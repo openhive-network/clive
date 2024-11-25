@@ -1,9 +1,10 @@
 from abc import ABC
 from dataclasses import dataclass
 
+from beekeepy import AsyncBeekeeper
+
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.world import CLIWorld, World
 
 
@@ -19,7 +20,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         return self._context_manager_instance
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         return self.world.beekeeper
 
     async def _create_context_manager_instance(self) -> World:

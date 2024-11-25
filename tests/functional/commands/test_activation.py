@@ -5,8 +5,9 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
 import pytest
+from beekeepy.exceptions import NoWalletWithSuchNameError
 
-from clive.__private.core.commands.unlock import Unlock, WalletDoesNotExistsError
+from clive.__private.core.commands.unlock import Unlock
 
 if TYPE_CHECKING:
     import clive
@@ -15,43 +16,43 @@ if TYPE_CHECKING:
 
 async def test_unlock(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE
-    await world.beekeeper.api.lock_all()
+    await world.session.lock_all()
 
     # ACT
     await world.commands.unlock(password=wallet.password)
 
     # ASSERT
-    assert world.app_state.is_unlocked
+    assert await world.app_state.is_unlocked
 
 
 async def test_unlock_non_existing_wallet(world: clive.World) -> None:
     # ACT & ASSERT
-    with pytest.raises(WalletDoesNotExistsError), world.modified_connection_details(max_attempts=1):
+    with pytest.raises(NoWalletWithSuchNameError):
         await Unlock(
             app_state=world.app_state,
-            beekeeper=world.beekeeper,
-            wallet="blabla",
+            session=world.session,
+            wallet_name="blabla",
             password="blabla",
         ).execute()
 
 
 async def test_lock(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE & ACT
-    assert world.app_state.is_unlocked
+    assert await world.app_state.is_unlocked
     await world.commands.lock()
 
     # ASSERT
-    assert not world.app_state.is_unlocked
+    assert not await world.app_state.is_unlocked
 
 
 async def test_unlock_again(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE & ACT
-    assert world.app_state.is_unlocked
+    assert await world.app_state.is_unlocked
     await world.commands.lock()
     await world.commands.unlock(password=wallet.password)
 
     # ASSERT
-    assert world.app_state.is_unlocked
+    assert await world.app_state.is_unlocked
 
 
 async def test_lock_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
@@ -61,8 +62,8 @@ async def test_lock_after_given_time(world: clive.World, wallet: WalletInfo) -> 
 
     # ACT
     await world.commands.unlock(password=wallet.password, time=time_to_sleep)
-    assert world.app_state.is_unlocked
+    assert await world.app_state.is_unlocked
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
-    assert not world.app_state.is_unlocked
+    assert not await world.app_state.is_unlocked

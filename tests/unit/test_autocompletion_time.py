@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import subprocess
+from pathlib import Path
 
 from clive.__private.logger import logger
+from clive.main import __file__ as path_to_clive_main
 
 
 def test_autocompletion_time() -> None:
     # ARRANGE
     seconds_threshold = 0.5
-    command = "_CLIVE_COMPLETE=1 TIMEFORMAT='%U' /bin/bash -c 'time python3 -X importtime clive/main.py --help'"
+    path = Path(path_to_clive_main).absolute().as_posix()
+    command = f"_CLIVE_COMPLETE=1 TIMEFORMAT='%U' /bin/bash -c 'time python3 -X importtime {path} --help'"
 
     # ACT
     result = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, get_args
 
+from beekeepy.exceptions import UnknownDecisionPathError
 from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -12,8 +13,9 @@ from clive.__private.models import Asset
 if TYPE_CHECKING:
     import datetime
 
+    from helpy._handles.hived.api.database_api.common import DatabaseApiCommons
+
     from clive.__private.core.node import Node
-    from clive.__private.core.node.api.database_api import DatabaseApi
     from clive.__private.models.schemas import DynamicGlobalProperties, ListProposals, ListProposalVotes
     from clive.__private.models.schemas import Proposal as SchemasProposal
 
@@ -87,9 +89,9 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     status: Statuses = DEFAULT_STATUS
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
-            gdpo = await node.api.database_api.get_dynamic_global_properties()
-            proposal_votes = await node.api.database_api.list_proposal_votes(
+        async with await self.node.batch() as node:
+            gdpo = await node.api.database.get_dynamic_global_properties()
+            proposal_votes = await node.api.database.list_proposal_votes(
                 start=[self.account_name],
                 limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
                 order="by_voter_proposal",
@@ -97,7 +99,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 status=self.status,
             )
 
-            order: DatabaseApi.SORT_TYPES
+            order: DatabaseApiCommons.SORT_TYPES
             if self.order == "by_total_votes_with_voted_first":
                 order = "by_total_votes"
             elif self.order in self.ORDERS:
@@ -105,7 +107,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             else:
                 raise ValueError(f"Unknown order: {self.order}")
 
-            searched_proposals = await node.api.database_api.list_proposals(
+            searched_proposals = await node.api.database.list_proposals(
                 start=[],
                 limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
                 order=order,
@@ -113,6 +115,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 status=self.status,
             )
             return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(

@@ -12,15 +12,16 @@ from clive.__private.core.commands.unsign import UnSign
 from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
+    from beekeepy import AsyncUnlockedWallet, AsyncWallet
+
     from clive.__private.core.commands.abc.command_in_unlocked import AppStateProtocol
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.keys import PublicKey
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
 
 
 @dataclass(kw_only=True)
@@ -52,7 +53,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     content: TransactionConvertibleType
     app_state: AppStateProtocol
     node: Node
-    beekeeper: Beekeeper | None = None
+    wallet: AsyncUnlockedWallet | AsyncWallet | None = None
     """Required if transaction needs to be signed - when sign_key is provided."""
     sign_key: PublicKey | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
@@ -66,11 +67,12 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
         if self.sign_key and not self.force_unsign:
-            assert self.beekeeper is not None, "beekeeper is required when sign_key is provided"
+            assert self.wallet is not None, "wallet is required when sign_key is provided"
+            self.wallet = await self.wallet.unlocked
+            assert self.wallet is not None, "wallet is not unlocked"
 
             transaction = await Sign(
-                app_state=self.app_state,
-                beekeeper=self.beekeeper,
+                wallet=self.wallet,
                 transaction=transaction,
                 key=self.sign_key,
                 chain_id=self.chain_id or await self.node.chain_id,

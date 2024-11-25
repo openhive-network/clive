@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
+from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.exceptions import BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
-from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.settings import safe_settings
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
@@ -14,6 +15,8 @@ from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
+
+    from helpy import HttpUrl
 
     from clive_local_tools.cli.cli_tester import CLITester
 
@@ -25,9 +28,11 @@ MEMO: Final[str] = "test-process-transfer-memo"
 
 
 @pytest.fixture
-async def beekeeper_for_remote_use() -> AsyncGenerator[Beekeeper]:
-    async with Beekeeper() as beekeeper:
-        yield beekeeper
+async def beekeeper_url() -> AsyncGenerator[HttpUrl]:
+    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper:
+        endpoint = beekeeper.pack().settings.http_endpoint
+        assert endpoint is not None, "endpoint from packed settings is None"
+        yield endpoint
 
 
 async def test_process_transfer(
@@ -73,18 +78,17 @@ async def test_process_transfer_required_password(cli_tester: CLITester) -> None
 
 
 async def test_transfer_with_remote_beekeeper_option(
-    node: tt.RawNode, beekeeper_for_remote_use: Beekeeper, cli_tester: CLITester
+    node: tt.RawNode, beekeeper_url: HttpUrl, cli_tester: CLITester
 ) -> None:
     """Check clive process transfer command."""
     # ARRANGE
-    beekeeper_http_endpoint = beekeeper_for_remote_use.http_endpoint.as_string()
     operation = TransferOperation(
         from_=WORKING_ACCOUNT_NAME,
         to=RECEIVER,
         amount=AMOUNT,
         memo=MEMO,
     )
-    log_message = f"Using beekeeper at {beekeeper_http_endpoint}"
+    log_message = f"Using beekeeper at {beekeeper_url}"
 
     # ACT
     result = cli_tester.process_transfer(
@@ -94,9 +98,9 @@ async def test_transfer_with_remote_beekeeper_option(
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         password=WORKING_ACCOUNT_PASSWORD,
         memo=MEMO,
-        beekeeper_remote=beekeeper_http_endpoint,
+        beekeeper_remote=beekeeper_url.as_string(),
     )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
-    assert log_message in result.output, f"Command process transfer should use beekeeper at `{beekeeper_http_endpoint}`"
+    assert log_message in result.output, f"Command process transfer should use beekeeper at `{beekeeper_url}`"

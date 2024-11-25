@@ -16,7 +16,7 @@ class ShowProposal(WorldBasedCommand):
         wrapper = await self.world.commands.find_proposal(proposal_id=self.proposal_id)
         proposal = wrapper.result_or_raise
 
-        gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
+        gdpo = await self.world.node.api.database.get_dynamic_global_properties()
         votes = humanize_votes_with_comma(proposal.total_votes, gdpo)
         daily_pay = Asset.pretty_amount(proposal.daily_pay)
 

@@ -61,6 +61,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.app_state import LockSource
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
@@ -98,9 +99,10 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             CreateWallet(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                wallet=self._world.profile.name,
+                session=self._world.session,
+                wallet_name=self._world.profile.name,
                 password=password,
+                world=self._world,
             )
         )
 
@@ -124,12 +126,13 @@ class Commands(Generic[WorldT_co]):
         """
         return await self.__surround_with_exception_handlers(
             Unlock(
-                app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                wallet=profile_name or self._world.profile.name,
                 password=password,
+                app_state=self._world.app_state,
+                session=self._world.session,
+                wallet_name=profile_name or self._world.profile.name,
                 time=time,
                 permanent=permanent,
+                world=self._world,
             )
         )
 
@@ -137,8 +140,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             Lock(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                wallet=self._world.profile.name,
+                wallet=self._world.wallet,
             )
         )
 
@@ -146,13 +148,13 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             LockAll(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
+                session=self._world.session,
             )
         )
 
     async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:
         return await self.__surround_with_exception_handlers(
-            GetWalletNames(beekeeper=self._world.beekeeper, filter_by_status=filter_by_status)
+            GetWalletNames(session=self._world.session, filter_by_status=filter_by_status)
         )
 
     async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
@@ -165,9 +167,7 @@ class Commands(Generic[WorldT_co]):
         )
 
     async def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return await self.__surround_with_exception_handlers(
-            SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds)
-        )
+        return await self.__surround_with_exception_handlers(SetTimeout(session=self._world.session, seconds=seconds))
 
     async def perform_actions_on_transaction(  # noqa: PLR0913
         self,
@@ -183,10 +183,10 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             PerformActionsOnTransaction(
+                content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                beekeeper=self._world.beekeeper if sign_key else None,
-                content=content,
+                wallet=self._world.wallet if sign_key else None,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
@@ -235,8 +235,7 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
-                app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
+                wallet=self._world.wallet,
                 transaction=transaction,
                 key=sign_with,
                 chain_id=chain_id or await self._world.node.chain_id,
@@ -267,19 +266,15 @@ class Commands(Generic[WorldT_co]):
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
             ImportKey(
-                app_state=self._world.app_state,
-                wallet=self._world.profile.name,
+                wallet=self._world.wallet,
                 key_to_import=key_to_import,
-                beekeeper=self._world.beekeeper,
             )
         )
 
     async def remove_key(self, *, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
-                app_state=self._world.app_state,
-                wallet=self._world.profile.name,
-                beekeeper=self._world.beekeeper,
+                wallet=self._world.wallet,
                 key_to_remove=key_to_remove,
             )
         )
@@ -287,19 +282,14 @@ class Commands(Generic[WorldT_co]):
     async def sync_data_with_beekeeper(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                app_state=self._world.app_state,
+                wallet=self._world.wallet,
                 profile=self._world.profile,
-                beekeeper=self._world.beekeeper,
             )
         )
 
-    async def sync_state_with_beekeeper(self) -> CommandWrapper:
+    async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            SyncStateWithBeekeeper(
-                app_state=self._world.app_state,
-                profile=self._world.profile,
-                beekeeper=self._world.beekeeper,
-            )
+            SyncStateWithBeekeeper(wallet=self._world.wallet, app_state=self._world.app_state, source=source)
         )
 
     async def get_dynamic_global_properties(self) -> CommandWithResultWrapper[DynamicGlobalProperties]:

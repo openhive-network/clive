@@ -1,20 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.keys import PublicKey, PublicKeyAliased
 from clive.exceptions import CliveError
 
-if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
-
 
 @dataclass(kw_only=True)
 class RemoveKey(CommandInUnlocked):
-    beekeeper: Beekeeper
-    wallet: str
     key_to_remove: PublicKey | PublicKeyAliased
 
     action_name: str = field(init=False)
@@ -24,7 +18,7 @@ class RemoveKey(CommandInUnlocked):
 
     async def _execute(self) -> None:
         public_key = self.key_to_remove.value
-        await self.beekeeper.api.remove_key(wallet_name=self.wallet, public_key=public_key)
+        await self.unlocked_wallet.remove_key(key=public_key)
 
     def __get_key_description(self) -> str:
         if isinstance(self.key_to_remove, PublicKey):

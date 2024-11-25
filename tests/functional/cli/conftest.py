@@ -21,8 +21,8 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
     import test_tools as tt
+    from beekeepy import AsyncBeekeeper
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.types import EnvContextFactory
 
 
@@ -57,12 +57,8 @@ async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
 
 
 @pytest.fixture
-async def beekeeper(
-    prepare_beekeeper_wallet: World, beekeeper_remote_address_env_context_factory: EnvContextFactory
-) -> AsyncGenerator[Beekeeper]:
-    address = str(prepare_beekeeper_wallet.beekeeper.http_endpoint)
-    with beekeeper_remote_address_env_context_factory(address):
-        yield prepare_beekeeper_wallet.beekeeper
+async def beekeeper(prepare_beekeeper_wallet: World) -> AsyncBeekeeper:
+    return prepare_beekeeper_wallet.beekeeper
 
 
 @pytest.fixture
@@ -74,7 +70,7 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 
 @pytest.fixture
-async def cli_tester(node: tt.RawNode, beekeeper: Beekeeper) -> CLITester:  # noqa: ARG001
+async def cli_tester(node: tt.RawNode, beekeeper: AsyncBeekeeper) -> CLITester:  # noqa: ARG001
     """Will return CliveTyper and CliRunner from typer.testing module.."""
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli

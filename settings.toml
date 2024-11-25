@@ -6,7 +6,6 @@ LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only log
 MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 
 [default.beekeeper]
-PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 15
 INITIALIZATION_TIMEOUT_SECS = 5

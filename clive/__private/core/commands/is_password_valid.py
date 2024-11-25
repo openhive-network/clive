@@ -3,12 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from beekeepy.exceptions import InvalidPasswordError
+
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.exceptions import WalletNotFoundError
-from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
+    from beekeepy import AsyncBeekeeper, AsyncSession, AsyncWallet
 
 
 @dataclass(kw_only=True)
@@ -19,30 +20,24 @@ class IsPasswordValid(CommandWithResult[bool]):
     Does it on the new session so the current session is not affected. E.g. unlock time remains the same.
     """
 
-    beekeeper: Beekeeper
+    beekeeper: AsyncBeekeeper
     wallet: str
     password: str
 
     async def _execute(self) -> None:
-        new_session_token = (await self.beekeeper.api.create_session()).token
+        async with await self.beekeeper.create_session() as session:
+            wallet = await self._ensure_wallet_name_exists_and_open(session=session)
+            self._result = await self._is_password_valid(wallet=wallet)
 
-        await self._ensure_wallet_name_exists(token=new_session_token)
+    async def _ensure_wallet_name_exists_and_open(self, session: AsyncSession) -> AsyncWallet:
+        for wallet in await session.wallets_created:
+            if wallet.name == self.wallet:
+                return await session.open_wallet(name=self.wallet)
+        raise WalletNotFoundError(self, self.wallet)
 
-        result = await self._is_password_valid(token=new_session_token)
-        await self.beekeeper.api.close_session(token=new_session_token)
-        self._result = result
-
-    async def _ensure_wallet_name_exists(self, token: str) -> None:
-        stored_wallets = (await self.beekeeper.api.list_created_wallets(token=token)).wallets  # type: ignore[call-arg]
-        stored_wallet_names = [wallet.name for wallet in stored_wallets]
-
-        if self.wallet not in stored_wallet_names:
-            await self.beekeeper.api.close_session(token=token)
-            raise WalletNotFoundError(self, self.wallet)
-
-    async def _is_password_valid(self, token: str) -> bool:
+    async def _is_password_valid(self, wallet: AsyncWallet) -> bool:
         try:
-            await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password, token=token)  # type: ignore[call-arg]
-        except CommunicationError:
+            await wallet.unlock(password=self.password)
+        except InvalidPasswordError:
             return False
         return True

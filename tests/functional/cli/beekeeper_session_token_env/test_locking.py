@@ -17,7 +17,8 @@ from clive_local_tools.testnet_block_log import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import Beekeeper
+    from beekeepy import AsyncBeekeeper
+
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -33,15 +34,16 @@ async def prepare_second_profile() -> Profile:
 
 @pytest.fixture
 async def prepare_second_beekeeper_wallet(
-    beekeeper: Beekeeper,
+    beekeeper: AsyncBeekeeper,
     prepare_second_profile: Profile,  # noqa: ARG001
 ) -> None:
     wallet_name = ALT_WORKING_ACCOUNT1_NAME
-    await beekeeper.api.create(wallet_name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
-    await beekeeper.api.lock(wallet_name=wallet_name)
+    session = await beekeeper.session
+    wallet = await session.create_wallet(name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
+    await wallet.lock()
 
 
-async def test_lock(beekeeper: Beekeeper, cli_tester_with_session_token_unlocked: CLITester) -> None:
+async def test_lock(beekeeper: AsyncBeekeeper, cli_tester_with_session_token_unlocked: CLITester) -> None:
     # ACT
     cli_tester_with_session_token_unlocked.lock()
 
@@ -49,7 +51,7 @@ async def test_lock(beekeeper: Beekeeper, cli_tester_with_session_token_unlocked
     await assert_wallets_locked(beekeeper)
 
 
-async def test_unlock_one_profile(beekeeper: Beekeeper, cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_unlock_one_profile(beekeeper: AsyncBeekeeper, cli_tester_with_session_token_locked: CLITester) -> None:
     # ACT
     cli_tester_with_session_token_locked.unlock(
         profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD

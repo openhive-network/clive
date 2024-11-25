@@ -46,7 +46,7 @@ class Transaction(SchemasTransaction):
         return self.ref_block_num >= 0 and self.ref_block_prefix > 0
 
     def calculate_transaction_id(self) -> TransactionId:
-        from clive.__private.core import iwax
+        from helpy import wax as iwax
 
         return TransactionId(iwax.calculate_transaction_id(self))
 

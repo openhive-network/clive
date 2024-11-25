@@ -14,5 +14,5 @@ class Lock(BeekeeperBasedCommand):
         await super().validate()
 
     async def _run(self) -> None:
-        await LockAll(beekeeper=self.beekeeper).execute()
+        await LockAll(session=await self.beekeeper.session).execute()
         typer.echo("All wallets have been locked.")

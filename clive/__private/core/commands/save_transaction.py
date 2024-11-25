@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
-from clive.__private.core import iwax
+from helpy import wax as iwax
+
 from clive.__private.core.commands.abc.command import Command
 
 if TYPE_CHECKING:

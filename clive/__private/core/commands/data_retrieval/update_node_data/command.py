@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core import iwax
+from helpy import wax as iwax
+
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
@@ -15,20 +16,17 @@ from clive.__private.core.commands.data_retrieval.update_node_data.temporary_mod
     SanitizedData,
 )
 from clive.__private.core.date_utils import utc_epoch, utc_now
-from clive.__private.core.iwax import (
-    calculate_current_manabar_value,
-    calculate_manabar_full_regeneration_time,
-)
 from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
 from clive.__private.models.disabled_api import DisabledAPI
 from clive.__private.models.hp_vests_balance import HpVestsBalance
 from clive.__private.models.schemas import (
+    AssetVestsHF26,
     DynamicGlobalProperties,
 )
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.models.schemas import (
         Account,
         FindAccounts,
@@ -52,7 +50,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             # We only need to fetch GDPO if no accounts were provided - otherwise it will be fetched in the same (batch)
             # query with other account-related data. Otherwise, if that would happen in a separate call we might get a
             # stale GDPO (for previous block).
-            self._result = await self.node.api.database_api.get_dynamic_global_properties()
+            self._result = await self.node.api.database.get_dynamic_global_properties()
             return
 
         await super()._execute()
@@ -62,14 +60,14 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         account_names = [acc.name for acc in self.accounts if acc.name]
         harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
-        async with self.node.batch(delay_error_on_data_access=True) as node:
-            harvested_data.gdpo = await node.api.database_api.get_dynamic_global_properties()
-            harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
-            harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
+        async with await self.node.batch(delay_error_on_data_access=True) as node:
+            harvested_data.gdpo = await node.api.database.get_dynamic_global_properties()
+            harvested_data.core_accounts = await node.api.database.find_accounts(accounts=account_names)
+            harvested_data.rc_accounts = await node.api.rc.find_rc_accounts(accounts=account_names)
 
             account_harvested_data = harvested_data.account_harvested_data
             for account in self.accounts:
-                account_history = await node.api.account_history_api.get_account_history(
+                account_history = await node.api.account_history.get_account_history(
                     account=account.name,
                     limit=1,
                     operation_filter_low=non_virtual_operations_filter,
@@ -154,15 +152,22 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         head_block_timestamp = int(head_block_time.timestamp())
         last_update_timestamp = manabar.last_update_time
         power_from_api = manabar.current_mana
-        max_mana_value = iwax.calculate_vests_to_hp(max_mana, gdpo)
+        max_mana_value = iwax.calculate_vests_to_hp(
+            vests=AssetVestsHF26(amount=max_mana),
+            total_vesting_fund_hive=gdpo.total_vesting_fund_hive,
+            total_vesting_shares=gdpo.total_vesting_shares,
+        )
         mana_value = iwax.calculate_vests_to_hp(
-            calculate_current_manabar_value(
-                now=head_block_timestamp,
-                max_mana=max_mana,
-                current_mana=power_from_api,
-                last_update_time=last_update_timestamp,
+            vests=AssetVestsHF26(
+                amount=iwax.calculate_current_manabar_value(
+                    now=head_block_timestamp,
+                    max_mana=max_mana,
+                    current_mana=power_from_api,
+                    last_update_time=last_update_timestamp,
+                )
             ),
-            gdpo,
+            total_vesting_fund_hive=gdpo.total_vesting_fund_hive,
+            total_vesting_shares=gdpo.total_vesting_shares,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
             head_block_time=head_block_time,
@@ -184,7 +189,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             return timedelta(0)
         head_block_timestamp = int(head_block_time.timestamp())
         return (
-            calculate_manabar_full_regeneration_time(
+            iwax.calculate_manabar_full_regeneration_time(
                 now=head_block_timestamp,
                 max_mana=max_mana,
                 current_mana=current_mana,

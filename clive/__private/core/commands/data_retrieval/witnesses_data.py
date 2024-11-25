@@ -4,6 +4,7 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from beekeepy.exceptions import UnknownDecisionPathError
 from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
@@ -104,16 +105,16 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     """Doesn't matter if mode is different than search_by_pattern."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
-            gdpo = await node.api.database_api.get_dynamic_global_properties()
+        async with await self.node.batch() as node:
+            gdpo = await node.api.database.get_dynamic_global_properties()
 
-            witness_votes = await node.api.database_api.list_witness_votes(
+            witness_votes = await node.api.database.list_witness_votes(
                 start=(self.account_name, ""),
                 limit=self.MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR,
                 order="by_account_witness",
             )
 
-            top_witnesses = await node.api.database_api.list_witnesses(
+            top_witnesses = await node.api.database.list_witnesses(
                 start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""),
                 limit=self.TOP_WITNESSES_HARD_LIMIT,
                 order="by_vote_name",
@@ -122,13 +123,14 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             witnesses_by_name: ListWitnesses | None = None
 
             if self.mode == "search_by_pattern":
-                witnesses_by_name = await node.api.database_api.list_witnesses(
+                witnesses_by_name = await node.api.database.list_witnesses(
                     start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
                     limit=self.search_by_pattern_limit,
                     order="by_name",
                 )
 
             return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         in_search_by_name_mode = self.mode == "search_by_pattern"
