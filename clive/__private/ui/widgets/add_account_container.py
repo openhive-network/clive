@@ -44,7 +44,7 @@ class AddAccountContainer(Horizontal, CliveWidget):
 
     def compose(self) -> ComposeResult:
         section_title = (
-            f"{'Track account' if self._accounts_type == 'tracked_accounts' else 'Add known account'}"
+            f"{'Add tracked account' if self._accounts_type == 'tracked_accounts' else 'Add known account'}"
             if self._show_section_title
             else ""
         )
