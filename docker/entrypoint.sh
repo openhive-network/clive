@@ -4,6 +4,7 @@
 set -euo pipefail
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
+SELECTED_PROFILE=""
 TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 
