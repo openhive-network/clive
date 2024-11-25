@@ -65,13 +65,13 @@ class UpdateAlarmsData(
     async def _harvest_data_from_api(self) -> AccountHarvestedAlarmsDataContainer:
         accounts_data: AccountHarvestedAlarmsDataContainer = {}
 
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             for account in self.accounts:
-                decline_voting_rights = await node.api.database_api.list_decline_voting_rights_requests(
+                decline_voting_rights = await node.api.database.list_decline_voting_rights_requests(
                     start=account.name, limit=1, order="by_account"
                 )
 
-                change_recovery_account_requests = await node.api.database_api.list_change_recovery_account_requests(
+                change_recovery_account_requests = await node.api.database.list_change_recovery_account_requests(
                     start=account.name, limit=1, order="by_account"
                 )
 

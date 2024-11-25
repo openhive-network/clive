@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
@@ -102,5 +103,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
             if isinstance(action, Command):
                 await action.execute()
+            elif inspect.iscoroutinefunction(action):
+                await action()
             else:
                 action()

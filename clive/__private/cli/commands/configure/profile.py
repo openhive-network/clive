@@ -1,6 +1,8 @@
 import errno
 from dataclasses import dataclass
 
+from helpy.exceptions import CommunicationError
+
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -9,7 +11,6 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
-from clive.exceptions import CommunicationError
 
 
 @dataclass(kw_only=True)
@@ -41,7 +42,9 @@ class CreateProfile(BeekeeperBasedCommand):
         profile.save()
 
         try:
-            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
+            await CreateWallet(
+                session=await self.beekeeper.session, wallet_name=profile.name, password=self.password
+            ).execute()
         except CommunicationError:
             profile.delete()
             raise

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive_local_tools.types import CLITesterWithSessionFactory
 
 
-async def test_configure_key_add_using_beekeeper_session_token(
+async def test_configure_key_add_using_beekeeper_session_token_xxx(
     cli_tester_with_session_token_unlocked: CLITester,
 ) -> None:
     """Add key using CLIVE_BEEKEEPER__SESSION_TOKEN."""

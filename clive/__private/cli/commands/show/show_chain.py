@@ -21,7 +21,7 @@ class ShowChain(WorldBasedCommand):
         data = wrapper.result_or_raise
         table = Table(title="Chain info", show_header=False)
 
-        table.add_row("Network properties:", f"{self.world.node.address}", end_section=True)
+        table.add_row("Network properties:", f"{self.world.node.http_endpoint}", end_section=True)
         table.add_row("chain type", data.chain_type)
         table.add_row("chain id", data.chain_id)
         table.add_row("head block time", data.pretty_head_block_time)

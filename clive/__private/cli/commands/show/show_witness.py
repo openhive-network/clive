@@ -22,7 +22,7 @@ class ShowWitness(WorldBasedCommand):
         wrapper = await self.world.commands.find_witness(witness_name=self.name)
         witness = wrapper.result_or_raise
 
-        gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
+        gdpo = await self.world.node.api.database.get_dynamic_global_properties()
         votes = humanize_votes_with_comma(witness.votes, gdpo)
 
         account_creation_fee: str | None = None

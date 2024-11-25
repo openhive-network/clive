@@ -105,7 +105,7 @@ async def test_process_transfer_with_beekeeper_either_session_token_or_password_
         )
 
 
-async def test_process_transfer_with_beekeeper_session_token_not_unlocked(
+async def test_process_transfer_with_beekeeper_session_token_not_unlocked_xxx(
     cli_tester_with_session_token_locked: CLITester,
 ) -> None:
     """Check if clive process transfer throws exception when wallet is not unlocked."""

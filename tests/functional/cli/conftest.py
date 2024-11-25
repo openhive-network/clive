@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from typer.testing import CliRunner
 
+from clive.__private.cli.commands.beekeeper import BeekeeperSaveDetached
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
@@ -21,8 +22,8 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
     import test_tools as tt
+    from beekeepy import AsyncBeekeeper
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.types import EnvContextFactory
 
 
@@ -53,16 +54,20 @@ async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
         )
         await world_cm.commands.sync_data_with_beekeeper()
         world_cm.profile.save()  # required for saving imported keys aliases
+
+        beekeeper = world_cm.beekeeper
+        http_endpoint = beekeeper.pack().settings.http_endpoint
+        assert http_endpoint is not None, "While performing setup of beekeeper, it own address was not set"
+        await BeekeeperSaveDetached(
+            pid=0, endpoint=http_endpoint.as_string()
+        ).execute()  # so that cli commands can refer
+
         yield world_cm
 
 
 @pytest.fixture
-async def beekeeper(
-    prepare_beekeeper_wallet: World, beekeeper_remote_address_env_context_factory: EnvContextFactory
-) -> AsyncGenerator[Beekeeper]:
-    address = str(prepare_beekeeper_wallet.beekeeper.http_endpoint)
-    with beekeeper_remote_address_env_context_factory(address):
-        yield prepare_beekeeper_wallet.beekeeper
+async def beekeeper(prepare_beekeeper_wallet: World) -> AsyncBeekeeper:
+    return prepare_beekeeper_wallet.beekeeper
 
 
 @pytest.fixture
@@ -74,7 +79,7 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 
 @pytest.fixture
-async def cli_tester(node: tt.RawNode, beekeeper: Beekeeper) -> CLITester:  # noqa: ARG001
+async def cli_tester(node: tt.RawNode, beekeeper: AsyncBeekeeper) -> CLITester:  # noqa: ARG001
     """Will return CliveTyper and CliRunner from typer.testing module.."""
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli

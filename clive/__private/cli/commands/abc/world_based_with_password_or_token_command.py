@@ -33,7 +33,7 @@ class WorldBasedWithPasswordOrTokenCommand(WorldBasedCommand):
         await super()._configure()
 
     async def validate_inside_context_manager(self) -> None:
-        self._validate_if_wallet_is_unlocked()
+        await self._validate_if_wallet_is_unlocked()
         await super().validate_inside_context_manager()
 
     async def _configure_inside_context_manager(self) -> None:
@@ -45,11 +45,11 @@ class WorldBasedWithPasswordOrTokenCommand(WorldBasedCommand):
         if self.password and not self.is_session_token_set():
             await self.world.commands.unlock(password=self.password_ensure)
 
-    def _validate_if_wallet_is_unlocked(self) -> None:
+    async def _validate_if_wallet_is_unlocked(self) -> None:
         if not self._is_beekeeper_required():
             return
 
-        if self.is_session_token_set() and not self.world.app_state.is_unlocked:
+        if self.is_session_token_set() and not (await self.world.app_state.is_unlocked):
             raise CLIWalletIsNotUnlockedError(self.world.profile.name)
 
     def _validate_no_both_credentials_given(self) -> None:

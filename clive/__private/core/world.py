@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 import contextlib
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
 
+import typer
+from beekeepy import AsyncBeekeeper, AsyncSession, AsyncWallet
+from beekeepy.exceptions import NoWalletWithSuchNameError
 from textual.reactive import var
 
 from clive.__private.core.app_state import AppState, LockSource
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
-from clive.__private.core.communication import Communication
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
-from clive.__private.core.node.node import Node
+from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
@@ -22,13 +23,10 @@ from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
     from types import TracebackType
-    from typing import Literal
 
+    from helpy import HttpUrl
     from typing_extensions import Self
-
-    from clive.__private.core.url import Url
 
 
 class World:
@@ -47,7 +45,7 @@ class World:
     def __init__(
         self,
         profile_name: str | None = None,
-        beekeeper_remote_endpoint: Url | None = None,
+        beekeeper_remote_endpoint: HttpUrl | None = None,
         *args: Any,
         use_beekeeper: bool = True,
         **kwargs: Any,
@@ -62,13 +60,18 @@ class World:
 
         self._use_beekeeper = use_beekeeper
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
-        self._beekeeper: Beekeeper | None = None
+        self._beekeeper: AsyncBeekeeper | None = None
+        self.__session: AsyncSession | None = None
+        self.__wallet: AsyncWallet | None = None
 
         self._node = Node(self._profile)
         self._is_during_setup = False
 
     async def __aenter__(self) -> Self:
-        return await self.setup()
+        typer.echo("pre setup")
+        xxx = await self.setup()
+        typer.echo("post setup")
+        return xxx
 
     async def __aexit__(
         self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
@@ -84,9 +87,29 @@ class World:
         return self._known_exchanges
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         assert self._beekeeper is not None, "Beekeeper is not initialized"
         return self._beekeeper
+
+    @property
+    def session(self) -> AsyncSession:
+        assert self.__session is not None, "Session is not initialized"
+        return self.__session
+
+    @property
+    def wallet(self) -> AsyncWallet:
+        assert self._optional_wallet is not None, "Wallet is not initialized"
+        return self._optional_wallet
+
+    async def set_wallet(self, new_wallet: AsyncWallet) -> None:
+        assert new_wallet.name in [
+            w.name for w in (await self.session.wallets)
+        ], "This wallet does not exists within this session"
+        self.__wallet = new_wallet
+
+    @property
+    def _optional_wallet(self) -> AsyncWallet | None:
+        return self.__wallet
 
     @property
     def node(self) -> Node:
@@ -95,30 +118,6 @@ class World:
     @property
     def _should_sync_with_beekeeper(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
-
-    @contextmanager
-    def modified_connection_details(
-        self,
-        max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_total_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
-        pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
-        target: Literal["beekeeper", "node", "all"] = "all",
-    ) -> Iterator[None]:
-        """Temporarily change connection details."""
-        contexts_to_enter = []
-        if target in ("beekeeper", "all"):
-            contexts_to_enter.append(
-                self.beekeeper.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
-            )
-        if target in ("node", "all"):
-            contexts_to_enter.append(
-                self.node.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
-            )
-
-        with contextlib.ExitStack() as stack:
-            for context in contexts_to_enter:
-                stack.enter_context(context)
-            yield
 
     @asynccontextmanager
     async def during_setup(self) -> AsyncGenerator[None]:
@@ -133,18 +132,19 @@ class World:
 
     async def setup(self) -> Self:
         async with self.during_setup():
-            await self._node.setup()
             if self._use_beekeeper:
                 self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+                self.__session = await self._beekeeper.session
+                typer.echo(f"{self._should_sync_with_beekeeper=}")
+                await self.__try_to_set_wallet()
                 if self._should_sync_with_beekeeper:
                     await self._commands.sync_state_with_beekeeper()
         return self
 
     async def close(self) -> None:
         self.profile.save()
-        await self._node.teardown()
         if self._beekeeper is not None:
-            await self._beekeeper.close()
+            self._beekeeper.teardown()
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
@@ -170,14 +170,30 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(
-            remote_endpoint=remote_endpoint,
-            notify_closing_wallet_name_cb=lambda: self.profile.name,
-        )
-        beekeeper.attach_wallet_closing_listener(self.app_state)
-        await beekeeper.launch()
-        return beekeeper
+    async def __setup_beekeeper(self, *, remote_endpoint: HttpUrl | None = None) -> AsyncBeekeeper:
+        if remote_endpoint is None:
+            from clive.__private.cli.commands.beekeeper import BeekeeperLoadDetachedPID
+
+            beekeeper_params = await BeekeeperLoadDetachedPID(remove_file=False, silent_fail=True).execute_with_result()
+            if beekeeper_params.is_set():
+                remote_endpoint = beekeeper_params.endpoint
+        settings = safe_settings.beekeeper.settings_factory(remote_endpoint=remote_endpoint)
+        if remote_endpoint is not None:
+            typer.echo("choose remote beekeeper")
+            return await AsyncBeekeeper.remote_factory(url_or_settings=settings)
+        typer.echo("choose local beekeeper")
+        return await AsyncBeekeeper.factory(settings=settings)
+
+    async def __try_to_set_wallet(self) -> None:
+        for wallet in await self.session.wallets:
+            if wallet.name == self.profile.name:
+                await self.set_wallet(wallet)
+                typer.echo("successfully set already opened wallet")
+                return
+
+        with contextlib.suppress(NoWalletWithSuchNameError):
+            await self.set_wallet(new_wallet=await self.session.open_wallet(name=self.profile.name))
+            typer.echo("successfully set wallet")
 
     @property
     def profile(self) -> Profile:
@@ -223,7 +239,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"
-        if source == "beekeeper_notification_server":
+        if source == "beekeeper_monitoring_thread":
             send_notification = partial(
                 self.app.notify,
                 f"{base_message} due to inactivity.",

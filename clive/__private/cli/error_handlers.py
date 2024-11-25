@@ -1,12 +1,13 @@
 import errno
 
+from helpy.exceptions import CommunicationError
+
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.unlock import WalletDoesNotExistsError
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.dev import is_in_dev_mode
-from clive.exceptions import CommunicationError
 
 
 def register_error_handlers(cli: CliveTyper) -> None:

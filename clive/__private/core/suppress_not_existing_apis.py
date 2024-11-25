@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Final
 
-from clive.exceptions import CommunicationError
+from helpy.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from types import TracebackType

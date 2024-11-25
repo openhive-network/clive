@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, overload
 
-from clive.__private.core import iwax
+from helpy import wax as iwax
+
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -129,7 +130,7 @@ class PrivateKey(Key):
 
     @staticmethod
     def create(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
-        private_key = iwax.generate_private_key()
+        private_key = PrivateKey(value=iwax.generate_private_key())
         return private_key.with_alias(with_alias) if with_alias else private_key
 
     @classmethod
@@ -170,7 +171,7 @@ class PrivateKey(Key):
     def calculate_public_key(self, *, with_alias: str) -> PublicKeyAliased: ...
 
     def calculate_public_key(self, *, with_alias: str = "") -> PublicKey | PublicKeyAliased:
-        public_key = iwax.calculate_public_key(self.value)
+        public_key = PublicKey(value=iwax.calculate_public_key(self.value))
 
         if with_alias:
             return public_key.with_alias(with_alias)
