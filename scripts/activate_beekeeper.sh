@@ -5,27 +5,17 @@ trap "clean_up" SIGTERM SIGQUIT SIGHUP EXIT
 
 # Start Beekeeper with prepared session token
 start_beekeeper_with_prepared_session_token() {
-  output=$(clive beekeeper spawn)
+  CLIVE_BEEKEEPER__REMOTE_ADDRESS=$(clive beekeeper spawn --echo-address-only)
   # shellcheck disable=SC2181
   if [[ $? -ne 0 ]]; then
     echo "Error: Fail to spawn Beekeeper. Aborting..."
     exit 1
   fi
-  CLIVE_BEEKEEPER__REMOTE_ADDRESS=$(echo "$output" | grep -oE 'http://[0-9.]+:[0-9]+')
 
-  CLIVE_BEEKEEPER__SESSION_TOKEN=$(curl -s --data '{
-    "jsonrpc": "2.0",
-    "method": "beekeeper_api.create_session",
-    "params": {
-      "salt": "clive-cli-session",
-      "notifications_endpoint": "'"${CLIVE_BEEKEEPER__REMOTE_ADDRESS}"'"
-    },
-    "id": 1
-  }' "${CLIVE_BEEKEEPER__REMOTE_ADDRESS}" | jq .result.token | tr -d '"')
-
-
-  if [[ "${CLIVE_BEEKEEPER__SESSION_TOKEN}" == "null" ]]; then
-    echo "Error: There is no valid token."
+  CLIVE_BEEKEEPER__SESSION_TOKEN=$(clive beekeeper create-session --echo-token-only)
+  # shellcheck disable=SC2181
+  if [[ $? -ne 0 ]]; then
+    echo "Error: Failed to create a new beekeeper session. Aborting..."
     exit 1
   fi
 
