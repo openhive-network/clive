@@ -42,6 +42,7 @@ def manage_thread_pool() -> Iterator[None]:
 
 @pytest.fixture(autouse=True)
 def run_prepare_before_launch() -> None:
+    settings.reload()
     working_directory = tt.context.get_current_directory() / "clive"
 
     beekeeper_directory = working_directory / "beekeeper"
