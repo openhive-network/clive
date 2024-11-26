@@ -18,11 +18,12 @@ async def info(ctx: typer.Context) -> None:  # noqa: ARG001
 @beekeeper.command()
 async def spawn(
     background: bool = typer.Option(default=True, help="Run in background."),  # noqa: FBT001
+    echo_address_only: bool = typer.Option(default=False, help="Display only address of launched Beekeeper."),  # noqa: FBT001
 ) -> None:
     """Spawn beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperSpawn
 
-    await BeekeeperSpawn(background=background).run()
+    await BeekeeperSpawn(background=background, echo_address_only=echo_address_only).run()
 
 
 @beekeeper.command(param_groups=[BeekeeperOptionsGroup])
