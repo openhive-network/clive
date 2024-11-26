@@ -24,7 +24,7 @@ class UnlockInvalidPasswordError(InvalidPasswordError, CannotUnlockError):
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured):
-    app_state: AppState
+    app_state: AppState | None = None
     beekeeper: Beekeeper
     wallet: str
     time: timedelta | None = None
@@ -43,7 +43,8 @@ class Unlock(CommandPasswordSecured):
                     raise known_error(error) from error
             raise CannotUnlockError(error) from error
 
-        self.app_state.unlock()
+        if self.app_state:
+            self.app_state.unlock()
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:

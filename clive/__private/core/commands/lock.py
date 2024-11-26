@@ -12,10 +12,11 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class Lock(Command):
-    app_state: AppState
+    app_state: AppState | None = None
     beekeeper: Beekeeper
     wallet: str
 
     async def _execute(self) -> None:
         await self.beekeeper.api.lock(wallet_name=self.wallet)
-        self.app_state.lock()
+        if self.app_state:
+            self.app_state.lock()
