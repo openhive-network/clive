@@ -6,6 +6,9 @@ import typer
 
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
+from clive.__private.cli.common import BeekeeperOptionsGroup
+from clive.__private.cli.common.parameters import argument_related_options
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.configure.main import configure
 from clive.__private.cli.process.main import process
@@ -39,3 +42,50 @@ def main(
         from clive.__private.storage.model import calculate_storage_model_revision
 
         typer.echo(f"Clive version: {__version__}\nStorage model revision: {calculate_storage_model_revision()}")
+
+
+_profile_name_unlock_argument = typer.Argument(
+    None,
+    help="The name of the profile to unlock (can be selected interactively if not provided).",
+    show_default=False,
+)
+
+
+@cli.command(name="unlock", param_groups=[BeekeeperOptionsGroup])
+async def unlock(
+    ctx: typer.Context,  # noqa: ARG001
+    profile_name: Optional[str] = _profile_name_unlock_argument,
+    profile_name_option: Optional[str] = argument_related_options.profile_name,
+    include_create_new_profile: bool = typer.Option(  # noqa: FBT001
+        default=False,
+        hidden=True,
+    ),
+) -> None:
+    """
+    Unlocks the selected profile.
+
+    Session token and beekeeper remote address must be set.
+    """
+    from clive.__private.cli.commands.unlock import Unlock
+
+    common = BeekeeperOptionsGroup.get_instance()
+    await Unlock(
+        **common.as_dict(),
+        profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option, allow_none=True),
+        include_create_new_profile=include_create_new_profile,
+    ).run()
+
+
+@cli.command(name="lock", param_groups=[BeekeeperOptionsGroup])
+async def lock(
+    ctx: typer.Context,  # noqa: ARG001
+) -> None:
+    """
+    Locks the profile.
+
+    Session token and beekeeper remote address must be set. Locks all wallets in beekeeper session.
+    """
+    from clive.__private.cli.commands.lock import Lock
+
+    common = BeekeeperOptionsGroup.get_instance()
+    await Lock(**common.as_dict()).run()
