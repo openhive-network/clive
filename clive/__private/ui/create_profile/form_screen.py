@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
+from textual.message import Message
 from textual.reactive import var
 
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.create_profile.context import CreateProfileContext
 from clive.__private.ui.create_profile.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
@@ -47,6 +47,9 @@ class FormScreen(FormScreenBase[ContextT], ABC):
 
     should_finish: bool = var(default=False)  # type: ignore[assignment]
 
+    class Finish(Message):
+        """Used to determine that the form is finished."""
+
     @dataclass
     class ValidationSuccess:
         """Used to determine that form validation passed and next screen should be displayed."""
@@ -76,14 +79,10 @@ class FormScreen(FormScreenBase[ContextT], ABC):
             await self.apply()
 
         if self.should_finish:
-            await self.finish()
+            self.post_message(self.Finish())
             return
 
         self._owner.action_next_screen()
-
-    async def finish(self) -> None:
-        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
-        self.app.run_worker(self._action_finish())
 
     @abstractmethod
     async def validate(self) -> ValidationFail | ValidationSuccess | None:
@@ -96,20 +95,3 @@ class FormScreen(FormScreenBase[ContextT], ABC):
     def is_step_optional(self) -> bool:
         """Override to skip form validation."""
         return False
-
-    async def _action_finish(self) -> None:
-        self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
-        context = cast(CreateProfileContext, self.context)  # TODO: remove cast, resolve type
-
-        profile = context.profile
-        profile.enable_saving()
-        self.world.profile = profile
-
-        await self._owner.execute_post_actions()
-        await self._handle_modes_on_finish()
-        self.profile.save()
-
-    async def _handle_modes_on_finish(self) -> None:
-        await self.app.switch_mode("dashboard")
-        await self.app.remove_mode("create_profile")
-        await self.app.remove_mode("unlock")
