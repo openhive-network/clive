@@ -37,10 +37,8 @@ class BeekeeperSpawn(ExternalCLICommand):
         await super().validate()
 
     async def _run(self) -> None:
-        typer.echo("Launching beekeeper...")
-
         async with Beekeeper(run_in_background=self.background) as beekeeper:
-            typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
+            typer.echo(f"{beekeeper.http_endpoint}")
 
             if not self.background:
                 self.__serve_forever()
