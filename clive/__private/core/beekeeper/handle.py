@@ -36,7 +36,7 @@ from clive.__private.core.beekeeper.notifications import (
     WalletClosingListener,
 )
 from clive.__private.core.communication import Communication
-from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.url import Url
 from clive.__private.logger import logger
 from clive.__private.models.base import CliveBaseModel
@@ -46,7 +46,7 @@ from clive.__private.models.schemas import (
     JSONRPCResult,
     get_response_model,
 )
-from clive.__private.settings import clive_prefixed_envvar, safe_settings, settings
+from clive.__private.settings import clive_prefixed_envvar, safe_settings
 from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:
@@ -82,12 +82,10 @@ class Beekeeper:
         run_in_background: bool = False,
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
     ) -> None:
-        if remote_endpoint:
-            settings.set(BEEKEEPER_REMOTE_ADDRESS, str(remote_endpoint))
-
-        if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
+        if not (remote_endpoint or Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError
 
+        self._remote_endpoint = remote_endpoint
         self.__communication = Communication(timeout_total_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.__run_in_background = run_in_background
         self.is_running = False
@@ -168,7 +166,9 @@ class Beekeeper:
 
     @property
     def http_endpoint(self) -> Url:
-        if not self.config.webserver_http_endpoint and (remote := self.get_remote_address_from_settings()):
+        if not self.config.webserver_http_endpoint and (
+            remote := self._remote_endpoint or self.get_remote_address_from_settings()
+        ):
             self.config.webserver_http_endpoint = remote
 
         if not self.config.webserver_http_endpoint:
