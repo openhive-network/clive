@@ -6,6 +6,7 @@ from typing import Final
 import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
+from clive.__private.cli.exceptions import CLIProfileDoesNotExistsError
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.profile import Profile
@@ -66,6 +67,13 @@ class Unlock(BeekeeperBasedCommand):
             return None
         return option_value
 
+    def _validate_profile_exists(self) -> None:
+        profile_name = self.profile_name
+        if profile_name is None:
+            return  # validation is not needed as profile will be selected interactively from list
+        if profile_name not in Profile.list_profiles():
+            raise CLIProfileDoesNotExistsError(profile_name)
+
     async def _unlock_in_tty_mode(self, profile_name: str) -> None:
         prompt = f"Enter password for profile `{profile_name}`: "
         password = getpass(prompt)
@@ -74,3 +82,7 @@ class Unlock(BeekeeperBasedCommand):
     async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
         password = sys.stdin.readline().rstrip()
         await self._unlock_profile(profile_name, password)
+
+    async def validate(self) -> None:
+        self._validate_profile_exists()
+        await super().validate()
