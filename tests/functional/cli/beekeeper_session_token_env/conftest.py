@@ -12,14 +12,14 @@ if TYPE_CHECKING:
 
     from clive.__private.core.world import World
     from clive_local_tools.cli.cli_tester import CLITester
-    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory, CLITesterWithSessionFactory
+    from clive_local_tools.types import CLITesterWithSessionFactory, EnvContextFactory
 
 
 @pytest.fixture
 async def cli_tester_with_session_token_locked(
     world: World,
     cli_tester: CLITester,
-    beekeeper_session_token_env_context: BeekeeperSessionTokenEnvContextFactory,
+    beekeeper_session_token_env_context: EnvContextFactory,
 ) -> AsyncGenerator[CLITester]:
     async with world as world_cm:
         with beekeeper_session_token_env_context(world_cm.beekeeper.token):

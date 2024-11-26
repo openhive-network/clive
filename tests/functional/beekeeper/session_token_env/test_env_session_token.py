@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory
+    from clive_local_tools.types import EnvContextFactory
 
 
 async def test_env_beekeeper_session_token(
     beekeeper: Beekeeper,
-    beekeeper_session_token_env_context: BeekeeperSessionTokenEnvContextFactory,
+    beekeeper_session_token_env_context: EnvContextFactory,
 ) -> None:
     """Check if beekeeper will use session token provided by CLIVE_BEEKEEPER_SESSION_TOKEN."""
     # ARRANGE

@@ -18,7 +18,8 @@ class SetupWalletsFactory(Protocol):
     ) -> Coroutine[Any, Any, list[WalletInfo]]: ...
 
 
-BeekeeperSessionTokenEnvContextFactory = Callable[[str], ContextManager[None]]
+EnvContextFactory = Callable[[str], ContextManager[None]]
+GenericEnvContextFactory = Callable[[str], EnvContextFactory]
 
 
 class CLITesterWithSessionFactory(Protocol):

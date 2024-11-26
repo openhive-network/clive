@@ -18,7 +18,11 @@ from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PA
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive_local_tools.data.constants import BEEKEEPER_SESSION_TOKEN_ENV_NAME, TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import (
+    BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
+    BEEKEEPER_SESSION_TOKEN_ENV_NAME,
+    TESTNET_CHAIN_ID,
+)
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
 
@@ -27,7 +31,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory, SetupWalletsFactory, Wallets
+    from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -155,16 +159,27 @@ async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
 
 
 @pytest.fixture
-async def beekeeper_session_token_env_context(
-    monkeypatch: pytest.MonkeyPatch,
-) -> BeekeeperSessionTokenEnvContextFactory:
-    @wraps(beekeeper_session_token_env_context)
-    @contextmanager
-    def __beekeeper_session_token_env_context(token: str) -> Generator[None]:
-        monkeypatch.setenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME, token)
-        settings.reload()
-        yield
-        monkeypatch.delenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
-        settings.reload()
+async def generic_env_context(monkeypatch: pytest.MonkeyPatch) -> GenericEnvContextFactory:
+    def factory(env_name: str) -> EnvContextFactory:
+        @wraps(factory)
+        @contextmanager
+        def impl(value: str) -> Generator[None]:
+            monkeypatch.setenv(env_name, value)
+            settings.reload()
+            yield
+            monkeypatch.delenv(env_name)
+            settings.reload()
 
-    return __beekeeper_session_token_env_context
+        return impl
+
+    return factory
+
+
+@pytest.fixture
+async def beekeeper_remote_address_env_context(generic_env_context: GenericEnvContextFactory) -> EnvContextFactory:
+    return generic_env_context(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME)
+
+
+@pytest.fixture
+async def beekeeper_session_token_env_context(generic_env_context: GenericEnvContextFactory) -> EnvContextFactory:
+    return generic_env_context(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
