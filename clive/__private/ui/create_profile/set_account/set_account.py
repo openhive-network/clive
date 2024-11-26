@@ -7,6 +7,7 @@ from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
 from clive.__private.ui.create_profile.context import CreateProfileContext
+from clive.__private.ui.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.create_profile.form_screen import FormScreen
 from clive.__private.ui.create_profile.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -27,7 +28,7 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccount(BaseScreen, FormScreen[CreateProfileContext]):
+class SetAccount(BaseScreen, FormScreen[CreateProfileContext], FinishProfileCreationMixin):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
 

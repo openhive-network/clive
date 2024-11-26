@@ -6,6 +6,7 @@ from textual import on
 
 from clive.__private.logger import logger
 from clive.__private.ui.create_profile.context import CreateProfileContext
+from clive.__private.ui.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.create_profile.form_screen import FormScreen
 from clive.__private.ui.create_profile.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
@@ -15,7 +16,9 @@ if TYPE_CHECKING:
     from clive.__private.core.node import Node
 
 
-class NewKeyAliasForm(NewKeyAliasBase[CreateProfileContext], FormScreen[CreateProfileContext]):
+class NewKeyAliasForm(
+    NewKeyAliasBase[CreateProfileContext], FormScreen[CreateProfileContext], FinishProfileCreationMixin
+):
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
