@@ -6,7 +6,11 @@ from typing import Final
 import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
-from clive.__private.cli.exceptions import CLIProfileDoesNotExistsError
+from clive.__private.cli.exceptions import (
+    CLIInvalidPasswordError,
+    CLIInvalidSelectionError,
+    CLIProfileDoesNotExistsError,
+)
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.profile import Profile
@@ -55,7 +59,17 @@ class Unlock(BeekeeperBasedCommand):
     def _prompt_for_profile_name(self) -> str | None:
         options = self._generate_profile_options()
         self._display_profile_options(options)
-        return self._get_selected_profile(options)
+        for i in range(PROFILE_SELECTION_ATTEMPTS):
+            try:
+                return self._get_selected_profile(options)
+            except CLIInvalidSelectionError:  # noqa: PERF203
+                attempts_left = PROFILE_SELECTION_ATTEMPTS - i - 1
+                if attempts_left < 1:
+                    raise
+                message = f"Invalid selection. Try again. Attempts left: {attempts_left}"
+                typer.secho(message, fg=typer.colors.RED)
+                self._display_profile_options(options)
+        raise AssertionError("Won't reach here")
 
     def _generate_profile_options(self) -> ProfileSelectionOptions:
         profiles = Profile.list_profiles()
@@ -72,7 +86,10 @@ class Unlock(BeekeeperBasedCommand):
     def _get_selected_profile(self, options: ProfileSelectionOptions) -> str | None:
         """Get selected profile name from prompt or None if profile creation is selected."""
         selection = typer.prompt("Enter the number")
-        option_value = options[int(selection)]
+        try:
+            option_value = options[int(selection)]
+        except (KeyError, ValueError) as error:
+            raise CLIInvalidSelectionError from error
         if option_value == UNLOCK_CREATE_PROFILE_SELECT:
             return None
         return option_value
@@ -86,8 +103,19 @@ class Unlock(BeekeeperBasedCommand):
 
     async def _unlock_in_tty_mode(self, profile_name: str) -> None:
         prompt = f"Enter password for profile `{profile_name}`: "
-        password = getpass(prompt)
-        await self._unlock_profile(profile_name, password)
+        for i in range(PASSWORD_SELECTION_ATTEMPTS):
+            password = getpass(prompt)
+            try:
+                await self._unlock_profile(profile_name, password)
+            except CLIInvalidPasswordError:
+                attempts_left = PASSWORD_SELECTION_ATTEMPTS - i - 1
+                if attempts_left < 1:
+                    raise
+                message = f"Invalid password. Try again. Attempts left: {attempts_left}"
+                typer.secho(message, fg=typer.colors.RED)
+            else:
+                return
+        raise AssertionError("Won't reach here")
 
     async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
         password = sys.stdin.readline().rstrip()
