@@ -31,10 +31,12 @@ from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.lock import Lock
+from clive.__private.core.commands.lock_all import LockAll
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_transaction import SaveTransaction
@@ -138,6 +140,19 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile.name,
             )
+        )
+
+    async def lock_all(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            LockAll(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+            )
+        )
+
+    async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:
+        return await self.__surround_with_exception_handlers(
+            GetWalletNames(beekeeper=self._world.beekeeper, filter_by_status=filter_by_status)
         )
 
     async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
