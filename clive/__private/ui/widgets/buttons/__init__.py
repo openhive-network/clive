@@ -6,6 +6,7 @@ from .cancel_button import CancelButton, CancelOneLineButton
 from .clive_button import CliveButton
 from .close_button import CloseButton, CloseOneLineButton
 from .confirm_button import ConfirmButton, ConfirmOneLineButton
+from .finalize_transaction_button import FinalizeTransactionButton, FinalizeTransactionOneLineButton
 from .generous_button import GenerousButton
 from .one_line_button import OneLineButton, OneLineButtonUnfocusable
 from .page_switch_buttons import PageDownButton, PageDownOneLineButton, PageUpButton, PageUpOneLineButton
@@ -24,6 +25,8 @@ __all__ = [
     "CloseOneLineButton",
     "ConfirmButton",
     "ConfirmOneLineButton",
+    "FinalizeTransactionButton",
+    "FinalizeTransactionOneLineButton",
     "GenerousButton",
     "OneLineButton",
     "OneLineButtonUnfocusable",

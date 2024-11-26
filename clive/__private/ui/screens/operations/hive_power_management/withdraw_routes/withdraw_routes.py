@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.containers import Center, Horizontal
+from textual.containers import Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
@@ -18,7 +18,7 @@ from clive.__private.ui.screens.operations.bindings import OperationActionBindin
 from clive.__private.ui.screens.operations.operation_summary.remove_withdraw_vesting_route import (
     RemoveWithdrawVestingRoute,
 )
-from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, OneLineButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, FinalizeTransactionButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -125,7 +125,9 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input
                     yield self._auto_vest_checkbox
-                yield Center(AddToCartButton())
+                with Horizontal(classes="horizontal-buttons"):
+                    yield AddToCartButton()
+                    yield FinalizeTransactionButton()
             yield WithdrawRoutesTable()
 
     def _additional_actions_after_clearing_inputs(self) -> None:

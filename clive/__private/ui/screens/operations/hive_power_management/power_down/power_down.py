@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Center, Horizontal
+from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
@@ -18,7 +18,12 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
-from clive.__private.ui.widgets.buttons import AddToCartButton, CancelOneLineButton, GenerousButton
+from clive.__private.ui.widgets.buttons import (
+    AddToCartButton,
+    CancelOneLineButton,
+    FinalizeTransactionButton,
+    GenerousButton,
+)
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -155,7 +160,9 @@ class PowerDown(TabPane, OperationActionBindings):
                 with Horizontal():
                     yield self._shares_input
                     yield GenerousButton(self._shares_input, self._get_shares_balance)  # type: ignore[arg-type]
-                yield Center(AddToCartButton())
+                with Horizontal(classes="horizontal-buttons"):
+                    yield AddToCartButton()
+                    yield FinalizeTransactionButton()
             yield self._one_withdrawal_display
             yield PendingPowerDown()
             yield WithdrawRoutesDisplay()
