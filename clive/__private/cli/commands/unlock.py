@@ -12,6 +12,7 @@ from clive.__private.cli.exceptions import (
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
+from clive.__private.core.commands.unlock import UnlockInvalidPasswordError
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.profile import Profile
 
@@ -50,11 +51,14 @@ class Unlock(BeekeeperBasedCommand):
         return self.profile_name or self._prompt_for_profile_name()
 
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
-        await CoreUnlockCommand(
-            beekeeper=self.beekeeper,
-            wallet=profile_name,
-            password=password,
-        ).execute()
+        try:
+            await CoreUnlockCommand(
+                beekeeper=self.beekeeper,
+                wallet=profile_name,
+                password=password,
+            ).execute()
+        except UnlockInvalidPasswordError as error:
+            raise CLIInvalidPasswordError(profile_name) from error
 
     def _prompt_for_profile_name(self) -> str | None:
         options = self._generate_profile_options()
