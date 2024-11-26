@@ -49,10 +49,11 @@ password = typer.Option(..., "--password", help="Password to unlock the wallet."
 password_optional = modified_param(password, default=None)
 
 beekeeper_remote = typer.Option(
-    get_default_beekeeper_remote(),
+    ...,
     "--beekeeper-remote",
+    default_factory=lambda: get_default_beekeeper_remote(),
     help="Beekeeper remote endpoint. (starts locally if not provided)",
-    show_default=bool(get_default_beekeeper_remote()),
+    show_default=False,
 )
 
 account_name = modified_param(working_account_template, param_decls=("--account-name",))
