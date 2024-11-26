@@ -177,6 +177,10 @@ class SafeSettings:
             return self._get_beekeeper_remote_address()
 
         @property
+        def is_remote_address_set(self) -> bool:
+            return self.remote_address is not None
+
+        @property
         def communication_total_timeout_secs(self) -> float:
             return self._get_beekeeper_communication_total_timeout_secs()
 

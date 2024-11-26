@@ -4,8 +4,15 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
+from clive.__private.cli.exceptions import (
+    CLIBeekeeperRemoteAddressIsNotSetError,
+    CLIBeekeeperSessionTokenIsNotSetError,
+    CLISessionNotLockedError,
+)
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.commands.get_wallet_names import GetWalletNames
 from clive.__private.core.url import Url
+from clive.__private.settings import safe_settings
 
 
 @dataclass(kw_only=True)
@@ -33,6 +40,21 @@ class BeekeeperCommon(ABC):
         )
 
         typer.echo(message)
+
+    async def validate_session_is_locked(self) -> None:
+        unlocked_wallet_names = await GetWalletNames(
+            beekeeper=self.beekeeper, filter_by_status="unlocked"
+        ).execute_with_result()
+        if unlocked_wallet_names:
+            raise CLISessionNotLockedError
+
+    async def validate_beekeeper_remote_address_set(self) -> None:
+        if not safe_settings.beekeeper.is_remote_address_set:
+            raise CLIBeekeeperRemoteAddressIsNotSetError
+
+    async def validate_beekeeper_session_token_set(self) -> None:
+        if not safe_settings.beekeeper.is_session_token_set:
+            raise CLIBeekeeperSessionTokenIsNotSetError
 
 
 @dataclass(kw_only=True)

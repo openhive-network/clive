@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
 
 
-from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar
 
 BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
@@ -202,3 +202,44 @@ class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
             f"Maximum available lifetime is {humanize_timedelta(SCHEDULED_TRANSFER_MAX_LIFETIME)}."
         )
         super().__init__(message, errno.EPERM)
+
+
+class CLIBeekeeperSessionTokenIsNotSetError(CLIPrettyError):
+    def __init__(self) -> None:
+        token_env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
+        address_env_var = clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)
+        message = (
+            f"Beekeeper session token is not set, you can set it with environment variable `{token_env_var}`"
+            f" or with setting `{BEEKEEPER_SESSION_TOKEN}` in settings file. Variable `{address_env_var}`"
+            f" or setting `{BEEKEEPER_REMOTE_ADDRESS}` is also required."
+        )
+        super().__init__(message, errno.ENOENT)
+
+
+class CLIInvalidPasswordError(CLIPrettyError):
+    def __init__(self, profile_name: str) -> None:
+        message = f"Password for profile `{profile_name}` is incorrect."
+        super().__init__(message, errno.EPERM)
+
+
+class CLISessionNotLockedError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "All wallets in session should be locked."
+        super().__init__(message, errno.EPERM)
+
+
+class CLIInvalidSelectionError(CLIPrettyError):
+    def __init__(self) -> None:
+        super().__init__("Invalid selection.", errno.EINVAL)
+
+
+class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
+    def __init__(self) -> None:
+        token_env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
+        address_env_var = clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)
+        message = (
+            f"Beekeeper remote address is not set, you can set it with environment variable `{address_env_var}`"
+            f" or with setting `{BEEKEEPER_REMOTE_ADDRESS}` in settings file. Variable `{token_env_var}`"
+            f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
+        )
+        super().__init__(message, errno.ENOENT)

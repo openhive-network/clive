@@ -21,6 +21,16 @@ class Unlock(BeekeeperBasedCommand):
     profile_name: str | None
     include_create_new_profile: bool
 
+    async def validate(self) -> None:
+        self._validate_profile_exists()
+        await self.validate_beekeeper_remote_address_set()
+        await self.validate_beekeeper_session_token_set()
+        await super().validate()
+
+    async def validate_inside_context_manager(self) -> None:
+        await self.validate_session_is_locked()
+        await super().validate_inside_context_manager()
+
     async def _run(self) -> None:
         profile_name = self._get_profile_name()
         if profile_name is None:
@@ -82,7 +92,3 @@ class Unlock(BeekeeperBasedCommand):
     async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
         password = sys.stdin.readline().rstrip()
         await self._unlock_profile(profile_name, password)
-
-    async def validate(self) -> None:
-        self._validate_profile_exists()
-        await super().validate()
