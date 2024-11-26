@@ -31,6 +31,10 @@ class CreateProfile(BeekeeperBasedCommand):
                 f"Can't use this password: {humanize_validation_result(password_result)}", errno.EINVAL
             )
 
+    async def validate_inside_context_manager(self) -> None:
+        await self.validate_session_is_locked()
+        await super().validate_inside_context_manager()
+
     async def _run(self) -> None:
         profile = Profile.create(self.profile_name, self.working_account_name)
 
