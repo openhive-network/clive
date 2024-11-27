@@ -7,8 +7,8 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
-from clive.__private.ui.create_profile.context import CreateProfileContext
-from clive.__private.ui.create_profile.form_screen import FirstFormScreen
+from clive.__private.ui.forms.create_profile.context import CreateProfileContext
+from clive.__private.ui.forms.form_screen import FirstFormScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
@@ -17,14 +17,14 @@ from clive.__private.ui.widgets.dialog_container import DialogContainer
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.create_profile.form import Form
+    from clive.__private.ui.forms.form import Form
 
 
 class Description(Static):
     """Description of the welcome screen."""
 
 
-class CreateProfileWelcomeScreen(BaseScreen, FirstFormScreen[CreateProfileContext]):
+class CreateProfileWelcomeFormScreen(BaseScreen, FirstFormScreen[CreateProfileContext]):
     BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True

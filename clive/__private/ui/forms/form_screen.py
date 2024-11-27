@@ -12,11 +12,11 @@ from textual.reactive import var
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.create_profile.navigation_buttons import NextScreenButton, PreviousScreenButton
+from clive.__private.ui.forms.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
-    from clive.__private.ui.create_profile.form import Form
+    from clive.__private.ui.forms.form import Form
 
 
 class FormScreenBase(CliveScreen, Contextual[ContextT]):

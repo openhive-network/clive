@@ -8,7 +8,7 @@ from typing import Any
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.create_profile.form_screen import FormScreenBase
+from clive.__private.ui.forms.form_screen import FormScreenBase
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
 PostAction = Command | Callable[[], Any]

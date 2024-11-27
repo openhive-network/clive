@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.ui.create_profile.context import CreateProfileContext
-from clive.__private.ui.create_profile.form_screen import FormScreen
-from clive.__private.ui.create_profile.navigation_buttons import NavigationButtons
+from clive.__private.ui.forms.create_profile.context import CreateProfileContext
+from clive.__private.ui.forms.form_screen import FormScreen
+from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
@@ -19,10 +19,10 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.create_profile.form import Form
+    from clive.__private.ui.forms.form import Form
 
 
-class CreateProfileForm(BaseScreen, FormScreen[CreateProfileContext]):
+class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
@@ -45,7 +45,7 @@ class CreateProfileForm(BaseScreen, FormScreen[CreateProfileContext]):
         # Validate the repeat password input again when password is changed and repeat was already touched.
         self.watch(self._password_input.input, "value", self._revalidate_repeat_password_input_when_password_changed)
 
-    async def validate(self) -> CreateProfileForm.ValidationFail | None:
+    async def validate(self) -> CreateProfileFormScreen.ValidationFail | None:
         try:
             CliveValidatedInput.validate_many_with_error(
                 self._profile_name_input, self._password_input, self._repeat_password_input

@@ -17,7 +17,7 @@ from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
-from clive.__private.ui.create_profile.create_profile import CreateProfile
+from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 
@@ -260,7 +260,7 @@ class TUIWorld(World, CliveDOMNode):
         return TUICommands(self)
 
     def _add_welcome_modes(self) -> None:
-        self.app.add_mode("create_profile", CreateProfile)
+        self.app.add_mode("create_profile", CreateProfileForm)
         self.app.add_mode("unlock", Unlock)
 
     async def _restart_dashboard_mode(self) -> None:

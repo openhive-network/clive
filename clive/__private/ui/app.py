@@ -18,7 +18,7 @@ from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_pilot import ClivePilot
-from clive.__private.ui.create_profile.create_profile import CreateProfile
+from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -64,7 +64,7 @@ class Clive(App[int]):
 
     MODES = {
         "unlock": Unlock,
-        "create_profile": CreateProfile,
+        "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
     }
 

@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.ui.app import Clive
-from clive.__private.ui.create_profile.create_profile_form import CreateProfileForm
-from clive.__private.ui.create_profile.new_key_alias_form import NewKeyAliasForm
-from clive.__private.ui.create_profile.set_account import SetAccount
-from clive.__private.ui.create_profile.set_account.set_account import WorkingAccountCheckbox
-from clive.__private.ui.create_profile.welcome_form_screen import CreateProfileWelcomeScreen
+from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
+from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
+from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen, WorkingAccountCheckbox
+from clive.__private.ui.forms.create_profile.welcome_form_screen import CreateProfileWelcomeFormScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -60,8 +59,8 @@ async def prepared_tui_on_create_profile(
 async def crate_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
-    assert_is_screen_active(pilot, CreateProfileWelcomeScreen)
-    await press_and_wait_for_screen(pilot, "enter", CreateProfileForm)
+    assert_is_screen_active(pilot, CreateProfileWelcomeFormScreen)
+    await press_and_wait_for_screen(pilot, "enter", CreateProfileFormScreen)
     assert_is_clive_composed_input_focused(
         pilot, SetProfileNameInput, context="CreateProfileForm should have initial focus"
     )
@@ -72,13 +71,13 @@ async def crate_profile_until_set_account(
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, RepeatPasswordInput)
     await write_text(pilot, profile_password)
-    await press_and_wait_for_screen(pilot, "enter", SetAccount)
+    await press_and_wait_for_screen(pilot, "enter", SetAccountFormScreen)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput)
     await write_text(pilot, account_name)
 
 
 async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
-    assert_is_screen_active(pilot, SetAccount)
+    assert_is_screen_active(pilot, SetAccountFormScreen)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput, context="SetAccount should have initial focus")
     await focus_next(pilot)
     assert_is_focused(pilot, WorkingAccountCheckbox)
@@ -89,7 +88,7 @@ async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
 
 
 async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
-    assert_is_screen_active(pilot, NewKeyAliasForm)
+    assert_is_screen_active(pilot, NewKeyAliasFormScreen)
     assert_is_clive_composed_input_focused(
         pilot, PublicKeyAliasInput, context="KeyAliasForm screen should have initial focus"
     )
@@ -151,7 +150,7 @@ async def test_create_profile_working_account_creation(prepared_tui_on_create_pr
 
     # ACT
     await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
-    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
+    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasFormScreen)
     await create_profile_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
     await create_profile_finish(pilot)
 
@@ -167,7 +166,7 @@ async def test_create_profile_working_account_creation_no_key(prepared_tui_on_cr
 
     # ACT
     await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
-    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
+    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasFormScreen)
     await create_profile_finish(pilot)
 
     # ASSERT
