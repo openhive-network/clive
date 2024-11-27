@@ -14,6 +14,7 @@ from clive.__private.ui.screens.operations.hive_power_management.common_hive_pow
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_information_table import (
     HpDataTable,
 )
+from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.hive_power_management.delegate_hive_power.delegate_hive_power import (
     DelegateHivePower,
 )
@@ -41,6 +42,7 @@ class HivePowerManagement(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with HivePowerDataProvider() as provider:
             yield LocationIndicator("hive power management")
+            yield HpVestsFactor(provider)
             with Horizontal(id="hive-power-info"):
                 yield HpDataTable()
                 yield WithdrawalInfo(provider)

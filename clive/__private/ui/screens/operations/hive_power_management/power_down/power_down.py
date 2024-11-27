@@ -17,7 +17,6 @@ from clive.__private.ui.data_providers.hive_power_data_provider import HivePower
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
 from clive.__private.ui.widgets.buttons import AddToCartButton, CancelOneLineButton, GenerousButton
 from clive.__private.ui.widgets.clive_basic import (
@@ -152,7 +151,6 @@ class PowerDown(TabPane, OperationActionBindings):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield HpVestsFactor(self.provider)
             with Section("Perform a power down (withdraw vesting)"):
                 with Horizontal():
                     yield self._shares_input
@@ -191,10 +189,7 @@ class PowerDown(TabPane, OperationActionBindings):
 
     @on(CurrencySelectorHpVests.Changed)
     def shares_type_changed(self) -> None:
-        """Display hp to vests factor only when HP is selected."""
         self._one_withdrawal_display.force_dynamic_update()
-        hp_vests_factor = self.query_exactly_one(HpVestsFactor)
-        hp_vests_factor.display = self._shares_input.selected_asset_type is Asset.Hive
 
     def _create_operation(self) -> WithdrawVestingOperation | None:
         asset = self._shares_input.value_or_none()

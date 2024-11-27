@@ -8,13 +8,11 @@ from textual.widgets import Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.ensure_vests import ensure_vests
-from clive.__private.models import Asset
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
-from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.remove_delegation import RemoveDelegation
 from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
@@ -22,7 +20,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
@@ -35,6 +32,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
+    from clive.__private.models import Asset
     from clive.__private.models.schemas import VestingDelegation
 
 
@@ -127,7 +125,6 @@ class DelegateHivePower(TabPane, OperationActionBindings):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield HpVestsFactor(self.provider)
             with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
@@ -147,12 +144,6 @@ class DelegateHivePower(TabPane, OperationActionBindings):
             delegatee=self._delegate_input.value_or_error,
             vesting_shares=asset,
         )
-
-    @on(CurrencySelectorHpVests.Changed)
-    def shares_type_changed(self) -> None:
-        """Display hp to vests factor only when HP is selected."""
-        hp_vests_factor = self.query_exactly_one(HpVestsFactor)
-        hp_vests_factor.display = self._shares_input.selected_asset_type is Asset.Hive
 
     @property
     def provider(self) -> HivePowerDataProvider:
