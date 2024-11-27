@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Final, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -263,13 +263,14 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (press F4 to add some)"
+    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "f4"
+    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {_ADD_ACCOUNT_BINDING_KEY} to add some)"
 
     BINDINGS = [
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
         Binding("f3", "switch_working_account", "Switch working account"),
-        Binding("f4", "add_account", "Add account"),
+        Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
         Binding("f5", "switch_mode_into_locked", "Lock wallet"),
         Binding("f6", "config", "Config"),
     ]
