@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from textual import on
 
 from clive.__private.logger import logger
-from clive.__private.ui.create_profile.context import CreateProfileContext
-from clive.__private.ui.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
-from clive.__private.ui.create_profile.form_screen import FormScreen
-from clive.__private.ui.create_profile.navigation_buttons import PreviousScreenButton
+from clive.__private.ui.forms.create_profile.context import CreateProfileContext
+from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
+from clive.__private.ui.forms.form_screen import FormScreen
+from clive.__private.ui.forms.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from clive.__private.core.node import Node
 
 
-class NewKeyAliasForm(
+class NewKeyAliasFormScreen(
     NewKeyAliasBase[CreateProfileContext], FormScreen[CreateProfileContext], FinishProfileCreationMixin
 ):
     BIG_TITLE = "create profile"
@@ -34,7 +34,7 @@ class NewKeyAliasForm(
         self.context.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
-    async def validate(self) -> NewKeyAliasForm.ValidationFail | None:
+    async def validate(self) -> NewKeyAliasFormScreen.ValidationFail | None:
         try:
             self._validate()
         except FailedManyValidationError:

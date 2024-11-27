@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from textual import on
 
-from clive.__private.ui.create_profile.context import CreateProfileContext
-from clive.__private.ui.create_profile.form_screen import FormScreen, FormScreenBase
+from clive.__private.ui.forms.create_profile.context import CreateProfileContext
+from clive.__private.ui.forms.form_screen import FormScreen, FormScreenBase
 
 
 class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
