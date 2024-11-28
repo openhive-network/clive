@@ -456,6 +456,14 @@ class CLITester:
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
 
+    def configure_node_set(
+        self,
+        *,
+        node_address: str,
+        profile_name: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["configure", "node", "set"], **extract_params(locals()))
+
     def unlock(
         self,
         *,
