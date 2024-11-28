@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 
 class FinalizeTransactionButton(CliveButton):
@@ -9,7 +9,7 @@ class FinalizeTransactionButton(CliveButton):
         """Used to identify exactly that FinalizeTransaction button was pressed."""
 
         DEFAULT_CSS = """
-            AddToCartButton {
+            FinalizeTransactionButton {
                 width: 25;
             }
             """

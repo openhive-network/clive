@@ -23,6 +23,9 @@ from clive.__private.ui.screens.operations.bindings import OperationActionBindin
 from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
+from clive.__private.ui.widgets.add_to_cart_and_finalize_transaction_buttons import (
+    TransactionButtons,
+)
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.buttons import CancelButton
 from clive.__private.ui.widgets.clive_basic import (
