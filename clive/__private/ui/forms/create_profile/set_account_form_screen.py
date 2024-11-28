@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual.binding import Binding
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
@@ -29,6 +30,7 @@ class WorkingAccountCheckbox(Checkbox):
 
 
 class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishProfileCreationMixin):
+    BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
 

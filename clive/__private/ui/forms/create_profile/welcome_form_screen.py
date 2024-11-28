@@ -25,7 +25,7 @@ class Description(Static):
 
 
 class CreateProfileWelcomeFormScreen(BaseScreen, FirstFormScreen[CreateProfileContext]):
-    BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
+    BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 
