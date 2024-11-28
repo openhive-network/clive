@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid, Horizontal
+from textual.containers import Grid
 
 from clive.__private.models import Asset
 from clive.__private.models.asset import AssetAmount
@@ -11,7 +11,6 @@ from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
-from clive.__private.ui.widgets.buttons import AddToCartButton, FinalizeTransactionButton
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
@@ -19,6 +18,7 @@ from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
 from clive.__private.ui.widgets.known_exchange_handler import KnownExchangeHandler
 from clive.__private.ui.widgets.section import SectionScrollable
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -59,9 +59,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._to_input
             yield self._amount_input
             yield self._memo_input
-            with Horizontal(classes="horizontal-buttons"):
-                yield AddToCartButton()
-                yield FinalizeTransactionButton()
+            yield TransactionButtons()
 
     def _check_is_known_exchange_in_input(self) -> bool:
         """

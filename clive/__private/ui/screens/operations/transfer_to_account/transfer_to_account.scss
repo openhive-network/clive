@@ -8,14 +8,9 @@ TransferToAccount {
     grid-gutter: 1;
     width: 100%;
     height: auto;
-  }
-}
 
-.horizontal-buttons {
-  align: center middle;
-  height: auto;
-
-  CliveButton {
-    margin: 1;
+    TransactionButtons {
+      margin-top: -1;
+    }
   }
 }

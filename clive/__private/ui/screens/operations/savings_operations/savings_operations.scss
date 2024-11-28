@@ -100,6 +100,10 @@ Savings {
     grid-rows: auto;
     grid-gutter: 1;
     height: auto;
+
+    TransactionButtons {
+      margin-top: -1;
+    }
   }
 
   #operation-type-choose {
@@ -108,14 +112,5 @@ Savings {
     margin-bottom: 1;
     width: 1fr;
     height: 3;
-  }
-
-  .horizontal-buttons {
-    align: center middle;
-    height: auto;
-
-    CliveButton {
-      margin: 1;
-    }
   }
 }

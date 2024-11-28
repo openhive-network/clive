@@ -10,6 +10,7 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
+from clive.__private.core.constants.tui.bindings import FINALIZE_TRANSACTION_BINDING_KEY
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -26,7 +27,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.accounts.accounts import Account
-    from clive.__private.models import Transaction
     from clive.__private.models.schemas import OperationUnion
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
@@ -41,7 +41,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     BINDINGS = [
         Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f6", "finalize_transaction", "Finalize transaction"),
+        Binding(FINALIZE_TRANSACTION_BINDING_KEY, "finalize_transaction", "Finalize transaction"),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
     POP_SCREEN_AFTER_ADDING_TO_CART: ClassVar[bool] = False
@@ -122,7 +122,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                     else None
                 )
                 # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
-                self.app.run_worker(self._switch_to_transaction_summary(transaction))
+                self.app.switch_screen(TransactionSummary(transaction))
 
         async def finalize_cb(confirm: bool | None) -> None:
             if confirm:
@@ -197,9 +197,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return False
         return True
-
-    async def _switch_to_transaction_summary(self, transaction: Transaction | None) -> None:
-        await self.app.switch_screen(TransactionSummary(transaction))
 
     def _add_to_cart(self) -> bool:
         """

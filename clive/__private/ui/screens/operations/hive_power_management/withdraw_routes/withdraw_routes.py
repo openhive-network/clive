@@ -18,7 +18,7 @@ from clive.__private.ui.screens.operations.bindings import OperationActionBindin
 from clive.__private.ui.screens.operations.operation_summary.remove_withdraw_vesting_route import (
     RemoveWithdrawVestingRoute,
 )
-from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, FinalizeTransactionButton, OneLineButton
+from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -30,6 +30,7 @@ from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
 from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -125,9 +126,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input
                     yield self._auto_vest_checkbox
-                with Horizontal(classes="horizontal-buttons"):
-                    yield AddToCartButton()
-                    yield FinalizeTransactionButton()
+                yield TransactionButtons()
             yield WithdrawRoutesTable()
 
     def _additional_actions_after_clearing_inputs(self) -> None:

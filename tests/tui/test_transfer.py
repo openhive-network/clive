@@ -148,10 +148,10 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
         # Fill transfer data
         await fill_transfer_data(pilot, RECEIVER, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True)
-
-        await press_binding(pilot, "f2", "Add to cart")
         await focus_next(pilot)  # focus on add to cart button
-        await focus_next(pilot)  # focus on receiver input
+        await focus_next(pilot)  # focus on finalize transaction button
+        await focus_next(pilot)  # focus on "to" input
+        await press_binding(pilot, "f2", "Add to cart")
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)

@@ -14,7 +14,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.operation_summary.remove_delegation import RemoveDelegation
-from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, FinalizeTransactionButton, OneLineButton
+from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -26,6 +26,7 @@ from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
 from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -128,9 +129,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
             with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
-                with Horizontal(classes="horizontal-buttons"):
-                    yield AddToCartButton()
-                    yield FinalizeTransactionButton()
+                yield TransactionButtons()
             yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:

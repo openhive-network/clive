@@ -24,7 +24,7 @@ from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_fro
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.buttons import AddToCartButton, CancelButton, FinalizeTransactionButton
+from clive.__private.ui.widgets.buttons import CancelButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -45,6 +45,7 @@ from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 from clive.exceptions import RequestIdError
 
 if TYPE_CHECKING:
@@ -231,9 +232,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
-                with Horizontal(classes="horizontal-buttons"):
-                    yield AddToCartButton()
-                    yield FinalizeTransactionButton()
+                yield TransactionButtons()
 
     def _additional_actions_after_clearing_inputs(self) -> None:
         receiver_input = self.query_exactly_one(ReceiverInput)
