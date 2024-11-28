@@ -34,7 +34,7 @@ class Url:
         return Url(parsed_url.scheme, parsed_url.hostname, parsed_url.port)
 
     def as_string(self, *, with_protocol: bool = True) -> str:
-        protocol_prefix = f"{self.proto}://" if with_protocol else ""
+        protocol_prefix = f"{self.proto}://" if with_protocol and self.proto else ""
         port_suffix = f":{self.port}" if self.port is not None else ""
 
         return f"{protocol_prefix}{self.host}{port_suffix}"
