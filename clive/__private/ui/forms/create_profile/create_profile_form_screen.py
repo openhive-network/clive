@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
+
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
@@ -23,6 +25,7 @@ if TYPE_CHECKING:
 
 
 class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
+    BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True

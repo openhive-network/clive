@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual import on
+from textual.binding import Binding
 
 from clive.__private.logger import logger
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
 class NewKeyAliasFormScreen(
     NewKeyAliasBase[CreateProfileContext], FormScreen[CreateProfileContext], FinishProfileCreationMixin
 ):
+    BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
