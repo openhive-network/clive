@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from typing import TYPE_CHECKING, Any
 
 from textual import on
@@ -14,11 +13,11 @@ from clive.__private.ui.widgets.section import SectionScrollable
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.node import Node
 
-
-class SetNodeAddressBase(BaseScreen, ABC):
+class SetNodeAddress(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
+    BIG_TITLE = "configuration"
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -34,12 +33,3 @@ class SetNodeAddressBase(BaseScreen, ABC):
     async def save_selected_node_address(self) -> None:
         self.query_exactly_one(SelectedNodeAddress).node_address = self.query_exactly_one(NodeSelector).value_ensure
         await self.query_exactly_one(NodesList).save_selected_node_address()
-
-    def get_node(self) -> Node:
-        """Override this method if widget should operate on node other than node from the world."""
-        return self.world.node
-
-
-class SetNodeAddress(SetNodeAddressBase):
-    BIG_TITLE = "configuration"
-    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
