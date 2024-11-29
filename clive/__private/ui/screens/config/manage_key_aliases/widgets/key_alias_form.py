@@ -8,10 +8,7 @@ from textual.widgets import Static
 from clive.__private.core.contextual import Contextual
 from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
-from clive.__private.ui.forms.navigation_buttons import (
-    FINISH_CREATE_PROFILE_BUTTON_LABEL,
-    NavigationButtons,
-)
+from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
@@ -56,7 +53,7 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
             yield from self._content_after_alias_input()
             yield self._public_key_input
             if self.world.is_in_create_profile_mode:
-                yield NavigationButtons(next_button_label=FINISH_CREATE_PROFILE_BUTTON_LABEL)
+                yield NavigationButtons(is_finish=True)
         yield SelectCopyPasteHint()
 
     def _get_context_profile(self) -> Profile:
