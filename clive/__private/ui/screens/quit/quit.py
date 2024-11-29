@@ -24,6 +24,8 @@ class Quit(BaseScreen):
         Binding("escape", "cancel", "Back"),
     ]
 
+    SHOW_RAW_HEADER = True
+
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Are you sure you want to quit?", id="question")
