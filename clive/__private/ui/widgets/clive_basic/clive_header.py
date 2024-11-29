@@ -71,6 +71,40 @@ class BlockDisplay(Horizontal, CliveWidget):
         return f"{block_num} ({block_time} UTC)"
 
 
+class CartStatus(DynamicOneLineButtonUnfocusable):
+    DEFAULT_CSS = """
+    CartStatus Button {
+        background: $secondary-lighten-1 !important;
+    }
+    """
+
+    def __init__(self) -> None:
+        super().__init__(obj_to_watch=self.world, attribute_name="profile", callback=self.cart_status_callback)
+        self.tooltip = "Proceed to transaction summary"
+
+    @staticmethod
+    def cart_status_callback(profile: Profile) -> str:
+        operation_amount = len(profile.cart)
+        amount_text = (
+            "empty" if operation_amount <= 0 else f"{operation_amount} op{'s' if operation_amount > 1 else ''}"
+        )
+        return f"Cart ({amount_text})"
+
+    @on(OneLineButton.Pressed)
+    async def go_to_transaction_summary(self) -> None:
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if isinstance(self.app.screen, TransactionSummary):
+            return
+
+        transaction = (
+            (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+            if self.profile.cart
+            else None
+        )
+        await self.app.push_screen(TransactionSummary(transaction))
+
+
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
     def __init__(self) -> None:
         super().__init__(
@@ -317,6 +351,7 @@ class CliveHeader(CliveRawHeader):
         yield Static("/", id="separator")
         yield WorkingAccountButton()
         yield AlarmDisplay()
+        yield CartStatus()
 
     def _create_right_part_bar(self) -> ComposeResult:
         yield NodeStatus()
