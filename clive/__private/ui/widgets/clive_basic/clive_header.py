@@ -199,9 +199,9 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
     @on(OneLineButton.Pressed)
     async def post_message_to_change_node_address(self) -> None:
         from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
-        from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
+        from clive.__private.ui.screens.config.switch_node_address.switch_node_address import SwitchNodeAddress
 
-        if isinstance(self.app.screen, SwitchNodeAddressDialog | SetNodeAddress):
+        if isinstance(self.app.screen, SwitchNodeAddressDialog | SwitchNodeAddress):
             return
 
         self.screen.post_message(self.ChangeNodeAddress())
