@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 from contextlib import contextmanager
 from functools import wraps
@@ -14,13 +15,15 @@ from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH, NODE_CHAIN_ID
+from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
+    NODE_ADDRESS_ENV_NAME,
+    NODE_CHAIN_ID_ENV_NAME,
     TESTNET_CHAIN_ID,
 )
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
@@ -40,8 +43,15 @@ def manage_thread_pool() -> Iterator[None]:
         yield
 
 
+@pytest.fixture
+def testnet_chain_id_env_context(generic_env_context_factory: GenericEnvContextFactory) -> Generator[None]:
+    chain_id_env_context_factory = generic_env_context_factory(NODE_CHAIN_ID_ENV_NAME)
+    with chain_id_env_context_factory(TESTNET_CHAIN_ID):
+        yield
+
+
 @pytest.fixture(autouse=True)
-def run_prepare_before_launch() -> None:
+def run_prepare_before_launch(testnet_chain_id_env_context: None) -> None:  # noqa: ARG001
     settings.reload()
     working_directory = tt.context.get_current_directory() / "clive"
 
@@ -56,9 +66,6 @@ def run_prepare_before_launch() -> None:
     settings.set(DATA_PATH, working_directory)
     log_path = working_directory / "logs"
     settings.set(LOG_PATH, log_path)
-
-    # set chain id to the testnet one
-    settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
     prepare_before_launch(enable_stream_handlers=True)
 
@@ -160,16 +167,19 @@ async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
 
 
 @pytest.fixture
-async def generic_env_context_factory(monkeypatch: pytest.MonkeyPatch) -> GenericEnvContextFactory:
+def generic_env_context_factory(monkeypatch: pytest.MonkeyPatch) -> GenericEnvContextFactory:
     def factory(env_name: str) -> EnvContextFactory:
+        def _setdelenv(value: str | None) -> None:
+            monkeypatch.setenv(env_name, value) if value else monkeypatch.delenv(env_name, raising=False)
+            settings.reload()
+
         @wraps(factory)
         @contextmanager
-        def impl(value: str) -> Generator[None]:
-            monkeypatch.setenv(env_name, value)
-            settings.reload()
+        def impl(value: str | None) -> Generator[None]:
+            previous_value = os.getenv(env_name)
+            _setdelenv(value)
             yield
-            monkeypatch.delenv(env_name)
-            settings.reload()
+            _setdelenv(previous_value)
 
         return impl
 
@@ -177,14 +187,19 @@ async def generic_env_context_factory(monkeypatch: pytest.MonkeyPatch) -> Generi
 
 
 @pytest.fixture
-async def beekeeper_remote_address_env_context_factory(
+def beekeeper_remote_address_env_context_factory(
     generic_env_context_factory: GenericEnvContextFactory,
 ) -> EnvContextFactory:
     return generic_env_context_factory(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME)
 
 
 @pytest.fixture
-async def beekeeper_session_token_env_context_factory(
+def beekeeper_session_token_env_context_factory(
     generic_env_context_factory: GenericEnvContextFactory,
 ) -> EnvContextFactory:
     return generic_env_context_factory(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
+
+
+@pytest.fixture
+def node_address_env_context_factory(generic_env_context_factory: GenericEnvContextFactory) -> EnvContextFactory:
+    return generic_env_context_factory(NODE_ADDRESS_ENV_NAME)

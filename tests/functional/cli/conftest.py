@@ -6,12 +6,10 @@ import pytest
 from typer.testing import CliRunner
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
-from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
-from clive.__private.settings import settings
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -20,7 +18,11 @@ from clive_local_tools.data.constants import (
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
     import test_tools as tt
+
+    from clive_local_tools.types import EnvContextFactory
 
 
 @pytest.fixture
@@ -51,10 +53,11 @@ async def prepare_beekeeper_wallet(world: World) -> None:
 
 
 @pytest.fixture
-async def node() -> tt.RawNode:
+async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
-    settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
-    return node
+    address = str(node.http_endpoint)
+    with node_address_env_context_factory(address):
+        yield node
 
 
 @pytest.fixture
