@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
+    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.types import EnvContextFactory
 
 
@@ -37,12 +38,12 @@ async def prepare_profile() -> Profile:
 
 
 @pytest.fixture
-async def world(prepare_profile: Profile) -> World:  # noqa: ARG001
-    return World()  # will load last profile by default
+async def world(prepare_profile: Profile) -> World:
+    return World(profile_name=prepare_profile.name)
 
 
 @pytest.fixture
-async def prepare_beekeeper_wallet(world: World) -> None:
+async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:  # gives world inside of context manager
     async with world as world_cm:
         await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
 
@@ -50,6 +51,17 @@ async def prepare_beekeeper_wallet(world: World) -> None:
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world_cm.commands.sync_data_with_beekeeper()
+        world_cm.profile.save()  # required for saving imported keys aliases
+        yield world_cm
+
+
+@pytest.fixture
+async def beekeeper(
+    prepare_beekeeper_wallet: World, beekeeper_remote_address_env_context_factory: EnvContextFactory
+) -> AsyncGenerator[Beekeeper]:
+    address = str(prepare_beekeeper_wallet.beekeeper.http_endpoint)
+    with beekeeper_remote_address_env_context_factory(address):
+        yield prepare_beekeeper_wallet.beekeeper
 
 
 @pytest.fixture
@@ -61,7 +73,7 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 
 @pytest.fixture
-async def cli_tester(node: tt.RawNode, prepare_beekeeper_wallet: None) -> CLITester:  # noqa: ARG001
+async def cli_tester(node: tt.RawNode, beekeeper: Beekeeper) -> CLITester:  # noqa: ARG001
     """Will return CliveTyper and CliRunner from typer.testing module.."""
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli
