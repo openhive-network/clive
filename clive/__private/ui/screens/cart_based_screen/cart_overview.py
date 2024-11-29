@@ -67,7 +67,7 @@ class CartOverview(CliveWidget):
                 yield DynamicLabel(self.world, "profile", self._get_rc)
             yield Static("HIVE balance:")
             yield DynamicLabel(
-                self,
+                self.world,
                 "profile",
                 self._get_hive_balance,
             )
