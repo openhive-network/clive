@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class SetNodeAddress(BaseScreen):
+class SwitchNodeAddress(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "configuration"
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
