@@ -93,8 +93,4 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
     @on(WorkingAccountCheckbox.Changed)
     def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:
         self.should_finish = not event.value
-
-        if self.should_finish:
-            self.query_exactly_one(NavigationButtons).set_finish_button()
-            return
-        self.query_exactly_one(NavigationButtons).set_next_screen_button()
+        self.query_exactly_one(NavigationButtons).is_finish = self.should_finish

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
+from textual.reactive import var
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
@@ -13,35 +14,49 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-FINISH_CREATE_PROFILE_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
-
 
 class NextScreenButton(CliveButton):
-    """Button to go to the next create_profile screen."""
+    """Button for going to next screen in forms (also used as finish button)."""
 
     DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN_BINDING_KEY}) →"
+    FINISH_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
+
+    is_finish = var(default=False)
 
     class Pressed(CliveButton.Pressed):
-        """Message sent when the next screen button is pressed."""
+        """Message sent when the NextScreenButton is pressed."""
 
     def __init__(
         self,
-        label: str = DEFAULT_NEXT_BUTTON_LABEL,
         *,
+        is_finish: bool = False,
         id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        super().__init__(label=label, variant="success", id_=id_, classes=classes, disabled=disabled)
+        super().__init__(
+            label=self._determine_label(is_finish=is_finish),
+            variant="success",
+            id_=id_,
+            classes=classes,
+            disabled=disabled,
+        )
+        self.set_reactive(self.__class__.is_finish, is_finish)
+
+    def _watch_is_finish(self, value: bool) -> None:  # noqa: FBT001
+        self.label = self._determine_label(is_finish=value)
+
+    def _determine_label(self, *, is_finish: bool) -> str:
+        return self.FINISH_BUTTON_LABEL if is_finish else self.DEFAULT_NEXT_BUTTON_LABEL
 
 
 class PreviousScreenButton(OneLineButton):
-    """Button to go to the previous create_profile screen."""
+    """Button for going to previous screen in forms."""
 
     DEFAULT_PREVIOUS_BUTTON_LABEL: Final[str] = f"← Previous ({PREVIOUS_SCREEN_BINDING_KEY})"
 
     class Pressed(OneLineButton.Pressed):
-        """Message sent when the previous screen button is pressed."""
+        """Message sent when the PreviousScreenButton is pressed."""
 
     def __init__(
         self,
@@ -82,24 +97,22 @@ class NavigationButtons(Horizontal):
     }
     """
 
+    is_finish = var(default=False)
+
     def __init__(
         self,
-        next_button_label: str = NextScreenButton.DEFAULT_NEXT_BUTTON_LABEL,
-        previous_button_label: str = PreviousScreenButton.DEFAULT_PREVIOUS_BUTTON_LABEL,
         id_: str | None = None,
         classes: str | None = None,
+        *,
+        is_finish: bool = False,
     ) -> None:
         super().__init__(id=id_, classes=classes)
-        self._next_button_label = next_button_label
-        self._previous_button_label = previous_button_label
+        self.set_reactive(self.__class__.is_finish, is_finish)
 
     def compose(self) -> ComposeResult:
-        yield PreviousScreenButton(self._previous_button_label)
+        yield PreviousScreenButton()
         yield PlaceTaker()
-        yield NextScreenButton(self._next_button_label)
+        yield NextScreenButton(is_finish=self.is_finish)
 
-    def set_finish_button(self) -> None:
-        self.query_exactly_one(NextScreenButton).label = FINISH_CREATE_PROFILE_BUTTON_LABEL
-
-    def set_next_screen_button(self) -> None:
-        self.query_exactly_one(NextScreenButton).label = NextScreenButton.DEFAULT_NEXT_BUTTON_LABEL
+    def _watch_is_finish(self, value: bool) -> None:  # noqa: FBT001
+        self.query_exactly_one(NextScreenButton).is_finish = value
