@@ -31,9 +31,9 @@ class CLITester:
         self.__typer = typer
         self.__runner = runner
 
-    def invoke_raw_command(self, command: list[str]) -> Result:
+    def invoke_raw_command(self, command: list[str], password_stdin: str | None = None) -> Result:
         tt.logger.info(f"Executing command {command}.")
-        result = self.__runner.invoke(self.__typer, command)
+        result = self.__runner.invoke(self.__typer, command, password_stdin)
         if result.exit_code != 0:
             raise CLITestCommandError(command, result.exit_code, result.stdout, result)
         return result
@@ -412,9 +412,11 @@ class CLITester:
     def show_chain(self, *, profile_name: str | None = None) -> Result:
         return self.__invoke_command_with_options(["show", "chain"], profile_name=profile_name)
 
-    def __invoke_command_with_options(self, command: list[str], **cli_options: CliOptionT) -> Result:
+    def __invoke_command_with_options(
+        self, command: list[str], password_stdin: str | None = None, /, **cli_options: CliOptionT
+    ) -> Result:
         full_command = [*command, *kwargs_to_cli_options(**cli_options)]
-        return self.invoke_raw_command(full_command)
+        return self.invoke_raw_command(full_command, password_stdin)
 
     def process_transfer(  # noqa: PLR0913
         self,
@@ -453,3 +455,21 @@ class CLITester:
         beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
+
+    def unlock(
+        self,
+        *,
+        profile_name: str | None = None,
+        beekeeper_remote: str | None = None,
+        password_stdin: str | None = None,
+    ) -> Result:
+        named_params = locals()
+        named_params.pop("password_stdin")
+        return self.__invoke_command_with_options(["unlock"], password_stdin, **extract_params(named_params))
+
+    def lock(
+        self,
+        *,
+        beekeeper_remote: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["lock"], **extract_params(locals()))

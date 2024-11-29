@@ -11,6 +11,7 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     import test_tools as tt
 
+    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.models.schemas import OperationUnion, RepresentationBase
 
 
@@ -59,3 +60,13 @@ def assert_operations_placed_in_blockchain(
         f"{transaction}."
     )
     assert not operations_to_check, message
+
+
+async def assert_wallets_locked(beekeeper: Beekeeper) -> None:
+    wallets = (await beekeeper.api.list_wallets()).wallets
+    assert all(not w.unlocked for w in wallets), "All wallets should be locked."
+
+
+async def assert_wallet_unlocked(beekeeper: Beekeeper, wallet_name: str) -> None:
+    wallets = (await beekeeper.api.list_wallets()).wallets
+    assert any(w.name == wallet_name and w.unlocked for w in wallets), f"Wallet {wallet_name} should be unlocked."
