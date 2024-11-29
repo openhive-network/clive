@@ -6,8 +6,8 @@ from textual import on
 
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.screens.config.set_node_address.set_node_address import NodesList, SelectedNodeAddress
 from clive.__private.ui.widgets.buttons import ConfirmButton
+from clive.__private.ui.widgets.node_widgets import NodesList, SelectedNodeAddress
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
