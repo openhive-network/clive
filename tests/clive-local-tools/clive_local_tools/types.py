@@ -18,7 +18,7 @@ class SetupWalletsFactory(Protocol):
     ) -> Coroutine[Any, Any, list[WalletInfo]]: ...
 
 
-EnvContextFactory = Callable[[str], ContextManager[None]]
+EnvContextFactory = Callable[[str | None], ContextManager[None]]
 GenericEnvContextFactory = Callable[[str], EnvContextFactory]
 
 
