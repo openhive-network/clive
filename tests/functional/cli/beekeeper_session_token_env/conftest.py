@@ -19,10 +19,10 @@ if TYPE_CHECKING:
 async def cli_tester_with_session_token_locked(
     world: World,
     cli_tester: CLITester,
-    beekeeper_session_token_env_context: EnvContextFactory,
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
 ) -> AsyncGenerator[CLITester]:
     async with world as world_cm:
-        with beekeeper_session_token_env_context(world_cm.beekeeper.token):
+        with beekeeper_session_token_env_context_factory(world_cm.beekeeper.token):
             yield cli_tester
 
 

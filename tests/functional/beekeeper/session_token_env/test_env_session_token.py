@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 async def test_env_beekeeper_session_token(
     beekeeper: Beekeeper,
-    beekeeper_session_token_env_context: EnvContextFactory,
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
 ) -> None:
     """Check if beekeeper will use session token provided by CLIVE_BEEKEEPER_SESSION_TOKEN."""
     # ARRANGE
@@ -24,6 +24,6 @@ async def test_env_beekeeper_session_token(
     assert token != beekeeper.token, "New token, should be different than beekeepers current token."
 
     # ACT & ASSERT
-    with beekeeper_session_token_env_context(token):
+    with beekeeper_session_token_env_context_factory(token):
         assert token == beekeeper.token, "New token should be used by beekeeper."
     assert token != beekeeper.token, "Again, new token, should be different than beekeepers current token."

@@ -159,7 +159,7 @@ async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
 
 
 @pytest.fixture
-async def generic_env_context(monkeypatch: pytest.MonkeyPatch) -> GenericEnvContextFactory:
+async def generic_env_context_factory(monkeypatch: pytest.MonkeyPatch) -> GenericEnvContextFactory:
     def factory(env_name: str) -> EnvContextFactory:
         @wraps(factory)
         @contextmanager
@@ -176,10 +176,14 @@ async def generic_env_context(monkeypatch: pytest.MonkeyPatch) -> GenericEnvCont
 
 
 @pytest.fixture
-async def beekeeper_remote_address_env_context(generic_env_context: GenericEnvContextFactory) -> EnvContextFactory:
-    return generic_env_context(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME)
+async def beekeeper_remote_address_env_context_factory(
+    generic_env_context_factory: GenericEnvContextFactory,
+) -> EnvContextFactory:
+    return generic_env_context_factory(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME)
 
 
 @pytest.fixture
-async def beekeeper_session_token_env_context(generic_env_context: GenericEnvContextFactory) -> EnvContextFactory:
-    return generic_env_context(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
+async def beekeeper_session_token_env_context_factory(
+    generic_env_context_factory: GenericEnvContextFactory,
+) -> EnvContextFactory:
+    return generic_env_context_factory(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
