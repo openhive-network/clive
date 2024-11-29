@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
@@ -17,6 +19,9 @@ from clive_local_tools.testnet_block_log import (
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
 )
+
+if TYPE_CHECKING:
+    from typing import AsyncGenerator
 
 
 @pytest.fixture
@@ -38,12 +43,12 @@ async def alt_prepare_profile() -> Profile:
 
 
 @pytest.fixture
-async def alt_world(alt_prepare_profile: Profile) -> World:  # noqa: ARG001
-    return World(profile_name=ALT_WORKING_ACCOUNT1_NAME)  # we must point to alternative profile
+async def alt_world(alt_prepare_profile: Profile) -> World:
+    return World(profile_name=alt_prepare_profile.name)  # we must point to alternative profile
 
 
 @pytest.fixture
-async def alt_prepare_beekeeper_wallet(alt_world: World) -> None:
+async def alt_prepare_beekeeper_wallet(alt_world: World) -> AsyncGenerator[World]:
     async with alt_world as alt_world_cm:
         await alt_world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
 
@@ -54,3 +59,5 @@ async def alt_prepare_beekeeper_wallet(alt_world: World) -> None:
             ),
         )
         await alt_world_cm.commands.sync_data_with_beekeeper()
+        alt_world_cm.profile.save()  # required for saving imported keys aliases
+        yield alt_world_cm

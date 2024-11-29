@@ -19,6 +19,12 @@ AMOUNT_TO_POWER_UP: Final[tt.Asset.HiveT] = tt.Asset.Hive(654.321)
 OTHER_ACCOUNT: Final[tt.Account] = ALT_WORKING_ACCOUNT1_DATA.account
 
 
+async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
+    unlocked_world_cm.profile.keys.add_to_import(private_key)
+    await unlocked_world_cm.commands.sync_data_with_beekeeper()
+    unlocked_world_cm.profile.save()  # save imported key aliases
+
+
 async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     operation = TransferToVestingOperation(
@@ -39,15 +45,13 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_tester: CLITester) -> None:
+async def test_power_up_no_default_account(
+    prepare_beekeeper_wallet: World, node: tt.RawNode, cli_tester: CLITester
+) -> None:
     # ARRANGE
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
-    async with world as world_cm:
-        await world_cm.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias),
-        )
-        await world_cm.commands.sync_data_with_beekeeper()
+    other_key = PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias)
+    await import_key(prepare_beekeeper_wallet, other_key)
     operation = TransferToVestingOperation(
         from_=OTHER_ACCOUNT.name,
         to=EMPTY_ACCOUNT.name,
