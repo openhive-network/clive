@@ -242,3 +242,10 @@ class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
             f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
         )
         super().__init__(message, errno.ENOENT)
+
+
+class CLITransactionNotSignedError(CLIPrettyError):
+    MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget option '--sign'?"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

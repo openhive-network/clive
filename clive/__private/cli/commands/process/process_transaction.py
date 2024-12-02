@@ -54,7 +54,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self._validate_if_broadcast_is_used_without_force_unsign()
         self._validate_signed_transaction() if await (
             self._is_transaction_signed()
-        ) else self._validate_if_can_be_signed()
+        ) else self._validate_if_broadcasting_signed_transaction()
         self._validate_from_file_argument()
         await super().validate()
 
