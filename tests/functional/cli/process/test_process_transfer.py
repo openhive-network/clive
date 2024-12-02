@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.cli.exceptions import BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
 from clive.__private.core.beekeeper.handle import Beekeeper
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
@@ -60,7 +60,7 @@ async def test_process_transfer(
 async def test_process_transfer_required_password(cli_tester: CLITester) -> None:
     """Check if clive process transfer requires password."""
     # ARRANGE
-    message = BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+    message = BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
 
     #  ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

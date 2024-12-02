@@ -14,7 +14,6 @@ operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMM
 @dataclass(kw_only=True)
 class OperationOptionsGroup(ParameterGroup):
     profile_name: str = operation_common_option(options.profile_name)
-    password: Optional[str] = operation_common_option(options.password_optional)
     sign: Optional[str] = operation_common_option(
         typer.Option(None, help="Key alias to sign the transaction with.", show_default=False)
     )
