@@ -8,9 +8,7 @@ from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
-from clive.__private.ui.forms.create_profile.welcome_form_screen import CreateProfileWelcomeFormScreen
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.dashboard import Dashboard
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -27,17 +25,15 @@ class Help(BaseScreen):
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
-    HELP_NOT_FOUND_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/help_not_found.md"
 
     def __init__(self) -> None:
         super().__init__()
-
-        if isinstance(self.app.screen, Dashboard | CreateProfileWelcomeFormScreen):
-            self.__help_file_path: Path = self.GLOBAL_HELP_FILE_PATH
+        screen_file_path = Path(inspect.getfile(self.app.screen.__class__))
+        screen_help_file_path = Path(f"{screen_file_path.with_suffix('')}_help.md")
+        if screen_help_file_path.exists():
+            self.__help_file_path = screen_help_file_path
         else:
-            class_path = Path(inspect.getfile(self.app.screen.__class__))
-            screen_help_file = class_path.parent / "help.md"
-            self.__help_file_path = screen_help_file if screen_help_file.exists() else self.HELP_NOT_FOUND_FILE_PATH
+            self.__help_file_path = self.GLOBAL_HELP_FILE_PATH
 
     @property
     def markdown_viewer(self) -> MarkdownViewer:
