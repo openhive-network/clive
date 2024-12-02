@@ -43,7 +43,8 @@ async def world(prepare_profile: Profile) -> World:
 
 
 @pytest.fixture
-async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:  # gives world inside of context manager
+async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
+    """Prepare wallet and yield World inside of context manager ready to use."""
     async with world as world_cm:
         await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
 
