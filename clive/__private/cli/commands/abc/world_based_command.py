@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCL
 from clive.__private.cli.exceptions import (
     CLIBeekeeperSessionTokenNotSetError,
     CLIPrettyError,
-    CLIWalletIsNotUnlockedError,
+    CLINoProfileUnlockedError,
 )
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.core.beekeeper import Beekeeper
@@ -44,7 +44,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
 
     def _validate_if_wallet_is_unlocked(self) -> None:
         if self.is_session_token_set() and not self.world.app_state.is_unlocked:
-            raise CLIWalletIsNotUnlockedError(self.profile.name)
+            raise CLINoProfileUnlockedError
 
     def _validate_session_token_set(self) -> None:
         if not self.is_session_token_set():

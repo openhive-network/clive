@@ -98,14 +98,6 @@ class CLIBeekeeperSessionTokenNotSetError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
-class CLIWalletIsNotUnlockedError(CLIPrettyError):
-    def __init__(self, name: str) -> None:
-        self.name = name
-        env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
-        message = f"If you want to use {env_var} envvar, ensure it is in unlocked state for wallet {self.name}."
-        super().__init__(message, errno.EINVAL)
-
-
 class CLISigningRequiresSessionTokenError(CLIPrettyError):
     def __init__(self) -> None:
         message = f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
