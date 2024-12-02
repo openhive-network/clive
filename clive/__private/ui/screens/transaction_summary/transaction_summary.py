@@ -262,6 +262,9 @@ class TransactionSummary(BaseScreen):
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
+        self.profile.cart.clear()
+        await self.handle_cart_update()
+        await self.query_exactly_one(CartTable).rebuild()
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
             f" {'(signed)' if transaction.is_signed() else ''}"
