@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.cli.exceptions import BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+from clive.__private.cli.exceptions import (
+    BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE,
+    TRANSACTION_NOT_SIGNED_MESSAGE,
+    CLIProfileIsNotUnlockedError,
+)
 from clive_local_tools.data.constants import (
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -109,14 +113,8 @@ async def test_process_transfer_with_beekeeper_session_token_not_unlocked(
     cli_tester_with_session_token_locked: CLITester,
 ) -> None:
     """Check if clive process transfer throws exception when wallet is not unlocked."""
-    # ARRANGE
-    message = (
-        f"If you want to use {BEEKEEPER_SESSION_TOKEN_ENV_NAME} envvar,"
-        f" ensure it is in unlocked state for wallet {WORKING_ACCOUNT_NAME}."
-    )
-
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=message):
+    with pytest.raises(CLITestCommandError, match=CLIProfileIsNotUnlockedError.MESSAGE):
         cli_tester_with_session_token_locked.process_transfer(
             from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
