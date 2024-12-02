@@ -5,15 +5,14 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.cli.exceptions import CLIProfileIsNotUnlockedError
 from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import (
-    BEEKEEPER_SESSION_TOKEN_ENV_NAME,
     WORKING_ACCOUNT_KEY_ALIAS,
 )
 from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_DATA,
-    WORKING_ACCOUNT_NAME,
 )
 
 if TYPE_CHECKING:
@@ -86,10 +85,6 @@ async def test_session_token_not_unlocked(
 ) -> None:
     """Check if clive process transfer throws exception when wallet is not unlocked."""
     # ARRANGE
-    message = (
-        f"If you want to use {BEEKEEPER_SESSION_TOKEN_ENV_NAME} envvar,"
-        f" ensure it is in unlocked state for wallet {WORKING_ACCOUNT_NAME}."
-    )
     cli_tester_with_session_token_locked.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
@@ -98,7 +93,7 @@ async def test_session_token_not_unlocked(
     )
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=message):
+    with pytest.raises(CLITestCommandError, match=CLIProfileIsNotUnlockedError.MESSAGE):
         cli_tester_with_session_token_locked.process_transaction(
             already_signed_mode="multisign",
             sign=WORKING_ACCOUNT_KEY_ALIAS,
