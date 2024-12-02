@@ -13,6 +13,7 @@ from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
     CLISigningRequiresAPasswordOrSessionTokenError,
+    CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -46,7 +47,6 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
-
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
@@ -87,12 +87,18 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         if not self._is_beekeeper_required():
             return  # no need to validate if no signing is required
 
-        if not self._credentials_provided() or self.sign is None:
+        signing_required = self.sign is not None
+        signing_possible = self._credentials_provided()
+        if signing_required and not signing_possible:
             raise CLISigningRequiresAPasswordOrSessionTokenError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         if self.broadcast and self.force_unsign:
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
+
+    def _validate_if_broadcasting_signed_transaction(self) -> None:
+        if self.broadcast and not self.sign:
+            raise CLITransactionNotSignedError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
@@ -104,4 +110,4 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         rich.print_json(transaction_json)
 
     def _is_beekeeper_required(self) -> bool:
-        return self.broadcast or self.sign is not None
+        return self.sign is not None
