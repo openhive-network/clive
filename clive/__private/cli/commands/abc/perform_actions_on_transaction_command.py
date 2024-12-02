@@ -13,6 +13,7 @@ from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
     CLISigningRequiresAPasswordOrSessionTokenError,
+    CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -21,6 +22,7 @@ from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
+from clive.exceptions import TransactionNotSignedError
 
 
 @dataclass(kw_only=True)
@@ -46,17 +48,19 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
-
-        transaction = (
-            await self.world.commands.perform_actions_on_transaction(
-                content=await self._get_transaction_content(),
-                sign_key=self.__get_key_to_sign(),
-                already_signed_mode=self.already_signed_mode,
-                force_unsign=self.force_unsign,
-                save_file_path=self.save_file_path,
-                broadcast=self.broadcast,
-            )
-        ).result_or_raise
+        try:
+            transaction = (
+                await self.world.commands.perform_actions_on_transaction(
+                    content=await self._get_transaction_content(),
+                    sign_key=self.__get_key_to_sign(),
+                    already_signed_mode=self.already_signed_mode,
+                    force_unsign=self.force_unsign,
+                    save_file_path=self.save_file_path,
+                    broadcast=self.broadcast,
+                )
+            ).result_or_raise
+        except TransactionNotSignedError as error:
+            raise CLITransactionNotSignedError from error
 
         self.__print_transaction(transaction.with_hash())
         typer.echo(
@@ -87,7 +91,9 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         if not self._is_beekeeper_required():
             return  # no need to validate if no signing is required
 
-        if not self._credentials_provided() or self.sign is None:
+        signing_required = self.sign is not None
+        signing_possible = self._credentials_provided()
+        if signing_required and not signing_possible:
             raise CLISigningRequiresAPasswordOrSessionTokenError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:

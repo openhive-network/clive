@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, ClassVar, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Final, TypeAlias
 
 from clive.__private.cli.completion import is_tab_completion_active
 
@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
 
     CommunicationResponseT: TypeAlias = str | JsonT | list[JsonT]
+
+
+FAILED_BROADCASTING_UNSIGNED_TRANSACTION_MESSAGE: Final[str] = "Could not broadcast unsigned transaction."
 
 
 class CliveError(Exception):
@@ -126,7 +129,10 @@ class CannotUnlockError(CliveError):
 
 
 class TransactionNotSignedError(CliveError):
-    pass
+    """Raise when trying to broadcast unsigned transaction."""
+
+    def __init__(self) -> None:
+        super().__init__(FAILED_BROADCASTING_UNSIGNED_TRANSACTION_MESSAGE)
 
 
 class RequestIdError(CliveError):

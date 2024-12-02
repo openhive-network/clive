@@ -26,6 +26,7 @@ from clive.__private.settings import clive_prefixed_envvar
 BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
     "You must provide a password or a beekeeper unlocked session token set via envvar"
 )
+TRANSACTION_NOT_SIGNED_MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget option '--sign'?"
 
 
 class CLIPrettyError(ClickException):
@@ -243,3 +244,8 @@ class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
             f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
         )
         super().__init__(message, errno.ENOENT)
+
+
+class CLITransactionNotSignedError(CLIPrettyError):
+    def __init__(self) -> None:
+        super().__init__(TRANSACTION_NOT_SIGNED_MESSAGE, errno.EINVAL)

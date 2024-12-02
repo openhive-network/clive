@@ -20,5 +20,5 @@ class Broadcast(Command):
 
     async def _execute(self) -> None:
         if not self.transaction.is_signed():
-            raise TransactionNotSignedError("Could not broadcast unsigned transaction.")
+            raise TransactionNotSignedError
         await self.node.api.network_broadcast.broadcast_transaction(trx=self.transaction)
