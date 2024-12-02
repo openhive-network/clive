@@ -6,13 +6,11 @@ from pathlib import Path
 import rich
 import typer
 
-from clive.__private.cli.commands.abc.world_based_with_password_or_token_command import (
-    WorldBasedWithPasswordOrTokenCommand,
-)
+from clive.__private.cli.commands.abc.world_based_with_token_command import WorldBasedWithTokenCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
-    CLISigningRequiresAPasswordOrSessionTokenError,
+    CLISigningRequiresSessionTokenError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -24,7 +22,7 @@ from clive.__private.validators.path_validator import PathValidator
 
 
 @dataclass(kw_only=True)
-class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, ABC):
+class PerformActionsOnTransactionCommand(WorldBasedWithTokenCommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -87,8 +85,10 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         if not self._is_beekeeper_required():
             return  # no need to validate if no signing is required
 
-        if not self._credentials_provided() or self.sign is None:
-            raise CLISigningRequiresAPasswordOrSessionTokenError
+        signing_required = self.sign is not None
+        signing_possible = self.is_session_token_set()
+        if signing_required and not signing_possible:
+            raise CLISigningRequiresSessionTokenError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         if self.broadcast and self.force_unsign:
