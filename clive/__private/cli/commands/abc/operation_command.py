@@ -8,7 +8,6 @@ from clive.__private.models.schemas import OperationUnion
 
 @dataclass(kw_only=True)
 class OperationCommand(PerformActionsOnTransactionCommand, ABC):
-    password: str | None
     sign: str | None
     force_unsign: bool = field(init=False, default=False)
     save_file: str | None
