@@ -1,5 +1,7 @@
 import errno
+import sys
 from dataclasses import dataclass
+from getpass import getpass
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
@@ -15,7 +17,6 @@ from clive.exceptions import CommunicationError
 @dataclass(kw_only=True)
 class CreateProfile(BeekeeperBasedCommand):
     profile_name: str
-    password: str
     working_account_name: str | None = None
 
     async def validate(self) -> None:
@@ -25,26 +26,40 @@ class CreateProfile(BeekeeperBasedCommand):
                 f"Can't use this profile name: {humanize_validation_result(profile_name_result)}", errno.EINVAL
             )
 
-        password_result = SetPasswordValidator().validate(self.password)
-        if not password_result.is_valid:
-            raise CLIPrettyError(
-                f"Can't use this password: {humanize_validation_result(password_result)}", errno.EINVAL
-            )
-
     async def validate_inside_context_manager(self) -> None:
         await self.validate_session_is_locked()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
+        password = self._get_validated_password()
         profile = Profile.create(self.profile_name, self.working_account_name)
 
         profile.save()
 
         try:
-            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
+            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=password).execute()
         except CommunicationError:
             profile.delete()
             raise
+
+    def _get_validated_password(self) -> str:
+        if sys.stdin.isatty():
+            password = self._get_password_input_in_tty_mode()
+        else:
+            password = self._get_password_input_in_non_tty_mode()
+        password_result = SetPasswordValidator().validate(password)
+        if not password_result.is_valid:
+            raise CLIPrettyError(
+                f"Can't use this password: {humanize_validation_result(password_result)}", errno.EINVAL
+            )
+        return password
+
+    def _get_password_input_in_tty_mode(self) -> str:
+        prompt = f"Enter password for profile `{self.profile_name}`: "
+        return getpass(prompt)
+
+    def _get_password_input_in_non_tty_mode(self) -> str:
+        return sys.stdin.readline().rstrip()
 
 
 @dataclass(kw_only=True)
