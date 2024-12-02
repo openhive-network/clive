@@ -11,6 +11,7 @@ from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
     CLISigningRequiresSessionTokenError,
+    CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -44,7 +45,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
-
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
@@ -90,6 +90,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         if self.broadcast and self.force_unsign:
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
+
+    def _validate_if_broadcasting_signed_transaction(self) -> None:
+        if self.broadcast and not self.sign:
+            raise CLITransactionNotSignedError
 
     def _get_transaction_created_message(self) -> str:
         return "created"

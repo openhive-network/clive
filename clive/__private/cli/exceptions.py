@@ -276,3 +276,12 @@ class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
             "If you wish to launch Beekeeper locally, please unset them first, then retry with `clive beekeeper spawn`."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLITransactionNotSignedError(CLIPrettyError):
+    """Raise when trying to broadcast unsigned transaction."""
+
+    MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget the '--sign' option?"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

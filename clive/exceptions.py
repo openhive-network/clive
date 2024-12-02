@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, ClassVar, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Final, TypeAlias
 
 from clive.__private.cli.completion import is_tab_completion_active
 
@@ -126,7 +126,12 @@ class CannotUnlockError(CliveError):
 
 
 class TransactionNotSignedError(CliveError):
-    pass
+    """Raise when trying to broadcast unsigned transaction."""
+
+    MESSAGE: Final[str] = "Could not broadcast unsigned transaction."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
 
 
 class RequestIdError(CliveError):

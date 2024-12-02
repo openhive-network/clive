@@ -22,5 +22,5 @@ class OperationCommand(PerformActionsOnTransactionCommand, ABC):
 
     async def validate(self) -> None:
         self._validate_if_broadcast_is_used_without_force_unsign()
-        self._validate_if_can_be_signed()
+        self._validate_if_broadcasting_signed_transaction()
         await super().validate()
