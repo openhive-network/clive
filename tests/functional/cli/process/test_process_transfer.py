@@ -4,7 +4,11 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE, CLINoProfileUnlockedError
+from clive.__private.cli.exceptions import (
+    BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE,
+    CLINoProfileUnlockedError,
+    CLITransactionNotSignedError,
+)
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
@@ -128,7 +132,7 @@ async def test_process_transfer_in_unlocked_without_sign(
 ) -> None:
     """Check if clive process transfer without sign throws exception when wallet is unlocked."""
     # ARRANGE
-    message = "Could not broadcast unsigned transaction."
+    message = CLITransactionNotSignedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
