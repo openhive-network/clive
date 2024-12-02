@@ -6,7 +6,7 @@ import pytest
 
 from clive.__private.models.schemas import CustomJsonOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -45,7 +45,6 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
     )
 
     result = cli_tester.process_transaction(
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         already_signed_mode="multisign",
         from_file=trx_file,

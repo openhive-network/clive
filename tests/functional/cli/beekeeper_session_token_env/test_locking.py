@@ -111,15 +111,18 @@ async def test_negative_unlock_already_unlocked(cli_tester_with_session_token_un
         cli_tester_with_session_token_unlocked.unlock()
 
 
-async def test_negative_lock_without_session_token(cli_tester: CLITester) -> None:
+async def test_negative_lock_without_session_token(cli_tester_without_session_token: CLITester) -> None:
     # ACT
     # ASSERT
     with pytest.raises(CLITestCommandError, match=MESSAGE_NO_SESSION_TOKEN):
-        cli_tester.lock()
+        cli_tester_without_session_token.lock()
 
 
-async def test_negative_unlock_without_session_token(cli_tester: CLITester) -> None:
+async def test_negative_unlock_without_session_token(cli_tester_without_session_token: CLITester) -> None:
     # ACT
     # ASSERT
     with pytest.raises(CLITestCommandError, match=MESSAGE_NO_SESSION_TOKEN):
-        cli_tester.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD)
+        cli_tester_without_session_token.unlock(
+            profile_name=WORKING_ACCOUNT_NAME,
+            password_stdin=WORKING_ACCOUNT_PASSWORD,
+        )

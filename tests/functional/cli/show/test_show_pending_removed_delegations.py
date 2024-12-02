@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive_local_tools.cli.checkers import assert_no_removed_delegations, assert_pending_removed_delegations
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import EMPTY_ACCOUNT
 
 if TYPE_CHECKING:
@@ -22,14 +22,11 @@ async def test_pending_removed_delegations_basic(cli_tester: CLITester) -> None:
     # ARRANGE
     amount_to_delegate: Final[tt.Asset.VestT] = tt.Asset.Vest(123_456.789)
     cli_tester.process_delegations_set(
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=EMPTY_ACCOUNT.name,
         amount=amount_to_delegate,
     )
-    cli_tester.process_delegations_remove(
-        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, delegatee=EMPTY_ACCOUNT.name
-    )
+    cli_tester.process_delegations_remove(sign=WORKING_ACCOUNT_KEY_ALIAS, delegatee=EMPTY_ACCOUNT.name)
 
     # ACT
     # ASSERT
