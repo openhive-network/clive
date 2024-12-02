@@ -4,7 +4,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import (
     CLIBothBeekeepersPasswordAndSessionTokenSetError,
     CLIEitherBeekeepersPasswordOrSessionTokenNotSetError,
-    CLIWalletIsNotUnlockedError,
+    CLIProfileIsNotUnlockedError,
 )
 from clive.__private.settings import safe_settings
 
@@ -50,7 +50,7 @@ class WorldBasedWithPasswordOrTokenCommand(WorldBasedCommand):
             return
 
         if self.is_session_token_set() and not self.world.app_state.is_unlocked:
-            raise CLIWalletIsNotUnlockedError(self.world.profile.name)
+            raise CLIProfileIsNotUnlockedError
 
     def _validate_no_both_credentials_given(self) -> None:
         if self._is_both_password_and_session_token_set():
