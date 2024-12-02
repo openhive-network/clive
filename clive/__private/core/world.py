@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from contextlib import asynccontextmanager, contextmanager
-from functools import partial
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from textual.reactive import var
 
@@ -222,31 +221,19 @@ class TUIWorld(World, CliveDOMNode):
         self.node.change_related_profile(profile)
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
-        base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_notification_server":
-            send_notification = partial(
-                self.app.notify,
-                f"{base_message} due to inactivity.",
-                timeout=10,
-            )
-        else:
-            send_notification = partial(self.app.notify, f"{base_message}.")
-
+            self.app.notify("Switched to the LOCKED mode due to inactivity.", timeout=10)
         self.profile.save()
 
         async def lock() -> None:
-            nonlocal send_notification
-
             self._add_welcome_modes()
             await self.app.switch_mode("unlock")
             await self._restart_dashboard_mode()
             self._switch_to_welcome_profile()
-            send_notification()
 
         self.app.run_worker(lock())
 
     def _on_going_into_unlocked_mode(self) -> None:
-        self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
 
     @property
