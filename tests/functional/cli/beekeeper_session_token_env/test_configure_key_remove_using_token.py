@@ -11,7 +11,6 @@ from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
-    from clive_local_tools.types import CLITesterWithSessionFactory
 
 
 async def test_configure_key_remove_using_beekeeper_session_token(
@@ -24,27 +23,6 @@ async def test_configure_key_remove_using_beekeeper_session_token(
 
     # ACT & ASSERT
     cli_tester_with_session_token_unlocked.configure_key_remove(alias="key")
-
-
-@pytest.mark.parametrize("unlocked", [True, False])
-async def test_configure_key_remove_with_beekeeper_session_token_and_password_both_set_with_different_wallet_state(
-    cli_tester_with_session_token: CLITesterWithSessionFactory, *, unlocked: bool
-) -> None:
-    """
-    Check clive configure key remove command.
-
-    If it throws exception when there is password and session token set while wallet is locked/unlocked.
-    """
-    # ARRANGE
-    cli_tester = cli_tester_with_session_token(unlocked=unlocked)
-    message = (
-        f"Both '--password' flag and environment variable {BEEKEEPER_SESSION_TOKEN_ENV_NAME} are set."
-        " Please use only one."
-    )
-
-    # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=message):
-        cli_tester.configure_key_remove(alias="doesnt-matter", password="doesnt-matter")
 
 
 async def test_configure_key_remove_with_beekeeper_session_token_not_unlocked(

@@ -56,7 +56,6 @@ async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
         yield world_cm
 
 
-@pytest.fixture
 async def beekeeper(
     prepare_beekeeper_wallet: World, beekeeper_remote_address_env_context_factory: EnvContextFactory
 ) -> AsyncGenerator[Beekeeper]:
@@ -74,11 +73,32 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 
 @pytest.fixture
-async def cli_tester(node: tt.RawNode, beekeeper: Beekeeper) -> CLITester:  # noqa: ARG001
-    """Will return CliveTyper and CliRunner from typer.testing module.."""
-    # import cli after default profile is set, default values for --profile-name option are set during loading
-    from clive.__private.cli.main import cli
+async def cli_tester(
+    node: tt.RawNode,  # noqa: ARG001
+    beekeeper: Beekeeper,
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
+    cli_tester_without_session_token: CLITester,
+) -> AsyncGenerator[CLITester]:
+    """Token is set in environment variable. Beekeeper session is unlocked."""
+    with beekeeper_session_token_env_context_factory(beekeeper.token):
+        yield cli_tester_without_session_token
 
-    env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
-    runner = CliRunner(env=env)
-    return CLITester(cli, runner)
+
+@pytest.fixture
+async def cli_tester_with_session_token_locked(
+    beekeeper: Beekeeper,
+    cli_tester: CLITester,
+) -> CLITester:
+    """Token is set in environment variable. Beekeeper session is locked."""
+    await beekeeper.api.lock_all()
+    return cli_tester
+
+
+@pytest.fixture
+async def cli_tester_without_session_token(
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
+    cli_tester: CLITester,
+) -> AsyncGenerator[CLITester]:
+    """Token is not set in environment variable."""
+    with beekeeper_session_token_env_context_factory(None):
+        yield cli_tester

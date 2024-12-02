@@ -7,7 +7,7 @@ import test_tools as tt
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.models.schemas import TransferToVestingOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -34,12 +34,7 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     )
 
     # ACT
-    result = cli_tester.process_power_up(
-        amount=AMOUNT_TO_POWER_UP,
-        to=operation.to,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
-    )
+    result = cli_tester.process_power_up(amount=AMOUNT_TO_POWER_UP, to=operation.to, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -60,11 +55,7 @@ async def test_power_up_no_default_account(
 
     # ACT
     result = cli_tester.process_power_up(
-        amount=AMOUNT_TO_POWER_UP,
-        from_=operation.from_,
-        to=operation.to,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=other_account_key_alias,
+        amount=AMOUNT_TO_POWER_UP, from_=operation.from_, to=operation.to, sign=other_account_key_alias
     )
 
     # ASSERT
@@ -80,11 +71,7 @@ async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester)
     )
 
     # ACT
-    result = cli_tester.process_power_up(
-        amount=AMOUNT_TO_POWER_UP,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
-    )
+    result = cli_tester.process_power_up(amount=AMOUNT_TO_POWER_UP, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)

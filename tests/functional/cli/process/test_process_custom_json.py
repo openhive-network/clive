@@ -9,7 +9,7 @@ from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.cli.helpers import get_transaction_id_from_result
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -33,9 +33,7 @@ EXAMPLE_ID: Final[str] = "some_id"
 @pytest.mark.parametrize("json_", [EXAMPLE_OBJECT, EXAMPLE_STRING, EXAMPLE_NUMBER])
 async def test_authorize_default(node: tt.RawNode, cli_tester: CLITester, json_: str) -> None:
     # ACT
-    result = cli_tester.process_custom_json(
-        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, id_=EXAMPLE_ID, json_=json_
-    )
+    result = cli_tester.process_custom_json(sign=WORKING_ACCOUNT_KEY_ALIAS, id_=EXAMPLE_ID, json_=json_)
 
     # ASSERT
     transaction_id = get_transaction_id_from_result(result)
@@ -46,7 +44,6 @@ async def test_authorize_default(node: tt.RawNode, cli_tester: CLITester, json_:
 async def test_authorize_posting(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.process_custom_json(
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize=WORKING_ACCOUNT_DATA.account.name,
         id_=EXAMPLE_ID,
@@ -75,7 +72,6 @@ async def test_authorize_multiple_posting(cli_tester: CLITester) -> None:
 async def test_authorize_active(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.process_custom_json(
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize_by_active=WORKING_ACCOUNT_DATA.account.name,
         id_=EXAMPLE_ID,
@@ -95,7 +91,6 @@ async def test_json_as_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: P
 
     # ACT
     result = cli_tester.process_custom_json(
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize=WORKING_ACCOUNT_DATA.account.name,
         id_=EXAMPLE_ID,
@@ -116,7 +111,6 @@ async def test_negative_invalid_json_format(cli_tester: CLITester) -> None:
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as exception_info:
         cli_tester.process_custom_json(
-            password=WORKING_ACCOUNT_PASSWORD,
             sign=WORKING_ACCOUNT_KEY_ALIAS,
             authorize=WORKING_ACCOUNT_DATA.account.name,
             id_=EXAMPLE_ID,
@@ -152,7 +146,6 @@ async def test_negative_invalid_json_file_path(cli_tester: CLITester, tmp_path: 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as exception_info:
         cli_tester.process_custom_json(
-            password=WORKING_ACCOUNT_PASSWORD,
             sign=WORKING_ACCOUNT_KEY_ALIAS,
             id_=EXAMPLE_ID,
             json_=invalid_path,
