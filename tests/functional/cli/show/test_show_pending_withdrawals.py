@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive_local_tools.cli import checkers
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log import EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -27,17 +27,11 @@ async def test_show_pending_withdrawals_none(cli_tester: CLITester) -> None:
 
 async def test_show_pending_withdrawals_basic(cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_savings_deposit(
-        amount=AMOUNT_TO_DEPOSIT, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
-    )
+    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
-    cli_tester.process_savings_withdrawal(
-        amount=AMOUNT_TO_WITHDRAW, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
-    )
+    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
-    cli_tester.process_savings_withdrawal(
-        amount=AMOUNT_TO_WITHDRAW2, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
-    )
+    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW2, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT
     # ASSERT

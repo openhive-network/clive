@@ -11,9 +11,7 @@ from clive_local_tools.cli.command_options import option_to_string
 from clive_local_tools.cli.helpers import run_clive_in_subprocess
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
-    ALT_WORKING_ACCOUNT1_PASSWORD,
     WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.helpers import get_transaction_id_from_output
 from clive_local_tools.testnet_block_log import (
@@ -67,7 +65,6 @@ async def test_custom_profile_in_custom_json_operation(
         f"--profile-name={ALT_WORKING_ACCOUNT1_NAME}",
         f"--id={custom_id}",
         f"--json={custom_json}",
-        f"--password={ALT_WORKING_ACCOUNT1_PASSWORD}",
         f"--sign={ALT_WORKING_ACCOUNT1_KEY_ALIAS}",
     ]
 
@@ -158,7 +155,6 @@ async def test_custom_profile_and_custom_authority_in_custom_json_operation(
         f"--profile-name={ALT_WORKING_ACCOUNT1_NAME}",
         f"--id={custom_id}",
         f"--json={custom_json}",
-        f"--password={ALT_WORKING_ACCOUNT1_PASSWORD}",
         f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
         f"--authorize={WORKING_ACCOUNT_NAME}",
     ]
@@ -190,7 +186,6 @@ async def test_default_working_account_in_transfer(
         "transfer",
         f"--to={other_account_name}",
         f"--amount={option_to_string(amount)}",
-        f"--password={WORKING_ACCOUNT_PASSWORD}",
         f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
     ]
 

@@ -6,12 +6,10 @@ from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_M
 from clive_local_tools.data.constants import (
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
     WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
 )
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
-    from clive_local_tools.types import CLITesterWithSessionFactory
 import pytest
 import test_tools as tt
 
@@ -45,7 +43,7 @@ async def test_process_multiple_transfers_with_beekeeper_session_token(
     node: tt.RawNode,
     cli_tester_with_session_token_unlocked: CLITester,
 ) -> None:
-    """Check if multiple clive process doesn't require --password when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
+    """Check if multiple clive process transfer when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
     # ACT
     for _ in range(2):
         result = cli_tester_with_session_token_unlocked.process_transfer(
@@ -56,39 +54,10 @@ async def test_process_multiple_transfers_with_beekeeper_session_token(
         assert_transaction_in_blockchain(node, result)
 
 
-@pytest.mark.parametrize("unlocked", [True, False])
-async def test_process_transfer_with_beekeeper_session_token_and_password_both_set_with_different_wallet_state(
-    cli_tester_with_session_token: CLITesterWithSessionFactory,
-    *,
-    unlocked: bool,
+async def test_process_transfer_with_beekeeper_session_token_missing(
+    cli_tester_without_session_token: CLITester,
 ) -> None:
-    """
-    Check if clive process transfer throws exception.
-
-    When there is password and CLIVE_BEEKEEPER__SESSION_TOKEN set while wallet is locked/unlocked.
-    """
-    # ARRANGE
-    cli_tester = cli_tester_with_session_token(unlocked=unlocked)
-    message = (
-        f"Both '--password' flag and environment variable {BEEKEEPER_SESSION_TOKEN_ENV_NAME} are set."
-        " Please use only one."
-    )
-
-    # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=message):
-        cli_tester.process_transfer(
-            from_=WORKING_ACCOUNT_NAME,
-            amount=tt.Asset.Hive(1),
-            to=RECEIVER,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
-            password=WORKING_ACCOUNT_PASSWORD,
-        )
-
-
-async def test_process_transfer_with_beekeeper_either_session_token_or_password_are_missing(
-    cli_tester: CLITester,
-) -> None:
-    """Check if clive process transfer throws exception when there is no pass or CLIVE_BEEKEEPER__SESSION_TOKEN set."""
+    """Check if clive process transfer throws exception when there is no CLIVE_BEEKEEPER__SESSION_TOKEN set."""
     # ARRANGE
     message = (
         f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
@@ -97,7 +66,7 @@ async def test_process_transfer_with_beekeeper_either_session_token_or_password_
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester.process_transfer(
+        cli_tester_without_session_token.process_transfer(
             from_=WORKING_ACCOUNT_NAME,
             amount=tt.Asset.Hive(1),
             to=RECEIVER,
@@ -127,7 +96,7 @@ async def test_process_transfer_with_beekeeper_session_token_unlocked_without_si
 ) -> None:
     """Check if clive process transfer without sign throws exception when wallet is unlocked."""
     # ARRANGE
-    message = BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+    message = "Could not broadcast unsigned transaction."
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

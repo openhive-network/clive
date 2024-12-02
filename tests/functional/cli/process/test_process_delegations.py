@@ -12,7 +12,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
     assert_transaction_in_blockchain,
 )
 from clive_local_tools.cli.checkers import assert_no_delegations
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -33,10 +33,7 @@ async def test_delegations_set_use_vests(node: tt.RawNode, cli_tester: CLITester
 
     # ACT
     result = cli_tester.process_delegations_set(
-        delegatee=operation.delegatee,
-        amount=AMOUNT_TO_DELEGATE,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        delegatee=operation.delegatee, amount=AMOUNT_TO_DELEGATE, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -49,10 +46,7 @@ async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester)
 
     # ACT
     result = cli_tester.process_delegations_set(
-        delegatee=DELEGATEE_ACCOUNT.name,
-        amount=amount_to_delegate_hp,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        delegatee=DELEGATEE_ACCOUNT.name, amount=amount_to_delegate_hp, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -63,10 +57,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
     # ARRANGE
     amount_to_delegate_reset: Final[tt.Asset.VestT] = tt.Asset.Vest(3456.789)
     cli_tester.process_delegations_set(
-        delegatee=DELEGATEE_ACCOUNT.name,
-        amount=AMOUNT_TO_DELEGATE,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        delegatee=DELEGATEE_ACCOUNT.name, amount=AMOUNT_TO_DELEGATE, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = DelegateVestingSharesOperation(
         delegator=WORKING_ACCOUNT_DATA.account.name,
@@ -76,10 +67,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
 
     # ACT
     result = cli_tester.process_delegations_set(
-        delegatee=operation.delegatee,
-        amount=amount_to_delegate_reset,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        delegatee=operation.delegatee, amount=amount_to_delegate_reset, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -89,10 +77,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
 async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_delegations_set(
-        delegatee=DELEGATEE_ACCOUNT.name,
-        amount=AMOUNT_TO_DELEGATE,
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        delegatee=DELEGATEE_ACCOUNT.name, amount=AMOUNT_TO_DELEGATE, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = DelegateVestingSharesOperation(
         delegator=WORKING_ACCOUNT_DATA.account.name,
@@ -101,9 +86,7 @@ async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> No
     )
 
     # ACT
-    result = cli_tester.process_delegations_remove(
-        delegatee=operation.delegatee, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
-    )
+    result = cli_tester.process_delegations_remove(delegatee=operation.delegatee, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
