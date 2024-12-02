@@ -44,10 +44,6 @@ profile_name = typer.Option(
     show_default=bool(get_default_profile_name()),
 )
 
-password = typer.Option(..., "--password", help="Password to unlock the wallet.", show_default=False)
-
-password_optional = modified_param(password, default=None)
-
 beekeeper_remote = typer.Option(
     ...,
     "--beekeeper-remote",

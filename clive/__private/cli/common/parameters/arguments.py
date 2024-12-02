@@ -22,12 +22,4 @@ working_account_template = typer.Argument(
 
 account_name = modified_param(working_account_template)
 
-profile_name = typer.Argument(
-    get_default_or_make_optional(get_default_profile_name()),
-    help=f"The profile to use. (default is name of the default profile, {REQUIRED_AS_ARG_OR_OPTION})",
-    show_default=bool(get_default_profile_name()),
-)
-
-password = typer.Argument(
-    None, help=f"Password to unlock the wallet. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False
-)
+profile_name = typer.Argument(..., help="The profile to use.")
