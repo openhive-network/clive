@@ -106,12 +106,11 @@ class CLIEitherBeekeepersPasswordOrSessionTokenNotSetError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
-class CLIWalletIsNotUnlockedError(CLIPrettyError):
-    def __init__(self, name: str) -> None:
-        self.name = name
-        env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
-        message = f"If you want to use {env_var} envvar, ensure it is in unlocked state for wallet {self.name}."
-        super().__init__(message, errno.EINVAL)
+class CLIProfileIsNotUnlockedError(CLIPrettyError):
+    MESSAGE: Final[str] = "The profile is locked, use command `clive unlock` to unlock"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
 
 
 class CLISigningRequiresAPasswordOrSessionTokenError(CLIPrettyError):
