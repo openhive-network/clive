@@ -14,6 +14,6 @@ OPERATION_COMMON_OPTIONS_PANEL_TITLE: Final[str] = "Operation common options"
 
 UNLOCK_CREATE_PROFILE_HELP: Final[str] = (
     "If you want to create a new profile, please enter the following command:\n"
-    "`clive configure profile add --profile-name PROFILE_NAME --password PROFILE_PASSWORD`"
+    "`clive configure profile add --profile-name PROFILE_NAME` and pass password to the standard input."
 )
 UNLOCK_CREATE_PROFILE_SELECT: Final[str] = "create a new profile"
