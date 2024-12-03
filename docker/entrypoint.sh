@@ -31,10 +31,10 @@ check_and_switch_user() {
       exit 1
     elif [[ "${CLIVE_UID}" -ne 0 ]]; then
       if [[ "${CLIVE_UID}" -ne "$(id -u clive)" ]]; then
-        echo "Setting user clive's UID to '${CLIVE_UID}'"
+        #echo "Setting user clive's UID to '${CLIVE_UID}'"
         usermod -o -u "${CLIVE_UID}" clive
       fi
-      echo "Respawning entrypoint as user clive"
+      #echo "Respawning entrypoint as user clive"
       exec sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
       exit 0
     fi
