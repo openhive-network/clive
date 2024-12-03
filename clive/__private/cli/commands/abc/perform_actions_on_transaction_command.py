@@ -12,7 +12,6 @@ from clive.__private.cli.commands.abc.world_based_with_password_or_token_command
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
-    CLISigningRequiresAPasswordOrSessionTokenError,
     CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
@@ -82,15 +81,6 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
             result = PathValidator(mode="can_be_file").validate(str(self.save_file))
             if not result.is_valid:
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
-
-    def _validate_if_can_be_signed(self) -> None:
-        if not self._is_beekeeper_required():
-            return  # no need to validate if no signing is required
-
-        signing_required = self.sign is not None
-        signing_possible = self._credentials_provided()
-        if signing_required and not signing_possible:
-            raise CLISigningRequiresAPasswordOrSessionTokenError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         if self.broadcast and self.force_unsign:
