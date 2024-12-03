@@ -8,5 +8,9 @@ TransferToAccount {
     grid-gutter: 1;
     width: 100%;
     height: auto;
+
+    TransactionButtons {
+      margin-top: -1;
+    }
   }
 }
