@@ -5,8 +5,8 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCo
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperSessionTokenNotSetError,
-    CLIPrettyError,
     CLINoProfileUnlockedError,
+    CLIPrettyError,
 )
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.core.beekeeper import Beekeeper

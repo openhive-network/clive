@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar
 
-BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
-    "You must provide a unlocked beekeeper session token set via envvar"
-)
+BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = "You must provide a beekeeper session token set via envvar"
 
 
 class CLIPrettyError(ClickException):
@@ -95,12 +93,6 @@ class CLIProfileAlreadyExistsError(CLIPrettyError):
 class CLIBeekeeperSessionTokenNotSetError(CLIPrettyError):
     def __init__(self) -> None:
         message = BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
-        super().__init__(message, errno.EINVAL)
-
-
-class CLISigningRequiresSessionTokenError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
         super().__init__(message, errno.EINVAL)
 
 
