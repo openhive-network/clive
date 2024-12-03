@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.profile import Profile
-from clive_local_tools.checkers import assert_wallet_unlocked, assert_wallets_locked
+from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_PASSWORD,

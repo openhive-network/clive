@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 import pytest
 import test_tools as tt
 
-from clive_local_tools.checkers import assert_transaction_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_DATA,

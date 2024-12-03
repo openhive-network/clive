@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive_local_tools.checkers import assert_transaction_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in_blockchain
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.cli.helpers import get_transaction_id_from_result

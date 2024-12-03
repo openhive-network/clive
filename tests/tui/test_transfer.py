@@ -11,7 +11,7 @@ from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 from clive_local_tools.tui.broadcast_transaction import broadcast_transaction
 from clive_local_tools.tui.checkers import assert_is_clive_composed_input_focused, assert_is_screen_active

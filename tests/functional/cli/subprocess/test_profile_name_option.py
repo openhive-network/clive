@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.command_options import option_to_string
 from clive_local_tools.cli.helpers import run_clive_in_subprocess
 from clive_local_tools.data.constants import (

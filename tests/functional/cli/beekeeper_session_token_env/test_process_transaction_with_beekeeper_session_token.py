@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive_local_tools.checkers import assert_transaction_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import (
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,

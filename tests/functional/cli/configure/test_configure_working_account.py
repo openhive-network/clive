@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from clive_local_tools.cli.checkers import ProfileAccountsChecker
+from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
 

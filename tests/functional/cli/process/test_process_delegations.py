@@ -7,7 +7,10 @@ import test_tools as tt
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import DelegateVestingSharesOperation
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain, assert_transaction_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import (
+    assert_operations_placed_in_blockchain,
+    assert_transaction_in_blockchain,
+)
 from clive_local_tools.cli.checkers import assert_no_delegations
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA

@@ -6,7 +6,7 @@ import test_tools as tt
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.models.schemas import TransferToVestingOperation
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 

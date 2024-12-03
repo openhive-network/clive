@@ -3,16 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from click.testing import Result
-from helpy.exceptions import RequestError
-
-from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.models.schemas import OperationUnion, RepresentationBase
+
+from click.testing import Result
+from helpy.exceptions import RequestError
+
+from clive_local_tools.helpers import get_transaction_id_from_output
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
@@ -60,13 +60,3 @@ def assert_operations_placed_in_blockchain(
         f"{transaction}."
     )
     assert not operations_to_check, message
-
-
-async def assert_wallets_locked(beekeeper: Beekeeper) -> None:
-    wallets = (await beekeeper.api.list_wallets()).wallets
-    assert all(not w.unlocked for w in wallets), "All wallets should be locked."
-
-
-async def assert_wallet_unlocked(beekeeper: Beekeeper, wallet_name: str) -> None:
-    wallets = (await beekeeper.api.list_wallets()).wallets
-    assert any(w.name == wallet_name and w.unlocked for w in wallets), f"Wallet {wallet_name} should be unlocked."

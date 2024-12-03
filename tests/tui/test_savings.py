@@ -25,7 +25,7 @@ from clive.__private.ui.widgets.clive_basic import CliveRadioButton
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_DATA,
     WORKING_ACCOUNT_DATA,
