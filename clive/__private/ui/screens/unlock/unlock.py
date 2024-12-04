@@ -121,6 +121,10 @@ class Unlock(BaseScreen):
     async def create_new_profile(self) -> None:
         await self.app.switch_mode("create_profile")
 
+    @on(SelectProfile.Changed)
+    def clear_password_input(self) -> None:
+        self.query_exactly_one(PasswordInput).clear_validation()
+
     def _remove_welcome_modes(self) -> None:
         self.app.remove_mode("unlock")
         self.app.remove_mode("create_profile")
