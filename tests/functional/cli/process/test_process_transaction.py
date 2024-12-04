@@ -64,12 +64,12 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
 
 async def test_process_signed_transaction(
     node: tt.RawNode,
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
     tmp_path: Path,
 ) -> None:
     """Check if clive process transfer doesn't require --password when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
     # ARRANGE
-    cli_tester_with_session_token_unlocked.process_power_up(
+    cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
@@ -78,7 +78,7 @@ async def test_process_signed_transaction(
     )
 
     # ACT
-    result = cli_tester_with_session_token_unlocked.process_transaction(
+    result = cli_tester.process_transaction(
         already_signed_mode="multisign",
         from_file=trx_file(tmp_path),
     )
@@ -89,12 +89,12 @@ async def test_process_signed_transaction(
 
 async def test_process_unsigned_transaction(
     node: tt.RawNode,
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
     tmp_path: Path,
 ) -> None:
     """Check if clive process transfer doesn't require --password when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
     # ARRANGE
-    cli_tester_with_session_token_unlocked.process_power_up(
+    cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         broadcast=False,
@@ -102,7 +102,7 @@ async def test_process_unsigned_transaction(
     )
 
     # ACT
-    result = cli_tester_with_session_token_unlocked.process_transaction(
+    result = cli_tester.process_transaction(
         already_signed_mode="multisign",
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         from_file=trx_file(tmp_path),

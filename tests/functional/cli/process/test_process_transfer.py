@@ -138,7 +138,7 @@ async def test_process_transfer_with_beekeeper_session_token_not_unlocked(
 
 
 async def test_process_transfer_with_beekeeper_session_token_unlocked_without_sign(
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
 ) -> None:
     """Check if clive process transfer without sign throws exception when wallet is unlocked."""
     # ARRANGE
@@ -146,6 +146,4 @@ async def test_process_transfer_with_beekeeper_session_token_unlocked_without_si
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_unlocked.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER
-        )
+        cli_tester.process_transfer(from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER)

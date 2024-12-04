@@ -4,7 +4,7 @@ import os
 import subprocess
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.setting_identifiers import DATA_PATH, SECRETS_NODE_ADDRESS
+from clive.__private.core.constants.setting_identifiers import DATA_PATH
 from clive.__private.settings import clive_prefixed_envvar, safe_settings
 from clive_local_tools.helpers import get_transaction_id_from_output
 
@@ -19,9 +19,6 @@ def get_transaction_id_from_result(result: Result) -> str:
 def run_clive_in_subprocess(command: list[str]) -> str:
     env = os.environ.copy()
     env[clive_prefixed_envvar(DATA_PATH)] = str(safe_settings.data_path)
-    secret_node_address = safe_settings.secrets.node_address
-    assert secret_node_address is not None, "Secrets node address is not set"
-    env[clive_prefixed_envvar(SECRETS_NODE_ADDRESS)] = str(secret_node_address)
 
     try:
         completed_process = subprocess.run(
