@@ -120,6 +120,10 @@ class Unlock(BaseScreen):
     async def create_new_profile(self) -> None:
         await self.app.switch_mode("create_profile")
 
+    def on_mount(self) -> None:
+        if len(self.world.profile.list_profiles()) == 1:
+            self.query_exactly_one(SelectProfile).disabled = True
+
     def _remove_welcome_modes(self) -> None:
         self.app.remove_mode("unlock")
         self.app.remove_mode("create_profile")
