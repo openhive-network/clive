@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import CLITransactionNotSignedError
-from clive.__private.models.schemas import CustomJsonOperation
+from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
@@ -51,6 +51,31 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         already_signed_mode="multisign",
         from_file=trx_file,
     )
+
+    # ASSERT
+    assert_operations_placed_in_blockchain(node, result, operation)
+
+
+def test_broadcast_signed_transaction(node: tt.RawNode, cli_tester: CLITester, tmp_path: Path) -> None:
+    # ARRANGE
+    transfer_amount: Final[tt.Asset.TestT] = tt.Asset.Test(2)
+    memo: Final[str] = "random memo"
+    trx_file = tmp_path / "trx_with_signature.json"
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_DATA.account.name, amount=transfer_amount, to=ALT_WORKING_ACCOUNT1_NAME, memo=memo
+    )
+    cli_tester.process_transfer(
+        amount=transfer_amount,
+        to=ALT_WORKING_ACCOUNT1_NAME,
+        memo=memo,
+        broadcast=False,
+        save_file=trx_file,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    )
+
+    # ACT
+    result = cli_tester.process_transaction(from_file=trx_file)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
