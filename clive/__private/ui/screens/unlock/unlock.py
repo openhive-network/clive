@@ -9,6 +9,7 @@ from textual.validation import Integer
 from textual.widgets import Button, Checkbox, Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -24,9 +25,9 @@ if TYPE_CHECKING:
 
 
 class SelectProfile(CliveSelect[str], CliveWidget):
-    def __init__(self) -> None:
+    def __init__(self, *, disabled: bool = False) -> None:
         profiles = self.world.profile.list_profiles()
-        super().__init__([(profile, profile) for profile in profiles], allow_blank=False)
+        super().__init__([(profile, profile) for profile in profiles], allow_blank=False, disabled=disabled)
 
 
 class LockAfterTime(Horizontal):
@@ -84,7 +85,7 @@ class Unlock(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome again!"):
             yield Static(PRESS_HELP_MESSAGE, id="press-help-message")
-            yield SelectProfile()
+            yield SelectProfile(disabled=Profile.is_only_one_profile_saved())
             yield PasswordInput()
             yield LockAfterTime()
             yield CliveButton("Unlock", id_="unlock-button", variant="success")
