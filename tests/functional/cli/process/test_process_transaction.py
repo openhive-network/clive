@@ -3,16 +3,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
+import test_tools as tt
 
+from clive.__private.cli.exceptions import CLITransactionNotSignedError
 from clive.__private.models.schemas import CustomJsonOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_DATA
+from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_NAME, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    import test_tools as tt
 
     from clive_local_tools.cli.cli_tester import CLITester
 
@@ -53,3 +54,19 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
+
+
+def test_negative_broadcast_unsigned_transaction(cli_tester: CLITester, tmp_path: Path) -> None:
+    # ARRANGE
+    trx_file = tmp_path / "trx_without_signature.json"
+    cli_tester.process_transfer(
+        amount=tt.Asset.Hive(1),
+        to=ALT_WORKING_ACCOUNT1_NAME,
+        broadcast=False,
+        save_file=trx_file,
+    )
+
+    # ACT
+    # ASSERT
+    with pytest.raises(CLITestCommandError, match=CLITransactionNotSignedError.MESSAGE):
+        cli_tester.process_transaction(from_file=trx_file)
