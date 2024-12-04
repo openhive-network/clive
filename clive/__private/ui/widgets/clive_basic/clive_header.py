@@ -351,9 +351,9 @@ class CliveHeader(CliveRawHeader):
         yield Static("/", id="separator")
         yield WorkingAccountButton()
         yield AlarmDisplay()
-        yield CartStatus()
 
     def _create_right_part_bar(self) -> ComposeResult:
+        yield CartStatus()
         yield NodeStatus()
 
     def _create_left_part_expandable(self) -> ComposeResult:
