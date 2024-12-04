@@ -28,10 +28,10 @@ class Help(BaseScreen):
 
     def __init__(self) -> None:
         super().__init__()
-        screen_file_name = Path(inspect.getfile(self.app.screen.__class__))
-        screen_help_file = Path(f"{screen_file_name}_help.md")
-        if screen_help_file.exists():
-            self.__help_file_path = screen_help_file
+        screen_file_path = Path(inspect.getfile(self.app.screen.__class__))
+        screen_help_file_path = Path(f"{screen_file_path.with_suffix('')}_help.md")
+        if screen_help_file_path.exists():
+            self.__help_file_path = screen_help_file_path
         else:
             self.__help_file_path = self.GLOBAL_HELP_FILE_PATH
 
