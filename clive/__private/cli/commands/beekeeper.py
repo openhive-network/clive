@@ -32,14 +32,11 @@ class BeekeeperCreateSession(BeekeeperBasedCommand):
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
-    async def _run(self) -> None:
-        if Beekeeper.is_already_running_locally():
-            message = (
-                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
-                f" {Beekeeper.get_pid_from_file()}"
-            )
-            raise CLIPrettyError(message, errno.EEXIST)
+    async def validate(self) -> None:
+        await self._validate_beekeeper_is_not_running()
+        await super().validate()
 
+    async def _run(self) -> None:
         typer.echo("Launching beekeeper...")
 
         async with Beekeeper(run_in_background=self.background) as beekeeper:
@@ -47,6 +44,14 @@ class BeekeeperSpawn(ExternalCLICommand):
 
             if not self.background:
                 self.__serve_forever()
+
+    async def _validate_beekeeper_is_not_running(self) -> None:
+        if Beekeeper.is_already_running_locally():
+            message = (
+                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
+                f" {Beekeeper.get_pid_from_file()}"
+            )
+            raise CLIPrettyError(message, errno.EEXIST)
 
     @staticmethod
     def __serve_forever() -> None:
