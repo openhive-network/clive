@@ -36,6 +36,7 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
     BINDINGS = [
         *TransactionSummaryBinding.BINDINGS,
         Binding("escape", "app.pop_screen", "Back"),
+        Binding("ctrl+t", "transaction_summary", "Transaction summary"),
     ]
 
     def create_left_panel(self) -> ComposeResult:
