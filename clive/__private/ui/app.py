@@ -55,6 +55,7 @@ class Clive(App[int]):
         Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
         Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
+        Binding("?", "help", "Help", show=False),
     ]
 
     SCREENS = {

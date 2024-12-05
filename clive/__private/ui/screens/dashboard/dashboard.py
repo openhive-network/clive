@@ -263,16 +263,17 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "f4"
+    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "a"
     NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {_ADD_ACCOUNT_BINDING_KEY} to add some)"
 
     BINDINGS = [
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-        Binding("f2", "operations", "Operations"),
-        Binding("f3", "switch_working_account", "Switch working account"),
+        Binding("?", "help", "Help"),
+        Binding("o", "operations", "Operations"),
+        Binding("ctrl+w", "switch_working_account", "Switch working account"),
         Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
-        Binding("f5", "switch_mode_into_locked", "Lock wallet"),
-        Binding("f6", "config", "Config"),
+        Binding("ctrl+l", "switch_mode_into_locked", ""),
+        Binding("ctrl+n", "config", "Config"),  # ctrl+n due to ctrl+m not working in ubuntu terminal
     ]
 
     def __init__(self) -> None:
