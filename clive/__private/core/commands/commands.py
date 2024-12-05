@@ -31,6 +31,7 @@ from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
@@ -149,6 +150,9 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
             )
         )
+
+    async def get_unlocked_profile_name(self) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(GetUnlockedProfileName(beekeeper=self._world.beekeeper))
 
     async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:
         return await self.__surround_with_exception_handlers(
