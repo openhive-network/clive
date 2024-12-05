@@ -10,9 +10,3 @@ class WorldOptionsGroup(ParameterGroup):
     profile_name: str = options.profile_name
     beekeeper_remote: Optional[str] = options.beekeeper_remote
     use_beekeeper: bool = field(default=True, metadata={"ignore": True})
-
-
-@dataclass(kw_only=True)
-class WorldWithoutBeekeeperOptionsGroup(ParameterGroup):
-    profile_name: str = options.profile_name
-    use_beekeeper: bool = field(default=False, metadata={"ignore": True})
