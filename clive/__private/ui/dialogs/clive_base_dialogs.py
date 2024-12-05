@@ -13,6 +13,7 @@ from textual.screen import ModalScreen
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import ScreenResultT
 from clive.__private.ui.widgets.buttons import CancelOneLineButton, CloseOneLineButton, ConfirmOneLineButton
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -120,6 +121,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
         yield ConfirmOneLineButton(self._confirm_button_text)
         yield CancelOneLineButton()
 
+    @on(CliveInput.Submitted)
     @on(ConfirmOneLineButton.Pressed)
     async def confirm_dialog(self) -> None:
         self.post_message(self.Confirmed())
