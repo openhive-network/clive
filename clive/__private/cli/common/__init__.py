@@ -7,7 +7,6 @@ from .parameters.groups import (
     ProfileOptionsGroup,
     TransferOptionsGroup,
     WorldOptionsGroup,
-    WorldWithoutBeekeeperOptionsGroup,
 )
 
 __all__ = [
@@ -22,5 +21,4 @@ __all__ = [
     "ProfileOptionsGroup",
     "TransferOptionsGroup",
     "WorldOptionsGroup",
-    "WorldWithoutBeekeeperOptionsGroup",
 ]
