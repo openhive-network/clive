@@ -134,8 +134,7 @@ class World:
     async def setup(self) -> Self:
         async with self.during_setup():
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            profile_name = await self._get_unlocked_profile_name(self._beekeeper)
-            self._profile = self._load_profile(profile_name)
+            self.load_profile()
             self._node = Node(self._profile)
             await self._node.setup()
             if self._should_sync_with_beekeeper:
@@ -178,7 +177,8 @@ class World:
     def _on_going_into_unlocked_mode(self) -> None:
         """Override this method to hook when clive goes into the unlocked mode."""
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
+    async def load_profile(self, profile_name: str | None) -> Profile:
+        profile_name = await self._get_unlocked_profile_name(self._beekeeper)
         return Profile.load(profile_name)
 
     def _setup_commands(self) -> Commands[World]:
@@ -220,11 +220,14 @@ class TUIWorld(World, CliveDOMNode):
         self.node = super().node
         return self
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        profile = super()._load_profile(profile_name)
-        if self._is_in_create_profile_mode(profile):
+    @override
+    def load_profile(self, profile_name: str | None) -> Profile:
+        try:
+            return super().load_profile()
+        except NoProfileUnlockedError:
+            profile = Profile.load(WELCOME_PROFILE_NAME)
             profile.skip_saving()
-        return profile
+            return profile
 
     @property
     def commands(self) -> TUICommands:
@@ -232,18 +235,11 @@ class TUIWorld(World, CliveDOMNode):
 
     @property
     def is_in_create_profile_mode(self) -> bool:
-        return self._is_in_create_profile_mode(self.profile)
-
-    @override
-    async def _get_unlocked_profile_name(self, beekeeper: Beekeeper) -> str:
-        try:
-            return await super()._get_unlocked_profile_name(beekeeper)
-        except NoProfileUnlockedError:
-            return WELCOME_PROFILE_NAME
+        return self.profile.name == WELCOME_PROFILE_NAME
 
     def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
-        self.profile = self._load_profile(WELCOME_PROFILE_NAME)
+        self.profile = self.load_profile(WELCOME_PROFILE_NAME)
 
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
@@ -279,9 +275,6 @@ class TUIWorld(World, CliveDOMNode):
     @property
     def _should_sync_with_beekeeper(self) -> bool:
         return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
-
-    def _is_in_create_profile_mode(self, profile: Profile) -> bool:
-        return profile.name == WELCOME_PROFILE_NAME
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
