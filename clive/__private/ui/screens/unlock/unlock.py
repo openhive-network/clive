@@ -114,6 +114,7 @@ class Unlock(BaseScreen):
         self.world.profile = self.profile.load(select_profile.value_ensure)
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
+        self.world.node.cached.clear()  # to harvest data from api (get correct network type)
         self.app.update_alarms_data_asap_on_newest_node_data()
 
     @on(Button.Pressed, "#new-profile-button")
