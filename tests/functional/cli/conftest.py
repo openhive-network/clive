@@ -73,7 +73,7 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 async def cli_tester_without_session_token(
     node: tt.RawNode,  # noqa: ARG001
     beekeeper: Beekeeper,
-    beekeeper_remote_address_env_context_factory: EnvContextFactory
+    beekeeper_remote_address_env_context_factory: EnvContextFactory,
 ) -> CLITester:
     """
     Will return CliveTyper and CliRunner from typer.testing module.

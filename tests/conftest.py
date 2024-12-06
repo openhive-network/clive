@@ -16,6 +16,7 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
+from clive.__private.core.profile import Profile
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
@@ -88,9 +89,12 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 
 @pytest.fixture
-async def world(wallet_name: str) -> AsyncIterator[World]:
-    async with World(profile_name=wallet_name) as world:
-        yield world
+async def world(wallet_name: str, wallet_password: str) -> AsyncIterator[World]:
+    async with World() as world_cm:
+        await CreateWallet(beekeeper=world_cm.beekeeper, wallet=wallet_name, password=wallet_password).execute()
+        world_cm.switch_profile(Profile.create(wallet_name))
+        world_cm.profile.save()
+        yield world_cm
 
 
 @pytest.fixture
