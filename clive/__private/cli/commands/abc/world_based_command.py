@@ -3,13 +3,18 @@ from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
+from clive.__private.cli.exceptions import (
+    CLIBeekeeperSessionTokenNotSetError,
+    CLIWalletIsNotUnlockedError,
+)
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.world import CLIWorld, World
+from clive.__private.settings import safe_settings
 
 
 @dataclass(kw_only=True)
 class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
-    """A command that requires a world."""
+    """A command that requires a world and session token."""
 
     profile_name: str
     use_beekeeper: bool = True
@@ -21,6 +26,33 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     @property
     def beekeeper(self) -> Beekeeper:
         return self.world.beekeeper
+
+    def is_session_token_set(self) -> bool:
+        return safe_settings.beekeeper.is_session_token_set
+
+    async def validate(self) -> None:
+        self._validate_session_token_set()
+        await super().validate()
+
+    async def validate_inside_context_manager(self) -> None:
+        self._validate_if_wallet_is_unlocked()
+        await super().validate_inside_context_manager()
+
+    def _validate_if_wallet_is_unlocked(self) -> None:
+        if not self._is_beekeeper_required():
+            return
+        if self.is_session_token_set() and not self.world.app_state.is_unlocked:
+            raise CLIWalletIsNotUnlockedError(self.world.profile.name)
+
+    def _validate_session_token_set(self) -> None:
+        if not self._is_beekeeper_required():
+            return  # Skip validation if beekeeper is not required
+        if not self.is_session_token_set():
+            raise CLIBeekeeperSessionTokenNotSetError
+
+    def _is_beekeeper_required(self) -> bool:
+        """Override in child class to provide own logic."""
+        return True
 
     async def _create_context_manager_instance(self) -> World:
         return CLIWorld(
