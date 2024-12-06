@@ -14,6 +14,7 @@ from clive.__private.ui.screens.config.account_management.common.manage_accounts
 )
 from clive.__private.ui.widgets.add_account_container import AddAccountContainer
 from clive.__private.ui.widgets.buttons import AddButton
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import SectionBody
 
@@ -40,6 +41,7 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
     def on_mount(self) -> None:
         self._add_account_container.query_exactly_one(SectionBody).mount(AddButton())
 
+    @on(CliveInput.Submitted)
     @on(AddButton.Pressed)
     async def track_account(self) -> None:
         await self._add_account_container.save_account()
