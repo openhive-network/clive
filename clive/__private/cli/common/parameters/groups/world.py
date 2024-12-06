@@ -7,5 +7,4 @@ from clive.__private.cli.common.parameters.groups.parameter_group import Paramet
 
 @dataclass(kw_only=True)
 class WorldOptionsGroup(ParameterGroup):
-    profile_name: str = options.profile_name
     beekeeper_remote: Optional[str] = options.beekeeper_remote

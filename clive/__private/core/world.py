@@ -5,10 +5,14 @@ from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from textual.reactive import var
+from typing_extensions import override
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
+from clive.__private.core.commands.exceptions import NoProfileUnlockedError
+from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
 from clive.__private.core.communication import Communication
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
@@ -38,13 +42,12 @@ class World:
 
     Args:
     ----
-    profile_name: Name of the profile to load. If None is passed, the default profile is loaded.
-    beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
+    beekeeper_remote_endpoint: If given, remote beekeeper will be used.
+    If not given, local beekeeper will start with locked session.
     """
 
     def __init__(
         self,
-        profile_name: str | None = None,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
         **kwargs: Any,
@@ -52,7 +55,7 @@ class World:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self._profile = self._load_profile(profile_name)
+        self._profile: Profile | None = None
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
@@ -60,7 +63,7 @@ class World:
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
-        self._node = Node(self._profile)
+        self._node: Node | None = None
         self._is_during_setup = False
 
     async def __aenter__(self) -> Self:
@@ -86,6 +89,7 @@ class World:
 
     @property
     def node(self) -> Node:
+        assert self._node is not None, "Node is not initialized"
         return self._node
 
     @property
@@ -129,15 +133,19 @@ class World:
 
     async def setup(self) -> Self:
         async with self.during_setup():
-            await self._node.setup()
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+            self._profile = await self._load_profile(self._beekeeper)
+            self._node = Node(self._profile)
+            await self._node.setup()
             if self._should_sync_with_beekeeper:
                 await self._commands.sync_state_with_beekeeper()
         return self
 
     async def close(self) -> None:
-        self.profile.save()
-        await self._node.teardown()
+        if self._profile is not None:
+            self._profile.save()
+        if self._node is not None:
+            await self._node.teardown()
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
@@ -153,14 +161,30 @@ class World:
             return
         self._on_going_into_unlocked_mode()
 
+    def switch_profile(self, profile: Profile) -> None:
+        self._profile = profile
+        if self._node is not None:
+            self._node.change_related_profile(profile)
+        else:
+            self._node = Node(profile)
+
+    async def _get_unlocked_profile_name(self, beekeeper: Beekeeper) -> str:
+        return await GetUnlockedProfileName(beekeeper=beekeeper).execute_with_result()
+
     def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
 
     def _on_going_into_unlocked_mode(self) -> None:
         """Override this method to hook when clive goes into the unlocked mode."""
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name)
+    async def _load_profile(self, beekeeper: Beekeeper) -> Profile:
+        try:
+            profile_name = await self._get_unlocked_profile_name(beekeeper)
+            return Profile.load(profile_name)
+        except NoProfileUnlockedError:
+            profile = Profile.load(WELCOME_PROFILE_NAME)
+            profile.skip_saving()
+            return profile
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
@@ -176,6 +200,7 @@ class World:
 
     @property
     def profile(self) -> Profile:
+        assert self._profile is not None, "Profile is not initialized"
         return self._profile
 
     @property
@@ -188,18 +213,22 @@ class TUIWorld(World, CliveDOMNode):
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
+    @override
     def __init__(self) -> None:
-        profile_name = WELCOME_PROFILE_NAME
-        super().__init__(profile_name)
-        self.node = self._node
-        self.profile = self._profile
+        super().__init__()
         self.app_state = self._app_state
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        profile = super()._load_profile(profile_name)
-        if self._is_in_create_profile_mode(profile):
-            profile.skip_saving()
-        return profile
+    @override
+    async def setup(self) -> Self:
+        await super().setup()
+        self.node = super().node
+        self.profile = super().profile
+        return self
+
+    @override
+    def switch_profile(self, profile: Profile) -> None:
+        super().switch_profile(profile)
+        self.profile = profile
 
     @property
     def commands(self) -> TUICommands:
@@ -207,11 +236,11 @@ class TUIWorld(World, CliveDOMNode):
 
     @property
     def is_in_create_profile_mode(self) -> bool:
-        return self._is_in_create_profile_mode(self.profile)
+        return self.profile is None or self.profile.name == WELCOME_PROFILE_NAME
 
     def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
-        self.profile = self._load_profile(WELCOME_PROFILE_NAME)
+        self._profile = Profile.load(WELCOME_PROFILE_NAME)
 
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
@@ -236,9 +265,6 @@ class TUIWorld(World, CliveDOMNode):
     def _should_sync_with_beekeeper(self) -> bool:
         return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
 
-    def _is_in_create_profile_mode(self, profile: Profile) -> bool:
-        return profile.name == WELCOME_PROFILE_NAME
-
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
 
@@ -259,5 +285,10 @@ class CLIWorld(World):
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name, auto_create=False)
+    @override
+    async def _load_profile(self, beekeeper: Beekeeper) -> Profile:
+        try:
+            profile_name = await self._get_unlocked_profile_name(beekeeper)
+            return Profile.load(profile_name)
+        except NoProfileUnlockedError as error:
+            raise CLINoProfileUnlockedError from error
