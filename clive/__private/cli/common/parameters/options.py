@@ -10,11 +10,7 @@ from __future__ import annotations
 
 import typer
 
-from clive.__private.cli.common.parameters.get_default import (
-    get_default_beekeeper_remote,
-    get_default_or_make_required,
-    get_default_profile_name,
-)
+from clive.__private.cli.common.parameters.get_default import get_default_beekeeper_remote
 from clive.__private.cli.common.parameters.modified_param import (
     modified_param,
 )
@@ -38,10 +34,10 @@ working_account_list_template = typer.Option(
 )
 
 profile_name = typer.Option(
-    get_default_or_make_required(get_default_profile_name()),
+    ...,
     "--profile-name",
     help="The profile to use.",
-    show_default=bool(get_default_profile_name()),
+    show_default=False,
 )
 
 beekeeper_remote = typer.Option(

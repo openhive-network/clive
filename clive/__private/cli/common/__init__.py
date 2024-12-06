@@ -3,8 +3,6 @@ from .parameters.groups import (
     BeekeeperOptionsGroup,
     OperationOptionsGroup,
     ParameterGroup,
-    ProfileNameArgumentAndOptionGroup,
-    ProfileOptionsGroup,
     TransferOptionsGroup,
     WorldOptionsGroup,
 )
@@ -17,8 +15,6 @@ __all__ = [
     "BeekeeperOptionsGroup",
     "OperationOptionsGroup",
     "ParameterGroup",
-    "ProfileNameArgumentAndOptionGroup",
-    "ProfileOptionsGroup",
     "TransferOptionsGroup",
     "WorldOptionsGroup",
 ]
