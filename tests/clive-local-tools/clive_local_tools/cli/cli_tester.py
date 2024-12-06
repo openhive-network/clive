@@ -38,16 +38,14 @@ class CLITester:
             raise CLITestCommandError(command, result.exit_code, result.stdout, result)
         return result
 
-    def show_authority(
-        self, authority: AuthorityType, *, account_name: str | None = None, profile_name: str | None = None
-    ) -> Result:
+    def show_authority(self, authority: AuthorityType, *, account_name: str | None = None) -> Result:
         match authority:
             case "owner":
-                return self.show_owner_authority(account_name=account_name, profile_name=profile_name)
+                return self.show_owner_authority(account_name=account_name)
             case "active":
-                return self.show_active_authority(account_name=account_name, profile_name=profile_name)
+                return self.show_active_authority(account_name=account_name)
             case "posting":
-                return self.show_posting_authority(account_name=account_name, profile_name=profile_name)
+                return self.show_posting_authority(account_name=account_name)
             case _:
                 raise ValueError(f"Unknown authority type: '{authority}'")
 
@@ -57,7 +55,6 @@ class CLITester:
         *,
         account_name: str | None = None,
         threshold: int | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -79,50 +76,35 @@ class CLITester:
             case _:
                 raise ValueError(f"Unknown authority type: '{authority}'")
 
-    def show_owner_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "owner-authority"], account_name=account_name, profile_name=profile_name
-        )
+    def show_owner_authority(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "owner-authority"], account_name=account_name)
 
-    def show_active_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "active-authority"], account_name=account_name, profile_name=profile_name
-        )
+    def show_active_authority(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "active-authority"], account_name=account_name)
 
-    def show_posting_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "posting-authority"], account_name=account_name, profile_name=profile_name
-        )
+    def show_posting_authority(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "posting-authority"], account_name=account_name)
 
-    def show_memo_key(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "memo-key"], account_name=account_name, profile_name=profile_name
-        )
+    def show_memo_key(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "memo-key"], account_name=account_name)
 
-    def show_pending_withdrawals(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "pending", "withdrawals"], account_name=account_name, profile_name=profile_name
-        )
+    def show_pending_withdrawals(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "pending", "withdrawals"], account_name=account_name)
 
-    def show_balances(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "balances"], account_name=account_name, profile_name=profile_name
-        )
+    def show_balances(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "balances"], account_name=account_name)
 
-    def show_account(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(
-            ["show", "account"], account_name=account_name, profile_name=profile_name
-        )
+    def show_account(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "account"], account_name=account_name)
 
-    def show_accounts(self, *, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(["show", "accounts"], profile_name=profile_name)
+    def show_accounts(self) -> Result:
+        return self.__invoke_command_with_options(["show", "accounts"])
 
     def process_update_owner_authority(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
         threshold: int | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -139,7 +121,6 @@ class CLITester:
         *,
         account_name: str | None = None,
         threshold: int | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -156,7 +137,6 @@ class CLITester:
         *,
         account_name: str | None = None,
         threshold: int | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -173,7 +153,6 @@ class CLITester:
         *,
         account_name: str | None = None,
         key: PublicKey,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -188,7 +167,6 @@ class CLITester:
         self,
         *,
         to: str | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -207,7 +185,6 @@ class CLITester:
         *,
         request_id: int | None = None,
         to: str | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -226,7 +203,6 @@ class CLITester:
         *,
         from_: str | None = None,
         request_id: int,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -244,7 +220,6 @@ class CLITester:
         authorize_by_active: str | list[str] | None = None,
         id_: str,
         json_: str | Path,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -261,7 +236,6 @@ class CLITester:
         from_file: Path,
         force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -272,18 +246,16 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def show_hive_power(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+    def show_hive_power(self, *, account_name: str | None = None) -> Result:
         return self.__invoke_command_with_options(["show", "hive-power"], **extract_params(locals()))
 
-    def show_pending_power_down(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+    def show_pending_power_down(self, *, account_name: str | None = None) -> Result:
         return self.__invoke_command_with_options(["show", "pending", "power-down"], **extract_params(locals()))
 
-    def show_pending_power_ups(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+    def show_pending_power_ups(self, *, account_name: str | None = None) -> Result:
         return self.__invoke_command_with_options(["show", "pending", "power-ups"], **extract_params(locals()))
 
-    def show_pending_removed_delegations(
-        self, *, account_name: str | None = None, profile_name: str | None = None
-    ) -> Result:
+    def show_pending_removed_delegations(self, *, account_name: str | None = None) -> Result:
         return self.__invoke_command_with_options(
             ["show", "pending", "removed-delegations"], **extract_params(locals())
         )
@@ -294,7 +266,6 @@ class CLITester:
         from_: str | None = None,
         to: str | None = None,
         amount: tt.Asset.HiveT,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -307,7 +278,6 @@ class CLITester:
         *,
         from_: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -320,7 +290,6 @@ class CLITester:
         *,
         from_: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -331,7 +300,6 @@ class CLITester:
     def process_power_down_cancel(
         self,
         *,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -345,7 +313,6 @@ class CLITester:
         account_name: str | None = None,
         delegatee: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -358,7 +325,6 @@ class CLITester:
         *,
         account_name: str | None = None,
         delegatee: str | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -373,7 +339,6 @@ class CLITester:
         to: str | None,
         percent: int,
         auto_vest: bool | None = None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -386,7 +351,6 @@ class CLITester:
         *,
         from_: str | None = None,
         to: str | None,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -394,8 +358,8 @@ class CLITester:
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "remove"], **extract_params(locals()))
 
-    def show_chain(self, *, profile_name: str | None = None) -> Result:
-        return self.__invoke_command_with_options(["show", "chain"], profile_name=profile_name)
+    def show_chain(self) -> Result:
+        return self.__invoke_command_with_options(["show", "chain"])
 
     def __invoke_command_with_options(
         self, command: list[str], password_stdin: str | None = None, /, **cli_options: CliOptionT
@@ -408,7 +372,6 @@ class CLITester:
         *,
         from_: str | None = None,
         to: str,
-        profile_name: str | None = None,
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
@@ -423,7 +386,6 @@ class CLITester:
         *,
         key: str,
         alias: str | None = None,
-        profile_name: str | None = None,
         beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "add"], **extract_params(locals()))
@@ -433,7 +395,6 @@ class CLITester:
         *,
         alias: str,
         from_beekeeper: bool | None = None,
-        profile_name: str | None = None,
         beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
@@ -442,7 +403,6 @@ class CLITester:
         self,
         *,
         node_address: str,
-        profile_name: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "node", "set"], **extract_params(locals()))
 
@@ -457,37 +417,18 @@ class CLITester:
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(["unlock"], password_stdin, **extract_params(named_params))
 
-    def lock(
-        self,
-        *,
-        beekeeper_remote: str | None = None,
-    ) -> Result:
+    def lock(self, *, beekeeper_remote: str | None = None) -> Result:
         return self.__invoke_command_with_options(["lock"], **extract_params(locals()))
 
-    def configure_working_account_switch(
-        self,
-        *,
-        account_name: str,
-        profile_name: str | None = None,
-    ) -> Result:
+    def configure_working_account_switch(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(
             ["configure", "working-account", "switch"], **extract_params(locals())
         )
 
-    def configure_tracked_account_add(
-        self,
-        *,
-        account_name: str,
-        profile_name: str | None = None,
-    ) -> Result:
+    def configure_tracked_account_add(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(["configure", "tracked-account", "add"], **extract_params(locals()))
 
-    def configure_tracked_account_remove(
-        self,
-        *,
-        account_name: str,
-        profile_name: str | None = None,
-    ) -> Result:
+    def configure_tracked_account_remove(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(
             ["configure", "tracked-account", "remove"], **extract_params(locals())
         )
