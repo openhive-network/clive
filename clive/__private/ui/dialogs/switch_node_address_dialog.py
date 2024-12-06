@@ -29,7 +29,7 @@ class SwitchNodeAddressDialog(CliveActionDialog):
             yield NodesList(self._node)
 
     @on(ConfirmButton.Pressed)
-    async def switch_node_address(self) -> None:
+    def switch_node_address(self) -> None:
         self.app.run_worker(self._switch_node_address())
 
     async def _switch_node_address(self) -> None:
