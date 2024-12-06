@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 
 
 @dataclass(kw_only=True)
-class SwitchWorkingAccount(ProfileBasedCommand):
+class SwitchWorkingAccount(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        self.profile.accounts.switch_working_account(self.account_name)
+        self.world.profile.accounts.switch_working_account(self.account_name)
 
     def _validate_already_working_account(self) -> None:
         if self.profile.accounts.is_account_working(self.account_name):
