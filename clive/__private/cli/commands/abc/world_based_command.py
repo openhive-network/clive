@@ -19,8 +19,6 @@ from clive.__private.settings import safe_settings
 class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     """A command that requires a world and session token."""
 
-    profile_name: str
-
     @property
     def world(self) -> World:
         return self._context_manager_instance
@@ -62,10 +60,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         await super()._configure()
 
     async def _create_context_manager_instance(self) -> World:
-        return CLIWorld(
-            profile_name=self.profile_name,
-            beekeeper_remote_endpoint=self.beekeeper_remote_url,
-        )
+        return CLIWorld(beekeeper_remote_endpoint=self.beekeeper_remote_url)
 
     async def _hook_before_entering_context_manager(self) -> None:
         self._print_launching_beekeeper()
