@@ -9,7 +9,7 @@ import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIBeekeeperLocallyAlreadyRunningError
 from clive.__private.core.beekeeper import Beekeeper
 
 
@@ -45,11 +45,9 @@ class BeekeeperSpawn(ExternalCLICommand):
 
     async def _validate_beekeeper_is_not_running(self) -> None:
         if Beekeeper.is_already_running_locally():
-            message = (
-                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
-                f" {Beekeeper.get_pid_from_file()}"
-            )
-            raise CLIPrettyError(message, errno.EEXIST)
+            remote_address = Beekeeper.get_remote_address_from_connection_file()
+            assert remote_address, "Remote address of local instance is known."
+            raise CLIBeekeeperLocallyAlreadyRunningError(remote_address.as_string(), Beekeeper.get_pid_from_file())
 
     @staticmethod
     def __serve_forever() -> None:
