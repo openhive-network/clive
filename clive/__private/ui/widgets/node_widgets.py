@@ -7,6 +7,7 @@ from textual.reactive import reactive
 from textual.widgets import Static
 
 from clive.__private.core.url import Url
+from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
@@ -62,5 +63,10 @@ class NodesList(Container, CliveWidget):
     async def save_selected_node_address(self) -> None:
         address = self.query_exactly_one(NodeSelector).value_ensure
         await self._node.set_address(address)
+        logger.debug(f"SWITCH: ADDRESS SWITCHED")
+        data = await self.world.commands.update_node_data()
+        self._node.cached.update_dynamic_global_properties(data, update_only_when_definitely_newer_data=False)
+        logger.debug(f"SWITCH: AFTER CLEARING CACHE INSIDE {self._node.cached.dynamic_global_properties_ensure.head_block_number}")
         self.app.trigger_node_watchers()
         self.notify(f"Node address set to `{self._node.address}`.")
+

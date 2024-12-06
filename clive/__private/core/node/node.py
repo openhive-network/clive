@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
+from clive.__private.logger import logger
 from clive.__private.models.schemas import JSONRPCExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError, CommunicationError
@@ -350,6 +351,7 @@ class Node(BaseNode):
             self, new_data: DynamicGlobalProperties, *, update_only_when_definitely_newer_data: bool = True
         ) -> None:
             def set_data() -> None:
+                logger.debug(f"(SWITCH) SETTING DATA FROM HEAD BLOCK NUMBER: {basic_info.dynamic_global_properties.head_block_number} TO {new_data.head_block_number}")
                 basic_info.dynamic_global_properties = new_data
 
             def is_incoming_dgpo_data_newer() -> bool:

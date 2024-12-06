@@ -11,6 +11,7 @@ from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
+from clive.__private.logger import logger
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -66,6 +67,8 @@ class BlockDisplay(Horizontal, CliveWidget):
             return NOT_AVAILABLE_LABEL
 
         gdpo = self.node.cached.dynamic_global_properties_ensure
+
+        logger.debug(f"(SWITCH) GET LAST BLOCK {gdpo.head_block_number}")
         block_num = gdpo.head_block_number
         block_time = gdpo.time.time()
         return f"{block_num} ({block_time} UTC)"

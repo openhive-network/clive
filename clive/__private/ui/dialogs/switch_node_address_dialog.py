@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
+from clive.__private.logger import logger
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.buttons import ConfirmButton
@@ -34,4 +35,6 @@ class SwitchNodeAddressDialog(CliveActionDialog):
 
     async def _switch_node_address(self) -> None:
         await self.query_exactly_one(NodesList).save_selected_node_address()
+        logger.debug(
+            f"SWITCH: AFTER CLEARING CACHE OUTSIDE {self._node.cached.dynamic_global_properties_ensure.head_block_number}")
         await self.app.pop_screen()
