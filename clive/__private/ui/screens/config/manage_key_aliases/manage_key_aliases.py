@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Horizontal
+from textual.containers import Center, Horizontal
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.bindings import NEW_ALIAS_BINDING_KEY
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
@@ -15,7 +16,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.manage_key_aliases.edit_key_alias import EditKeyAlias
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAlias
 from clive.__private.ui.screens.confirm_with_password.confirm_with_password import ConfirmWithPassword
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton, NewAliasButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -113,7 +114,7 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f2", "new_key_alias", "New alias"),
+        Binding(NEW_ALIAS_BINDING_KEY, "new_key_alias", "New alias"),
     ]
 
     BIG_TITLE = "configuration"
@@ -124,8 +125,10 @@ class ManageKeyAliases(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
+        yield Center(NewAliasButton())
         with self.__scrollable_part:
             yield ManageKeyAliasesTable()
 
+    @on(NewAliasButton.Pressed)
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())
