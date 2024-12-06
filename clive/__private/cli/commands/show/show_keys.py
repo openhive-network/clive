@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 import typer
 
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIWorkingAccountIsNotSetError
 
 
 @dataclass(kw_only=True)
-class ShowKeys(ProfileBasedCommand):
+class ShowKeys(WorldBasedCommand):
     async def _run(self) -> None:
         profile_name = self.profile.name
 
