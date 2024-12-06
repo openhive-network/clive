@@ -6,7 +6,7 @@ from pathlib import Path
 import rich
 import typer
 
-from clive.__private.cli.commands.abc.world_based_with_token_command import WorldBasedWithTokenCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
@@ -22,7 +22,7 @@ from clive.__private.validators.path_validator import PathValidator
 
 
 @dataclass(kw_only=True)
-class PerformActionsOnTransactionCommand(WorldBasedWithTokenCommand, ABC):
+class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
