@@ -100,13 +100,15 @@ def _create_profile(profile_name: str, working_account_name: str, watched_accoun
 
 
 async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
-    async with World(working_account_name) as world_cm:
+    async with World() as world_cm:
         password = await CreateWallet(
             app_state=world_cm.app_state,
             beekeeper=world_cm.beekeeper,
             wallet=working_account_name,
             password=working_account_name * 2,
         ).execute_with_result()
+        profile = await world_cm._load_profile(world_cm.beekeeper)
+        world_cm.switch_profile(profile)
 
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
         world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
