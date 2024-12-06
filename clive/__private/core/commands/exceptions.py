@@ -15,4 +15,4 @@ class MultipleProfilesUnlockedError(CommandError):
 
 class NoProfileUnlockedError(CommandError):
     def __init__(self, command: Command) -> None:
-        super().__init__(command, "There is no unlocked profile the beekeeper.")
+        super().__init__(command, "There is no unlocked profile on the beekeeper.")
