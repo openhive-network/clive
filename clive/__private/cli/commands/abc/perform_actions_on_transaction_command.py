@@ -82,9 +82,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_can_be_signed(self) -> None:
-        if not self._is_beekeeper_required():
-            return  # no need to validate if no signing is required
-
         signing_required = self.sign is not None
         signing_possible = self.is_session_token_set()
         if signing_required and not signing_possible:
@@ -102,6 +99,3 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
-
-    def _is_beekeeper_required(self) -> bool:
-        return self.broadcast or self.sign is not None
