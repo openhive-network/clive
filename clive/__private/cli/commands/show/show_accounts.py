@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 import typer
 
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 
 
 @dataclass(kw_only=True)
-class ShowAccounts(ProfileBasedCommand):
+class ShowAccounts(WorldBasedCommand):
     async def _run(self) -> None:
         self._show_accounts_info()
 
