@@ -261,7 +261,7 @@ class Profile(Context):
         PersistentStorageService().set_default_profile(profile_name)
 
     @classmethod
-    def load(cls, name: str | None = None, *, auto_create: bool = True) -> Profile:
+    def load(cls, name: str | None = None) -> Profile:
         """
         Load profile with the given name from the database.
 
@@ -274,12 +274,10 @@ class Profile(Context):
         Args:
         ----
             name: Name of the profile to load. If None, the default profile is loaded.
-            auto_create: If True, a new profile is created if the profile with the given name does not exist.
 
         Raises:
         ------
             NoDefaultProfileToLoadError: If name is None but no default profile is set.
-            ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
         def create_new_profile(new_profile_name: str) -> Profile:
@@ -290,14 +288,12 @@ class Profile(Context):
         try:
             return PersistentStorageService().load_profile(_name)
         except ProfileDoesNotExistsError:
-            if auto_create:
-                return create_new_profile(_name)
-            raise
+            return create_new_profile(_name)
 
     @classmethod
     @asynccontextmanager
-    async def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> AsyncIterator[Profile]:
-        async with cls.load(name, auto_create=auto_create) as profile:
+    async def load_with_auto_save(cls, name: str = "") -> AsyncIterator[Profile]:
+        async with cls.load(name) as profile:
             yield profile
 
     @classmethod
