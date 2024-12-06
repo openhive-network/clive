@@ -15,6 +15,7 @@ from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form
     KeyAliasForm,
     KeyAliasFormContextT,
 )
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
     CliveValidatedInputError,
@@ -131,6 +132,7 @@ class NewKeyAlias(NewKeyAliasBase[Profile]):
     def context(self) -> Profile:
         return self.profile
 
+    @on(CliveInput.Submitted)
     async def action_save(self) -> None:
         try:
             self._validate()
@@ -139,7 +141,7 @@ class NewKeyAlias(NewKeyAliasBase[Profile]):
 
         self.context.keys.set_to_import([self._private_key_aliased])
         await self._import_new_key()
-        await self.dismiss()
+        self.dismiss()
 
     async def _import_new_key(self) -> None:
         await self.commands.sync_data_with_beekeeper()
