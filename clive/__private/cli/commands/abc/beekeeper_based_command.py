@@ -75,6 +75,13 @@ class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, AB
     def beekeeper(self) -> Beekeeper:
         return self._context_manager_instance
 
+    async def validate(self) -> None:
+        if self.beekeeper_remote_url:
+            await super().validate_remote_beekeeper_running()
+        else:
+            await super().validate_local_beekeeper_running()
+        await super().validate()
+
     async def _create_context_manager_instance(self) -> Beekeeper:
         return Beekeeper(remote_endpoint=self.beekeeper_remote_url)
 
