@@ -7,6 +7,7 @@ from .clive_button import CliveButton
 from .close_button import CloseButton, CloseOneLineButton
 from .confirm_button import ConfirmButton, ConfirmOneLineButton
 from .generous_button import GenerousButton
+from .new_alias_button import NewKeyAliasButton, NewKeyAliasOneLineButton
 from .one_line_button import OneLineButton, OneLineButtonUnfocusable
 from .page_switch_buttons import PageDownButton, PageDownOneLineButton, PageUpButton, PageUpOneLineButton
 from .remove_button import RemoveButton
@@ -25,6 +26,8 @@ __all__ = [
     "ConfirmButton",
     "ConfirmOneLineButton",
     "GenerousButton",
+    "NewKeyAliasButton",
+    "NewKeyAliasOneLineButton",
     "OneLineButton",
     "OneLineButtonUnfocusable",
     "PageDownButton",
