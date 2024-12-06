@@ -4,9 +4,7 @@ from pathlib import Path
 
 import typer
 
-from clive.__private.cli.commands.abc.world_based_with_token_command import (
-    WorldBasedWithTokenCommand,
-)
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
@@ -20,7 +18,7 @@ from clive.__private.validators.public_key_alias_validator import PublicKeyAlias
 
 
 @dataclass(kw_only=True)
-class AddKey(WorldBasedWithTokenCommand):
+class AddKey(WorldBasedCommand):
     alias: str | None = None
     key_or_path: str
     """str might be a path to a file or a private key value."""
@@ -79,7 +77,7 @@ class AddKey(WorldBasedWithTokenCommand):
 
 
 @dataclass(kw_only=True)
-class RemoveKey(WorldBasedWithTokenCommand):
+class RemoveKey(WorldBasedCommand):
     alias: str
     from_beekeeper: bool = False
     """Indicates whether to remove the key from the Beekeeper as well or just the alias association from the profile."""
