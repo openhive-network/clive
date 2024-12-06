@@ -97,6 +97,9 @@ async def prepared_env(
 @pytest.fixture
 async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
+    # start updating data (pilot skips onboarding/unlocking via TUI - updating is handled there)
+    pilot.app.update_alarms_data_asap()
+    pilot.app.update_data_from_node_asap()
     pilot.app.world.profile = pilot.app.world.profile.load(WORKING_ACCOUNT_DATA.account.name)
 
     await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD, permanent=True)

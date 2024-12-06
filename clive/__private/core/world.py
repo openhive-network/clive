@@ -224,6 +224,10 @@ class TUIWorld(World, CliveDOMNode):
         if source == "beekeeper_notification_server":
             self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
         self.profile.save()
+        self.app.workers.cancel_group(self.app, "node_and_alarms")
+        self.app.pause_refresh_node_data_interval()
+        self.app.pause_refresh_alarms_data_interval()
+        self.node.cached.clear()
 
         async def lock() -> None:
             self._add_welcome_modes()

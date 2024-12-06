@@ -163,9 +163,6 @@ class Clive(App[int]):
             safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
-        self.update_data_from_node_asap()
-        self.update_alarms_data_asap()
-
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
@@ -246,7 +243,7 @@ class Clive(App[int]):
 
         return self.run_worker(_update_alarms_data_asap_on_newest_node_data())
 
-    @work(name="alarms data update worker")
+    @work(name="alarms data update worker", group="node_and_alarms")
     async def update_alarms_data(self) -> None:
         accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
@@ -256,7 +253,7 @@ class Clive(App[int]):
 
         self.trigger_profile_watchers()
 
-    @work(name="node data update worker")
+    @work(name="node data update worker", group="node_and_alarms")
     async def update_data_from_node(self) -> None:
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
