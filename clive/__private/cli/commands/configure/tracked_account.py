@@ -1,14 +1,14 @@
 import errno
 from dataclasses import dataclass
 
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.validators.set_tracked_account_validator import SetTrackedAccountValidator
 
 
 @dataclass(kw_only=True)
-class AddTrackedAccount(ProfileBasedCommand):
+class AddTrackedAccount(WorldBasedCommand):
     account_name: str
 
     def _validate_tracked_account(self) -> None:
@@ -25,7 +25,7 @@ class AddTrackedAccount(ProfileBasedCommand):
 
 
 @dataclass(kw_only=True)
-class RemoveTrackedAccount(ProfileBasedCommand):
+class RemoveTrackedAccount(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:

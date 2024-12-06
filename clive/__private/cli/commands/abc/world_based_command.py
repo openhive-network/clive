@@ -5,9 +5,12 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCo
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperSessionTokenNotSetError,
+    CLIPrettyError,
     CLIWalletIsNotUnlockedError,
 )
+from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
 
@@ -21,6 +24,10 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     @property
     def world(self) -> World:
         return self._context_manager_instance
+
+    @property
+    def profile(self) -> Profile:
+        return self.world.profile
 
     @property
     def beekeeper(self) -> Beekeeper:
@@ -39,11 +46,17 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
 
     def _validate_if_wallet_is_unlocked(self) -> None:
         if self.is_session_token_set() and not self.world.app_state.is_unlocked:
-            raise CLIWalletIsNotUnlockedError(self.world.profile.name)
+            raise CLIWalletIsNotUnlockedError(self.profile.name)
 
     def _validate_session_token_set(self) -> None:
         if not self.is_session_token_set():
             raise CLIBeekeeperSessionTokenNotSetError
+
+    def _validate_account_exists(self, account_name: str) -> None:
+        try:
+            self.profile.accounts.get_tracked_account(account_name)
+        except AccountNotFoundError as ex:
+            raise CLIPrettyError(str(ex)) from None
 
     async def _create_context_manager_instance(self) -> World:
         return CLIWorld(
@@ -55,4 +68,4 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         self._print_launching_beekeeper()
 
     async def _hook_after_entering_context_manager(self) -> None:
-        self._supply_with_correct_default_for_working_account(self.world.profile)
+        self._supply_with_correct_default_for_working_account(self.profile)

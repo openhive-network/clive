@@ -45,9 +45,9 @@ class ShowAccount(WorldBasedCommand):
         console.print(columned_tables)
 
     def _get_account_type_name(self) -> str | None:
-        if self.world.profile.accounts.is_account_working(self.account_name):
+        if self.profile.accounts.is_account_working(self.account_name):
             return "Tracked account (working)"
-        if self.world.profile.accounts.is_account_watched(self.account_name):
+        if self.profile.accounts.is_account_watched(self.account_name):
             return "Tracked account"
         return None
 

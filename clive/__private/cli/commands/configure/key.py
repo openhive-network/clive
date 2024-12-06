@@ -51,12 +51,12 @@ class AddKey(WorldBasedCommand):
         await super().validate_inside_context_manager()
 
     async def _validate_has_working_account(self) -> None:
-        profile = self.world.profile
+        profile = self.profile
         if not profile.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile)
 
     async def _validate_key_alias(self) -> None:
-        key_manager = self.world.profile.keys
+        key_manager = self.profile.keys
         alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
             self.get_actual_alias()
         )
@@ -71,7 +71,7 @@ class AddKey(WorldBasedCommand):
 
     async def _run(self) -> None:
         typer.echo("Importing key...")
-        self.world.profile.keys.add_to_import(self.private_key_aliased)
+        self.profile.keys.add_to_import(self.private_key_aliased)
         await self.world.commands.sync_data_with_beekeeper()
         typer.echo("Key imported.")
 
@@ -87,13 +87,13 @@ class RemoveKey(WorldBasedCommand):
         await super().validate_inside_context_manager()
 
     async def _validate_working_account(self) -> None:
-        profile = self.world.profile
+        profile = self.profile
         if not profile.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile)
 
     async def _run(self) -> None:
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
-        public_key = self.world.profile.keys.get(self.alias)
+        public_key = self.profile.keys.get(self.alias)
         self.__remove_key_association_from_the_profile(public_key)
         if self.from_beekeeper:
             await self.__remove_key_from_the_beekeeper(public_key)
@@ -105,7 +105,7 @@ class RemoveKey(WorldBasedCommand):
         typer.echo(message)
 
     def __remove_key_association_from_the_profile(self, key: PublicKeyAliased) -> None:
-        self.world.profile.keys.remove(key)
+        self.profile.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
         await self.world.commands.remove_key(key_to_remove=key)
