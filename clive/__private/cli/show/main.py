@@ -4,7 +4,7 @@ from typing import Optional, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import ProfileNameArgumentAndOptionGroup, WorldOptionsGroup
+from clive.__private.cli.common import WorldOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options, arguments
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleAccountNameValue,
@@ -27,31 +27,31 @@ async def show_profiles() -> None:
     await ShowProfiles().run()
 
 
-@show.command(name="profile", param_groups=[ProfileNameArgumentAndOptionGroup])
+@show.command(name="profile", param_groups=[WorldOptionsGroup])
 async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show profile information."""
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
-    common = ProfileNameArgumentAndOptionGroup.get_instance()
-    await ShowProfile(profile_name=common.ensure_single_profile_name_value()).run()
+    common = WorldOptionsGroup.get_instance()
+    await ShowProfile(**common.as_dict()).run()
 
 
-@show.command(name="accounts", param_groups=[ProfileNameArgumentAndOptionGroup])
+@show.command(name="accounts", param_groups=[WorldOptionsGroup])
 async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all accounts stored in the profile."""
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
-    common = ProfileNameArgumentAndOptionGroup.get_instance()
-    await ShowAccounts(profile_name=common.ensure_single_profile_name_value()).run()
+    common = WorldOptionsGroup.get_instance()
+    await ShowAccounts(**common.as_dict()).run()
 
 
-@show.command(name="keys", param_groups=[ProfileNameArgumentAndOptionGroup])
+@show.command(name="keys", param_groups=[WorldOptionsGroup])
 async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all the public keys stored in Clive."""
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
-    common = ProfileNameArgumentAndOptionGroup.get_instance()
-    await ShowKeys(profile_name=common.ensure_single_profile_name_value()).run()
+    common = WorldOptionsGroup.get_instance()
+    await ShowKeys(**common.as_dict()).run()
 
 
 @show.command(name="balances", param_groups=[WorldOptionsGroup])
@@ -69,13 +69,13 @@ async def show_balances(
     ).run()
 
 
-@show.command(name="node", param_groups=[ProfileNameArgumentAndOptionGroup])
+@show.command(name="node", param_groups=[WorldOptionsGroup])
 async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show address of the currently selected node."""
     from clive.__private.cli.commands.show.show_node import ShowNode
 
-    common = ProfileNameArgumentAndOptionGroup.get_instance()
-    await ShowNode(profile_name=common.ensure_single_profile_name_value()).run()
+    common = WorldOptionsGroup.get_instance()
+    await ShowNode(**common.as_dict()).run()
 
 
 _transaction_id_argument = typer.Argument(

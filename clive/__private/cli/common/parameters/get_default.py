@@ -25,6 +25,7 @@ def get_default_beekeeper_remote() -> str | None:
     return None
 
 
+# currently not used
 def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
     return ... if value is None else value
 
