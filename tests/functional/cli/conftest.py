@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from contextlib import ExitStack
 from typing import TYPE_CHECKING
 
 import pytest
 from typer.testing import CliRunner
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
@@ -22,43 +25,52 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.types import EnvContextFactory
 
 
+# clive command line interface is always remote beekeeper and session token
 @pytest.fixture
-async def prepare_profile() -> Profile:
+async def beekeeer_for_remote_use(
+    beekeeper_remote_address_env_context_factory: EnvContextFactory,
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
+) -> AsyncGenerator[Beekeeper]:
+    async with Beekeeper() as beekeeper_cm:
+        with ExitStack() as stack:
+            address = str(beekeeper_cm.http_endpoint)
+            stack.enter_context(beekeeper_remote_address_env_context_factory(address))
+            stack.enter_context(beekeeper_session_token_env_context_factory(beekeeper_cm.token))
+            yield beekeeper_cm
+
+
+@pytest.fixture
+async def prepare_profile(beekeeer_for_remote_use: Beekeeper) -> Profile:
     profile = Profile.create(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
+    await CreateWallet(
+        beekeeper=beekeeer_for_remote_use, wallet=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD
+    ).execute()
     profile.save()
     return profile
 
 
 @pytest.fixture
-async def world(prepare_profile: Profile) -> World:
-    return World(profile_name=prepare_profile.name)
+async def world(beekeeer_for_remote_use: Beekeeper) -> World:  # noqa: ARG001
+    return World()
 
 
 @pytest.fixture
 async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
     """Prepare wallet and yield World inside of context manager ready to use."""
     async with world as world_cm:
-        await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
-
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world_cm.commands.sync_data_with_beekeeper()
         world_cm.profile.save()  # required for saving imported keys aliases
         yield world_cm
-
-
-@pytest.fixture
-async def beekeeper(prepare_beekeeper_wallet: World) -> Beekeeper:
-    return prepare_beekeeper_wallet.beekeeper
 
 
 @pytest.fixture
@@ -70,44 +82,39 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 
 @pytest.fixture
-async def cli_tester_without_session_token(
+async def cli_tester(
     node: tt.RawNode,  # noqa: ARG001
-    beekeeper: Beekeeper,
-    beekeeper_remote_address_env_context_factory: EnvContextFactory
+    beekeeer_for_remote_use: Beekeeper,  # noqa: ARG001
 ) -> CLITester:
     """
     Will return CliveTyper and CliRunner from typer.testing module.
 
-    Environment variable for session token is not set.
+    Environment variable for session token is set.
     Environment variable for beekeeper remote address is set.
     """
     # import cli after default values for options/arguments are set
     from clive.__private.cli.main import cli
 
-    address = str(beekeeper.http_endpoint)
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)
-    with beekeeper_remote_address_env_context_factory(address):
-        return CLITester(cli, runner)
-
-
-@pytest.fixture
-async def cli_tester(
-    node: tt.RawNode,  # noqa: ARG001
-    beekeeper: Beekeeper,
-    beekeeper_session_token_env_context_factory: EnvContextFactory,
-    cli_tester_without_session_token: CLITester,
-) -> AsyncGenerator[CLITester]:
-    """Token is set in environment variable. Beekeeper session is unlocked."""
-    with beekeeper_session_token_env_context_factory(beekeeper.token):
-        yield cli_tester_without_session_token
+    return CLITester(cli, runner)
 
 
 @pytest.fixture
 async def cli_tester_with_session_token_locked(
-    beekeeper: Beekeeper,
+    beekeeer_for_remote_use: Beekeeper,
     cli_tester: CLITester,
 ) -> CLITester:
     """Token is set in environment variable. Beekeeper session is locked."""
-    await beekeeper.api.lock_all()
+    await beekeeer_for_remote_use.api.lock_all()
     return cli_tester
+
+
+@pytest.fixture
+async def cli_tester_without_session_token(
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
+    cli_tester: CLITester,
+) -> AsyncGenerator[CLITester]:
+    """Token is not set in environment variable."""
+    with beekeeper_session_token_env_context_factory(None):
+        yield cli_tester
