@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
 
     from clive.__private.core.profile import Profile
+    from clive.__private.core.url import Url
 
 
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
@@ -251,3 +252,25 @@ class CLICreatingProfileCommunicationError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EEXIST)
+
+
+class CLIBeekeeperRemoteAddressIsNotRespondingError(CLIPrettyError):
+    def __init__(self, url: Url) -> None:
+        message = f"Beekeeper on address {url} is not responding."
+        super().__init__(message, errno.EEXIST)
+
+
+class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
+    def __init__(self, url: Url, pid: int) -> None:
+        message = f"Local instance of Beekeeper is already running on {url} with pid {pid}"
+        super().__init__(message, errno.EEXIST)
+
+
+class CLIBeekeeperLocallyNotRunningError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            "Local instance of Beekeeper is not running.\n"
+            "Please use command `clive beekeeper spawn` in order to create"
+            " one. Or pass `--beekeeper-remote` flag that points to running one."
+        )
+        super().__init__(message, errno.EEXIST)
