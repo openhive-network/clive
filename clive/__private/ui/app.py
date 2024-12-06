@@ -163,9 +163,6 @@ class Clive(App[int]):
             safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
-        self.update_data_from_node_asap()
-        self.update_alarms_data_asap()
-
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
@@ -196,6 +193,20 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
+    def pause_refresh_alarms_data_interval(self) -> None:
+        self._refresh_alarms_data_interval.pause()
+        self.workers.cancel_group(self, "alarms_data")
+
+    def resume_refresh_alarms_data_interval(self) -> None:
+        self._refresh_alarms_data_interval.resume()
+
+    def pause_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.pause()
+        self.workers.cancel_group(self, "node_data")
+
+    def resume_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.resume()
+
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]
 
@@ -209,19 +220,19 @@ class Clive(App[int]):
         """Update alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
-            self._refresh_alarms_data_interval.pause()
+            self.pause_refresh_alarms_data_interval()
             while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
                 await asyncio.sleep(0.1)
             await self.update_alarms_data().wait()
-            self._refresh_alarms_data_interval.resume()
+            self.resume_refresh_alarms_data_interval()
 
         return self.run_worker(_update_alarms_data_asap())
 
     def update_data_from_node_asap(self) -> Worker[None]:
         async def _update_data_from_node_asap() -> None:
-            self._refresh_node_data_interval.pause()
+            self.pause_refresh_node_data_interval()
             await self.update_data_from_node().wait()
-            self._refresh_node_data_interval.resume()
+            self.resume_refresh_node_data_interval()
 
         return self.run_worker(_update_data_from_node_asap())
 
@@ -234,7 +245,7 @@ class Clive(App[int]):
 
         return self.run_worker(_update_alarms_data_asap_on_newest_node_data())
 
-    @work(name="alarms data update worker")
+    @work(name="alarms data update worker", group="node_data")
     async def update_alarms_data(self) -> None:
         accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
@@ -244,7 +255,7 @@ class Clive(App[int]):
 
         self.trigger_profile_watchers()
 
-    @work(name="node data update worker")
+    @work(name="node data update worker", group="alarms_data")
     async def update_data_from_node(self) -> None:
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 

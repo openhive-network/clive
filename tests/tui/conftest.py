@@ -99,6 +99,9 @@ async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTui
 
     await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD, permanent=True)
 
+    # update the data (pilot skips onboarding/unlocking via TUI - updating is handled there)
+    await pilot.app.update_alarms_data_asap_on_newest_node_data().wait()
+
     await pilot.app.push_screen(Dashboard())
     await wait_for_screen(pilot, Dashboard)
     assert_is_dashboard(pilot)
