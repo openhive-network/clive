@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.keys.keys import PrivateKey
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import BEEKEEPER_SESSION_TOKEN_ENV_NAME
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
@@ -46,10 +46,7 @@ async def test_configure_key_add_with_beekeeper_session_token_not_unlocked(
     """Check if clive configure add_key command throws exception when wallet is not unlocked using session token."""
     # ARRANGE
     pk = PrivateKey.create()
-    message = (
-        f"If you want to use {BEEKEEPER_SESSION_TOKEN_ENV_NAME} envvar,"
-        f" ensure it is in unlocked state for wallet {WORKING_ACCOUNT_NAME}."
-    )
+    message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
@@ -77,10 +74,7 @@ async def test_configure_key_remove_with_beekeeper_session_token_not_unlocked(
 ) -> None:
     """Check if clive configure key remove command throws exception when wallet is not unlocked using session token."""
     # ARRANGE
-    message = (
-        f"If you want to use {BEEKEEPER_SESSION_TOKEN_ENV_NAME} envvar,"
-        f" ensure it is in unlocked state for wallet {WORKING_ACCOUNT_NAME}."
-    )
+    message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
