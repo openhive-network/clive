@@ -14,6 +14,7 @@ from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.path_input import PathInput
 from clive.__private.ui.widgets.notice import Notice
 
@@ -82,6 +83,7 @@ class SelectFile(BaseScreen[SaveFileResultT]):
     def update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self._file_path_input.input.value = str(event.path)
 
+    @on(CliveInput.Submitted)
     def action_save(self) -> None:
         path = self._file_path_input.value_or_none()
         if path is None:
