@@ -16,6 +16,7 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 
@@ -182,9 +183,11 @@ class BadAccounts(TabPane):
             yield SearchButton()
             yield ClearButton()
 
+    @on(CliveInput.Submitted)
     @on(SearchButton.Pressed)
     async def search_pattern_in_list(self) -> None:
-        pattern = self.query_exactly_one(AccountNamePatternInput).value_or_none()
+        account_name_input = self.query_exactly_one(AccountNamePatternInput)
+        pattern = account_name_input.value_or_none()
         if pattern is None:
             return
 
