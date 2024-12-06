@@ -17,7 +17,6 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     """A command that requires a world and session token."""
 
     profile_name: str
-    use_beekeeper: bool = True
 
     @property
     def world(self) -> World:
@@ -39,31 +38,21 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         await super().validate_inside_context_manager()
 
     def _validate_if_wallet_is_unlocked(self) -> None:
-        if not self._is_beekeeper_required():
-            return
         if self.is_session_token_set() and not self.world.app_state.is_unlocked:
             raise CLIWalletIsNotUnlockedError(self.world.profile.name)
 
     def _validate_session_token_set(self) -> None:
-        if not self._is_beekeeper_required():
-            return  # Skip validation if beekeeper is not required
         if not self.is_session_token_set():
             raise CLIBeekeeperSessionTokenNotSetError
-
-    def _is_beekeeper_required(self) -> bool:
-        """Override in child class to provide own logic."""
-        return True
 
     async def _create_context_manager_instance(self) -> World:
         return CLIWorld(
             profile_name=self.profile_name,
-            use_beekeeper=self.use_beekeeper,
             beekeeper_remote_endpoint=self.beekeeper_remote_url,
         )
 
     async def _hook_before_entering_context_manager(self) -> None:
-        if self.use_beekeeper:
-            self._print_launching_beekeeper()
+        self._print_launching_beekeeper()
 
     async def _hook_after_entering_context_manager(self) -> None:
         self._supply_with_correct_default_for_working_account(self.world.profile)

@@ -39,7 +39,6 @@ class World:
     Args:
     ----
     profile_name: Name of the profile to load. If None is passed, the default profile is loaded.
-    use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
     beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
 
@@ -48,7 +47,6 @@ class World:
         profile_name: str | None = None,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
-        use_beekeeper: bool = True,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -59,7 +57,6 @@ class World:
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
-        self._use_beekeeper = use_beekeeper
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
@@ -133,10 +130,9 @@ class World:
     async def setup(self) -> Self:
         async with self.during_setup():
             await self._node.setup()
-            if self._use_beekeeper:
-                self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-                if self._should_sync_with_beekeeper:
-                    await self._commands.sync_state_with_beekeeper()
+            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+            if self._should_sync_with_beekeeper:
+                await self._commands.sync_state_with_beekeeper()
         return self
 
     async def close(self) -> None:
