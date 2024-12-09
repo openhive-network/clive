@@ -20,7 +20,15 @@ def main() -> None:
             return
 
         if not _is_cli_requested():
-            run_tui()
+            from clive.__private.cli.exceptions import CLIPrettyError
+
+            try:
+                run_tui()
+            except CLIPrettyError as error:
+                from typer import rich_utils
+
+                rich_utils.rich_format_error(error)
+                sys.exit(error.exit_code)
             return
 
         run_cli()
