@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import sys
 
+from typer import rich_utils
+
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.main import cli
 from clive.__private.core._thread import thread_pool
 from clive.__private.run_cli import run_cli
@@ -20,7 +23,11 @@ def main() -> None:
             return
 
         if not _is_cli_requested():
-            run_tui()
+            try:
+                run_tui()
+            except CLIPrettyError as error:
+                rich_utils.rich_format_error(error)
+                sys.exit(error.exit_code)
             return
 
         run_cli()
