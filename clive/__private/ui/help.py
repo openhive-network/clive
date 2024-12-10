@@ -17,6 +17,18 @@ if TYPE_CHECKING:
 class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
+    DEFAULT_CSS = """
+    Help {
+        MarkdownTableOfContents {
+           width: 40;
+        }
+
+        Tree {
+            max-width: 40; /*To proper display horizontal scrollbar*/
+        }
+    }
+    """
+
     BINDINGS = [
         Binding("space,q,question_mark,escape", "app.pop_screen", "Back", key_display="esc"),
         Binding("t", "toggle_table_of_contents", "Toggle TOC"),
