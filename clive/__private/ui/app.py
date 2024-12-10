@@ -196,6 +196,18 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
+    def pause_refresh_alarms_data_interval(self) -> None:
+        self._refresh_alarms_data_interval.pause()
+
+    def resume_refresh_alarms_data_interval(self) -> None:
+        self._refresh_alarms_data_interval.resume()
+
+    def pause_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.pause()
+
+    def resume_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.resume()
+
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]
 
@@ -209,19 +221,19 @@ class Clive(App[int]):
         """Update alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
-            self._refresh_alarms_data_interval.pause()
+            self.pause_refresh_alarms_data_interval()
             while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
                 await asyncio.sleep(0.1)
             await self.update_alarms_data().wait()
-            self._refresh_alarms_data_interval.resume()
+            self.resume_refresh_alarms_data_interval()
 
         return self.run_worker(_update_alarms_data_asap())
 
     def update_data_from_node_asap(self) -> Worker[None]:
         async def _update_data_from_node_asap() -> None:
-            self._refresh_node_data_interval.pause()
+            self.pause_refresh_node_data_interval()
             await self.update_data_from_node().wait()
-            self._refresh_node_data_interval.resume()
+            self.resume_refresh_node_data_interval()
 
         return self.run_worker(_update_data_from_node_asap())
 
