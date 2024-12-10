@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Horizontal
+from textual.containers import Container, Horizontal
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.bindings import MANAGE_KEY_ALIASES_BINDING_KEY
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import RemoveKeyAliasDialog
@@ -15,7 +16,7 @@ from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.manage_key_aliases.edit_key_alias import EditKeyAlias
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAlias
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import BindingButton, CliveButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -102,7 +103,7 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f2", "new_key_alias", "New alias"),
+        Binding(MANAGE_KEY_ALIASES_BINDING_KEY, "new_key_alias", "New alias"),
     ]
 
     BIG_TITLE = "configuration"
@@ -113,8 +114,13 @@ class ManageKeyAliases(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
+        yield Container(
+            BindingButton(MANAGE_KEY_ALIASES_BINDING_KEY, cast(list[Binding], self.BINDINGS)),
+            id="binding-button-container",
+        )
         with self.__scrollable_part:
             yield ManageKeyAliasesTable()
 
+    @on(BindingButton.Pressed)
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())

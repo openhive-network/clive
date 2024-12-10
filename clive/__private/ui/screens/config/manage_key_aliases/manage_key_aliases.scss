@@ -34,4 +34,14 @@ ManageKeyAliases {
       }
     }
   }
+
+  #binding-button-container {
+    align: right top;
+    height: auto;
+
+    BindingButton {
+      margin: 1 1 0 0;
+      width: 25;
+    }
+  }
 }
