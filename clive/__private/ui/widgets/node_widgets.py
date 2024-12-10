@@ -59,8 +59,14 @@ class NodesList(Container, CliveWidget):
         with self.prevent(NodeSelector.Changed):
             yield NodeSelector()
 
-    async def save_selected_node_address(self) -> None:
+    async def save_selected_node_address(self) -> bool:
+        self.app.pause_refresh_node_data_interval()
         address = self.query_exactly_one(NodeSelector).value_ensure
-        await self._node.set_address(address)
-        self.app.trigger_node_watchers()
-        self.notify(f"Node address set to `{self._node.address}`.")
+        change_of_node_succeeded = await self._node.set_address(address, triggered_by_tui=True)
+        self.app.resume_refresh_node_data_interval()
+        if change_of_node_succeeded:
+            self.app.trigger_node_watchers()
+            self.notify(f"Node address set to `{self._node.address}`.")
+            return True
+        self.notify("Cannot connect to a node with a different chain id.", severity="error")
+        return False
