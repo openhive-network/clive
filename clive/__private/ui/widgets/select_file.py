@@ -82,6 +82,7 @@ class SelectFile(BaseScreen[SaveFileResultT]):
     def update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self._file_path_input.input.value = str(event.path)
 
+    @on(DirectoryTree.FileSelected)
     def action_save(self) -> None:
         path = self._file_path_input.value_or_none()
         if path is None:
