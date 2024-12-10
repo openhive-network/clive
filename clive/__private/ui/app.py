@@ -196,6 +196,12 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
+    def pause_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.pause()
+
+    def resume_refresh_node_data_interval(self) -> None:
+        self._refresh_node_data_interval.resume()
+
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]
 
