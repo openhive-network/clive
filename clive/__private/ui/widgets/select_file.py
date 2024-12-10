@@ -6,13 +6,15 @@ from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Horizontal, VerticalScroll
+from textual.containers import Center, Horizontal, VerticalScroll
 from textual.widgets import DirectoryTree, Label
 from typing_extensions import TypeVar
 
+from clive.__private.core.constants.tui.bindings import ADD_BUTTON_BINDING_KEY
 from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.widgets.buttons import AddButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.path_input import PathInput
 from clive.__private.ui.widgets.notice import Notice
@@ -72,6 +74,7 @@ class SelectFile(BaseScreen[SaveFileResultT]):
             yield from self.additional_content_after_input()
             yield DirectoryTreeHint("Or select from the directory tree:")
             yield DirectoryTree(str(Path.home()))
+            yield Center(AddButton(f"Load from file ({ADD_BUTTON_BINDING_KEY.upper()})"))
 
     def additional_content_after_input(self) -> ComposeResult:
         """Override this method to add additional content before the input."""
@@ -82,6 +85,7 @@ class SelectFile(BaseScreen[SaveFileResultT]):
     def update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self._file_path_input.input.value = str(event.path)
 
+    @on(AddButton.Pressed)
     def action_save(self) -> None:
         path = self._file_path_input.value_or_none()
         if path is None:
