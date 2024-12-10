@@ -18,10 +18,10 @@ class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
     BINDINGS = [
-        Binding("space,q,question_mark,escape", "app.pop_screen", "Back", key_display="ESC"),
+        Binding("space,q,question_mark,escape", "app.pop_screen", "Back", key_display="esc"),
         Binding("t", "toggle_table_of_contents", "Toggle TOC"),
-        Binding("ctrl+p", "back", "Back"),
-        Binding("ctrl+n", "forward", "Forward"),
+        Binding("ctrl+p", "back", "Back", show=False),
+        Binding("ctrl+n", "forward", "Forward", show=False),
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
