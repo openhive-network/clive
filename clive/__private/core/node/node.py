@@ -427,9 +427,29 @@ class Node(BaseNode):
     def address(self) -> Url:
         return self.__profile.node_address
 
-    async def set_address(self, address: Url) -> None:
+    async def set_address(self, address: Url, *, triggered_by_tui: bool = False) -> bool:
+        def clear_cache_and_return_true() -> bool:
+            self.cached.clear()
+            return True
+
+        if not triggered_by_tui:
+            self.__profile._set_node_address(address)
+            return clear_cache_and_return_true()
+
+        previous_node_address = self.address
+        previous_network_type = await self.cached.network_type
         self.__profile._set_node_address(address)
+
+        await self._sync_node_basic_info()
+        new_network_type = await self.cached.network_type
+
+        if previous_network_type == new_network_type:
+            return True  # No need to clear the cache, as the basic info is up-to-date
+
+        # block possibility to stay connected to node with different network type
+        self.__profile._set_node_address(previous_node_address)
         self.cached.clear()
+        return False
 
     def change_related_profile(self, profile: Profile) -> None:
         self.__profile = profile
