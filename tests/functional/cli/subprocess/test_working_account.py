@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
@@ -44,13 +45,12 @@ async def test_unlocked_profile(
     assert f"Profile name: {WORKING_ACCOUNT_NAME}" in output
 
 
-@pytest.mark.xfail
 async def test_negative_no_unlocked_profile(
     node: tt.RawNode,  # noqa: ARG001
     cli_tester_with_session_token_locked: CLITester,  # noqa: ARG001
 ) -> None:
     # ARRANGE
-    expected_error = "Missing option '--profile-name'."
+    expected_error = CLINoProfileUnlockedError.MESSAGE
 
     # ACT
     with pytest.raises(AssertionError) as exception_info:
