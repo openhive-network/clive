@@ -22,7 +22,8 @@ class CreateProfileForm(Form[CreateProfileContext]):
         return self.__context
 
     def register_screen_builders(self) -> Iterator[ScreenBuilder[CreateProfileContext]]:
-        yield CreateProfileWelcomeFormScreen
+        if not Profile.is_any_profile_saved():
+            yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen

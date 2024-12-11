@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -19,6 +19,9 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
+BackScreenModes = Literal["back_to_unlock", "nothing_to_back", "back_to_previous"]
+
+
 class FormScreenBase(CliveScreen, Contextual[ContextT]):
     def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
@@ -29,23 +32,14 @@ class FormScreenBase(CliveScreen, Contextual[ContextT]):
         return self._owner.context
 
 
-class FirstFormScreen(FormScreenBase[ContextT]):
-    BINDINGS = [
-        Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
-    ]
-
-    async def action_next_screen(self) -> None:
-        self._owner.action_next_screen()
-
-
 class FormScreen(FormScreenBase[ContextT], ABC):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
-        Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"),
         Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
     ]
 
     should_finish: bool = var(default=False)  # type: ignore[assignment]
+    back_screen_mode: BackScreenModes = var("back_to_previous")  # type: ignore[assignment]
 
     class Finish(Message):
         """Used to determine that the form is finished."""
@@ -63,6 +57,13 @@ class FormScreen(FormScreenBase[ContextT], ABC):
 
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
+        if self.back_screen_mode == "nothing_to_back":
+            return
+
+        if self.back_screen_mode == "back_to_unlock":
+            await self._back_to_unlock_screen()
+            return
+
         self._owner.action_previous_screen()
 
     @on(NextScreenButton.Pressed)
@@ -95,3 +96,14 @@ class FormScreen(FormScreenBase[ContextT], ABC):
     def is_step_optional(self) -> bool:
         """Override to skip form validation."""
         return False
+
+    def watch_back_screen_mode(self, value: BackScreenModes) -> None:
+        """Responding to a change of the back screen mode."""
+        if value == "nothing_to_back":
+            self.unbind(PREVIOUS_SCREEN_BINDING_KEY)
+            return
+
+        self.bind(Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"))
+
+    async def _back_to_unlock_screen(self) -> None:
+        await self.app.switch_mode("unlock")
