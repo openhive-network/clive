@@ -234,3 +234,10 @@ class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
             f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
         )
         super().__init__(message, errno.ENOENT)
+
+
+class CLINoProfileUnlockedError(CLIPrettyError):
+    MESSAGE: Final[str] = "There is no unlocked profile on the beekeeper. Perform clive unlock command first."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EACCES)
