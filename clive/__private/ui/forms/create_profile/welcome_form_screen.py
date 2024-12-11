@@ -38,15 +38,6 @@ class CreateProfileWelcomeFormScreen(BaseScreen, FirstFormScreen[CreateProfileCo
             yield Description(self._description)
             yield CliveButton("Start!", id_="welcome-button-start")
 
-    def on_mount(self) -> None:
-        if self.profile.is_any_profile_saved:
-            # If the user requested profile creation from a `Unlock` screen, it is possible to back to the `Unlock`
-            # screen otherwise, during first time profile creation there is NO screen to go back to
-            self.bind(Binding("escape", "back", "Back"))
-
-    async def action_back(self) -> None:
-        await self.app.switch_mode("unlock")
-
     @on(CliveButton.Pressed, "#welcome-button-start")
     async def begin(self) -> None:
         await self.action_next_screen()

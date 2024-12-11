@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FormScreen
-from clive.__private.ui.forms.navigation_buttons import NavigationButtons
+from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
@@ -61,6 +62,20 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
     async def apply(self) -> None:
         self._owner.clear_post_actions()
         self._schedule_profile_creation()
+
+    @on(PreviousScreenButton.Pressed)
+    async def action_previous_screen(self, event: PreviousScreenButton.Pressed | None = None) -> None:
+        if event is not None:
+            event.prevent_default()
+
+        if self.profile.is_any_profile_saved:
+            await self._back_to_unlock_screen()
+            return
+
+        self._owner.action_previous_screen()
+
+    async def _back_to_unlock_screen(self) -> None:
+        await self.app.switch_mode("unlock")
 
     def _schedule_profile_creation(self) -> None:
         # all inputs are validated first, so we can safely get the values
