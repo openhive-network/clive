@@ -15,7 +15,7 @@ from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
-from clive.__private.ui.widgets.buttons import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,
@@ -103,6 +103,21 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
             else None
         )
         await self.app.push_screen(TransactionSummary(transaction))
+
+
+class DashboardButton(OneLineButtonUnfocusable):
+    def __init__(self) -> None:
+        super().__init__("Dashboard")
+        self.tooltip = "Go back to dashboard"
+
+    @on(OneLineButton.Pressed)
+    def go_to_dashboard(self) -> None:
+        from clive.__private.ui.screens.dashboard import Dashboard
+
+        if isinstance(self.app.screen, Dashboard):
+            return
+
+        self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
 
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
@@ -353,6 +368,7 @@ class CliveHeader(CliveRawHeader):
         yield AlarmDisplay()
 
     def _create_right_part_bar(self) -> ComposeResult:
+        yield DashboardButton()
         yield CartStatus()
         yield NodeStatus()
 
