@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 from textual.reactive import var
 from typing_extensions import override
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
@@ -284,3 +285,11 @@ class CLIWorld(World):
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)
+
+    @override
+    async def _load_profile(self, beekeeper: Beekeeper) -> Profile:
+        try:
+            profile_name = await self._get_unlocked_profile_name(beekeeper)
+            return Profile.load(profile_name)
+        except NoProfileUnlockedError as error:
+            raise CLINoProfileUnlockedError from error
