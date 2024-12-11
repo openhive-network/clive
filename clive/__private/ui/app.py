@@ -188,6 +188,8 @@ class Clive(App[int]):
         raise ScreenNotFoundError(f"Screen {screen} not found in stack")
 
     def action_help(self) -> None:
+        if isinstance(self.screen, Help):
+            return
         self.push_screen(Help())
 
     def action_clear_notifications(self) -> None:
