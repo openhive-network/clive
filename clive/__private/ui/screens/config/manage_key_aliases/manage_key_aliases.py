@@ -9,12 +9,12 @@ from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs import RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.manage_key_aliases.edit_key_alias import EditKeyAlias
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAlias
-from clive.__private.ui.screens.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
@@ -45,18 +45,7 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
     def remove_key_alias(self) -> None:
-        async def _remove_key_alias(password: str | None) -> None:
-            if not password:
-                return
-
-            self.profile.keys.remove(self._public_key)
-            self.notify(f"Key alias `{self._public_key.alias}` was removed.")
-            self.app.trigger_profile_watchers()
-
-        self.app.push_screen(
-            ConfirmWithPassword(title=f"Remove a `{self._public_key.alias}` key alias."),
-            _remove_key_alias,
-        )
+        self.app.push_screen(RemoveKeyAliasDialog(self._public_key))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [

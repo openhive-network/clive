@@ -7,7 +7,6 @@ from textual.containers import Center
 from textual.widgets import Static
 
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.screens.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.section_title import SectionTitle
 
@@ -61,19 +60,9 @@ class FixAlarmInfoWidget(CliveWidget):
 
     @on(OneLineButton.Pressed, "#harmless-button")
     def mark_alarm_as_harmless(self) -> None:
-        def _mark_alarm_as_harmless(password: str | None) -> None:
-            if not password:
-                return
+        from clive.__private.ui.dialogs import MarkAlarmAsHarmlessDialog
 
-            self._alarm.is_harmless = True
-            self.notify(f"Alarm `{self._alarm.get_alarm_basic_info()}` was marked as harmless.")
-            self.app.trigger_profile_watchers()
-            self.app.pop_screen()
-
-        self.app.push_screen(
-            ConfirmWithPassword(title=f"Marking alarm `{self._alarm.get_alarm_basic_info()}` as harmless"),
-            _mark_alarm_as_harmless,
-        )
+        self.app.push_screen(MarkAlarmAsHarmlessDialog(self._alarm))
 
     @on(OneLineButton.Pressed, "#fix-alarm-button")
     def fix_alarm_action(self) -> None:
