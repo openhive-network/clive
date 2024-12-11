@@ -29,23 +29,14 @@ class FormScreenBase(CliveScreen, Contextual[ContextT]):
         return self._owner.context
 
 
-class FirstFormScreen(FormScreenBase[ContextT]):
-    BINDINGS = [
-        Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
-    ]
-
-    async def action_next_screen(self) -> None:
-        self._owner.action_next_screen()
-
-
 class FormScreen(FormScreenBase[ContextT], ABC):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
-        Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"),
         Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
     ]
 
     should_finish: bool = var(default=False)  # type: ignore[assignment]
+    first_screen: bool = var(default=False)  # type: ignore[assignment]
 
     class Finish(Message):
         """Used to determine that the form is finished."""
@@ -63,6 +54,9 @@ class FormScreen(FormScreenBase[ContextT], ABC):
 
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
+        if self.first_screen:
+            return
+
         self._owner.action_previous_screen()
 
     @on(NextScreenButton.Pressed)
@@ -95,3 +89,11 @@ class FormScreen(FormScreenBase[ContextT], ABC):
     def is_step_optional(self) -> bool:
         """Override to skip form validation."""
         return False
+
+    def watch_first_screen(self, value: bool) -> None:  # noqa: FBT001
+        """Responding to a change of the first screen status."""
+        if value:
+            self.unbind(PREVIOUS_SCREEN_BINDING_KEY)
+            return
+
+        self.bind(Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"))
