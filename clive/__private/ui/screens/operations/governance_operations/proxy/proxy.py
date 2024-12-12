@@ -90,7 +90,7 @@ class Proxy(TabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         content = ProxySet(self._current_proxy) if self._current_proxy else ProxyNotSet()
-        with ScrollablePart():
+        with ScrollablePart(id="scrollable-for-proxy"):
             yield content
 
     @on(Button.Pressed, "#set-proxy-button")
@@ -116,4 +116,4 @@ class Proxy(TabPane, CliveWidget):
 
             with self.app.batch_update():
                 self.query_exactly_one(ProxyBaseContainer).remove()
-                self.query_exactly_one(ScrollablePart).mount(content)
+                self.query_exactly_one("#scrollable-for-proxy").mount(content)
