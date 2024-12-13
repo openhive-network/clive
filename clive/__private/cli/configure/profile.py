@@ -42,17 +42,6 @@ _profile_name_set_default_argument = modified_param(
 )
 
 
-@profile.command(name="set-default")
-async def set_default_profile(
-    profile_name: Optional[str] = _profile_name_set_default_argument,
-    profile_name_option: Optional[str] = argument_related_options.profile_name,
-) -> None:
-    """Set the profile which will be used by default in all profile-related commands."""
-    from clive.__private.cli.commands.configure.profile import SetDefaultProfile
-
-    await SetDefaultProfile(profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option)).run()
-
-
 _profile_name_delete_argument = modified_param(
     _profile_name_create_argument, help=f"The name of the profile to delete. ({REQUIRED_AS_ARG_OR_OPTION})"
 )
