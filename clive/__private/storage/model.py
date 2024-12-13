@@ -39,7 +39,6 @@ class ProfileStorageModel(CliveBaseModel):
 class PersistentStorageModel(CliveBaseModel):
     """Model used for serializing and deserializing the entire storage model."""
 
-    default_profile: str | None = None
     profiles: list[ProfileStorageModel] = []  # noqa: RUF012
 
 
