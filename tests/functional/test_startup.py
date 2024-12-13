@@ -4,6 +4,7 @@ import os
 import signal
 import subprocess
 import time
+from copy import deepcopy
 from typing import Final
 
 import test_tools as tt
@@ -28,7 +29,7 @@ def test_if_dev_entry_point_works() -> None:
     # ARRANGE
     working_directory = tt.context.get_current_directory()
     entry_point: Final[str] = "clive-dev"
-    envs = os.environ
+    envs = deepcopy(os.environ)
     envs[clive_prefixed_envvar(DATA_PATH)] = working_directory.as_posix()
     beekeeper_pid = working_directory / "beekeeper" / "beekeeper.pid"
     beekeeper_output = working_directory / "test_output.log"
