@@ -38,7 +38,8 @@ from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.tui_world import TUIWorld
 from clive.__private.ui.types import CliveModes
-from clive.exceptions import ScreenNotFoundError
+from clive.dev import is_in_dev_mode
+from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Awaitable, Callable, Iterator
@@ -260,9 +261,18 @@ class Clive(App[int]):
             yield cast("ClivePilot", pilot)
 
     async def on_load(self) -> None:
-        self.console.set_window_title("Clive")
-        self._register_quit_signals()
-        self._world = await TUIWorld().setup()
+        try:
+            self.console.set_window_title("Clive")
+            self._register_quit_signals()
+            self._world = await TUIWorld().setup()
+        except CommunicationError:
+            # If at this level we caught exception it means that TUI will not launch. In that case we can display:
+            #    1) more verbose info for devs (if in dev mode),
+            #    2) user friendly message.
+
+            if is_in_dev_mode():
+                raise
+            self._print_message_and_exit()
 
     async def on_mount(self) -> None:
         self._refresh_node_data_interval = self.set_interval(
@@ -697,3 +707,18 @@ class Clive(App[int]):
     def _update_theme_in_profile(self, theme: str) -> None:
         if self.world.is_profile_available:
             self.world.profile.tui_theme = theme
+
+    def _print_message_and_exit(self, message: str | None = None) -> None:
+        """Print to stdout/stderr message and exit application."""
+        from click import ClickException  # noqa: PLC0415
+        from typer.rich_utils import rich_format_error  # noqa: PLC0415
+
+        if not message:
+            message = (
+                "We`re sorry, something went wrong.\n"
+                "Please try again later or contact support if the issue persists."
+            )
+
+        formated_message = ClickException(message=message)
+        rich_format_error(formated_message)
+        self.exit(return_code=1)
