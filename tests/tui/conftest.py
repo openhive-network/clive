@@ -39,25 +39,23 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 async def prepare_profile() -> Profile:
-    profile = Profile.create(
+    return Profile.create(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
-    profile.save()
-    return profile
 
 
 @pytest.fixture
 async def world() -> World:
-    return World()  # will load last profile by default
+    return World()
 
 
 @pytest.fixture
-async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> None:  # noqa: ARG001
+async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> None:
     async with world as world_cm:
+        await world_cm.switch_profile(prepare_profile)
         await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
-
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
