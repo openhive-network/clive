@@ -52,8 +52,8 @@ class NoWorkingAccountRadioButton(CliveRadioButton):
     have to change the `RadioSet` code.
     """
 
-    def __init__(self, *, is_working_account_set: bool) -> None:
-        super().__init__(label="(no working account)", value=is_working_account_set)
+    def __init__(self, *, value: bool) -> None:
+        super().__init__(label="(no working account)", value=value)
 
 
 class NoTrackedAccounts(NoContentAvailable):
@@ -115,14 +115,18 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         with Section("Switch working account" if self._show_title else None):
             yield self._create_tracked_accounts_content(self.local_profile)
 
-    def _create_radio_buttons(self, profile: Profile) -> list[AccountRadioButton | CliveRadioButton]:
-        """Create radio buttons for all tracked accounts and a no working account button."""
-        tracked_account_radios = [AccountRadioButton(account) for account in profile.accounts.tracked]
-        no_working_account_radio = NoWorkingAccountRadioButton(
-            is_working_account_set=not profile.accounts.has_working_account
-        )
+    def _create_radio_buttons(self, profile: Profile) -> list[AccountRadioButton | NoWorkingAccountRadioButton]:
+        """
+        Create radio buttons for all tracked accounts and optionally a no working account button.
 
-        return [*tracked_account_radios, no_working_account_radio]
+        If there is no working account, the additional no working account button is selected.
+        """
+        radio_buttons: list[AccountRadioButton | NoWorkingAccountRadioButton] = [
+            AccountRadioButton(account) for account in profile.accounts.tracked
+        ]
+        if not profile.accounts.has_working_account:
+            radio_buttons.append(NoWorkingAccountRadioButton(value=True))
+        return radio_buttons
 
     def _create_tracked_accounts_content(self, profile: Profile) -> CliveRadioSet | NoTrackedAccounts:
         if not profile.accounts.has_tracked_accounts:
