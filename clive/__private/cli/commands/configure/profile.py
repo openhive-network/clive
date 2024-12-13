@@ -71,11 +71,3 @@ class DeleteProfile(ExternalCLICommand):
 
     async def _run(self) -> None:
         Profile.delete_by_name(self.profile_name)
-
-
-@dataclass(kw_only=True)
-class SetDefaultProfile(ExternalCLICommand):
-    profile_name: str
-
-    async def _run(self) -> None:
-        Profile.set_default_profile(self.profile_name)
