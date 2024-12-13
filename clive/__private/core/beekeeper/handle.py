@@ -294,7 +294,7 @@ class Beekeeper:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
         await self.__start_notifications_server()
-        if not (remote := self.get_remote_address_from_settings()):
+        if not (remote := self._remote_endpoint or self.get_remote_address_from_settings()):
             await self.__run_beekeeper(timeout=timeout, arguments=arguments)
         else:
             self.config.webserver_http_endpoint = remote
