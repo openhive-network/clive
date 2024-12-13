@@ -1,113 +1,81 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
+from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
+from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
-from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
+
+if TYPE_CHECKING:
+    from typing import AsyncIterator
+
+    from clive_local_tools.types import EnvContextFactory
 
 
-def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
+@pytest.fixture
+async def beekeeper_for_remote_use() -> AsyncIterator[Beekeeper]:
+    async with Beekeeper() as beekeeper_cm:
+        yield beekeeper_cm
+
+
+async def create_profile_and_wallet(beekeeper: Beekeeper, profile_name: str, *, lock: bool = False) -> None:
+    Profile.create(profile_name).save()
+    await CreateWallet(beekeeper=beekeeper, wallet=profile_name, password=profile_name).execute()
+    if lock:
+        await beekeeper.api.lock(wallet_name=profile_name)
+
+
+def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, wallet_name: str) -> None:  # noqa: ARG001
     # ARRANGE, ACT & ASSERT
-    assert world.profile.name == wallet_name
+    assert world.profile.name == wallet_name, f"Profile {wallet_name} should be loaded"
 
 
-async def test_if_first_profile_is_saved_as_a_default_one() -> None:
+async def test_if_unlocked_profile_is_loaded_other_was_saved(
+    beekeeper_for_remote_use: Beekeeper, beekeeper_session_token_env_context_factory: EnvContextFactory
+) -> None:
     # ARRANGE
-    expected_profile_name = "first"
+    additional_profile_name = "first"
+    unlocked_profile_name = "second"
+    additional_profile_name2 = "third"
+    await create_profile_and_wallet(beekeeper_for_remote_use, additional_profile_name, lock=True)
+    await create_profile_and_wallet(beekeeper_for_remote_use, additional_profile_name2, lock=True)
 
-    # This profile should be saved as a default one
-    async with World(expected_profile_name, use_beekeeper=False):
-        pass  # save should be called on exit
+    # This profile should be unlocked
+    await create_profile_and_wallet(beekeeper_for_remote_use, unlocked_profile_name)
 
     # ACT
-    # Creating world without given profile name should load the default one
-    async with World(use_beekeeper=False) as world:
-        loaded_profile_name = world.profile.name
+    # Check if the unlocked profile is loaded
+    with beekeeper_session_token_env_context_factory(beekeeper_for_remote_use.token):
+        async with World(beekeeper_remote_endpoint=beekeeper_for_remote_use.http_endpoint) as world_cm:
+            loaded_profile_name = world_cm.profile.name
 
     # ASSERT
-    assert loaded_profile_name == expected_profile_name
-    assert Profile.get_default_profile_name() == expected_profile_name
-    assert Profile.list_profiles() == [expected_profile_name]
+    assert (
+        loaded_profile_name == unlocked_profile_name
+    ), f"Unlocked profile is {unlocked_profile_name} but loaded is {loaded_profile_name}"
+    actual_unlocked_profile_name = await GetUnlockedProfileName(
+        beekeeper=beekeeper_for_remote_use
+    ).execute_with_result()
+    assert actual_unlocked_profile_name == unlocked_profile_name
+    assert Profile.list_profiles() == sorted([additional_profile_name, unlocked_profile_name, additional_profile_name2])
 
 
-async def test_if_correct_profile_is_loaded_when_default_is_stored() -> None:
-    # ARRANGE
-    default_profile_name = "first"
-    additional_profile_name = "second"
-
-    # This profile should be saved as a default one
-    async with World(additional_profile_name, use_beekeeper=False):
-        pass  # save should be called on exit
-
+async def test_loading_profile_without_beekeeper_session() -> None:
     # ACT
-    # Explicitly loading the expected profile, even when there is a default one
-    async with World(default_profile_name, use_beekeeper=False) as world:
-        loaded_profile_name = world.profile.name
+    world = World()
+    await world.setup()
 
     # ASSERT
-    assert loaded_profile_name == default_profile_name
-    assert Profile.get_default_profile_name() == additional_profile_name
-    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
+    assert world.profile.name == WELCOME_PROFILE_NAME, "Without beekeeper session welcome profile should be created"
 
 
-async def test_if_default_profile_is_loaded_other_was_saved() -> None:
-    # ARRANGE
-    default_profile_name = "first"
-    additional_profile_name = "second"
-
-    # This profile should be saved as a default one
-    async with World(default_profile_name, use_beekeeper=False):
-        pass  # save should be called on exit
-
-    # ACT
-    # Explicitly loading the other profile should not change the default one
-    async with World(additional_profile_name, use_beekeeper=False) as world:
-        explicitly_loaded_profile_name = world.profile.name
-
-    # Check if the default profile is loaded
-    async with World(use_beekeeper=False) as world:
-        default_loaded_profile_name = world.profile.name
-
-    # ASSERT
-    assert explicitly_loaded_profile_name == additional_profile_name
-    assert default_loaded_profile_name == default_profile_name
-    assert Profile.get_default_profile_name() == default_profile_name
-    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
-
-
-@pytest.mark.parametrize("world_cls", [World, CLIWorld])
-def test_loading_profile_without_given_name_when_no_default_set(world_cls: type[World]) -> None:
+async def test_loading_profile_without_beekeeper_session_cli() -> None:
     # ACT & ASSERT
-    with pytest.raises(NoDefaultProfileToLoadError):
-        world_cls()
-
-
-def test_loading_non_existing_profile_with_auto_create_disabled() -> None:
-    # ARRANGE
-    profile_name = "non_existing_profile"
-    exception_message = f"Profile `{profile_name}` does not exist."
-
-    # ACT & ASSERT
-    with pytest.raises(ProfileDoesNotExistsError) as error:
-        # CLIWorld should have auto_create disabled by default
-        CLIWorld(profile_name)
-    assert exception_message in str(error.value)
-
-
-async def test_loading_existing_profile_with_auto_create_disabled() -> None:
-    # ARRANGE
-    profile_name = "existing_profile"
-
-    # This profile should be saved as a default one
-    async with World(profile_name, use_beekeeper=False):
-        pass  # save should be called on exit
-
-    # ACT
-    async with World(profile_name, use_beekeeper=False) as world:
-        loaded_profile_name = world.profile.name
-
-    # ASSERT
-    assert loaded_profile_name == profile_name
-    assert Profile.get_default_profile_name() == profile_name
-    assert Profile.list_profiles() == [profile_name]
+    with pytest.raises(CLINoProfileUnlockedError):
+        await CLIWorld().setup()

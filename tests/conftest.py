@@ -16,6 +16,7 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
+from clive.__private.core.profile import Profile
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
@@ -72,12 +73,12 @@ def run_prepare_before_launch(testnet_chain_id_env_context: None) -> None:  # no
 
 @pytest.fixture
 def wallet_name() -> str:
-    return generate_wallet_name()
+    return "fixture_wallet_name"
 
 
 @pytest.fixture
 def wallet_password() -> str:
-    return generate_wallet_password()
+    return "fixture_wallet_password"
 
 
 @pytest.fixture
@@ -88,29 +89,49 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 
 @pytest.fixture
-async def world(wallet_name: str) -> AsyncIterator[World]:
-    async with World(profile_name=wallet_name) as world:
-        yield world
+async def world() -> AsyncIterator[World]:
+    async with World() as world_cm:
+        yield world_cm
 
 
 @pytest.fixture
-async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
+async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_password: str) -> Profile:
+    profile = Profile.create(wallet_name)
+    world.switch_profile(profile)
+    await world.commands.create_wallet(password=wallet_password)
+    world.profile.save()
+    return profile
+
+
+@pytest.fixture
+async def init_node(
+    prepare_profile_with_wallet: Profile, node_address_env_context_factory: EnvContextFactory
+) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
-    yield init_node
+    address = str(init_node.http_endpoint)
+    prepare_profile_with_wallet._set_node_address(Url.parse(address))
+    prepare_profile_with_wallet.save()
+    with node_address_env_context_factory(address):
+        yield init_node
     init_node.close()
 
 
 @pytest.fixture
-async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
+async def init_node_extra_apis(
+    prepare_profile_with_wallet: Profile,
+    node_address_env_context_factory: EnvContextFactory,
+) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
-    yield init_node
+    address = str(init_node.http_endpoint)
+    prepare_profile_with_wallet._set_node_address(Url.parse(address))
+    prepare_profile_with_wallet.save()
+    with node_address_env_context_factory(address):
+        yield init_node
     init_node.close()
 
 
