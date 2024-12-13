@@ -25,6 +25,7 @@ from clive.__private.ui.help import Help
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
+from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -151,9 +152,18 @@ class Clive(App[int]):
             yield cast(ClivePilot, pilot)
 
     async def on_load(self) -> None:
-        self.console.set_window_title("Clive")
-        self._register_quit_signals()
-        self._world = await TUIWorld().setup()
+        try:
+            self.console.set_window_title("Clive")
+            self._register_quit_signals()
+            self._world = await TUIWorld().setup()
+        except CommunicationError:
+            # If at this level we caught exception it means that TUI will not launch. In that case we can display:
+            #    1) more verbose info for devs (if in dev mode),
+            #    2) user friendly message.
+
+            if is_in_dev_mode():
+                raise
+            self._print_message_and_exit()
 
     def on_mount(self) -> None:
         self._refresh_node_data_interval = self.set_interval(
@@ -286,3 +296,18 @@ class Clive(App[int]):
         loop = asyncio.get_running_loop()  # can't use self._loop since it's not set yet
         for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
             loop.add_signal_handler(signal_number, callback)
+
+    def _print_message_and_exit(self, message: str | None = None) -> None:
+        """Print to stdout/stderr message and exit application."""
+        from click import ClickException
+        from typer.rich_utils import rich_format_error
+
+        if not message:
+            message = (
+                "We`re sorry, something went wrong.\n"
+                "Please try again later or contact support if the issue persists."
+            )
+
+        formated_message = ClickException(message=message)
+        rich_format_error(formated_message)
+        self.exit(return_code=1)
