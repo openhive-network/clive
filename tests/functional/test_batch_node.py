@@ -10,6 +10,7 @@ from clive.exceptions import CommunicationError
 if TYPE_CHECKING:
     import test_tools as tt
 
+    from clive.__private.core.profile import Profile
     from clive.__private.core.world import World
 
 
@@ -63,7 +64,7 @@ async def test_batch_node_mixed_request_delayed(
         _ = bad_response.accounts[0].name
 
 
-async def test_batch_node_nothing_to_send(world: World) -> None:
+async def test_batch_node_nothing_to_send(world: World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     with pytest.raises(NothingToSendError):
         async with world.node.batch():
             pass
