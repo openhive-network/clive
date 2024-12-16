@@ -160,7 +160,11 @@ class Clive(App[int]):
         #    1) more verbose info for devs (if in dev mode),
         #    2) user friendly message.
         except BeekeeperSetupError:
-            message = "An error occurs while setting up Beekeeper.\nPlease do `clive beekeeper close` and try again."
+            message = (
+                "An error occurs while setting up Beekeeper, apparently other clive instance is using Beekeeper "
+                "or didn't close properly.\n"
+                "Please do run cli command `clive beekeeper close` or invoke cli script and try again."
+            )
             self._print_message_and_exit(message=message)
         except CliveError:
             if is_in_dev_mode():

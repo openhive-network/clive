@@ -11,6 +11,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.beekeeper.config import BeekeeperConfig
 
 
 @dataclass(kw_only=True)
@@ -53,8 +54,14 @@ class BeekeeperClose(ExternalCLICommand):
         pid = Beekeeper.get_pid_from_file()
         typer.echo(f"Closing beekeeper with pid {pid}...")
 
-        sig = signal.SIGINT
-        os.kill(pid, sig)
+        try:
+            sig = signal.SIGINT
+            os.kill(pid, sig)
+        except ProcessLookupError:
+            # If this exception occurs, it means that something wrong happens to beekeeper.
+            # So, we need to remove trash.
+            self._remove_dangling_files()
+            raise
 
         try:
             self.__wait_for_pid_to_die(pid, timeout_secs=10)
@@ -65,6 +72,21 @@ class BeekeeperClose(ExternalCLICommand):
 
         signal_name = signal.Signals(sig).name
         typer.echo(f"Beekeeper was closed with {signal_name}.")
+
+    def _remove_dangling_files(self) -> None:
+        import pathlib
+
+        beekeeper_path = BeekeeperConfig.get_wallet_dir()
+        if beekeeper_path:
+            connection_file = beekeeper_path / "beekeeper.connection"
+            pid_file = beekeeper_path / "beekeeper.pid"
+            wallet_lock_file = beekeeper_path / "beekeeper.wallet.lock"
+            if connection_file.is_file():
+                pathlib.Path.unlink(connection_file)
+            if pid_file.is_file():
+                pathlib.Path.unlink(pid_file)
+            if wallet_lock_file.is_file():
+                pathlib.Path.unlink(wallet_lock_file)
 
     @classmethod
     def __wait_for_pid_to_die(cls, pid: int, *, timeout_secs: float = math.inf) -> None:
