@@ -69,7 +69,7 @@ class ProfileStorageModel(CliveBaseModel):
 class PersistentStorageModel(CliveBaseModel):
     """Model used for serializing and deserializing the entire storage model."""
 
-    profiles: list[ProfileStorageModel] = []  # noqa: RUF012
+    profiles: dict[str, ProfileStorageModel] = {}  # noqa: RUF012
 
 
 class AlarmStorageModelSchema(AlarmStorageModel):
@@ -89,7 +89,7 @@ class ProfileStorageModelSchema(ProfileStorageModel):
 class PersistentStorageModelSchema(PersistentStorageModel):
     """Should be used for generating schema of the storage model that could be later used for revision calculation."""
 
-    profiles: list[ProfileStorageModelSchema] = []  # type: ignore[assignment] # noqa: RUF012
+    profiles: dict[str, ProfileStorageModelSchema] = {}  # type: ignore[assignment] # noqa: RUF012
 
 
 def get_storage_model_schema_json() -> str:
