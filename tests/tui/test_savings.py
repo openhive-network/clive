@@ -251,6 +251,7 @@ async def test_savings_finalize_cart(
 
         await focus_next(pilot)  # focus add to cart button
         await press_binding(pilot, "f2", "Add to cart")
+        await focus_next(pilot)  # focus finalize transaction button
         await focus_next(pilot)  # focus transfer tab pane
         log_current_view(pilot.app)
 

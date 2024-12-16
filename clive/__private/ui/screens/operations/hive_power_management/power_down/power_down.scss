@@ -7,6 +7,10 @@ PowerDown {
     Horizontal {
       height: auto;
     }
+
+    TransactionButtons {
+      margin-top: 1;
+    }
   }
 
   WithdrawRoutesDisplay {
