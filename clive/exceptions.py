@@ -131,3 +131,7 @@ class TransactionNotSignedError(CliveError):
 
 class RequestIdError(CliveError):
     """Raise when quantity of request_ids is greater than 100."""
+
+
+class BeekeeperSetupError(CliveError):
+    """Raise when error occurs while Beekeeper setup."""
