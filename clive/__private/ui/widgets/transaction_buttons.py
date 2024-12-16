@@ -8,6 +8,7 @@ from clive.__private.ui.widgets.buttons import AddToCartButton, FinalizeTransact
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.binding import Binding
 
 
 class TransactionButtons(Horizontal):
@@ -22,6 +23,10 @@ class TransactionButtons(Horizontal):
     }
     """
 
+    def __init__(self, bindings_list: list[Binding]) -> None:
+        super().__init__()
+        self._bindings_list = bindings_list
+
     def compose(self) -> ComposeResult:
-        yield AddToCartButton()
-        yield FinalizeTransactionButton()
+        yield AddToCartButton(self._bindings_list)
+        yield FinalizeTransactionButton(self._bindings_list)

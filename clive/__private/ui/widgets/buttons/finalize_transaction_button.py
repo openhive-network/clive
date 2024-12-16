@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from clive.__private.core.constants.tui.bindings import FINALIZE_TRANSACTION_BINDING_KEY
+from clive.__private.ui.widgets.buttons import BindingButton
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
+if TYPE_CHECKING:
+    from textual.binding import Binding
 
-class FinalizeTransactionButton(CliveButton):
+
+class FinalizeTransactionButton(BindingButton):
     DEFAULT_CSS = """
     FinalizeTransactionButton {
         width: 29;
@@ -15,12 +21,8 @@ class FinalizeTransactionButton(CliveButton):
     class Pressed(CliveButton.Pressed):
         """Used to identify exactly that FinalizeTransactionButton was pressed."""
 
-    def __init__(self) -> None:
-        super().__init__(
-            f"Finalize transaction ({FINALIZE_TRANSACTION_BINDING_KEY.upper()})",
-            variant="success",
-            id_="finalize-button",
-        )
+    def __init__(self, bindings_list: list[Binding]) -> None:
+        super().__init__(FINALIZE_TRANSACTION_BINDING_KEY, bindings_list)
 
 
 class FinalizeTransactionOneLineButton(OneLineButton, FinalizeTransactionButton):

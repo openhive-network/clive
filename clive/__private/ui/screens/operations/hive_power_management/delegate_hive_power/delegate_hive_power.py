@@ -129,7 +129,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
             with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
-                yield TransactionButtons()
+                yield TransactionButtons(self.ensure_bindings_list_type())
             yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
