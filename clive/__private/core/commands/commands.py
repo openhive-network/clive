@@ -26,11 +26,14 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
+from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
+from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_unlocked_profile_encryption_wallet import GetUnlockedProfileEncryptionWallet
 from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
@@ -121,9 +124,25 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
+    async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            DecryptWithProfileKey(
+                unlocked_profile_encryption_wallet=self._world._unlocked_wallet_ensure,
+                encrypted_content=encrypted_content,
+            )
+        )
+
     async def does_account_exists_in_node(self, *, account_name: str) -> CommandWithResultWrapper[bool]:
         return await self.__surround_with_exception_handlers(
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
+        )
+
+    async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            EncryptWithProfileKey(
+                unlocked_profile_encryption_wallet=self._world._unlocked_wallet_ensure,
+                content=content,
+            )
         )
 
     async def unlock(
@@ -166,7 +185,12 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def get_unlocked_profile_name(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
+    async def get_unlocked_profile_encryption_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
+        return await self.__surround_with_exception_handlers(
+            GetUnlockedProfileEncryptionWallet(session=self._world._session_ensure)
+        )
+
+    async def get_unlocked_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
         return await self.__surround_with_exception_handlers(GetUnlockedWallet(session=self._world._session_ensure))
 
     async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:

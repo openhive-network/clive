@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.ui.app import Clive
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
@@ -60,6 +61,7 @@ async def crate_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
     assert_is_screen_active(pilot, CreateProfileWelcomeFormScreen)
+    assert_is_new_profile(pilot)
     await press_and_wait_for_screen(pilot, "enter", CreateProfileFormScreen)
     assert_is_clive_composed_input_focused(
         pilot, SetProfileNameInput, context="CreateProfileForm should have initial focus"
@@ -110,6 +112,11 @@ async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
     key_aliases = pilot.app.screen.query(KeyAliasRow)
     assert len(key_aliases) == 1, f"Expected 1 key-alias, current count is: {len(key_aliases)}"
+
+
+def assert_is_new_profile(pilot: ClivePilot) -> None:
+    assert pilot.app.world.profile, "Expected profile is not None"
+    assert pilot.app.world.profile.name == WELCOME_PROFILE_NAME, f"Expected profile name to be {WELCOME_PROFILE_NAME}"
 
 
 def assert_working_account(pilot: ClivePilot, name: str) -> None:

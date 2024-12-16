@@ -8,9 +8,8 @@ from beekeepy import AsyncBeekeeper
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
-from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.profile import Profile
-from clive.__private.core.world import CLIWorld, TUIWorld, World
+from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
@@ -75,18 +74,6 @@ async def test_loading_profile_without_beekeeper_session() -> None:
 
     # ASSERT
     assert world._profile is None, "Without beekeeper session profile should be not loaded"
-
-
-async def test_loading_profile_without_beekeeper_session_tui() -> None:
-    # ACT
-    world = TUIWorld()
-    await world.setup()
-
-    # ASSERT
-    assert world.profile is not None, "Without beekeeper session welcome profile should be created"
-    assert (
-        world.profile.name == WELCOME_PROFILE_NAME
-    ), f"Without beekeeper session profile name should be {WELCOME_PROFILE_NAME}"
 
 
 async def test_loading_profile_without_beekeeper_session_cli() -> None:
