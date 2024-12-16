@@ -6,11 +6,12 @@ import test_tools as tt
 
 from clive.__private.core.profile import Profile
 from clive.__private.storage.model import PersistentStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-EXPECTED_REVISION: Final[str] = "f6a234dc"
+EXPECTED_REVISION: Final[str] = "920b3dfe"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -31,7 +32,8 @@ def test_storage_dir_contains_expected_files() -> None:
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     current_revision_symlink = storage_data_dir / "current"
     revision_dir = storage_data_dir / EXPECTED_REVISION
-    profile_json_file = storage_data_dir / revision_dir / "profiles.json"
+    filename = PersistentStorageService.get_profile_filename(FIRST_PROFILE_NAME)
+    profile_json_file = storage_data_dir / revision_dir / filename
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
