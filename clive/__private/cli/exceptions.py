@@ -243,3 +243,20 @@ class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
             f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
         )
         super().__init__(message, errno.ENOENT)
+
+
+class CLIBeekeeperInstanceAlreadyRunningError(CLIPrettyError):
+    def __init__(self, address: str, pid: int) -> None:
+        self.address = address
+        self.pid = pid
+        message = f"Beekeeper is already running on {address} with pid {pid}"
+        super().__init__(message)
+
+
+class CLIBeekeeperDanglingPidError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            "An error occurs while setting up Beekeeper, apparently Beekeeper didn't close properly and left"
+            " dangling pid file."
+        )
+        super().__init__(message)

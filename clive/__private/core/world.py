@@ -19,6 +19,7 @@ from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
+from clive.exceptions import BeekeeperSetupError, CommunicationError
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -134,7 +135,10 @@ class World:
         async with self.during_setup():
             await self._node.setup()
             if self._use_beekeeper:
-                self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+                try:
+                    self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+                except CommunicationError as ce:
+                    raise BeekeeperSetupError from ce
                 if self._should_sync_with_beekeeper:
                     await self._commands.sync_state_with_beekeeper()
         return self

@@ -26,7 +26,7 @@ from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
 from clive.dev import is_in_dev_mode
-from clive.exceptions import CommunicationError, ScreenNotFoundError
+from clive.exceptions import BeekeeperSetupError, CliveError, CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
@@ -156,11 +156,14 @@ class Clive(App[int]):
             self.console.set_window_title("Clive")
             self._register_quit_signals()
             self._world = await TUIWorld().setup()
-        except CommunicationError:
-            # If at this level we caught exception it means that TUI will not launch. In that case we can display:
-            #    1) more verbose info for devs (if in dev mode),
-            #    2) user friendly message.
-
+        # For exceptions:
+        # If at this level we caught exception it means that TUI will not launch. In that case we can display:
+        #    1) more verbose info for devs (if in dev mode),
+        #    2) user friendly message.
+        except BeekeeperSetupError:
+            message = "An error occurs while setting up Beekeeper.\nPlease do `clive beekeeper close` and try again."
+            self._print_message_and_exit(message=message)
+        except CliveError:
             if is_in_dev_mode():
                 raise
             self._print_message_and_exit()
