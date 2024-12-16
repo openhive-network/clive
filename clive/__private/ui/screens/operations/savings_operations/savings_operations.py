@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 from textual import on
+from textual.binding import Binding
 from textual.containers import Center, Grid, Horizontal
 from textual.widgets import Label, RadioSet, Static, TabPane
 
@@ -231,7 +232,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
-                yield Center(AddToCartButton())
+                yield Center(AddToCartButton(cast(list[Binding], self.BINDINGS)))
 
     def _additional_actions_after_clearing_inputs(self) -> None:
         receiver_input = self.query_exactly_one(ReceiverInput)

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
+from textual.binding import Binding
 from textual.containers import Center, Grid
 
 from clive.__private.models import Asset
@@ -59,7 +60,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._to_input
             yield self._amount_input
             yield self._memo_input
-            yield Center(AddToCartButton())
+            yield Center(AddToCartButton(cast(list[Binding], OperationActionBindings.BINDINGS)))
 
     def _check_is_known_exchange_in_input(self) -> bool:
         """

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 from textual import on
+from textual.binding import Binding
 from textual.containers import Center, Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
@@ -125,7 +126,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input
                     yield self._auto_vest_checkbox
-                yield Center(AddToCartButton())
+                yield Center(AddToCartButton(cast(list[Binding], self.BINDINGS)))
             yield WithdrawRoutesTable()
 
     def _additional_actions_after_clearing_inputs(self) -> None:

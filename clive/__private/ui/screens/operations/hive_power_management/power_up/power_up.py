@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
+from textual.binding import Binding
 from textual.containers import Center, Horizontal
 from textual.widgets import TabPane
 
@@ -52,7 +53,7 @@ class PowerUp(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-button"):
                     yield self._asset_input
                     yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
-                yield Center(AddToCartButton())
+                yield Center(AddToCartButton(cast(list[Binding], self.BINDINGS)))
 
     def _additional_actions_after_clearing_inputs(self) -> None:
         receiver_input = self.query_exactly_one(ReceiverInput)

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from textual import on
+from textual.binding import Binding
 from textual.containers import Center, Horizontal
 from textual.widgets import Static, TabPane
 
@@ -128,7 +129,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
             with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
-                yield Center(AddToCartButton())
+                yield Center(AddToCartButton(cast(list[Binding], self.BINDINGS)))
             yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
