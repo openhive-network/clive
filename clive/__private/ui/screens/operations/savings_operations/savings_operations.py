@@ -232,7 +232,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
-                yield TransactionButtons()
+                yield TransactionButtons(self.ensure_bindings_list_type())
 
     def _additional_actions_after_clearing_inputs(self) -> None:
         receiver_input = self.query_exactly_one(ReceiverInput)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any, ClassVar, Final
+from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 
 from pydantic import ValidationError
 from textual import on
@@ -51,6 +51,13 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         super().__init__(*args, **kwargs)
 
         self.__check_if_correctly_implemented()
+
+    @classmethod
+    def ensure_bindings_list_type(cls) -> list[Binding]:
+        for binding in cls.BINDINGS:
+            assert isinstance(binding, Binding), f"Binding {binding} is not an instance of Binding class."
+
+        return cast(list[Binding], cls.BINDINGS)
 
     def _create_operation(self) -> OperationUnion | None | _NotImplemented:
         """Return a new operation based on the data from screen or None."""
