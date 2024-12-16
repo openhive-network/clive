@@ -6,6 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
@@ -96,6 +97,15 @@ class Commands(Generic[WorldT_co]):
 
         self._world = world
         self.__exception_handlers = [*(exception_handlers or [])]
+
+    async def create_profile_encryption_key(self, *, password: str | None) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            CreateProfileEncryptionWallet(
+                beekeeper=self._world.beekeeper,
+                profile_name=self._world.profile.name,
+                password=password,
+            )
+        )
 
     async def create_wallet(self, *, password: str | None) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
