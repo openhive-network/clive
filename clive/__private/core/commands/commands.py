@@ -26,7 +26,9 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
+from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
+from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
@@ -105,9 +107,25 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
+    async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            DecryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                encrypted_content=encrypted_content,
+            )
+        )
+
     async def does_account_exists_in_node(self, *, account_name: str) -> CommandWithResultWrapper[bool]:
         return await self.__surround_with_exception_handlers(
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
+        )
+
+    async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            EncryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                content=content,
+            )
         )
 
     async def unlock(

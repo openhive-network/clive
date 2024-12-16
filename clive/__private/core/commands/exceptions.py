@@ -16,3 +16,9 @@ class MultipleProfilesUnlockedError(CommandError):
 class NoProfileUnlockedError(CommandError):
     def __init__(self, command: Command) -> None:
         super().__init__(command, "There is no unlocked profile on the beekeeper.")
+
+
+class ProfileEncryptionKeyError(CommandError):
+    def __init__(self, command: Command, number_of_keys: int) -> None:
+        message = f"Error retrieving profile encryption keys. Number of keys: {number_of_keys}."
+        super().__init__(command, message)
