@@ -15,6 +15,7 @@ from clive.__private.core.commands.exceptions import NoProfileUnlockedError
 from clive.__private.core.commands.get_unlocked_profile_encryption_wallet import GetUnlockedProfileEncryptionWallet
 from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
@@ -58,6 +59,7 @@ class World:
         self._session: AsyncSession | None = None
         self._unlocked_profile_encryption_wallet: AsyncUnlockedWallet | None = None
         self._unlocked_wallet: AsyncUnlockedWallet | None = None
+        self._encryption_service: EncryptionService | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -119,6 +121,11 @@ class World:
         return self._beekeeper_settings
 
     @property
+    def encryption_service(self) -> EncryptionService:
+        assert self._encryption_service is not None, "EncryptionService is not initialized"
+        return self._encryption_service
+
+    @property
     def _session_ensure(self) -> AsyncSession:
         message = "Session is not available. Did you forget to use as a context manager or call `setup`?"
         assert self._session is not None, message
@@ -151,6 +158,7 @@ class World:
             w.name for w in (await self._session_ensure.wallets)
         ], "This wallet does not exists within this session"
         self._unlocked_profile_encryption_wallet = new_wallet
+        self._encryption_service = EncryptionService(new_wallet)
 
     async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
         assert new_wallet.name in [
@@ -181,7 +189,7 @@ class World:
 
     async def close(self) -> None:
         if self._profile is not None:
-            self._profile.save()
+            await self._profile.save(self.encryption_service)
         if self._node is not None:
             self._node.teardown()
         if self._beekeeper is not None:
@@ -211,13 +219,16 @@ class World:
         If beekeeper wallet creation fails, profile will not be saved.
         """
         await self.create_new_profile(name, working_account, watched_accounts)
-        self.profile.save()
 
         create_wallet_wrapper = await self.commands.create_wallet(password=password)
+        result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
+        await self._set_unlocked_wallet(result.unlocked_wallet)
+        await self._set_unlocked_profile_encryption_wallet(result.unlocked_profile_encryption_wallet)
+        await self.profile.save(self.encryption_service)
 
-        generated_password = create_wallet_wrapper.result_or_raise.password
+        generated_password = result.password
         actual_password = password or generated_password
         return actual_password  # noqa: RET504
 
@@ -228,13 +239,13 @@ class World:
         await self._set_unlocked_profile_encryption_wallet(unlocked_profile_encryption_wallet)
 
         profile_name = self._unlocked_profile_encryption_wallet_ensure.name
-        profile = Profile.load(profile_name)
+        profile = await Profile.load(profile_name, self.encryption_service)
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
             await self._commands.sync_state_with_beekeeper()
 
     async def load_profile(self, profile_name: str) -> None:
-        profile = Profile.load(profile_name)
+        profile = await Profile.load(profile_name, self.encryption_service)
         await self.switch_profile(profile)
 
     async def switch_profile(self, new_profile: Profile) -> None:
@@ -360,7 +371,6 @@ class TUIWorld(World, CliveDOMNode):
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         if source == "beekeeper_monitoring_thread":
             self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
-        self.profile.save()
         self.app.pause_refresh_node_data_interval()
         self.app.pause_refresh_alarms_data_interval()
         self.node.cached.clear()
@@ -371,6 +381,7 @@ class TUIWorld(World, CliveDOMNode):
             await self._restart_dashboard_mode()
             await self._switch_to_welcome_profile()
 
+        self.app.run_worker(self.profile.save(self.encryption_service))
         self.app.run_worker(lock())
 
     def _on_going_into_unlocked_mode(self) -> None:

@@ -66,12 +66,6 @@ class ProfileStorageModel(CliveBaseModel):
     node_address: str
 
 
-class PersistentStorageModel(CliveBaseModel):
-    """Model used for serializing and deserializing the entire storage model."""
-
-    profiles: dict[str, ProfileStorageModel] = {}  # noqa: RUF012
-
-
 class AlarmStorageModelSchema(AlarmStorageModel):
     identifier: Any
     """Do not include alarm identifiers union in the schema so new alarms can be added without revision change."""
@@ -86,14 +80,8 @@ class ProfileStorageModelSchema(ProfileStorageModel):
     tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
 
 
-class PersistentStorageModelSchema(PersistentStorageModel):
-    """Should be used for generating schema of the storage model that could be later used for revision calculation."""
-
-    profiles: dict[str, ProfileStorageModelSchema] = {}  # type: ignore[assignment] # noqa: RUF012
-
-
 def get_storage_model_schema_json() -> str:
-    return PersistentStorageModelSchema.schema_json(indent=4)
+    return ProfileStorageModelSchema.schema_json(indent=4)
 
 
 def calculate_storage_model_revision() -> str:

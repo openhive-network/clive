@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.core.encryption import EncryptionService
 
 
 class ProfileError(CliveError):
@@ -161,7 +162,7 @@ class Profile(Context):
     def copy(self) -> Self:
         return deepcopy(self)
 
-    def save(self) -> None:
+    async def save(self, encryption_service: EncryptionService) -> None:
         """
         Save the current profile to the storage.
 
@@ -172,7 +173,7 @@ class Profile(Context):
         """
         if self._skip_save:
             return
-        PersistentStorageService().save_profile(self)
+        await PersistentStorageService(encryption_service).save_profile(self)
 
     def delete(self) -> None:
         """
@@ -222,18 +223,19 @@ class Profile(Context):
     @classmethod
     def list_profiles(cls) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        return PersistentStorageService().list_stored_profile_names()
+        return PersistentStorageService.list_stored_profile_names()
 
     @classmethod
-    def load(cls, name: str) -> Profile:
+    async def load(cls, name: str, encryption_service: EncryptionService) -> Profile:
         """
         Load profile with the given name from the database.
 
         Args:
         ----
             name: Name of the profile to load.
+            encryption_service: Service for encrypting and decrypting data.
         """
-        return PersistentStorageService().load_profile(name)
+        return await PersistentStorageService(encryption_service).load_profile(name)
 
     @classmethod
     def delete_by_name(cls, profile_name: str) -> None:
@@ -248,7 +250,7 @@ class Profile(Context):
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        PersistentStorageService().remove_profile(profile_name)
+        PersistentStorageService.delete_profile(profile_name)
 
     @classmethod
     def _create_instance(  # noqa: PLR0913
