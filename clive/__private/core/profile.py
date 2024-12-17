@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
@@ -20,9 +19,8 @@ from clive.__private.validators.profile_name_validator import ProfileNameValidat
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterable
+    from collections.abc import Iterable
     from pathlib import Path
-    from types import TracebackType
 
     from typing_extensions import Self
 
@@ -87,14 +85,6 @@ class Profile(Context):
 
         self._skip_save = False
         self._is_newly_created = is_newly_created
-
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(
-        self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
-    ) -> None:
-        self.save()
 
     @property
     def is_newly_created(self) -> bool:
@@ -244,12 +234,6 @@ class Profile(Context):
             name: Name of the profile to load.
         """
         return PersistentStorageService().load_profile(name)
-
-    @classmethod
-    @asynccontextmanager
-    async def load_with_auto_save(cls, name: str = "") -> AsyncIterator[Profile]:
-        async with cls.load(name) as profile:
-            yield profile
 
     @classmethod
     def delete_by_name(cls, profile_name: str) -> None:
