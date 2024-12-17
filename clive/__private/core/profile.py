@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
@@ -18,8 +17,7 @@ from clive.__private.validators.profile_name_validator import ProfileNameValidat
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterable
-    from types import TracebackType
+    from collections.abc import Iterable
 
     from typing_extensions import Self
 
@@ -96,14 +94,6 @@ class Profile(Context):
 
         self._skip_save = False
         self._is_newly_created = is_newly_created
-
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(
-        self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
-    ) -> None:
-        await self.save()
 
     @property
     def is_newly_created(self) -> bool:
@@ -221,7 +211,7 @@ class Profile(Context):
     @classmethod
     def list_profiles(cls) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        return PersistentStorageService().list_stored_profile_names()
+        return PersistentStorageService.list_stored_profile_names()
 
     @classmethod
     async def load(cls, name: str, encryption_service: EncryptionService) -> Profile:
@@ -243,12 +233,6 @@ class Profile(Context):
             return create_new_profile(name)
 
     @classmethod
-    @asynccontextmanager
-    async def load_with_auto_save(cls, name: str, encryption_service: EncryptionService) -> AsyncIterator[Profile]:
-        async with cls.load(name, encryption_service) as profile:
-            yield profile
-
-    @classmethod
     def delete_by_name(cls, profile_name: str) -> None:
         """
         Remove profile with the given name from the storage.
@@ -261,7 +245,7 @@ class Profile(Context):
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        PersistentStorageService().remove_profile(profile_name)
+        PersistentStorageService.remove_profile(profile_name)
 
     @classmethod
     def _create_instance(  # noqa: PLR0913
