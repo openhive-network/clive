@@ -9,6 +9,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLICreatingProfileCommunicationError, CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
@@ -36,17 +37,17 @@ class CreateProfile(BeekeeperBasedCommand):
         password = self._get_validated_password()
         profile = Profile.create(self.profile_name, self.working_account_name)
 
-        profile.save()
-
         try:
-            await CreateWallet(
+            result = await CreateWallet(
                 session=await self.beekeeper.session, wallet_name=profile.name, password=password
-            ).execute()
+            ).execute_with_result()
         except CommunicationError as error:
-            profile.delete()
             if is_in_dev_mode():
                 raise
             raise CLICreatingProfileCommunicationError from error
+
+        encryption_wallet = result.unlocked_profile_encryption_wallet
+        await SaveProfile(unlocked_profile_encryption_wallet=encryption_wallet, profile=profile).execute()
 
     def _get_validated_password(self) -> str:
         if sys.stdin.isatty():

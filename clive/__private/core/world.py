@@ -171,7 +171,7 @@ class World:
 
     async def close(self) -> None:
         if self._profile is not None:
-            self._profile.save()
+            await self.commands.save_profile()
         if self._node is not None:
             self._node.teardown()
         if self._beekeeper is not None:
@@ -201,13 +201,16 @@ class World:
         If beekeeper wallet creation fails, profile will not be saved.
         """
         await self.create_new_profile(name, working_account, watched_accounts)
-        self.profile.save()
 
         create_wallet_wrapper = await self.commands.create_wallet(password=password)
+        result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
+        await self._set_unlocked_wallet(result.unlocked_wallet)
+        await self._set_unlocked_profile_encryption_wallet(result.unlocked_profile_encryption_wallet)
+        await self.commands.save_profile()
 
-        generated_password = create_wallet_wrapper.result_or_raise.password
+        generated_password = result.password
         actual_password = password or generated_password
         return actual_password  # noqa: RET504
 
@@ -220,13 +223,13 @@ class World:
         await self._set_unlocked_profile_encryption_wallet(unlocked_profile_encryption_wallet)
 
         profile_name = self._unlocked_wallet_ensure.name
-        profile = Profile.load(profile_name)
+        profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
-            await self._commands.sync_state_with_beekeeper()
+            await self.commands.sync_state_with_beekeeper()
 
     async def load_profile(self, profile_name: str) -> None:
-        profile = Profile.load(profile_name)
+        profile = (await self.commands.load_profile(profile_name)).result_or_raise
         await self.switch_profile(profile)
 
     async def switch_profile(self, new_profile: Profile) -> None:
@@ -331,6 +334,14 @@ class TUIWorld(World, CliveDOMNode):
             await self._switch_to_welcome_profile()
         return self
 
+    @override
+    async def close(self) -> None:
+        if self._node is not None:
+            self._node.teardown()
+        if self._beekeeper is not None:
+            self._beekeeper.teardown()
+            self._clear_beekeeper_members_after_close()
+
     async def switch_profile(self, new_profile: Profile) -> None:
         await super().switch_profile(new_profile)
         self._update_profile_related_reactive_attributes()
@@ -346,7 +357,6 @@ class TUIWorld(World, CliveDOMNode):
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         if source == "beekeeper_monitoring_thread":
             self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
-        self.profile.save()
         self.app.pause_refresh_node_data_interval()
         self.app.pause_refresh_alarms_data_interval()
         self.node.cached.clear()
