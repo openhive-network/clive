@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Iterable
 from clive.__private.core.constants.profile import PROFILE_FILENAME_SUFFIX
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import PersistentStorageModel, ProfileStorageModel, calculate_storage_model_revision
+from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -13,6 +13,7 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
 
 
@@ -43,20 +44,10 @@ class NoDefaultProfileToLoadError(PersistentStorageServiceError):
 
 
 class PersistentStorageService:
-    def __init__(self) -> None:
-        self._cached_storage: PersistentStorageModel | None = None
+    def __init__(self, encryption_service: EncryptionService) -> None:
+        self._encryption_service = encryption_service
 
-    @property
-    def cached_storage(self) -> PersistentStorageModel:
-        if self._cached_storage is None:
-            self._cached_storage = self._load_storage()
-        return self._cached_storage
-
-    def save_storage(self) -> None:
-        for profile_name, profile_model in self.cached_storage.profiles.items():
-            self._save_profile_model(profile_name, profile_model)
-
-    def save_profile(self, profile: Profile) -> None:
+    async def save_profile(self, profile: Profile) -> None:
         """
         Save profile to the storage.
 
@@ -75,10 +66,9 @@ class PersistentStorageService:
         profile_name = profile.name
         profile_model = RuntimeToStorageConverter(profile).create_storage_model()
 
-        self.cached_storage.profiles[profile_name] = profile_model
-        self._save_profile_model(profile_name, profile_model)
+        await self._save_profile_model(profile_name, profile_model)
 
-    def load_profile(self, profile_name: str) -> Profile:
+    async def load_profile(self, profile_name: str) -> Profile:
         """
         Load profile with the given name from the storage.
 
@@ -91,7 +81,7 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
         """
         self._raise_if_profile_not_stored(profile_name)
-        profile_storage_model = self._find_profile_storage_model_by_name(profile_name)
+        profile_storage_model = await self._find_profile_storage_model_by_name(profile_name)
 
         return StorageToRuntimeConverter(profile_storage_model).create_profile()
 
@@ -108,14 +98,14 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
         self._raise_if_profile_not_stored(profile_name)
-        self._remove_profile_storage_model_by_name(profile_name)
         for paths in self._get_storage_filepaths():
             if paths.stem == profile_name:
                 paths.unlink()
 
     def list_stored_profile_names(self) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        return sorted(self.cached_storage.profiles.keys())
+        profile_names = [path.stem for path in self._get_storage_filepaths()]
+        return sorted(profile_names)
 
     def is_profile_stored(self, profile_name: str) -> bool:
         return profile_name in self.list_stored_profile_names()
@@ -152,22 +142,19 @@ class PersistentStorageService:
         symlink_dir.unlink(missing_ok=True)
         symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
 
-    def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
+    async def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
         versioned_storage_dir = PersistentStorageService._get_storage_versioned_directory()
 
         # create data directory if it doesn't exist
         versioned_storage_dir.mkdir(parents=True, exist_ok=True)
         self._create_current_storage_symlink()
 
+        encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
+
         filepath = versioned_storage_dir / f"{profile_name}{PROFILE_FILENAME_SUFFIX}"
-        filepath.write_text(profile_model.json(indent=4))
+        filepath.write_text(encrypted_profile)
 
-    def _load_storage(self) -> PersistentStorageModel:
-        storage_paths = self._get_storage_filepaths()
-        storage_serialized_dict = {filepath.stem: filepath.read_text() for filepath in storage_paths}
-        return self._deserialize_storage_model(storage_serialized_dict)
-
-    def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
+    async def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
         """
         Find profile storage model by name in the given container of profiles.
 
@@ -179,27 +166,13 @@ class PersistentStorageService:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
         """
-        profiles = self.cached_storage.profiles
-        try:
-            return profiles[profile_name]
-        except KeyError as err:
-            raise ProfileDoesNotExistsError(profile_name) from err
-
-    def _remove_profile_storage_model_by_name(self, profile_name: str) -> None:
-        profiles = self.cached_storage.profiles
-        profiles.pop(profile_name, None)
-
-    @classmethod
-    def _serialize_storage_model(cls, storage: PersistentStorageModel) -> str:
-        return storage.json(indent=4)
-
-    @classmethod
-    def _deserialize_storage_model(cls, storage_serialized_dict: dict[str, str]) -> PersistentStorageModel:
-        deserialized_profiles = {
-            profile_name: ProfileStorageModel.parse_raw(serialized_profile)
-            for profile_name, serialized_profile in storage_serialized_dict.items()
-        }
-        return PersistentStorageModel(profiles=deserialized_profiles)
+        storage_paths = self._get_storage_filepaths()
+        for filepath in storage_paths:
+            if filepath.stem == profile_name:
+                encrypted_profile = filepath.read_text()
+                decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+                return ProfileStorageModel.parse_raw(decrypted_profile)
+        raise ProfileDoesNotExistsError(profile_name)
 
     def _raise_if_profile_not_stored(self, profile_name: str) -> None:
         if not self.is_profile_stored(profile_name):

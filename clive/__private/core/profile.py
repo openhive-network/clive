@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.core.encryption import EncryptionService
     from clive.__private.models import Transaction
 
 
@@ -102,7 +103,7 @@ class Profile(Context):
     async def __aexit__(
         self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
     ) -> None:
-        self.save()
+        await self.save()
 
     @property
     def is_newly_created(self) -> bool:
@@ -161,7 +162,7 @@ class Profile(Context):
     def copy(self) -> Self:
         return deepcopy(self)
 
-    def save(self) -> None:
+    async def save(self, encryption_service: EncryptionService) -> None:
         """
         Save the current profile to the storage.
 
@@ -172,7 +173,7 @@ class Profile(Context):
         """
         if self._skip_save:
             return
-        PersistentStorageService().save_profile(self)
+        await PersistentStorageService(encryption_service).save_profile(self)
 
     def delete(self) -> None:
         """
@@ -223,27 +224,28 @@ class Profile(Context):
         return PersistentStorageService().list_stored_profile_names()
 
     @classmethod
-    def load(cls, name: str) -> Profile:
+    async def load(cls, name: str, encryption_service: EncryptionService) -> Profile:
         """
         Load profile with the given name from the database.
 
         Args:
         ----
             name: Name of the profile to load.
+            encryption_service: Service for encrypting and decrypting data.
         """
 
         def create_new_profile(new_profile_name: str) -> Profile:
             return cls.create(new_profile_name)
 
         try:
-            return PersistentStorageService().load_profile(name)
+            return await PersistentStorageService(encryption_service).load_profile(name)
         except ProfileDoesNotExistsError:
             return create_new_profile(name)
 
     @classmethod
     @asynccontextmanager
-    async def load_with_auto_save(cls, name: str = "") -> AsyncIterator[Profile]:
-        async with cls.load(name) as profile:
+    async def load_with_auto_save(cls, name: str, encryption_service: EncryptionService) -> AsyncIterator[Profile]:
+        async with cls.load(name, encryption_service) as profile:
             yield profile
 
     @classmethod
