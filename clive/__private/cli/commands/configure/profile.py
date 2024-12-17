@@ -8,11 +8,11 @@ from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICom
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
-from clive.exceptions import CommunicationError
 
 
 @dataclass(kw_only=True)
@@ -35,16 +35,13 @@ class CreateProfile(BeekeeperBasedCommand):
         password = self._get_validated_password()
         profile = Profile.create(self.profile_name, self.working_account_name)
 
-        profile.save()
-
-        try:
-            await CreateProfileEncryptionWallet(
-                beekeeper=self.beekeeper, profile_name=profile.name, password=password
-            ).execute()
-            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=password).execute()
-        except CommunicationError:
-            profile.delete()
-            raise
+        await CreateProfileEncryptionWallet(
+            beekeeper=self.beekeeper, profile_name=profile.name, password=password
+        ).execute()
+        await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=password).execute()
+        encryption_service = EncryptionService(self.beekeeper)
+        encryption_service = EncryptionService(self.beekeeper)
+        await profile.save(encryption_service)
 
     def _get_validated_password(self) -> str:
         if sys.stdin.isatty():

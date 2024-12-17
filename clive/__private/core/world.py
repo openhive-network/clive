@@ -15,6 +15,7 @@ from clive.__private.core.commands.exceptions import NoProfileUnlockedError
 from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
 from clive.__private.core.communication import Communication
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
@@ -62,7 +63,7 @@ class World:
 
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
-
+        self._encryption_service: EncryptionService | None = None
         self._node: Node | None = None
         self._is_during_setup = False
 
@@ -86,6 +87,11 @@ class World:
     def beekeeper(self) -> Beekeeper:
         assert self._beekeeper is not None, "Beekeeper is not initialized"
         return self._beekeeper
+
+    @property
+    def encryption_service(self) -> EncryptionService:
+        assert self._encryption_service is not None, "EncryptionService is not initialized"
+        return self._encryption_service
 
     @property
     def node(self) -> Node:
@@ -134,7 +140,8 @@ class World:
     async def setup(self) -> Self:
         async with self.during_setup():
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            self._profile = await self._load_profile(self._beekeeper)
+            self._encryption_service = EncryptionService(self._beekeeper)
+            self._profile = await self._load_profile(self._beekeeper, self._encryption_service)
             self._node = Node(self._profile)
             await self._node.setup()
             if self._should_sync_with_beekeeper:
@@ -143,7 +150,7 @@ class World:
 
     async def close(self) -> None:
         if self._profile is not None:
-            self._profile.save()
+            await self._profile.save(self.encryption_service)
         if self._node is not None:
             await self._node.teardown()
         if self._beekeeper is not None:
@@ -177,12 +184,12 @@ class World:
     def _on_going_into_unlocked_mode(self) -> None:
         """Override this method to hook when clive goes into the unlocked mode."""
 
-    async def _load_profile(self, beekeeper: Beekeeper) -> Profile:
+    async def _load_profile(self, beekeeper: Beekeeper, encryption_service: EncryptionService) -> Profile:
         try:
             profile_name = await self._get_unlocked_profile_name(beekeeper)
-            return Profile.load(profile_name)
+            return await Profile.load(profile_name, encryption_service)
         except NoProfileUnlockedError:
-            profile = Profile.load(WELCOME_PROFILE_NAME)
+            profile = Profile.create(WELCOME_PROFILE_NAME)
             profile.skip_saving()
             return profile
 
@@ -240,7 +247,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
-        self._profile = Profile.load(WELCOME_PROFILE_NAME)
+        self._profile = Profile.create(WELCOME_PROFILE_NAME)
 
     def _watch_profile(self, profile: Profile) -> None:
         if self._node:
@@ -248,8 +255,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         if source == "beekeeper_notification_server":
-            self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
-        self.profile.save()
+            self.app.notify("Switched to the LOCKED mode due to inactivity.", timeout=10)
 
         async def lock() -> None:
             self._add_welcome_modes()
@@ -257,6 +263,7 @@ class TUIWorld(World, CliveDOMNode):
             await self._restart_dashboard_mode()
             self._switch_to_welcome_profile()
 
+        self.app.run_worker(self.profile.save(self.encryption_service))
         self.app.run_worker(lock())
 
     def _on_going_into_unlocked_mode(self) -> None:
@@ -287,9 +294,9 @@ class CLIWorld(World):
         return CLICommands(self)
 
     @override
-    async def _load_profile(self, beekeeper: Beekeeper) -> Profile:
+    async def _load_profile(self, beekeeper: Beekeeper, encryption_service: EncryptionService) -> Profile:
         try:
             profile_name = await self._get_unlocked_profile_name(beekeeper)
-            return Profile.load(profile_name)
+            return await Profile.load(profile_name, encryption_service)
         except NoProfileUnlockedError as error:
             raise CLINoProfileUnlockedError from error
