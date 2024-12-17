@@ -6,6 +6,7 @@ from getpass import getpass
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
@@ -37,6 +38,9 @@ class CreateProfile(BeekeeperBasedCommand):
         profile.save()
 
         try:
+            await CreateProfileEncryptionWallet(
+                beekeeper=self.beekeeper, profile_name=profile.name, password=password
+            ).execute()
             await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=password).execute()
         except CommunicationError:
             profile.delete()
