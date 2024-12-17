@@ -85,7 +85,8 @@ class PersistentStorageService:
 
         return StorageToRuntimeConverter(profile_storage_model).create_profile()
 
-    def remove_profile(self, profile_name: str) -> None:
+    @classmethod
+    def remove_profile(cls, profile_name: str) -> None:
         """
         Remove profile with the given name from the storage.
 
@@ -97,18 +98,20 @@ class PersistentStorageService:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        self._raise_if_profile_not_stored(profile_name)
-        for paths in self._get_storage_filepaths():
+        cls._raise_if_profile_not_stored(profile_name)
+        for paths in cls._get_storage_filepaths():
             if paths.stem == profile_name:
                 paths.unlink()
 
-    def list_stored_profile_names(self) -> list[str]:
+    @classmethod
+    def list_stored_profile_names(cls) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        profile_names = [path.stem for path in self._get_storage_filepaths()]
+        profile_names = [path.stem for path in cls._get_storage_filepaths()]
         return sorted(profile_names)
 
-    def is_profile_stored(self, profile_name: str) -> bool:
-        return profile_name in self.list_stored_profile_names()
+    @classmethod
+    def is_profile_stored(cls, profile_name: str) -> bool:
+        return profile_name in cls.list_stored_profile_names()
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
@@ -174,8 +177,9 @@ class PersistentStorageService:
                 return ProfileStorageModel.parse_raw(decrypted_profile)
         raise ProfileDoesNotExistsError(profile_name)
 
-    def _raise_if_profile_not_stored(self, profile_name: str) -> None:
-        if not self.is_profile_stored(profile_name):
+    @classmethod
+    def _raise_if_profile_not_stored(cls, profile_name: str) -> None:
+        if not cls.is_profile_stored(profile_name):
             raise ProfileDoesNotExistsError(profile_name)
 
     def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: Profile) -> None:
