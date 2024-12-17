@@ -75,6 +75,10 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
     DEFAULT_CSS = """
     CartStatus Button {
         background: $secondary-lighten-1 !important;
+
+        &:hover {
+            background: $secondary-darken-1 !important;
+        }
     }
     """
 
