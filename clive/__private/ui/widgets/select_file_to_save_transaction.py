@@ -35,7 +35,7 @@ class SelectFileToSaveTransaction(SelectFile[SaveTransactionResult]):
     def __init__(self) -> None:
         super().__init__(validator_mode="is_file_or_can_be_file")
         self.__binary_checkbox = Checkbox("Binary?")
-        self.__signed_checkbox = Checkbox("Signed?")
+        self.__signed_checkbox = Checkbox("Signed?", disabled=not self.profile.keys)
 
     @property
     def is_binary_checked(self) -> bool:
