@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.constants.profile import ENCRYPTION_WALLET_TEMPLATE
 from clive.__private.core.profile import Profile
 from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
 from clive_local_tools.cli.exceptions import CLITestCommandError
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     from typing import AsyncGenerator
 
     from clive.__private.core.beekeeper.handle import Beekeeper
+    from clive.__private.core.encryption import EncryptionService
     from clive_local_tools.cli.cli_tester import CLITester
     from clive_local_tools.types import EnvContextFactory
 
@@ -22,19 +24,18 @@ MESSAGE_NO_SESSION_TOKEN: Final[str] = "Beekeeper session token is not set"
 
 
 @pytest.fixture
-async def prepare_second_profile() -> Profile:
-    profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
-    profile.save()
-    return profile
-
-
-@pytest.fixture
-async def prepare_second_beekeeper_wallet(
+async def prepare_second_profile_and_wallet(
     beekeeper: Beekeeper,
+    encryption_service: EncryptionService,
     prepare_second_profile: Profile,  # noqa: ARG001
 ) -> None:
+    profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
+    encryption_wallet_name = ENCRYPTION_WALLET_TEMPLATE.format(ALT_WORKING_ACCOUNT1_NAME)
     wallet_name = ALT_WORKING_ACCOUNT1_NAME
+    await beekeeper.api.create(wallet_name=encryption_wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
     await beekeeper.api.create(wallet_name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
+    await profile.save(encryption_service)
+    await beekeeper.api.lock(wallet_name=encryption_wallet_name)
     await beekeeper.api.lock(wallet_name=wallet_name)
 
 
@@ -87,7 +88,7 @@ async def test_unlock_one_profile(beekeeper: Beekeeper, cli_tester_with_session_
 
 async def test_negative_unlocking_single_profile_when_multiple_profiles_exist(
     cli_tester_with_session_token_locked: CLITester,
-    prepare_second_beekeeper_wallet: None,  # noqa: ARG001
+    prepare_second_profile_and_wallet: None,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     message = "All wallets in session should be locked."

@@ -8,8 +8,10 @@ from typer.testing import CliRunner
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
@@ -43,16 +45,24 @@ async def beekeeper(
 
 
 @pytest.fixture
-async def prepare_profile(beekeeper: Beekeeper) -> Profile:
+async def encryption_service(beekeeper: Beekeeper) -> EncryptionService:
+    return EncryptionService(beekeeper)
+
+
+@pytest.fixture
+async def prepare_profile(beekeeper: Beekeeper, encryption_service: EncryptionService) -> Profile:
     profile = Profile.create(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
+    await CreateProfileEncryptionWallet(
+        beekeeper=beekeeper, profile_name=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD
+    ).execute()
     await CreateWallet(
         beekeeper=beekeeper, wallet=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD
     ).execute()
-    profile.save()
+    await profile.save(encryption_service)
     return profile
 
 
@@ -69,7 +79,7 @@ async def prepare_beekeeper_wallet(world: World) -> AsyncGenerator[World]:
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world_cm.commands.sync_data_with_beekeeper()
-        world_cm.profile.save()  # required for saving imported keys aliases
+        await world_cm.profile.save(world.encryption_service)  # required for saving imported keys aliases
         yield world_cm
 
 

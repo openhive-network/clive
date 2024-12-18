@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
     unlocked_world_cm.profile.keys.add_to_import(private_key)
     await unlocked_world_cm.commands.sync_data_with_beekeeper()
-    unlocked_world_cm.profile.save()  # save imported key aliases
+    await unlocked_world_cm.profile.save(unlocked_world_cm.encryption_service)  # save imported key aliases
 
 
 async def test_unlocked_profile(
@@ -42,7 +42,7 @@ async def test_unlocked_profile(
     output = run_clive_in_subprocess(["clive", "show", "profile"])
 
     # ASSERT
-    assert f"Profile name: {WORKING_ACCOUNT_NAME}" in output
+    assert f"Profile name: {ALT_WORKING_ACCOUNT1_NAME}" in output
 
 
 async def test_negative_no_unlocked_profile(
