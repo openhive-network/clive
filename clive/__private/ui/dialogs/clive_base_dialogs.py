@@ -12,6 +12,7 @@ from textual.screen import ModalScreen
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import ScreenResultT
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.buttons import CancelOneLineButton, CloseOneLineButton, ConfirmOneLineButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
@@ -27,7 +28,7 @@ class CliveDialogContent(Vertical):
     """Contains all the content of the dialog."""
 
 
-class CliveBaseDialog(ModalScreen[ScreenResultT], AbstractClassMessagePump):
+class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMessagePump):
     DEFAULT_CSS = """
     CliveBaseDialog {
         align: center middle;
