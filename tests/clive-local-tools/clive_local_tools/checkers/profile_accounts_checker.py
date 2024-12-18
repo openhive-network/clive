@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, Literal
+from typing import TYPE_CHECKING, Iterable, Literal
 
 from clive.__private.core.profile import Profile
+
+if TYPE_CHECKING:
+    from clive.__private.core.encryption import EncryptionService
 
 
 class IsNotSet:
@@ -10,12 +13,13 @@ class IsNotSet:
 
 
 class ProfileAccountsChecker:
-    def __init__(self, profile_name: str) -> None:
-        self.profile_name = profile_name
+    def __init__(self, profile: Profile) -> None:
+        self.profile = profile
 
-    @property
-    def profile(self) -> Profile:
-        return Profile.load(name=self.profile_name)
+    @classmethod
+    async def load(cls, profile_name: str, encryption_service: EncryptionService) -> ProfileAccountsChecker:
+        profile = await Profile.load(profile_name, encryption_service)
+        return cls(profile)
 
     def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
         """

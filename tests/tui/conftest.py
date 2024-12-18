@@ -7,7 +7,8 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
-from clive.__private.core.commands.lock_all import LockAll
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
@@ -51,14 +52,19 @@ async def prepare_profile_with_wallet(world: World) -> None:
             working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
             watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
         )
-        world_cm.switch_profile(profile)
-        await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
+        await CreateProfileEncryptionWallet(
+            beekeeper=world.beekeeper, profile_name=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD
+        ).execute()
+        await CreateWallet(
+            beekeeper=world.beekeeper, wallet=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD
+        ).execute()
+        await profile.save(world.encryption_service)
+        await world_cm.reload_profile()
+        world_cm.app_state.unlock()
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world_cm.commands.sync_data_with_beekeeper()
-        world_cm.profile.save()
-        await LockAll(beekeeper=world.beekeeper).execute()
 
 
 @pytest.fixture
@@ -94,9 +100,12 @@ async def prepared_env(
 @pytest.fixture
 async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
-    pilot.app.world.profile = pilot.app.world.profile.load(WORKING_ACCOUNT_DATA.account.name)
-
-    await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD, permanent=True)
+    await pilot.app.world.commands.unlock(
+        profile_name=WORKING_ACCOUNT_DATA.account.name,
+        password=WORKING_ACCOUNT_PASSWORD,
+        permanent=True,
+    )
+    await pilot.app.world.reload_profile()
 
     await pilot.app.push_screen(Dashboard())
     await wait_for_screen(pilot, Dashboard)
