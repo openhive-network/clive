@@ -112,8 +112,7 @@ class Unlock(BaseScreen):
         ).success:
             return
 
-        profile = await self.world._load_profile(self.world.beekeeper, self.world.encryption_service)
-        self.world.switch_profile(profile)
+        await self.world.reload_profile()
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
         self.app.update_alarms_data_asap_on_newest_node_data()

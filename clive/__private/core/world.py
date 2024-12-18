@@ -168,12 +168,13 @@ class World:
             return
         self._on_going_into_unlocked_mode()
 
-    def switch_profile(self, profile: Profile) -> None:
-        self._profile = profile
+    async def reload_profile(self) -> Profile:
+        self._profile = await self._load_profile(self.beekeeper, self.encryption_service)
         if self._node is not None:
-            self._node.change_related_profile(profile)
+            self._node.change_related_profile(self._profile)
         else:
-            self._node = Node(profile)
+            self._node = Node(self._profile)
+        return self._profile
 
     async def _get_unlocked_profile_name(self, beekeeper: Beekeeper) -> str:
         return await GetUnlockedProfileName(beekeeper=beekeeper).execute_with_result()
@@ -233,9 +234,10 @@ class TUIWorld(World, CliveDOMNode):
         return self
 
     @override
-    def switch_profile(self, profile: Profile) -> None:
-        super().switch_profile(profile)
+    async def reload_profile(self) -> Profile:
+        profile = await super().reload_profile()
         self.profile = profile
+        return profile
 
     @property
     def commands(self) -> TUICommands:
