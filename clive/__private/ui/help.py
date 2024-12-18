@@ -26,6 +26,8 @@ class Help(BaseScreen):
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
 
+    SHOW_RAW_HEADER = True
+
     def __init__(self) -> None:
         super().__init__()
         screen_file_path = Path(inspect.getfile(self.app.screen.__class__))
