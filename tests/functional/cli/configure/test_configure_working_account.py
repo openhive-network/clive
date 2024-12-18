@@ -9,13 +9,16 @@ from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
+    from clive.__private.core.encryption import EncryptionService
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
+async def test_configure_working_account_switch(cli_tester: CLITester, encryption_service: EncryptionService) -> None:
     """Check clive configure working-account switch command."""
     # ARRANGE
-    profile_account_checker = ProfileAccountsChecker(profile_name=WORKING_ACCOUNT_NAME)
+    profile_account_checker = await ProfileAccountsChecker.load(
+        profile_name=WORKING_ACCOUNT_NAME, encryption_service=encryption_service
+    )
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
 
     # ACT

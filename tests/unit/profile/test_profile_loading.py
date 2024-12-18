@@ -6,9 +6,11 @@ import pytest
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
 
@@ -25,7 +27,9 @@ async def beekeeper_for_remote_use() -> AsyncIterator[Beekeeper]:
 
 
 async def create_profile_and_wallet(beekeeper: Beekeeper, profile_name: str, *, lock: bool = False) -> None:
-    Profile.create(profile_name).save()
+    encryption_service = EncryptionService(beekeeper)
+    await Profile.create(profile_name).save(encryption_service)
+    await CreateProfileEncryptionWallet(beekeeper=beekeeper, profile_name=profile_name, password=profile_name).execute()
     await CreateWallet(beekeeper=beekeeper, wallet=profile_name, password=profile_name).execute()
     if lock:
         await beekeeper.api.lock(wallet_name=profile_name)
