@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
+from clive.__private.core.encryption_helpers import get_encryption_wallet_name
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -26,10 +27,12 @@ class Unlock(CommandPasswordSecured):
         if unlock_seconds := self.__get_unlock_seconds():
             await SetTimeout(session=self.session, seconds=unlock_seconds).execute()
 
-        locked_wallet = await self.session.open_wallet(name=self.wallet_name)
-        unlocked_wallet = await locked_wallet.unlock(password=self.password)
+        unlocked_wallet = await (await self.session.open_wallet(name=self.wallet_name)).unlock(password=self.password)
+        unlocked_profile_encryption_wallet = await (
+            await self.session.open_wallet(name=get_encryption_wallet_name(self.wallet_name))
+        ).unlock(password=self.password)
         if self.app_state is not None:
-            await self.app_state.unlock(unlocked_wallet)
+            await self.app_state.unlock(unlocked_wallet, unlocked_profile_encryption_wallet)
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:
