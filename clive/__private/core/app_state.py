@@ -25,13 +25,17 @@ class AppState:
     def is_unlocked(self) -> bool:
         return self._is_unlocked
 
-    async def unlock(self, unlocked_wallet: AsyncUnlockedWallet | None = None) -> None:
+    async def unlock(
+        self,
+        wallets: tuple[AsyncUnlockedWallet, AsyncUnlockedWallet] | None = None,
+    ) -> None:
         if self._is_unlocked:
             return
 
         self._is_unlocked = True
-        if unlocked_wallet:
-            await self.world._set_unlocked_wallet(unlocked_wallet)
+        if wallets:
+            await self.world._set_unlocked_wallet(wallets[0])
+            await self.world._set_unlocked_profile_encryption_wallet(wallets[1])
         self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 

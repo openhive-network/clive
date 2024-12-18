@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class SyncStateWithBeekeeper(Command):
     wallet: AsyncWallet
+    profile_encryption_wallet: AsyncWallet
     app_state: AppState
     source: LockSource = "unknown"
 
@@ -22,5 +23,8 @@ class SyncStateWithBeekeeper(Command):
 
     async def __sync_state(self) -> None:
         unlocked_wallet = await self.wallet.unlocked
-        is_unlocked = unlocked_wallet is not None
-        await self.app_state.unlock(unlocked_wallet) if is_unlocked else self.app_state.lock(self.source)
+        unlocked_profile_encryption_wallet = await self.profile_encryption_wallet.unlocked
+        if unlocked_wallet is not None and unlocked_profile_encryption_wallet is not None:
+            await self.app_state.unlock((unlocked_wallet, unlocked_profile_encryption_wallet))
+        else:
+            self.app_state.lock(self.source)
