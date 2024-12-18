@@ -41,7 +41,7 @@ class Help(BaseScreen):
         return self.query_exactly_one(MarkdownViewer)
 
     def create_main_panel(self) -> ComposeResult:
-        yield MarkdownViewer()
+        yield MarkdownViewer(show_table_of_contents=False)
 
     async def on_mount(self) -> None:
         await self.markdown_viewer.go(self.__help_file_path)
