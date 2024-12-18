@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured, InvalidPasswordError
 from clive.__private.core.commands.set_timeout import SetTimeout
+from clive.__private.core.constants.profile import ENCRYPTION_WALLET_TEMPLATE
 from clive.exceptions import CannotUnlockError, CommunicationError, KnownError
 
 if TYPE_CHECKING:
@@ -34,6 +35,8 @@ class Unlock(CommandPasswordSecured):
 
     async def _execute(self) -> None:
         try:
+            profile_encryption_wallet_name = ENCRYPTION_WALLET_TEMPLATE.format(self.wallet)
+            await self.beekeeper.api.unlock(wallet_name=profile_encryption_wallet_name, password=self.password)
             await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
             if unlock_seconds := self.__get_unlock_seconds():
                 await SetTimeout(beekeeper=self.beekeeper, seconds=unlock_seconds).execute()
