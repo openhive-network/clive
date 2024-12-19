@@ -109,8 +109,6 @@ ignore = [
     "D212", # Multi-line docstring summary should start at the first line; because we re using D213
     "D413", # Missing blank line after last section
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
-    "ANN101",  # Missing annotation for self; makes no sense
-    "ANN102",  # Missing annotation for cls; makes no sense
     "TD002", # Missing author in to-do; no need for that
     "TD003",  # Missing issue link on the line following this to-do; no need for that
     "SLF001",  # Private member accessed: {access}; too restrictive
@@ -138,7 +136,6 @@ required-imports = ["from __future__ import annotations"]
     "RUF012", # Mutable class attributes should be annotated with typing.ClassVar; TODO: Check if we can fix it, it's kinda Textual-specific
 ]
 "tests/**" = [
-    "PT004", # fixture does not return anything, add leading underscore;  issue: pytest seems to ignore (not launch) auto-use fixtures with leading underscode
     "S104", # Checks for hardcoded bindings to all network interfaces (0.0.0.0); in tests this is not a security issue
     "S105", # Possible hardcoded password assigned to: "{}"; in tests this is not a security issue
     "S106", # Possible hardcoded password assigned to argument: "{}"; in tests this is not a security issue
