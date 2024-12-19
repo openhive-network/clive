@@ -73,13 +73,13 @@ class _DelayedResponseWrapper:
             response=response,
         )
 
-    def __setattr__(self, __name: str, __value: Any) -> None:  # noqa: ANN401
+    def __setattr__(self, name: str, value: Any) -> None:  # noqa: ANN401
         self.__check_is_response_available()
-        setattr(self.__get_data(), __name, __value)
+        setattr(self.__get_data(), name, value)
 
-    def __getattr__(self, __name: str) -> Any:  # noqa: ANN401
+    def __getattr__(self, name: str) -> Any:  # noqa: ANN401
         self.__check_is_response_available()
-        return getattr(self.__get_data(), __name)
+        return getattr(self.__get_data(), name)
 
     def _set_response(self, **kwargs: Any) -> None:
         expected_type = super().__getattribute__("_expected_type")
