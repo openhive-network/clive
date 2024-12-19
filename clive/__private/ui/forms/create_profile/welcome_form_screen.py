@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FirstFormScreen
 from clive.__private.ui.get_css import get_relative_css_path
@@ -39,7 +40,7 @@ class CreateProfileWelcomeFormScreen(BaseScreen, FirstFormScreen[CreateProfileCo
             yield CliveButton("Start!", id_="welcome-button-start")
 
     def on_mount(self) -> None:
-        if self.profile.is_any_profile_saved:
+        if Profile.is_any_profile_saved():
             # If the user requested profile creation from a `Unlock` screen, it is possible to back to the `Unlock`
             # screen otherwise, during first time profile creation there is NO screen to go back to
             self.bind(Binding("escape", "back", "Back"))

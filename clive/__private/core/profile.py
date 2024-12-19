@@ -109,9 +109,9 @@ class Profile(Context):
         """Determine if the profile is newly created (has not been saved yet)."""
         return self._is_newly_created
 
-    @property
-    def is_any_profile_saved(self) -> bool:
-        return bool(self.list_profiles())
+    @classmethod
+    def is_any_profile_saved(cls) -> bool:
+        return bool(cls.list_profiles())
 
     @classmethod
     def is_only_one_profile_saved(cls) -> bool:

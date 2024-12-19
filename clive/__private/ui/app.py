@@ -14,6 +14,7 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
@@ -170,7 +171,7 @@ class Clive(App[int]):
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
             self.set_interval(debug_loop_period_secs, self.__debug_log)
 
-        if self.world.profile.is_any_profile_saved:
+        if Profile.is_any_profile_saved():
             self.switch_mode("unlock")
         else:
             self.switch_mode("create_profile")
