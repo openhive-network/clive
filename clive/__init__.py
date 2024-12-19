@@ -7,4 +7,4 @@ if not is_tab_completion_active():
 
 __version__ = "0.0.0"
 
-__all__ = ["__version__", "World"]
+__all__ = ["World", "__version__"]

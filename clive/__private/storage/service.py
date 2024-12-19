@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Iterable, TypeAlias
+from typing import TYPE_CHECKING, Final, TypeAlias
 
 from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
 from clive.__private.core.commands.decrypt import CommandDecryptError

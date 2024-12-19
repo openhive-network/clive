@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from hashlib import sha256
-from pathlib import Path  # noqa: TCH003
-from typing import Any, Sequence
+from pathlib import Path  # noqa: TC003
+from typing import Any
 
-from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
+from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TC001
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (

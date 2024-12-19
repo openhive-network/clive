@@ -3,8 +3,9 @@ from __future__ import annotations
 import asyncio
 import math
 import traceback
+from collections.abc import Awaitable
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, Final, TypeVar, cast, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, cast, get_args
 
 from beekeepy.exceptions import CommunicationError
 from textual import on, work

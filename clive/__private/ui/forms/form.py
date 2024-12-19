@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import inspect
 from abc import abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from queue import Queue
-from typing import Any, Iterable, cast
+from typing import Any, cast
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextualHolder

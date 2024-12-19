@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import Final, Generator
+from collections.abc import Generator
+from typing import Final
 
 from clive.__private.logger import logger
 from clive.exceptions import CliveError

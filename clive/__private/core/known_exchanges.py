@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Iterator, Literal
+from collections.abc import Iterator
+from typing import Literal
 
 from clive.__private.core.accounts.accounts import Account, ExchangeAccount
 from clive.exceptions import CliveError

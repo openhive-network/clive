@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Final, Literal, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Final, Literal, TypeVar, cast
 
 from beekeepy.exceptions import UnknownDecisionPathError
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from decimal import Decimal  # noqa: TCH003
+from decimal import Decimal  # noqa: TC003
 
 import typer
 
