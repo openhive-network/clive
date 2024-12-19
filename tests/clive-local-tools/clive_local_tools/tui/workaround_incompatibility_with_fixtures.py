@@ -12,8 +12,9 @@ import asyncio
 import contextvars
 import functools
 import traceback
+from collections.abc import Coroutine, Generator
 from pathlib import Path
-from typing import Any, Coroutine, Generator
+from typing import Any
 
 import pytest
 

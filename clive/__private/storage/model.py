@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from hashlib import sha256
-from typing import Any, Sequence
+from typing import Any
 
-from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
+from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TC001
 from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import OperationRepresentationUnion  # noqa: TCH001
+from clive.__private.models.schemas import OperationRepresentationUnion  # noqa: TC001
 
 
 class AlarmStorageModel(CliveBaseModel):

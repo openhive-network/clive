@@ -8,8 +8,8 @@ from .currency_selector_liquid import CurrencySelectorLiquid
 
 __all__ = [
     "CurrencySelector",
-    "CurrencySelectorLiquid",
+    "CurrencySelectorBase",
     "CurrencySelectorHive",
     "CurrencySelectorHpVests",
-    "CurrencySelectorBase",
+    "CurrencySelectorLiquid",
 ]

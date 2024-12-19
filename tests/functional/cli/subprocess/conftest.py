@@ -21,7 +21,7 @@ from clive_local_tools.testnet_block_log import (
 )
 
 if TYPE_CHECKING:
-    from typing import AsyncGenerator
+    from collections.abc import AsyncGenerator
 
 
 @pytest.fixture

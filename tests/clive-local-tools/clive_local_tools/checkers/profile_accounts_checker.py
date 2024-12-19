@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Iterable, Literal
+from collections.abc import Iterable
+from typing import Literal
 
 from clive.__private.core.profile import Profile
 

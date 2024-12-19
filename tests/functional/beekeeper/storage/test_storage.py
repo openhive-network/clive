@@ -45,9 +45,10 @@ async def test_multiply_beekeepeer_different_storage(tmp_path: Path) -> None:
 
     # ACT
     bks = []
-    async with await Beekeeper().launch(wallet_dir=bk1_path) as bk1, await Beekeeper().launch(
-        wallet_dir=bk2_path
-    ) as bk2:
+    async with (
+        await Beekeeper().launch(wallet_dir=bk1_path) as bk1,
+        await Beekeeper().launch(wallet_dir=bk2_path) as bk2,
+    ):
         # ASSERT
         assert bk1.is_running, "First instance of beekeeper should be working."
         assert bk2.is_running, "Second instance of beekeeper should be working."

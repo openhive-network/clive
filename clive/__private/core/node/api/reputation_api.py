@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.node.api.api import Api
-from clive.__private.models.schemas import GetAccountReputations  # noqa: TCH001
+from clive.__private.models.schemas import GetAccountReputations  # noqa: TC001
 
 
 class ReputationApi(Api):

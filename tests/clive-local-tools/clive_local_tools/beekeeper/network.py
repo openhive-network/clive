@@ -13,9 +13,10 @@ if TYPE_CHECKING:
 async def raw_http_call(*, http_endpoint: Url, data: JSONRPCRequest) -> dict[str, Any]:
     """Make raw async call with given data to given http_endpoint."""
     data_serialized = data.json(by_alias=True)
-    async with aiohttp.ClientSession() as session, session.post(
-        http_endpoint.as_string(), data=data_serialized
-    ) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(http_endpoint.as_string(), data=data_serialized) as resp,
+    ):
         return dict(await resp.json())
 
 

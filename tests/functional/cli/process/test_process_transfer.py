@@ -13,7 +13,7 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
-    from typing import AsyncGenerator
+    from collections.abc import AsyncGenerator
 
     from clive_local_tools.cli.cli_tester import CLITester
 

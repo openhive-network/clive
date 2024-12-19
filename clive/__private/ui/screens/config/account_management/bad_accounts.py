@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Final, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.binding import Binding

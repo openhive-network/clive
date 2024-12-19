@@ -12,10 +12,10 @@ from .keys import (
 )
 
 __all__ = [
-    "KeyAliasAlreadyInUseError",
-    "KeyManager",
     "Key",
+    "KeyAliasAlreadyInUseError",
     "KeyAliased",
+    "KeyManager",
     "PrivateKey",
     "PrivateKeyAliased",
     "PrivateKeyInvalidFormatError",

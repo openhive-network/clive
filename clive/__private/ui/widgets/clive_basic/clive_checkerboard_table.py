@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Sequence, TypeVar
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from textual.containers import Container
 from textual.widget import Widget

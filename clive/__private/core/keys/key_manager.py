@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Iterator
-from typing import Iterable
+from collections.abc import Awaitable, Callable, Iterable, Iterator
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.logger import logger

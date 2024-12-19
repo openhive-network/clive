@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime  # noqa: TCH003
+from datetime import datetime  # noqa: TC003
 from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarm import Alarm

@@ -28,9 +28,10 @@ async def check_webserver_http_endpoint(*, nofification_endpoint: Url | None, we
         "id": 1,
     }
 
-    async with aiohttp.ClientSession() as session, session.post(
-        webserver_http_endpoint.as_string(), data=json.dumps(data)
-    ) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(webserver_http_endpoint.as_string(), data=json.dumps(data)) as resp,
+    ):
         assert resp.ok
         resp_json = await resp.json()
         get_response_model(beekeeper_api.CreateSession, **resp_json)

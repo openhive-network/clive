@@ -4,7 +4,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import TYPE_CHECKING, Any, TypeVar, get_type_hints
 
-from clive.__private.core.beekeeper import model  # noqa: TCH001
+from clive.__private.core.beekeeper import model  # noqa: TC001
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper

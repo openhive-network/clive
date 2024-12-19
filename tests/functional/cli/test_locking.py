@@ -9,7 +9,7 @@ from clive_local_tools.data.constants import WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
-    from typing import AsyncGenerator
+    from collections.abc import AsyncGenerator
 
     from clive_local_tools.cli.cli_tester import CLITester
     from clive_local_tools.types import EnvContextFactory

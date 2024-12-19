@@ -11,9 +11,9 @@ from clive.__private.core.alarms.specific_alarms.governance_voting_expiration im
 from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import RecoveryAccountWarningListed
 
 __all__ = [
+    "ChangingRecoveryAccountInProgress",
+    "DecliningVotingRightsInProgress",
+    "GovernanceNoActiveVotes",
     "GovernanceVotingExpiration",
     "RecoveryAccountWarningListed",
-    "DecliningVotingRightsInProgress",
-    "ChangingRecoveryAccountInProgress",
-    "GovernanceNoActiveVotes",
 ]

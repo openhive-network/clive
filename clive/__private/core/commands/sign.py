@@ -24,7 +24,7 @@ class TransactionAlreadySignedError(SignCommandError):
 
 
 AlreadySignedMode = Literal["error", "override", "multisign"]
-ALREADY_SIGNED_MODE_DEFAULT: Final[Literal["error"]] = "error"
+ALREADY_SIGNED_MODE_DEFAULT: Final = "error"
 
 
 @dataclass(kw_only=True)
