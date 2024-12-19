@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Final
 
-from clive.__private.core.constants.node import GOVERNANCE_VOTES_VALIDITY_PERIOD
+from clive.__private.core.constants.node import GOVERNANCE_VOTES_VALIDITY_PERIOD, HIVE_MAX_ACCOUNT_WITNESS_VOTES
 from clive.__private.core.formatters.humanize import humanize_timedelta
 
 GOVERNANCE_COMMON_ALARM_DESCRIPTION: Final[str] = (
     "Governance votes are votes on proposals and witnesses.\n"
-    "You can vote for 30 witnesses and an unlimited number of proposals.\n"  # TODO: change 30 to const after merging: https://gitlab.syncad.com/hive/clive/-/merge_requests/387
+    f"You can vote for {HIVE_MAX_ACCOUNT_WITNESS_VOTES} witnesses and an unlimited number of proposals.\n"
     f"The governance votes are valid {humanize_timedelta(GOVERNANCE_VOTES_VALIDITY_PERIOD)}."
 )
 GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION: Final[str] = (
