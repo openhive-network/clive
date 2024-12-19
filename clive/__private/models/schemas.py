@@ -137,7 +137,7 @@ from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_
 from schemas.transaction import Transaction
 from schemas.virtual_operation import VirtualOperation
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     # operation BASIC aliases
     "ApiOperationObject",
     "OperationBase",
