@@ -372,8 +372,9 @@ class CliveHeader(CliveRawHeader):
         yield AlarmDisplay()
 
     def _create_right_part_bar(self) -> ComposeResult:
-        yield DashboardButton()
-        yield CartStatus()
+        if not self.world.is_in_create_profile_mode:
+            yield DashboardButton()
+            yield CartStatus()
         yield NodeStatus()
 
     def _create_left_part_expandable(self) -> ComposeResult:
