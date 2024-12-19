@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, ContextManager, Protocol
+from contextlib import AbstractContextManager
+from typing import TYPE_CHECKING, Any, Callable, Protocol
 
 from clive_local_tools.data.models import WalletInfo
 
@@ -17,5 +18,5 @@ class SetupWalletsFactory(Protocol):
     ) -> Coroutine[Any, Any, list[WalletInfo]]: ...
 
 
-EnvContextFactory = Callable[[str | None], ContextManager[None]]
+EnvContextFactory = Callable[[str | None], AbstractContextManager[None]]
 GenericEnvContextFactory = Callable[[str], EnvContextFactory]
