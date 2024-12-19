@@ -31,8 +31,10 @@ class Governance(OperationBaseScreen):
         self._initial_tab = initial_tab
 
     def create_left_panel(self) -> ComposeResult:
-        with WitnessesDataProvider(paused=True), ProposalsDataProvider(paused=True), CliveTabbedContent(
-            initial=self._initial_tab
+        with (
+            WitnessesDataProvider(paused=True),
+            ProposalsDataProvider(paused=True),
+            CliveTabbedContent(initial=self._initial_tab),
         ):
             yield Proxy()
             yield Witnesses()

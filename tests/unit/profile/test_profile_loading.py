@@ -14,7 +14,7 @@ from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
-    from typing import AsyncIterator
+    from collections.abc import AsyncIterator
 
 
 @pytest.fixture

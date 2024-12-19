@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, TypeVar, overload
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast

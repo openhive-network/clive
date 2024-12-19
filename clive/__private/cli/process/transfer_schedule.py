@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta  # noqa: TCH003
+from datetime import timedelta  # noqa: TC003
 from typing import TYPE_CHECKING, cast
 
 import typer
