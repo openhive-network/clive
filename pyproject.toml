@@ -58,7 +58,7 @@ pytest = "8.3.5"
 pytest-asyncio = "0.26.0"
 pytest-xdist = "3.6.1"
 pytest-timeout = "2.3.1"
-ruff = "0.6.5"
+ruff = "0.8.3"
 textual-dev = "1.5.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
