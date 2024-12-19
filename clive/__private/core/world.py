@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 from textual.reactive import var
 from typing_extensions import override
 
+from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
@@ -24,6 +25,9 @@ from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
+
+if not is_tab_completion_active():
+    from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -150,7 +154,10 @@ class World:
 
     async def close(self) -> None:
         if self._profile is not None:
-            await self._profile.save(self.encryption_service)
+            try:
+                await self._profile.save(self.encryption_service)
+            except NoProfileUnlockedError:
+                logger.warning("Profile is not unlocked, skipping saving")
         if self._node is not None:
             await self._node.teardown()
         if self._beekeeper is not None:
