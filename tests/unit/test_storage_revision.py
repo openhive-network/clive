@@ -4,17 +4,30 @@ from typing import TYPE_CHECKING, Any, Final
 
 import test_tools as tt
 
+from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.profile import PROFILE_FILENAME_SUFFIX
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
 from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-    from clive.__private.core.encryption import EncryptionService
 
-EXPECTED_REVISION: Final[str] = "920b3dfe"
+EXPECTED_REVISION: Final[str] = "a13fdc57"
 FIRST_PROFILE_NAME: Final[str] = "first"
+
+
+async def create_and_save_profile(profile_name: str) -> None:
+    async with Beekeeper() as beekeeper_cm:
+        profile = Profile.create(profile_name)
+        await CreateProfileEncryptionWallet(
+            beekeeper=beekeeper_cm, profile_name=profile_name, password=profile_name
+        ).execute()
+        await CreateWallet(beekeeper=beekeeper_cm, wallet=profile_name, password=profile_name).execute()
+        await profile.save(EncryptionService(beekeeper_cm))
 
 
 def test_storage_revision_doesnt_changed() -> None:
@@ -29,7 +42,7 @@ def test_storage_revision_doesnt_changed() -> None:
     assert actual_revision == EXPECTED_REVISION, message
 
 
-async def test_storage_dir_contains_expected_files(encryption_service: EncryptionService) -> None:
+async def test_storage_dir_contains_expected_files() -> None:
     # ARRANGE
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     current_revision_symlink = storage_data_dir / "current"
@@ -38,8 +51,7 @@ async def test_storage_dir_contains_expected_files(encryption_service: Encryptio
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
-    profile = Profile.create(FIRST_PROFILE_NAME)
-    await profile.save(encryption_service)
+    await create_and_save_profile(FIRST_PROFILE_NAME)
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
@@ -52,9 +64,7 @@ async def test_storage_dir_contains_expected_files(encryption_service: Encryptio
     assert profile_json_file.read_text(), "Profile JSON file is empty."
 
 
-async def test_correct_revision_is_loaded_when_multiple_ones_exist(
-    monkeypatch: MonkeyPatch, encryption_service: EncryptionService
-) -> None:
+async def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: MonkeyPatch) -> None:
     # ARRANGE
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     current_revision_symlink = storage_data_dir / "current"
@@ -67,8 +77,7 @@ async def test_correct_revision_is_loaded_when_multiple_ones_exist(
 
     # ACT & ASSERT
     # we need to have more than one revision of profile data for this test
-    profile = Profile.create(FIRST_PROFILE_NAME)
-    await profile.save(encryption_service)
+    await create_and_save_profile(FIRST_PROFILE_NAME)
 
     # stimulate the situation when the schema has changed, causing different revision
     monkeypatch.setattr(ProfileStorageModelSchema, "schema_json", mock_schema_json)
@@ -76,8 +85,7 @@ async def test_correct_revision_is_loaded_when_multiple_ones_exist(
     assert not new_revision_dir.is_dir(), "New revision dir should not yet exist."
     assert Profile.list_profiles() == [], "There should be no profiles yet in new revision."
 
-    profile = Profile.create(profile_name_in_new_revision)
-    await profile.save(encryption_service)
+    await create_and_save_profile(profile_name_in_new_revision)
 
     assert new_revision_dir.is_dir(), "New revision dir should exist."
 

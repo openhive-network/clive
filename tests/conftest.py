@@ -102,10 +102,12 @@ async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_pas
     await CreateProfileEncryptionWallet(
         beekeeper=world.beekeeper, profile_name=wallet_name, password=wallet_password
     ).execute()
-    await CreateWallet(beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_password).execute()
+    await CreateWallet(
+        app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_password
+    ).execute()
     await profile.save(world.encryption_service)
     await world.reload_profile()
-    return profile
+    return world.profile
 
 
 @pytest.fixture

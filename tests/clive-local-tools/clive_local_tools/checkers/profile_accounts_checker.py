@@ -13,13 +13,17 @@ class IsNotSet:
 
 
 class ProfileAccountsChecker:
-    def __init__(self, profile: Profile) -> None:
+    def __init__(self, profile: Profile, encryption_service: EncryptionService) -> None:
         self.profile = profile
+        self.encryption_service = encryption_service
 
     @classmethod
-    async def load(cls, profile_name: str, encryption_service: EncryptionService) -> ProfileAccountsChecker:
+    async def load_profile(cls, profile_name: str, encryption_service: EncryptionService) -> ProfileAccountsChecker:
         profile = await Profile.load(profile_name, encryption_service)
-        return cls(profile)
+        return cls(profile, encryption_service)
+
+    async def reload_profile(self) -> None:
+        self.profile = await Profile.load(self.profile.name, self.encryption_service)
 
     def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
         """

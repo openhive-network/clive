@@ -9,6 +9,7 @@ from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
+from clive.__private.core.constants.profile import ENCRYPTION_WALLET_TEMPLATE
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
@@ -27,11 +28,12 @@ async def beekeeper_for_remote_use() -> AsyncIterator[Beekeeper]:
 
 
 async def create_profile_and_wallet(beekeeper: Beekeeper, profile_name: str, *, lock: bool = False) -> None:
-    encryption_service = EncryptionService(beekeeper)
-    await Profile.create(profile_name).save(encryption_service)
+    profile = Profile.create(profile_name)
     await CreateProfileEncryptionWallet(beekeeper=beekeeper, profile_name=profile_name, password=profile_name).execute()
     await CreateWallet(beekeeper=beekeeper, wallet=profile_name, password=profile_name).execute()
+    await profile.save(EncryptionService(beekeeper))
     if lock:
+        await beekeeper.api.lock(wallet_name=ENCRYPTION_WALLET_TEMPLATE.format(profile_name))
         await beekeeper.api.lock(wallet_name=profile_name)
 
 
