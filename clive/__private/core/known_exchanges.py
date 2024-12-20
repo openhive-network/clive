@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.accounts.accounts import Account, ExchangeAccount
 from clive.exceptions import CliveError
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 ExchangeEntity = Literal["Binance", "Upbit", "HTX", "MEXC"]
 

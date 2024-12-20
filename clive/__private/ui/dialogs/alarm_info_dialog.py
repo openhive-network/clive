@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
@@ -18,6 +17,8 @@ from clive.__private.ui.widgets.clive_basic import (
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from textual.app import ComposeResult
 
     from clive.__private.core.accounts.accounts import TrackedAccount

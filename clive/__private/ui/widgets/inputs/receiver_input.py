@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from textual.message import Message
@@ -10,6 +9,8 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.validators.bad_account_validator import BadAccountValidator
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 

@@ -12,11 +12,13 @@ import asyncio
 import contextvars
 import functools
 import traceback
-from collections.abc import Coroutine, Generator
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Coroutine, Generator
 
 Task310 = asyncio.tasks._PyTask  # type: ignore[attr-defined]
 

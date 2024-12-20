@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
@@ -15,6 +14,9 @@ from clive.__private.core.accounts.exceptions import (
     NoWorkingAccountError,
     TryingToAddBadAccountError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def _load_bad_accounts_from_file() -> list[str]:

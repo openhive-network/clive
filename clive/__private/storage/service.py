@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from clive.__private.logger import logger
@@ -12,6 +11,7 @@ from clive.__private.storage.storage_to_runtime_converter import StorageToRuntim
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
 
     from clive.__private.core.profile import Profile
