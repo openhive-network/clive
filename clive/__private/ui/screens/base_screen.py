@@ -9,12 +9,14 @@ from textual.widgets import Footer
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
+from clive.__private.ui.screens.ensure_bindings_with_binding_type import ensure_bindings_with_binding_type
 from clive.__private.ui.widgets.clive_basic import CliveHeader, CliveRawHeader
 from clive.__private.ui.widgets.clive_basic.clive_header import NodeStatus
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.binding import Binding
 
     from clive.__private.core.node import Node
 
@@ -36,6 +38,21 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
             yield LocationIndicator(self.BIG_TITLE, self.subtitle)
         yield from self.create_main_panel()
         yield Footer()
+
+    @classmethod
+    def ensure_bindings_with_binding_type(cls) -> list[Binding]:
+        """
+        Return the bindings with the `list[Binding]` type ensured.
+
+        Returns
+        -------
+        list[Binding]: list of bindings.
+
+        Raises
+        ------
+        AssertionError: if any binding is not an instance of Binding class.
+        """
+        return ensure_bindings_with_binding_type(cls.BINDINGS)
 
     @on(NodeStatus.ChangeNodeAddress)
     def push_switch_node_address_dialog(self) -> None:
