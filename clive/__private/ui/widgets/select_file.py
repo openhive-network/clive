@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar, cast
+from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
 from textual.binding import Binding
@@ -75,7 +75,7 @@ class SelectFile(BaseScreen[SaveFileResultT]):
             yield from self.additional_content_after_input()
             yield DirectoryTreeHint("Or select from the directory tree:")
             yield DirectoryTree(str(Path.home()))
-            yield Center(BindingButton(SELECT_FILE_BINDING_KEY, cast(list[Binding], self.BINDINGS)))
+            yield Center(BindingButton(SELECT_FILE_BINDING_KEY, self.ensure_bindings_with_binding_type()))
 
     def additional_content_after_input(self) -> ComposeResult:
         """Override this method to add additional content before the input."""

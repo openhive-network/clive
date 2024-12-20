@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final
 
 from pydantic import ValidationError
 from textual import on
@@ -13,6 +13,7 @@ from clive.__private.core import iwax
 from clive.__private.core.constants.tui.bindings import FINALIZE_TRANSACTION_BINDING_KEY
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
+from clive.__private.ui.screens.ensure_bindings_with_binding_type import ensure_bindings_with_binding_type
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.buttons import AddToCartButton, FinalizeTransactionButton
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -53,11 +54,19 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         self.__check_if_correctly_implemented()
 
     @classmethod
-    def ensure_bindings_list_type(cls) -> list[Binding]:
-        for binding in cls.BINDINGS:
-            assert isinstance(binding, Binding), f"Binding {binding} is not an instance of Binding class."
+    def ensure_bindings_with_binding_type(cls) -> list[Binding]:
+        """
+        Return the bindings with the `list[Binding]` type ensured.
 
-        return cast(list[Binding], cls.BINDINGS)
+        Returns
+        -------
+        list[Binding]: list of bindings.
+
+        Raises
+        ------
+        AssertionError: if any binding is not an instance of Binding class.
+        """
+        return ensure_bindings_with_binding_type(cls.BINDINGS)
 
     def _create_operation(self) -> OperationUnion | None | _NotImplemented:
         """Return a new operation based on the data from screen or None."""

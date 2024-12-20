@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
@@ -115,7 +115,7 @@ class ManageKeyAliases(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield Container(
-            BindingButton(MANAGE_KEY_ALIASES_BINDING_KEY, cast(list[Binding], self.BINDINGS)),
+            BindingButton(MANAGE_KEY_ALIASES_BINDING_KEY, self.ensure_bindings_with_binding_type()),
             id="binding-button-container",
         )
         with self.__scrollable_part:

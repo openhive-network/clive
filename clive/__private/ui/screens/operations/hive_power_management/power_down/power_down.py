@@ -156,7 +156,7 @@ class PowerDown(TabPane, OperationActionBindings):
                 with Horizontal():
                     yield self._shares_input
                     yield GenerousButton(self._shares_input, self._get_shares_balance)  # type: ignore[arg-type]
-                yield TransactionButtons(self.ensure_bindings_list_type())
+                yield TransactionButtons(self.ensure_bindings_with_binding_type())
             yield self._one_withdrawal_display
             yield PendingPowerDown()
             yield WithdrawRoutesDisplay()
