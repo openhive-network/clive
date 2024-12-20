@@ -11,13 +11,16 @@ from clive.__private.models.schemas import CustomJsonOperation, TransferOperatio
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.command_options import option_to_string
 from clive_local_tools.cli.helpers import run_clive_in_subprocess
-from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.data.constants import (
+    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT2_KEY_ALIAS,
+)
 from clive_local_tools.helpers import get_transaction_id_from_output
 from clive_local_tools.testnet_block_log import (
-    ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
+    ALT_WORKING_ACCOUNT2_DATA,
+    ALT_WORKING_ACCOUNT2_NAME,
     WATCHED_ACCOUNTS_NAMES,
-    WORKING_ACCOUNT_NAME,
 )
 
 if TYPE_CHECKING:
@@ -33,8 +36,6 @@ async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -
 
 
 async def test_unlocked_profile(
-    prepare_profile: Profile,  # noqa: ARG001
-    alt_prepare_profile: Profile,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
     cli_tester: CLITester,  # noqa: ARG001
 ) -> None:
@@ -42,7 +43,7 @@ async def test_unlocked_profile(
     output = run_clive_in_subprocess(["clive", "show", "profile"])
 
     # ASSERT
-    assert f"Profile name: {WORKING_ACCOUNT_NAME}" in output
+    assert f"Profile name: {ALT_WORKING_ACCOUNT1_NAME}" in output
 
 
 async def test_negative_no_unlocked_profile(
@@ -87,7 +88,6 @@ async def test_negative_unlocked_profile_without_working_account(
 
 async def test_unlocked_profile_and_custom_working_account(
     prepare_profile: Profile,  # noqa: ARG001
-    alt_prepare_profile: Profile,  # noqa: ARG001
     cli_tester: CLITester,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
 ) -> None:
@@ -115,7 +115,7 @@ async def test_custom_authority_in_custom_json_operation(
     # ARRANGE
 
     other_key = PrivateKeyAliased(
-        value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS
+        value=ALT_WORKING_ACCOUNT2_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT2_KEY_ALIAS
     )
     await import_key(prepare_beekeeper_wallet, other_key)
 
@@ -123,7 +123,7 @@ async def test_custom_authority_in_custom_json_operation(
     custom_id: Final[str] = "some_id"
     operation = CustomJsonOperation(
         required_auths=[],
-        required_posting_auths=[ALT_WORKING_ACCOUNT1_NAME],
+        required_posting_auths=[ALT_WORKING_ACCOUNT2_NAME],
         id_=custom_id,
         json_=custom_json,
     )
@@ -133,8 +133,8 @@ async def test_custom_authority_in_custom_json_operation(
         "custom-json",
         f"--id={custom_id}",
         f"--json={custom_json}",
-        f"--sign={ALT_WORKING_ACCOUNT1_KEY_ALIAS}",
-        f"--authorize={ALT_WORKING_ACCOUNT1_NAME}",
+        f"--sign={ALT_WORKING_ACCOUNT2_KEY_ALIAS}",
+        f"--authorize={ALT_WORKING_ACCOUNT2_NAME}",
     ]
 
     # ACT
@@ -153,7 +153,7 @@ async def test_default_working_account_in_transfer(
     other_account_name = WATCHED_ACCOUNTS_NAMES[1]
     amount = tt.Asset.Hive(13.17)
     operation = TransferOperation(
-        from_=WORKING_ACCOUNT_NAME,
+        from_=ALT_WORKING_ACCOUNT1_NAME,
         to=other_account_name,
         amount=amount,
         memo="",
@@ -164,7 +164,7 @@ async def test_default_working_account_in_transfer(
         "transfer",
         f"--to={other_account_name}",
         f"--amount={option_to_string(amount)}",
-        f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
+        f"--sign={ALT_WORKING_ACCOUNT1_KEY_ALIAS}",
     ]
 
     # ACT
