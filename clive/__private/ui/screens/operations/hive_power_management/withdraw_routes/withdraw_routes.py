@@ -126,7 +126,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input
                     yield self._auto_vest_checkbox
-                yield TransactionButtons(self.ensure_bindings_list_type())
+                yield TransactionButtons(self.ensure_bindings_with_binding_type())
             yield WithdrawRoutesTable()
 
     def _additional_actions_after_clearing_inputs(self) -> None:

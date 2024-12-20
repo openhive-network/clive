@@ -60,7 +60,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._amount_input
             yield self._memo_input
             yield TransactionButtons(
-                OperationActionBindings.ensure_bindings_list_type()
+                OperationActionBindings.ensure_bindings_with_binding_type()
             )  # self.BINDINGS returns `OperationBaseScreen` bindings.
 
     def _check_is_known_exchange_in_input(self) -> bool:
