@@ -24,7 +24,7 @@ from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_
 from clive.__private.settings import clive_prefixed_envvar
 
 BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
-    "You must provide a password or a beekeeper unlocked session token set via envvar"
+    "You must provide a password or a beekeeper unlocked session token set via envvar"  # noqa: S105
 )
 
 
