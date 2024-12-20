@@ -432,3 +432,6 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["configure", "tracked-account", "remove"], **extract_params(locals())
         )
+
+    def show_profile(self, *, beekeeper_remote: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "profile"], **extract_params(locals()))
