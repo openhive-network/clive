@@ -312,7 +312,7 @@ class Savings(OperationBaseScreen):
 
     def __init__(
         self,
-        initial_tab: SavingsTabType = "pending-transfers-tab",
+        initial_tab: SavingsTabType = "transfer-tab",
         default_transfer_type: TransferType = "to-savings",
         default_asset_selected: type[Asset.LiquidT] = Asset.Hive,
     ) -> None:
