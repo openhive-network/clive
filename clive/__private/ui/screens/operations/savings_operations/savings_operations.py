@@ -312,7 +312,7 @@ class Savings(OperationBaseScreen):
 
     def __init__(
         self,
-        initial_tab: SavingsTabType = "pending-transfers-tab",
+        initial_tab: SavingsTabType = "transfer-tab",
         default_transfer_type: TransferType = "to-savings",
         default_asset_selected: type[Asset.LiquidT] = Asset.Hive,
     ) -> None:
@@ -329,5 +329,5 @@ class Savings(OperationBaseScreen):
                 yield SavingsInterestInfo()
             yield SavingsAPR(provider)
             with CliveTabbedContent(initial=self._initial_tab):
-                yield PendingTransfersPane()
                 yield SavingsTransfers(self._default_transfer_type, default_asset_selected=self._default_asset_selected)
+                yield PendingTransfersPane()
