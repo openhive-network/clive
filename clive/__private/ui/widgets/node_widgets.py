@@ -59,8 +59,26 @@ class NodesList(Container, CliveWidget):
         with self.prevent(NodeSelector.Changed):
             yield NodeSelector()
 
-    async def save_selected_node_address(self) -> None:
+    async def save_selected_node_address(self) -> bool:
+        self.app.pause_refresh_node_data_interval()
         address = self.query_exactly_one(NodeSelector).value_ensure
+
+        previous_node_address = self.node.address
+        previous_network_type = await self.node.cached.network_type
+
         await self._node.set_address(address)
-        self.app.trigger_node_watchers()
-        self.notify(f"Node address set to `{self._node.address}`.")
+
+        new_network_type = await self.node.cached.network_type
+
+        if new_network_type == previous_network_type:
+            self.app.trigger_node_watchers()
+            self.notify(f"Node address set to `{self._node.address}`.")
+            self.app.resume_refresh_node_data_interval()
+            return True
+
+        # block possibility to stay connected to node with different network type
+        await self._node.set_address(previous_node_address)
+        self.node.cached.clear()
+        self.notify("Cannot connect to a node with a different network type.", severity="error")
+        self.app.resume_refresh_node_data_interval()
+        return False
