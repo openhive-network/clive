@@ -33,5 +33,6 @@ class SwitchNodeAddressDialog(CliveActionDialog):
         self.app.run_worker(self._switch_node_address())
 
     async def _switch_node_address(self) -> None:
-        await self.query_exactly_one(NodesList).save_selected_node_address()
-        await self.app.pop_screen()
+        change_node_succeeded = await self.query_exactly_one(NodesList).save_selected_node_address()
+        if change_node_succeeded:
+            await self.app.pop_screen()
