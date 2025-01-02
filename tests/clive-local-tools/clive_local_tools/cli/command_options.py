@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from copy import deepcopy
+from copy import deepcopy, copy
 from pathlib import Path
 from typing import TypeAlias
 
@@ -44,8 +44,11 @@ def kwargs_to_cli_options(**cli_options: CliOptionT) -> list[str]:
 
 
 def extract_params(params: dict[str, CliOptionT], *param_names_to_drop: str) -> dict[str, CliOptionT]:
-    named_params = deepcopy(params)
-    named_params.pop("self")
+    # TODO: this should be CLITester instancemethod, not global function
+    # deepcopy on self is not possible as it causes CLITester to be copied but it cant be because of Beekeeper
+    copied_params = copy(params)
+    copied_params.pop("self")
+    named_params = deepcopy(copied_params)
     for name in param_names_to_drop:
         named_params.pop(name)
     return named_params

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
+from clive import World
 from .chaining.update_authority import (
     UpdateActiveAuthority,
     UpdateAuthority,
@@ -27,9 +28,10 @@ if TYPE_CHECKING:
 
 
 class CLITester:
-    def __init__(self, typer: CliveTyper, runner: CliRunner) -> None:
+    def __init__(self, typer: CliveTyper, runner: CliRunner, world: World) -> None:
         self.__typer = typer
         self.__runner = runner
+        self.world = world
 
     def invoke_raw_command(self, command: list[str], password_stdin: str | None = None) -> Result:
         tt.logger.info(f"Executing command {command}.")

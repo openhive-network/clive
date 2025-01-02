@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
+from clive.__private.core.world import World
 from clive.__private.models.schemas import TransferToVestingOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
-    from clive.__private.core.world import World
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -40,13 +40,13 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_power_up_no_default_account(
-    prepare_beekeeper_wallet: World, node: tt.RawNode, cli_tester: CLITester
-) -> None:
+async def test_power_up_no_default_account(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
     other_key = PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias)
-    await import_key(prepare_beekeeper_wallet, other_key)
+    async with World() as world_cm:
+        await import_key(world_cm, other_key)
+
     operation = TransferToVestingOperation(
         from_=OTHER_ACCOUNT.name,
         to=EMPTY_ACCOUNT.name,

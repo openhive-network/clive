@@ -79,6 +79,7 @@ class Beekeeper:
         self,
         *,
         remote_endpoint: Url | None = None,
+        token: str | None = None,
         run_in_background: bool = False,
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
     ) -> None:
@@ -94,7 +95,8 @@ class Beekeeper:
         self.__notification_server = BeekeeperNotificationsServer(lambda: self.token, notify_closing_wallet_name_cb)
         self.api = BeekeeperApi(self)
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
-        self.__token: str | None = None
+        self.__token: str | None = token
+        self._was_initial_token_set = token is not None
         self.__next_time_unlock = perf_counter()
 
     async def __aenter__(self) -> Self:
@@ -136,7 +138,7 @@ class Beekeeper:
             webserver_http_endpoint=webserver_http_endpoint,
         )
         await self.__start(arguments=arguments)
-        if not self._is_session_token_env_var_set():
+        if not self._is_session_token_env_var_set() and not self.__token:
             await self.__set_token()
         assert self.token
         return self
@@ -269,9 +271,8 @@ class Beekeeper:
         return self.__executable.get_wallet_dir()
 
     async def close(self) -> None:
-        if self._is_session_token_env_var_set():
-            env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
-            logger.info(f"Environment variable `{env_var}` is set, aborting beekeeper closure.")
+        if self._is_session_token_env_var_set() or self._was_initial_token_set:
+            logger.info("Skipping beekeeper closure due to session token being explicitly set.")
             return
         logger.info("Closing Beekeeper...")
         if self.__token:

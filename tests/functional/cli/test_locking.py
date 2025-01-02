@@ -30,12 +30,12 @@ async def prepare_second_profile() -> Profile:
 
 @pytest.fixture
 async def prepare_second_beekeeper_wallet(
-    beekeeper: Beekeeper,
+    beekeeper_local: Beekeeper,
     prepare_second_profile: Profile,  # noqa: ARG001
 ) -> None:
     wallet_name = ALT_WORKING_ACCOUNT1_NAME
-    await beekeeper.api.create(wallet_name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
-    await beekeeper.api.lock(wallet_name=wallet_name)
+    await beekeeper_local.api.create(wallet_name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
+    await beekeeper_local.api.lock(wallet_name=wallet_name)
 
 
 @pytest.fixture
@@ -67,22 +67,22 @@ async def test_negative_unlock_without_remote_address(cli_tester_without_remote_
         )
 
 
-async def test_lock(beekeeper: Beekeeper, cli_tester: CLITester) -> None:
+async def test_lock(beekeeper_local: Beekeeper, cli_tester: CLITester) -> None:
     # ACT
     cli_tester.lock()
 
     # ASSERT
-    await assert_wallets_locked(beekeeper)
+    await assert_wallets_locked(beekeeper_local)
 
 
-async def test_unlock_one_profile(beekeeper: Beekeeper, cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_unlock_one_profile(beekeeper_local: Beekeeper, cli_tester_with_session_token_locked: CLITester) -> None:
     # ACT
     cli_tester_with_session_token_locked.unlock(
         profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD
     )
 
     # ASSERT
-    await assert_wallet_unlocked(beekeeper, WORKING_ACCOUNT_NAME)
+    await assert_wallet_unlocked(beekeeper_local, WORKING_ACCOUNT_NAME)
 
 
 async def test_negative_unlocking_single_profile_when_multiple_profiles_exist(

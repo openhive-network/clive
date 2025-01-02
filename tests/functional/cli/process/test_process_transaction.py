@@ -117,7 +117,7 @@ async def test_process_unsigned_transaction(
 async def test_session_token_not_unlocked(
     cli_tester: CLITester,
     tmp_path: Path,
-    beekeeper: Beekeeper,
+    beekeeper_local: Beekeeper,
 ) -> None:
     """Check if clive process transfer throws exception when wallet is not unlocked."""
     # ARRANGE
@@ -128,7 +128,7 @@ async def test_session_token_not_unlocked(
         broadcast=False,
         save_file=trx_file(tmp_path),
     )
-    await beekeeper.api.lock_all()
+    await beekeeper_local.api.lock_all()
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
