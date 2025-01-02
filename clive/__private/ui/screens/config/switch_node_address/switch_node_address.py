@@ -31,5 +31,11 @@ class SwitchNodeAddress(BaseScreen):
 
     @on(NodeSelector.Changed)
     async def save_selected_node_address(self) -> None:
-        self.query_exactly_one(SelectedNodeAddress).node_address = self.query_exactly_one(NodeSelector).value_ensure
-        await self.query_exactly_one(NodesList).save_selected_node_address()
+        node_change_succeeded = await self.query_exactly_one(NodesList).save_selected_node_address()
+        node_selector = self.query_exactly_one(NodeSelector)
+        if not node_change_succeeded:
+            # restore initial value in NodesList
+            with self.prevent(NodeSelector.Changed):
+                node_selector.value = self.profile.node_address
+        else:
+            self.query_exactly_one(SelectedNodeAddress).node_address = node_selector.value_ensure
