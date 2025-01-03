@@ -256,7 +256,7 @@ class Proposals(GovernanceTabPane):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: TextType) -> None:
-        super().__init__(title=title)
+        super().__init__(title=title, id="proposals")
 
     def compose(self) -> ComposeResult:
         self.__proposals_table = ProposalsTable()

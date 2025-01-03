@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
 
@@ -17,14 +17,23 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
+GovernanceTabType = Literal["proxy", "witnesses", "proposals"]
+
+
 class Governance(OperationBaseScreen):
     CSS_PATH = [
         *OperationBaseScreen.CSS_PATH,
         get_relative_css_path(__file__),
     ]
 
+    def __init__(self, initial_tab: GovernanceTabType = "proxy") -> None:
+        super().__init__()
+        self._initial_tab = initial_tab
+
     def create_left_panel(self) -> ComposeResult:
-        with WitnessesDataProvider(paused=True), ProposalsDataProvider(paused=True), CliveTabbedContent():
+        with WitnessesDataProvider(paused=True), ProposalsDataProvider(paused=True), CliveTabbedContent(
+            initial=self._initial_tab
+        ):
             yield Proxy("Proxy")
             yield Witnesses("Witnesses")
             yield Proposals("Proposals")

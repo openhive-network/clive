@@ -292,7 +292,7 @@ class Witnesses(GovernanceTabPane):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: TextType) -> None:
-        super().__init__(title=title)
+        super().__init__(title=title, id="witnesses")
 
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
