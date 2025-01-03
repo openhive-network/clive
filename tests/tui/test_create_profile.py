@@ -90,12 +90,12 @@ async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
 async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
     assert_is_screen_active(pilot, NewKeyAliasFormScreen)
     assert_is_clive_composed_input_focused(
-        pilot, PublicKeyAliasInput, context="KeyAliasForm screen should have initial focus"
+        pilot, PrivateKeyInput, context="KeyAliasForm screen should have initial focus"
     )
-    await write_text(pilot, alias_name)
-    await focus_next(pilot)
-    assert_is_clive_composed_input_focused(pilot, PrivateKeyInput)
     await write_text(pilot, private_key)
+    await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, PublicKeyAliasInput)
+    await write_text(pilot, alias_name)
 
 
 async def create_profile_finish(pilot: ClivePilot) -> None:

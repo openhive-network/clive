@@ -29,7 +29,7 @@ class SubTitle(Static):
 class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = True
+    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     SECTION_TITLE: ClassVar[str] = "Change me in subclass"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -49,9 +49,9 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
     def create_main_panel(self) -> ComposeResult:
         yield from self._content_after_big_title()
         with SectionScrollable(self.SECTION_TITLE):
-            yield self._key_alias_input
             yield from self._content_after_alias_input()
             yield self._public_key_input
+            yield self._key_alias_input
             if self.world.is_in_create_profile_mode:
                 yield NavigationButtons(is_finish=True)
         yield SelectCopyPasteHint()

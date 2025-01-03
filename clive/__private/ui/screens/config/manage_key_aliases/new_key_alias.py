@@ -17,7 +17,6 @@ from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form
 )
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
-    CliveValidatedInput,
     CliveValidatedInputError,
     FailedManyValidationError,
 )
@@ -71,10 +70,17 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         ------
         FailedManyValidationError: when cannot create a private key from the given inputs.
         """
-        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
+        self._key_input.validate_with_error()
+
+        if not self._key_alias_input.is_empty:
+            self._key_alias_input.validate_with_error()
 
         private_key = self._key_input.value_or_error
-        key_alias = self._key_alias_input.value_or_error
+        key_alias = (
+            self._key_alias_input.value_or_error
+            if not self._key_alias_input.is_empty
+            else self._private_key.calculate_public_key().value
+        )
         return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
 
     def action_load_from_file(self) -> None:
@@ -111,7 +117,10 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         ------
         FailedManyValidationError: when key alias or private key inputs are invalid.
         """
-        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
+        if not self._key_alias_input.is_empty:
+            self._key_alias_input.validate_with_error()
+
+        self._key_input.validate_with_error()
 
     def _content_after_alias_input(self) -> ComposeResult:
         yield self._key_input

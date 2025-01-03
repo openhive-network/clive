@@ -23,7 +23,6 @@ class NewKeyAliasFormScreen(
     BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
-    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
