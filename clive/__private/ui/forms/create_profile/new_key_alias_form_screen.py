@@ -23,7 +23,6 @@ class NewKeyAliasFormScreen(
     BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
-    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -48,7 +47,7 @@ class NewKeyAliasFormScreen(
         logger.debug("New private key is waiting to be imported...")
 
     def is_step_optional(self) -> bool:
-        return self._key_input.is_empty or self._key_alias_input.is_empty
+        return self._key_input.is_empty
 
     def get_node(self) -> Node:
         return self.context.node

@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
+    from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+
 
 class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
     BINDINGS = [
@@ -71,10 +73,14 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         ------
         FailedManyValidationError: when cannot create a private key from the given inputs.
         """
-        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
+        CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
         private_key = self._key_input.value_or_error
-        key_alias = self._key_alias_input.value_or_error
+        key_alias = (
+            self._key_alias_input.value_or_error
+            if not self._key_alias_input.is_empty
+            else self._private_key.calculate_public_key().value
+        )
         return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
 
     def action_load_from_file(self) -> None:
@@ -111,7 +117,15 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         ------
         FailedManyValidationError: when key alias or private key inputs are invalid.
         """
-        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
+        CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
+
+    def _get_inputs_to_validate(self) -> list[PrivateKeyInput | PublicKeyAliasInput]:
+        inputs_to_validate: list[PrivateKeyInput | PublicKeyAliasInput] = [self._key_input]
+
+        if not self._key_alias_input.is_empty:
+            inputs_to_validate.append(self._key_alias_input)
+
+        return inputs_to_validate
 
     def _content_after_alias_input(self) -> ComposeResult:
         yield self._key_input

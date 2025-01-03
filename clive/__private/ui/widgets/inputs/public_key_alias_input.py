@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.tui.placeholders import KEY_ALIAS_PLACEHOLDER
+from clive.__private.core.constants.tui.placeholders import KEY_ALIAS_PLACEHOLDER, SETTING_KEY_ALIAS_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
@@ -21,7 +21,7 @@ class PublicKeyAliasInput(TextInput):
         self,
         title: str = "Key alias",
         value: str | None = None,
-        placeholder: str = KEY_ALIAS_PLACEHOLDER,
+        placeholder: str | None = None,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
@@ -44,6 +44,11 @@ class PublicKeyAliasInput(TextInput):
         key_manager: Key manager to use for validation. If not provided, the key manager from the world will be used.
         """
         key_manager = key_manager if key_manager is not None else self.profile.keys
+        placeholder = (
+            placeholder
+            if placeholder is not None
+            else (SETTING_KEY_ALIAS_PLACEHOLDER if setting_key_alias else KEY_ALIAS_PLACEHOLDER)
+        )
 
         super().__init__(
             title=title,

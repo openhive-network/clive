@@ -16,6 +16,7 @@ MEMO_PLACEHOLDER: Final[str] = "e.g.: For the coffee!"
 KNOWN_EXCHANGE_MEMO_PLACEHOLDER: Final[str] = "Check the memo of your exchange account!"
 
 KEY_ALIAS_PLACEHOLDER: Final[str] = "e.g.: my-active-key"
+SETTING_KEY_ALIAS_PLACEHOLDER: Final[str] = f"{KEY_ALIAS_PLACEHOLDER} (if not passed - the public key will be used)"
 
 PATH_PLACEHOLDER: Final[str] = "e.g.: /home/me/some-path"
 KEY_FILE_PATH_PLACEHOLDER: Final[str] = "e.g. /home/me/my-active-key.wif"
