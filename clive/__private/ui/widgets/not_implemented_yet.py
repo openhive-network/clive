@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.styling import label_future_functionality
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -31,7 +31,7 @@ class NotImplementedYetTabPane(TabPane):
             yield Static("The functionality will be available soon.")
 
 
-class NotImplementedYetButton(CliveButton):
+class NotImplementedYetButton(OneLineButton):
     def __init__(
         self,
         label: TextType,
