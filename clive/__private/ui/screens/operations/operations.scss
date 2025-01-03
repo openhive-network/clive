@@ -2,15 +2,18 @@ Operations {
   OperationButton,
   NotImplementedYetButton {
     margin: 1 2 0 2;
-    width: 1fr;
+    width: 40%;
   }
 
-  Tab {
-    width: 1fr;
-  }
+  Section {
+    margin: 1 2 0 2;
 
-  #hint {
-    text-style: bold;
-    text-align: center;
+    SectionBody {
+      align-horizontal: center;
+    }
+
+    .first-in-section {
+      margin: 0 2;
+    }
   }
 }
