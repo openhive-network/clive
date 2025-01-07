@@ -81,7 +81,7 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 @pytest.fixture
 async def cli_tester(
     node: tt.RawNode,  # noqa: ARG001
-    prepare_beekeeper_wallet: World,  # noqa: ARG001
+    prepare_beekeeper_wallet: World,
 ) -> CLITester:
     """
     Will return CliveTyper and CliRunner from typer.testing module.
@@ -94,7 +94,7 @@ async def cli_tester(
 
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)
-    return CLITester(cli, runner)
+    return CLITester(cli, runner, prepare_beekeeper_wallet)
 
 
 @pytest.fixture

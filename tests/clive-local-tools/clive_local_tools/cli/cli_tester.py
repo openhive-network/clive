@@ -22,14 +22,20 @@ if TYPE_CHECKING:
     from clive.__private.cli.clive_typer import CliveTyper
     from clive.__private.cli.types import AuthorityType
     from clive.__private.core.commands.sign import AlreadySignedMode
+    from clive.__private.core.world import World
     from clive.__private.models.schemas import PublicKey
     from clive_local_tools.cli.command_options import CliOptionT
 
 
 class CLITester:
-    def __init__(self, typer: CliveTyper, runner: CliRunner) -> None:
+    def __init__(self, typer: CliveTyper, runner: CliRunner, world: World) -> None:
         self.__typer = typer
         self.__runner = runner
+        self.__world = world
+
+    @property
+    def world(self) -> World:
+        return self.__world
 
     def invoke_raw_command(self, command: list[str], password_stdin: str | None = None) -> Result:
         tt.logger.info(f"Executing command {command}.")
