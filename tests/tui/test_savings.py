@@ -122,7 +122,6 @@ async def go_to_savings(pilot: ClivePilot) -> None:
     assert_is_dashboard(pilot)
     await press_and_wait_for_screen(pilot, "f2", Operations)
     await focus_next(pilot)
-    await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
 
@@ -183,7 +182,6 @@ async def test_savings(  # noqa: PLR0913
     # ACT
     ### Create transfer to savings
     await go_to_savings(pilot)
-    await pilot.press("right")
 
     # Fill transfer to savings data
     await fill_savings_data(pilot, operation_type, other_account, asset, memo)
@@ -241,7 +239,6 @@ async def test_savings_finalize_cart(
     ### Create transfers
     # Choose savings operation
     await go_to_savings(pilot)
-    await pilot.press("right")
 
     for i in range(TRANSFERS_COUNT):
         # Fill transfer savings data
@@ -306,6 +303,7 @@ async def test_canceling_transfer_from_savings(
         # Test canceling first transfer from savings
         # ACT
         await go_to_savings(pilot)
+        await pilot.press("right")  # switch tab to pending transfers
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
         await press_and_wait_for_screen(pilot, "f6", TransactionSummary)  # Finalize transaction

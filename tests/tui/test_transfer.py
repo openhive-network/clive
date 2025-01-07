@@ -95,7 +95,6 @@ async def test_transfers(
     # ACT
     ### Create transfer
     await press_and_wait_for_screen(pilot, "f2", Operations)
-    await focus_next(pilot)  # Choose transfer operation
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     # Fill transfer data
@@ -141,7 +140,6 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
     ### Create 2 transfers
     # Choose transfer operation
     await press_and_wait_for_screen(pilot, "f2", Operations)
-    await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     for i in range(TRANSFERS_COUNT):
