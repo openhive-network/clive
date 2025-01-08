@@ -160,9 +160,8 @@ class Clive(App[int]):
         # If at this level we caught exception it means that TUI will not launch. In that case we can display:
         #    1) more verbose info for devs (if in dev mode),
         #    2) user friendly message.
-        except BeekeeperSetupError:
-            message = "An error occurs while setting up Beekeeper.\nPlease do `clive beekeeper close` and try again."
-            self._print_message_and_exit(message=message)
+        except BeekeeperSetupError as ex:
+            self._print_message_and_exit(message=str(ex))
         except CliveError:
             if is_in_dev_mode():
                 raise

@@ -138,7 +138,16 @@ class World:
                 try:
                     self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
                 except CommunicationError as ce:
-                    raise BeekeeperSetupError from ce
+                    error_message = "An error occuress during communication with Beekeeper"
+                    if ce.is_response_available:
+                        error_message = " ".join(ce.get_response_error_messages())
+                    if not Beekeeper.is_pid_valid():
+                        from clive.__private.cli.exceptions import CLIBeekeeperDanglingPidError
+
+                        error_message = CLIBeekeeperDanglingPidError().message
+
+                    raise BeekeeperSetupError(error_message) from ce
+
                 if self._should_sync_with_beekeeper:
                     await self._commands.sync_state_with_beekeeper()
         return self

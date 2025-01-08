@@ -9,7 +9,7 @@ import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIBeekeeperDanglingPidError, CLIBeekeeperInstanceAlreadyRunningError
 from clive.__private.core.beekeeper import Beekeeper
 
 
@@ -23,14 +23,12 @@ class BeekeeperInfo(BeekeeperBasedCommand):
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
-    async def _run(self) -> None:
-        if Beekeeper.is_already_running_locally():
-            message = (
-                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
-                f" {Beekeeper.get_pid_from_file()}"
-            )
-            raise CLIPrettyError(message, errno.EEXIST)
+    async def validate(self) -> None:
+        self._validate_dangling_pid()
+        self._validate_local_instance_already_running()
+        await super().validate()
 
+    async def _run(self) -> None:
         typer.echo("Launching beekeeper...")
 
         async with Beekeeper(run_in_background=self.background) as beekeeper:
@@ -38,6 +36,18 @@ class BeekeeperSpawn(ExternalCLICommand):
 
             if not self.background:
                 self.__serve_forever()
+
+    def _validate_dangling_pid(self) -> None:
+        if Beekeeper.is_already_running_locally() and not Beekeeper.is_pid_valid():
+            raise CLIBeekeeperDanglingPidError
+
+    def _validate_local_instance_already_running(self) -> None:
+        if Beekeeper.is_already_running_locally():
+            beekeeper_address_from_file = Beekeeper.get_remote_address_from_connection_file()
+            assert beekeeper_address_from_file, "Beekeeper address is known"
+            beekeeper_address = beekeeper_address_from_file.as_string()
+            beekeeper_pid = Beekeeper.get_pid_from_file()
+            raise CLIBeekeeperInstanceAlreadyRunningError(beekeeper_address, beekeeper_pid)
 
     @staticmethod
     def __serve_forever() -> None:
