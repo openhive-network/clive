@@ -206,6 +206,19 @@ class Beekeeper:
         return BeekeeperExecutable.get_pid_from_file()
 
     @staticmethod
+    def is_pid_valid() -> bool:
+        """Check For the existence of a unix pid."""
+        import os
+
+        try:
+            pid = BeekeeperExecutable.get_pid_from_file()
+            os.kill(pid, 0)
+        except OSError:
+            return False
+        else:
+            return True
+
+    @staticmethod
     def is_already_running_locally() -> bool:
         return BeekeeperExecutable.is_already_running()
 
