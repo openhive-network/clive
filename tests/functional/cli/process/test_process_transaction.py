@@ -18,7 +18,6 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -127,7 +126,8 @@ async def test_negative_process_transaction_in_locked(
         broadcast=False,
         save_file=trx_file(tmp_path),
     )
-    await cli_tester.world.beekeeper.api.lock_all()
+    beekeeper = cli_tester.world.beekeeper
+    await beekeeper.api.lock_all()
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

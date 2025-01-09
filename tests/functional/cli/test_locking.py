@@ -75,35 +75,29 @@ async def test_lock(cli_tester: CLITester) -> None:
     await assert_wallets_locked(cli_tester.world.beekeeper)
 
 
-async def test_unlock_one_profile(cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_unlock_one_profile(cli_tester_locked: CLITester) -> None:
     # ACT
-    cli_tester_with_session_token_locked.unlock(
-        profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD
-    )
+    cli_tester_locked.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD)
 
     # ASSERT
-    await assert_wallet_unlocked(cli_tester_with_session_token_locked.world.beekeeper, WORKING_ACCOUNT_NAME)
+    await assert_wallet_unlocked(cli_tester_locked.world.beekeeper, WORKING_ACCOUNT_NAME)
 
 
 async def test_negative_unlocking_single_profile_when_multiple_profiles_exist(
-    cli_tester_with_session_token_locked: CLITester,
+    cli_tester_locked: CLITester,
     prepare_second_beekeeper_wallet: None,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     message = "All wallets in session should be locked."
-    cli_tester_with_session_token_locked.unlock(
-        profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD
-    )
+    cli_tester_locked.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
 
     # ACT
     # ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.unlock(
-            profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD
-        )
+        cli_tester_locked.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
 
 
-async def test_negative_unlock_profile_name_invalid(cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_negative_unlock_profile_name_invalid(cli_tester_locked: CLITester) -> None:
     # ARRANGE
     invalid_profile_name = "invalid-profile-name"
     message = f"Profile `{invalid_profile_name}` does not exist."
@@ -111,12 +105,10 @@ async def test_negative_unlock_profile_name_invalid(cli_tester_with_session_toke
     # ACT
     # ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.unlock(
-            profile_name=invalid_profile_name, password_stdin=WORKING_ACCOUNT_PASSWORD
-        )
+        cli_tester_locked.unlock(profile_name=invalid_profile_name, password_stdin=WORKING_ACCOUNT_PASSWORD)
 
 
-async def test_negative_unlock_password_invalid(cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_negative_unlock_password_invalid(cli_tester_locked: CLITester) -> None:
     # ARRANGE
     invalid_password = "invalid-password"
     message = f"Password for profile `{WORKING_ACCOUNT_NAME}` is incorrect."
@@ -124,7 +116,7 @@ async def test_negative_unlock_password_invalid(cli_tester_with_session_token_lo
     # ACT
     # ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=invalid_password)
+        cli_tester_locked.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=invalid_password)
 
 
 async def test_negative_unlock_already_unlocked(cli_tester: CLITester) -> None:

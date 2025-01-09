@@ -41,13 +41,13 @@ async def test_unlocked_profile(cli_tester: CLITester) -> None:
     assert f"Profile name: {WORKING_ACCOUNT_NAME}" in result.output
 
 
-async def test_negative_no_unlocked_profile(cli_tester_with_session_token_locked: CLITester) -> None:
+async def test_negative_no_unlocked_profile(cli_tester_locked: CLITester) -> None:
     # ARRANGE
     expected_error = CLINoProfileUnlockedError.MESSAGE
 
     # ACT
     with pytest.raises(AssertionError) as exception_info:
-        cli_tester_with_session_token_locked.show_balances()
+        cli_tester_locked.show_balances()
 
     # ASSERT
     assert expected_error in str(exception_info.value)

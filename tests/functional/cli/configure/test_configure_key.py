@@ -27,55 +27,55 @@ async def assert_key_exists(beekeeper: Beekeeper, private_key: PrivateKey, *, sh
         assert not exists, "Beekeeper should not have given private key."
 
 
-async def test_configure_key_add(beekeeper: Beekeeper, cli_tester: CLITester) -> None:
+async def test_configure_key_add(cli_tester: CLITester) -> None:
     """Check clive configure key add command."""
     # ARRANGE
     pk = PrivateKey.create()
-    await assert_key_exists(beekeeper, pk, should_exists=False)
+    await assert_key_exists(cli_tester.world.beekeeper, pk, should_exists=False)
 
     # ACT
     cli_tester.configure_key_add(key=pk.value, alias="add_key")
 
     # ASSERT
-    await assert_key_exists(beekeeper, pk, should_exists=True)
+    await assert_key_exists(cli_tester.world.beekeeper, pk, should_exists=True)
 
 
-async def test_configure_key_add_with_beekeeper_session_token_not_unlocked(
-    cli_tester_with_session_token_locked: CLITester,
+async def test_negative_configure_key_add_in_locked(
+    cli_tester_locked: CLITester,
 ) -> None:
-    """Check if clive configure add_key command throws exception when wallet is not unlocked using session token."""
+    """Check if clive configure add_key command throws exception when wallet is locked."""
     # ARRANGE
     pk = PrivateKey.create()
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.configure_key_add(key=pk.value, alias="add_key")
+        cli_tester_locked.configure_key_add(key=pk.value, alias="add_key")
 
 
 @pytest.mark.parametrize("from_beekeeper", [True, False])
-async def test_configure_key_remove(beekeeper: Beekeeper, cli_tester: CLITester, *, from_beekeeper: bool) -> None:
+async def test_configure_key_remove(cli_tester: CLITester, *, from_beekeeper: bool) -> None:
     """Check clive configure key remove command."""
     # ARRANGE
     pk = PrivateKey.create()
-    await assert_key_exists(beekeeper, pk, should_exists=False)
+    await assert_key_exists(cli_tester.world.beekeeper, pk, should_exists=False)
     cli_tester.configure_key_add(key=pk.value, alias="key")
-    await assert_key_exists(beekeeper, pk, should_exists=True)
+    await assert_key_exists(cli_tester.world.beekeeper, pk, should_exists=True)
 
     # ACT
     cli_tester.configure_key_remove(alias="key", from_beekeeper=from_beekeeper)
 
     # ASSERT
-    await assert_key_exists(beekeeper, pk, should_exists=not from_beekeeper)
+    await assert_key_exists(cli_tester.world.beekeeper, pk, should_exists=not from_beekeeper)
 
 
-async def test_configure_key_remove_with_beekeeper_session_token_not_unlocked(
-    cli_tester_with_session_token_locked: CLITester,
+async def test_negative_configure_key_remove_in_locked(
+    cli_tester_locked: CLITester,
 ) -> None:
-    """Check if clive configure key remove command throws exception when wallet is not unlocked using session token."""
+    """Check if clive configure key remove command throws exception when wallet is locked."""
     # ARRANGE
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.configure_key_remove(alias="doesnt-matter")
+        cli_tester_locked.configure_key_remove(alias="doesnt-matter")

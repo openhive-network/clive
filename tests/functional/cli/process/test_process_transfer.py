@@ -15,7 +15,6 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.cli.cli_tester import CLITester
 
 import test_tools as tt
@@ -110,21 +109,21 @@ async def test_process_transfer_with_beekeeper_session_token_missing(
         )
 
 
-async def test_process_transfer_with_beekeeper_session_token_not_unlocked(
-    cli_tester_with_session_token_locked: CLITester,
+async def test_process_transfer_in_locked(
+    cli_tester_locked: CLITester,
 ) -> None:
-    """Check if clive process transfer throws exception when wallet is not unlocked."""
+    """Check if clive process transfer throws exception when wallet is locked."""
     # ARRANGE
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_locked.process_transfer(
+        cli_tester_locked.process_transfer(
             from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
 
 
-async def test_process_transfer_with_beekeeper_session_token_unlocked_without_sign(
+async def test_process_transfer_in_unlocked_without_sign(
     cli_tester: CLITester,
 ) -> None:
     """Check if clive process transfer without sign throws exception when wallet is unlocked."""
