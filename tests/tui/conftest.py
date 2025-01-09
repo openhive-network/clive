@@ -95,7 +95,7 @@ async def prepared_env(
 @pytest.fixture
 async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
-    pilot.app.world.profile = pilot.app.world.profile.load(WORKING_ACCOUNT_DATA.account.name)
+    await pilot.app.world.load_profile(WORKING_ACCOUNT_DATA.account.name)
 
     await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD, permanent=True)
 
