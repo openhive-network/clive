@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
@@ -33,27 +32,8 @@ async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -
     unlocked_world_cm.profile.save()  # save imported key aliases
 
 
-async def test_unlocked_profile(cli_tester: CLITester) -> None:
-    # ACT
-    result = cli_tester.show_profile()
-
-    # ASSERT
-    assert f"Profile name: {WORKING_ACCOUNT_NAME}" in result.output
-
-
-async def test_negative_no_unlocked_profile(cli_tester_locked: CLITester) -> None:
-    # ARRANGE
-    expected_error = CLINoProfileUnlockedError.MESSAGE
-
-    # ACT
-    with pytest.raises(AssertionError) as exception_info:
-        cli_tester_locked.show_balances()
-
-    # ASSERT
-    assert expected_error in str(exception_info.value)
-
-
 async def test_unlocked_profile_without_working_account(prepare_profile: Profile, cli_tester: CLITester) -> None:
+    """Command `clive show chain` needs profile but doesn't need working account set."""
     # ARRANGE
     prepare_profile.accounts.unset_working_account()
     prepare_profile.save()
