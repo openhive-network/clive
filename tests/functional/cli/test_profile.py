@@ -22,7 +22,6 @@ async def test_unlocked_profile(cli_tester: CLITester) -> None:
 
 
 async def test_negative_no_unlocked_profile(cli_tester_locked: CLITester) -> None:
-    """Command `clive show balances` needs argument `working_account` or profile needs working account set."""
     # ARRANGE
     expected_error = CLINoProfileUnlockedError.MESSAGE
 

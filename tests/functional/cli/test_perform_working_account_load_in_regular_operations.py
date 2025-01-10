@@ -99,7 +99,8 @@ async def test_custom_authority_in_custom_json_operation(
     assert_operations_placed_in_blockchain(node, transaction_id, operation)
 
 
-async def test_default_working_account_in_transfer(node: tt.RawNode, cli_tester: CLITester) -> None:
+async def test_perform_working_account_load_in_regular_operations(node: tt.RawNode, cli_tester: CLITester) -> None:
+    """Command `clive process transfer` needs argument `working_account` or profile needs working account set."""
     # ARRANGE
     other_account_name = WATCHED_ACCOUNTS_NAMES[1]
     amount = tt.Asset.Hive(13.17)
