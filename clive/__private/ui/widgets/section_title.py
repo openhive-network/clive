@@ -31,7 +31,7 @@ class SectionTitle(Static):
     def __init__(
         self, title: str, variant: SectionTitleVariant = "default", id_: str | None = None, classes: str | None = None
     ) -> None:
-        super().__init__(renderable=title, id=id_, classes=classes)
+        super().__init__(title, id=id_, classes=classes)
         self.variant = variant
 
     def watch_variant(self, old_variant: str, variant: str) -> None:
