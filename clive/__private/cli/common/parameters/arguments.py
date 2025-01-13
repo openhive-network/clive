@@ -11,7 +11,6 @@ from __future__ import annotations
 import typer
 
 from clive.__private.cli.common.parameters import modified_param
-from clive.__private.cli.common.parameters.get_default import get_default_or_make_optional, get_default_profile_name
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD, REQUIRED_AS_ARG_OR_OPTION
 
 working_account_template = typer.Argument(
@@ -22,4 +21,4 @@ working_account_template = typer.Argument(
 
 account_name = modified_param(working_account_template)
 
-profile_name = typer.Argument(..., help="The profile to use.")
+profile_name = typer.Argument(..., help=f"The profile to use. {REQUIRED_AS_ARG_OR_OPTION}")

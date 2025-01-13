@@ -13,7 +13,7 @@ from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.models.schemas import ChainId, OperationBase
 from clive.__private.settings import safe_settings
-from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
+from clive.__private.storage.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.exceptions import CliveError
 
@@ -227,68 +227,15 @@ class Profile(Context):
         return PersistentStorageService().list_stored_profile_names()
 
     @classmethod
-    def is_default_profile_set(cls) -> bool:
-        return PersistentStorageService().is_default_profile_set()
-
-    @classmethod
-    def get_default_profile_name(cls) -> str:
-        """
-        Get the profile name of default profile set in the storage.
-
-        Args:
-        ----
-            storage: Storage model to be used. If not provided, storage will be loaded from the disk.
-
-        Raises:
-        ------
-            NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
-        """
-        return PersistentStorageService().get_default_profile_name()
-
-    @classmethod
-    def set_default_profile(cls, profile_name: str) -> None:
-        """
-        Set profile with the given name as default.
-
-        Args:
-        ----
-            profile_name: Name of the profile to be set as default.
-
-        Raises:
-        ------
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
-        """
-        PersistentStorageService().set_default_profile(profile_name)
-
-    @classmethod
-    def load(cls, name: str | None = None) -> Profile:
+    def load(cls, name: str) -> Profile:
         """
         Load profile with the given name from the database.
 
-        Cases:
-        1. if name=None and is_default_profile_set=True -> load default profile
-        2. if name=None and is_default_profile_set=False -> raise error
-        3. if name="some_name" and is_default_profile_set=True -> load "some_name"
-        4. if name="some_name" and is_default_profile_set=False -> load "some_name".
-
         Args:
         ----
-            name: Name of the profile to load. If None, the default profile is loaded.
-
-        Raises:
-        ------
-            NoDefaultProfileToLoadError: If name is None but no default profile is set.
+            name: Name of the profile to load.
         """
-
-        def create_new_profile(new_profile_name: str) -> Profile:
-            return cls.create(new_profile_name)
-
-        _name = name or cls.get_default_profile_name()
-
-        try:
-            return PersistentStorageService().load_profile(_name)
-        except ProfileDoesNotExistsError:
-            return create_new_profile(_name)
+        return PersistentStorageService().load_profile(name)
 
     @classmethod
     @asynccontextmanager

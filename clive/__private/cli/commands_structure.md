@@ -131,7 +131,6 @@ flowchart LR
         Configure(configure) --> ConfigureProfile(profile)
         ConfigureProfile --> CreateProfile[add]
         ConfigureProfile --> DeleteProfile[remove]
-        ConfigureProfile --> SetDefaultProfile[set-default]
 
         Configure --> ConfigureTrackedAccount(tracked-account)
         ConfigureTrackedAccount --> AddTrackedAccount[add]
