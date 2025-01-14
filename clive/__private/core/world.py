@@ -49,6 +49,7 @@ class World:
     def __init__(
         self,
         beekeeper_remote_endpoint: Url | None = None,
+        beekeeper_token: str | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -61,6 +62,7 @@ class World:
         self._commands = self._setup_commands()
 
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
+        self._beekeeper_token = beekeeper_token
         self._beekeeper: Beekeeper | None = None
 
         self._node: Node | None = None
@@ -133,7 +135,9 @@ class World:
 
     async def setup(self) -> Self:
         async with self.during_setup():
-            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+            self._beekeeper = await self.__setup_beekeeper(
+                remote_endpoint=self._beekeeper_remote_endpoint, token=self._beekeeper_token
+            )
             self._profile = await self._load_profile(self._beekeeper)
             self._node = Node(self._profile)
             await self._node.setup()
@@ -189,9 +193,10 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
+    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None, token: str | None = None) -> Beekeeper:
         beekeeper = Beekeeper(
             remote_endpoint=remote_endpoint,
+            token=token,
             notify_closing_wallet_name_cb=lambda: self.profile.name,
         )
         beekeeper.attach_wallet_closing_listener(self.app_state)

@@ -27,18 +27,11 @@ if TYPE_CHECKING:
     from clive_local_tools.types import EnvContextFactory
 
 
-# clive command line interface is always remote beekeeper and session token
 @pytest.fixture
-async def beekeeper(
-    beekeeper_remote_address_env_context_factory: EnvContextFactory,
-    beekeeper_session_token_env_context_factory: EnvContextFactory,
-) -> AsyncGenerator[Beekeeper]:
+async def beekeeper_local() -> AsyncGenerator[Beekeeper]:
+    """CLI tests are remotely connecting to a locally started beekeeper by this fixture."""
     async with Beekeeper() as beekeeper_cm:
-        with ExitStack() as stack:
-            address = str(beekeeper_cm.http_endpoint)
-            stack.enter_context(beekeeper_remote_address_env_context_factory(address))
-            stack.enter_context(beekeeper_session_token_env_context_factory(beekeeper_cm.token))
-            yield beekeeper_cm
+        yield beekeeper_cm
 
 
 @pytest.fixture
@@ -80,9 +73,12 @@ async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGene
 
 @pytest.fixture
 async def cli_tester(
+    beekeeper_remote_address_env_context_factory: EnvContextFactory,
+    beekeeper_session_token_env_context_factory: EnvContextFactory,
+    beekeeper_local: Beekeeper,
     node: tt.RawNode,  # noqa: ARG001
     prepare_beekeeper_wallet: World,
-) -> CLITester:
+) -> AsyncGenerator[CLITester]:
     """
     Will return CliveTyper and CliRunner from typer.testing module.
 
@@ -94,16 +90,17 @@ async def cli_tester(
 
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)
-    return CLITester(cli, runner, prepare_beekeeper_wallet)
+    with ExitStack() as stack:
+        address = str(beekeeper_local.http_endpoint)
+        stack.enter_context(beekeeper_remote_address_env_context_factory(address))
+        stack.enter_context(beekeeper_session_token_env_context_factory(beekeeper_local.token))
+        yield CLITester(cli, runner, prepare_beekeeper_wallet)
 
 
 @pytest.fixture
-async def cli_tester_with_session_token_locked(
-    beekeeper: Beekeeper,
-    cli_tester: CLITester,
-) -> CLITester:
+async def cli_tester_with_session_token_locked(cli_tester: CLITester,) -> CLITester:
     """Token is set in environment variable. Beekeeper session is locked."""
-    await beekeeper.api.lock_all()
+    await cli_tester.world.commands.lock_all()
     return cli_tester
 
 

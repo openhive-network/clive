@@ -51,12 +51,10 @@ async def test_process_transfer(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_transfer_with_remote_beekeeper_option(
-    node: tt.RawNode, beekeeper: Beekeeper, cli_tester: CLITester
-) -> None:
+async def test_transfer_with_remote_beekeeper_option(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check clive process transfer command."""
     # ARRANGE
-    beekeeper_http_endpoint = beekeeper.http_endpoint.as_string()
+    beekeeper_http_endpoint = cli_tester.world.beekeeper.http_endpoint.as_string()
     operation = TransferOperation(
         from_=WORKING_ACCOUNT_NAME,
         to=RECEIVER,

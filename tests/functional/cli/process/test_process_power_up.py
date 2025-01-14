@@ -40,13 +40,11 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_power_up_no_default_account(
-    prepare_beekeeper_wallet: World, node: tt.RawNode, cli_tester: CLITester
-) -> None:
+async def test_power_up_no_default_account(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
     other_key = PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias)
-    await import_key(prepare_beekeeper_wallet, other_key)
+    await import_key(cli_tester.world, other_key)
     operation = TransferToVestingOperation(
         from_=OTHER_ACCOUNT.name,
         to=EMPTY_ACCOUNT.name,
