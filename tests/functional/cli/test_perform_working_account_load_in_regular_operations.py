@@ -32,7 +32,9 @@ async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -
     unlocked_world_cm.profile.save()  # save imported key aliases
 
 
-async def test_unlocked_profile_without_working_account(prepare_profile: Profile, cli_tester: CLITester) -> None:
+async def test_perform_working_account_load_does_not_influence_unrelated_commands(
+    prepare_profile: Profile, cli_tester: CLITester
+) -> None:
     """Command `clive show chain` needs profile but doesn't need working account set."""
     # ARRANGE
     prepare_profile.accounts.unset_working_account()
