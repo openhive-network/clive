@@ -77,9 +77,10 @@ class Unlock(BeekeeperBasedCommand):
 
     def _generate_profile_options(self) -> ProfileSelectionOptions:
         profiles = Profile.list_profiles()
-        options = ProfileSelectionOptions(enumerate(profiles, 1))
+        options: dict[int, str] = {}
         if self.include_create_new_profile:
             options[0] = UNLOCK_CREATE_PROFILE_SELECT
+        options.update(ProfileSelectionOptions(enumerate(profiles, 1)))
         return options
 
     def _display_profile_options(self, options: ProfileSelectionOptions) -> None:
