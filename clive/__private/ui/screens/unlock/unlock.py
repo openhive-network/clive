@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 class SelectProfile(CliveSelect[str], CliveWidget):
     def __init__(self, *, disabled: bool = False) -> None:
-        profiles = self.world.profile.list_profiles()
+        profiles = Profile.list_profiles()
         super().__init__([(profile, profile) for profile in profiles], allow_blank=False, disabled=disabled)
 
 
@@ -112,8 +112,7 @@ class Unlock(BaseScreen):
         ).success:
             return
 
-        profile = await self.world._load_profile(self.world.beekeeper)
-        self.world.switch_profile(profile)
+        await self.world.load_profile_based_on_beekepeer()
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
         self.app.update_alarms_data_asap_on_newest_node_data()

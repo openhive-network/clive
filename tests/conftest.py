@@ -16,7 +16,6 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
-from clive.__private.core.profile import Profile
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
@@ -35,6 +34,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
+    from clive.__private.core.profile import Profile
     from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
 
 
@@ -96,11 +96,10 @@ async def world() -> AsyncIterator[World]:
 
 @pytest.fixture
 async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_password: str) -> Profile:
-    profile = Profile.create(wallet_name)
-    world.switch_profile(profile)
+    await world.create_new_profile(wallet_name)
     await world.commands.create_wallet(password=wallet_password)
     world.profile.save()
-    return profile
+    return world.profile
 
 
 @pytest.fixture

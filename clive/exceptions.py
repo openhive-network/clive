@@ -131,3 +131,7 @@ class TransactionNotSignedError(CliveError):
 
 class RequestIdError(CliveError):
     """Raise when quantity of request_ids is greater than 100."""
+
+
+class ProfileNotLoadedError(CliveError):
+    """Raise when profile is requested and was not loaded."""
