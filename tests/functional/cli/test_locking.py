@@ -4,11 +4,22 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
+from clive.__private.core.world import World
 from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
+from clive_local_tools.cli.checkers import assert_unlocked_profile
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_PASSWORD, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_NAME, WORKING_ACCOUNT_NAME
+from clive_local_tools.data.constants import (
+    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT1_PASSWORD,
+    WORKING_ACCOUNT_PASSWORD,
+)
+from clive_local_tools.testnet_block_log import (
+    ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT1_NAME,
+    WORKING_ACCOUNT_NAME,
+)
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
@@ -22,20 +33,23 @@ MESSAGE_NO_SESSION_TOKEN: Final[str] = "Beekeeper session token is not set"
 
 
 @pytest.fixture
-async def prepare_second_profile() -> Profile:
-    profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
-    profile.save()
-    return profile
-
-
-@pytest.fixture
-async def prepare_second_beekeeper_wallet(
-    beekeeper_local: Beekeeper,
-    prepare_second_profile: Profile,  # noqa: ARG001
-) -> None:
-    wallet_name = ALT_WORKING_ACCOUNT1_NAME
-    await beekeeper_local.api.create(wallet_name=wallet_name, password=ALT_WORKING_ACCOUNT1_PASSWORD)
-    await beekeeper_local.api.lock(wallet_name=wallet_name)
+async def cli_tester_locked_with_second_profile(beekeeper_local: Beekeeper, cli_tester_locked: CLITester) -> CLITester:
+    second_profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
+    async with World(
+        beekeeper_remote_endpoint=beekeeper_local.http_endpoint, beekeeper_token=beekeeper_local.token
+    ) as world_cm:
+        await world_cm.switch_profile(second_profile)
+        await world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
+        await world_cm.commands.sync_state_with_beekeeper()
+        world_cm.profile.keys.add_to_import(
+            PrivateKeyAliased(
+                value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
+            )
+        )
+        await world_cm.commands.sync_data_with_beekeeper()
+        world_cm.profile.save()  # required for saving imported keys aliases
+        await world_cm.commands.lock_all()
+    return cli_tester_locked
 
 
 @pytest.fixture
@@ -83,18 +97,19 @@ async def test_unlock_one_profile(cli_tester_locked: CLITester) -> None:
     await assert_wallet_unlocked(cli_tester_locked.world.beekeeper, WORKING_ACCOUNT_NAME)
 
 
-async def test_negative_unlocking_single_profile_when_multiple_profiles_exist(
-    cli_tester_locked: CLITester,
-    prepare_second_beekeeper_wallet: None,  # noqa: ARG001
-) -> None:
+async def test_second_profile(cli_tester_locked_with_second_profile: CLITester) -> None:
     # ARRANGE
-    message = "All wallets in session should be locked."
-    cli_tester_locked.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    cli_tester = cli_tester_locked_with_second_profile
 
     # ACT
+    cli_tester.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    assert_unlocked_profile(cli_tester, ALT_WORKING_ACCOUNT1_NAME)
+
+    cli_tester.lock()
+    cli_tester.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD)
+
     # ASSERT
-    with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_locked.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    assert_unlocked_profile(cli_tester, WORKING_ACCOUNT_NAME)
 
 
 async def test_negative_unlock_profile_name_invalid(cli_tester_locked: CLITester) -> None:

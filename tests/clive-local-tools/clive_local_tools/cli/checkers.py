@@ -187,3 +187,9 @@ def _get_output(context: CLITester | Result, function: Callable[[CLITester], Res
     else:
         result = context
     return result.output
+
+
+def assert_unlocked_profile(context: CLITester | Result, profile_name: str) -> None:
+    output = _get_output(context, CLITester.show_profile)
+    expected_output = f"Profile name: {profile_name}"
+    assert_output_contains(expected_output, output, "show profile")
