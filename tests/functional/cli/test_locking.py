@@ -40,7 +40,7 @@ async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) ->
             )
         )
         await world_cm.commands.sync_data_with_beekeeper()
-        world_cm.profile.save()  # required for saving imported keys aliases
+        await world_cm.commands.save_profile()  # required for saving imported keys aliases
         await world_cm.commands.lock_all()
     return cli_tester_locked
 
