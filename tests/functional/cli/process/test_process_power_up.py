@@ -22,7 +22,7 @@ OTHER_ACCOUNT: Final[tt.Account] = ALT_WORKING_ACCOUNT1_DATA.account
 async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
     unlocked_world_cm.profile.keys.add_to_import(private_key)
     await unlocked_world_cm.commands.sync_data_with_beekeeper()
-    unlocked_world_cm.profile.save()  # save imported key aliases
+    await unlocked_world_cm.profile.save(unlocked_world_cm.encryption_service)  # save imported key aliases
 
 
 async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester) -> None:

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
     unlocked_world_cm.profile.keys.add_to_import(private_key)
     await unlocked_world_cm.commands.sync_data_with_beekeeper()
-    unlocked_world_cm.profile.save()  # save imported key aliases
+    await unlocked_world_cm.profile.save(unlocked_world_cm.encryption_service)  # save imported key aliases
 
 
 async def test_perform_working_account_load_does_not_influence_unrelated_commands(
@@ -38,7 +38,7 @@ async def test_perform_working_account_load_does_not_influence_unrelated_command
     """Command `clive show chain` needs profile but doesn't need working account set."""
     # ARRANGE
     prepare_profile.accounts.unset_working_account()
-    prepare_profile.save()
+    await prepare_profile.save(cli_tester.world.encryption_service)
 
     # ACT
     # ASSERT
@@ -51,7 +51,7 @@ async def test_negative_unlocked_profile_without_working_account(
     # ARRANGE
     expected_error = "Working account is not set"
     prepare_profile.accounts.unset_working_account()
-    prepare_profile.save()
+    await prepare_profile.save(cli_tester.world.encryption_service)
 
     # ACT
     with pytest.raises(AssertionError) as exception_info:

@@ -106,7 +106,7 @@ async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_pas
 
 @pytest.fixture
 async def init_node(
-    prepare_profile_with_wallet: Profile,  # noqa: ARG001
+    prepare_profile_with_wallet: Profile,
     node_address_env_context_factory: EnvContextFactory,
     world: World,
 ) -> AsyncIterator[tt.InitNode]:
@@ -114,6 +114,8 @@ async def init_node(
     init_node.config.log_json_rpc = "jsonrpc"
     init_node.run()
     await world.node.set_address(init_node.http_endpoint)
+    prepare_profile_with_wallet._set_node_address(init_node.http_endpoint)
+    await prepare_profile_with_wallet.save(world.encryption_service)
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node
@@ -121,7 +123,7 @@ async def init_node(
 
 @pytest.fixture
 async def init_node_extra_apis(
-    prepare_profile_with_wallet: Profile,  # noqa: ARG001
+    prepare_profile_with_wallet: Profile,
     node_address_env_context_factory: EnvContextFactory,
     world: World,
 ) -> AsyncIterator[tt.InitNode]:
@@ -131,6 +133,8 @@ async def init_node_extra_apis(
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
     await world.node.set_address(init_node.http_endpoint)
+    prepare_profile_with_wallet._set_node_address(init_node.http_endpoint)
+    await prepare_profile_with_wallet.save(world.encryption_service)
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node

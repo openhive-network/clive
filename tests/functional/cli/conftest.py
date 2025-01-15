@@ -65,7 +65,7 @@ async def prepare_beekeeper_wallet(world: World, prepare_profile: Profile) -> As
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world_cm.commands.sync_data_with_beekeeper()
-        world_cm.profile.save()  # required for saving imported keys aliases
+        await world_cm.profile.save(world_cm.encryption_service)  # required for saving imported keys aliases
         yield world_cm
 
 
