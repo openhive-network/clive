@@ -212,7 +212,8 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def lock_wallet(self) -> None:
-        await self.commands.lock()
+        await self.profile.save(self.world.encryption_service)
+        await self.commands.lock_all()
 
     def _wallet_to_locked_changed(self) -> None:
         self.post_message(self.WalletLocked())
