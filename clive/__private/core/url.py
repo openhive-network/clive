@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
+import aiohttp
 from typing_extensions import Self
 
 from clive.exceptions import CliveError
@@ -32,6 +33,13 @@ class Url:
             raise UrlError("Hostname is not specified.")
 
         return Url(parsed_url.scheme, parsed_url.hostname, parsed_url.port)
+
+    async def is_url_open(self) -> bool:
+        try:
+            async with aiohttp.ClientSession() as session, session.get(self.as_string()) as resp:
+                return resp.ok
+        except aiohttp.ClientConnectorError:
+            return False
 
     def as_string(self, *, with_protocol: bool = True) -> str:
         protocol_prefix = f"{self.proto}://" if with_protocol and self.proto else ""
