@@ -15,7 +15,10 @@ if TYPE_CHECKING:
 async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     """Check clive configure working-account switch command."""
     # ARRANGE
-    profile_account_checker = ProfileAccountsChecker(profile_name=WORKING_ACCOUNT_NAME)
+    profile_name = cli_tester.world.profile.name
+    profile_account_checker = await ProfileAccountsChecker.create_async(
+        profile_name, cli_tester.world.encryption_service
+    )
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
 
     # ACT
@@ -25,6 +28,7 @@ async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     cli_tester.configure_working_account_switch(account_name=account_to_switch)
 
     # ASSERT
+    await profile_account_checker.reload()
     profile_account_checker.assert_working_account(working_account=account_to_switch)
     profile_account_checker.assert_in_tracked_accounts(account_names=[account_to_switch])
 

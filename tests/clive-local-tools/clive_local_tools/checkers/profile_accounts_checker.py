@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, Literal
+from typing import TYPE_CHECKING, Final, Iterable, Literal
 
 from clive.__private.core.profile import Profile
+
+if TYPE_CHECKING:
+    from clive.__private.core.encryption import EncryptionService
 
 
 class IsNotSet:
@@ -10,12 +13,26 @@ class IsNotSet:
 
 
 class ProfileAccountsChecker:
-    def __init__(self, profile_name: str) -> None:
-        self.profile_name = profile_name
+    _INIT_KEY: Final[object] = object()
+    """Used to prevent direct initialization of the class. Instead factory methods should be used."""
 
-    @property
-    def profile(self) -> Profile:
-        return Profile.load(name=self.profile_name)
+    def __init__(self, init_key: object, profile: Profile, encryption_service: EncryptionService) -> None:
+        message = f"Await {self.create_async} to create a new profile checker."
+        assert init_key is self._INIT_KEY, message
+        self.profile = profile
+        self._encryption_service = encryption_service
+
+    @classmethod
+    async def create_async(cls, profile_name: str, encryption_service: EncryptionService) -> ProfileAccountsChecker:
+        profile = await cls._load(profile_name, encryption_service)
+        return cls(cls._INIT_KEY, profile, encryption_service)
+
+    async def reload(self) -> None:
+        self.profile = await self._load(self.profile.name, self._encryption_service)
+
+    @classmethod
+    async def _load(cls, profile_name: str, encryption_service: EncryptionService) -> Profile:
+        return await Profile.load(profile_name, encryption_service)
 
     def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
         """
