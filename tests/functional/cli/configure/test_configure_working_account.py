@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive.__private.core.encryption import EncryptionService
 from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
@@ -15,18 +16,20 @@ if TYPE_CHECKING:
 async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     """Check clive configure working-account switch command."""
     # ARRANGE
-    profile_account_checker = ProfileAccountsChecker(profile_name=WORKING_ACCOUNT_NAME)
+    profile_name = cli_tester.world.profile.name
+    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    profile_account_checker = ProfileAccountsChecker(profile_name, encryption_service)
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
 
     # ACT
-    profile_account_checker.assert_working_account(working_account=WORKING_ACCOUNT_NAME)
-    profile_account_checker.assert_in_tracked_accounts(account_names=[account_to_switch])
+    await profile_account_checker.assert_working_account(working_account=WORKING_ACCOUNT_NAME)
+    await profile_account_checker.assert_in_tracked_accounts(account_names=[account_to_switch])
 
     cli_tester.configure_working_account_switch(account_name=account_to_switch)
 
     # ASSERT
-    profile_account_checker.assert_working_account(working_account=account_to_switch)
-    profile_account_checker.assert_in_tracked_accounts(account_names=[account_to_switch])
+    await profile_account_checker.assert_working_account(working_account=account_to_switch)
+    await profile_account_checker.assert_in_tracked_accounts(account_names=[account_to_switch])
 
 
 async def test_configure_working_account_switch_same_account(cli_tester: CLITester) -> None:

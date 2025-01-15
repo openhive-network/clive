@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, Literal
+from typing import TYPE_CHECKING, Iterable, Literal
 
 from clive.__private.core.profile import Profile
+
+if TYPE_CHECKING:
+    from clive.__private.core.encryption import EncryptionService
 
 
 class IsNotSet:
@@ -10,14 +13,15 @@ class IsNotSet:
 
 
 class ProfileAccountsChecker:
-    def __init__(self, profile_name: str) -> None:
-        self.profile_name = profile_name
+    def __init__(self, profile_name: str, encryption_service: EncryptionService) -> None:
+        self._profile_name = profile_name
+        self._encryption_service = encryption_service
 
     @property
-    def profile(self) -> Profile:
-        return Profile.load(name=self.profile_name)
+    async def profile(self) -> Profile:
+        return await Profile.load(self._profile_name, self._encryption_service)
 
-    def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
+    async def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
         """
         Check working account of profile.
 
@@ -27,7 +31,7 @@ class ProfileAccountsChecker:
         * None - skip the check.
         """
         if working_account is not None:
-            profile = self.profile
+            profile = await self.profile
             is_working_account_set = profile.accounts.has_working_account
 
             if isinstance(working_account, IsNotSet):
@@ -39,20 +43,24 @@ class ProfileAccountsChecker:
                     f"while should be '{working_account}'.",
                 )
 
-    def assert_in_tracked_accounts(self, account_names: Iterable[str] | None = None) -> None:
-        tracked_account_names = [account.name for account in self.profile.accounts.tracked]
+    async def assert_in_tracked_accounts(self, account_names: Iterable[str] | None = None) -> None:
+        profile = await self.profile
+        tracked_account_names = [account.name for account in profile.accounts.tracked]
         self._assert_account_presence(tracked_account_names, account_names, "Tracked")
 
-    def assert_not_in_tracked_accounts(self, account_names: Iterable[str] | None = None) -> None:
-        tracked_account_names = [account.name for account in self.profile.accounts.tracked]
+    async def assert_not_in_tracked_accounts(self, account_names: Iterable[str] | None = None) -> None:
+        profile = await self.profile
+        tracked_account_names = [account.name for account in profile.accounts.tracked]
         self._assert_account_absence(tracked_account_names, account_names, "Tracked")
 
-    def assert_in_known_accounts(self, account_names: Iterable[str] | None = None) -> None:
-        known_account_names = [account.name for account in self.profile.accounts.known]
+    async def assert_in_known_accounts(self, account_names: Iterable[str] | None = None) -> None:
+        profile = await self.profile
+        known_account_names = [account.name for account in profile.accounts.known]
         self._assert_account_presence(known_account_names, account_names, "Known")
 
-    def assert_not_in_known_accounts(self, account_names: Iterable[str] | None = None) -> None:
-        known_account_names = [account.name for account in self.profile.accounts.known]
+    async def assert_not_in_known_accounts(self, account_names: Iterable[str] | None = None) -> None:
+        profile = await self.profile
+        known_account_names = [account.name for account in profile.accounts.known]
         self._assert_account_absence(known_account_names, account_names, "Known")
 
     def _assert_account_presence(

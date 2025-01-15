@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.encryption import EncryptionService
 from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import (
@@ -23,14 +24,16 @@ async def test_configure_tracked_account_add(cli_tester: CLITester) -> None:
     """Check clive configure tracked-account add command."""
     # ARRANGE
     account_to_add = ALT_WORKING_ACCOUNT1_NAME
-    profile_checker = ProfileAccountsChecker(profile_name=PROFILE_NAME)
+    profile_name = cli_tester.world.profile.name
+    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT
     cli_tester.configure_tracked_account_add(account_name=account_to_add)
 
     # ASSERT
-    profile_checker.assert_in_tracked_accounts(account_names=[account_to_add])
-    profile_checker.assert_in_known_accounts(account_names=[account_to_add])
+    await profile_checker.assert_in_tracked_accounts(account_names=[account_to_add])
+    await profile_checker.assert_in_known_accounts(account_names=[account_to_add])
 
 
 async def test_configure_tracked_account_add_already_tracked_account(cli_tester: CLITester) -> None:
@@ -50,24 +53,28 @@ async def test_configure_tracked_account_add_already_tracked_account(cli_tester:
 async def test_configure_tracked_account_remove(cli_tester: CLITester) -> None:
     """Check clive configure tracked-account remove command."""
     # ARRANGE
-    profile_checker = ProfileAccountsChecker(profile_name=PROFILE_NAME)
+    profile_name = cli_tester.world.profile.name
+    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT
-    profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
+    await profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
     cli_tester.configure_tracked_account_remove(account_name=ACCOUNT_TO_REMOVE)
 
     # ASSERT
-    profile_checker.assert_not_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
+    await profile_checker.assert_not_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
 
 
 async def test_configure_tracked_account_remove_with_already_removed_account(cli_tester: CLITester) -> None:
     """Check clive configure tracked-account remove command with already removed account."""
     # ARRANGE
     message = f"Account {ACCOUNT_TO_REMOVE} not found."
-    profile_checker = ProfileAccountsChecker(profile_name=PROFILE_NAME)
+    profile_name = cli_tester.world.profile.name
+    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT
-    profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
+    await profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
     cli_tester.configure_tracked_account_remove(account_name=ACCOUNT_TO_REMOVE)
 
     # ASSERT
