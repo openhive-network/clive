@@ -1,15 +1,31 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Coroutine
 
 
-async def wait_for(condition: Callable[[], bool], message: str | Callable[[], str], timeout: float = 10.0) -> None:
+async def wait_for(
+    condition: Callable[[], bool | Coroutine[Any, Any, bool]],
+    message: str | Callable[[], str],
+    timeout: float = 10.0,
+) -> None:
+    """
+    Wait for a condition to be true.
+
+    It supports both synchronous and asynchronous conditions.
+    """
+
     async def __wait_for() -> None:
-        while not condition():  # noqa: ASYNC110
+        while True:
+            if asyncio.iscoroutinefunction(condition):
+                result = await condition()
+            else:
+                result = condition()
+            if result:
+                break
             await asyncio.sleep(0.1)
 
     try:

@@ -207,8 +207,19 @@ class Beekeeper:
         return BeekeeperExecutable.get_pid_from_file()
 
     @staticmethod
-    def is_already_running_locally() -> bool:
-        return BeekeeperExecutable.is_already_running()
+    async def is_already_running_locally() -> bool:
+        """
+        Check if Beekeeper is running locally.
+
+        1) Check if pid is available,
+        2) Check if remote address if available,
+        3) Check if remote address is open.
+        """
+        if BeekeeperExecutable.is_already_running():
+            remote_address = Beekeeper.get_remote_address_from_connection_file()
+            if remote_address and await remote_address.is_url_open():
+                return True
+        return False
 
     def _is_session_token_env_var_set(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set

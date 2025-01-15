@@ -24,7 +24,7 @@ class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
     async def _run(self) -> None:
-        if Beekeeper.is_already_running_locally():
+        if await Beekeeper.is_already_running_locally():
             message = (
                 f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
                 f" {Beekeeper.get_pid_from_file()}"
