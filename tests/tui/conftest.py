@@ -60,6 +60,7 @@ async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> No
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world_cm.commands.sync_data_with_beekeeper()
+        await world_cm.profile.save(world_cm.encryption_service)
 
 
 @pytest.fixture
@@ -95,9 +96,11 @@ async def prepared_env(
 @pytest.fixture
 async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
-    await pilot.app.world.load_profile(WORKING_ACCOUNT_DATA.account.name)
 
-    await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD, permanent=True)
+    await pilot.app.world.commands.unlock(
+        profile_name=WORKING_ACCOUNT_DATA.account.name, password=WORKING_ACCOUNT_PASSWORD, permanent=True
+    )
+    await pilot.app.world.load_profile_based_on_beekepeer()
 
     # update the data (pilot skips onboarding/unlocking via TUI - updating is handled there)
     await pilot.app.update_alarms_data_asap_on_newest_node_data().wait()
