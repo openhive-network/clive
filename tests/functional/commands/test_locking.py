@@ -57,7 +57,7 @@ async def test_unlock_again(
 ) -> None:
     # ARRANGE & ACT
     assert world.app_state.is_unlocked
-    await world.commands.lock()
+    await world.commands.lock_all()
     await world.commands.unlock(password=wallet_password)
 
     # ASSERT
@@ -71,7 +71,7 @@ async def test_lock_after_given_time(
 ) -> None:
     # ARRANGE
     time_to_sleep: Final[timedelta] = timedelta(seconds=2)
-    await world.commands.lock()
+    await world.commands.lock_all()
 
     # ACT
     await world.commands.unlock(password=wallet_password, time=time_to_sleep)

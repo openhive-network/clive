@@ -14,7 +14,7 @@ from clive.__private.storage.service import PersistentStorageService
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-EXPECTED_REVISION: Final[str] = "920b3dfe"
+EXPECTED_REVISION: Final[str] = "c600278a"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
