@@ -185,6 +185,14 @@ class TransactionSummary(BaseScreen):
     def key_container(self) -> KeyContainer:
         return self.query_exactly_one(KeyContainer)
 
+    @property
+    def button_container(self) -> ButtonContainer:
+        return self.query_exactly_one(ButtonContainer)
+
+    @property
+    def transaction_metadata_container(self) -> TransactionMetadataContainer:
+        return self.query_exactly_one(TransactionMetadataContainer)
+
     def create_main_panel(self) -> ComposeResult:
         yield Subtitle(self._create_subtitle_content())
         yield TransactionMetadataContainer(self.transaction)
@@ -215,30 +223,40 @@ class TransactionSummary(BaseScreen):
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
+        async def refresh() -> None:
+            await self._update_transaction_metadata()
+            await self._rebuild_signatures_changed()
+
         async def refresh_metadata_cb(confirm: bool | None) -> None:
             if confirm:
-                await self._update_transaction_metadata()
+                await refresh()
 
         if self.transaction.is_signed():
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
         else:
-            await self._update_transaction_metadata()
+            await refresh()
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
         await self._update_transaction_metadata()
-
-    def watch_transaction(self, transaction: Transaction) -> None:
-        transaction_metadata_container = self.query_exactly_one(TransactionMetadataContainer)
-        button_container = self.query_exactly_one(ButtonContainer)
-
-        transaction_metadata_container.transaction = transaction
-        button_container.transaction = transaction
-        self.key_container.transaction = transaction
-
-        self.key_container.display = bool(self.transaction)
+        await self._rebuild_signatures_changed()
         self._update_subtitle()
         self._update_bindings()
+
+    async def watch_transaction(self, transaction: Transaction) -> None:
+        """Rebuild the whole screen (related widgets) when the transaction changes."""
+        self.transaction_metadata_container.transaction = transaction
+        self.button_container.transaction = transaction
+
+        if transaction:
+            self.key_container.transaction = transaction
+            self.key_container.display = True
+        else:
+            self.key_container.display = False
+
+        self._update_subtitle()
+        self._update_bindings()
+        await self.query_exactly_one(CartTable).rebuild()
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
@@ -267,7 +285,8 @@ class TransactionSummary(BaseScreen):
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
         self.transaction.reset()
-        await self.query_exactly_one(CartTable).rebuild()
+        self.mutate_reactive(self.__class__.transaction)  # type: ignore[arg-type]
+        self.app.trigger_profile_watchers()
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
             f" {'(signed)' if transaction.is_signed() else ''}"
@@ -291,9 +310,8 @@ class TransactionSummary(BaseScreen):
 
         self.profile.transaction_file_path = file_path
         self.profile.transaction = loaded_transaction
-        self.transaction = self.profile.transaction
+        self.transaction = loaded_transaction
         self.app.trigger_profile_watchers()
-        await self.query_exactly_one(CartTable).rebuild()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
@@ -313,13 +331,18 @@ class TransactionSummary(BaseScreen):
 
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
         self.transaction.reset()
+        self.app.trigger_profile_watchers()
         self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
     async def _update_transaction_metadata(self) -> None:
         self.profile.transaction_file_path = None
         self.transaction.signatures.clear()
         await self.commands.update_transaction_metadata(transaction=self.transaction)
-        self.mutate_reactive(self.__class__.transaction)  # type: ignore[arg-type]
+        self.app.trigger_profile_watchers()
+
+    async def _rebuild_signatures_changed(self) -> None:
+        await self.transaction_metadata_container.recompose()
+        await self.key_container.recompose()
 
     def _get_key_to_sign(self) -> PublicKey:
         return self.key_container.selected_key
