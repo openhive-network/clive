@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 
-class AddToCartButton(CliveButton):
+class AddToCartButton(OneLineButton):
     DEFAULT_CSS = """
         AddToCartButton {
             width: 25;
         }
         """
 
-    class Pressed(CliveButton.Pressed):
+    class Pressed(OneLineButton.Pressed):
         """Message send when AddToCartButton is pressed."""
 
     def __init__(self) -> None:
