@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
@@ -42,9 +42,9 @@ if TYPE_CHECKING:
 
 class WithdrawRoutesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("To", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Percent", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
-        yield Static("Auto vest", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
+        yield Static("To", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Percent", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Auto vest", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
         yield PlaceTaker()
 
 
