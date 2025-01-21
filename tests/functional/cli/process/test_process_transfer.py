@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.cli.exceptions import (
-    BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE,
+    CLIBeekeeperSessionTokenNotSetError,
     CLINoProfileUnlockedError,
     CLITransactionNotSignedError,
 )
@@ -98,10 +98,7 @@ async def test_process_transfer_with_beekeeper_session_token_missing(
 ) -> None:
     """Check if clive process transfer throws exception when there is no CLIVE_BEEKEEPER__SESSION_TOKEN set."""
     # ARRANGE
-    message = (
-        f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
-        " and a key alias to sign the transaction with if |\n| you want to broadcast it."
-    )
+    message = CLIBeekeeperSessionTokenNotSetError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

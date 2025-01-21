@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.cli.exceptions import CLIBeekeeperSessionTokenNotSetError
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
@@ -29,7 +30,6 @@ if TYPE_CHECKING:
     from clive_local_tools.types import EnvContextFactory
 
 MESSAGE_NO_REMOTE_ADDRESS: Final[str] = "Beekeeper remote address is not set"
-MESSAGE_NO_SESSION_TOKEN: Final[str] = "Beekeeper session token is not set"
 
 
 @pytest.fixture
@@ -147,14 +147,14 @@ async def test_negative_unlock_already_unlocked(cli_tester: CLITester) -> None:
 async def test_negative_lock_without_session_token(cli_tester_without_session_token: CLITester) -> None:
     # ACT
     # ASSERT
-    with pytest.raises(CLITestCommandError, match=MESSAGE_NO_SESSION_TOKEN):
+    with pytest.raises(CLITestCommandError, match=CLIBeekeeperSessionTokenNotSetError.MESSAGE):
         cli_tester_without_session_token.lock()
 
 
 async def test_negative_unlock_without_session_token(cli_tester_without_session_token: CLITester) -> None:
     # ACT
     # ASSERT
-    with pytest.raises(CLITestCommandError, match=MESSAGE_NO_SESSION_TOKEN):
+    with pytest.raises(CLITestCommandError, match=CLIBeekeeperSessionTokenNotSetError.MESSAGE):
         cli_tester_without_session_token.unlock(
             profile_name=WORKING_ACCOUNT_NAME,
             password_stdin=WORKING_ACCOUNT_PASSWORD,

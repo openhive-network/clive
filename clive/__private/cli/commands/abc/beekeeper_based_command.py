@@ -8,7 +8,7 @@ from clive.__private.cli.exceptions import (
     CLIBeekeeperLocallyNotRunningError,
     CLIBeekeeperRemoteAddressIsNotRespondingError,
     CLIBeekeeperRemoteAddressIsNotSetError,
-    CLIBeekeeperSessionTokenIsNotSetError,
+    CLIBeekeeperSessionTokenNotSetError,
     CLISessionNotLockedError,
 )
 from clive.__private.core.beekeeper import Beekeeper
@@ -57,7 +57,7 @@ class BeekeeperCommon(ABC):
 
     async def validate_beekeeper_session_token_set(self) -> None:
         if not safe_settings.beekeeper.is_session_token_set:
-            raise CLIBeekeeperSessionTokenIsNotSetError
+            raise CLIBeekeeperSessionTokenNotSetError
 
     async def validate_remote_beekeeper_running(self) -> None:
         if self.beekeeper_remote_url and not await self.beekeeper_remote_url.is_url_open():
