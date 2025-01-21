@@ -1,4 +1,4 @@
-$table-header-color: $primary-background;
+$table-header-color: $primary-darken-3;
 
 HivePowerManagement {
   HpVestsFactor {
@@ -7,6 +7,10 @@ HivePowerManagement {
 
   Tab {
     width: 1fr;
+  }
+
+  Tabs {
+    margin-top: 1;
   }
 
   #hive-power-info {
@@ -36,13 +40,16 @@ HivePowerManagement {
       }
 
       #shares-name-header {
-        background: $table-header-color;
         width: 2fr;
       }
 
       .shares-balance-header {
-        background: $table-header-color;
         width: 3fr;
+      }
+
+      #shares-name-header,
+      .shares-balance-header {
+        background: $table-header-color;
       }
     }
 

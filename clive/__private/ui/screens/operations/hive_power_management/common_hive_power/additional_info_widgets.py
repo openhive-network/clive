@@ -40,12 +40,12 @@ class WithdrawalInfo(Vertical, CliveWidget):
         margin-top: 1;
     }
 
-    #withdrawal-info-date, #withdrawal-info-vests-amount {
-        background: $accent;
+    #withdrawal-info-date, #withdrawal-info-hp-amount {
+        background: $panel-lighten-2;
     }
 
-    #withdrawal-info-hp-amount {
-        background: $accent-lighten-1;
+    #withdrawal-info-vests-amount {
+        background: $panel-lighten-3;
     }
     """
 
@@ -54,7 +54,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
         self._provider = provider
 
     def compose(self) -> ComposeResult:
-        yield SectionTitle("Next withdrawal", variant="dark")
+        yield SectionTitle("Next withdrawal")
         yield DynamicLabel(
             self._provider,
             "_content",
@@ -62,7 +62,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
             id_="withdrawal-info-date",
             first_try_callback=lambda content: content is not None,
         )
-        yield SectionTitle("To withdraw", variant="dark", id_="to-withdraw-header")
+        yield SectionTitle("To withdraw", id_="to-withdraw-header")
         yield DynamicLabel(
             self._provider,
             "_content",

@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
@@ -39,9 +39,9 @@ if TYPE_CHECKING:
 
 class DelegationsTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Delegate", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Shares [HP]", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
-        yield Static("Shares [VESTS]", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
+        yield Static("Delegate", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Shares [HP]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Shares [VESTS]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
         yield PlaceTaker()
 
 
