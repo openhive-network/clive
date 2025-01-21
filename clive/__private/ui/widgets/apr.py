@@ -15,7 +15,7 @@ class APR(DynamicLabel, AbstractClassMessagePump):
     APR {
         height: 1;
         margin-top: 1;
-        background: $primary-background;
+        background: $primary-darken-3;
         text-style: bold;
         align: center middle;
         width: 1fr;
