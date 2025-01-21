@@ -24,7 +24,7 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.events import Mount
+    from textual.events import Click, Mount
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node import Node
@@ -47,7 +47,8 @@ class HeaderIcon(TextualHeaderIcon, CliveWidget):
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
 
-    def on_click(self) -> None:  # type: ignore[override]
+    def on_click(self, event: Click) -> None:  # type: ignore[override]
+        event.prevent_default()
         self.app.header_expanded = not self.app.header_expanded
 
 
