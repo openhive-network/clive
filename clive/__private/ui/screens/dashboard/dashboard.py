@@ -132,7 +132,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         balance_type: Literal["liquid", "savings"],
         asset_type: type[Asset.LiquidT],
         classes: str | None = None,
-        variant: CliveButtonVariant = "primary",
+        variant: CliveButtonVariant = "grey-lighten",
     ) -> None:
         super().__init__(
             obj_to_watch=self.world,
@@ -202,13 +202,13 @@ class BalanceStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("", classes="empty")
         yield EllipsedStatic("LIQUID", classes="title")
-        yield EllipsedStatic("SAVINGS", classes="title title-variant")
-        yield Static("HIVE", classes="token")
-        yield BalanceStatsButton(self._account, "liquid", Asset.Hive, variant="grey-darken")
-        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-lighten")
-        yield Static("HBD", classes="token token-variant")
-        yield BalanceStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-lighten")
-        yield BalanceStatsButton(self._account, "savings", Asset.Hbd, variant="grey-darken")
+        yield EllipsedStatic("SAVINGS", classes="title")
+        yield Static("HIVE", classes="token-hive")
+        yield BalanceStatsButton(self._account, "liquid", Asset.Hive)
+        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-darken")
+        yield Static("HBD", classes="token-hbd")
+        yield BalanceStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "savings", Asset.Hbd)
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):

@@ -1,5 +1,5 @@
-$working-color: $secondary-darken-2;
-$watched-color: $primary-darken-1;
+$working-color: $primary-darken-2;
+$watched-color: $secondary-darken-2;
 
 Dashboard {
   AccountsContainer {
@@ -79,11 +79,11 @@ Dashboard {
     height: 2;
 
     .even-manabar {
-      background: $primary-lighten-1;
+      background: $panel-lighten-1;
     }
 
     .odd-manabar {
-      background: $primary-lighten-2;
+      background: $panel-lighten-2;
     }
   }
 
@@ -104,12 +104,12 @@ Dashboard {
 
     .time {
       column-span: 6;
-      background: $panel-lighten-2;
+      background: $panel;
     }
 
     .hivepower-value {
       column-span: 4;
-      background: $panel-lighten-1;
+      background: $panel-darken-1;
     }
   }
 
@@ -132,21 +132,18 @@ Dashboard {
     }
 
     .title {
-      background: $accent-lighten-3;
+      background: $primary-darken-3;
       color: $text;
     }
 
-    .title-variant {
-      background: $accent-lighten-2;
-    }
-
-    .token {
+    .token-hive {
       margin-left: 2;
-      background: $accent-lighten-1;
+      background: $primary-darken-1;
     }
 
-    .token-variant {
-      background: $accent-lighten-2;
+    .token-hbd {
+      margin-left: 2;
+      background: $primary-lighten-2;
     }
   }
 }
