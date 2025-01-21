@@ -20,6 +20,7 @@ CliveButtonVariant = Literal[
     "transparent",
     "grey-darken",
     "grey-lighten",
+    "darken-primary",
     ButtonVariant,
 ]
 
@@ -87,6 +88,14 @@ class CliveButton(Button, CliveWidget):
 
             &:hover {
                 background: $panel-lighten-1;
+            }
+        }
+
+        &.-darken-primary {
+            background: $primary-darken-1;
+
+            &:hover {
+                background: $primary-darken-3;
             }
         }
     }
