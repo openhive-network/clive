@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Iterable
 from textual.containers import Horizontal
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
@@ -30,8 +30,8 @@ class AlarmDataHeader(Horizontal):
         self._columns = columns
 
     def compose(self) -> ComposeResult:
-        for evenness, column in enumerate(self._columns):
-            yield Static(column, classes=CLIVE_EVEN_COLUMN_CLASS_NAME if evenness % 2 else CLIVE_ODD_COLUMN_CLASS_NAME)
+        for column in self._columns:
+            yield Static(column, classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
 
 
 class AlarmDataRow(CliveCheckerboardTableRow):

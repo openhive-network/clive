@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import AlarmInfoDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -32,8 +32,8 @@ if TYPE_CHECKING:
 
 class AlarmsTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Alarm", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Action", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
+        yield Static("Alarm", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} basic-info-cell-header")
+        yield Static("Action", classes="action-header")
 
 
 class AlarmsTableRow(CliveCheckerboardTableRow):
