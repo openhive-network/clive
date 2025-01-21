@@ -13,6 +13,7 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.reactive import Reactable
+    from textual.visual import SupportsVisual
 
 DynamicLabelCallbackType = WatchLikeCallbackType[str]
 
@@ -44,7 +45,7 @@ class DynamicLabel(DynamicWidget[Label, str]):
         )
 
     @property
-    def renderable(self) -> RenderableType:
+    def renderable(self) -> RenderableType | SupportsVisual:
         return self._widget.renderable
 
     def _create_widget(self) -> Label:
