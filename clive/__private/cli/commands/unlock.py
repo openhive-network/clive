@@ -28,8 +28,6 @@ class Unlock(BeekeeperBasedCommand):
 
     async def validate(self) -> None:
         self._validate_profile_exists()
-        await self.validate_beekeeper_remote_address_set()
-        await self.validate_beekeeper_session_token_set()
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:

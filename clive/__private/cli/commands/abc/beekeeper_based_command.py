@@ -5,7 +5,6 @@ import typer
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
-    CLIBeekeeperLocallyNotRunningError,
     CLIBeekeeperRemoteAddressIsNotRespondingError,
     CLIBeekeeperRemoteAddressIsNotSetError,
     CLIBeekeeperSessionTokenNotSetError,
@@ -51,21 +50,17 @@ class BeekeeperCommon(ABC):
         if unlocked_wallet_names:
             raise CLISessionNotLockedError
 
-    async def validate_beekeeper_remote_address_set(self) -> None:
+    def validate_beekeeper_remote_address_set(self) -> None:
         if not safe_settings.beekeeper.is_remote_address_set:
             raise CLIBeekeeperRemoteAddressIsNotSetError
 
-    async def validate_beekeeper_session_token_set(self) -> None:
+    def validate_beekeeper_session_token_set(self) -> None:
         if not safe_settings.beekeeper.is_session_token_set:
             raise CLIBeekeeperSessionTokenNotSetError
 
     async def validate_remote_beekeeper_running(self) -> None:
         if self.beekeeper_remote_url and not await self.beekeeper_remote_url.is_url_open():
             raise CLIBeekeeperRemoteAddressIsNotRespondingError(self.beekeeper_remote_url)
-
-    async def validate_local_beekeeper_running(self) -> None:
-        if not await Beekeeper.is_already_running_locally():
-            raise CLIBeekeeperLocallyNotRunningError
 
     def _print_launching_beekeeper(self) -> None:
         message = (
@@ -85,11 +80,15 @@ class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, AB
     def beekeeper(self) -> Beekeeper:
         return self._context_manager_instance
 
+    @property
+    def _is_session_token_required(self) -> bool:
+        return True
+
     async def validate(self) -> None:
-        if self.beekeeper_remote_url:
-            await super().validate_remote_beekeeper_running()
-        else:
-            await super().validate_local_beekeeper_running()
+        self.validate_beekeeper_remote_address_set()
+        if self._is_session_token_required:
+            self.validate_beekeeper_session_token_set()
+        await super().validate_remote_beekeeper_running()
         await super().validate()
 
     async def _create_context_manager_instance(self) -> Beekeeper:

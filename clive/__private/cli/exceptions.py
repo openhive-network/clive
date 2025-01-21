@@ -237,16 +237,6 @@ class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
         super().__init__(message, errno.EEXIST)
 
 
-class CLIBeekeeperLocallyNotRunningError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = (
-            "Local instance of Beekeeper is not running.\n"
-            "Please use command `clive beekeeper spawn` in order to create"
-            " one. Or pass `--beekeeper-remote` flag that points to running one."
-        )
-        super().__init__(message, errno.EEXIST)
-
-
 class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
     def __init__(self) -> None:
         message = (

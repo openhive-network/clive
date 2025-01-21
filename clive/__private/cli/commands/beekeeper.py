@@ -40,6 +40,10 @@ class BeekeeperCreateSession(BeekeeperBasedCommand):
             )
         typer.echo(message=message)
 
+    @property
+    def _is_session_token_required(self) -> bool:
+        return False
+
     async def _hook_before_entering_context_manager(self) -> None:
         """Display information about using Beekeeper if not using echo-token-only flag."""
         if not self.echo_token_only:

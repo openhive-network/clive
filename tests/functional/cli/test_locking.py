@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.cli.exceptions import CLIBeekeeperSessionTokenNotSetError
+from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
@@ -25,11 +26,10 @@ from clive_local_tools.testnet_block_log import (
 if TYPE_CHECKING:
     from typing import AsyncGenerator
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
+    from _pytest.monkeypatch import MonkeyPatch
+
     from clive_local_tools.cli.cli_tester import CLITester
     from clive_local_tools.types import EnvContextFactory
-
-MESSAGE_NO_REMOTE_ADDRESS: Final[str] = "Beekeeper remote address is not set"
 
 
 @pytest.fixture
@@ -59,6 +59,9 @@ async def cli_tester_without_remote_address(
 ) -> AsyncGenerator[CLITester]:
     with beekeeper_remote_address_env_context_factory(None):
         yield cli_tester
+
+
+MESSAGE_NO_REMOTE_ADDRESS: Final[str] = "Beekeeper remote address is not set"
 
 
 async def test_negative_lock_without_remote_address(cli_tester_without_remote_address: CLITester) -> None:
