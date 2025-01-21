@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.unsign import UnSign
 from clive.__private.models.schemas import HiveInt
 
 if TYPE_CHECKING:
@@ -23,6 +24,9 @@ class UpdateTransactionMetadata(Command):
     """Expiration relative to the gdpo time."""
 
     async def _execute(self) -> None:
+        # clear existing signatures
+        self.transaction = await UnSign(transaction=self.transaction).execute_with_result()
+
         # get dynamic global properties
         gdpo = await self.node.api.database_api.get_dynamic_global_properties()
         block_id = gdpo.head_block_id
