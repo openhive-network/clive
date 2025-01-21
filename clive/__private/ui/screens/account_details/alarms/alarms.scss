@@ -26,8 +26,12 @@ Alarms {
         text-align: center;
       }
 
-      .-odd-column {
+      .basic-info-cell-header {
         width: 3fr;
+      }
+
+      .action-header {
+        background: $primary-darken-2;
       }
     }
   }
