@@ -50,7 +50,7 @@ class Clive(App[int]):
 
     AUTO_FOCUS = "*"
 
-    ENABLE_COMMAND_PALETTE = False
+    ENABLE_COMMAND_PALETTE = True
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
