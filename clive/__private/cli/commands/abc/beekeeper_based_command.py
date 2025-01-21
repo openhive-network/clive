@@ -28,7 +28,17 @@ class BeekeeperCommon(ABC):
 
     @property
     def beekeeper_remote_url(self) -> Url | None:
+        """
+        Select Beekeeper's remote URL address.
+
+        The value from the `--beekeeper-remote` flag has the highest priority.
+
+        If the user did not pass this flag, but the `CLIVE_BEEKEEPER_REMOTE_ADDRESS`
+        environment variable is set, that address will be used.
+        """
         if self.beekeeper_remote is None:
+            if safe_settings.beekeeper.is_remote_address_set:
+                return safe_settings.beekeeper.remote_address
             return None
         if isinstance(self.beekeeper_remote, Url):
             return self.beekeeper_remote
