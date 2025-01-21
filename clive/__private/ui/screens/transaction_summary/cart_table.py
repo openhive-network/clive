@@ -12,7 +12,7 @@ from textual.reactive import reactive
 from textual.widgets import Static
 from typing_extensions import Self
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.raw_json_dialog import RawJsonDialog
@@ -250,10 +250,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
 class CartHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("No.", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Operation type", classes=f"{CLIVE_EVEN_COLUMN_CLASS_NAME} operation-name")
-        yield Static("Operation details", classes=f"{CLIVE_ODD_COLUMN_CLASS_NAME} operation-details")
-        yield Static("Actions", classes=f"{CLIVE_EVEN_COLUMN_CLASS_NAME} actions")
+        yield Static("No.", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Operation type", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} operation-name")
+        yield Static("Operation details", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} operation-details")
+        yield Static("Actions", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} actions")
 
 
 class CartTable(CliveCheckerboardTable):

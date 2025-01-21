@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_relative_css_path
@@ -63,10 +63,10 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
 class KeyAliasesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("No.", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Alias", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
-        yield Static("Public key", classes=f"{CLIVE_ODD_COLUMN_CLASS_NAME} public-key")
-        yield Static("Actions", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
+        yield Static("No.", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Alias", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Public key", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} public-key")
+        yield Static("Actions", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
 
 
 class ManageKeyAliasesTable(CliveCheckerboardTable):

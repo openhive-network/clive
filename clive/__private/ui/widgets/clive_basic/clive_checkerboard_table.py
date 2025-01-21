@@ -136,7 +136,7 @@ class CliveCheckerboardTable(CliveWidget):
         height: auto;
 
         .-odd-column {
-            background: $primary-background-darken-2;
+            background: $panel-lighten-2;
 
             OneLineButton {
                 opacity: 93%;
@@ -144,12 +144,20 @@ class CliveCheckerboardTable(CliveWidget):
         }
 
         .-even-column {
-            background: $primary-background-darken-1;
+            background: $panel-lighten-1;
         }
 
         #loading-static {
             text-align: center;
             text-style: bold;
+        }
+
+        .checkerboard-header-cell {
+            background: $primary;
+        }
+
+        .checkerboard-table-title {
+            background: $primary-darken-3;
         }
     }
     """
