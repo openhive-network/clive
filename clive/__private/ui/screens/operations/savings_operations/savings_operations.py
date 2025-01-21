@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Grid, Horizontal
 from textual.widgets import Label, RadioSet, Static, TabPane
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models import Asset
@@ -24,7 +24,7 @@ from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_fro
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.buttons import CancelButton
+from clive.__private.ui.widgets.buttons import CancelOneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -104,7 +104,7 @@ class SavingsInterestInfo(TrackedAccountReferencingWidget):
         return self.screen.query_exactly_one(SavingsDataProvider)
 
     def compose(self) -> ComposeResult:
-        yield SectionTitle("Interest data", variant="dark")
+        yield SectionTitle("Interest data")
         yield DynamicLabel(
             self.provider,
             "_content",
@@ -130,10 +130,10 @@ class SavingsInterestInfo(TrackedAccountReferencingWidget):
 
 class PendingTransfersHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Label("To", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Label("Amount", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
-        yield Label("Realized on (UTC)", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Label("Memo", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
+        yield Label("To", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Label("Amount", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Label("Realized on (UTC)", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Label("Memo", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
         yield Label()
 
 
@@ -144,11 +144,11 @@ class PendingTransfer(CliveCheckerboardTableRow):
             CliveCheckerBoardTableCell(aligned_amount),
             CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
             CliveCheckerBoardTableCell(pending_transfer.memo),
-            CliveCheckerBoardTableCell(CancelButton()),
+            CliveCheckerBoardTableCell(CancelOneLineButton()),
         )
         self._pending_transfer = pending_transfer
 
-    @on(CancelButton.Pressed)
+    @on(CancelOneLineButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(CancelTransferFromSavings(self._pending_transfer))
 
