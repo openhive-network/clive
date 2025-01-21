@@ -3,6 +3,10 @@ Savings {
     width: 1fr;
   }
 
+  Tabs {
+    margin-top: 1;
+  }
+
   #savings-info-container {
     max-height: 3;
 
@@ -12,7 +16,7 @@ Savings {
 
       SavingsBalancesHeader {
         #savings-title {
-          background: $primary-background;
+          background: $primary-darken-3;
         }
       }
 
@@ -50,11 +54,11 @@ Savings {
       }
 
       .interest-info-row-odd {
-        background: $accent;
+        background: $panel-lighten-2;
       }
 
       .interest-info-row-even {
-        background: $accent-lighten-1;
+        background: $panel-lighten-3;
       }
     }
   }
@@ -79,7 +83,7 @@ Savings {
     }
 
     CliveCheckerBoardTableCell {
-      height: 3;
+      height: 1;
     }
 
     CliveButton {
