@@ -1,8 +1,8 @@
-$table-column-1-odd: $accent;
-$table-column-2-odd: $accent-lighten-1;
-$table-column-1-even: $primary-background;
-$table-column-2-even: $primary-background-lighten-1;
-$table-header-column: $primary-darken-2;
+$table-column-1-odd: $panel-lighten-1;
+$table-column-2-odd: $panel-darken-1;
+$table-column-1-even: $secondary-lighten-1;
+$table-column-2-even: $secondary-darken-1;
+$table-header-column: $primary;
 
 Proposals {
   Label {

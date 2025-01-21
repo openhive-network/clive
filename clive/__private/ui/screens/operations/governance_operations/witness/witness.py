@@ -59,8 +59,9 @@ class WitnessDetailsLabel(Label):
     class Clicked(Message):
         """Message send when DetailsLabel is clicked."""
 
-    def __init__(self, *, classes: str | None = None) -> None:
+    def __init__(self, witness_name: str, *, classes: str | None = None) -> None:
         super().__init__(renderable="details", classes=classes)
+        self.tooltip = f"Click to see more details about {witness_name} witness."
 
     @on(Click)
     def clicked(self) -> None:
@@ -108,16 +109,17 @@ class Witness(GovernanceTableRow[WitnessData]):
     BINDINGS = [Binding("f3", "show_details", "Details")]
 
     def create_row_content(self) -> ComposeResult:
+        class_name = f"witness-row-{self.evenness}"
         yield Label(
             str(self.row_data.rank) if self.row_data.rank is not None else f">{MAX_NUMBER_OF_WITNESSES_IN_TABLE}",
-            classes=f"witness-rank-{self.evenness}",
+            classes=class_name,
         )
         yield WitnessNameLabel(
             self.row_data.name,
-            classes=f"witness-name-{self.evenness}",
+            classes=class_name,
         )
-        yield Label(str(self.row_data.votes), classes=f"witness-votes-{self.evenness}")
-        yield WitnessDetailsLabel(classes=f"witness-details-{self.evenness}")
+        yield Label(str(self.row_data.votes), classes=class_name)
+        yield WitnessDetailsLabel(self.row_data.name, classes=class_name)
 
     @on(WitnessDetailsLabel.Clicked)
     async def action_show_details(self) -> None:
@@ -248,9 +250,9 @@ class WitnessesList(GovernanceListWidget[WitnessData]):
 
 class WitnessesListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
-        yield Static("rank", id="rank-column")
-        yield Static("witness", id="name-column")
-        yield Static("votes", id="votes-column")
+        yield Static("Rank", classes="witnesses-table-header")
+        yield Static("Witness", classes="witnesses-table-header witness-name-header")
+        yield Static("Votes", classes="witnesses-table-header")
 
     def create_additional_headlines(self) -> ComposeResult:
         yield SectionTitle(

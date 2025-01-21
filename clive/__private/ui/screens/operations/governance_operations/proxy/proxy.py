@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Container, Horizontal
-from textual.widgets import Button, TabPane
+from textual.widgets import TabPane
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.operation_summary.account_witness_proxy import AccountWitnessProxy
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput
 from clive.__private.ui.widgets.notice import Notice
@@ -48,7 +48,7 @@ class ProxyNotSet(ProxyBaseContainer):
             yield CurrentProxy("Proxy not set")
             yield NewProxyInput(required=True)
             with Container(id="set-button-container"):
-                yield CliveButton("Set proxy", id_="set-proxy-button", variant="success")
+                yield OneLineButton("Set proxy", id_="set-proxy-button", variant="success")
 
 
 class ProxySet(ProxyBaseContainer):
@@ -68,8 +68,8 @@ class ProxySet(ProxyBaseContainer):
             yield CurrentProxy(self._current_proxy)
             yield NewProxyInput(required=False)
             with Horizontal(id="modify-proxy-buttons"):
-                yield CliveButton("Change proxy", variant="success", id_="set-proxy-button")
-                yield CliveButton("Remove proxy", variant="error", id_="remove-proxy-button")
+                yield OneLineButton("Change proxy", variant="success", id_="set-proxy-button")
+                yield OneLineButton("Remove proxy", variant="error", id_="remove-proxy-button")
 
 
 class Proxy(TabPane, CliveWidget):
@@ -93,7 +93,7 @@ class Proxy(TabPane, CliveWidget):
         with ScrollablePart(id="scrollable-for-proxy"):
             yield content
 
-    @on(Button.Pressed, "#set-proxy-button")
+    @on(OneLineButton.Pressed, "#set-proxy-button")
     def set_new_proxy(self) -> None:
         if not self.new_proxy_input.validate_passed():
             # we need to exclusively validate the input when set button is pressed, because the input is not validated
@@ -103,7 +103,7 @@ class Proxy(TabPane, CliveWidget):
         new_proxy = self.new_proxy_input.value_or_error  # already validated
         self.app.push_screen(AccountWitnessProxy(new_proxy=new_proxy))
 
-    @on(Button.Pressed, "#remove-proxy-button")
+    @on(OneLineButton.Pressed, "#remove-proxy-button")
     def remove_proxy(self) -> None:
         self.app.push_screen(AccountWitnessProxy(new_proxy=None))
 
