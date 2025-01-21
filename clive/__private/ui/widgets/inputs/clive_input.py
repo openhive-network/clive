@@ -22,7 +22,7 @@ class CliveInput(Input):
     """A custom input that shows a title on the border top-left corner."""
 
     DEFAULT_CSS = """
-    $regular-color: $accent
+    $regular-color: $primary;
     $invalid-color: $error;
     $valid-color: $success-darken-3;
 
