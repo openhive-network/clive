@@ -4,7 +4,7 @@ from textual.reactive import reactive
 from textual.widgets import Static
 from typing_extensions import Literal
 
-SectionTitleVariant = Literal["default", "dark", "red"]
+SectionTitleVariant = Literal["default", "light", "red"]
 """The names of the valid section title variants."""
 
 
@@ -12,13 +12,13 @@ class SectionTitle(Static):
     DEFAULT_CSS = """
     SectionTitle {
         text-style: bold;
-        background: $primary;
+        background: $primary-darken-3;
         width: 1fr;
         height: 1;
         text-align: center;
 
-        &.-dark {
-            background: $primary-background;
+        &.-light {
+            background: $primary-lighten-3;
         }
 
         &.-red {
