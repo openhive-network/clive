@@ -15,6 +15,39 @@ Tabs {
 
     Tab.-active {
       text-style: bold reverse;
+      background: white;
+    }
+  }
+}
+
+RadioSet {
+  background: $panel-darken-1 !important;
+
+  & > RadioButton {
+    &.-selected {
+      background: transparent;
+    }
+  }
+
+  &:focus {
+    & > RadioButton.-selected {
+      background: white;
+    }
+  }
+}
+
+Checkbox {
+  &:focus {
+    & > .toggle--label {
+      background: white;
+    }
+  }
+}
+
+Select {
+  OptionList {
+    & > .option-list--option-highlighted {
+      background: white;
     }
   }
 }
