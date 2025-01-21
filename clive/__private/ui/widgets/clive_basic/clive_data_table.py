@@ -18,9 +18,9 @@ class CliveDataTableRow(Horizontal, CliveWidget):
     """Class that represent the one line of the clive data table."""
 
     DEFAULT_CSS = """
-    $row-color-odd: $accent;
-    $row-color-even: $accent-lighten-1;
-    $row-title-color: $background-lighten-2;
+    $row-color-odd: $panel-lighten-2;
+    $row-color-even: $panel-lighten-3;
+    $row-title-color: $primary-lighten-2;
 
     CliveDataTableRow {
         layout: horizontal;
