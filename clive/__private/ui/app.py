@@ -181,6 +181,8 @@ class Clive(App[int]):
         else:
             self.switch_mode("create_profile")
 
+        self.theme = "textual-dark"
+
     async def on_unmount(self) -> None:
         if self._world is not None:
             # There might be an exception during world setup and therefore world might not be available.
