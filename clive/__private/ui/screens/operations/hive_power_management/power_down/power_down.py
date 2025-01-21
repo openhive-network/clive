@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_percent
 from clive.__private.core.percent_conversions import hive_percent_to_percent
@@ -81,9 +81,9 @@ class WithdrawRoutesDisplay(CliveWidget):
 
 class PendingPowerDownHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Next power down", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
-        yield Static("Power down [HP]", classes=CLIVE_EVEN_COLUMN_CLASS_NAME)
-        yield Static("Power down [VESTS]", classes=CLIVE_ODD_COLUMN_CLASS_NAME)
+        yield Static("Next power down", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Power down [HP]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("Power down [VESTS]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
         yield PlaceTaker()
 
 
