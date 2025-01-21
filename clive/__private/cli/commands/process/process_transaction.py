@@ -70,4 +70,4 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             )
 
     async def _is_transaction_signed(self) -> bool:
-        return (await self.__loaded_transaction).is_signed()
+        return (await self.__loaded_transaction).is_signed

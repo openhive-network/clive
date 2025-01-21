@@ -139,7 +139,7 @@ class KeyContainer(Horizontal, CliveWidget):
             raise NoItemSelectedError("No key was selected!") from error
 
     def compose(self) -> ComposeResult:
-        if self.profile.transaction.is_signed():
+        if self.profile.transaction.is_signed:
             yield AlreadySignedHint()
         else:
             yield KeyHint("Sign with key:")
@@ -212,7 +212,7 @@ class TransactionSummary(BaseScreen):
             if confirm:
                 await refresh()
 
-        if self.profile.transaction.is_signed():
+        if self.profile.transaction.is_signed:
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
         else:
             await refresh()
@@ -259,7 +259,7 @@ class TransactionSummary(BaseScreen):
         await self._rebuild()
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
-            f" {'(signed)' if transaction.is_signed() else ''}"
+            f" {'(signed)' if transaction.is_signed else ''}"
         )
 
     async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
@@ -274,7 +274,7 @@ class TransactionSummary(BaseScreen):
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
             return
 
-        if not loaded_transaction.is_tapos_set():
+        if not loaded_transaction.is_tapos_set:
             self.notify("TaPoS metadata was not set, updating automatically...")
             await self._update_transaction_metadata()
 
@@ -291,7 +291,7 @@ class TransactionSummary(BaseScreen):
             (
                 await self.commands.perform_actions_on_transaction(
                     content=transaction,
-                    sign_key=self._get_key_to_sign() if not transaction.is_signed() else None,
+                    sign_key=self._get_key_to_sign() if not transaction.is_signed else None,
                     broadcast=True,
                 )
             ).raise_if_error_occurred()

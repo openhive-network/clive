@@ -24,7 +24,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
 
-        if not transaction.is_tapos_set() or self.force_update_metadata:
+        if not transaction.is_tapos_set or self.force_update_metadata:
             assert self.node is not None, "node is required so that transaction metadata can be updated"
             await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
 

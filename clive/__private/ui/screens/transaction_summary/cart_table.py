@@ -224,7 +224,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         if self._action_manager.is_action_disabled:
             return
 
-        if self.profile.transaction.is_signed():
+        if self.profile.transaction.is_signed:
             self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
         else:
             post_message_and_disable_action()
@@ -266,7 +266,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         if self._action_manager.is_action_disabled:
             return
 
-        if self.profile.transaction.is_signed():
+        if self.profile.transaction.is_signed:
             self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
         else:
             post_message_and_disable_action()

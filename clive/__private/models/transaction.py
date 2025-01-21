@@ -45,6 +45,14 @@ class Transaction(SchemasTransaction):
         return len(self.operations)
 
     @property
+    def is_signed(self) -> bool:
+        return bool(self.signatures)
+
+    @property
+    def is_tapos_set(self) -> bool:
+        return self.ref_block_num >= 0 and self.ref_block_prefix > 0
+
+    @property
     def operations_models(self) -> list[OperationUnion]:
         """Get only the operation models from already stored operations representations."""
         return [op.value for op in self.operations]  # type: ignore[attr-defined]
@@ -64,12 +72,6 @@ class Transaction(SchemasTransaction):
             if op.value in operations:  # type: ignore[attr-defined]
                 self.operations.remove(op)
                 return
-
-    def is_signed(self) -> bool:
-        return bool(self.signatures)
-
-    def is_tapos_set(self) -> bool:
-        return self.ref_block_num >= 0 and self.ref_block_prefix > 0
 
     def calculate_transaction_id(self) -> TransactionId:
         from clive.__private.core import iwax

@@ -46,7 +46,7 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
         self._result = self.transaction
 
     def __throw_already_signed_error_when_needed(self) -> None:
-        if self.already_signed_mode == "error" and self.transaction.is_signed():
+        if self.already_signed_mode == "error" and self.transaction.is_signed:
             raise TransactionAlreadySignedError(self, "Transaction is already signed!")
 
     def __set_transaction_signature(self, signature: Signature) -> None:
