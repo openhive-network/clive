@@ -1,6 +1,6 @@
 $governance-green-color: $success-darken-3;
 $governance-red-color: $error;
-$table-header-contrast-column: $warning-darken-2;
+$table-header-color: $primary-lighten-3;
 
 GovernanceActions {
   margin-left: 1;
@@ -15,7 +15,7 @@ GovernanceActions {
   }
 
   #action-row {
-    background: $table-header-contrast-column;
+    background: $table-header-color;
     width: 1fr;
   }
 }
