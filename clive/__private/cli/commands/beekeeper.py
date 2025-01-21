@@ -9,10 +9,13 @@ import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIBeekeeperLocallyAlreadyRunningError
+from clive.__private.cli.exceptions import (
+    CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
+    CLIBeekeeperLocallyAlreadyRunningError,
+)
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
-from clive.__private.settings import clive_prefixed_envvar
+from clive.__private.settings import clive_prefixed_envvar, safe_settings
 
 
 @dataclass(kw_only=True)
@@ -49,6 +52,7 @@ class BeekeeperSpawn(ExternalCLICommand):
     echo_address_only: bool
 
     async def validate(self) -> None:
+        await self._validate_beekeepers_env_vars_not_set()
         await self._validate_beekeeper_is_not_running()
         await super().validate()
 
@@ -69,6 +73,17 @@ class BeekeeperSpawn(ExternalCLICommand):
 
             if not self.background:
                 self.__serve_forever()
+
+    async def _validate_beekeepers_env_vars_not_set(self) -> None:
+        """
+        Do not spawn new instance of Beekeeper.
+
+        In order to avoid miss-configrutaion with using Beekeeper we should avoid spawning
+        new instance(s) of Beekeeper while CLIVE_BEEKEEPEER__SESSION_TOKEN and
+        CLIVE_BEEKEEPER__REMOTE_ADDRES are set.
+        """
+        if safe_settings.beekeeper.is_remote_address_set or safe_settings.beekeeper.is_session_token_set:
+            raise CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError
 
     async def _validate_beekeeper_is_not_running(self) -> None:
         if await Beekeeper.is_already_running_locally():

@@ -274,3 +274,13 @@ class CLIBeekeeperLocallyNotRunningError(CLIPrettyError):
             " one. Or pass `--beekeeper-remote` flag that points to running one."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            "Cannot spawn new instance of Beekeepeer while the env variable of CLIVE_BEEKEEPER__REMOTE_ADDRESS "
+            "or CLIVE_BEEKEEPEER__SESSION_TOKEN is set.\n"
+            "If you wish to launch Beekeeper locally, please unset them first, then retry with `clive beekeeper spawn`."
+        )
+        super().__init__(message, errno.EEXIST)
