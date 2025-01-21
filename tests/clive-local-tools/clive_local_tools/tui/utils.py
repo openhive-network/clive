@@ -5,22 +5,23 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 from textual.css.query import NoMatches
 
-from clive.__private.ui.widgets.clive_basic.clive_header import LockStatus
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
+    from beekeepy import AsyncBeekeeper, AsyncUnlockedWallet
+
     from clive_local_tools.tui.types import CliveApp
 
 
-def is_header_in_locked_mode(app: CliveApp) -> bool:
-    """Do not call while create_profile process."""
-    try:
-        widget = app.screen.query_exactly_one(LockStatus)
-    except NoMatches as error:
-        raise AssertionError(
-            "Couldn't get mode from the header. It is not available in the create_profile process."
-        ) from error
-    return widget.is_locked
+async def unlock_wallet(beekeeper: AsyncBeekeeper, wallet_name: str, wallet_password: str) -> AsyncUnlockedWallet:
+    session = await beekeeper.session
+    for wallet in await session.wallets:
+        if wallet.name == wallet_name:
+            if (unlocked_wallet := await wallet.unlocked) is not None:
+                return unlocked_wallet
+            return await wallet.unlock(password=wallet_password)
+    locked_wallet = await session.open_wallet(name=wallet_name)
+    return await locked_wallet.unlock(password=wallet_password)
 
 
 def log_current_view(app: CliveApp, *, nodes: bool = False, source: str | None = None) -> None:

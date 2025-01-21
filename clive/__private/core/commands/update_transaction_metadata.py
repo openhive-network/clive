@@ -4,13 +4,14 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core import iwax
+from helpy import wax as iwax
+
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.models.schemas import HiveInt
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.models import Transaction
 
 
@@ -32,7 +33,7 @@ class UpdateTransactionMetadata(Command):
         block_id = gdpo.head_block_id
 
         # set header
-        tapos_data = iwax.get_tapos_data(block_id)
+        tapos_data = iwax.calculate_tapos_data(block_id)
         ref_block_num = tapos_data.ref_block_num
         ref_block_prefix = tapos_data.ref_block_prefix
 

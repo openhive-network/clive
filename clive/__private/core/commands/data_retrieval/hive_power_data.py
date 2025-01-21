@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core import iwax
+from beekeepy.exceptions import UnknownDecisionPathError
+from helpy import wax as iwax
+
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import align_to_dot
 from clive.__private.models import Asset, HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime
-    from decimal import Decimal
 
     from clive.__private.core.node import Node
     from clive.__private.models.schemas import (
@@ -76,7 +78,7 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     account_name: str
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             return HarvestedDataRaw(
                 await node.api.database_api.get_dynamic_global_properties(),
                 await node.api.database_api.find_accounts(accounts=[self.account_name]),
@@ -85,6 +87,7 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 ),
                 await node.api.database_api.find_vesting_delegations(account=self.account_name),
             )
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(
@@ -99,8 +102,8 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         received_shares = data.core_account.received_vesting_shares
         delegated_shares = data.core_account.delegated_vesting_shares
         total_shares = owned_shares + received_shares - delegated_shares - data.core_account.vesting_withdraw_rate
-        to_withdraw_vests = iwax.vests(data.core_account.to_withdraw)
-        withdrawn_vests = iwax.vests(data.core_account.withdrawn)
+        to_withdraw_vests = Asset.Vests(amount=data.core_account.to_withdraw)
+        withdrawn_vests = Asset.Vests(amount=data.core_account.withdrawn)
         remaining_vests = to_withdraw_vests - withdrawn_vests
 
         return HivePowerData(
@@ -115,7 +118,14 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             withdrawn=HpVestsBalance.create(withdrawn_vests, data.gdpo),
             remaining=HpVestsBalance.create(remaining_vests, data.gdpo),
             next_power_down=HpVestsBalance.create(data.core_account.vesting_withdraw_rate, data.gdpo),
-            current_hp_apr=iwax.calculate_hp_apr(data.gdpo),
+            current_hp_apr=Decimal(
+                iwax.calculate_hp_apr(
+                    head_block_num=data.gdpo.head_block_number,
+                    vesting_reward_percent=data.gdpo.vesting_reward_percent,
+                    virtual_supply=data.gdpo.virtual_supply,
+                    total_vesting_fund_hive=data.gdpo.total_vesting_fund_hive,
+                )
+            ),
             gdpo=data.gdpo,
         )
 

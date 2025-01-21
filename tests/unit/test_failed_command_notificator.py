@@ -19,7 +19,7 @@ class MockCommand(Command):
 
 @dataclass(kw_only=True)
 class MockCommandInUnlocked(CommandInUnlocked):
-    app_state: None = field(init=False, default=None)  # type: ignore[assignment]
+    wallet: None = field(init=False, default=None)  # type: ignore[assignment]
 
     async def _execute(self) -> None:
         """Just a mock command."""

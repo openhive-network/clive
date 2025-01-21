@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+from helpy import wax as iwax
 from pydantic import Field, validator
 
 from clive.__private.models.schemas import (
@@ -74,8 +75,6 @@ class Transaction(SchemasTransaction):
                 return
 
     def calculate_transaction_id(self) -> TransactionId:
-        from clive.__private.core import iwax
-
         return TransactionId(iwax.calculate_transaction_id(self))
 
     def reset(self) -> None:

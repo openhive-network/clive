@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-import contextlib
-from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
+from contextlib import asynccontextmanager
+from functools import partial
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
 
+from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet, Settings
+from helpy import HttpUrl
 from textual.reactive import var
 from typing_extensions import override
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
-from clive.__private.core.commands.exceptions import NoProfileUnlockedError
-from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
-from clive.__private.core.communication import Communication
+from clive.__private.core.commands.exceptions import MultipleProfilesUnlockedError, NoProfileUnlockedError
+from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
-from clive.__private.core.node.node import Node
+from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
@@ -26,14 +26,12 @@ from clive.__private.ui.screens.unlock import Unlock
 from clive.exceptions import ProfileNotLoadedError
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator
+    from collections.abc import Iterable
     from types import TracebackType
-    from typing import Literal
 
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
-    from clive.__private.core.url import Url
 
 
 class World:
@@ -44,15 +42,20 @@ class World:
 
     Args:
     ----
-    beekeeper_remote_endpoint: If given, remote beekeeper will be used.
-    If not given, local beekeeper will start with locked session.
+    settings_or_url:  In case of passing url it will be set to settings.http_endpoint.
+        Missing required fields will be automatically filled.
+        If not provided all is set to defaults.
+
+    Note:
+    ----
+    Depending on settings.http_endpoint, remote beekeeper will be used.
+    If not set, local beekeeper will start with locked session.
     """
 
     def __init__(
         self,
-        beekeeper_remote_endpoint: Url | None = None,
-        beekeeper_token: str | None = None,
         *args: Any,
+        settings_or_url: Settings | HttpUrl | None = None,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -62,10 +65,10 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-
-        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
-        self._beekeeper_token = beekeeper_token
-        self._beekeeper: Beekeeper | None = None
+        self.__beekeeper_settings = self.__construct_settings_from_init_args(settings_or_url)
+        self._beekeeper: AsyncBeekeeper | None = None
+        self.__session: AsyncSession | None = None
+        self.__wallet: AsyncUnlockedWallet | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -87,9 +90,29 @@ class World:
         return self._known_exchanges
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         assert self._beekeeper is not None, "Beekeeper is not initialized"
         return self._beekeeper
+
+    @property
+    def session(self) -> AsyncSession:
+        assert self.__session is not None, "Session is not initialized"
+        return self.__session
+
+    @property
+    def wallet(self) -> AsyncUnlockedWallet:
+        assert self._optional_wallet is not None, "Wallet is not initialized"
+        return self._optional_wallet
+
+    async def set_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
+        assert new_wallet.name in [
+            w.name for w in (await self.session.wallets)
+        ], "This wallet does not exists within this session"
+        self.__wallet = new_wallet
+
+    @property
+    def _optional_wallet(self) -> AsyncUnlockedWallet | None:
+        return self.__wallet
 
     @property
     def node(self) -> Node:
@@ -99,30 +122,6 @@ class World:
     @property
     def _should_sync_with_beekeeper(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
-
-    @contextmanager
-    def modified_connection_details(
-        self,
-        max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_total_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
-        pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
-        target: Literal["beekeeper", "node", "all"] = "all",
-    ) -> Iterator[None]:
-        """Temporarily change connection details."""
-        contexts_to_enter = []
-        if target in ("beekeeper", "all"):
-            contexts_to_enter.append(
-                self.beekeeper.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
-            )
-        if target in ("node", "all"):
-            contexts_to_enter.append(
-                self.node.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
-            )
-
-        with contextlib.ExitStack() as stack:
-            for context in contexts_to_enter:
-                stack.enter_context(context)
-            yield
 
     @asynccontextmanager
     async def during_setup(self) -> AsyncGenerator[None]:
@@ -137,18 +136,15 @@ class World:
 
     async def setup(self) -> Self:
         async with self.during_setup():
-            self._beekeeper = await self.__setup_beekeeper(
-                remote_endpoint=self._beekeeper_remote_endpoint, token=self._beekeeper_token
-            )
+            self._beekeeper = await self.__setup_beekeeper()
+            self.__session = await self.beekeeper.session
         return self
 
     async def close(self) -> None:
         if self._profile is not None:
             self._profile.save()
-        if self._node is not None:
-            await self._node.teardown()
         if self._beekeeper is not None:
-            await self._beekeeper.close()
+            self._beekeeper.teardown()
 
     async def create_new_profile(
         self,
@@ -160,8 +156,12 @@ class World:
         await self.switch_profile(profile)
 
     async def load_profile_based_on_beekepeer(self) -> None:
-        profile_name = await self._get_unlocked_profile_name(self.beekeeper)
-        profile = Profile.load(profile_name)
+        if self._optional_wallet is not None:
+            raise MultipleProfilesUnlockedError(GetUnlockedWallet(session=self.session))
+
+        self.__wallet = await self._get_unlocked_wallet(self.session)
+
+        profile = Profile.load(self.wallet.name)
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
             await self._commands.sync_state_with_beekeeper()
@@ -189,8 +189,8 @@ class World:
             return
         self._on_going_into_unlocked_mode()
 
-    async def _get_unlocked_profile_name(self, beekeeper: Beekeeper) -> str:
-        return await GetUnlockedProfileName(beekeeper=beekeeper).execute_with_result()
+    async def _get_unlocked_wallet(self, session: AsyncSession) -> AsyncUnlockedWallet:
+        return await GetUnlockedWallet(session=session).execute_with_result()
 
     def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
@@ -201,15 +201,22 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None, token: str | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(
-            remote_endpoint=remote_endpoint,
-            token=token,
-            notify_closing_wallet_name_cb=lambda: self.profile.name if self._profile else "",
+    async def __setup_beekeeper(self) -> AsyncBeekeeper:
+        if self.__beekeeper_settings.http_endpoint is None:
+            from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID
+
+            beekeeper_params = await BeekeeperLoadDetachedPID(remove_file=False, silent_fail=True).execute_with_result()
+            if beekeeper_params.is_set():
+                self.__beekeeper_settings.http_endpoint = beekeeper_params.endpoint
+
+        self.__beekeeper_settings = safe_settings.beekeeper.settings_factory(
+            settings_to_update=self.__beekeeper_settings
         )
-        beekeeper.attach_wallet_closing_listener(self.app_state)
-        await beekeeper.launch()
-        return beekeeper
+
+        if self.__beekeeper_settings.http_endpoint is not None:
+            return await AsyncBeekeeper.remote_factory(url_or_settings=self.__beekeeper_settings)
+
+        return await AsyncBeekeeper.factory(settings=self.__beekeeper_settings)
 
     async def _update_node(self) -> None:
         if self._profile is None:
@@ -217,7 +224,6 @@ class World:
             return
         if self._node is None:
             self._node = Node(self._profile)
-            await self._node.setup()
         else:
             self._node.change_related_profile(self._profile)
 
@@ -230,6 +236,18 @@ class World:
     @property
     def app_state(self) -> AppState:
         return self._app_state
+
+    @classmethod
+    def __construct_settings_from_init_args(cls, settings_or_url: Settings | HttpUrl | None) -> Settings:
+        if isinstance(settings_or_url, Settings):
+            return settings_or_url
+
+        default_settings = Settings()
+
+        if isinstance(settings_or_url, HttpUrl):
+            default_settings.http_endpoint = settings_or_url
+
+        return default_settings
 
 
 class TUIWorld(World, CliveDOMNode):
@@ -290,8 +308,18 @@ class TUIWorld(World, CliveDOMNode):
         self.node.change_related_profile(profile)
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
-        if source == "beekeeper_notification_server":
-            self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
+        base_message: Final[str] = "Switched to the LOCKED mode"
+        if source == "beekeeper_monitoring_thread":
+            send_notification = partial(
+                self.app.notify,
+                f"{base_message} due to inactivity.",
+                timeout=10,
+            )
+        else:
+            send_notification = partial(self.app.notify, f"{base_message}.")
+
+        send_notification()
+
         self.profile.save()
         self.app.pause_refresh_node_data_interval()
         self.app.pause_refresh_alarms_data_interval()

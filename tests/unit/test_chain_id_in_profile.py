@@ -87,6 +87,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
 ) -> None:
     # ARRANGE
     # any transaction so we could sign it, and hope that chain id will be retrieved from the node api
+    await world.set_wallet(next(w for w in await world.session.wallets_unlocked if w.name == wallet.name))
     transaction = Transaction(
         operations=[
             TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo=""),

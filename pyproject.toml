@@ -41,8 +41,10 @@ humanize = "4.6.0"
 pydantic = "1.10.18"
 
 # remember to keep these versions adequate to one specified in test-tools
-schemas = "0.0.1.dev320+f4fdcfe"
+schemas = "0.0.1.dev323+e5a1ba1"
 wax = "0.3.10.dev227+a000255"
+helpy = "0.0.1.dev280+ae6ef73"
+beekeepy = "0.0.1.dev280+ae6ef73"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]

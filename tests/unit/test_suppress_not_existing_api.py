@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Final
 
 import pytest
+from helpy.exceptions import CommunicationError
 
 from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
-from clive.exceptions import CommunicationError
 
 URL: Final[str] = "http://doesnt_matter.com"
 REQUEST: Final[str] = "doesnt_matter"

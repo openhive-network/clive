@@ -3,15 +3,16 @@ from __future__ import annotations
 import ast
 from abc import ABC
 from dataclasses import dataclass
+from datetime import timedelta
 from pathlib import Path
-from typing import Literal, TypeVar, cast, get_args, overload
+from typing import TYPE_CHECKING, Literal, TypeVar, cast, get_args, overload
 
 from inflection import underscore
 
+from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS,
-    BEEKEEPER_INITIALIZATION_TIMEOUT_SECS,
-    BEEKEEPER_PATH,
+    BEEKEEPER_REFRESH_TIMEOUT_SECS,
     BEEKEEPER_REMOTE_ADDRESS,
     BEEKEEPER_SESSION_TOKEN,
     DATA_PATH,
@@ -31,9 +32,17 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_NODE_ADDRESS,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.core.url import Url
 from clive.__private.settings._settings import settings
 from clive.exceptions import CliveError
+
+if not is_tab_completion_active():
+    from beekeepy import Settings
+    from helpy import HttpUrl
+
+if TYPE_CHECKING:
+    from beekeepy import Settings
+    from helpy import HttpUrl  # noqa: TCH004
+
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -141,14 +150,14 @@ class SafeSettings:
     @dataclass
     class _Secrets(_Namespace):
         @property
-        def node_address(self) -> Url | None:
+        def node_address(self) -> HttpUrl | None:
             return self._get_secrets_node_address()
 
         @property
         def default_private_key(self) -> str | None:
             return self._get_secrets_default_private_key()
 
-        def _get_secrets_node_address(self) -> Url | None:
+        def _get_secrets_node_address(self) -> HttpUrl | None:
             return self._parent._get_url(SECRETS_NODE_ADDRESS)
 
         def _get_secrets_default_private_key(self) -> str | None:
@@ -169,11 +178,7 @@ class SafeSettings:
     @dataclass
     class _Beekeeper(_Namespace):
         @property
-        def path(self) -> Path | None:
-            return self._get_beekeeper_path()
-
-        @property
-        def remote_address(self) -> Url | None:
+        def remote_address(self) -> HttpUrl | None:
             return self._get_beekeeper_remote_address()
 
         @property
@@ -185,8 +190,8 @@ class SafeSettings:
             return self._get_beekeeper_communication_total_timeout_secs()
 
         @property
-        def initialization_timeout_secs(self) -> float:
-            return self._get_beekeeper_initialization_timeout_secs()
+        def refresh_timeout_secs(self) -> float:
+            return self._get_beekeeper_refresh_timeout_secs()
 
         @property
         def session_token(self) -> str | None:
@@ -196,25 +201,31 @@ class SafeSettings:
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
-        def _get_beekeeper_path(self) -> Path | None:
-            setting_name = BEEKEEPER_PATH
-            value = self._parent._get_value_from_settings(setting_name, "")
-            if not value:
-                return None
+        def settings_factory(self, settings_to_update: Settings | None = None) -> Settings:
+            from beekeepy import Settings
 
-            self._parent._assert_is_string(setting_name, value=value)
-            value_ = Path(cast(str, value))
-            self._parent._assert_path_is_file(setting_name, value=value_)
-            return value_
+            settings = (settings_to_update or Settings()).copy()
+            settings.working_directory = (
+                settings.working_directory
+                if settings.working_directory != Path.cwd()
+                # check is set to default
+                else self._get_beekeeper_wallet_directory()
+            )
+            settings.use_existing_session = settings.use_existing_session or self.session_token
+            settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
+            return settings
 
-        def _get_beekeeper_remote_address(self) -> Url | None:
+        def _get_beekeeper_remote_address(self) -> HttpUrl | None:
             return self._parent._get_url(BEEKEEPER_REMOTE_ADDRESS)
 
         def _get_beekeeper_communication_total_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=15, minimum=1)
 
-        def _get_beekeeper_initialization_timeout_secs(self) -> float:
-            return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT_SECS, default=5, minimum=1)
+        def _get_beekeeper_refresh_timeout_secs(self) -> float:
+            return self._parent._get_number(BEEKEEPER_REFRESH_TIMEOUT_SECS, default=0.5, minimum=0.1)
+
+        def _get_beekeeper_wallet_directory(self) -> Path:
+            return self._parent._get_data_path() / "beekeeper"
 
         def _get_beekeeper_session_token(self) -> str | None:
             beekeeper_session_token = self._parent._get_value_from_settings(BEEKEEPER_SESSION_TOKEN, None)
@@ -353,12 +364,12 @@ class SafeSettings:
         return cast(list[object], value_)
 
     @overload
-    def _get_url(self, setting_name: str, *, optionally: Literal[False]) -> Url: ...
+    def _get_url(self, setting_name: str, *, optionally: Literal[False]) -> HttpUrl: ...
 
     @overload
-    def _get_url(self, setting_name: str, *, optionally: Literal[True] = True) -> Url | None: ...
+    def _get_url(self, setting_name: str, *, optionally: Literal[True] = True) -> HttpUrl | None: ...
 
-    def _get_url(self, setting_name: str, *, optionally: bool = True) -> Url | None:
+    def _get_url(self, setting_name: str, *, optionally: bool = True) -> HttpUrl | None:
         value = self._get_value_from_settings(setting_name, "")
         if not value:
             if optionally:
@@ -368,7 +379,7 @@ class SafeSettings:
         self._assert_is_string(setting_name, value=value)
         value_ = cast(str, value)
         try:
-            return Url.parse(value_)
+            return HttpUrl(value_)
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
@@ -380,10 +391,6 @@ class SafeSettings:
 
     def _assert_is_list(self, setting_name: str, *, value: object) -> None:
         self._assert_is_type(setting_name=setting_name, value=value, expected_type=list)
-
-    def _assert_path_is_file(self, setting_name: str, *, value: Path) -> None:
-        if not value.is_file():
-            raise SettingsValueError(setting_name=setting_name, value=value, details="Path should be a file.")
 
     def _assert_is_type(
         self, setting_name: str, *, value: object, expected_type: type[object] | tuple[type[object], ...]
