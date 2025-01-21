@@ -1,28 +1,20 @@
 $governance-green-color: $success-darken-3;
 $governance-red-color: $error;
-$table-column-1-odd: $accent;
-$table-column-2-odd: $accent-lighten-1;
-$table-column-3-odd: $accent-lighten-2;
-$table-column-4-odd: $accent-darken-2;
-$table-column-1-even: $primary-background;
-$table-column-2-even: $primary-background-lighten-1;
-$table-column-3-even: $primary-background-lighten-2;
-$table-column-4-even: $primary-background-lighten-3;
-$table-header-contrast-column: $warning-darken-2;
-$table-header-column: $primary-darken-2;
+$table-row-odd-color: $secondary-darken-1;
+$table-row-even-color: $panel-darken-1;
+$table-header-color: $primary;
+$table-header-color-2: $primary-lighten-3;
 
 Witnesses {
   layout: vertical;
   height: auto;
 
   Label {
-    text-style: bold;
     width: 1fr;
     text-align: center;
   }
 
   Static {
-    text-style: bold;
     text-align: center;
   }
 
@@ -35,36 +27,19 @@ Witnesses {
     grid-columns: 2fr 1fr 3fr 2fr 2fr;
     height: auto;
 
-    .witness-name-even {
-      background: $table-column-1-even;
+    WitnessNameLabel,
+    WitnessDetailsLabel {
+      &:hover {
+        background: $panel;
+      }
     }
 
-    .witness-rank-even {
-      background: $table-column-2-even;
+    .witness-row-even {
+      background: $table-row-even-color;
     }
 
-    .witness-votes-even {
-      background: $table-column-3-even;
-    }
-
-    .witness-details-even {
-      background: $table-column-4-even;
-    }
-
-    .witness-name-odd {
-      background: $table-column-1-odd;
-    }
-
-    .witness-rank-odd {
-      background: $table-column-2-odd;
-    }
-
-    .witness-votes-odd {
-      background: $table-column-3-odd;
-    }
-
-    .witness-details-odd {
-      background: $table-column-4-odd;
+    .witness-row-odd {
+      background: $table-row-odd-color;
     }
   }
 
@@ -73,16 +48,12 @@ Witnesses {
     grid-columns: 2fr 1fr 3fr 2fr 2fr;
     height: 2;
 
-    #rank-column {
-      background: $table-header-contrast-column;
+    .witnesses-table-header {
+      background: $table-header-color;
     }
 
-    #name-column {
-      background: $table-header-column;
-    }
-
-    #votes-column {
-      background: $table-header-column;
+    .witness-name-header {
+      background: $table-header-color-2;
     }
   }
 
@@ -97,7 +68,7 @@ Witnesses {
 
   WitnessesActions {
     #action-name-row {
-      background: $table-header-column;
+      background: $table-header-color;
       width: 2fr;
     }
   }
