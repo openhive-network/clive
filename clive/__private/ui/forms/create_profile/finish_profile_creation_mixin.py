@@ -17,7 +17,7 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
 
         profile = self.context.profile
         profile.enable_saving()
-        self.world.profile = profile
+        await self.world.switch_profile(profile)
 
         await self._owner.execute_post_actions()
         await self._handle_modes_on_finish()
