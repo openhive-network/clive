@@ -54,7 +54,7 @@ wait_for_testnet() {
 
 # Launch Clive in CLI mode
 launch_cli() {
-  echo 'PS1="\u@cli:\w\$"' >> ~/.bashrc
+  echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
   clive --install-completion >/dev/null 2>&1
   exec bash --init-file /clive/scripts/activate_beekeeper.sh
 }
