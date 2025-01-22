@@ -11,5 +11,5 @@ class UnSign(CommandWithResult[Transaction]):
     transaction: Transaction
 
     async def _execute(self) -> None:
-        self.transaction.signatures = []
+        self.transaction.unsign()
         self._result = self.transaction
