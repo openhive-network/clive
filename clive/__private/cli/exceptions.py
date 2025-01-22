@@ -21,10 +21,6 @@ if TYPE_CHECKING:
     from clive.__private.core.url import Url
 
 
-from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
-from clive.__private.settings import clive_prefixed_envvar
-
-
 class CLIPrettyError(ClickException):
     """
     A pretty error to be shown to the user.
@@ -197,15 +193,10 @@ class CLIInvalidSelectionError(CLIPrettyError):
 
 
 class CLIBeekeeperRemoteAddressIsNotSetError(CLIPrettyError):
+    MESSAGE: Final[str] = "Beekeeper remote address is not set. Please run via start_clive_cli.sh."
+
     def __init__(self) -> None:
-        token_env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
-        address_env_var = clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)
-        message = (
-            f"Beekeeper remote address is not set, you can set it with environment variable `{address_env_var}`"
-            f" or with setting `{BEEKEEPER_REMOTE_ADDRESS}` in settings file. Variable `{token_env_var}`"
-            f" or setting `{BEEKEEPER_SESSION_TOKEN}` is also required."
-        )
-        super().__init__(message, errno.ENOENT)
+        super().__init__(self.MESSAGE, errno.EINVAL)
 
 
 class CLINoProfileUnlockedError(CLIPrettyError):

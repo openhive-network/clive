@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 import pytest
 
-from clive.__private.cli.exceptions import CLIBeekeeperSessionTokenNotSetError
-from clive.__private.core.beekeeper.handle import Beekeeper
+from clive.__private.cli.exceptions import CLIBeekeeperRemoteAddressIsNotSetError, CLIBeekeeperSessionTokenNotSetError
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
@@ -26,8 +25,7 @@ from clive_local_tools.testnet_block_log import (
 if TYPE_CHECKING:
     from typing import AsyncGenerator
 
-    from _pytest.monkeypatch import MonkeyPatch
-
+    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.cli.cli_tester import CLITester
     from clive_local_tools.types import EnvContextFactory
 
@@ -61,15 +59,12 @@ async def cli_tester_without_remote_address(
         yield cli_tester
 
 
-MESSAGE_NO_REMOTE_ADDRESS: Final[str] = "Beekeeper remote address is not set"
-
-
 async def test_negative_lock_without_remote_address(cli_tester_without_remote_address: CLITester) -> None:
     # ARRANGE
 
     # ACT
     # ASSERT
-    with pytest.raises(CLITestCommandError, match=MESSAGE_NO_REMOTE_ADDRESS):
+    with pytest.raises(CLITestCommandError, match=CLIBeekeeperRemoteAddressIsNotSetError.MESSAGE):
         cli_tester_without_remote_address.lock()
 
 
@@ -78,7 +73,7 @@ async def test_negative_unlock_without_remote_address(cli_tester_without_remote_
 
     # ACT
     # ASSERT
-    with pytest.raises(CLITestCommandError, match=MESSAGE_NO_REMOTE_ADDRESS):
+    with pytest.raises(CLITestCommandError, match=CLIBeekeeperRemoteAddressIsNotSetError.MESSAGE):
         cli_tester_without_remote_address.unlock(
             profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD
         )
