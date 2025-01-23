@@ -273,8 +273,8 @@ class World:
 
 class TUIWorld(World, CliveDOMNode):
     profile_reactive: Profile = var(None, init=False)  # type: ignore[assignment]
-    node_reactive: Node = var(None)  # type: ignore[assignment]
-    app_state: AppState = var(None)  # type: ignore[assignment]
+    node_reactive: Node = var(None, init=False)  # type: ignore[assignment]
+    app_state: AppState = var(None, init=False)  # type: ignore[assignment]
 
     @override
     def __init__(self) -> None:
