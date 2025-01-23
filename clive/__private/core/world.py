@@ -93,7 +93,8 @@ class World:
 
     @property
     def node(self) -> Node:
-        assert self._node is not None, "Node is not initialized"
+        if self._node is None:
+            raise ProfileNotLoadedError
         return self._node
 
     @property
