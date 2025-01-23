@@ -40,7 +40,7 @@ class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
     def __init__(self) -> None:
-        super().__init__(self.world, "profile", self._get_cart_item_count)
+        super().__init__(self.world, "profile_reactive", self._get_cart_item_count)
 
     def _get_cart_item_count(self, profile: Profile) -> str:
         amount = len(profile.transaction)
@@ -64,22 +64,22 @@ class CartOverview(CliveWidget):
         with Resources():
             with self._rc_container:
                 yield Static("RC:")
-                yield DynamicLabel(self.world, "profile", self._get_rc)
+                yield DynamicLabel(self.world, "profile_reactive", self._get_rc)
             yield Static("HIVE balance:")
             yield DynamicLabel(
                 self.world,
-                "profile",
+                "profile_reactive",
                 self._get_hive_balance,
             )
             yield Static("HBD balance:")
-            yield DynamicLabel(self.world, "profile", self._get_hbd_balance)
+            yield DynamicLabel(self.world, "profile_reactive", self._get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
             with self._cart_items_container:
                 yield from self._create_cart_items(self.profile)
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile", self._sync_cart_items)
+        self.watch(self.world, "profile_reactive", self._sync_cart_items)
 
     async def _sync_cart_items(self, profile: Profile) -> None:
         with self.app.batch_update():

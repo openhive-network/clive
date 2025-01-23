@@ -136,7 +136,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
     ) -> None:
         super().__init__(
             obj_to_watch=self.world,
-            attribute_name="profile",
+            attribute_name="profile_reactive",
             callback=self._update_asset_value,
             first_try_callback=lambda: account.is_node_data_available,
             variant=variant,
@@ -290,7 +290,7 @@ class Dashboard(BaseScreen):
                 yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile", self._update_account_containers)
+        self.watch(self.world, "profile_reactive", self._update_account_containers)
         self.watch(self.world, "app_state", self._update_mode)
 
     async def _update_account_containers(self, profile: Profile) -> None:

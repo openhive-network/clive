@@ -74,7 +74,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
     }
     """
 
-    ATTRIBUTE_TO_WATCH = "profile"
+    ATTRIBUTE_TO_WATCH = "profile_reactive"
     NO_CONTENT_TEXT = "You have no accounts"
 
     def __init__(self, accounts_type: AccountsType) -> None:

@@ -72,7 +72,7 @@ class KeyAliasesHeader(Horizontal):
 class ManageKeyAliasesTable(CliveCheckerboardTable):
     """Table with KeyAliases."""
 
-    ATTRIBUTE_TO_WATCH = "profile"
+    ATTRIBUTE_TO_WATCH = "profile_reactive"
     NO_CONTENT_TEXT = "You have no key aliases"
 
     def __init__(self) -> None:
