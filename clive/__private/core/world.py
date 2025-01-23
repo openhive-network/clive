@@ -219,7 +219,7 @@ class World:
         await self._update_node()
 
     def is_profile_available(self) -> bool:
-        return self.profile is not None
+        return self._profile is not None
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
