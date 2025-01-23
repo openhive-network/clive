@@ -216,7 +216,7 @@ class Clive(App[int]):
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
     def trigger_node_watchers(self) -> None:
-        self.world.mutate_reactive(TUIWorld.node)  # type: ignore[arg-type]
+        self.world.mutate_reactive(TUIWorld.node_reactive)  # type: ignore[arg-type]
 
     def trigger_app_state_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]

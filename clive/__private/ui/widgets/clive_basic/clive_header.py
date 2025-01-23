@@ -56,7 +56,7 @@ class BlockDisplay(Horizontal, CliveWidget):
         yield TitledLabel(
             "Block",
             obj_to_watch=self.world,
-            attribute_name="node",
+            attribute_name="node_reactive",
             first_try_callback=lambda: self.node.cached.is_online_status_known,
             callback=self._get_last_block,
         )
@@ -228,7 +228,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
     def __init__(self) -> None:
         super().__init__(
             obj_to_watch=self.world,
-            attribute_name="node",
+            attribute_name="node_reactive",
             callback=self._update_node_status,
             first_try_callback=lambda: self.node.cached.is_online_status_known,
         )
@@ -318,7 +318,7 @@ class CliveHeader(CliveRawHeader):
         super().__init__()
         self._node_version = DynamicLabel(
             obj_to_watch=self.world,
-            attribute_name="node",
+            attribute_name="node_reactive",
             callback=self._get_node_version,
             first_try_callback=lambda: self.node.cached.is_online_status_known,
             id_="node-type",
@@ -376,7 +376,7 @@ class CliveHeader(CliveRawHeader):
     def _create_right_part_expandable(self) -> ComposeResult:
         yield DynamicLabel(
             obj_to_watch=self.world,
-            attribute_name="node",
+            attribute_name="node_reactive",
             callback=self._get_node_address,
             id_="node-address-label",
         )

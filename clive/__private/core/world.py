@@ -272,8 +272,8 @@ class World:
 
 class TUIWorld(World, CliveDOMNode):
     profile_reactive: Profile = var(None, init=False)  # type: ignore[assignment]
+    node_reactive: Node = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
-    node: Node = var(None)  # type: ignore[assignment]
 
     @override
     def __init__(self) -> None:
@@ -363,7 +363,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def _update_profile_related_reactive_attributes(self) -> None:
         if self._node is not None:
-            self.node = self._node
+            self.node_reactive = self._node
         if self._profile is not None:
             self.profile_reactive = self._profile
 
