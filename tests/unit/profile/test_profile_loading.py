@@ -8,9 +8,9 @@ from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
-from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, TUIWorld, World
+from clive.exceptions import ProfileNotLoadedError
 
 if TYPE_CHECKING:
     from typing import AsyncIterator
@@ -81,10 +81,15 @@ async def test_loading_profile_without_beekeeper_session_tui() -> None:
     await world.setup()
 
     # ASSERT
-    assert world.profile is not None, "Without beekeeper session welcome profile should be created"
-    assert (
-        world.profile.name == WELCOME_PROFILE_NAME
-    ), f"Without beekeeper session profile name should be {WELCOME_PROFILE_NAME}"
+    assert not world.is_profile_available, "Without beekeeper session profile should be not loaded"
+    assert world.profile_reactive is None, "Profile reactive should be None"
+    assert world.node_reactive is None, "Node reactive should be None"
+
+    with pytest.raises(ProfileNotLoadedError):
+        _ = world.profile  # accessing profile should raise an error
+
+    with pytest.raises(ProfileNotLoadedError):
+        _ = world.node  # accessing node should raise an error
 
 
 async def test_loading_profile_without_beekeeper_session_cli() -> None:
