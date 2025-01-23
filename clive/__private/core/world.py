@@ -218,6 +218,7 @@ class World:
         self._profile = new_profile
         await self._update_node()
 
+    @property
     def is_profile_available(self) -> bool:
         return self._profile is not None
 
