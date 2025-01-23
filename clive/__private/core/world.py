@@ -271,7 +271,7 @@ class World:
 
 
 class TUIWorld(World, CliveDOMNode):
-    profile: Profile = var(None, init=False)  # type: ignore[assignment]
+    profile_reactive: Profile = var(None, init=False)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
@@ -365,7 +365,7 @@ class TUIWorld(World, CliveDOMNode):
         if self._node is not None:
             self.node = self._node
         if self._profile is not None:
-            self.profile = self._profile
+            self.profile_reactive = self._profile
 
 
 class CLIWorld(World):

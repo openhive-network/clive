@@ -27,7 +27,7 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
         self._account = account
         super().__init__(
             self.world,
-            "profile",
+            "profile_reactive",
             self._update_callback,
             first_try_callback=self._first_try_alarms_callback,
             id_=id_,

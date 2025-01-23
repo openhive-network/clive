@@ -83,7 +83,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
     """
 
     def __init__(self) -> None:
-        super().__init__(obj_to_watch=self.world, attribute_name="profile", callback=self.cart_status_callback)
+        super().__init__(obj_to_watch=self.world, attribute_name="profile_reactive", callback=self.cart_status_callback)
         self.tooltip = "Proceed to transaction summary"
 
     @staticmethod
@@ -125,7 +125,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
     def __init__(self) -> None:
         super().__init__(
             obj_to_watch=self.world,
-            attribute_name="profile",
+            attribute_name="profile_reactive",
             callback=self.working_account_callback,
             variant="success-on-transparent",
         )
@@ -343,7 +343,7 @@ class CliveHeader(CliveRawHeader):
 
     def on_mount(self, _: Mount) -> None:
         if not self.world.is_in_create_profile_mode:
-            self.watch(self.world, "profile", self._update_alarm_display_showing)
+            self.watch(self.world, "profile_reactive", self._update_alarm_display_showing)
 
     @on(LockStatus.WalletUnlocked)
     def change_state_to_unlocked(self) -> None:
@@ -356,7 +356,7 @@ class CliveHeader(CliveRawHeader):
     def _create_left_part_bar(self) -> ComposeResult:
         yield DynamicLabel(
             obj_to_watch=self.world,
-            attribute_name="profile",
+            attribute_name="profile_reactive",
             callback=self._get_profile_name,
             id_="profile-name",
         )

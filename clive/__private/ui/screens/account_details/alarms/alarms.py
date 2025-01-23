@@ -52,7 +52,7 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 
 
 class AlarmsTable(CliveCheckerboardTable):
-    ATTRIBUTE_TO_WATCH = "profile"
+    ATTRIBUTE_TO_WATCH = "profile_reactive"
     NO_CONTENT_TEXT = "Account has no alarms"
 
     def __init__(self, account: TrackedAccount) -> None:

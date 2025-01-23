@@ -82,7 +82,7 @@ class Proxy(TabPane, CliveWidget):
         self._current_proxy = self.profile.accounts.working.data.proxy
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile", self.sync_when_proxy_changed)
+        self.watch(self.world, "profile_reactive", self.sync_when_proxy_changed)
 
     @property
     def new_proxy_input(self) -> NewProxyInput:

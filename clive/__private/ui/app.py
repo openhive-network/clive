@@ -213,7 +213,7 @@ class Clive(App[int]):
         self._refresh_node_data_interval.resume()
 
     def trigger_profile_watchers(self) -> None:
-        self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]
+        self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
     def trigger_node_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.node)  # type: ignore[arg-type]

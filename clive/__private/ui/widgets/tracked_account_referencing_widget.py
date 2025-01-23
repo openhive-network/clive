@@ -32,7 +32,7 @@ class TrackedAccountReferencingWidget(CliveWidget):
     ) -> DynamicLabel:
         return DynamicLabel(
             self.world,
-            "profile",
+            "profile_reactive",
             lambda: foo() if self._account.name else "NULL",
             first_try_callback=self._check_if_account_node_data_is_available,
             classes=classes,
