@@ -43,7 +43,7 @@ class EditKeyAlias(KeyAliasForm[Profile]):
             return
 
         old_alias = self._public_key.alias
-        new_alias = self._key_alias_input.value_or_error
+        new_alias = self._get_key_alias()
         self.profile.keys.rename(old_alias, new_alias)
         self.notify(f"Key alias `{self._public_key.alias}` was edited.")
 
@@ -58,7 +58,13 @@ class EditKeyAlias(KeyAliasForm[Profile]):
         ------
         FailedValidationError: when key alias is not valid.
         """
-        self._key_alias_input.validate_with_error()
+        if not self._key_alias_input.is_empty:
+            self._key_alias_input.validate_with_error()
+
+    def _get_key_alias(self) -> str:
+        if self._key_alias_input.is_empty:
+            return self._public_key.value
+        return self._key_alias_input.value_or_error
 
     def _default_key_alias_name(self) -> str:
         return self._public_key.alias
