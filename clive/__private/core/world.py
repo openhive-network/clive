@@ -307,21 +307,8 @@ class TUIWorld(World, CliveDOMNode):
             await self._switch_to_welcome_profile()
         return self
 
-    async def create_new_profile(
-        self,
-        name: str,
-        working_account: str | WorkingAccount | None = None,
-        watched_accounts: Iterable[WatchedAccount] | None = None,
-    ) -> None:
-        await super().create_new_profile(name, working_account, watched_accounts)
-        self._update_profile_related_reactive_attributes()
-
-    async def load_profile_based_on_beekepeer(self) -> None:
-        await super().load_profile_based_on_beekepeer()
-        self._update_profile_related_reactive_attributes()
-
-    async def load_profile(self, profile_name: str) -> None:
-        await super().load_profile(profile_name)
+    async def switch_profile(self, new_profile: Profile) -> None:
+        await super().switch_profile(new_profile)
         self._update_profile_related_reactive_attributes()
 
     async def _switch_to_welcome_profile(self) -> None:
