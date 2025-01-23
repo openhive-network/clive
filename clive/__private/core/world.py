@@ -251,10 +251,6 @@ class TUIWorld(World, CliveDOMNode):
     def commands(self) -> TUICommands:
         return cast(TUICommands, super().commands)
 
-    @property
-    def _should_sync_with_beekeeper(self) -> bool:
-        return super()._should_sync_with_beekeeper and self.is_profile_available
-
     @override
     async def setup(self) -> Self:
         """
