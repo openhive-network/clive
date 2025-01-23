@@ -6,6 +6,7 @@ trap "clean_up" SIGTERM SIGQUIT SIGHUP EXIT
 # Start Beekeeper with prepared session token
 start_beekeeper_with_prepared_session_token() {
   CLIVE_BEEKEEPER__REMOTE_ADDRESS=$(clive beekeeper spawn --echo-address-only)
+  export CLIVE_BEEKEEPER__REMOTE_ADDRESS
   # shellcheck disable=SC2181
   if [[ $? -ne 0 ]]; then
     echo "Error: Fail to spawn Beekeeper. Aborting..."
@@ -13,14 +14,12 @@ start_beekeeper_with_prepared_session_token() {
   fi
 
   CLIVE_BEEKEEPER__SESSION_TOKEN=$(clive beekeeper create-session --echo-token-only)
+  export CLIVE_BEEKEEPER__SESSION_TOKEN
   # shellcheck disable=SC2181
   if [[ $? -ne 0 ]]; then
     echo "Error: Failed to create a new beekeeper session. Aborting..."
     exit 1
   fi
-
-  export CLIVE_BEEKEEPER__REMOTE_ADDRESS
-  export CLIVE_BEEKEEPER__SESSION_TOKEN
 }
 
 # Unlock wallet for selected profile
