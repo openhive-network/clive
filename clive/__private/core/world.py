@@ -97,6 +97,20 @@ class World:
         return self._node
 
     @property
+    def profile(self) -> Profile:
+        if self._profile is None:
+            raise ProfileNotLoadedError
+        return self._profile
+
+    @property
+    def is_profile_available(self) -> bool:
+        return self._profile is not None
+
+    @property
+    def app_state(self) -> AppState:
+        return self._app_state
+
+    @property
     def _should_sync_with_beekeeper(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
 
@@ -174,10 +188,6 @@ class World:
         self._profile = new_profile
         await self._update_node()
 
-    @property
-    def is_profile_available(self) -> bool:
-        return self._profile is not None
-
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
         if self._is_during_setup:
@@ -221,16 +231,6 @@ class World:
             await self._node.setup()
         else:
             self._node.change_related_profile(self._profile)
-
-    @property
-    def profile(self) -> Profile:
-        if self._profile is None:
-            raise ProfileNotLoadedError
-        return self._profile
-
-    @property
-    def app_state(self) -> AppState:
-        return self._app_state
 
 
 class TUIWorld(World, CliveDOMNode):
