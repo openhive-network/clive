@@ -243,6 +243,18 @@ class TUIWorld(World, CliveDOMNode):
         super().__init__()
         self.app_state = self._app_state
 
+    @property
+    def commands(self) -> TUICommands:
+        return cast(TUICommands, super().commands)
+
+    @property
+    def is_in_create_profile_mode(self) -> bool:
+        return self.profile.name == WELCOME_PROFILE_NAME
+
+    @property
+    def _should_sync_with_beekeeper(self) -> bool:
+        return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
+
     @override
     async def setup(self) -> Self:
         """
@@ -274,14 +286,6 @@ class TUIWorld(World, CliveDOMNode):
         await super().load_profile(profile_name)
         self._update_profile_related_reactive_attributes()
 
-    @property
-    def commands(self) -> TUICommands:
-        return cast(TUICommands, super().commands)
-
-    @property
-    def is_in_create_profile_mode(self) -> bool:
-        return self.profile.name == WELCOME_PROFILE_NAME
-
     async def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
         await self.create_new_profile(WELCOME_PROFILE_NAME)
@@ -308,10 +312,6 @@ class TUIWorld(World, CliveDOMNode):
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.trigger_app_state_watchers()
-
-    @property
-    def _should_sync_with_beekeeper(self) -> bool:
-        return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
