@@ -5,7 +5,6 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.url import Url
@@ -48,7 +47,7 @@ class ProfileInvalidNameError(ProfileError):
         super().__init__(message)
 
 
-class Profile(Context):
+class Profile:
     _INIT_KEY: Final[object] = object()
     """Used to prevent direct initialization of the class. Instead factory methods should be used."""
 

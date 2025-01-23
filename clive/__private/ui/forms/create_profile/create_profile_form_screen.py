@@ -7,7 +7,6 @@ from textual.binding import Binding
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -25,13 +24,13 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
+class CreateProfileFormScreen(BaseScreen, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form[CreateProfileContext]) -> None:
+    def __init__(self, owner: Form) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)
@@ -70,7 +69,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         profile_name = self._profile_name_input.value_or_error
         password = self._password_input.value_or_error
 
-        self.context.profile.name = profile_name
+        self.profile.name = profile_name
 
         create_wallet = CreateWallet(
             app_state=self.app_state,
@@ -80,7 +79,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         )
         write_data = SyncDataWithBeekeeper(
             app_state=self.app_state,
-            profile=self.context.profile,
+            profile=self.profile,
             beekeeper=self.world.beekeeper,
         )
 

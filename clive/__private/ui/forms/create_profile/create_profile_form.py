@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen
@@ -15,27 +13,23 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-class CreateProfileForm(Form[CreateProfileContext]):
-    @property
-    def context(self) -> CreateProfileContext:
-        return self.__context
+class CreateProfileForm(Form):
+    async def initialize(self) -> None:
+        await self.world.create_new_profile("temp_name")
+        self.profile.skip_saving()
 
-    def register_screen_builders(self) -> Iterator[ScreenBuilder[CreateProfileContext]]:
+    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen
 
-    def _rebuild_context(self) -> None:
-        profile = Profile.create("temp")
-        self.__context = CreateProfileContext(profile, Node(profile))
-
-    def _skip_during_push_screen(self) -> list[ScreenBuilder[CreateProfileContext]]:
-        screens_to_skip: list[ScreenBuilder[CreateProfileContext]] = []
+    def _skip_during_push_screen(self) -> list[ScreenBuilder]:
+        screens_to_skip: list[ScreenBuilder] = []
 
         # skip NewKeyAliasForm if there is no working account set
-        if not self.context.profile.accounts.has_working_account:
+        if not self.profile.accounts.has_working_account:
             screens_to_skip.append(NewKeyAliasFormScreen)
 
         return screens_to_skip

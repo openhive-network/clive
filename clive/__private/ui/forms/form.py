@@ -6,40 +6,42 @@ from queue import Queue
 from typing import Any
 
 from clive.__private.core.commands.abc.command import Command
-from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.form_screen import FormScreenBase
 
-ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
+ScreenBuilder = Callable[["Form"], FormScreenBase]
 PostAction = Command | Callable[[], Any]
 
 
-class Form(Contextual[ContextT], CliveScreen[None]):
+class Form(CliveScreen):
     MINIMUM_SCREEN_COUNT = 2  # Rationale: it makes no sense to have only one screen in the form
 
     def __init__(self) -> None:
         self.__current_screen_index = 0
-        self.__screens: list[ScreenBuilder[ContextT]] = [*list(self.register_screen_builders())]
-        self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
+        self.__screens: list[ScreenBuilder] = [*list(self.register_screen_builders())]
+        self.__skipped_screens: set[ScreenBuilder] = set()
         assert len(self.__screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
-        self._rebuild_context()
         self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
     @property
-    def screens(self) -> list[ScreenBuilder[ContextT]]:
+    def screens(self) -> list[ScreenBuilder]:
         return self.__screens
 
     @property
-    def current_screen(self) -> ScreenBuilder[ContextT]:
+    def current_screen(self) -> ScreenBuilder:
         return self.__screens[self.__current_screen_index]
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         assert self.__current_screen_index == 0
+        await self.initialize()
         self.__push_current_screen()
 
-    def _skip_during_push_screen(self) -> list[ScreenBuilder[ContextT]]:
+    async def initialize(self) -> None:
+        """Do actions that should be executed before the first form is displayed."""
+
+    def _skip_during_push_screen(self) -> list[ScreenBuilder]:
         return []
 
     def action_next_screen(self) -> None:
@@ -82,11 +84,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))
 
     @abstractmethod
-    def _rebuild_context(self) -> None:
-        """Create brand new fresh context."""
-
-    @abstractmethod
-    def register_screen_builders(self) -> Iterator[ScreenBuilder[ContextT]]:
+    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
         """Return screens to display."""
 
     def add_post_action(self, *actions: PostAction) -> None:

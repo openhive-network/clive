@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual.widgets import Static
 
-from clive.__private.core.contextual import Contextual
-from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -19,14 +16,12 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-KeyAliasFormContextT = TypeVar("KeyAliasFormContextT", Profile, CreateProfileContext)
-
 
 class SubTitle(Static):
     pass
 
 
-class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
+class KeyAliasForm(BaseScreen, ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     SECTION_TITLE: ClassVar[str] = "Change me in subclass"
@@ -38,7 +33,7 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
         self._key_alias_input = PublicKeyAliasInput(
             value=self._default_key_alias_name(),
             setting_key_alias=True,
-            key_manager=self._get_context_profile().keys,
+            key_manager=self.profile.keys,
             required=False,
         )
         self._public_key_input = LabelizedInput(
@@ -54,11 +49,6 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
             if not self.world.is_profile_available:
                 yield NavigationButtons(is_finish=True)
         yield SelectCopyPasteHint()
-
-    def _get_context_profile(self) -> Profile:
-        if isinstance(self.context, Profile):
-            return self.context
-        return self.context.profile
 
     def _content_after_big_title(self) -> ComposeResult:
         return []

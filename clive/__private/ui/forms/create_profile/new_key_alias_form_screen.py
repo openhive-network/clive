@@ -1,25 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from textual import on
 from textual.binding import Binding
 
 from clive.__private.logger import logger
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
-if TYPE_CHECKING:
-    from clive.__private.core.node import Node
 
-
-class NewKeyAliasFormScreen(
-    NewKeyAliasBase[CreateProfileContext], FormScreen[CreateProfileContext], FinishProfileCreationMixin
-):
+class NewKeyAliasFormScreen(NewKeyAliasBase, FormScreen, FinishProfileCreationMixin):
     BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
@@ -32,7 +26,7 @@ class NewKeyAliasFormScreen(
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
         # We allow just for adding one key during create_profile. Clear old ones because validation could fail.
-        self.context.profile.keys.clear_to_import()
+        self.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
     async def validate(self) -> NewKeyAliasFormScreen.ValidationFail | None:
@@ -43,11 +37,8 @@ class NewKeyAliasFormScreen(
         return None
 
     async def apply(self) -> None:
-        self.context.profile.keys.set_to_import([self._private_key_aliased])
+        self.profile.keys.set_to_import([self._private_key_aliased])
         logger.debug("New private key is waiting to be imported...")
 
     def is_step_optional(self) -> bool:
         return self._key_input.is_empty
-
-    def get_node(self) -> Node:
-        return self.context.node

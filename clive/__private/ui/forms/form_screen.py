@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
@@ -9,8 +9,8 @@ from textual.binding import Binding
 from textual.message import Message
 from textual.reactive import var
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
-from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
@@ -22,17 +22,13 @@ if TYPE_CHECKING:
 BackScreenModes = Literal["back_to_unlock", "nothing_to_back", "back_to_previous"]
 
 
-class FormScreenBase(CliveScreen, Contextual[ContextT]):
-    def __init__(self, owner: Form[ContextT]) -> None:
+class FormScreenBase(CliveScreen, AbstractClassMessagePump):
+    def __init__(self, owner: Form) -> None:
         self._owner = owner
         super().__init__()
 
-    @property
-    def context(self) -> ContextT:
-        return self._owner.context
 
-
-class FormScreen(FormScreenBase[ContextT], ABC):
+class FormScreen(FormScreenBase, AbstractClassMessagePump):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
         Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),

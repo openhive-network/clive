@@ -50,10 +50,6 @@ class NodesList(Container, CliveWidget):
     }
     """
 
-    def __init__(self, node: Node) -> None:
-        super().__init__()
-        self._node = node
-
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         with self.prevent(NodeSelector.Changed):
@@ -72,7 +68,7 @@ class NodesList(Container, CliveWidget):
         if new_network_type == current_network_type:
             await self.node.set_address(new_address)
             self.app.trigger_node_watchers()
-            self.notify(f"Node address set to `{self._node.address}`.")
+            self.notify(f"Node address set to `{new_address}`.")
             return True
 
         # block possibility to stay connected to node with different network type
