@@ -226,7 +226,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
 
         Raises:  # noqa: D406
         ------
-        InputValidationError: Raised when validation fails.
+        FailedValidationError: Raised when validation fails.
         InputValueError: Raised when cannot get the value of the input due to an error, which validation doesn't catch.
         """
 
