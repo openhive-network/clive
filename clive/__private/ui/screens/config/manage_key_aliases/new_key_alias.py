@@ -153,7 +153,12 @@ class NewKeyAlias(NewKeyAliasBase[Profile]):
         except FailedManyValidationError:
             return
 
-        self.context.keys.set_to_import([self._private_key_aliased])
+        def set_key_alias_to_import() -> None:
+            self.context.keys.set_to_import([self._private_key_aliased])
+
+        if not self._handle_key_alias_change(set_key_alias_to_import):
+            return
+
         await self._import_new_key()
         self.dismiss()
 

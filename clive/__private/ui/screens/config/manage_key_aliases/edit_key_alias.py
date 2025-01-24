@@ -44,8 +44,14 @@ class EditKeyAlias(KeyAliasForm[Profile]):
 
         old_alias = self._public_key.alias
         new_alias = self._get_key_alias()
-        self.profile.keys.rename(old_alias, new_alias)
-        self.notify(f"Key alias `{self._public_key.alias}` was edited.")
+
+        success_message = f"Key alias `{self._public_key.alias}` was edited."
+
+        def rename_key_alias() -> None:
+            self.profile.keys.rename(old_alias, new_alias)
+
+        if not self._handle_key_alias_change(rename_key_alias, success_message):
+            return
 
         self.app.trigger_profile_watchers()
         self.dismiss()

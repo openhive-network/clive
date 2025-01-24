@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, TypeVar
 
 from textual.widgets import Static
 
 from clive.__private.core.contextual import Contextual
+from clive.__private.core.keys import KeyAliasAlreadyInUseError
 from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
@@ -72,3 +73,17 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
 
     def _default_public_key(self) -> str:
         return ""
+
+    def _handle_key_alias_change(self, func: Callable[[], None], success_message: str | None = None) -> bool:
+        try:
+            func()
+        except KeyAliasAlreadyInUseError:
+            self.notify(
+                "Can't proceed because such alias already exists. Use explicit name or remove the old alias.",
+                severity="error",
+            )
+            return False
+
+        if success_message is not None:
+            self.notify(success_message)
+        return True
