@@ -185,8 +185,9 @@ class World:
         await self.switch_profile(profile)
 
     async def switch_profile(self, new_profile: Profile | None) -> None:
+        old_profile = self._profile
         self._profile = new_profile
-        await self._update_node()
+        await self._update_node(old_profile)
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
@@ -222,10 +223,14 @@ class World:
         await beekeeper.launch()
         return beekeeper
 
-    async def _update_node(self) -> None:
+    async def _update_node(self, old_profile: Profile | None) -> None:
+        if old_profile is not None and self._node is not None:
+            await self._node.teardown()
+
         if self._profile is None:
             self._node = None
             return
+
         if self._node is None:
             self._node = Node(self._profile)
             await self._node.setup()
