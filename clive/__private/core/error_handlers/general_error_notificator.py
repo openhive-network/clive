@@ -5,6 +5,7 @@ from typing import Final, TypeGuard
 from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
+from clive.__private.core.profile import ProfileSavingError
 
 
 class GeneralErrorNotificator(ErrorNotificator[Exception]):
@@ -13,6 +14,7 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
         InvalidPasswordError: "The password you entered is incorrect. Please try again.",
         NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
+        ProfileSavingError: ProfileSavingError.ERROR_MESSAGE,
     }
 
     def __init__(self) -> None:

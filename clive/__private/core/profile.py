@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from helpy import HttpUrl
+from helpy.exceptions import CommunicationError
 
 from clive.__private.core.accounts.account_manager import AccountManager
+from clive.__private.core.commands.exceptions import NoProfileUnlockedError
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
@@ -37,6 +39,15 @@ class InvalidChainIdError(ProfileError):
 
     def __init__(self) -> None:
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
+
+
+class ProfileSavingError(ProfileError):
+    """Raised when profile can't be saved due to beekeeper communication error."""
+
+    ERROR_MESSAGE: ClassVar[str] = "beekeeper_api"
+
+    def __init__(self) -> None:
+        super().__init__("Profile was not saved because communication with beekeeper failed.")
 
 
 class ProfileInvalidNameError(ProfileError):
@@ -173,7 +184,10 @@ class Profile(Context):
         """
         if self._skip_save:
             return
-        await PersistentStorageService(encryption_service).save_profile(self)
+        try:
+            await PersistentStorageService(encryption_service).save_profile(self)
+        except (CommunicationError, NoProfileUnlockedError) as error:
+            raise ProfileSavingError from error
 
     def delete(self) -> None:
         """

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
@@ -18,7 +18,7 @@ from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
-from clive.__private.core.profile import Profile
+from clive.__private.core.profile import Profile, ProfileSavingError
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -252,6 +252,10 @@ class World:
         self._profile = new_profile
         await self._update_node()
 
+    async def save_profile(self) -> None:
+        with suppress(ProfileNotLoadedError, ProfileSavingError):
+            await self.profile.save(self.encryption_service)
+
     def is_profile_available(self) -> bool:
         return self.profile is not None
 
@@ -347,6 +351,12 @@ class TUIWorld(World, CliveDOMNode):
         await super().switch_profile(new_profile)
         self._update_profile_related_reactive_attributes()
 
+    async def save_profile(self) -> None:
+        try:
+            await self.profile.save(self.encryption_service)
+        except ProfileSavingError as error:
+            self.app.notify(str(error), severity="error")
+
     async def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
         await self.create_new_profile(WELCOME_PROFILE_NAME)
@@ -405,6 +415,9 @@ class CLIWorld(World):
         except NoProfileUnlockedError as error:
             raise CLINoProfileUnlockedError from error
         return self
+
+    async def save_profile(self) -> None:
+        await self.profile.save(self.encryption_service)
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)

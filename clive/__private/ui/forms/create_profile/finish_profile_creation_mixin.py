@@ -21,7 +21,7 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
 
         await self._owner.execute_post_actions()
         await self._handle_modes_on_finish()
-        await self.profile.save(self.world.encryption_service)
+        await self.world.save_profile()
 
     async def _handle_modes_on_finish(self) -> None:
         await self.app.switch_mode("dashboard")
