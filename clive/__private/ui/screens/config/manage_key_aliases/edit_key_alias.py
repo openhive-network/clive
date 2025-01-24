@@ -50,6 +50,16 @@ class EditKeyAlias(KeyAliasForm[Profile]):
         self.app.trigger_profile_watchers()
         self.dismiss()
 
+    def _validate(self) -> None:
+        """
+        Validate the inputs.
+
+        Raises
+        ------
+        FailedValidationError: when key alias is not valid.
+        """
+        self._key_alias_input.validate_with_error()
+
     def _default_key_alias_name(self) -> str:
         return self._public_key.alias
 

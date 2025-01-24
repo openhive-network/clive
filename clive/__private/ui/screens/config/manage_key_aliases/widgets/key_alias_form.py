@@ -66,16 +66,6 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
     def _content_after_alias_input(self) -> ComposeResult:
         return []
 
-    def _validate(self) -> None:
-        """
-        Validate the inputs.
-
-        Raises
-        ------
-        FailedValidationError: when key alias is not valid.
-        """
-        self._key_alias_input.validate_with_error()
-
     def _default_key_alias_name(self) -> str:
         return ""
 
