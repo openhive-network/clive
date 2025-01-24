@@ -254,8 +254,11 @@ class World:
 
     async def _update_node(self) -> None:
         if self._profile is None:
+            if self._node is not None:
+                self._node.teardown()
             self._node = None
             return
+
         if self._node is None:
             self._node = Node(self._profile)
         else:
