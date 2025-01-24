@@ -64,7 +64,7 @@ class Form(CliveScreen):
         await self.initialize()
         self._push_current_screen()
 
-    def action_next_screen(self) -> None:
+    def next_screen(self) -> None:
         if not self._check_valid_range(self._current_screen_index + 1):
             return
 
@@ -72,7 +72,7 @@ class Form(CliveScreen):
 
         self._push_current_screen()
 
-    def action_previous_screen(self) -> None:
+    def previous_screen(self) -> None:
         if not self._check_valid_range(self._current_screen_index - 1):
             return
 
