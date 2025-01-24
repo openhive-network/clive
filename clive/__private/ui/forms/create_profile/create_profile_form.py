@@ -18,6 +18,10 @@ class CreateProfileForm(Form):
         await self.world.create_new_profile("temp_name")
         self.profile.skip_saving()
 
+    async def cleanup(self) -> None:
+        await self.world.switch_profile(None)
+        self.app.call_later(lambda: self.app.remove_mode("create_profile"))
+
     def register_screen_builders(self) -> Iterator[ScreenBuilder]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen

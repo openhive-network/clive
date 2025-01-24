@@ -41,6 +41,9 @@ class Form(CliveScreen):
     async def initialize(self) -> None:
         """Do actions that should be executed before the first form is displayed."""
 
+    async def cleanup(self) -> None:
+        """Do actions that should be executed when exiting the form."""
+
     def _skip_during_push_screen(self) -> list[ScreenBuilder]:
         return []
 
