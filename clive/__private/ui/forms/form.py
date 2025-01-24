@@ -25,6 +25,10 @@ class Form(CliveScreen):
 
         super().__init__()
 
+    @abstractmethod
+    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
+        """Return screens to display."""
+
     @property
     def screens_types(self) -> list[type[FormScreenBase]]:
         return self._screen_types
@@ -33,16 +37,32 @@ class Form(CliveScreen):
     def current_screen_type(self) -> type[FormScreenBase]:
         return self._screen_types[self._current_screen_index]
 
-    async def on_mount(self) -> None:
-        assert self._current_screen_index == 0
-        await self.initialize()
-        self._push_current_screen()
+    def add_post_action(self, *actions: PostAction) -> None:
+        for action in actions:
+            self._post_actions.put_nowait(action)
+
+    def clear_post_actions(self) -> None:
+        self._post_actions = Queue[PostAction]()
+
+    async def execute_post_actions(self) -> None:
+        while not self._post_actions.empty():
+            action = self._post_actions.get_nowait()
+
+            if isinstance(action, Command):
+                await action.execute()
+            else:
+                action()
 
     async def initialize(self) -> None:
         """Do actions that should be executed before the first form is displayed."""
 
     async def cleanup(self) -> None:
         """Do actions that should be executed when exiting the form."""
+
+    async def on_mount(self) -> None:
+        assert self._current_screen_index == 0
+        await self.initialize()
+        self._push_current_screen()
 
     def action_next_screen(self) -> None:
         if not self._check_valid_range(self._current_screen_index + 1):
@@ -66,23 +86,3 @@ class Form(CliveScreen):
 
     def _check_valid_range(self, proposed_idx: int) -> bool:
         return (proposed_idx >= 0) and (proposed_idx < len(self._screen_types))
-
-    @abstractmethod
-    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
-        """Return screens to display."""
-
-    def add_post_action(self, *actions: PostAction) -> None:
-        for action in actions:
-            self._post_actions.put_nowait(action)
-
-    def clear_post_actions(self) -> None:
-        self._post_actions = Queue[PostAction]()
-
-    async def execute_post_actions(self) -> None:
-        while not self._post_actions.empty():
-            action = self._post_actions.get_nowait()
-
-            if isinstance(action, Command):
-                await action.execute()
-            else:
-                action()
