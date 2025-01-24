@@ -7,10 +7,12 @@ from clive.__private.ui.forms.create_profile.create_profile_form_screen import C
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen
 from clive.__private.ui.forms.create_profile.welcome_form_screen import CreateProfileWelcomeFormScreen
-from clive.__private.ui.forms.form import Form, ScreenBuilder
+from clive.__private.ui.forms.form import Form
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from clive.__private.ui.forms.form_screen import FormScreenBase
 
 
 class CreateProfileForm(Form):
@@ -22,15 +24,15 @@ class CreateProfileForm(Form):
         await self.world.switch_profile(None)
         self.app.call_later(lambda: self.app.remove_mode("create_profile"))
 
-    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
+    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen
 
-    def _skip_during_push_screen(self) -> list[ScreenBuilder]:
-        screens_to_skip: list[ScreenBuilder] = []
+    def _skip_during_push_screen(self) -> list[type[FormScreenBase]]:
+        screens_to_skip: list[type[FormScreenBase]] = []
 
         # skip NewKeyAliasForm if there is no working account set
         if not self.profile.accounts.has_working_account:

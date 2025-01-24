@@ -3,13 +3,14 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.forms.form_screen import FormScreenBase
 
-ScreenBuilder = Callable[["Form"], FormScreenBase]
+if TYPE_CHECKING:
+    from clive.__private.ui.forms.form_screen import FormScreenBase
+
 PostAction = Command | Callable[[], Any]
 
 
@@ -18,19 +19,19 @@ class Form(CliveScreen):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screens: list[ScreenBuilder] = [*list(self.register_screen_builders())]
-        self._skipped_screens: set[ScreenBuilder] = set()
+        self._screens: list[type[FormScreenBase]] = [*list(self.register_screen_builders())]
+        self._skipped_screens: set[type[FormScreenBase]] = set()
         assert len(self._screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
     @property
-    def screens(self) -> list[ScreenBuilder]:
+    def screens(self) -> list[type[FormScreenBase]]:
         return self._screens
 
     @property
-    def current_screen(self) -> ScreenBuilder:
+    def current_screen(self) -> type[FormScreenBase]:
         return self._screens[self._current_screen_index]
 
     async def on_mount(self) -> None:
@@ -44,7 +45,7 @@ class Form(CliveScreen):
     async def cleanup(self) -> None:
         """Do actions that should be executed when exiting the form."""
 
-    def _skip_during_push_screen(self) -> list[ScreenBuilder]:
+    def _skip_during_push_screen(self) -> list[type[FormScreenBase]]:
         return []
 
     def action_next_screen(self) -> None:
@@ -87,7 +88,7 @@ class Form(CliveScreen):
         return (proposed_idx >= 0) and (proposed_idx < len(self._screens))
 
     @abstractmethod
-    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
+    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
         """Return screens to display."""
 
     def add_post_action(self, *actions: PostAction) -> None:
