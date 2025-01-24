@@ -76,12 +76,7 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
         private_key = self._key_input.value_or_error
-        key_alias = (
-            self._key_alias_input.value_or_error
-            if not self._key_alias_input.is_empty
-            else self._private_key.calculate_public_key().value
-        )
-        return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
+        return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=self._get_key_alias())
 
     def action_load_from_file(self) -> None:
         self.app.push_screen(SelectFile(placeholder=KEY_FILE_PATH_PLACEHOLDER), self._load_private_key_from_file)
@@ -132,6 +127,11 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
 
     def _default_private_key(self) -> str:
         return safe_settings.secrets.default_private_key or ""
+
+    def _get_key_alias(self) -> str:
+        if self._key_alias_input.is_empty:
+            return self._private_key.calculate_public_key().value
+        return self._key_alias_input.value_or_error
 
 
 class NewKeyAlias(NewKeyAliasBase[Profile]):
