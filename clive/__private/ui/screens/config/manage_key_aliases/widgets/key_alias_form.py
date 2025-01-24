@@ -41,6 +41,7 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
             key_manager=self._get_context_profile().keys,
             required=False,
         )
+        self._key_alias_input.clear_validation(clear_value=False)
         self._public_key_input = LabelizedInput(
             "Public key", self._default_public_key() or "will be calculated here", id="public-key"
         )
