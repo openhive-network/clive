@@ -19,15 +19,15 @@ class Form(CliveScreen):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screen_types: list[type[FormScreenBase]] = [*list(self.register_screen_builders())]
+        self._screen_types: list[type[FormScreenBase]] = [*list(self.register_screens())]
         assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
     @abstractmethod
-    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
-        """Return screens to display."""
+    def register_screens(self) -> Iterator[type[FormScreenBase]]:
+        """Return screens types that should be created and displayed in the form."""
 
     @property
     def screens_types(self) -> list[type[FormScreenBase]]:

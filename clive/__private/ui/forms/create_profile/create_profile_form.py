@@ -24,7 +24,7 @@ class CreateProfileForm(Form):
         await self.world.switch_profile(None)
         self.app.call_later(lambda: self.app.remove_mode("create_profile"))
 
-    def register_screen_builders(self) -> Iterator[type[FormScreenBase]]:
+    def register_screens(self) -> Iterator[type[FormScreenBase]]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
