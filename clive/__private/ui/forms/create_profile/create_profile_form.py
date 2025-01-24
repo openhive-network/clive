@@ -30,12 +30,3 @@ class CreateProfileForm(Form):
         yield CreateProfileFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen
-
-    def _skip_during_push_screen(self) -> list[type[FormScreenBase]]:
-        screens_to_skip: list[type[FormScreenBase]] = []
-
-        # skip NewKeyAliasForm if there is no working account set
-        if not self.profile.accounts.has_working_account:
-            screens_to_skip.append(NewKeyAliasFormScreen)
-
-        return screens_to_skip

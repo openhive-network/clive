@@ -20,7 +20,6 @@ class Form(CliveScreen):
     def __init__(self) -> None:
         self._current_screen_index = 0
         self._screen_types: list[type[FormScreenBase]] = [*list(self.register_screen_builders())]
-        self._skipped_screen_types: set[type[FormScreenBase]] = set()
         assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._post_actions = Queue[PostAction]()
 
@@ -45,19 +44,11 @@ class Form(CliveScreen):
     async def cleanup(self) -> None:
         """Do actions that should be executed when exiting the form."""
 
-    def _skip_during_push_screen(self) -> list[type[FormScreenBase]]:
-        return []
-
     def action_next_screen(self) -> None:
         if not self._check_valid_range(self._current_screen_index + 1):
             return
 
         self._current_screen_index += 1
-
-        if self._is_current_screen_to_skip():
-            self._skipped_screen_types.add(self.current_screen_type)
-            self.action_next_screen()
-            return
 
         self._push_current_screen()
 
@@ -67,19 +58,8 @@ class Form(CliveScreen):
 
         self._current_screen_index -= 1
 
-        if self._is_current_screen_skipped():
-            self._skipped_screen_types.discard(self.current_screen_type)
-            self.action_previous_screen()
-            return
-
         # self.dismiss() won't work here because self is Form and not FormScreen
         self.app.pop_screen()
-
-    def _is_current_screen_to_skip(self) -> bool:
-        return self.current_screen_type in self._skip_during_push_screen()
-
-    def _is_current_screen_skipped(self) -> bool:
-        return self.current_screen_type in self._skipped_screen_types
 
     def _push_current_screen(self) -> None:
         self.app.push_screen(self.current_screen_type(self))
