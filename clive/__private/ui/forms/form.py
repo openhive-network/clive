@@ -7,7 +7,7 @@ from typing import Any, cast
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.forms.form_screen import FormScreenBase
+from clive.__private.ui.forms.form_screen import FormScreen
 
 PostAction = Command | Callable[[], Any]
 
@@ -17,22 +17,22 @@ class Form(CliveScreen):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screen_types: list[type[FormScreenBase]] = [*list(self.register_screens())]
+        self._screen_types: list[type[FormScreen]] = [*list(self.register_screens())]
         assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
     @abstractmethod
-    def register_screens(self) -> Iterator[type[FormScreenBase]]:
+    def register_screens(self) -> Iterator[type[FormScreen]]:
         """Return screens types that should be created and displayed in the form."""
 
     @property
-    def screens_types(self) -> list[type[FormScreenBase]]:
+    def screens_types(self) -> list[type[FormScreen]]:
         return self._screen_types
 
     @property
-    def current_screen_type(self) -> type[FormScreenBase]:
+    def current_screen_type(self) -> type[FormScreen]:
         return self._screen_types[self._current_screen_index]
 
     @property
@@ -41,7 +41,7 @@ class Form(CliveScreen):
 
     @property
     def is_should_finish_set_on_current_screen(self) -> bool:
-        return cast(FormScreenBase, self.app.screen).should_finish
+        return cast(FormScreen, self.app.screen).should_finish
 
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:

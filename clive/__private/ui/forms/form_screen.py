@@ -18,17 +18,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class FormScreenBase(CliveScreen, AbstractClassMessagePump):
-    def __init__(self, owner: Form) -> None:
-        self._owner = owner
-        super().__init__()
-
-    @property
-    def should_finish(self) -> bool:
-        return False
-
-
-class FormScreen(FormScreenBase, AbstractClassMessagePump):
+class FormScreen(CliveScreen, AbstractClassMessagePump):
     BINDINGS = [
         Binding(
             f"{PREVIOUS_SCREEN_BINDING_KEY},escape",
@@ -51,6 +41,10 @@ class FormScreen(FormScreenBase, AbstractClassMessagePump):
 
         notification_message: str | None = None
         """Message to be displayed in the notification."""
+
+    def __init__(self, owner: Form) -> None:
+        self._owner = owner
+        super().__init__()
 
     @property
     def should_finish(self) -> bool:
