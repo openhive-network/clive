@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from textual import on
 from textual.binding import Binding
 
 from clive.__private.core.profile import Profile
 from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     FailedValidationError,
     InputValueError,
@@ -33,6 +35,7 @@ class EditKeyAlias(KeyAliasForm[Profile]):
     def context(self) -> Profile:
         return self.profile
 
+    @on(CliveInput.Submitted)
     def action_save(self) -> None:
         try:
             self._validate()
