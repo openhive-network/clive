@@ -6,6 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.bindings import PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.get_css import get_relative_css_path
@@ -24,14 +25,16 @@ class Description(Static):
 
 
 class CreateProfileWelcomeFormScreen(BaseScreen, FormScreen):
-    BINDINGS = [Binding("f1", "help", "Help")]
+    BINDINGS = [
+        Binding("f1", "help", "Help"),
+        Binding(f"{PREVIOUS_SCREEN_BINDING_KEY},escape", "_there_is_no_back", "Nothing", show=False),
+    ]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 
     def __init__(self, owner: Form) -> None:
         super().__init__(owner)
         self._description = "Let's create profile!\n" + PRESS_HELP_MESSAGE
-        self.back_screen_mode = "nothing_to_back"
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):

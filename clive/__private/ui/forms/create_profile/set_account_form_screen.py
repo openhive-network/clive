@@ -7,9 +7,8 @@ from textual.binding import Binding
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
-from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.forms.form_screen import FormScreen
-from clive.__private.ui.forms.navigation_buttons import NavigationButtons
+from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -28,7 +27,7 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccountFormScreen(BaseScreen, FormScreen, FinishProfileCreationMixin):
+class SetAccountFormScreen(BaseScreen, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
@@ -48,7 +47,15 @@ class SetAccountFormScreen(BaseScreen, FormScreen, FinishProfileCreationMixin):
         return self.app.query_exactly_one(WorkingAccountCheckbox)
 
     def on_mount(self) -> None:
-        self.app.update_data_from_node_asap()
+        self.app.resume_refresh_node_data_interval()
+
+    @on(PreviousScreenButton.Pressed)
+    async def action_previous_screen(self, event: PreviousScreenButton.Pressed | None = None) -> None:
+        self.app.pause_refresh_alarms_data_interval()
+        self.app.pause_refresh_node_data_interval()
+        if event is None:
+            await super().action_previous_screen()
+
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):
@@ -94,5 +101,5 @@ class SetAccountFormScreen(BaseScreen, FormScreen, FinishProfileCreationMixin):
 
     @on(WorkingAccountCheckbox.Changed)
     def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:
-        self.should_finish = not event.value
+        self._should_finish = not event.value
         self.query_exactly_one(NavigationButtons).is_finish = self.should_finish

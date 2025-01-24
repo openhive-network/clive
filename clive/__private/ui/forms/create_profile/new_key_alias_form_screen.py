@@ -6,14 +6,13 @@ from textual import on
 from textual.binding import Binding
 
 from clive.__private.logger import logger
-from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 
-class NewKeyAliasFormScreen(NewKeyAliasBase, FormScreen, FinishProfileCreationMixin):
+class NewKeyAliasFormScreen(NewKeyAliasBase, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
@@ -21,7 +20,10 @@ class NewKeyAliasFormScreen(NewKeyAliasBase, FormScreen, FinishProfileCreationMi
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.should_finish = True
+
+    @property
+    def should_finish(self) -> bool:
+        return True
 
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:

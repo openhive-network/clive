@@ -3,13 +3,11 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
-from typing import TYPE_CHECKING, Any
+from typing import Any, cast
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.ui.clive_screen import CliveScreen
-
-if TYPE_CHECKING:
-    from clive.__private.ui.forms.form_screen import FormScreenBase
+from clive.__private.ui.forms.form_screen import FormScreenBase
 
 PostAction = Command | Callable[[], Any]
 
@@ -37,6 +35,14 @@ class Form(CliveScreen):
     def current_screen_type(self) -> type[FormScreenBase]:
         return self._screen_types[self._current_screen_index]
 
+    @property
+    def is_on_the_last_screen(self) -> bool:
+        return self._current_screen_index == len(self._screen_types) - 1
+
+    @property
+    def is_should_finish_set_on_current_screen(self) -> bool:
+        return cast(FormScreenBase, self.app.screen).should_finish
+
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:
             self._post_actions.put_nowait(action)
@@ -59,21 +65,32 @@ class Form(CliveScreen):
     async def cleanup(self) -> None:
         """Do actions that should be executed when exiting the form."""
 
+    async def exit_form(self) -> None:
+        self.app.pop_screen()
+
+    async def finish_form(self) -> None:
+        """Execute actions when the form is finished."""
+
     async def on_mount(self) -> None:
         assert self._current_screen_index == 0
         await self.initialize()
         self._push_current_screen()
 
-    def next_screen(self) -> None:
-        if not self._check_valid_range(self._current_screen_index + 1):
+    async def next_screen(self) -> None:
+        if self.is_on_the_last_screen or self.is_should_finish_set_on_current_screen:
+            await self.finish_form()
             return
 
         self._current_screen_index += 1
 
         self._push_current_screen()
 
-    def previous_screen(self) -> None:
-        if not self._check_valid_range(self._current_screen_index - 1):
+    async def previous_screen(self) -> None:
+        is_leaving_form = self._current_screen_index == 0
+
+        if is_leaving_form:
+            await self.cleanup()
+            await self.exit_form()
             return
 
         self._current_screen_index -= 1
@@ -82,7 +99,6 @@ class Form(CliveScreen):
         self.app.pop_screen()
 
     def _push_current_screen(self) -> None:
+        assert self._current_screen_index < len(self._screen_types), "Current screen index is out of bounds"
+        assert self._current_screen_index >= 0, "Current screen index is out of bounds"
         self.app.push_screen(self.current_screen_type(self))
-
-    def _check_valid_range(self, proposed_idx: int) -> bool:
-        return (proposed_idx >= 0) and (proposed_idx < len(self._screen_types))
