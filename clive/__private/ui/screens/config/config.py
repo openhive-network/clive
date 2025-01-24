@@ -42,10 +42,6 @@ class Config(BaseScreen):
 
     @on(CliveButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
-        if not self._has_working_account():
-            self.notify("Cannot manage key aliases without working account", severity="error")
-            return
-
         await self.app.push_screen(ManageKeyAliases())
 
     def _has_working_account(self) -> bool:
