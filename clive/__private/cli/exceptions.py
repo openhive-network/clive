@@ -11,8 +11,10 @@ from clive.__private.core.constants.node import (
     VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
     VESTS_TO_REMOVE_DELEGATION,
 )
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.formatters.humanize import humanize_timedelta
 from clive.__private.models.asset import Asset
+from clive.__private.settings import clive_prefixed_envvar
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -232,8 +234,9 @@ class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
 class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
     def __init__(self) -> None:
         message = (
-            "Cannot spawn new instance of Beekeepeer while the env variable of CLIVE_BEEKEEPER__REMOTE_ADDRESS "
-            "or CLIVE_BEEKEEPEER__SESSION_TOKEN is set.\n"
+            "Cannot spawn new instance of Beekeepeer while "
+            f"the env variable of {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)} "
+            f"or {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)} is set.\n"
             "If you wish to launch Beekeeper locally, please unset them first, then retry with `clive beekeeper spawn`."
         )
         super().__init__(message, errno.EEXIST)
