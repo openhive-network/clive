@@ -140,15 +140,6 @@ build_wheel:
   after_script:
     - bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash"
 
-testing_beekeeper:
-  extends: .testing
-  variables:
-      PYTEST_TIMEOUT_MINUTES: 10
-  script:
-    - echo -e "${TXT_BLUE}Launching beekeeper tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/functional/beekeeper)
-    - !reference [.run-pytest, script]
-
 testing_clive:
   extends: .testing
   variables:
@@ -156,7 +147,7 @@ testing_clive:
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(
-      --ignore tests/functional/beekeeper --ignore tests/tui --ignore tests/functional/cli
+      --ignore tests/tui --ignore tests/functional/cli
       -k "not test_autocompletion_time"
       )
     - !reference [.run-pytest, script]
@@ -186,14 +177,12 @@ testing_cli:
     PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/functional/cli)
+    - export PYTEST_ARGS=(tests/functional/cli -v)
     - !reference [.run-pytest, script]
 
 testing_password_private_key_logging:
   stage: tests
   needs:
-    - job: testing_beekeeper
-      artifacts: true
     - job: testing_clive
       artifacts: true
     - job: testing_clive_import_times_during_autocompletion
