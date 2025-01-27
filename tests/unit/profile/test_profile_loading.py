@@ -7,7 +7,7 @@ import pytest
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
+from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, TUIWorld, World

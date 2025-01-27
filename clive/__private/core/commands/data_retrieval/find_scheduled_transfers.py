@@ -4,6 +4,8 @@ from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final, Literal, Sequence, TypeVar, cast
 
+from beekeepy.exceptions import UnknownDecisionPathError
+
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSFER
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
 from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
 
 AllowedBaseSorts = Literal[
     "amount",
@@ -223,11 +225,12 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
     account_name: str
 
     async def _harvest_data_from_api(self) -> _HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             return _HarvestedDataRaw(
                 recurrent_transfers=await node.api.database_api.find_recurrent_transfers(from_=self.account_name),
                 account_data=await node.api.database_api.find_accounts(accounts=[self.account_name]),
             )
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: _HarvestedDataRaw) -> _SanitizedData:
         return _SanitizedData(
