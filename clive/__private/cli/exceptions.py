@@ -17,8 +17,9 @@ from clive.__private.models.asset import Asset
 if TYPE_CHECKING:
     from datetime import timedelta
 
+    from helpy import HttpUrl
+
     from clive.__private.core.profile import Profile
-    from clive.__private.core.url import Url
 
 
 class CLIPrettyError(ClickException):
@@ -217,14 +218,14 @@ class CLICreatingProfileCommunicationError(CLIPrettyError):
 
 
 class CLIBeekeeperRemoteAddressIsNotRespondingError(CLIPrettyError):
-    def __init__(self, url: Url) -> None:
+    def __init__(self, url: HttpUrl) -> None:
         message = f"Beekeeper on address {url} is not responding."
         super().__init__(message, errno.EEXIST)
 
 
 class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
-    def __init__(self, url: Url, pid: int) -> None:
-        message = f"Local instance of Beekeeper is already running on {url} with pid {pid}"
+    def __init__(self, pid: int) -> None:
+        message = f"Local instance of Beekeeper is already running with pid {pid}"
         super().__init__(message, errno.EEXIST)
 
 
