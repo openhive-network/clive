@@ -59,7 +59,7 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
 
         Raises
         ------
-        FailedCliveInputValidationError: When given input is not a valid private key.
+        FailedValidationError: When given input is not a valid private key.
         """
         self._key_input.validate_with_error()
         return PrivateKey(value=self._key_input.value_or_error, file_path=self.__key_file_path)
