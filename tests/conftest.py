@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Generator
 
 import pytest
 import test_tools as tt
+from beekeepy import AsyncBeekeeper
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import prepare_before_launch
@@ -16,7 +17,6 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
-from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.data.constants import (
@@ -32,7 +32,8 @@ from clive_local_tools.data.models import Keys, WalletInfo
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
-    from clive.__private.core.beekeeper import Beekeeper
+    from beekeepy import AsyncBeekeeper
+
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive.__private.core.profile import Profile
     from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
@@ -104,37 +105,38 @@ async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_pas
 
 @pytest.fixture
 async def init_node(
-    prepare_profile_with_wallet: Profile, node_address_env_context_factory: EnvContextFactory
+    prepare_profile_with_wallet: Profile,  # noqa: ARG001
+    node_address_env_context_factory: EnvContextFactory,
+    world: World,
 ) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
+    init_node.config.log_json_rpc = "jsonrpc"
     init_node.run()
+    await world.node.set_address(init_node.http_endpoint)
     address = str(init_node.http_endpoint)
-    prepare_profile_with_wallet._set_node_address(Url.parse(address))
-    prepare_profile_with_wallet.save()
     with node_address_env_context_factory(address):
         yield init_node
 
 
 @pytest.fixture
 async def init_node_extra_apis(
-    prepare_profile_with_wallet: Profile,
+    prepare_profile_with_wallet: Profile,  # noqa: ARG001
     node_address_env_context_factory: EnvContextFactory,
+    world: World,
 ) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
+    await world.node.set_address(init_node.http_endpoint)
     address = str(init_node.http_endpoint)
-    prepare_profile_with_wallet._set_node_address(Url.parse(address))
-    prepare_profile_with_wallet.save()
     with node_address_env_context_factory(address):
         yield init_node
-    init_node.close()
 
 
 @pytest.fixture
-def beekeeper(world: World) -> Beekeeper:
+def beekeeper(world: World) -> AsyncBeekeeper:
     return world.beekeeper
 
 
@@ -148,16 +150,18 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
         ]
         for wallet in wallets:
             await CreateWallet(
-                app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet.name, password=wallet.password
+                app_state=world.app_state,
+                session=world.session,
+                wallet_name=wallet.name,
+                password=wallet.password,
+                world=world,
             ).execute()
 
             if import_keys:
                 for pairs in wallet.keys.pairs:
                     await ImportKey(
-                        app_state=world.app_state,
-                        wallet=wallet.name,
+                        unlocked_wallet=world.unlocked_wallet,
                         key_to_import=pairs.private_key,
-                        beekeeper=world.beekeeper,
                     ).execute()
         return wallets
 

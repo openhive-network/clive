@@ -3,14 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
+    from beekeepy import AsyncBeekeeper
 
 
-async def assert_wallets_locked(beekeeper: Beekeeper) -> None:
-    wallets = (await beekeeper.api.list_wallets()).wallets
-    assert all(not w.unlocked for w in wallets), "All wallets should be locked."
+async def assert_wallets_locked(beekeeper: AsyncBeekeeper) -> None:
+    wallets = await (await beekeeper.session).wallets
+    locked_wallets = [(await w.unlocked) is None for w in wallets]
+    assert all(locked_wallets), "All wallets should be locked."
 
 
-async def assert_wallet_unlocked(beekeeper: Beekeeper, wallet_name: str) -> None:
-    wallets = (await beekeeper.api.list_wallets()).wallets
-    assert any(w.name == wallet_name and w.unlocked for w in wallets), f"Wallet {wallet_name} should be unlocked."
+async def assert_wallet_unlocked(beekeeper: AsyncBeekeeper, wallet_name: str) -> None:
+    wallets = await (await beekeeper.session).wallets
+    unlocked_wallets = [((wallet.name == wallet_name) and ((await wallet.unlocked) is not None)) for wallet in wallets]
+    assert any(unlocked_wallets), f"Wallet {wallet_name} should be unlocked."

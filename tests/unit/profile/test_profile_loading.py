@@ -3,14 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
-from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, TUIWorld, World
+from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
     from typing import AsyncIterator
@@ -19,16 +20,21 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-async def beekeeper_for_remote_use() -> AsyncIterator[Beekeeper]:
-    async with Beekeeper() as beekeeper_cm:
+async def beekeeper_for_remote_use() -> AsyncIterator[AsyncBeekeeper]:
+    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper_cm:
         yield beekeeper_cm
 
 
-async def create_profile_and_wallet(beekeeper: Beekeeper, profile_name: str, *, lock: bool = False) -> None:
+async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str, *, lock: bool = False) -> None:
     Profile.create(profile_name).save()
-    await CreateWallet(beekeeper=beekeeper, wallet=profile_name, password=profile_name).execute()
+    await CreateWallet(session=await beekeeper.session, wallet_name=profile_name, password=profile_name).execute()
+    wallet = await (await beekeeper.session).open_wallet(name=profile_name)
     if lock:
-        await beekeeper.api.lock(wallet_name=profile_name)
+        unlocked_wallet = await wallet.unlocked
+        if unlocked_wallet is not None:
+            await unlocked_wallet.lock()
+    elif await wallet.unlocked is None:
+        await wallet.unlock(password=profile_name)
 
 
 def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, wallet_name: str) -> None:  # noqa: ARG001
@@ -37,7 +43,7 @@ def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, w
 
 
 async def test_if_unlocked_profile_is_loaded_other_was_saved(
-    beekeeper_for_remote_use: Beekeeper, beekeeper_session_token_env_context_factory: EnvContextFactory
+    beekeeper_for_remote_use: AsyncBeekeeper, beekeeper_session_token_env_context_factory: EnvContextFactory
 ) -> None:
     # ARRANGE
     additional_profile_name = "first"
@@ -51,18 +57,18 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(
 
     # ACT
     # Check if the unlocked profile is loaded
-    with beekeeper_session_token_env_context_factory(beekeeper_for_remote_use.token):
-        async with CLIWorld(beekeeper_remote_endpoint=beekeeper_for_remote_use.http_endpoint) as world_cm:
+    with beekeeper_session_token_env_context_factory(await (await beekeeper_for_remote_use.session).token):
+        async with CLIWorld(beekeepy_settings_or_url=beekeeper_for_remote_use.pack().settings) as world_cm:
             loaded_profile_name = world_cm.profile.name
 
     # ASSERT
     assert (
         loaded_profile_name == unlocked_profile_name
     ), f"Unlocked profile is {unlocked_profile_name} but loaded is {loaded_profile_name}"
-    actual_unlocked_profile_name = await GetUnlockedProfileName(
-        beekeeper=beekeeper_for_remote_use
+    actual_unlocked_profile_name = await GetUnlockedWallet(
+        session=await beekeeper_for_remote_use.session
     ).execute_with_result()
-    assert actual_unlocked_profile_name == unlocked_profile_name
+    assert actual_unlocked_profile_name.name == unlocked_profile_name
     assert Profile.list_profiles() == sorted([additional_profile_name, unlocked_profile_name, additional_profile_name2])
 
 
