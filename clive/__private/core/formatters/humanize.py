@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
@@ -8,8 +9,9 @@ from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 import humanize
 import inflection
 
+from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
-from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
+from clive.__private.core.calculate_vests_to_hive_ratio import TotalVestingProtocol, calculate_vests_to_hive_ratio
 from clive.__private.core.constants.date import TIME_FORMAT_DAYS, TIME_FORMAT_WITH_SECONDS
 from clive.__private.core.constants.node import NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.constants.precision import (
@@ -31,16 +33,15 @@ from clive.__private.core.formatters.data_labels import (
     PARTICIPATION_COUNT_LABEL,
     VEST_HIVE_RATIO_LABEL,
 )
-from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-from clive.__private.models import Asset
+
+if not is_tab_completion_active():
+    from helpy import wax as iwax
+
+    from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult
 
-    from clive.__private.core.iwax import (
-        HpAPRProtocol,
-        TotalVestingProtocol,
-    )
     from clive.__private.models.schemas import HbdExchangeRate, OperationBase, PriceFeed
 
 
@@ -49,6 +50,14 @@ def _round_to_precision(data: Decimal, precision: int) -> Decimal:
 
 
 SignPrefixT: TypeAlias = Literal["", "+", "-"]
+
+
+@dataclass
+class HpAPRProtocol:
+    head_block_num: int
+    vesting_reward_percent: int
+    virtual_supply: Asset.AnyT
+    total_vesting_fund_hive: Asset.Hive
 
 
 def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:
@@ -223,7 +232,18 @@ def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False
 
 def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
     """Return formatted APR value returned from wax."""
-    calculated = data if isinstance(data, Decimal) else calculate_hp_apr(data)
+    calculated = (
+        data
+        if isinstance(data, Decimal)
+        else Decimal(
+            iwax.calculate_hp_apr(
+                head_block_num=data.head_block_num,
+                vesting_reward_percent=data.vesting_reward_percent,
+                virtual_supply=data.virtual_supply,
+                total_vesting_fund_hive=data.total_vesting_fund_hive,
+            )
+        )
+    )
     return humanize_percent(calculated)
 
 
@@ -239,7 +259,7 @@ def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: boo
 
 def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool = False) -> str:
     """Return formatted inflation rate for head block returned from wax."""
-    inflation = calculate_current_inflation_rate(head_block_number)
+    inflation = Decimal(iwax.calculate_inflation_rate_for_block(head_block_number))
     return _maybe_labelize(CURRENT_INFLATION_RATE_LABEL, humanize_percent(inflation), add_label=with_label)
 
 
@@ -276,13 +296,22 @@ def humanize_witness_status(signing_key: str) -> str:
 
 def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
-    hive_power = calculate_witness_votes_hp(votes, data)
+    hive_power = iwax.calculate_witness_votes_hp(
+        votes=votes,
+        total_vesting_fund_hive=data.total_vesting_fund_hive,
+        total_vesting_shares=data.total_vesting_shares,
+    )
+    assert isinstance(hive_power, Asset.Hive), f"hive power should be in HIVE but is in: {hive_power}"
     return humanize_hive_power(hive_power)
 
 
 def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
-    hive_power = calculate_witness_votes_hp(votes, data)
+    hive_power = iwax.calculate_witness_votes_hp(
+        votes=votes,
+        total_vesting_fund_hive=data.total_vesting_fund_hive,
+        total_vesting_shares=data.total_vesting_shares,
+    )
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
 

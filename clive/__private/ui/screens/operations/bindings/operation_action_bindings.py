@@ -3,13 +3,13 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final
 
+from helpy import wax as iwax
 from pydantic import ValidationError
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.core import iwax
 from clive.__private.core.constants.tui.bindings import FINALIZE_TRANSACTION_BINDING_KEY
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
@@ -22,6 +22,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
     CliveValidatedInputError,
 )
+from schemas.operations.representations import HF26Representation
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -97,7 +98,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         try:
             for operation in operations:
-                iwax.validate_operation(operation)
+                iwax.validate_operation(HF26Representation(type=operation.get_name_with_suffix(), value=operation))
         except iwax.WaxOperationFailedError as error:
             self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
