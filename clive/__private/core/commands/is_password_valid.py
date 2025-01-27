@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING
 from beekeepy.exceptions import InvalidPasswordError
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.commands.exceptions import WalletNotFoundError
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncBeekeeper, AsyncSession, AsyncWallet
+    from beekeepy import AsyncBeekeeper, AsyncWallet
 
 
 @dataclass(kw_only=True)
@@ -21,19 +20,13 @@ class IsPasswordValid(CommandWithResult[bool]):
     """
 
     beekeeper: AsyncBeekeeper
-    wallet: str
+    wallet_name: str
     password: str
 
     async def _execute(self) -> None:
         async with await self.beekeeper.create_session() as session:
-            wallet = await self._ensure_wallet_name_exists_and_open(session=session)
+            wallet = await session.open_wallet(name=self.wallet_name)
             self._result = await self._is_password_valid(wallet=wallet)
-
-    async def _ensure_wallet_name_exists_and_open(self, session: AsyncSession) -> AsyncWallet:
-        for wallet in await session.wallets_created:
-            if wallet.name == self.wallet:
-                return await session.open_wallet(name=self.wallet)
-        raise WalletNotFoundError(self, self.wallet)
 
     async def _is_password_valid(self, wallet: AsyncWallet) -> bool:
         try:
