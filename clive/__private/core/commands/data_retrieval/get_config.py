@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_data_retrieval import CommandData
 from clive.__private.models.schemas import Config
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
 
 
 @dataclass(kw_only=True)

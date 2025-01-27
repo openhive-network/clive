@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import TYPE_CHECKING
+
+from beekeepy.exceptions import UnknownDecisionPathError
+from helpy import wax as iwax
 
 from clive.__private.cli.styling import colorize_error, colorize_ok, colorize_warning
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
@@ -19,15 +23,10 @@ from clive.__private.core.formatters.humanize import (
     humanize_participation_count,
     humanize_vest_to_hive_ratio,
 )
-from clive.__private.core.iwax import (
-    calculate_current_inflation_rate,
-    calculate_hp_apr,
-)
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 
 if TYPE_CHECKING:
     from datetime import datetime
-    from decimal import Decimal
 
     from clive.__private.core.node import Node
     from clive.__private.models import Asset
@@ -237,7 +236,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
     node: Node
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             gdpo = await node.api.database_api.get_dynamic_global_properties()
             witness_schedule = await node.api.database_api.get_witness_schedule()
             version = await node.api.database_api.get_version()
@@ -245,6 +244,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             current_price_feed = await node.api.database_api.get_current_price_feed()
             feed = await node.api.database_api.get_feed_history()
             return HarvestedDataRaw(gdpo, witness_schedule, version, hardfork_properties, current_price_feed, feed)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         witness_schedule = self.__assert_witnesses_schedule(data.witness_schedule)
@@ -263,7 +263,9 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             account_creation_fee=data.account_creation_fee,
             chain_id=data.version.chain_id,
             chain_type=data.version.node_type,
-            current_inflation_rate=calculate_current_inflation_rate(data.gdpo.head_block_number),
+            current_inflation_rate=Decimal(
+                iwax.calculate_inflation_rate_for_block(block_num=data.gdpo.head_block_number)
+            ),
             hardfork_version=data.hardfork_properties.current_hardfork_version,
             hbd_print_rate=hive_percent_to_percent(data.gdpo.hbd_print_rate),
             hbd_savings_apr=hive_percent_to_percent(data.gdpo.hbd_interest_rate),
@@ -275,7 +277,14 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             maximum_block_size=data.gdpo.maximum_block_size,
             median_hive_price=data.current_price_feed,
             participation=data.gdpo.participation_count,
-            vests_apr=calculate_hp_apr(data.gdpo),
+            vests_apr=Decimal(
+                iwax.calculate_hp_apr(
+                    head_block_num=data.gdpo.head_block_number,
+                    vesting_reward_percent=data.gdpo.vesting_reward_percent,
+                    virtual_supply=data.gdpo.virtual_supply,
+                    total_vesting_fund_hive=data.gdpo.total_vesting_fund_hive,
+                )
+            ),
             vests_to_hive_ratio=calculate_vests_to_hive_ratio(data.gdpo),
             witness_majority_version=data.witness_schedule.majority_version,
             _current_median_history=data.feed.current_median_history,
