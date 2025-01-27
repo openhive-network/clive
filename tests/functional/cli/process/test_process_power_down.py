@@ -116,7 +116,7 @@ async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester
 
 async def test_power_down_cancel_fail(cli_tester: CLITester) -> None:
     # ARRANGE
-    expected_error = "network_broadcast_api.broadcast_transaction"
+    expected_error = "This operation would not change the vesting withdraw rate"
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as power_down_cancel_exception_info:

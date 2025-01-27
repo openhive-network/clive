@@ -46,7 +46,7 @@ async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
     cli_tester.process_savings_withdrawal(
         amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=actual_request_id
     )
-    expected_error = "network_broadcast_api.broadcast_transaction"
+    expected_error = rf'unknown key: \["alice",{invalid_request_id}\] of type'
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as withdrawal_cancel_exception_info:
