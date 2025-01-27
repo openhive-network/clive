@@ -5,8 +5,10 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
 import pytest
+from beekeepy.exceptions import NoWalletWithSuchNameError
 
-from clive.__private.core.commands.unlock import Unlock, WalletDoesNotExistsError
+from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
+from clive.__private.core.commands.unlock import Unlock
 
 if TYPE_CHECKING:
     import clive
@@ -19,7 +21,7 @@ async def test_unlock(
     wallet_password: str,
 ) -> None:
     # ARRANGE
-    await world.beekeeper.api.lock_all()
+    await world.session.lock_all()
 
     # ACT
     await world.commands.unlock(password=wallet_password)
@@ -30,11 +32,11 @@ async def test_unlock(
 
 async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ACT & ASSERT
-    with pytest.raises(WalletDoesNotExistsError), world.modified_connection_details(max_attempts=1):
+    with pytest.raises(NoWalletWithSuchNameError):
         await Unlock(
             app_state=world.app_state,
-            beekeeper=world.beekeeper,
-            wallet="blabla",
+            session=world.session,
+            wallet_name="blabla",
             password="blabla",
         ).execute()
 
@@ -77,4 +79,9 @@ async def test_lock_after_given_time(
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
-    assert not world.app_state.is_unlocked
+    is_wallet_unlocked_in_beekeeper = await IsWalletUnlocked(wallet=world._unlocked_wallet_ensure).execute_with_result()
+    assert not is_wallet_unlocked_in_beekeeper, "Wallet should be locked in beekeeper"
+
+    await world.commands.sync_state_with_beekeeper()
+
+    assert not world.app_state.is_unlocked, "Wallet should be locked in clive"

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import OperationUnion, RepresentationBase
 
 from click.testing import Result
-from helpy.exceptions import RequestError
+from helpy.exceptions import ErrorInResponseError
 
 from clive_local_tools.helpers import get_transaction_id_from_output
 
@@ -30,7 +30,7 @@ def assert_transaction_in_blockchain(
         node.wait_number_of_blocks(1)
     try:
         node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
-    except RequestError:
+    except ErrorInResponseError:
         pytest.fail(f"The transaction with {transaction_id=} couldn't be found in the blockchain.")
 
 
