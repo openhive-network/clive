@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.table_pagination_info import add_pagination_info_to_table_if_needed
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_bool
 
@@ -60,5 +61,10 @@ class ShowProposals(WorldBasedCommand):
                 f"{proposal.pretty_start_date}",
                 f"{proposal.pretty_end_date}",
             )
+
+        add_pagination_info_to_table_if_needed(
+            table=table, page_no=self.page_no, page_size=self.page_size, all_entries=len(proposals_data.proposals)
+        )
+
         console = Console()
         console.print(table)
