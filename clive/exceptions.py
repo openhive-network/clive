@@ -3,9 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from typing import ClassVar, Final
 
-from clive.__private.cli.completion import is_tab_completion_active
-
-
 
 class CliveError(Exception):
     """Base class for all clive exceptions."""
