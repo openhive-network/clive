@@ -1,6 +1,8 @@
 from abc import ABC
 from dataclasses import dataclass
 
+from beekeepy import AsyncBeekeeper
+
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -9,7 +11,6 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
 )
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
@@ -28,7 +29,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         return self.world.profile
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         return self.world.beekeeper
 
     def is_session_token_set(self) -> bool:
@@ -59,7 +60,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
             raise CLIPrettyError(str(ex)) from None
 
     async def _create_context_manager_instance(self) -> World:
-        return CLIWorld(beekeeper_remote_endpoint=self.beekeeper_remote_url)
+        return CLIWorld()
 
     async def _hook_before_entering_context_manager(self) -> None:
         self._print_launching_beekeeper()
