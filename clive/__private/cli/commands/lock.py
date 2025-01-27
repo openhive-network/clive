@@ -9,5 +9,5 @@ from clive.__private.core.commands.lock_all import LockAll
 @dataclass(kw_only=True)
 class Lock(BeekeeperBasedCommand):
     async def _run(self) -> None:
-        await LockAll(beekeeper=self.beekeeper).execute()
+        await LockAll(session=await self.beekeeper.session).execute()
         typer.echo("All wallets have been locked.")
