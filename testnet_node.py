@@ -103,9 +103,10 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
     async with World() as world_cm:
         password = await CreateWallet(
             app_state=world_cm.app_state,
-            beekeeper=world_cm.beekeeper,
-            wallet=working_account_name,
+            session=world_cm.session,
+            wallet_name=working_account_name,
             password=working_account_name * 2,
+            world=world_cm,
         ).execute_with_result()
         await world_cm.load_profile_based_on_beekepeer()
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
