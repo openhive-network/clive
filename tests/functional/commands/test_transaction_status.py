@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from helpy.exceptions import RequestError
 
 from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.logger import logger
 from clive.__private.models import Asset
 from clive.__private.models.schemas import TransferOperation
-from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -52,12 +52,13 @@ async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt
     assert "unknown" in result.status
 
 
-async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:  # noqa: ARG001
+async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:
     # ARRANGE
     expected_message = "Could not find API transaction_status_api"
+    assert "transaction_status_api" not in init_node.config.plugin
 
     # ACT & ASSERT
-    with pytest.raises(CommunicationError) as exc_info:
+    with pytest.raises(RequestError) as exc_info:
         await world.commands.find_transaction(transaction_id="deadbeef")
 
     assert expected_message in str(exc_info.value), "Got different error message than expected"
