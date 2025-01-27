@@ -273,6 +273,10 @@ class TUIWorld(World, CliveDOMNode):
         await super().load_profile(profile_name)
         self._update_profile_related_reactive_attributes()
 
+    async def switch_profile(self, new_profile: Profile) -> None:
+        await super().switch_profile(new_profile)
+        self._update_profile_related_reactive_attributes()
+
     @property
     def commands(self) -> TUICommands:
         return cast(TUICommands, super().commands)
