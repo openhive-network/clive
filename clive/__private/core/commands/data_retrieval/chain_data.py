@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from beekeepy.exceptions import UnknownDecisionPathError
+
 from clive.__private.cli.styling import colorize_error, colorize_ok, colorize_warning
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
 from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
@@ -237,7 +239,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
     node: Node
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             gdpo = await node.api.database_api.get_dynamic_global_properties()
             witness_schedule = await node.api.database_api.get_witness_schedule()
             version = await node.api.database_api.get_version()
@@ -245,6 +247,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             current_price_feed = await node.api.database_api.get_current_price_feed()
             feed = await node.api.database_api.get_feed_history()
             return HarvestedDataRaw(gdpo, witness_schedule, version, hardfork_properties, current_price_feed, feed)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         witness_schedule = self.__assert_witnesses_schedule(data.witness_schedule)

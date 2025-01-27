@@ -28,7 +28,7 @@ from clive.__private.models.schemas import (
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.models.schemas import (
         Account,
         FindAccounts,
@@ -62,7 +62,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         account_names = [acc.name for acc in self.accounts if acc.name]
         harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
-        async with self.node.batch(delay_error_on_data_access=True) as node:
+        async with await self.node.batch(delay_error_on_data_access=True) as node:
             harvested_data.gdpo = await node.api.database_api.get_dynamic_global_properties()
             harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
             harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)

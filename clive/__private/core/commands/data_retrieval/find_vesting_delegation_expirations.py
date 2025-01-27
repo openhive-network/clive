@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from beekeepy.exceptions import UnknownDecisionPathError
+
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.models import HpVestsBalance
@@ -10,7 +12,7 @@ from clive.__private.models import HpVestsBalance
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.models.schemas import DynamicGlobalProperties, VestingDelegationExpiration
     from clive.__private.models.schemas import (
         FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations,
@@ -62,12 +64,13 @@ class FindVestingDelegationExpirations(
     account: str
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             vesting_delegation_expirations = await node.api.database_api.find_vesting_delegation_expirations(
                 account=self.account
             )
             dgpo = await node.api.database_api.get_dynamic_global_properties()
             return HarvestedDataRaw(vesting_delegation_expirations, dgpo)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         delegations = data.find_vesting_delegation_expirations.delegations

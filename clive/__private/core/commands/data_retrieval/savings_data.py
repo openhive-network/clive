@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
+from beekeepy.exceptions import UnknownDecisionPathError
+
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 from clive.exceptions import RequestIdError
@@ -83,12 +85,13 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
     account_name: str
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             return HarvestedDataRaw(
                 await node.api.database_api.get_dynamic_global_properties(),
                 await node.api.database_api.find_accounts(accounts=[self.account_name]),
                 await node.api.database_api.find_savings_withdrawals(account=self.account_name),
             )
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(
