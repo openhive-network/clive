@@ -26,7 +26,7 @@ class SwitchNodeAddress(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         # Section is focusable bcs it's not possible to use scrolling via keyboard when Select is focused
         with SectionScrollable("Set node address", focusable=True):
-            yield SelectedNodeAddress(self._node.address)
+            yield SelectedNodeAddress(self._node.http_endpoint)
             yield NodesList(self._node)
 
     @on(NodeSelector.Changed)

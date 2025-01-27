@@ -74,15 +74,17 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
 
         create_wallet = CreateWallet(
             app_state=self.app_state,
-            beekeeper=self.world.beekeeper,
-            wallet=profile_name,
+            session=self.world.session,
+            wallet_name=profile_name,
             password=password,
+            world=self.world,
         )
-        write_data = SyncDataWithBeekeeper(
-            app_state=self.app_state,
-            profile=self.context.profile,
-            beekeeper=self.world.beekeeper,
-        )
+
+        async def write_data() -> None:
+            await SyncDataWithBeekeeper(
+                wallet=self.world.wallet,
+                profile=self.context.profile,
+            ).execute()
 
         self._owner.add_post_action(create_wallet, write_data)
 
