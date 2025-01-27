@@ -4,6 +4,7 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from beekeepy.exceptions import UnknownDecisionPathError
 from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
@@ -104,7 +105,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     """Doesn't matter if mode is different than search_by_pattern."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
+        async with await self.node.batch() as node:
             gdpo = await node.api.database_api.get_dynamic_global_properties()
 
             witness_votes = await node.api.database_api.list_witness_votes(
@@ -129,6 +130,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 )
 
             return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
+        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         in_search_by_name_mode = self.mode == "search_by_pattern"

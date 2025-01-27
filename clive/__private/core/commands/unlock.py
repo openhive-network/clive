@@ -1,50 +1,40 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured, InvalidPasswordError
+from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.exceptions import CannotUnlockError, CommunicationError, KnownError
+from clive.exceptions import CannotUnlockError, KnownError
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
+    from beekeepy import AsyncSession
+
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.beekeeper import Beekeeper
 
 
 class WalletDoesNotExistsError(KnownError, CannotUnlockError):
     ERROR_MESSAGE: ClassVar[str] = "Unable to open file: "
 
 
-class UnlockInvalidPasswordError(InvalidPasswordError, CannotUnlockError):
-    pass
-
-
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured):
     app_state: AppState | None = None
-    beekeeper: Beekeeper
-    wallet: str
+    session: AsyncSession
+    wallet_name: str
     time: timedelta | None = None
     permanent: bool = False
 
-    __KNOWN_ERRORS: Final[tuple[type[KnownError], ...]] = (WalletDoesNotExistsError, UnlockInvalidPasswordError)
-
     async def _execute(self) -> None:
-        try:
-            await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
-            if unlock_seconds := self.__get_unlock_seconds():
-                await SetTimeout(beekeeper=self.beekeeper, seconds=unlock_seconds).execute()
-        except CommunicationError as error:
-            for known_error in self.__KNOWN_ERRORS:
-                if known_error.ERROR_MESSAGE in str(error):
-                    raise known_error(error) from error
-            raise CannotUnlockError(error) from error
+        if unlock_seconds := self.__get_unlock_seconds():
+            await SetTimeout(session=self.session, seconds=unlock_seconds).execute()
 
-        if self.app_state:
-            self.app_state.unlock()
+        locked_wallet = await self.session.open_wallet(name=self.wallet_name)
+        unlocked_wallet = await locked_wallet.unlock(password=self.password)
+        if self.app_state is not None:
+            await self.app_state.unlock(unlocked_wallet)
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:

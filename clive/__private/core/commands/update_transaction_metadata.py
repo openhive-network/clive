@@ -10,7 +10,7 @@ from clive.__private.core.commands.unsign import UnSign
 from clive.__private.models.schemas import HiveInt
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.models import Transaction
 
 
