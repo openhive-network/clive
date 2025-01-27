@@ -315,8 +315,8 @@ class Dashboard(BaseScreen):
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
 
-    def _update_mode(self, app_state: AppState) -> None:
-        self.is_unlocked = app_state.is_unlocked
+    async def _update_mode(self, app_state: AppState) -> None:
+        self.is_unlocked = await app_state.is_unlocked
 
     @CliveScreen.prevent_action_when_no_working_account()
     @CliveScreen.prevent_action_when_no_accounts_node_data()
