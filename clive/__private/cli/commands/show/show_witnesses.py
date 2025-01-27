@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.table_pagination_info import add_pagination_info_if_needed
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_bool
 
@@ -62,5 +63,10 @@ class ShowWitnesses(WorldBasedCommand):
                 f"{witness.price_feed}",
                 f"{witness.version}",
             )
+
         console = Console()
-        console.print(table)
+        console.print(
+            add_pagination_info_if_needed(
+                table=table, page_no=self.page_no, page_size=self.page_size, all_entries=len(witnesses_list)
+            )
+        )
