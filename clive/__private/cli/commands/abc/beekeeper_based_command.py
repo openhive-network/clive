@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import typer
+from beekeepy import AsyncBeekeeper
+from helpy import HttpUrl
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -10,23 +12,22 @@ from clive.__private.cli.exceptions import (
     CLIBeekeeperSessionTokenNotSetError,
     CLISessionNotLockedError,
 )
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.get_wallet_names import GetWalletNames
-from clive.__private.core.url import Url
+from clive.__private.core.url_utils import is_url_reachable
 from clive.__private.settings import safe_settings
 
 
 @dataclass(kw_only=True)
 class BeekeeperCommon(ABC):
-    beekeeper_remote: str | Url | None = None
+    beekeeper_remote: str | HttpUrl | None = None
     """If None, beekeeper will be launched locally."""
 
     @property
     @abstractmethod
-    def beekeeper(self) -> Beekeeper: ...
+    def beekeeper(self) -> AsyncBeekeeper: ...
 
     @property
-    def beekeeper_remote_url(self) -> Url | None:
+    def beekeeper_remote_url(self) -> HttpUrl | None:
         """
         Select Beekeeper's remote URL address.
 
@@ -39,19 +40,19 @@ class BeekeeperCommon(ABC):
             if safe_settings.beekeeper.is_remote_address_set:
                 return safe_settings.beekeeper.remote_address
             return None
-        if isinstance(self.beekeeper_remote, Url):
+        if isinstance(self.beekeeper_remote, HttpUrl):
             return self.beekeeper_remote
-        return Url.parse(self.beekeeper_remote)
+        return HttpUrl(self.beekeeper_remote)
 
     async def validate_session_is_locked(self) -> None:
         unlocked_wallet_names = await GetWalletNames(
-            beekeeper=self.beekeeper, filter_by_status="unlocked"
+            session=await self.beekeeper.session, filter_by_status="unlocked"
         ).execute_with_result()
         if unlocked_wallet_names:
             raise CLISessionNotLockedError
 
     def validate_beekeeper_remote_address_set(self) -> None:
-        if not safe_settings.beekeeper.is_remote_address_set:
+        if self.beekeeper_remote_url is None:
             raise CLIBeekeeperRemoteAddressIsNotSetError
 
     def validate_beekeeper_session_token_set(self) -> None:
@@ -59,8 +60,9 @@ class BeekeeperCommon(ABC):
             raise CLIBeekeeperSessionTokenNotSetError
 
     async def validate_remote_beekeeper_running(self) -> None:
-        if self.beekeeper_remote_url and not await self.beekeeper_remote_url.is_url_open():
-            raise CLIBeekeeperRemoteAddressIsNotRespondingError(self.beekeeper_remote_url)
+        beekeeper_remote_url = self.beekeeper_remote_url
+        if beekeeper_remote_url and not await is_url_reachable(beekeeper_remote_url):
+            raise CLIBeekeeperRemoteAddressIsNotRespondingError(beekeeper_remote_url)
 
     def _print_launching_beekeeper(self) -> None:
         message = (
@@ -73,11 +75,11 @@ class BeekeeperCommon(ABC):
 
 
 @dataclass(kw_only=True)
-class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, ABC):
+class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommon, ABC):
     """A command that requires beekeeper to be running."""
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         return self._context_manager_instance
 
     @property
@@ -91,8 +93,13 @@ class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, AB
         await super().validate_remote_beekeeper_running()
         await super().validate()
 
-    async def _create_context_manager_instance(self) -> Beekeeper:
-        return Beekeeper(remote_endpoint=self.beekeeper_remote_url)
+    async def _create_context_manager_instance(self) -> AsyncBeekeeper:
+        settings = safe_settings.beekeeper.settings_factory()
+        return await (
+            AsyncBeekeeper.factory(settings=settings)
+            if settings.http_endpoint is None
+            else AsyncBeekeeper.remote_factory(url_or_settings=settings)
+        )
 
     async def _hook_before_entering_context_manager(self) -> None:
         self._print_launching_beekeeper()
