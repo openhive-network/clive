@@ -31,7 +31,6 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_DEFAULT_PRIVATE_KEY,
     SECRETS_NODE_ADDRESS,
 )
-from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import settings
 from clive.exceptions import CliveError
 
@@ -339,6 +338,8 @@ class SafeSettings:
 
     def _get_number(self, setting_name: str, *, default: float | None = None, minimum: float | None = None) -> float:
         from textual.validation import Number
+
+        from clive.__private.core.formatters.humanize import humanize_validation_result
 
         value = self._get_value_from_settings(setting_name, default=default)
         value_ = str(value)
