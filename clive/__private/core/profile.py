@@ -4,11 +4,12 @@ from contextlib import asynccontextmanager
 from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
+from helpy import HttpUrl
+
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
-from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
@@ -63,7 +64,7 @@ class Profile(Context):
         transaction: Transaction | None = None,
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
-        node_address: str | Url | None = None,
+        node_address: str | HttpUrl | None = None,
         *,
         is_newly_created: bool = True,
     ) -> None:
@@ -78,7 +79,7 @@ class Profile(Context):
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
 
         self._backup_node_addresses = self._default_node_addresses()
-        self._node_address: Url | None = None
+        self._node_address: HttpUrl | None = None
         self._set_node_address(self._get_initial_node_address(node_address))
 
         self._chain_id: str | None = None
@@ -116,12 +117,12 @@ class Profile(Context):
         return self._accounts
 
     @property
-    def node_address(self) -> Url:
+    def node_address(self) -> HttpUrl:
         assert self._node_address is not None, "Node address is not set."
         return self._node_address
 
     @property
-    def backup_node_addresses(self) -> list[Url]:
+    def backup_node_addresses(self) -> list[HttpUrl]:
         return self._backup_node_addresses
 
     @property
@@ -212,7 +213,7 @@ class Profile(Context):
         transaction: Transaction | None = None,
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
-        node_address: str | Url | None = None,
+        node_address: str | HttpUrl | None = None,
     ) -> Profile:
         cls.validate_profile_name(name)
         return cls._create_instance(
@@ -276,7 +277,7 @@ class Profile(Context):
         transaction: Transaction | None = None,
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
-        node_address: str | Url | None = None,
+        node_address: str | HttpUrl | None = None,
         *,
         is_newly_created: bool = True,
     ) -> Self:
@@ -295,15 +296,15 @@ class Profile(Context):
             is_newly_created=is_newly_created,
         )
 
-    def _get_initial_node_address(self, given_node_address: str | Url | None = None) -> Url:
+    def _get_initial_node_address(self, given_node_address: str | HttpUrl | None = None) -> HttpUrl:
         secret_node_address = self._get_secret_node_address()
         if secret_node_address:
             return secret_node_address
         if given_node_address:
-            return Url.parse(given_node_address)
+            return HttpUrl(given_node_address)
         return self._backup_node_addresses[0]
 
-    def _set_node_address(self, value: Url) -> None:
+    def _set_node_address(self, value: HttpUrl) -> None:
         """
         Set the node address.
 
@@ -323,12 +324,12 @@ class Profile(Context):
         return safe_settings.node.chain_id
 
     @staticmethod
-    def _default_node_addresses() -> list[Url]:
+    def _default_node_addresses() -> list[HttpUrl]:
         return [
-            Url("https", "api.hive.blog"),
-            Url("https", "api.openhive.network"),
+            HttpUrl("api.hive.blog", protocol="https"),
+            HttpUrl("api.openhive.network", protocol="https"),
         ]
 
     @staticmethod
-    def _get_secret_node_address() -> Url | None:
+    def _get_secret_node_address() -> HttpUrl | None:
         return safe_settings.secrets.node_address
