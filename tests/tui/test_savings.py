@@ -200,8 +200,8 @@ async def test_savings(  # noqa: PLR0913
 
 
 TRANSFERS_DATA: Final[list[tuple[tt.Asset.HbdT | tt.Asset.HiveT, str]]] = [
-    (tt.Asset.Hbd("2.0"), "memo0"),
-    (tt.Asset.Hive("2.1"), "memo1"),
+    (tt.Asset.Tbd("2.0"), "memo0"),
+    (tt.Asset.Test("2.1"), "memo1"),
 ]
 TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 
@@ -285,7 +285,7 @@ async def test_canceling_transfer_from_savings(
             SENDER,
             i + WORKING_ACCOUNT_DATA.from_savings_transfer_count,
             RECEIVER,
-            TRANSFERS_DATA[i][0].as_nai(),
+            TRANSFERS_DATA[i][0],
             TRANSFERS_DATA[i][1],
         )
 

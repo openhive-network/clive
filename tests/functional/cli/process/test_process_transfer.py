@@ -19,6 +19,9 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
+    from beekeepy import AsyncBeekeeper
+    from helpy import HttpUrl
+
     from clive_local_tools.cli.cli_tester import CLITester
 
 import test_tools as tt
@@ -26,6 +29,12 @@ import test_tools as tt
 RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(1)
 MEMO: Final[str] = "test-process-transfer-memo"
+
+
+async def beekeeper_url(beekeeper: AsyncBeekeeper) -> HttpUrl:
+    endpoint = beekeeper.settings.http_endpoint
+    assert endpoint is not None, "endpoint from packed settings is None"
+    return endpoint
 
 
 async def test_process_transfer(
@@ -57,14 +66,14 @@ async def test_process_transfer(
 async def test_transfer_with_remote_beekeeper_option(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check clive process transfer command."""
     # ARRANGE
-    beekeeper_http_endpoint = cli_tester.world.beekeeper.http_endpoint.as_string()
+    beekeeper_http_endpoint = await beekeeper_url(cli_tester.world.beekeeper)
     operation = TransferOperation(
         from_=WORKING_ACCOUNT_NAME,
         to=RECEIVER,
         amount=AMOUNT,
         memo=MEMO,
     )
-    log_message = f"Using beekeeper at {beekeeper_http_endpoint}"
+    log_message = f"Using beekeeper at {beekeeper_http_endpoint.as_string()}"
 
     # ACT
     result = cli_tester.process_transfer(
@@ -73,7 +82,7 @@ async def test_transfer_with_remote_beekeeper_option(node: tt.RawNode, cli_teste
         to=RECEIVER,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         memo=MEMO,
-        beekeeper_remote=beekeeper_http_endpoint,
+        beekeeper_remote=beekeeper_http_endpoint.as_string(),
     )
 
     # ASSERT

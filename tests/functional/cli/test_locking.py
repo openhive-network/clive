@@ -25,17 +25,14 @@ from clive_local_tools.testnet_block_log import (
 if TYPE_CHECKING:
     from typing import AsyncGenerator
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.cli.cli_tester import CLITester
     from clive_local_tools.types import EnvContextFactory
 
 
 @pytest.fixture
-async def cli_tester_locked_with_second_profile(beekeeper_local: Beekeeper, cli_tester_locked: CLITester) -> CLITester:
+async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
     second_profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
-    async with World(
-        beekeeper_remote_endpoint=beekeeper_local.http_endpoint, beekeeper_token=beekeeper_local.token
-    ) as world_cm:
+    async with World() as world_cm:
         await world_cm.switch_profile(second_profile)
         await world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
         await world_cm.commands.sync_state_with_beekeeper()
