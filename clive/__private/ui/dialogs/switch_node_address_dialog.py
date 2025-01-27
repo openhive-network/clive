@@ -25,7 +25,7 @@ class SwitchNodeAddressDialog(CliveActionDialog):
 
     def create_dialog_content(self) -> ComposeResult:
         with Section():
-            yield SelectedNodeAddress(self._node.address)
+            yield SelectedNodeAddress(self._node.http_endpoint)
             yield NodesList(self._node)
 
     @on(ConfirmButton.Pressed)
