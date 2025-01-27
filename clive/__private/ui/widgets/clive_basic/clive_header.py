@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from textual.events import Mount
 
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.node.node import Node
+    from clive.__private.core.node import Node
     from clive.__private.core.profile import Profile
 
 
@@ -201,10 +201,6 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
             variant="success",
         )
         self.tooltip = "Lock wallet"
-
-    @property
-    def is_locked(self) -> bool:
-        return self.app_state.is_unlocked
 
     def mode_callback(self, app_state: AppState) -> str:
         if app_state.is_unlocked:
@@ -405,7 +401,7 @@ class CliveHeader(CliveRawHeader):
 
     @staticmethod
     def _get_node_address(node: Node) -> str:
-        return str(node.address)
+        return str(node.http_endpoint)
 
     @staticmethod
     def _get_profile_name(profile: Profile) -> str:

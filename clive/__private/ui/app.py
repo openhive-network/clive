@@ -6,6 +6,7 @@ import traceback
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from helpy.exceptions import CommunicationError
 from textual import on, work
 from textual._context import active_app
 from textual.app import App
@@ -25,7 +26,7 @@ from clive.__private.ui.help import Help
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
-from clive.exceptions import CommunicationError, ScreenNotFoundError
+from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
@@ -163,6 +164,10 @@ class Clive(App[int]):
             safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
+        self._refresh_beekeeper_wallet_lock_status_interval = self.set_interval(
+            safe_settings.beekeeper.refresh_timeout_secs, self.update_wallet_lock_status_from_beekeeper
+        )
+
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
@@ -262,7 +267,7 @@ class Clive(App[int]):
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             error = wrapper.error
-            if isinstance(error, CommunicationError) and not error.is_response_available:
+            if isinstance(error, CommunicationError) and error.response is None:
                 # notify watchers when node goes offline
                 self.trigger_node_watchers()
 
@@ -272,12 +277,17 @@ class Clive(App[int]):
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
+    @work(name="beekeeper wallet lock status update worker")
+    async def update_wallet_lock_status_from_beekeeper(self) -> None:
+        if self.world.is_unlocked_wallet_set:
+            await self.world.commands.sync_state_with_beekeeper("beekeeper_monitoring_thread")
+
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
         logger.debug(f"Screen stack: {self.screen_stack}")
 
-        response = await self.world.node.api.database_api.get_dynamic_global_properties()
+        response = await self.world.node.api.database.get_dynamic_global_properties()
         logger.debug(f"Current block: {response.head_block_number}")
 
         logger.debug("=================================================")
