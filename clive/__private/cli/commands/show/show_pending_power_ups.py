@@ -3,19 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import timedelta
 
+from helpy import wax as iwax
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
-from clive.__private.core import iwax
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
     humanize_asset,
     humanize_datetime,
     humanize_hive_power,
 )
+from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)
@@ -43,8 +44,14 @@ class ShowPendingPowerUps(WorldBasedCommand):
         delayed_voting_interval = await self.__get_delayed_voting_interval()
 
         for entry in delayed_votes:
-            votes_vests = iwax.vests(entry.val)
-            hp_humanized = humanize_hive_power(iwax.calculate_vests_to_hp(votes_vests, gdpo))
+            votes_vests = Asset.Vests(amount=entry.val)
+            hp_humanized = humanize_hive_power(
+                iwax.calculate_vests_to_hp(
+                    vests=votes_vests,
+                    total_vesting_fund_hive=gdpo.total_vesting_fund_hive,
+                    total_vesting_shares=gdpo.total_vesting_shares,
+                )
+            )
             vests_humanized = humanize_asset(votes_vests)
             hp_aligned, vests_aligned = align_to_dot(hp_humanized, vests_humanized, center_to=amount_title)
             delayed_votes_table.add_row(humanize_datetime(entry.time + delayed_voting_interval), hp_aligned)
