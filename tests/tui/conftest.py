@@ -60,7 +60,7 @@ async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> No
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world_cm.commands.sync_data_with_beekeeper()
-        await world_cm.profile.save(world_cm.encryption_service)
+        await world_cm.save_profile()
 
 
 @pytest.fixture

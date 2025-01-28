@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
     unlocked_world_cm.profile.keys.add_to_import(private_key)
     await unlocked_world_cm.commands.sync_data_with_beekeeper()
-    await unlocked_world_cm.profile.save(unlocked_world_cm.encryption_service)  # save imported key aliases
+    await unlocked_world_cm.save_profile()  # save imported key aliases
 
 
 async def test_perform_working_account_load_does_not_influence_unrelated_commands(
