@@ -37,9 +37,13 @@ class Unlock(BeekeeperBasedCommand):
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
+        if self._should_display_profile_creation_help():
+            self._display_create_profile_help_info()
+            return
+
         profile_name = self._get_profile_name()
         if profile_name is None:
-            typer.echo(UNLOCK_CREATE_PROFILE_HELP)
+            self._display_create_profile_help_info()
             return
         if sys.stdin.isatty():
             await self._unlock_in_tty_mode(profile_name)
@@ -127,3 +131,9 @@ class Unlock(BeekeeperBasedCommand):
     async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
         password = sys.stdin.readline().rstrip()
         await self._unlock_profile(profile_name, password)
+
+    def _should_display_profile_creation_help(self) -> bool:
+        return not Profile.is_any_profile_saved()
+
+    def _display_create_profile_help_info(self) -> None:
+        typer.echo(UNLOCK_CREATE_PROFILE_HELP)
