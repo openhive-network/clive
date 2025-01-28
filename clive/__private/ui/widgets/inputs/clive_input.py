@@ -125,6 +125,20 @@ class CliveInput(Input):
     def unmodified_placeholder(self) -> str:
         return self._unmodified_placeholder
 
+    @property
+    def has_suggestion(self) -> bool:
+        return bool(self._suggestion)
+
+    @property
+    def is_empty(self) -> bool:
+        return not bool(self.value)
+
+    async def action_suggest_next(self) -> None:
+        await self._suggest(mode="next")
+
+    async def action_suggest_previous(self) -> None:
+        await self._suggest(mode="previous")
+
     def make_required(self, message: str = DEFAULT_REQUIRED_FAILURE_DESCRIPTION) -> None:
         self.set_reactive(self.__class__.required_failure_description, message)  # type: ignore[arg-type]
         self.required = True

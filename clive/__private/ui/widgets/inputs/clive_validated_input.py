@@ -188,7 +188,7 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
 
     @property
     def is_empty(self) -> bool:
-        return not bool(self.value_raw)
+        return self.input.is_empty
 
     def value_or_none(
         self,
