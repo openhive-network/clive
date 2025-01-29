@@ -149,6 +149,7 @@ testing_clive:
     - export PYTEST_ARGS=(
       --ignore tests/tui --ignore tests/functional/cli
       -k "not test_autocompletion_time"
+      -v
       )
     - !reference [.run-pytest, script]
 
@@ -159,7 +160,7 @@ testing_clive_import_times_during_autocompletion:
     PYTEST_TIMEOUT_MINUTES: 3
   script:
     - echo -e "${TXT_BLUE}Launching clive test for autocompletion time...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(-k test_autocompletion_time)
+    - export PYTEST_ARGS=(-k test_autocompletion_time -v)
     - !reference [.run-pytest, script]
 
 testing_tui:
@@ -168,7 +169,7 @@ testing_tui:
     PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/tui)
+    - export PYTEST_ARGS=(tests/tui -v)
     - !reference [.run-pytest, script]
 
 testing_cli:
@@ -177,7 +178,7 @@ testing_cli:
     PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/functional/cli)
+    - export PYTEST_ARGS=(tests/functional/cli -v)
     - !reference [.run-pytest, script]
 
 testing_password_private_key_logging:
