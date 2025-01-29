@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
+from textual.containers import Horizontal, Center, Container
+from textual.suggester import SuggestFromList
+from textual.widgets import Collapsible, Static
 
 from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
@@ -11,6 +15,7 @@ from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
+from clive.__private.ui.widgets.inputs.authority_input import AuthorityInput
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
@@ -22,6 +27,26 @@ if TYPE_CHECKING:
 
     from clive.__private.ui.forms.form import Form
 
+class AuthorityType(Collapsible):
+    DEFAULT_CSS ="""
+      Horizontal {
+        width: 1fr;
+        
+      }
+      #horiz2 {
+      align-horizontal: right;
+        Static {
+          align: right middle;
+          width: auto;
+          margin-right: 1;
+        }
+        
+      }
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Horizontal(self._title, Horizontal(Static("threshold 1/1"), id="horiz2"))
+        yield self.Contents(*self._contents_list)
 
 class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
     BINDINGS = [Binding("f1", "help", "Help")]
@@ -30,6 +55,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
     SHOW_RAW_HEADER = True
 
     def __init__(self, owner: Form[CreateProfileContext]) -> None:
+        self._key_or_name_input = AuthorityInput()
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)
@@ -39,10 +65,16 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Enter profile data"):
-            yield self._profile_name_input
-            yield self._password_input
-            yield self._repeat_password_input
-            yield NavigationButtons()
+            with AuthorityType(title="Owner"):
+                yield self._key_or_name_input
+            with AuthorityType(title="Active"):
+                yield AuthorityInput()
+            with AuthorityType(title="Posting"):
+                yield AuthorityInput()
+            # yield self._profile_name_input
+            # yield self._password_input
+            # yield self._repeat_password_input
+            # yield NavigationButtons()
         yield SelectCopyPasteHint()
 
     def on_mount(self) -> None:
