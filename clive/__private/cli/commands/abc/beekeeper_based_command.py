@@ -19,26 +19,17 @@ from clive.__private.settings import safe_settings
 
 @dataclass(kw_only=True)
 class BeekeeperCommon:
-    beekeeper_remote: str | HttpUrl | None = None
-    """If None, beekeeper will be launched locally."""
-
     @property
     def beekeeper_remote_url(self) -> HttpUrl | None:
         """
         Select Beekeeper's remote URL address.
 
-        The value from the `--beekeeper-remote` flag has the highest priority.
-
-        If the user did not pass this flag, but the `CLIVE_BEEKEEPER_REMOTE_ADDRESS`
-        environment variable is set, that address will be used.
+        If `CLIVE_BEEKEEPER_REMOTE_ADDRESS` environment variable is set, that address will be used.
+        Otherwise value from settings will be used.
         """
-        if self.beekeeper_remote is None:
-            if safe_settings.beekeeper.is_remote_address_set:
-                return safe_settings.beekeeper.remote_address
-            return None
-        if isinstance(self.beekeeper_remote, HttpUrl):
-            return self.beekeeper_remote
-        return HttpUrl(self.beekeeper_remote)
+        if safe_settings.beekeeper.is_remote_address_set:
+            return safe_settings.beekeeper.remote_address
+        return None
 
     def validate_beekeeper_remote_address_set(self) -> None:
         if self.beekeeper_remote_url is None:
