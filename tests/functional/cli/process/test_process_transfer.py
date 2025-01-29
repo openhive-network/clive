@@ -54,33 +54,6 @@ async def test_process_transfer(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_transfer_with_remote_beekeeper_option(node: tt.RawNode, cli_tester: CLITester) -> None:
-    """Check clive process transfer command."""
-    # ARRANGE
-    beekeeper_http_endpoint = cli_tester.world.beekeeper.http_endpoint
-    operation = TransferOperation(
-        from_=WORKING_ACCOUNT_NAME,
-        to=RECEIVER,
-        amount=AMOUNT,
-        memo=MEMO,
-    )
-    log_message = f"Using beekeeper at {beekeeper_http_endpoint}"
-
-    # ACT
-    result = cli_tester.process_transfer(
-        from_=WORKING_ACCOUNT_NAME,
-        amount=tt.Asset.Hive(1),
-        to=RECEIVER,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
-        memo=MEMO,
-        beekeeper_remote=beekeeper_http_endpoint.as_string(),
-    )
-
-    # ASSERT
-    assert_operations_placed_in_blockchain(node, result, operation)
-    assert log_message in result.output, f"Command process transfer should use beekeeper at `{beekeeper_http_endpoint}`"
-
-
 async def test_process_multiple_transfers_when_unlocked_once(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check if multiple transfers can be done when unlocked once."""
     # ACT

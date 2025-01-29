@@ -62,7 +62,6 @@ class CLITester:
         account_name: str | None = None,
         threshold: int | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateAuthority:
@@ -106,13 +105,12 @@ class CLITester:
     def show_accounts(self) -> Result:
         return self.__invoke_command_with_options(["show", "accounts"])
 
-    def process_update_owner_authority(  # noqa: PLR0913
+    def process_update_owner_authority(
         self,
         *,
         account_name: str | None = None,
         threshold: int | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateOwnerAuthority:
@@ -122,13 +120,12 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_active_authority(  # noqa: PLR0913
+    def process_update_active_authority(
         self,
         *,
         account_name: str | None = None,
         threshold: int | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateActiveAuthority:
@@ -138,13 +135,12 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_posting_authority(  # noqa: PLR0913
+    def process_update_posting_authority(
         self,
         *,
         account_name: str | None = None,
         threshold: int | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdatePostingAuthority:
@@ -154,13 +150,12 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_memo_key(  # noqa: PLR0913
+    def process_update_memo_key(
         self,
         *,
         account_name: str | None = None,
         key: PublicKey,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -174,7 +169,6 @@ class CLITester:
         *,
         to: str | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
         amount: tt.Asset.AnyT,
@@ -192,7 +186,6 @@ class CLITester:
         request_id: int | None = None,
         to: str | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
         amount: tt.Asset.AnyT,
@@ -204,13 +197,12 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_savings_withdrawal_cancel(  # noqa: PLR0913
+    def process_savings_withdrawal_cancel(
         self,
         *,
         from_: str | None = None,
         request_id: int,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -227,7 +219,6 @@ class CLITester:
         id_: str,
         json_: str | Path,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -243,7 +234,6 @@ class CLITester:
         force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -273,31 +263,28 @@ class CLITester:
         to: str | None = None,
         amount: tt.Asset.HiveT,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
-    def process_power_down_start(  # noqa: PLR0913
+    def process_power_down_start(
         self,
         *,
         from_: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "start"], **extract_params(locals()))
 
-    def process_power_down_restart(  # noqa: PLR0913
+    def process_power_down_restart(
         self,
         *,
         from_: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -307,7 +294,6 @@ class CLITester:
         self,
         *,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -320,19 +306,17 @@ class CLITester:
         delegatee: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.VestsT,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
-    def process_delegations_remove(  # noqa: PLR0913
+    def process_delegations_remove(
         self,
         *,
         account_name: str | None = None,
         delegatee: str | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -346,19 +330,17 @@ class CLITester:
         percent: int,
         auto_vest: bool | None = None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
-    def process_withdraw_routes_remove(  # noqa: PLR0913
+    def process_withdraw_routes_remove(
         self,
         *,
         from_: str | None = None,
         to: str | None,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
@@ -379,7 +361,6 @@ class CLITester:
         from_: str | None = None,
         to: str,
         sign: str | None = None,
-        beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
         memo: str | None = None,
@@ -392,7 +373,6 @@ class CLITester:
         *,
         key: str,
         alias: str | None = None,
-        beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "add"], **extract_params(locals()))
 
@@ -401,7 +381,6 @@ class CLITester:
         *,
         alias: str,
         from_beekeeper: bool | None = None,
-        beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
 
@@ -416,14 +395,13 @@ class CLITester:
         self,
         *,
         profile_name: str | None = None,
-        beekeeper_remote: str | None = None,
         password_stdin: str | None = None,
     ) -> Result:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(["unlock"], password_stdin, **extract_params(named_params))
 
-    def lock(self, *, beekeeper_remote: str | None = None) -> Result:
+    def lock(self) -> Result:
         return self.__invoke_command_with_options(["lock"], **extract_params(locals()))
 
     def configure_working_account_switch(self, *, account_name: str) -> Result:
@@ -439,5 +417,5 @@ class CLITester:
             ["configure", "tracked-account", "remove"], **extract_params(locals())
         )
 
-    def show_profile(self, *, beekeeper_remote: str | None = None) -> Result:
+    def show_profile(self) -> Result:
         return self.__invoke_command_with_options(["show", "profile"], **extract_params(locals()))
