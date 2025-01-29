@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import typer
 
-from clive.__private.cli.common.parameters.get_default import get_default_beekeeper_remote
 from clive.__private.cli.common.parameters.modified_param import (
     modified_param,
 )
@@ -37,14 +36,6 @@ profile_name = typer.Option(
     ...,
     "--profile-name",
     help="The profile to use.",
-    show_default=False,
-)
-
-beekeeper_remote = typer.Option(
-    ...,
-    "--beekeeper-remote",
-    default_factory=lambda: get_default_beekeeper_remote(),
-    help="Beekeeper remote endpoint. (starts locally if not provided)",
     show_default=False,
 )
 

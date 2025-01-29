@@ -4,7 +4,7 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.common.parameters import modified_param, options
+from clive.__private.cli.common.parameters import modified_param
 from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroup
 from clive.__private.core.constants.cli import OPERATION_COMMON_OPTIONS_PANEL_TITLE
 
@@ -16,7 +16,6 @@ class OperationOptionsGroup(ParameterGroup):
     sign: Optional[str] = operation_common_option(
         typer.Option(None, help="Key alias to sign the transaction with.", show_default=False)
     )
-    beekeeper_remote: Optional[str] = operation_common_option(options.beekeeper_remote)
     broadcast: bool = operation_common_option(
         typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
     )
