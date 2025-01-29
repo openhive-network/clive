@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from helpy import wax as iwax
 from rich.columns import Columns
 from rich.console import Console, Group
 from rich.padding import Padding
@@ -12,6 +11,7 @@ from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.core import iwax
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
     humanize_asset,
@@ -149,11 +149,7 @@ class ShowHivePower(WorldBasedCommand):
         delegations_table.add_column(Text("Shares", justify="center"), style="green", no_wrap=True)
 
         for delegation in self._hp_data.delegations:
-            delegation_hp_raw = iwax.calculate_vests_to_hp(
-                vests=delegation.vesting_shares,
-                total_vesting_fund_hive=self._hp_data.gdpo.total_vesting_fund_hive,
-                total_vesting_shares=self._hp_data.gdpo.total_vesting_shares,
-            )
+            delegation_hp_raw = iwax.calculate_vests_to_hp(delegation.vesting_shares, self._hp_data.gdpo)
             delegation_hp = humanize_hive_power(delegation_hp_raw)
             delegation_vests = humanize_asset(delegation.vesting_shares)
             hp_aligned, vests_aligned = align_to_dot(delegation_hp, delegation_vests, center_to=delegations_title)
