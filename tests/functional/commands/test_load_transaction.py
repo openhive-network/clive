@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
-from helpy import wax as iwax
 
+from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.models import Asset, Transaction
 from clive.__private.models.schemas import TransferOperation

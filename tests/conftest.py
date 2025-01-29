@@ -10,15 +10,14 @@ import pytest
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
 from helpy import HttpUrl
-from helpy import wax as iwax
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import prepare_before_launch
+from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
-from clive.__private.core.keys.keys import PrivateKey, PublicKey
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.data.constants import (
@@ -36,6 +35,7 @@ if TYPE_CHECKING:
 
     from beekeepy import AsyncBeekeeper
 
+    from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive.__private.core.profile import Profile
     from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
 
@@ -86,8 +86,8 @@ def wallet_password() -> str:
 @pytest.fixture
 def key_pair() -> tuple[PublicKey, PrivateKey]:
     private_key = iwax.generate_private_key()
-    public_key = PublicKey(value=iwax.calculate_public_key(wif=private_key))
-    return public_key, PrivateKey(value=private_key)
+    public_key = private_key.calculate_public_key()
+    return public_key, private_key
 
 
 @pytest.fixture
