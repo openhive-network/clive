@@ -4,8 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
-from helpy import wax as iwax
-
+from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
@@ -16,11 +15,14 @@ from clive.__private.core.commands.data_retrieval.update_node_data.temporary_mod
     SanitizedData,
 )
 from clive.__private.core.date_utils import utc_epoch, utc_now
+from clive.__private.core.iwax import (
+    calculate_current_manabar_value,
+    calculate_manabar_full_regeneration_time,
+)
 from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
 from clive.__private.models.disabled_api import DisabledAPI
 from clive.__private.models.hp_vests_balance import HpVestsBalance
 from clive.__private.models.schemas import (
-    AssetVestsHF26,
     DynamicGlobalProperties,
 )
 
@@ -152,22 +154,15 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         head_block_timestamp = int(head_block_time.timestamp())
         last_update_timestamp = manabar.last_update_time
         power_from_api = manabar.current_mana
-        max_mana_value = iwax.calculate_vests_to_hp(
-            vests=AssetVestsHF26(amount=max_mana),
-            total_vesting_fund_hive=gdpo.total_vesting_fund_hive,
-            total_vesting_shares=gdpo.total_vesting_shares,
-        )
+        max_mana_value = iwax.calculate_vests_to_hp(max_mana, gdpo)
         mana_value = iwax.calculate_vests_to_hp(
-            vests=AssetVestsHF26(
-                amount=iwax.calculate_current_manabar_value(
-                    now=head_block_timestamp,
-                    max_mana=max_mana,
-                    current_mana=power_from_api,
-                    last_update_time=last_update_timestamp,
-                )
+            calculate_current_manabar_value(
+                now=head_block_timestamp,
+                max_mana=max_mana,
+                current_mana=power_from_api,
+                last_update_time=last_update_timestamp,
             ),
-            total_vesting_fund_hive=gdpo.total_vesting_fund_hive,
-            total_vesting_shares=gdpo.total_vesting_shares,
+            gdpo,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
             head_block_time=head_block_time,
@@ -189,7 +184,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             return timedelta(0)
         head_block_timestamp = int(head_block_time.timestamp())
         return (
-            iwax.calculate_manabar_full_regeneration_time(
+            calculate_manabar_full_regeneration_time(
                 now=head_block_timestamp,
                 max_mana=max_mana,
                 current_mana=current_mana,

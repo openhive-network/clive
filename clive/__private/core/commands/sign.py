@@ -3,11 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
-from helpy import wax as iwax
-
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.iwax import calculate_sig_digest
 from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
@@ -38,7 +37,7 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
     async def _execute(self) -> None:
         self.__throw_already_signed_error_when_needed()
 
-        sig_digest = iwax.calculate_sig_digest(self.transaction, self.chain_id)
+        sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
         result = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=self.key.value)
 
         self.__set_transaction_signature(result)
