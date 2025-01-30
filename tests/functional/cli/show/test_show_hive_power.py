@@ -28,7 +28,7 @@ async def test_hive_power_empty_account(cli_tester: CLITester) -> None:
     assert_no_withdraw_routes(result)
 
 
-async def test_hive_power_effective_xxx(cli_tester: CLITester) -> None:
+async def test_hive_power_effective(cli_tester: CLITester) -> None:
     # ARRANGE
     amount_to_power_up: Final[tt.Asset.HiveT] = tt.Asset.Hive(234.567)
     cli_tester.process_power_up(sign=WORKING_ACCOUNT_KEY_ALIAS, amount=amount_to_power_up, to=EMPTY_ACCOUNT.name)
