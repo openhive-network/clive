@@ -1,15 +1,17 @@
+import errno
 import sys
 from dataclasses import dataclass
 from getpass import getpass
 from typing import Final
 
 import typer
-from beekeepy.exceptions import InvalidPasswordError
+from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.exceptions import (
     CLIInvalidPasswordError,
     CLIInvalidSelectionError,
+    CLIPrettyError,
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
@@ -57,6 +59,8 @@ class Unlock(BeekeeperBasedCommand):
             ).execute()
         except InvalidPasswordError as error:
             raise CLIInvalidPasswordError(profile_name) from error
+        except NoWalletWithSuchNameError as error:
+            raise CLIPrettyError("Wallet with this name no longer exist on the beekeeper.", errno.ENOENT) from error
 
     def _prompt_for_profile_name(self) -> str | None:
         options = self._generate_profile_options()

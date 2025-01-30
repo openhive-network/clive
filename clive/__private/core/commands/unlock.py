@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.exceptions import CannotUnlockError, KnownError
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -14,10 +13,6 @@ if TYPE_CHECKING:
 
     from clive import World
     from clive.__private.core.app_state import AppState
-
-
-class WalletDoesNotExistsError(KnownError, CannotUnlockError):
-    ERROR_MESSAGE: ClassVar[str] = "Unable to open file: "
 
 
 @dataclass(kw_only=True)
