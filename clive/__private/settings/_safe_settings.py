@@ -5,11 +5,12 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypeVar, cast, get_args, overload
+from typing import Literal, TypeVar, cast, get_args, overload
 
+from beekeepy import Settings as BeekeepySettings
+from helpy import HttpUrl
 from inflection import underscore
 
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS,
     BEEKEEPER_REFRESH_TIMEOUT_SECS,
@@ -33,15 +34,6 @@ from clive.__private.core.constants.setting_identifiers import (
 )
 from clive.__private.settings._settings import settings
 from clive.exceptions import CliveError
-
-if not is_tab_completion_active():
-    from beekeepy import Settings
-    from helpy import HttpUrl
-
-if TYPE_CHECKING:
-    from beekeepy import Settings
-    from helpy import HttpUrl  # noqa: TCH004
-
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -200,19 +192,18 @@ class SafeSettings:
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
-        def settings_factory(self, settings_to_update: Settings | None = None) -> Settings:
-            from beekeepy import Settings
+        def settings_factory(self, base_settings: BeekeepySettings | None = None) -> BeekeepySettings:
+            beekeepy_settings = base_settings.copy() if base_settings is not None else BeekeepySettings()
 
-            settings = (settings_to_update or Settings()).copy()
-            settings.working_directory = (
-                settings.working_directory
-                if settings.working_directory != Path.cwd()
+            beekeepy_settings.working_directory = (
+                beekeepy_settings.working_directory
+                if beekeepy_settings.working_directory != Path.cwd()
                 # check is set to default
                 else self._get_beekeeper_wallet_directory()
             )
-            settings.use_existing_session = settings.use_existing_session or self.session_token
-            settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
-            return settings
+            beekeepy_settings.use_existing_session = beekeepy_settings.use_existing_session or self.session_token
+            beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
+            return beekeepy_settings
 
         def _get_beekeeper_remote_address(self) -> HttpUrl | None:
             return self._parent._get_url(BEEKEEPER_REMOTE_ADDRESS)
