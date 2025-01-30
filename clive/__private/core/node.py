@@ -6,7 +6,8 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from helpy import AsyncHived, HttpUrl, Settings
+from helpy import AsyncHived, HttpUrl
+from helpy import Settings as HelpySettings
 from helpy.exceptions import CommunicationError
 
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
@@ -185,7 +186,7 @@ class Node(AsyncHived):
         self.__profile = profile
         self.cached = self.CachedData(self)
         super().__init__(
-            settings=Settings(
+            settings=HelpySettings(
                 http_endpoint=self.__profile.node_address,
                 timeout=timedelta(seconds=safe_settings.node.communication_timeout_total_secs),
             )
