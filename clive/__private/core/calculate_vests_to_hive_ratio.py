@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core import iwax
-
-if not is_tab_completion_active():
-    from clive.__private.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from decimal import Decimal

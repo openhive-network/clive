@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 import humanize
 import inflection
 
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
 from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
 from clive.__private.core.constants.date import TIME_FORMAT_DAYS, TIME_FORMAT_WITH_SECONDS
@@ -33,9 +32,7 @@ from clive.__private.core.formatters.data_labels import (
     VEST_HIVE_RATIO_LABEL,
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-
-if not is_tab_completion_active():
-    from clive.__private.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult
