@@ -58,7 +58,7 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(
     # ACT
     # Check if the unlocked profile is loaded
     with beekeeper_session_token_env_context_factory(await (await beekeeper_for_remote_use.session).token):
-        async with CLIWorld(settings_or_url=beekeeper_for_remote_use.pack().settings) as world_cm:
+        async with CLIWorld(beekeepy_settings_or_url=beekeeper_for_remote_use.pack().settings) as world_cm:
             loaded_profile_name = world_cm.profile.name
 
     # ASSERT

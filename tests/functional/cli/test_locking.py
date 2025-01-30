@@ -36,7 +36,7 @@ async def cli_tester_locked_with_second_profile(
     beekeeper_local: AsyncBeekeeper, cli_tester_locked: CLITester
 ) -> CLITester:
     second_profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
-    async with World(settings_or_url=beekeeper_local.pack().settings) as world_cm:
+    async with World(beekeepy_settings_or_url=beekeeper_local.pack().settings) as world_cm:
         await world_cm.switch_profile(second_profile)
         await world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
         await world_cm.commands.sync_state_with_beekeeper()

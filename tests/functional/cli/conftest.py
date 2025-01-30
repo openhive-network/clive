@@ -4,7 +4,8 @@ from contextlib import ExitStack
 from typing import TYPE_CHECKING
 
 import pytest
-from beekeepy import AsyncBeekeeper, Settings
+from beekeepy import AsyncBeekeeper
+from beekeepy import Settings as BeekeepySettings
 from typer.testing import CliRunner
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
@@ -49,7 +50,7 @@ async def prepare_profile() -> Profile:
 @pytest.fixture
 async def world(beekeeper_local: AsyncBeekeeper) -> World:
     return World(
-        settings_or_url=Settings(
+        beekeepy_settings_or_url=BeekeepySettings(
             http_endpoint=beekeeper_local.pack().settings.http_endpoint,
             use_existing_session=await (await beekeeper_local.session).token,
         )
