@@ -4,7 +4,8 @@ from contextlib import asynccontextmanager
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
 
-from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet, Settings
+from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
+from beekeepy import Settings as BeekeepySettings
 from helpy import HttpUrl
 from textual.reactive import var
 from typing_extensions import override
@@ -42,7 +43,7 @@ class World:
 
     Args:
     ----
-    settings_or_url:  In case of passing url it will be set to settings.http_endpoint.
+    beekeepy_settings_or_url:  In case of passing url it will be set to settings.http_endpoint.
         Missing required fields will be automatically filled.
         If not provided all is set to defaults.
 
@@ -55,7 +56,7 @@ class World:
     def __init__(
         self,
         *args: Any,
-        settings_or_url: Settings | HttpUrl | None = None,
+        beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None = None,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -65,7 +66,7 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self.__beekeeper_settings = self.__construct_settings_from_init_args(settings_or_url)
+        self.__beekeeper_settings = self._construct_beekeepy_settings_from_init_args(beekeepy_settings_or_url)
         self._beekeeper: AsyncBeekeeper | None = None
         self.__session: AsyncSession | None = None
         self.__wallet: AsyncUnlockedWallet | None = None
@@ -233,14 +234,16 @@ class World:
         return self._app_state
 
     @classmethod
-    def __construct_settings_from_init_args(cls, settings_or_url: Settings | HttpUrl | None) -> Settings:
-        if isinstance(settings_or_url, Settings):
-            return settings_or_url
+    def _construct_beekeepy_settings_from_init_args(
+        cls, beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None
+    ) -> BeekeepySettings:
+        if isinstance(beekeepy_settings_or_url, BeekeepySettings):
+            return beekeepy_settings_or_url
 
-        default_settings = Settings()
+        default_settings = BeekeepySettings()
 
-        if isinstance(settings_or_url, HttpUrl):
-            default_settings.http_endpoint = settings_or_url
+        if isinstance(beekeepy_settings_or_url, HttpUrl):
+            default_settings.http_endpoint = beekeepy_settings_or_url
 
         return default_settings
 
