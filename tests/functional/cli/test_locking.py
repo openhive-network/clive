@@ -60,7 +60,6 @@ async def cli_tester_without_remote_address(
         yield cli_tester
 
 
-@pytest.mark.skip("Not sure if this is ok")
 async def test_negative_lock_without_remote_address(cli_tester_without_remote_address: CLITester) -> None:
     # ARRANGE
 
@@ -70,7 +69,6 @@ async def test_negative_lock_without_remote_address(cli_tester_without_remote_ad
         cli_tester_without_remote_address.lock()
 
 
-@pytest.mark.skip("Not sure if this is ok")
 async def test_negative_unlock_without_remote_address(cli_tester_without_remote_address: CLITester) -> None:
     # ARRANGE
 
