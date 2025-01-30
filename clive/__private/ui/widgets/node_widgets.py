@@ -69,7 +69,7 @@ class NodesList(Container, CliveWidget):
         if new_network_type == current_network_type:
             await self.node.set_address(new_address)
             self.app.trigger_node_watchers()
-            self.notify(f"Node address set to `{self._node.http_endpoint.as_string()}`.")
+            self.notify(f"Node address set to `{self._node.http_endpoint}`.")
             return True
 
         # block possibility to stay connected to node with different network type
