@@ -164,13 +164,9 @@ class Clive(App[int]):
             safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
-        self._refresh_beekeeper_wallet_lock_status = self.set_interval(
-            safe_settings.beekeeper.refresh_timeout_secs,
-            lambda: self.update_wallet_lock_status_from_beekeeper(),
-            pause=True,
+        self._refresh_beekeeper_wallet_lock_status_interval = self.set_interval(
+            safe_settings.beekeeper.refresh_timeout_secs, self.update_wallet_lock_status_from_beekeeper
         )
-
-        self.update_wallet_lock_status_from_beekeeper_asap()
 
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
@@ -245,14 +241,6 @@ class Clive(App[int]):
 
         return self.run_worker(_update_data_from_node_asap())
 
-    def update_wallet_lock_status_from_beekeeper_asap(self) -> Worker[None]:
-        async def _update_wallet_lock_status_from_beekeeper_asap() -> None:
-            self._refresh_beekeeper_wallet_lock_status.pause()
-            await self.update_wallet_lock_status_from_beekeeper().wait()
-            self._refresh_beekeeper_wallet_lock_status.resume()
-
-        return self.run_worker(_update_wallet_lock_status_from_beekeeper_asap())
-
     def update_alarms_data_asap_on_newest_node_data(self) -> Worker[None]:
         """Update alarms on the newest possible node data."""
 
@@ -289,7 +277,7 @@ class Clive(App[int]):
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
-    @work(name="beekeeper wallet lock status")
+    @work(name="beekeeper wallet lock status update worker")
     async def update_wallet_lock_status_from_beekeeper(self) -> None:
         if self.world._optional_wallet is not None:
             await self.world.commands.sync_state_with_beekeeper("beekeeper_monitoring_thread")
