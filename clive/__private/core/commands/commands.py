@@ -31,7 +31,7 @@ from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
-from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedWallet
+from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid

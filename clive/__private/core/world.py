@@ -13,7 +13,7 @@ from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.commands.exceptions import NoProfileUnlockedError
-from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedWallet
+from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
