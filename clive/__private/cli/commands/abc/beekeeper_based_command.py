@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import typer
-from beekeepy import AsyncBeekeeper, Settings
+from beekeepy import AsyncBeekeeper
+from beekeepy import Settings as BeekeepySettings
 from helpy import HttpUrl
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
@@ -101,7 +102,7 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
             if beekeeper_params.is_set():
                 self.beekeeper_remote = beekeeper_params.endpoint
         remote_url = HttpUrl(self.beekeeper_remote_url) if self.beekeeper_remote_url is not None else None
-        settings = safe_settings.beekeeper.settings_factory(Settings(http_endpoint=remote_url))
+        settings = safe_settings.beekeeper.settings_factory(BeekeepySettings(http_endpoint=remote_url))
         return await (
             AsyncBeekeeper.remote_factory(url_or_settings=settings)
             if remote_url is not None

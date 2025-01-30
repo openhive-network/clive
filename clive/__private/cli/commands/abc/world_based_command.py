@@ -1,7 +1,8 @@
 from abc import ABC
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper, Settings
+from beekeepy import AsyncBeekeeper
+from beekeepy import Settings as BeekeepySettings
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
@@ -61,7 +62,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
 
     async def _create_context_manager_instance(self) -> World:
         return CLIWorld(
-            settings_or_url=Settings(
+            beekeepy_settings_or_url=BeekeepySettings(
                 http_endpoint=self.beekeeper_remote_url,
             ),
         )
