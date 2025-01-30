@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final, TypeGuard
 
-from beekeepy.exceptions import InvalidPasswordError
+from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 
@@ -12,6 +12,7 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
 
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
         InvalidPasswordError: "The password you entered is incorrect. Please try again.",
+        NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
     }
 
     def __init__(self) -> None:
