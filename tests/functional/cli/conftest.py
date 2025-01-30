@@ -86,8 +86,11 @@ async def beekeeper(prepare_beekeeper_wallet: World) -> AsyncBeekeeper:
 
 
 @pytest.fixture
-async def node(node_address_env_context_factory: EnvContextFactory) -> AsyncGenerator[tt.RawNode]:
+async def node(
+    node_address_env_context_factory: EnvContextFactory, prepare_beekeeper_wallet: World
+) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
+    await prepare_beekeeper_wallet.node.set_address(node.http_endpoint)
     address = str(node.http_endpoint)
     with node_address_env_context_factory(address):
         yield node

@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Generator
 import pytest
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
-from helpy import HttpUrl
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import prepare_before_launch
@@ -107,21 +106,22 @@ async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_pas
 @pytest.fixture
 async def init_node(
     prepare_profile_with_wallet: Profile,  # noqa: ARG001
-    node_address_env_context_factory: EnvContextFactory,  # noqa: ARG001
+    node_address_env_context_factory: EnvContextFactory,
     world: World,
 ) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.config.log_json_rpc = "jsonrpc"
     init_node.run()
     await world.node.set_address(init_node.http_endpoint)
-    yield init_node
-    init_node.close()
+    address = str(init_node.http_endpoint)
+    with node_address_env_context_factory(address):
+        yield init_node
 
 
 @pytest.fixture
 async def init_node_extra_apis(
     prepare_profile_with_wallet: Profile,  # noqa: ARG001
-    node_address_env_context_factory: EnvContextFactory,  # noqa: ARG001
+    node_address_env_context_factory: EnvContextFactory,
     world: World,
 ) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
@@ -129,9 +129,10 @@ async def init_node_extra_apis(
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
-    await world.node.set_address(HttpUrl(init_node.http_endpoint.as_string()))
-    yield init_node
-    init_node.close()
+    await world.node.set_address(init_node.http_endpoint)
+    address = str(init_node.http_endpoint)
+    with node_address_env_context_factory(address):
+        yield init_node
 
 
 @pytest.fixture
