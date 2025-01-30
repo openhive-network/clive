@@ -206,9 +206,7 @@ class World:
             if beekeeper_params.is_set():
                 self.__beekeeper_settings.http_endpoint = beekeeper_params.endpoint
 
-        self.__beekeeper_settings = safe_settings.beekeeper.settings_factory(
-            settings_to_update=self.__beekeeper_settings
-        )
+        self.__beekeeper_settings = safe_settings.beekeeper.settings_factory(self.__beekeeper_settings)
 
         if self.__beekeeper_settings.http_endpoint is not None:
             return await AsyncBeekeeper.remote_factory(url_or_settings=self.__beekeeper_settings)
