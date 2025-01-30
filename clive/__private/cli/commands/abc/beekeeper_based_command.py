@@ -13,6 +13,7 @@ from clive.__private.cli.exceptions import (
     CLISessionNotLockedError,
 )
 from clive.__private.core.commands.get_wallet_names import GetWalletNames
+from clive.__private.core.url_utils import is_url_reachable
 from clive.__private.settings import safe_settings
 
 
@@ -59,14 +60,9 @@ class BeekeeperCommon(ABC):
             raise CLIBeekeeperSessionTokenNotSetError
 
     async def validate_remote_beekeeper_running(self) -> None:
-        if self.beekeeper_remote_url:
-            try:
-                async with await AsyncBeekeeper.remote_factory(
-                    url_or_settings=self.beekeeper_remote_url
-                ) as beekeeper, await beekeeper.session as session:
-                    await session.get_info()
-            except Exception as error:
-                raise CLIBeekeeperRemoteAddressIsNotRespondingError(self.beekeeper_remote_url) from error
+        beekeeper_remote_url = self.beekeeper_remote_url
+        if beekeeper_remote_url and not await is_url_reachable(beekeeper_remote_url):
+            raise CLIBeekeeperRemoteAddressIsNotRespondingError(beekeeper_remote_url)
 
     def _print_launching_beekeeper(self) -> None:
         message = (
