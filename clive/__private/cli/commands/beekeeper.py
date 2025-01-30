@@ -37,15 +37,15 @@ class BeekeeperSpawn(ExternalCLICommand):
             beekeeper_endpoint = beekeeper_settings.http_endpoint
             assert beekeeper_endpoint is not None, "started beekeeper has no address, critical error!"
             pid = beekeeper.detach()
-            await BeekeeperSaveDetached(pid=pid, endpoint=beekeeper_endpoint.as_string()).execute()
+            await BeekeeperSaveDetached(pid=pid, endpoint=str(beekeeper_endpoint)).execute()
 
             if self.echo_address_only:
-                message = beekeeper_endpoint.as_string()
+                message = str(beekeeper_endpoint)
             else:
                 message = (
-                    f"Beekeeper started on {beekeeper_endpoint.as_string()} with {pid=}.\n"
+                    f"Beekeeper started on {beekeeper_endpoint} with {pid=}.\n"
                     "If you want to use that beekeeper in Clive CLI env, please set:\n"
-                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={beekeeper_endpoint.as_string()}\n"
+                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={beekeeper_endpoint}\n"
                     f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={await (await beekeeper.session).token}"
                 )
             typer.echo(message=message)

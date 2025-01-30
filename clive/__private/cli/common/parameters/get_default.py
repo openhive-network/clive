@@ -7,5 +7,5 @@ from clive.__private.settings import safe_settings
 def get_default_beekeeper_remote() -> str | None:
     if not is_tab_completion_active():
         address = safe_settings.beekeeper.settings_factory().http_endpoint
-        return address.as_string() if address is not None else None
+        return str(address) if address is not None else None
     return None
