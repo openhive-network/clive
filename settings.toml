@@ -8,7 +8,7 @@ MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 [default.beekeeper]
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 15
-INITIALIZATION_TIMEOUT_SECS = 5
+REFRESH_TIMEOUT_SECS = 0.5
 
 [default.node]
 # chain_id that will be set as default for all the profiles.
