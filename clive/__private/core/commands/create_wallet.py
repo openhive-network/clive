@@ -4,10 +4,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from beekeepy import AsyncSession, AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
@@ -28,6 +31,9 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
     session: AsyncSession
     wallet_name: str
     password: str | None
+    unlock_time: timedelta | None = None
+    permanent_unlock: bool = True
+    """Will take precedence when `unlock_time` is also set."""
 
     async def _execute(self) -> None:
         result = await self.session.create_wallet(name=self.wallet_name, password=self.password)
@@ -55,3 +61,5 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
         if self.app_state:
             wallets = WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet)
             await self.app_state.unlock(wallets)
+
+        await SetTimeout(session=self.session, time=self.unlock_time, permanent=self.permanent_unlock).execute()

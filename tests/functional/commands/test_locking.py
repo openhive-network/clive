@@ -76,7 +76,7 @@ async def test_lock_after_given_time(
     world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
 
     # ACT
-    await world.commands.unlock(password=wallet_password, time=time_to_sleep)
+    await world.commands.unlock(password=wallet_password, time=time_to_sleep, permanent=False)
     assert world.app_state.is_unlocked
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 

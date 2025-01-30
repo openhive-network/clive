@@ -23,12 +23,12 @@ class Unlock(CommandPasswordSecured):
     profile_name: str
     session: AsyncSession
     time: timedelta | None = None
-    permanent: bool = False
+    permanent: bool = True
+    """Will take precedence when `time` is also set."""
     app_state: AppState | None = None
 
     async def _execute(self) -> None:
-        if unlock_seconds := self.__get_unlock_seconds():
-            await SetTimeout(session=self.session, seconds=unlock_seconds).execute()
+        await SetTimeout(session=self.session, time=self.time, permanent=self.permanent).execute()
 
         user_keys_wallet = await (await self.session.open_wallet(name=self.profile_name)).unlock(password=self.password)
         encryption_key_wallet = await (
@@ -38,14 +38,3 @@ class Unlock(CommandPasswordSecured):
         if self.app_state is not None:
             wallets = WalletContainer(user_keys_wallet, encryption_key_wallet)
             await self.app_state.unlock(wallets)
-
-    def __get_unlock_seconds(self) -> int | None:
-        if self.permanent:
-            # beekeeper does not support permanent unlock in a convenient way, we have to pass a very big number
-            # which is uint32 max value
-            return 2**32 - 1
-
-        if self.time is None:
-            return None
-
-        return int(self.time.total_seconds())
