@@ -155,7 +155,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             Lock(
                 app_state=self._world.app_state,
-                wallet=self._world.unlocked_wallet,
+                unlocked_wallet=self._world.unlocked_wallet,
             )
         )
 

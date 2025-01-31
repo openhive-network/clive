@@ -3,12 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy import AsyncUnlockedWallet
-
 from clive.__private.core.commands.abc.command import Command
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncWallet
+    from beekeepy import AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
 
@@ -16,9 +14,8 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class Lock(Command):
     app_state: AppState
-    wallet: AsyncUnlockedWallet | AsyncWallet
+    unlocked_wallet: AsyncUnlockedWallet
 
     async def _execute(self) -> None:
-        if isinstance(self.wallet, AsyncUnlockedWallet):
-            await self.wallet.lock()
+        await self.unlocked_wallet.lock()
         self.app_state.lock()
