@@ -279,7 +279,7 @@ class Clive(App[int]):
 
     @work(name="beekeeper wallet lock status update worker")
     async def update_wallet_lock_status_from_beekeeper(self) -> None:
-        if self.world._optional_wallet is not None:
+        if self.world._wallet is not None:
             await self.world.commands.sync_state_with_beekeeper("beekeeper_monitoring_thread")
 
     async def __debug_log(self) -> None:
