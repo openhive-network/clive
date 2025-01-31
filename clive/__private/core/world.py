@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from functools import partial
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
 from beekeepy import Settings as BeekeepySettings
@@ -296,18 +295,8 @@ class TUIWorld(World, CliveDOMNode):
         self.node.change_related_profile(profile)
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
-        base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_monitoring_thread":
-            send_notification = partial(
-                self.app.notify,
-                f"{base_message} due to inactivity.",
-                timeout=10,
-            )
-        else:
-            send_notification = partial(self.app.notify, f"{base_message}.")
-
-        send_notification()
-
+            self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
         self.profile.save()
         self.app.pause_refresh_node_data_interval()
         self.app.pause_refresh_alarms_data_interval()
