@@ -101,6 +101,10 @@ class World:
         return self._session
 
     @property
+    def is_wallet_set(self) -> bool:
+        return self._wallet is not None
+
+    @property
     def wallet(self) -> AsyncUnlockedWallet:
         assert self._wallet is not None, "Wallet is not initialized"
         return self._wallet
