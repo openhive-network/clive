@@ -106,7 +106,6 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
             session=world_cm._session_ensure,
             wallet_name=working_account_name,
             password=working_account_name * 2,
-            world=world_cm,
         ).execute_with_result()
         await world_cm.load_profile_based_on_beekepeer()
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
