@@ -69,7 +69,7 @@ class World:
         self._beekeeper_settings = self._construct_beekeepy_settings_from_init_args(beekeepy_settings_or_url)
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
-        self._wallet: AsyncUnlockedWallet | None = None
+        self._unlocked_wallet: AsyncUnlockedWallet | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -101,19 +101,19 @@ class World:
         return self._session
 
     @property
-    def is_wallet_set(self) -> bool:
-        return self._wallet is not None
+    def is_unlocked_wallet_set(self) -> bool:
+        return self._unlocked_wallet is not None
 
     @property
-    def wallet(self) -> AsyncUnlockedWallet:
-        assert self._wallet is not None, "Wallet is not initialized"
-        return self._wallet
+    def unlocked_wallet(self) -> AsyncUnlockedWallet:
+        assert self._unlocked_wallet is not None, "Wallet is not initialized"
+        return self._unlocked_wallet
 
-    async def set_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
+    async def set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
         assert new_wallet.name in [
             w.name for w in (await self.session.wallets)
         ], "This wallet does not exists within this session"
-        self._wallet = new_wallet
+        self._unlocked_wallet = new_wallet
 
     @property
     def node(self) -> Node:
@@ -157,9 +157,9 @@ class World:
         await self.switch_profile(profile)
 
     async def load_profile_based_on_beekepeer(self) -> None:
-        self._wallet = await self._get_unlocked_wallet(self.session)
+        self._unlocked_wallet = await self._get_unlocked_wallet(self.session)
 
-        profile = Profile.load(self.wallet.name)
+        profile = Profile.load(self.unlocked_wallet.name)
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
             await self._commands.sync_state_with_beekeeper()
