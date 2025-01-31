@@ -154,7 +154,6 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
                 session=world._session_ensure,
                 wallet_name=wallet.name,
                 password=wallet.password,
-                world=world,
             ).execute()
 
             if import_keys:
