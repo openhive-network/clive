@@ -75,7 +75,7 @@ async def test_lock_after_given_time(
     # ACT
     await world.commands.unlock(password=wallet_password, time=time_to_sleep)
     assert await world.app_state.is_unlocked
-    await asyncio.sleep(time_to_sleep.total_seconds() + 1)
+    await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
     assert not await world.app_state.is_unlocked
