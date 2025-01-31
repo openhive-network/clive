@@ -21,6 +21,8 @@ class SyncDataWithBeekeeper(CommandInUnlocked, Command):
 
     async def __import_pending_keys(self) -> None:
         async def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
-            return await ImportKey(wallet=self.unlocked_wallet, key_to_import=key_to_import).execute_with_result()
+            return await ImportKey(
+                unlocked_wallet=self.unlocked_wallet, key_to_import=key_to_import
+            ).execute_with_result()
 
         await self.profile.keys.import_pending_to_beekeeper(import_key)

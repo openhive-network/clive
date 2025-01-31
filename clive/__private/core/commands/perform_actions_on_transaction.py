@@ -72,7 +72,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
             assert self.wallet is not None, "wallet is not unlocked"
 
             transaction = await Sign(
-                wallet=self.wallet,
+                unlocked_wallet=self.wallet,
                 transaction=transaction,
                 key=self.sign_key,
                 chain_id=self.chain_id or await self.node.chain_id,

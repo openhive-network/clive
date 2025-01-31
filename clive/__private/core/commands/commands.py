@@ -253,7 +253,7 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
-                wallet=self._world.unlocked_wallet,
+                unlocked_wallet=self._world.unlocked_wallet,
                 transaction=transaction,
                 key=sign_with,
                 chain_id=chain_id or await self._world.node.chain_id,
@@ -284,7 +284,7 @@ class Commands(Generic[WorldT_co]):
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
             ImportKey(
-                wallet=self._world.unlocked_wallet,
+                unlocked_wallet=self._world.unlocked_wallet,
                 key_to_import=key_to_import,
             )
         )
@@ -292,7 +292,7 @@ class Commands(Generic[WorldT_co]):
     async def remove_key(self, *, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
-                wallet=self._world.unlocked_wallet,
+                unlocked_wallet=self._world.unlocked_wallet,
                 key_to_remove=key_to_remove,
             )
         )
@@ -307,7 +307,7 @@ class Commands(Generic[WorldT_co]):
         """
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                wallet=self._world.unlocked_wallet,
+                unlocked_wallet=self._world.unlocked_wallet,
                 profile=profile if profile is not None else self._world.profile,
             )
         )
