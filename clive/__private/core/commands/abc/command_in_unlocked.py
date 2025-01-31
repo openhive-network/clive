@@ -2,17 +2,12 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Protocol
+from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError, CommandRestricted
 
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
-
-
-class AppStateProtocol(Protocol):
-    @property
-    async def is_unlocked(self) -> bool: ...
 
 
 class CommandRequiresUnlockedModeError(CommandExecutionNotPossibleError):
