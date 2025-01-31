@@ -27,7 +27,7 @@ async def test_configure_key_add(cli_tester: CLITester) -> None:
     """Check clive configure key add command."""
     # ARRANGE
     pk = PrivateKey.create()
-    unlocked_wallet = cli_tester.world.unlocked_wallet
+    unlocked_wallet = cli_tester.world._unlocked_wallet_ensure
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
 
     # ACT
@@ -55,7 +55,7 @@ async def test_configure_key_remove(cli_tester: CLITester, *, from_beekeeper: bo
     """Check clive configure key remove command."""
     # ARRANGE
     pk = PrivateKey.create()
-    unlocked_wallet = cli_tester.world.unlocked_wallet
+    unlocked_wallet = cli_tester.world._unlocked_wallet_ensure
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
     cli_tester.configure_key_add(key=pk.value, alias="key")
     await assert_key_exists(unlocked_wallet, pk, should_exists=True)

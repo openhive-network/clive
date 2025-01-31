@@ -30,7 +30,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
 
     @property
     def beekeeper(self) -> AsyncBeekeeper:
-        return self.world.beekeeper
+        return self.world._beekeeper_ensure
 
     def is_session_token_set(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
