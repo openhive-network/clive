@@ -202,13 +202,6 @@ class World:
         return Commands(self)
 
     async def _setup_beekeeper(self) -> AsyncBeekeeper:
-        if self._beekeeper_settings.http_endpoint is None:
-            from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID
-
-            beekeeper_params = await BeekeeperLoadDetachedPID(remove_file=False, silent_fail=True).execute_with_result()
-            if beekeeper_params.is_set():
-                self._beekeeper_settings.http_endpoint = beekeeper_params.endpoint
-
         self._beekeeper_settings = safe_settings.beekeeper.settings_factory(self._beekeeper_settings)
 
         if self._beekeeper_settings.http_endpoint is not None:
