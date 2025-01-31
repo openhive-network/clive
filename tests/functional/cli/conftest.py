@@ -9,7 +9,6 @@ from beekeepy import Settings as BeekeepySettings
 from typer.testing import CliRunner
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
-from clive.__private.core.commands.beekeeper import BeekeeperSaveDetached
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
@@ -69,14 +68,6 @@ async def prepare_beekeeper_wallet(world: World, prepare_profile: Profile) -> As
         )
         await world_cm.commands.sync_data_with_beekeeper()
         world_cm.profile.save()  # required for saving imported keys aliases
-
-        beekeeper = world_cm.beekeeper
-        http_endpoint = beekeeper.pack().settings.http_endpoint
-        assert http_endpoint is not None, "While performing setup of beekeeper, it own address was not set"
-        await BeekeeperSaveDetached(
-            pid=0, endpoint=http_endpoint.as_string()
-        ).execute()  # so that cli commands can refer
-
         yield world_cm
 
 
