@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final, TypeGuard
 
-from helpy.exceptions import CommunicationError
+from helpy.exceptions import CommunicationError, TimeoutExceededError
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
@@ -20,6 +20,9 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
 
     @classmethod
     def _determine_message(cls, exception: CommunicationError) -> str:
+        if isinstance(exception, TimeoutExceededError):
+            return cls._get_communication_timeout_message(exception)
+
         error_messages = exception.get_response_error_messages()
         url = exception.url
 
@@ -67,3 +70,10 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
     @staticmethod
     def _get_communication_detailed_error_message(url: str, error_details: str) -> str:
         return f"Communication error with {url}:\n{error_details}"
+
+    @staticmethod
+    def _get_communication_timeout_message(exception: TimeoutExceededError) -> str:
+        return (
+            f"Timeout occurred during communication with {exception.url}."
+            f" Took over {exception.timeout_secs:.2f} seconds."
+        )
