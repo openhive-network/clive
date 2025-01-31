@@ -1,7 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper
 from beekeepy import Settings as BeekeepySettings
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
@@ -28,10 +27,6 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     @property
     def profile(self) -> Profile:
         return self.world.profile
-
-    @property
-    def beekeeper(self) -> AsyncBeekeeper:
-        return self.world.beekeeper
 
     def is_session_token_set(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
