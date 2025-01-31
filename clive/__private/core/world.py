@@ -158,7 +158,8 @@ class World:
         await self.switch_profile(profile)
 
     async def load_profile_based_on_beekepeer(self) -> None:
-        self._unlocked_wallet = await self._get_unlocked_wallet(self.session)
+        unlocked_wallet = await self._get_unlocked_wallet(self.session)
+        await self.set_unlocked_wallet(unlocked_wallet)
 
         profile = Profile.load(self.unlocked_wallet.name)
         await self.switch_profile(profile)
