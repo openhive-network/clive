@@ -66,7 +66,7 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self._beekeeper_settings = self._construct_beekeepy_settings_from_init_args(beekeepy_settings_or_url)
+        self._beekeeper_settings = self._setup_beekeepy_settings(beekeepy_settings_or_url)
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
         self._unlocked_wallet: AsyncUnlockedWallet | None = None
@@ -202,8 +202,6 @@ class World:
         return Commands(self)
 
     async def _setup_beekeeper(self) -> AsyncBeekeeper:
-        self._beekeeper_settings = safe_settings.beekeeper.settings_factory(self._beekeeper_settings)
-
         if self._beekeeper_settings.http_endpoint is not None:
             return await AsyncBeekeeper.remote_factory(url_or_settings=self._beekeeper_settings)
 
@@ -229,18 +227,15 @@ class World:
         return self._app_state
 
     @classmethod
-    def _construct_beekeepy_settings_from_init_args(
-        cls, beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None
-    ) -> BeekeepySettings:
+    def _setup_beekeepy_settings(cls, beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None) -> BeekeepySettings:
         if isinstance(beekeepy_settings_or_url, BeekeepySettings):
-            return beekeepy_settings_or_url
+            settings = beekeepy_settings_or_url
+        elif isinstance(beekeepy_settings_or_url, HttpUrl):
+            settings = BeekeepySettings(http_endpoint=beekeepy_settings_or_url)
+        else:
+            settings = BeekeepySettings()
 
-        default_settings = BeekeepySettings()
-
-        if isinstance(beekeepy_settings_or_url, HttpUrl):
-            default_settings.http_endpoint = beekeepy_settings_or_url
-
-        return default_settings
+        return safe_settings.beekeeper.settings_factory(settings)
 
 
 class TUIWorld(World, CliveDOMNode):
