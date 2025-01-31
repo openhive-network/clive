@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import time
 from dataclasses import dataclass
 
@@ -14,8 +12,42 @@ from clive.__private.cli.exceptions import (
 )
 from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID, IsBeekeeperRunning
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
-from clive.__private.settings import safe_settings
-from clive.__private.settings._settings import clive_prefixed_envvar
+from clive.__private.settings import clive_prefixed_envvar, safe_settings
+
+
+@dataclass(kw_only=True)
+class BeekeeperInfo(BeekeeperBasedCommand):
+    async def _run(self) -> None:
+        session = await self.beekeeper.session
+        info = (await session.get_info()).json(by_alias=True)
+        typer.echo(info)
+
+
+@dataclass(kw_only=True)
+class BeekeeperCreateSession(BeekeeperBasedCommand):
+    echo_token_only: bool
+
+    async def _run(self) -> None:
+        session = await self.beekeeper.create_session()
+        token = await session.token
+        if self.echo_token_only:
+            message = token
+        else:
+            message = (
+                f"A new session was created, token is: {token}\n"
+                "If you want to use that Beekeeper session in Clive CLI env, please set:\n"
+                f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
+            )
+        typer.echo(message=message)
+
+    @property
+    def _is_session_token_required(self) -> bool:
+        return False
+
+    async def _hook_before_entering_context_manager(self) -> None:
+        """Display information about using Beekeeper if not using echo-token-only flag."""
+        if not self.echo_token_only:
+            await super()._hook_before_entering_context_manager()
 
 
 @dataclass(kw_only=True)
@@ -33,20 +65,21 @@ class BeekeeperSpawn(ExternalCLICommand):
             typer.echo("Launching beekeeper...")
 
         async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper:
-            beekeeper_settings = beekeeper.pack().settings
-            beekeeper_endpoint = beekeeper_settings.http_endpoint
-            assert beekeeper_endpoint is not None, "started beekeeper has no address, critical error!"
+            http_endpoint = beekeeper.pack().settings.http_endpoint
+            assert http_endpoint is not None, "started beekeeper has no address, critical error!"
 
             pid = beekeeper.detach()
 
             if self.echo_address_only:
-                message = str(beekeeper_endpoint)
+                message = str(http_endpoint)
             else:
+                session = await beekeeper.session
+                token = await session.token
                 message = (
-                    f"Beekeeper started on {beekeeper_endpoint} with {pid=}.\n"
+                    f"Beekeeper started on {http_endpoint} with pid {pid}.\n"
                     "If you want to use that beekeeper in Clive CLI env, please set:\n"
-                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={beekeeper_endpoint}\n"
-                    f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={await (await beekeeper.session).token}"
+                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={http_endpoint}\n"
+                    f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
                 )
             typer.echo(message=message)
 
@@ -67,7 +100,7 @@ class BeekeeperSpawn(ExternalCLICommand):
     async def _validate_beekeeper_is_not_running(self) -> None:
         result = await IsBeekeeperRunning().execute_with_result()
         if result.is_running:
-            raise CLIBeekeeperLocallyAlreadyRunningError(pid=result.pid_ensure)
+            raise CLIBeekeeperLocallyAlreadyRunningError(result.pid_ensure)
 
     @staticmethod
     def __serve_forever() -> None:
@@ -81,27 +114,6 @@ class BeekeeperSpawn(ExternalCLICommand):
 class BeekeeperClose(ExternalCLICommand):
     async def _run(self) -> None:
         pid = await BeekeeperLoadDetachedPID().execute_with_result()
+        typer.echo(f"Closing beekeeper with pid {pid}...")
         close_already_running_beekeeper(pid=pid)
-
-
-@dataclass(kw_only=True)
-class BeekeeperCreateSession(BeekeeperBasedCommand):
-    echo_token_only: bool
-
-    async def _run(self) -> None:
-        session = await self.beekeeper.create_session()
-        if self.echo_token_only:
-            message = await session.token
-        else:
-            message = (
-                f"A new session was created, token is: {await session.token}\n"
-                "If you want to use that Beekeeper session in Clive CLI env, please set:\n"
-                f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={await session.token}"
-            )
-        typer.echo(message=message)
-
-
-@dataclass(kw_only=True)
-class BeekeeperInfo(BeekeeperBasedCommand):
-    async def _run(self) -> None:
-        typer.echo((await (await self.beekeeper.session).get_info()).json())
+        typer.echo("Beekeeper was closed with.")
