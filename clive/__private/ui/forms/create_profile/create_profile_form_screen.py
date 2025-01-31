@@ -82,7 +82,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
 
         async def write_data() -> None:
             await SyncDataWithBeekeeper(
-                wallet=self.world.wallet,
+                wallet=self.world.unlocked_wallet,
                 profile=self.context.profile,
             ).execute()
 
