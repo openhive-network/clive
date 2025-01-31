@@ -117,7 +117,6 @@ class Commands(Generic[WorldT_co]):
                 session=self._world._session_ensure,
                 wallet_name=name if name is not None else self._world.profile.name,
                 password=password,
-                world=self._world,
             )
         )
 
@@ -147,7 +146,6 @@ class Commands(Generic[WorldT_co]):
                 wallet_name=profile_name or self._world.profile.name,
                 time=time,
                 permanent=permanent,
-                world=self._world,
             )
         )
 

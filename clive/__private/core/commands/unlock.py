@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
     from beekeepy import AsyncSession
 
-    from clive import World
     from clive.__private.core.app_state import AppState
 
 
@@ -22,7 +21,6 @@ class Unlock(CommandPasswordSecured):
     wallet_name: str
     time: timedelta | None = None
     permanent: bool = False
-    world: World | None = None
 
     async def _execute(self) -> None:
         if unlock_seconds := self.__get_unlock_seconds():
@@ -30,10 +28,8 @@ class Unlock(CommandPasswordSecured):
 
         locked_wallet = await self.session.open_wallet(name=self.wallet_name)
         unlocked_wallet = await locked_wallet.unlock(password=self.password)
-        if self.world is not None:
-            await self.world._set_unlocked_wallet(unlocked_wallet)
         if self.app_state is not None:
-            self.app_state.unlock()
+            await self.app_state.unlock(unlocked_wallet)
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:
