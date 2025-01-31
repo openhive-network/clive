@@ -144,7 +144,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             Lock(
                 app_state=self._world.app_state,
-                wallet=self._world.wallet,
+                wallet=self._world.unlocked_wallet,
             )
         )
 
@@ -193,7 +193,7 @@ class Commands(Generic[WorldT_co]):
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                wallet=self._world.wallet if sign_key else None,
+                wallet=self._world.unlocked_wallet if sign_key else None,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
@@ -242,7 +242,7 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
-                wallet=self._world.wallet,
+                wallet=self._world.unlocked_wallet,
                 transaction=transaction,
                 key=sign_with,
                 chain_id=chain_id or await self._world.node.chain_id,
@@ -273,7 +273,7 @@ class Commands(Generic[WorldT_co]):
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
             ImportKey(
-                wallet=self._world.wallet,
+                wallet=self._world.unlocked_wallet,
                 key_to_import=key_to_import,
             )
         )
@@ -281,7 +281,7 @@ class Commands(Generic[WorldT_co]):
     async def remove_key(self, *, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
-                wallet=self._world.wallet,
+                wallet=self._world.unlocked_wallet,
                 key_to_remove=key_to_remove,
             )
         )
@@ -289,14 +289,14 @@ class Commands(Generic[WorldT_co]):
     async def sync_data_with_beekeeper(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                wallet=self._world.wallet,
+                wallet=self._world.unlocked_wallet,
                 profile=self._world.profile,
             )
         )
 
     async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            SyncStateWithBeekeeper(wallet=self._world._wallet, app_state=self._world.app_state, source=source)
+            SyncStateWithBeekeeper(wallet=self._world._unlocked_wallet, app_state=self._world.app_state, source=source)
         )
 
     async def get_dynamic_global_properties(self) -> CommandWithResultWrapper[DynamicGlobalProperties]:
