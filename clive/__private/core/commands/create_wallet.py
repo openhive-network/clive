@@ -26,11 +26,11 @@ class CreateWallet(CommandWithResult[str]):
         if isinstance(result, tuple):
             self._result = result[1]
             if self.world is not None:
-                await self.world.set_unlocked_wallet(result[0])
+                await self.world._set_unlocked_wallet(result[0])
         else:
             self._result = self.password
             if self.world is not None:
-                await self.world.set_unlocked_wallet(result)
+                await self.world._set_unlocked_wallet(result)
 
         if self.app_state:
             self.app_state.unlock()

@@ -73,7 +73,7 @@ async def prepare_beekeeper_wallet(world: World, prepare_profile: Profile) -> As
 
 @pytest.fixture
 async def beekeeper(prepare_beekeeper_wallet: World) -> AsyncBeekeeper:
-    return prepare_beekeeper_wallet.beekeeper
+    return prepare_beekeeper_wallet._beekeeper_ensure
 
 
 @pytest.fixture

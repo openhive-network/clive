@@ -85,7 +85,7 @@ async def test_lock(cli_tester: CLITester) -> None:
     cli_tester.lock()
 
     # ASSERT
-    await assert_wallets_locked(cli_tester.world.beekeeper)
+    await assert_wallets_locked(cli_tester.world._beekeeper_ensure)
 
 
 async def test_unlock_one_profile(cli_tester_locked: CLITester) -> None:
@@ -93,7 +93,7 @@ async def test_unlock_one_profile(cli_tester_locked: CLITester) -> None:
     cli_tester_locked.unlock(profile_name=WORKING_ACCOUNT_NAME, password_stdin=WORKING_ACCOUNT_PASSWORD)
 
     # ASSERT
-    await assert_wallet_unlocked(cli_tester_locked.world.beekeeper, WORKING_ACCOUNT_NAME)
+    await assert_wallet_unlocked(cli_tester_locked.world._beekeeper_ensure, WORKING_ACCOUNT_NAME)
 
 
 async def test_second_profile(cli_tester_locked_with_second_profile: CLITester) -> None:
