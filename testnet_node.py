@@ -103,7 +103,7 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
     async with World() as world_cm:
         password = await CreateWallet(
             app_state=world_cm.app_state,
-            session=world_cm.session,
+            session=world_cm._session_ensure,
             wallet_name=working_account_name,
             password=working_account_name * 2,
             world=world_cm,

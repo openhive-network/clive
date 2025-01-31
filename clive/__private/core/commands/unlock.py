@@ -31,7 +31,7 @@ class Unlock(CommandPasswordSecured):
         locked_wallet = await self.session.open_wallet(name=self.wallet_name)
         unlocked_wallet = await locked_wallet.unlock(password=self.password)
         if self.world is not None:
-            await self.world.set_unlocked_wallet(unlocked_wallet)
+            await self.world._set_unlocked_wallet(unlocked_wallet)
         if self.app_state is not None:
             self.app_state.unlock()
 
