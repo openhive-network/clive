@@ -144,6 +144,8 @@ class World:
     async def close(self) -> None:
         if self._profile is not None:
             self._profile.save()
+        if self._node is not None:
+            self._node.teardown()
         if self._beekeeper is not None:
             self._beekeeper.teardown()
 
