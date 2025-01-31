@@ -55,6 +55,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 )
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
+from clive.__private.core.error_handlers.tui_error_handler import TUIErrorHandler
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
@@ -493,4 +494,6 @@ class CLICommands(Commands["CLIWorld"]):
 
 class TUICommands(Commands["TUIWorld"], CliveDOMNode):
     def __init__(self, world: TUIWorld) -> None:
-        super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
+        super().__init__(
+            world, exception_handlers=[TUIErrorHandler, CommunicationFailureNotificator, GeneralErrorNotificator]
+        )
