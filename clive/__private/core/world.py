@@ -66,9 +66,9 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self.__beekeeper_settings = self._construct_beekeepy_settings_from_init_args(beekeepy_settings_or_url)
+        self._beekeeper_settings = self._construct_beekeepy_settings_from_init_args(beekeepy_settings_or_url)
         self._beekeeper: AsyncBeekeeper | None = None
-        self.__session: AsyncSession | None = None
+        self._session: AsyncSession | None = None
         self._wallet: AsyncUnlockedWallet | None = None
 
         self._node: Node | None = None
@@ -97,8 +97,8 @@ class World:
 
     @property
     def session(self) -> AsyncSession:
-        assert self.__session is not None, "Session is not initialized"
-        return self.__session
+        assert self._session is not None, "Session is not initialized"
+        return self._session
 
     @property
     def wallet(self) -> AsyncUnlockedWallet:
@@ -133,8 +133,8 @@ class World:
 
     async def setup(self) -> Self:
         async with self.during_setup():
-            self._beekeeper = await self.__setup_beekeeper()
-            self.__session = await self.beekeeper.session
+            self._beekeeper = await self._setup_beekeeper()
+            self._session = await self.beekeeper.session
         return self
 
     async def close(self) -> None:
@@ -195,20 +195,20 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self) -> AsyncBeekeeper:
-        if self.__beekeeper_settings.http_endpoint is None:
+    async def _setup_beekeeper(self) -> AsyncBeekeeper:
+        if self._beekeeper_settings.http_endpoint is None:
             from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID
 
             beekeeper_params = await BeekeeperLoadDetachedPID(remove_file=False, silent_fail=True).execute_with_result()
             if beekeeper_params.is_set():
-                self.__beekeeper_settings.http_endpoint = beekeeper_params.endpoint
+                self._beekeeper_settings.http_endpoint = beekeeper_params.endpoint
 
-        self.__beekeeper_settings = safe_settings.beekeeper.settings_factory(self.__beekeeper_settings)
+        self._beekeeper_settings = safe_settings.beekeeper.settings_factory(self._beekeeper_settings)
 
-        if self.__beekeeper_settings.http_endpoint is not None:
-            return await AsyncBeekeeper.remote_factory(url_or_settings=self.__beekeeper_settings)
+        if self._beekeeper_settings.http_endpoint is not None:
+            return await AsyncBeekeeper.remote_factory(url_or_settings=self._beekeeper_settings)
 
-        return await AsyncBeekeeper.factory(settings=self.__beekeeper_settings)
+        return await AsyncBeekeeper.factory(settings=self._beekeeper_settings)
 
     async def _update_node(self) -> None:
         if self._profile is None:
