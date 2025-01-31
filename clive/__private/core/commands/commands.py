@@ -204,7 +204,7 @@ class Commands(Generic[WorldT_co]):
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                wallet=self._world.unlocked_wallet if sign_key else None,
+                unlocked_wallet=self._world.unlocked_wallet if sign_key else None,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
