@@ -296,7 +296,7 @@ class Commands(Generic[WorldT_co]):
 
     async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            SyncStateWithBeekeeper(wallet=self._world._optional_wallet, app_state=self._world.app_state, source=source)
+            SyncStateWithBeekeeper(wallet=self._world._wallet, app_state=self._world.app_state, source=source)
         )
 
     async def get_dynamic_global_properties(self) -> CommandWithResultWrapper[DynamicGlobalProperties]:
