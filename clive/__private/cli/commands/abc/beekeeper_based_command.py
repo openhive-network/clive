@@ -95,12 +95,6 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
         await super().validate()
 
     async def _create_context_manager_instance(self) -> AsyncBeekeeper:
-        if self.beekeeper_remote_url is None:
-            from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID
-
-            beekeeper_params = await BeekeeperLoadDetachedPID(remove_file=False, silent_fail=True).execute_with_result()
-            if beekeeper_params.is_set():
-                self.beekeeper_remote = beekeeper_params.endpoint
         remote_url = HttpUrl(self.beekeeper_remote_url) if self.beekeeper_remote_url is not None else None
         settings = safe_settings.beekeeper.settings_factory(BeekeepySettings(http_endpoint=remote_url))
         return await (

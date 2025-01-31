@@ -224,8 +224,8 @@ class CLIBeekeeperRemoteAddressIsNotRespondingError(CLIPrettyError):
 
 
 class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
-    def __init__(self, url: HttpUrl, pid: int) -> None:
-        message = f"Local instance of Beekeeper is already running on {url} with pid {pid}"
+    def __init__(self, pid: int) -> None:
+        message = f"Local instance of Beekeeper is already running with pid {pid}"
         super().__init__(message, errno.EEXIST)
 
 

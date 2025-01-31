@@ -12,7 +12,7 @@ from clive.__private.cli.exceptions import (
     CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
     CLIBeekeeperLocallyAlreadyRunningError,
 )
-from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID, BeekeeperSaveDetached, IsBeekeeperRunning
+from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID, IsBeekeeperRunning
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import safe_settings
 from clive.__private.settings._settings import clive_prefixed_envvar
@@ -36,8 +36,8 @@ class BeekeeperSpawn(ExternalCLICommand):
             beekeeper_settings = beekeeper.pack().settings
             beekeeper_endpoint = beekeeper_settings.http_endpoint
             assert beekeeper_endpoint is not None, "started beekeeper has no address, critical error!"
+
             pid = beekeeper.detach()
-            await BeekeeperSaveDetached(pid=pid, endpoint=str(beekeeper_endpoint)).execute()
 
             if self.echo_address_only:
                 message = str(beekeeper_endpoint)
@@ -65,16 +65,9 @@ class BeekeeperSpawn(ExternalCLICommand):
             raise CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError
 
     async def _validate_beekeeper_is_not_running(self) -> None:
-        command = IsBeekeeperRunning()
-        if await command.execute_with_result():
-            # assertions because of mypy
-            assert command.beekeeper_process_info is not None, "beekeeper_process_info is None"
-            assert command.beekeeper_process_info.endpoint is not None, "beekeeper_process_info.endpoint is None"
-            assert command.beekeeper_process_info.pid is not None, "beekeeper_process_info.pid is None"
-
-            raise CLIBeekeeperLocallyAlreadyRunningError(
-                url=command.beekeeper_process_info.endpoint, pid=command.beekeeper_process_info.pid
-            )
+        result = await IsBeekeeperRunning().execute_with_result()
+        if result.is_running:
+            raise CLIBeekeeperLocallyAlreadyRunningError(pid=result.pid_ensure)
 
     @staticmethod
     def __serve_forever() -> None:
@@ -87,8 +80,7 @@ class BeekeeperSpawn(ExternalCLICommand):
 @dataclass(kw_only=True)
 class BeekeeperClose(ExternalCLICommand):
     async def _run(self) -> None:
-        pid = (await BeekeeperLoadDetachedPID().execute_with_result()).pid
-        assert pid is not None, "Cannot automatically determine beekeeper PID, missing file"
+        pid = await BeekeeperLoadDetachedPID().execute_with_result()
         close_already_running_beekeeper(pid=pid)
 
 
