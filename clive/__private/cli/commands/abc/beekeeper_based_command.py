@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 
 import typer
@@ -18,13 +18,9 @@ from clive.__private.settings import safe_settings
 
 
 @dataclass(kw_only=True)
-class BeekeeperCommon(ABC):
+class BeekeeperCommon:
     beekeeper_remote: str | HttpUrl | None = None
     """If None, beekeeper will be launched locally."""
-
-    @property
-    @abstractmethod
-    def beekeeper(self) -> AsyncBeekeeper: ...
 
     @property
     def beekeeper_remote_url(self) -> HttpUrl | None:
@@ -43,13 +39,6 @@ class BeekeeperCommon(ABC):
         if isinstance(self.beekeeper_remote, HttpUrl):
             return self.beekeeper_remote
         return HttpUrl(self.beekeeper_remote)
-
-    async def validate_session_is_locked(self) -> None:
-        unlocked_wallet_names = await GetWalletNames(
-            session=await self.beekeeper.session, filter_by_status="unlocked"
-        ).execute_with_result()
-        if unlocked_wallet_names:
-            raise CLISessionNotLockedError
 
     def validate_beekeeper_remote_address_set(self) -> None:
         if self.beekeeper_remote_url is None:
@@ -80,6 +69,7 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
 
     @property
     def beekeeper(self) -> AsyncBeekeeper:
+        # in WorldBasedCommand, should not be exposed as Commands should be used instead
         return self._context_manager_instance
 
     @property
@@ -92,6 +82,13 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
             self.validate_beekeeper_session_token_set()
         await super().validate_remote_beekeeper_running()
         await super().validate()
+
+    async def validate_session_is_locked(self) -> None:
+        unlocked_wallet_names = await GetWalletNames(
+            session=await self.beekeeper.session, filter_by_status="unlocked"
+        ).execute_with_result()
+        if unlocked_wallet_names:
+            raise CLISessionNotLockedError
 
     async def _create_context_manager_instance(self) -> AsyncBeekeeper:
         settings = safe_settings.beekeeper.settings_factory()

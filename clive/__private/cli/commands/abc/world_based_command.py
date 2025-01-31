@@ -1,8 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper
-
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -27,10 +25,6 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     @property
     def profile(self) -> Profile:
         return self.world.profile
-
-    @property
-    def beekeeper(self) -> AsyncBeekeeper:
-        return self.world._beekeeper_ensure
 
     def is_session_token_set(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
