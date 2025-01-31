@@ -14,7 +14,8 @@ from clive.__private.models import Transaction
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet, AsyncWallet
 
-    from clive.__private.core.commands.abc.command_in_unlocked import AppStateProtocol
+    from clive.__private.core.app_state import AppState
+
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -51,7 +52,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     """
 
     content: TransactionConvertibleType
-    app_state: AppStateProtocol
+    app_state: AppState
     node: Node
     wallet: AsyncUnlockedWallet | AsyncWallet | None = None
     """Required if transaction needs to be signed - when sign_key is provided."""
