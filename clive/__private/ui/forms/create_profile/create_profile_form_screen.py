@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FormScreen
@@ -70,21 +68,16 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         profile_name = self._profile_name_input.value_or_error
         password = self._password_input.value_or_error
 
-        self.context.profile.name = profile_name
+        profile = self.context.profile
+        profile.name = profile_name
 
-        create_wallet = CreateWallet(
-            app_state=self.app_state,
-            beekeeper=self.world.beekeeper,
-            wallet=profile_name,
-            password=password,
-        )
-        write_data = SyncDataWithBeekeeper(
-            app_state=self.app_state,
-            profile=self.context.profile,
-            beekeeper=self.world.beekeeper,
-        )
+        async def create_wallet() -> None:
+            await self.world.commands.create_wallet(name=profile_name, password=password)
 
-        self._owner.add_post_action(create_wallet, write_data)
+        async def sync_data() -> None:
+            await self.world.commands.sync_data_with_beekeeper(profile=profile)
+
+        self._owner.add_post_action(create_wallet, sync_data)
 
     def _revalidate_repeat_password_input_when_password_changed(self) -> None:
         if not self._repeat_password_input.is_empty:
