@@ -21,7 +21,7 @@ async def test_unlock(
     wallet_password: str,
 ) -> None:
     # ARRANGE
-    await world.session.lock_all()
+    await world._session_ensure.lock_all()
 
     # ACT
     await world.commands.unlock(password=wallet_password)
@@ -35,7 +35,7 @@ async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_wi
     with pytest.raises(NoWalletWithSuchNameError):
         await Unlock(
             app_state=world.app_state,
-            session=world.session,
+            session=world._session_ensure,
             wallet_name="blabla",
             password="blabla",
         ).execute()

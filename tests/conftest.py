@@ -137,7 +137,7 @@ async def init_node_extra_apis(
 
 @pytest.fixture
 def beekeeper(world: World) -> AsyncBeekeeper:
-    return world.beekeeper
+    return world._beekeeper_ensure
 
 
 @pytest.fixture
@@ -151,7 +151,7 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
         for wallet in wallets:
             await CreateWallet(
                 app_state=world.app_state,
-                session=world.session,
+                session=world._session_ensure,
                 wallet_name=wallet.name,
                 password=wallet.password,
             ).execute()
@@ -159,7 +159,7 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             if import_keys:
                 for pairs in wallet.keys.pairs:
                     await ImportKey(
-                        unlocked_wallet=world.unlocked_wallet,
+                        unlocked_wallet=world._unlocked_wallet_ensure,
                         key_to_import=pairs.private_key,
                     ).execute()
         return wallets
