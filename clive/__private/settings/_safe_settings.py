@@ -12,6 +12,8 @@ from helpy import HttpUrl
 from inflection import underscore
 
 from clive.__private.core.constants.setting_identifiers import (
+    BEEKEEPER_COMMUNICATION_ATTEMPTS_AMOUNT,
+    BEEKEEPER_COMMUNICATION_RETRIES_DELAY_SECS,
     BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS,
     BEEKEEPER_REFRESH_TIMEOUT_SECS,
     BEEKEEPER_REMOTE_ADDRESS,
@@ -26,6 +28,8 @@ from clive.__private.core.constants.setting_identifiers import (
     LOG_PATH,
     MAX_NUMBER_OF_TRACKED_ACCOUNTS,
     NODE_CHAIN_ID,
+    NODE_COMMUNICATION_ATTEMPTS_AMOUNT,
+    NODE_COMMUNICATION_RETRIES_DELAY_SECS,
     NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS,
     NODE_REFRESH_ALARMS_RATE_SECS,
     NODE_REFRESH_RATE_SECS,
@@ -182,6 +186,14 @@ class SafeSettings:
             return self._get_beekeeper_communication_total_timeout_secs()
 
         @property
+        def communication_attempts_amount(self) -> int:
+            return self._get_beekeeper_communication_attempts_amount()
+
+        @property
+        def communication_retries_delay_secs(self) -> float:
+            return self._get_beekeeper_communication_retries_delay_secs()
+
+        @property
         def refresh_timeout_secs(self) -> float:
             return self._get_beekeeper_refresh_timeout_secs()
 
@@ -204,6 +216,8 @@ class SafeSettings:
             )
             beekeepy_settings.use_existing_session = beekeepy_settings.use_existing_session or self.session_token
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
+            beekeepy_settings.max_retries = self.communication_attempts_amount
+            beekeepy_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
             return beekeepy_settings
 
         def _get_beekeeper_remote_address(self) -> HttpUrl | None:
@@ -211,6 +225,12 @@ class SafeSettings:
 
         def _get_beekeeper_communication_total_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=15, minimum=1)
+
+        def _get_beekeeper_communication_attempts_amount(self) -> int:
+            return int(self._parent._get_number(BEEKEEPER_COMMUNICATION_ATTEMPTS_AMOUNT, default=1, minimum=1))
+
+        def _get_beekeeper_communication_retries_delay_secs(self) -> float:
+            return self._parent._get_number(BEEKEEPER_COMMUNICATION_RETRIES_DELAY_SECS, default=0.2, minimum=0)
 
         def _get_beekeeper_refresh_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_REFRESH_TIMEOUT_SECS, default=0.5, minimum=0.1)
@@ -242,6 +262,14 @@ class SafeSettings:
         def communication_timeout_total_secs(self) -> float:
             return self._get_node_communication_timeout_total_secs()
 
+        @property
+        def communication_attempts_amount(self) -> int:
+            return self._get_node_communication_attempts_amount()
+
+        @property
+        def communication_retries_delay_secs(self) -> float:
+            return self._get_node_communication_retries_delay_secs()
+
         def _get_node_chain_id(self) -> str | None:
             from clive.__private.core.validate_schema_field import is_schema_field_valid
             from clive.__private.models.schemas import ChainId
@@ -267,6 +295,12 @@ class SafeSettings:
 
         def _get_node_communication_timeout_total_secs(self) -> float:
             return self._parent._get_number(NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=30, minimum=1)
+
+        def _get_node_communication_attempts_amount(self) -> int:
+            return int(self._parent._get_number(NODE_COMMUNICATION_ATTEMPTS_AMOUNT, default=5, minimum=1))
+
+        def _get_node_communication_retries_delay_secs(self) -> float:
+            return self._parent._get_number(NODE_COMMUNICATION_RETRIES_DELAY_SECS, default=0.2, minimum=0)
 
     def __init__(self) -> None:
         self._namespaces: set[type[SafeSettings._Namespace]] = set()
