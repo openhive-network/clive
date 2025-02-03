@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError, CommandRestricted
+from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
@@ -24,5 +25,4 @@ class CommandInUnlocked(CommandRestricted, ABC):
     _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandRequiresUnlockedModeError
 
     async def _is_execution_possible(self) -> bool:
-        is_wallet_unlocked = await self.unlocked_wallet.unlocked is not None
-        return is_wallet_unlocked  # noqa: RET504
+        return await IsWalletUnlocked(wallet=self.unlocked_wallet).execute_with_result()
