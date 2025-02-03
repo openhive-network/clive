@@ -188,7 +188,9 @@ class Node(AsyncHived):
         super().__init__(
             settings=HelpySettings(
                 http_endpoint=self.__profile.node_address,
+                max_retries=safe_settings.node.communication_attempts_amount,
                 timeout=timedelta(seconds=safe_settings.node.communication_timeout_total_secs),
+                period_between_retries=timedelta(seconds=safe_settings.node.communication_retries_delay_secs),
             )
         )
 
