@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
-from clive.__private.ui.screens.operations.operation_summary.operation_summary import OperationSummary
+from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 
 if TYPE_CHECKING:
@@ -15,20 +15,18 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import WithdrawRoute
 
 
-class RemoveWithdrawVestingRoute(OperationSummary):
-    """Screen to remove withdraw vesting route."""
-
-    SECTION_TITLE: ClassVar[str] = "Remove withdraw vesting route"
+class RemoveWithdrawVestingRouteDialog(OperationSummaryBaseDialog):
+    """Dialog to remove withdraw vesting route."""
 
     def __init__(self, withdraw_route: WithdrawRoute) -> None:
-        super().__init__()
+        super().__init__("Remove withdraw vesting route")
         self._withdraw_route = withdraw_route
 
     @property
     def working_account_name(self) -> str:
         return self.profile.accounts.working.name
 
-    def content(self) -> ComposeResult:
+    def create_dialog_content(self) -> ComposeResult:
         yield LabelizedInput("From account", self.working_account_name)
         yield LabelizedInput("To account", self._withdraw_route.to_account)
         yield LabelizedInput("Percent", f"{self._withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %")

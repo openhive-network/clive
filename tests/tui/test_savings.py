@@ -12,11 +12,11 @@ from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
+from clive.__private.ui.dialogs.operation_summary.cancel_transfer_from_savings_dialog import (
+    CancelTransferFromSavingsDialog,
+)
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.operations import Operations
-from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
-    CancelTransferFromSavings,
-)
 from clive.__private.ui.screens.operations.savings_operations.savings_operations import (
     PendingTransfer,
     Savings,
@@ -306,7 +306,7 @@ async def test_canceling_transfer_from_savings(
         await go_to_savings(pilot)
         await pilot.press("right")  # switch tab to pending transfers
         await focus_next(pilot)
-        await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
+        await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavingsDialog)  # Cancel transfer
         await press_and_wait_for_screen(pilot, "f6", TransactionSummary)  # Finalize transaction
         await broadcast_transaction(pilot)
 
