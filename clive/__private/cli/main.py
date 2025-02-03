@@ -61,11 +61,7 @@ async def unlock(
         hidden=True,
     ),
 ) -> None:
-    """
-    Unlocks the selected profile.
-
-    Session token and beekeeper remote address must be set.
-    """
+    """Unlocks the selected profile."""
     from clive.__private.cli.commands.unlock import Unlock
 
     common = BeekeeperOptionsGroup.get_instance()
@@ -83,7 +79,7 @@ async def lock(
     """
     Locks the profile.
 
-    Session token and beekeeper remote address must be set. Locks all wallets in beekeeper session.
+    Locks all wallets in beekeeper session.
     """
     from clive.__private.cli.commands.lock import Lock
 
