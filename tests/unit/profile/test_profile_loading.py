@@ -65,10 +65,10 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(
     assert (
         loaded_profile_name == unlocked_profile_name
     ), f"Unlocked profile is {unlocked_profile_name} but loaded is {loaded_profile_name}"
-    actual_unlocked_profile_name = await GetUnlockedWallet(
+    actual_unlocked_profile = await GetUnlockedWallet(
         session=await beekeeper_for_remote_use.session
     ).execute_with_result()
-    assert actual_unlocked_profile_name.name == unlocked_profile_name
+    assert actual_unlocked_profile.name == unlocked_profile_name
     assert Profile.list_profiles() == sorted([additional_profile_name, unlocked_profile_name, additional_profile_name2])
 
 
