@@ -12,12 +12,12 @@ from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
+from clive.__private.ui.dialogs.operation_summary.remove_withdraw_vesting_route_dialog import (
+    RemoveWithdrawVestingRouteDialog,
+)
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
-from clive.__private.ui.screens.operations.operation_summary.remove_withdraw_vesting_route import (
-    RemoveWithdrawVestingRoute,
-)
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
@@ -62,7 +62,7 @@ class WithdrawRoute(CliveCheckerboardTableRow):
 
     @on(CliveButton.Pressed, "#remove-withdraw-route-button")
     def push_operation_summary_screen(self) -> None:
-        self.app.push_screen(RemoveWithdrawVestingRoute(self._withdraw_route))
+        self.app.push_screen(RemoveWithdrawVestingRouteDialog(self._withdraw_route))
 
 
 class WithdrawRoutesTable(CliveCheckerboardTable):

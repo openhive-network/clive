@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.models import Asset
 from clive.__private.models.schemas import DelegateVestingSharesOperation
-from clive.__private.ui.screens.operations.operation_summary.operation_summary import OperationSummary
+from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 
 if TYPE_CHECKING:
@@ -14,13 +14,11 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import VestingDelegation
 
 
-class RemoveDelegation(OperationSummary):
-    """Screen to remove delegation."""
-
-    SECTION_TITLE: ClassVar[str] = "Remove delegation"
+class RemoveDelegationDialog(OperationSummaryBaseDialog):
+    """Dialog to remove delegation."""
 
     def __init__(self, delegation: VestingDelegation[Asset.Vests], pretty_hp_amount: str) -> None:
-        super().__init__()
+        super().__init__("Remove delegation")
         self._delegation = delegation
         self._pretty_hp_amount = pretty_hp_amount
 
@@ -28,7 +26,7 @@ class RemoveDelegation(OperationSummary):
     def working_account_name(self) -> str:
         return self.profile.accounts.working.name
 
-    def content(self) -> ComposeResult:
+    def create_dialog_content(self) -> ComposeResult:
         yield LabelizedInput("Delegator", self.working_account_name)
         yield LabelizedInput("Delegate", self._delegation.delegatee)
         yield LabelizedInput(
