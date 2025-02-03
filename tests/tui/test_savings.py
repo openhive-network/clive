@@ -6,6 +6,7 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
+from clive.__private.core.constants.tui.bindings import ADD_OPERATION_TO_CART_BINDING_KEY
 from clive.__private.models.schemas import (
     CancelTransferFromSavingsOperation,
     TransferFromSavingsOperation,
@@ -247,7 +248,7 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
         await focus_next(pilot)  # focus add to cart button
-        await press_binding(pilot, "f2", "Add to cart")
+        await press_binding(pilot, ADD_OPERATION_TO_CART_BINDING_KEY, "Add to cart")
         await focus_next(pilot)  # focus finalize transaction button
         await focus_next(pilot)  # focus transfer tab pane
         log_current_view(pilot.app)
