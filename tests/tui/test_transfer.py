@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.core.constants.tui.bindings import ADD_OPERATION_TO_CART_BINDING_KEY
 from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.screens.operations import Operations, TransferToAccount
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -149,7 +150,7 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
         await focus_next(pilot)  # focus on add to cart button
         await focus_next(pilot)  # focus on finalize transaction button
         await focus_next(pilot)  # focus on "to" input
-        await press_binding(pilot, "f2", "Add to cart")
+        await press_binding(pilot, ADD_OPERATION_TO_CART_BINDING_KEY, "Add to cart")
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)
