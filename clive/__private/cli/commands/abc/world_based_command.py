@@ -38,11 +38,11 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
-        await self._validate_if_wallet_is_unlocked()
+        self._validate_if_wallet_is_unlocked()
         await super().validate_inside_context_manager()
 
-    async def _validate_if_wallet_is_unlocked(self) -> None:
-        if not await self.world.app_state.is_unlocked:
+    def _validate_if_wallet_is_unlocked(self) -> None:
+        if not self.world.app_state.is_unlocked:
             raise CLINoProfileUnlockedError
 
     def _validate_session_token_set(self) -> None:
