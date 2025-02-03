@@ -10,7 +10,10 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
-from clive.__private.core.constants.tui.bindings import FINALIZE_TRANSACTION_BINDING_KEY
+from clive.__private.core.constants.tui.bindings import (
+    ADD_OPERATION_TO_CART_BINDING_KEY,
+    FINALIZE_TRANSACTION_BINDING_KEY,
+)
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -40,7 +43,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     """Class to provide access to methods related with operations to not just screens."""
 
     BINDINGS = [
-        Binding("f2", "add_to_cart", "Add to cart"),
+        Binding(ADD_OPERATION_TO_CART_BINDING_KEY, "add_to_cart", "Add to cart"),
         Binding(FINALIZE_TRANSACTION_BINDING_KEY, "finalize_transaction", "Finalize transaction"),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
