@@ -21,10 +21,8 @@ class AppState:
     _previous_state: bool = False
 
     @property
-    async def is_unlocked(self) -> bool:
-        if not self.world._is_unlocked_wallet_set:
-            return False
-        return (await self.world._unlocked_wallet_ensure.unlocked) is not None
+    def is_unlocked(self) -> bool:
+        return self._previous_state
 
     async def unlock(self, unlocked_wallet: AsyncUnlockedWallet | None = None) -> None:
         if self._previous_state:
