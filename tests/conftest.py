@@ -4,21 +4,26 @@ import os
 import shutil
 from contextlib import contextmanager
 from functools import wraps
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Callable, Generator
 
 import pytest
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
-from clive.__private.before_launch import prepare_before_launch
+from clive.__private.before_launch import (
+    _create_clive_data_directory,
+    _disable_schemas_extra_fields_check,
+    _initialize_user_settings,
+)
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
 from clive.__private.core.world import World
-from clive.__private.settings import settings
+from clive.__private.logger import logger
+from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
@@ -45,17 +50,14 @@ def manage_thread_pool() -> Iterator[None]:
         yield
 
 
-@pytest.fixture
-def testnet_chain_id_env_context(generic_env_context_factory: GenericEnvContextFactory) -> Generator[None]:
-    chain_id_env_context_factory = generic_env_context_factory(NODE_CHAIN_ID_ENV_NAME)
-    with chain_id_env_context_factory(TESTNET_CHAIN_ID):
-        yield
-
-
-@pytest.fixture(autouse=True)
-def run_prepare_before_launch(testnet_chain_id_env_context: None) -> None:  # noqa: ARG001
+def _prepare_settings() -> None:
     settings.reload()
+
     working_directory = tt.context.get_current_directory() / "clive"
+    settings.set(DATA_PATH, working_directory)
+
+    _create_clive_data_directory()
+    _initialize_user_settings()
 
     beekeeper_directory = working_directory / "beekeeper"
     if beekeeper_directory.exists():
@@ -65,14 +67,37 @@ def run_prepare_before_launch(testnet_chain_id_env_context: None) -> None:  # no
     if profile_data_directory.exists():
         shutil.rmtree(profile_data_directory)
 
-    settings.set(DATA_PATH, working_directory)
-    log_path = working_directory / "logs"
-    settings.set(LOG_PATH, log_path)
+    settings.set(LOG_PATH, working_directory / "logs")
 
     settings.set(LOG_LEVELS, ["DEBUG"])
     settings.set(LOG_LEVEL_1ST_PARTY, "DEBUG")
 
-    prepare_before_launch(enable_stream_handlers=True)
+    safe_settings.validate()
+
+
+@pytest.fixture
+def testnet_chain_id_env_context(generic_env_context_factory: GenericEnvContextFactory) -> Generator[None]:
+    chain_id_env_context_factory = generic_env_context_factory(NODE_CHAIN_ID_ENV_NAME)
+    with chain_id_env_context_factory(TESTNET_CHAIN_ID):
+        yield
+
+
+@pytest.fixture
+def logger_configuration_factory() -> Callable[[], None]:
+    def _logger_configuration_factory() -> None:
+        logger.setup(enable_textual=False, enable_stream_handlers=True)
+
+    return _logger_configuration_factory
+
+
+@pytest.fixture(autouse=True)
+def prepare_before_launch(
+    testnet_chain_id_env_context: None,  # noqa: ARG001
+    logger_configuration_factory: Callable[[], None],
+) -> None:
+    _prepare_settings()
+    _disable_schemas_extra_fields_check()
+    logger_configuration_factory()
 
 
 @pytest.fixture
