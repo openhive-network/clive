@@ -7,9 +7,6 @@ import pytest
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.keys.keys import PrivateKey
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_NAME
-from clive_local_tools.tui.utils import unlock_wallet
 
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
@@ -30,9 +27,7 @@ async def test_configure_key_add(cli_tester: CLITester) -> None:
     """Check clive configure key add command."""
     # ARRANGE
     pk = PrivateKey.create()
-    unlocked_wallet = await unlock_wallet(
-        cli_tester.world._beekeeper_ensure, WORKING_ACCOUNT_NAME, WORKING_ACCOUNT_PASSWORD
-    )
+    unlocked_wallet = cli_tester.world._unlocked_wallet_ensure
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
 
     # ACT
@@ -60,9 +55,7 @@ async def test_configure_key_remove(cli_tester: CLITester, *, from_beekeeper: bo
     """Check clive configure key remove command."""
     # ARRANGE
     pk = PrivateKey.create()
-    unlocked_wallet = await unlock_wallet(
-        cli_tester.world._beekeeper_ensure, WORKING_ACCOUNT_NAME, WORKING_ACCOUNT_PASSWORD
-    )
+    unlocked_wallet = cli_tester.world._unlocked_wallet_ensure
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
     cli_tester.configure_key_add(key=pk.value, alias="key")
     await assert_key_exists(unlocked_wallet, pk, should_exists=True)

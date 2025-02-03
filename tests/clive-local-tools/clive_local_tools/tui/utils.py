@@ -8,20 +8,7 @@ from textual.css.query import NoMatches
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncBeekeeper, AsyncUnlockedWallet
-
     from clive_local_tools.tui.types import CliveApp
-
-
-async def unlock_wallet(beekeeper: AsyncBeekeeper, wallet_name: str, wallet_password: str) -> AsyncUnlockedWallet:
-    session = await beekeeper.session
-    for wallet in await session.wallets:
-        if wallet.name == wallet_name:
-            if (unlocked_wallet := await wallet.unlocked) is not None:
-                return unlocked_wallet
-            return await wallet.unlock(password=wallet_password)
-    locked_wallet = await session.open_wallet(name=wallet_name)
-    return await locked_wallet.unlock(password=wallet_password)
 
 
 def log_current_view(app: CliveApp, *, nodes: bool = False, source: str | None = None) -> None:
