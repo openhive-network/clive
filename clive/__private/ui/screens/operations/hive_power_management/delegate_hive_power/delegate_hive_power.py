@@ -10,10 +10,10 @@ from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HE
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
+from clive.__private.ui.dialogs.operation_summary.remove_delegation_dialog import RemoveDelegationDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
-from clive.__private.ui.screens.operations.operation_summary.remove_delegation import RemoveDelegation
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
@@ -71,7 +71,7 @@ class Delegation(CliveCheckerboardTableRow):
 
     @on(CliveButton.Pressed, "#remove-delegation-button")
     def push_operation_summary_screen(self) -> None:
-        self.app.push_screen(RemoveDelegation(self._delegation, self._aligned_hp_amount))
+        self.app.push_screen(RemoveDelegationDialog(self._delegation, self._aligned_hp_amount))
 
 
 class DelegationsTable(CliveCheckerboardTable):

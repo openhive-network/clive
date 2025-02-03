@@ -141,7 +141,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     @on(CliveInput.Submitted)
     @on(AddToCartButton.Pressed)
-    def action_add_to_cart(self) -> None:
+    async def action_add_to_cart(self) -> None:
         def add_to_cart() -> None:
             if self._add_to_cart():
                 if self.profile.transaction.is_signed:
