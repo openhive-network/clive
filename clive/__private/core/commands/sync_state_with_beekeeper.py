@@ -21,5 +21,6 @@ class SyncStateWithBeekeeper(Command):
         await self.__sync_state()
 
     async def __sync_state(self) -> None:
-        is_unlocked = (await self.wallet.unlocked) is not None
-        await self.app_state.unlock() if is_unlocked else self.app_state.lock(self.source)
+        unlocked_wallet = await self.wallet.unlocked
+        is_unlocked = unlocked_wallet is not None
+        await self.app_state.unlock(unlocked_wallet) if is_unlocked else self.app_state.lock(self.source)
