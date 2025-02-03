@@ -35,6 +35,7 @@ from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
+from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.lock import Lock
 from clive.__private.core.commands.lock_all import LockAll
@@ -61,7 +62,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from pathlib import Path
 
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy import AsyncUnlockedWallet, AsyncWallet
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
@@ -178,6 +179,20 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
                 wallet_name=self._world.profile.name,
                 password=password,
+            )
+        )
+
+    async def is_wallet_unlocked(self, *, wallet: AsyncWallet | None = None) -> CommandWithResultWrapper[bool]:
+        """
+        Check if the given wallet is unlocked.
+
+        Args:
+        ----
+        wallet: Wallet to check. If None, the world wallet will be checked.
+        """
+        return await self.__surround_with_exception_handlers(
+            IsWalletUnlocked(
+                wallet=wallet if wallet is not None else self._world.unlocked_wallet,
             )
         )
 
