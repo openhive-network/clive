@@ -14,10 +14,10 @@ from clive.__private.models import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
+from clive.__private.ui.dialogs.operation_summary.cancel_power_down_dialog import CancelPowerDownDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
 from clive.__private.ui.widgets.buttons import CancelOneLineButton, GenerousButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
@@ -108,7 +108,7 @@ class PendingPowerDown(CliveCheckerboardTable):
     @on(CancelOneLineButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(
-            CancelPowerDown(
+            CancelPowerDownDialog(
                 self.object_to_watch.content.next_vesting_withdrawal, self.object_to_watch.content.next_power_down
             )
         )
