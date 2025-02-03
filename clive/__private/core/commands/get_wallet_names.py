@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
     from beekeepy import AsyncSession
@@ -20,7 +21,11 @@ class GetWalletNames(CommandWithResult[list[str]]):
     async def _execute(self) -> None:
         wallets = await self.session.wallets
         if self.filter_by_status in ["locked", "unlocked"]:
-            unlocked = self.filter_by_status == "unlocked"
-            self._result = [wallet.name for wallet in wallets if ((await wallet.unlocked) is not None) == unlocked]
+            should_be_unlocked = self.filter_by_status == "unlocked"
+            self._result = [
+                wallet.name
+                for wallet in wallets
+                if await IsWalletUnlocked(wallet=wallet).execute_with_result() == should_be_unlocked
+            ]
         else:
             self._result = [wallet.name for wallet in wallets]
