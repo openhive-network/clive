@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import ExitStack
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 from beekeepy import AsyncBeekeeper
@@ -12,6 +12,7 @@ from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
+from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
@@ -26,6 +27,14 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive_local_tools.types import EnvContextFactory
+
+
+@pytest.fixture
+def logger_configuration_factory() -> Callable[[], None]:
+    def _logger_configuration_factory() -> None:
+        logger.setup(enable_textual=False, enable_stream_handlers=False)
+
+    return _logger_configuration_factory
 
 
 @pytest.fixture
