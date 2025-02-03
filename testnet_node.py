@@ -101,12 +101,13 @@ def _create_profile(profile_name: str, working_account_name: str, watched_accoun
 
 async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
     async with World() as world_cm:
-        password = await CreateWallet(
+        result = await CreateWallet(
             app_state=world_cm.app_state,
             session=world_cm._session_ensure,
             wallet_name=working_account_name,
             password=working_account_name * 2,
         ).execute_with_result()
+        password = result.password
         await world_cm.load_profile_based_on_beekepeer()
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
         world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))

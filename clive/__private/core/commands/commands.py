@@ -6,7 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
-from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.create_wallet import CreateWallet, CreateWalletResult
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
     AccountScheduledTransferData,
@@ -103,7 +103,7 @@ class Commands(Generic[WorldT_co]):
 
     async def create_wallet(
         self, *, name: str | None = None, password: str | None = None
-    ) -> CommandWithResultWrapper[str]:
+    ) -> CommandWithResultWrapper[CreateWalletResult]:
         """
         Create a beekeeper wallet.
 

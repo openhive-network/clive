@@ -27,14 +27,11 @@ async def beekeeper_for_remote_use() -> AsyncIterator[AsyncBeekeeper]:
 
 async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str, *, lock: bool = False) -> None:
     Profile.create(profile_name).save()
-    await CreateWallet(session=await beekeeper.session, wallet_name=profile_name, password=profile_name).execute()
-    wallet = await (await beekeeper.session).open_wallet(name=profile_name)
+    result = await CreateWallet(
+        session=await beekeeper.session, wallet_name=profile_name, password=profile_name
+    ).execute_with_result()
     if lock:
-        unlocked_wallet = await wallet.unlocked
-        if unlocked_wallet is not None:
-            await unlocked_wallet.lock()
-    elif await wallet.unlocked is None:
-        await wallet.unlock(password=profile_name)
+        await result.unlocked_wallet.lock()
 
 
 def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, wallet_name: str) -> None:  # noqa: ARG001

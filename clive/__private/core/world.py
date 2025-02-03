@@ -188,10 +188,9 @@ class World:
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
 
-        generated_password = create_wallet_wrapper.result_or_raise
+        generated_password = create_wallet_wrapper.result_or_raise.password
         actual_password = password or generated_password
-        assert actual_password is not None, "Looks like there's an issue with beekeeper password generation"
-        return actual_password
+        return actual_password  # noqa: RET504
 
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_wallet = await self._get_unlocked_wallet(self._session_ensure)
