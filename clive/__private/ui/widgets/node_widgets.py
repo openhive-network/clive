@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from helpy import Hived, HttpUrl, Settings
+from helpy import AsyncHived, HttpUrl
+from helpy import Settings as HelpySettings
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.widgets import Static
@@ -61,9 +62,10 @@ class NodesList(Container, CliveWidget):
 
     async def save_selected_node_address(self) -> bool:
         new_address = self.query_exactly_one(NodeSelector).value_ensure
-        temp_node = Hived(settings=Settings(http_endpoint=new_address))
 
-        new_network_type = temp_node.api.database.get_version().node_type
+        async with AsyncHived(settings=HelpySettings(http_endpoint=new_address)) as temp_node:
+            new_network_type = (await temp_node.api.database.get_version()).node_type
+
         current_network_type = await self.node.cached.network_type
 
         if new_network_type == current_network_type:
