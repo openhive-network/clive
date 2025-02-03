@@ -26,7 +26,7 @@ async def test_unlock(
     await world.commands.unlock(password=wallet_password)
 
     # ASSERT
-    assert await world.app_state.is_unlocked
+    assert world.app_state.is_unlocked
 
 
 async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
@@ -42,11 +42,11 @@ async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_wi
 
 async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ARRANGE & ACT
-    assert await world.app_state.is_unlocked
+    assert world.app_state.is_unlocked
     await world.commands.lock()
 
     # ASSERT
-    assert not await world.app_state.is_unlocked
+    assert not world.app_state.is_unlocked
 
 
 async def test_unlock_again(
@@ -55,12 +55,12 @@ async def test_unlock_again(
     wallet_password: str,
 ) -> None:
     # ARRANGE & ACT
-    assert await world.app_state.is_unlocked
+    assert world.app_state.is_unlocked
     await world.commands.lock()
     await world.commands.unlock(password=wallet_password)
 
     # ASSERT
-    assert await world.app_state.is_unlocked
+    assert world.app_state.is_unlocked
 
 
 async def test_lock_after_given_time(
@@ -74,8 +74,8 @@ async def test_lock_after_given_time(
 
     # ACT
     await world.commands.unlock(password=wallet_password, time=time_to_sleep)
-    assert await world.app_state.is_unlocked
+    assert world.app_state.is_unlocked
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
-    assert not await world.app_state.is_unlocked
+    assert not world.app_state.is_unlocked
