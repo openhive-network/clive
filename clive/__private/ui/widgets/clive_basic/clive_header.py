@@ -202,12 +202,8 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
         )
         self.tooltip = "Lock wallet"
 
-    @property
-    async def is_locked(self) -> bool:
-        return await self.app_state.is_unlocked
-
-    async def mode_callback(self, app_state: AppState) -> str:
-        if await app_state.is_unlocked:
+    def mode_callback(self, app_state: AppState) -> str:
+        if app_state.is_unlocked:
             self._wallet_to_unlocked_changed()
             return self.UNLOCKED_LABEL
 
