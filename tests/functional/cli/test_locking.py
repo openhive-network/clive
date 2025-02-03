@@ -6,7 +6,6 @@ import pytest
 
 from clive.__private.cli.exceptions import CLIBeekeeperRemoteAddressIsNotSetError, CLIBeekeeperSessionTokenNotSetError
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
 from clive_local_tools.cli.checkers import assert_unlocked_profile
@@ -35,11 +34,10 @@ if TYPE_CHECKING:
 async def cli_tester_locked_with_second_profile(
     beekeeper_local: AsyncBeekeeper, cli_tester_locked: CLITester
 ) -> CLITester:
-    second_profile = Profile.create(ALT_WORKING_ACCOUNT1_NAME)
     async with World(beekeepy_settings_or_url=beekeeper_local.pack().settings) as world_cm:
-        await world_cm.switch_profile(second_profile)
-        await world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
-        await world_cm.commands.sync_state_with_beekeeper()
+        await world_cm.create_new_profile_with_beekeeper_wallet(
+            ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD
+        )
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(
                 value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"

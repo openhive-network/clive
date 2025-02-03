@@ -168,6 +168,31 @@ class World:
         profile = Profile.create(name, working_account, watched_accounts)
         await self.switch_profile(profile)
 
+    async def create_new_profile_with_beekeeper_wallet(
+        self,
+        name: str,
+        password: str | None = None,
+        working_account: str | WorkingAccount | None = None,
+        watched_accounts: Iterable[WatchedAccount] | None = None,
+    ) -> str:
+        """
+        Create a new profile and a. wallet in beekeeper in one-go.
+
+        Since beekeeper wallet will be created, profile will be also saved.
+        If beekeeper wallet creation fails, profile will not be saved.
+        """
+        await self.create_new_profile(name, working_account, watched_accounts)
+        self.profile.save()
+
+        create_wallet_wrapper = await self.commands.create_wallet(password=password)
+        if create_wallet_wrapper.error_occurred:
+            self.profile.delete()
+
+        generated_password = create_wallet_wrapper.result_or_raise
+        actual_password = password or generated_password
+        assert actual_password is not None, "Looks like there's an issue with beekeeper password generation"
+        return actual_password
+
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_wallet = await self._get_unlocked_wallet(self._session_ensure)
         await self._set_unlocked_wallet(unlocked_wallet)
