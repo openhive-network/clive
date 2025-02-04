@@ -24,6 +24,7 @@ from clive.__private.core.constants.setting_identifiers import (
     LOG_DEBUG_LOOP,
     LOG_DEBUG_PERIOD_SECS,
     LOG_KEEP_HISTORY,
+    LOG_LEVEL_1ST_PARTY,
     LOG_LEVEL_3RD_PARTY,
     LOG_LEVELS,
     LOG_PATH,
@@ -109,6 +110,10 @@ class SafeSettings:
             return self._get_log_levels()
 
         @property
+        def level_1st_party(self) -> _AvailableLogLevels:
+            return self._get_log_level_1st_party()
+
+        @property
         def level_3rd_party(self) -> _AvailableLogLevels:
             return self._get_log_level_3rd_party()
 
@@ -121,6 +126,12 @@ class SafeSettings:
             value = self._parent._get_list(setting_name, ["INFO"])
             self._assert_log_levels(setting_name, value=value)
             return cast(_AvailableLogLevelsContainer, value)
+
+        def _get_log_level_1st_party(self) -> _AvailableLogLevels:
+            setting_name = LOG_LEVEL_1ST_PARTY
+            value = self._parent._get_value_from_settings(setting_name, "INFO")
+            self._assert_log_level(setting_name, value=value)
+            return cast(_AvailableLogLevels, value)
 
         def _get_log_level_3rd_party(self) -> _AvailableLogLevels:
             setting_name = LOG_LEVEL_3RD_PARTY
