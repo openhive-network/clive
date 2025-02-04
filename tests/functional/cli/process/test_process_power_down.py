@@ -114,7 +114,7 @@ async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester
     assert_no_pending_power_down(cli_tester)
 
 
-async def test_power_down_cancel_fail_xx(cli_tester: CLITester) -> None:
+async def test_power_down_cancel_fail(cli_tester: CLITester) -> None:
     # ARRANGE
     expected_error = "This operation would not change the vesting withdraw rate"
 
