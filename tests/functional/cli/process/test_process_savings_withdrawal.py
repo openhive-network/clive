@@ -55,7 +55,7 @@ async def test_withdrawal_valid(
     )
 
 
-async def test_withdrawal_invalid_xxx(cli_tester: CLITester) -> None:
+async def test_withdrawal_invalid(cli_tester: CLITester) -> None:
     # ARRANGE
     expected_error = "Assert Exception:_db.get_savings_balance"
 
