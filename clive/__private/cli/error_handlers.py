@@ -1,6 +1,6 @@
 import errno
 
-from helpy.exceptions import CommunicationError
+from helpy.exceptions import CommunicationError, RequestError
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
@@ -21,6 +21,11 @@ def register_error_handlers(cli: CliveTyper) -> None:
     @cli.error_handler(CommunicationError)
     def handle_communication_error(error: CommunicationError) -> None:
         raise CLIPrettyError(str(error), errno.ECOMM) from None
+
+    @cli.error_handler(RequestError)
+    def handle_request_error(error: RequestError) -> None:
+        message = f"Error in response:\n{error.error}"
+        raise CLIPrettyError(message, errno.ECOMM) from None
 
     @cli.error_handler(CannotNotifyError)
     def handle_cannot_notify_error(error: CannotNotifyError) -> None:
