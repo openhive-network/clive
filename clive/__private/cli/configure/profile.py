@@ -37,11 +37,6 @@ async def create_profile(
     ).run()
 
 
-_profile_name_set_default_argument = modified_param(
-    _profile_name_create_argument, help=f"The name of the profile to switch to. ({REQUIRED_AS_ARG_OR_OPTION})"
-)
-
-
 _profile_name_delete_argument = modified_param(
     _profile_name_create_argument, help=f"The name of the profile to delete. ({REQUIRED_AS_ARG_OR_OPTION})"
 )
