@@ -47,7 +47,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding(FINALIZE_TRANSACTION_BINDING_KEY, "finalize_transaction", "Finalize transaction"),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
-    POP_SCREEN_AFTER_ADDING_TO_CART: ClassVar[bool] = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -149,8 +148,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                     self._send_cleared_signatures_notification()
                 self.profile.transaction_file_path = None
                 self._add_account_to_known_after_action()
-                if self.POP_SCREEN_AFTER_ADDING_TO_CART:
-                    self.app.pop_screen()
                 self._clear_inputs()
                 self._actions_after_clearing_inputs()
                 self.notify("The operation was added to the cart.")
