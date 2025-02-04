@@ -45,15 +45,9 @@ class AddKey(WorldBasedCommand):
         return self.alias if self.alias else private_key.calculate_public_key().value
 
     async def validate_inside_context_manager(self) -> None:
-        await self._validate_has_working_account()
         await self._validate_key_alias()
         await self._validate_private_key()
         await super().validate_inside_context_manager()
-
-    async def _validate_has_working_account(self) -> None:
-        profile = self.profile
-        if not profile.accounts.has_working_account:
-            raise CLIWorkingAccountIsNotSetError(profile)
 
     async def _validate_key_alias(self) -> None:
         key_manager = self.profile.keys
