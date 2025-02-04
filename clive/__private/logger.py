@@ -8,7 +8,7 @@ from loguru import logger as loguru_logger
 from loguru._simple_sinks import StreamSink
 from textual import log as textual_logger
 
-from clive.__private.core.constants.env import LAUNCH_TIME, ROOT_DIRECTORY
+from clive.__private.core.constants.env import KNOWN_FIRST_PARTY_PACKAGES, LAUNCH_TIME
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -145,35 +145,36 @@ class Logger:
 
     def _add_file_handlers(self, log_paths: GroupLogFilePaths) -> None:
         for log_level, paths in log_paths.items():
-            log_level_3rd_party = self._get_3rd_party_log_level(log_level)
-
             for path in paths:
                 loguru_logger.add(
                     sink=path,
                     format=LOG_FORMAT,
-                    filter=self._make_filter(level=log_level, level_3rd_party=log_level_3rd_party),
+                    filter=self._make_filter(level=log_level),
                 )
 
-    def _get_3rd_party_log_level(self, log_level: str) -> str:
-        """
-        Return the log level for 3rd party modules based on given log_level for clive.
+    def _get_1st_party_log_level(self) -> str:
+        return self.safe_settings_delayed.log.level_1st_party
 
-        We want to include everything when clive is in DEBUG mode, but also leave the option to set a different log lvl
-        for 3rd party modules when clive is in higher log levels than DEBUG.
+    def _get_3rd_party_log_level(self) -> str:
+        return self.safe_settings_delayed.log.level_3rd_party
 
-        """
-        log_level_3rd_party = self.safe_settings_delayed.log.level_3rd_party
-        return "DEBUG" if log_level == "DEBUG" else log_level_3rd_party
-
-    def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
-        level_no = getattr(logging, level) if isinstance(level, str) else level
-        level_no_3rd_party = getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
+    def _make_filter(self, *, level: str) -> Callable[..., bool]:
+        level_mapping: dict[str, int] = {
+            "clive": getattr(logging, level),
+            "1st_party": getattr(logging, self._get_1st_party_log_level()),
+            "3rd_party": getattr(logging, self._get_3rd_party_log_level()),
+        }
 
         def _filter(record: dict[str, Any]) -> bool:
-            is_3rd_party = ROOT_DIRECTORY not in Path(record["file"].path).parents
-            if level_no_3rd_party is not None and is_3rd_party:
-                return bool(record["level"].no >= level_no_3rd_party)
-            return bool(record["level"].no >= level_no)
+            is_clive = "clive" in record["name"]
+            is_1st_party = any(pkg in record["name"] for pkg in KNOWN_FIRST_PARTY_PACKAGES)
+
+            category = "clive" if is_clive else "1st_party" if is_1st_party else "3rd_party"
+            min_required_level_no = level_mapping[category]
+            directory_level_no = level_mapping["clive"]
+            record_level_no: int = record["level"].no
+
+            return record_level_no >= directory_level_no and record_level_no >= min_required_level_no
 
         return _filter
 
