@@ -16,7 +16,7 @@ from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH
+from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.data.constants import (
@@ -68,6 +68,9 @@ def run_prepare_before_launch(testnet_chain_id_env_context: None) -> None:  # no
     settings.set(DATA_PATH, working_directory)
     log_path = working_directory / "logs"
     settings.set(LOG_PATH, log_path)
+
+    settings.set(LOG_LEVELS, ["DEBUG"])
+    settings.set(LOG_LEVEL_1ST_PARTY, "DEBUG")
 
     prepare_before_launch(enable_stream_handlers=True)
 
