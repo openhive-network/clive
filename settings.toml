@@ -1,7 +1,8 @@
 [default]
 LOG_DIRECTORY = "" # if not given, logs will be placed in data directory
 LOG_LEVELS = ["INFO"]  # possible values: ["DEBUG", "INFO", "WARNING", "ERROR"], multiple values could be given and logs from and up that level will be saved also in corresponding directories
-LOG_LEVEL_3RD_PARTY = "WARNING"  # matters only for directories containing LOG_LEVEL higher than DEBUG, in DEBUG 3rd party logs are always DEBUG
+LOG_LEVEL_1ST_PARTY = "INFO"  # LOG_LEVELS should include same or lower level than LOG_LEVEL_1ST_PARTY
+LOG_LEVEL_3RD_PARTY = "WARNING"  #  LOG_LEVELS should include same or lower level than LOG_LEVEL_3RD_PARTY
 LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only logs of latest run will be kept
 MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 
@@ -26,6 +27,7 @@ COMMUNICATION_RETRY_TIMEOUT_SECS = 0.2
 [dev]
 IS_DEV = true
 LOG_LEVELS = ["DEBUG"]
+LOG_LEVEL_1ST_PARTY = "DEBUG"
 LOG_KEEP_HISTORY = true
 LOG_DEBUG_LOOP = false
 LOG_DEBUG_PERIOD_SECS = 1
