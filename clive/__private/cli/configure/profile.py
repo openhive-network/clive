@@ -26,7 +26,11 @@ async def create_profile(
         None, help="The name of the working account.", show_default=False
     ),
 ) -> None:
-    """Create a new profile. Password for new profile is provided by stdin."""
+    """
+    Create a new profile. Password for new profile is provided by stdin.
+
+    If new password is entered in terminal it must be repeated.
+    """
     from clive.__private.cli.commands.configure.profile import CreateProfile
 
     common = BeekeeperOptionsGroup.get_instance()

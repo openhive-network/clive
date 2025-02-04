@@ -7,7 +7,11 @@ from helpy.exceptions import CommunicationError
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLICreatingProfileCommunicationError, CLIPrettyError
+from clive.__private.cli.exceptions import (
+    CLICreatingProfileCommunicationError,
+    CLIInvalidPasswordRepeatError,
+    CLIPrettyError,
+)
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
@@ -65,8 +69,13 @@ class CreateProfile(BeekeeperBasedCommand):
         return password
 
     def _get_password_input_in_tty_mode(self) -> str:
-        prompt = f"Enter password for profile `{self.profile_name}`: "
-        return getpass(prompt)
+        prompt = "Set a new password: "
+        password = getpass(prompt)
+        prompt_repeat = "Repeat password: "
+        password_repeat = getpass(prompt_repeat)
+        if password != password_repeat:
+            raise CLIInvalidPasswordRepeatError
+        return password
 
     def _get_password_input_in_non_tty_mode(self) -> str:
         return sys.stdin.readline().rstrip()

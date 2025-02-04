@@ -174,6 +174,15 @@ class CLIInvalidPasswordError(CLIPrettyError):
         super().__init__(message, errno.EPERM)
 
 
+class CLIInvalidPasswordRepeatError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            "Repeated password doesn't match previously entered password."
+            " The profile was not created. Please try again."
+        )
+        super().__init__(message, errno.EPERM)
+
+
 class CLISessionNotLockedError(CLIPrettyError):
     def __init__(self) -> None:
         message = "All wallets in session should be locked."
