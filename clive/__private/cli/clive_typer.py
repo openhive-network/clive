@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import contextlib
 import sys
 from collections.abc import Callable
 from dataclasses import fields
 from functools import wraps
 from inspect import Parameter, isawaitable, signature
-from typing import Any, ClassVar, NewType, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generator, NewType, Optional, TypeVar
 
 import typer
 from click import ClickException
@@ -12,9 +14,11 @@ from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
 from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
-from clive.__private.cli.common import ParameterGroup
 from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroupInstanceNotAvailableError
 from clive.__private.core._async import asyncio_run
+
+if TYPE_CHECKING:
+    from clive.__private.cli.common import ParameterGroup
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
 ExitCode = NewType("ExitCode", int)
@@ -66,12 +70,6 @@ class CliveTyper(typer.Typer):
             no_args_is_help=True,
         )
 
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        try:
-            return super().__call__(*args, **kwargs)
-        except Exception as error:  # noqa: BLE001
-            self.__handle_error(error)
-
     def error_handler(
         self, error: type[ExceptionT]
     ) -> Callable[[ErrorHandlingCallback[ExceptionT]], ErrorHandlingCallback[ExceptionT]]:
@@ -98,10 +96,13 @@ class CliveTyper(typer.Typer):
                 for param_group in param_groups:
                     _kwargs = self.__patch_wrapper_kwargs(param_group, **_kwargs)
 
-                result = f(*args, **_kwargs)
-
-                if isawaitable(result):
-                    asyncio_run(result)
+                try:
+                    result = f(*args, **_kwargs)
+                    if isawaitable(result):
+                        asyncio_run(result)
+                except Exception as error:  # noqa: BLE001
+                    handlers = self.__get_error_handlers(error)
+                    self.__handle_error(error, handlers)
 
             for param_group in param_groups:
                 self.__patch_command_sig(wrapper, param_group)
@@ -138,14 +139,18 @@ class CliveTyper(typer.Typer):
             result_callback=result_callback,
         )
 
-    def __handle_error(self, error: ExceptionT) -> None:
-        handler = self.__get_error_handler(error)
+    def __handle_error(self, error: ExceptionT, handlers: Generator[ErrorHandlingCallback[ExceptionT]]) -> None:
+        try:
+            next_handler = next(handlers)
+        except StopIteration:
+            # there are no more handlers, reraise error
+            raise error from None
 
         try:
-            exit_code = handler(error)
+            exit_code = next_handler(error)
             if exit_code is None:
                 # means that error was not handled by that callback, try to handle with the next one
-                self.__handle_error(error)
+                self.__handle_error(error, handlers)
 
             sys.exit(exit_code)
         except ClickException as click_exception:
@@ -167,12 +172,10 @@ class CliveTyper(typer.Typer):
             )
             raise exception from None
 
-    def __get_error_handler(self, error: ExceptionT) -> ErrorHandlingCallback[ExceptionT]:
+    def __get_error_handlers(self, error: ExceptionT) -> Generator[ErrorHandlingCallback[ExceptionT]]:
         for type_ in type(error).mro():
             if type_ in self.__clive_error_handlers__:
-                return self.__clive_error_handlers__.pop(type_)
-
-        raise error  # reraise if no handler is available
+                yield self.__clive_error_handlers__[type_]
 
     @staticmethod
     def __patch_wrapper_kwargs(param_group_cls: type[ParameterGroup], **kwargs: Any) -> dict[str, Any]:

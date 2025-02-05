@@ -18,6 +18,10 @@ def register_error_handlers(cli: CliveTyper) -> None:
         message = f"Unhandled exception {type(error).__name__}{f': {error_message}' if error_message else ''}"
         raise CLIPrettyError(message, 1)
 
+    @cli.error_handler(CLIPrettyError)
+    def handle_cli_pretty_error(error: CLIPrettyError) -> None:
+        raise error from None
+
     @cli.error_handler(CommunicationError)
     def handle_communication_error(error: CommunicationError) -> None:
         raise CLIPrettyError(str(error), errno.ECOMM) from None
