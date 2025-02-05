@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
 from beekeepy import Settings as BeekeepySettings
-from helpy import HttpUrl
 from textual.reactive import var
 from typing_extensions import override
 
@@ -18,7 +17,7 @@ from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
-from clive.__private.settings import safe_settings
+from clive.__private.settings import SafeSettings, safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -55,7 +54,7 @@ class World:
     def __init__(
         self,
         *args: Any,
-        beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None = None,
+        update_beekeepy_settings_cb: SafeSettings.UpdateBeekeepySettingsCb | None = None,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -65,7 +64,7 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self._beekeeper_settings = self._setup_beekeepy_settings(beekeepy_settings_or_url)
+        self._beekeeper_settings = self._setup_beekeepy_settings(update_beekeepy_settings_cb)
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
         self._unlocked_wallet: AsyncUnlockedWallet | None = None
@@ -252,15 +251,10 @@ class World:
             self._node.change_related_profile(self._profile)
 
     @classmethod
-    def _setup_beekeepy_settings(cls, beekeepy_settings_or_url: BeekeepySettings | HttpUrl | None) -> BeekeepySettings:
-        if isinstance(beekeepy_settings_or_url, BeekeepySettings):
-            settings = beekeepy_settings_or_url
-        elif isinstance(beekeepy_settings_or_url, HttpUrl):
-            settings = BeekeepySettings(http_endpoint=beekeepy_settings_or_url)
-        else:
-            settings = BeekeepySettings()
-
-        return safe_settings.beekeeper.settings_factory(settings)
+    def _setup_beekeepy_settings(
+        cls, update_beekeepy_settings: SafeSettings.UpdateBeekeepySettingsCb | None = None
+    ) -> BeekeepySettings:
+        return safe_settings.beekeeper.settings_factory(update_beekeepy_settings)
 
 
 class TUIWorld(World, CliveDOMNode):

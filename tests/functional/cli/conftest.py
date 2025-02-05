@@ -47,12 +47,13 @@ async def prepare_profile() -> Profile:
 
 @pytest.fixture
 async def world(beekeeper_local: AsyncBeekeeper) -> World:
-    return World(
-        beekeepy_settings_or_url=BeekeepySettings(
-            http_endpoint=beekeeper_local.settings.http_endpoint,
-            use_existing_session=await (await beekeeper_local.session).token,
-        )
-    )
+    token = await (await beekeeper_local.session).token
+
+    def update_beekeepy_settings(settings: BeekeepySettings) -> None:
+        settings.http_endpoint = beekeeper_local.settings.http_endpoint
+        settings.use_existing_session = token
+
+    return World(update_beekeepy_settings_cb=update_beekeepy_settings)
 
 
 @pytest.fixture

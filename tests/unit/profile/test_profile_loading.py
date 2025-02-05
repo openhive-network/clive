@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from beekeepy import AsyncBeekeeper
+from beekeepy import Settings as BeekeepySettings
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.commands.create_wallet import CreateWallet
@@ -15,8 +16,6 @@ from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
     from typing import AsyncIterator
-
-    from clive_local_tools.types import EnvContextFactory
 
 
 @pytest.fixture
@@ -39,9 +38,7 @@ def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, w
     assert world.profile.name == wallet_name, f"Profile {wallet_name} should be loaded"
 
 
-async def test_if_unlocked_profile_is_loaded_other_was_saved(
-    beekeeper_for_remote_use: AsyncBeekeeper, beekeeper_session_token_env_context_factory: EnvContextFactory
-) -> None:
+async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper_for_remote_use: AsyncBeekeeper) -> None:
     # ARRANGE
     additional_profile_name = "first"
     unlocked_profile_name = "second"
@@ -54,9 +51,14 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(
 
     # ACT
     # Check if the unlocked profile is loaded
-    with beekeeper_session_token_env_context_factory(await (await beekeeper_for_remote_use.session).token):
-        async with CLIWorld(beekeepy_settings_or_url=beekeeper_for_remote_use.settings) as world_cm:
-            loaded_profile_name = world_cm.profile.name
+    token = await (await beekeeper_for_remote_use.session).token
+
+    def update_beekeepy_settings(settings: BeekeepySettings) -> None:
+        settings.http_endpoint = beekeeper_for_remote_use.settings.http_endpoint
+        settings.use_existing_session = token
+
+    async with CLIWorld(update_beekeepy_settings_cb=update_beekeepy_settings) as world_cm:
+        loaded_profile_name = world_cm.profile.name
 
     # ASSERT
     assert (

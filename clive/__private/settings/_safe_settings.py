@@ -5,7 +5,7 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal, TypeVar, cast, get_args, overload
+from typing import Callable, Literal, TypeVar, cast, get_args, overload
 
 from beekeepy import Settings as BeekeepySettings
 from helpy import HttpUrl
@@ -74,6 +74,7 @@ class SafeSettings:
     AvailableLogLevels = _AvailableLogLevels
     AvailableLogLevelsContainer = _AvailableLogLevelsContainer
     AVAILABLE_LOG_LEVELS = _AVAILABLE_LOG_LEVELS
+    UpdateBeekeepySettingsCb = Callable[[BeekeepySettings], None]
 
     @dataclass
     class _Namespace(ABC):
@@ -216,17 +217,21 @@ class SafeSettings:
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
-        def settings_factory(self, base_settings: BeekeepySettings | None = None) -> BeekeepySettings:
-            beekeepy_settings = base_settings.copy() if base_settings is not None else BeekeepySettings()
+        def settings_factory(
+            self, update_settings_cb: SafeSettings.UpdateBeekeepySettingsCb | None = None
+        ) -> BeekeepySettings:
+            beekeepy_settings = BeekeepySettings()
 
-            beekeepy_settings.working_directory = (
-                beekeepy_settings.working_directory or self._get_beekeeper_wallet_directory()
-            )
+            beekeepy_settings.working_directory = self._get_beekeeper_wallet_directory()
             beekeepy_settings.http_endpoint = self.remote_address
-            beekeepy_settings.use_existing_session = beekeepy_settings.use_existing_session or self.session_token
+            beekeepy_settings.use_existing_session = self.session_token
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
             beekeepy_settings.max_retries = self.communication_attempts_amount
             beekeepy_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
+
+            if update_settings_cb is not None:
+                update_settings_cb(beekeepy_settings)
+
             return beekeepy_settings
 
         def _get_beekeeper_remote_address(self) -> HttpUrl | None:
