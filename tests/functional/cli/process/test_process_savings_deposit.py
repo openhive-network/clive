@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
@@ -87,7 +88,7 @@ async def test_deposit_to_other_account(cli_tester: CLITester) -> None:
 
 async def test_deposit_not_enough_hive(cli_tester: CLITester) -> None:
     # ARRANGE
-    expected_error = "Account alice does not have sufficient funds for balance adjustment"
+    expected_error = CommunicationFailureNotificator.YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as deposit_exception_info:

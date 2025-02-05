@@ -11,8 +11,10 @@ from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotif
 class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
     """A context manager that notifies about errors of `CommunicatorError` type."""
 
+    YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE: Final[str] = "You don't have enough funds to perform this operation."
+
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[str, str]] = {
-        "does not have sufficient funds": "You don't have enough funds to perform this operation.",
+        "does not have sufficient funds": YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE,
     }
 
     def _is_exception_to_catch(self, error: Exception) -> TypeGuard[CommunicationError]:
