@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 import typer
 from beekeepy import AsyncBeekeeper
-from beekeepy import Settings as BeekeepySettings
 from helpy import HttpUrl
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
@@ -92,12 +91,11 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
             raise CLISessionNotLockedError
 
     async def _create_context_manager_instance(self) -> AsyncBeekeeper:
-        remote_url = HttpUrl(self.beekeeper_remote_url) if self.beekeeper_remote_url is not None else None
-        settings = safe_settings.beekeeper.settings_factory(BeekeepySettings(http_endpoint=remote_url))
+        settings = safe_settings.beekeeper.settings_factory()
         return await (
-            AsyncBeekeeper.remote_factory(url_or_settings=settings)
-            if remote_url is not None
-            else AsyncBeekeeper.factory(settings=settings)
+            AsyncBeekeeper.factory(settings=settings)
+            if settings.http_endpoint is None
+            else AsyncBeekeeper.remote_factory(url_or_settings=settings)
         )
 
     async def _hook_before_entering_context_manager(self) -> None:

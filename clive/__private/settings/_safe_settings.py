@@ -222,6 +222,7 @@ class SafeSettings:
             beekeepy_settings.working_directory = (
                 beekeepy_settings.working_directory or self._get_beekeeper_wallet_directory()
             )
+            beekeepy_settings.http_endpoint = self.remote_address
             beekeepy_settings.use_existing_session = beekeepy_settings.use_existing_session or self.session_token
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
             beekeepy_settings.max_retries = self.communication_attempts_amount
