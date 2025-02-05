@@ -18,8 +18,8 @@ async def test_configure_node_set_address_regression_issue_345(
 ) -> None:
     """Regression test for issue https://gitlab.syncad.com/hive/clive/-/issues/345."""
     # ARRANGE
-    expected_node_address: Final[str] = "-h"
-    expected_error: Final[str] = "Exception occurred:\n<InvalidURL -h>"
+    expected_node_address: Final[str] = "http://-h"
+    expected_error: Final[str] = f"Could not communicate with (seems to be unavailable): {expected_node_address}"
 
     # ACT
     cli_tester.configure_node_set(node_address=expected_node_address)
