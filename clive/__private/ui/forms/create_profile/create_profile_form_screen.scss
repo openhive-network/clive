@@ -1,11 +1,71 @@
 CreateProfileFormScreen {
+    Checkbox {
+      height: 3;
+    }
+
+  #filter_and_modify {
+    height: auto;
+    width: auto;
+
+    #button-container {
+        height: auto;
+        margin: 2 0 0 2;
+        CliveButton {
+          min-width: 1fr;
+        }
+    }
+    FilterAuthority {
+      width: 12fr;
+      border-title-style: bold;
+        border-title-color: $text;
+        border-title-background: $primary;
+        border: $primary outer;
+      height: auto;
+      padding-top: 1;
+      CliveButton {
+          min-width: 0.6fr;
+          width: 0.6fr;
+      }
+      CancelButton {
+      margin: 0 1;
+      }
+      AuthorityInput{
+        width: 4fr;
+      }
+      Collapsible {
+        width: 2fr;
+        margin-right: 1;
+        Contents {
+            padding: 1 0 0 0;
+        }
+      }
+
+    }
+  }
+
+  AuthorityTable {
+  AuthorityHeader {
+    height: 1;
+  }
+    AuthorityHeader, AuthorityRow{
+      Static{
+        content-align: center middle;
+      }
+    }
+    .key {
+      width: 67%;
+    }
+    .weight {
+      width: 20%;
+    }
+    .action {
+      width: 13%;
+    }
+  }
   SectionScrollable {
-    margin: 1 4 0 4;
+    margin: 1 1 0 1;
 
     SectionBody {
-      layout: grid;
-      grid-gutter: 1;
-      grid-rows: auto;
     }
   }
 }
