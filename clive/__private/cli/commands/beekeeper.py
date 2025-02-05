@@ -65,7 +65,7 @@ class BeekeeperSpawn(ExternalCLICommand):
             typer.echo("Launching beekeeper...")
 
         async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper:
-            http_endpoint = beekeeper.pack().settings.http_endpoint
+            http_endpoint = beekeeper.settings.http_endpoint
             assert http_endpoint is not None, "started beekeeper has no address, critical error!"
 
             pid = beekeeper.detach()

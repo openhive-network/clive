@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 async def cli_tester_locked_with_second_profile(
     beekeeper_local: AsyncBeekeeper, cli_tester_locked: CLITester
 ) -> CLITester:
-    async with World(beekeepy_settings_or_url=beekeeper_local.pack().settings) as world_cm:
+    async with World(beekeepy_settings_or_url=beekeeper_local.settings) as world_cm:
         await world_cm.create_new_profile_with_beekeeper_wallet(
             ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD
         )

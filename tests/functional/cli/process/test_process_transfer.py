@@ -32,7 +32,7 @@ MEMO: Final[str] = "test-process-transfer-memo"
 
 
 async def beekeeper_url(beekeeper: AsyncBeekeeper) -> HttpUrl:
-    endpoint = beekeeper.pack().settings.http_endpoint
+    endpoint = beekeeper.settings.http_endpoint
     assert endpoint is not None, "endpoint from packed settings is None"
     return endpoint
 

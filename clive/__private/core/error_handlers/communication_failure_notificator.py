@@ -51,7 +51,7 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
         """
 
         def is_error_response_available() -> bool:
-            return self.error_ensure.get_response() is not None
+            return self.error_ensure.response is not None
 
         if is_error_response_available():
             super()._notify_tui(message)
