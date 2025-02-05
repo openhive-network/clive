@@ -220,10 +220,7 @@ class SafeSettings:
             beekeepy_settings = base_settings.copy() if base_settings is not None else BeekeepySettings()
 
             beekeepy_settings.working_directory = (
-                beekeepy_settings.working_directory
-                if beekeepy_settings.working_directory != Path.cwd()
-                # check is set to default
-                else self._get_beekeeper_wallet_directory()
+                beekeepy_settings.working_directory or self._get_beekeeper_wallet_directory()
             )
             beekeepy_settings.use_existing_session = beekeepy_settings.use_existing_session or self.session_token
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
