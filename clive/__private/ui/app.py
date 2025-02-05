@@ -267,7 +267,7 @@ class Clive(App[int]):
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             error = wrapper.error
-            if isinstance(error, CommunicationError) and error.get_response() is None:
+            if isinstance(error, CommunicationError) and error.response is None:
                 # notify watchers when node goes offline
                 self.trigger_node_watchers()
 
