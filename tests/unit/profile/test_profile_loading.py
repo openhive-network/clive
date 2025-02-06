@@ -50,13 +50,10 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper: AsyncBee
 
     # ACT
     # Check if the unlocked profile is loaded
-    http_endpoint = beekeeper.settings.http_endpoint
-    assert http_endpoint is not None, "Running beekeeper should have http_endpoint set."
-
     token = await (await beekeeper.session).token
 
     cli_world = CLIWorld()
-    cli_world.beekeeper_settings.http_endpoint = http_endpoint
+    cli_world.beekeeper_settings.http_endpoint = beekeeper.http_endpoint
     cli_world.beekeeper_settings.use_existing_session = token
 
     async with cli_world as world_cm:

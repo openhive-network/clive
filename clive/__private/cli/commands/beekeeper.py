@@ -65,20 +65,17 @@ class BeekeeperSpawn(ExternalCLICommand):
             typer.echo("Launching beekeeper...")
 
         async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper:
-            http_endpoint = beekeeper.settings.http_endpoint
-            assert http_endpoint is not None, "started beekeeper has no address, critical error!"
-
             pid = beekeeper.detach()
 
             if self.echo_address_only:
-                message = str(http_endpoint)
+                message = str(beekeeper.http_endpoint)
             else:
                 session = await beekeeper.session
                 token = await session.token
                 message = (
-                    f"Beekeeper started on {http_endpoint} with pid {pid}.\n"
+                    f"Beekeeper started on {beekeeper.http_endpoint} with pid {pid}.\n"
                     "If you want to use that beekeeper in Clive CLI env, please set:\n"
-                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={http_endpoint}\n"
+                    f"export {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)}={beekeeper.http_endpoint}\n"
                     f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
                 )
             typer.echo(message=message)
