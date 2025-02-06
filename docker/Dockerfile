@@ -70,12 +70,14 @@ WORKDIR /clive
 # - 362 -> schemas
 # - 392 -> clive
 # - 419 -> wax
+# - 434 -> beekeepy
 RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     python3 -m venv "${PYTHON_VENV_PATH}" && \
     pip install clive=="${CLIVE_VERSION}" \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
-    --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple && \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple && \
     find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} +
 
 
