@@ -56,18 +56,26 @@ async def unlock(
     ctx: typer.Context,  # noqa: ARG001
     profile_name: Optional[str] = _profile_name_unlock_argument,
     profile_name_option: Optional[str] = argument_related_options.profile_name,
+    unlock_time_mins: Optional[int] = typer.Option(
+        None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout.", show_default=False
+    ),
     include_create_new_profile: bool = typer.Option(  # noqa: FBT001
         default=False,
         hidden=True,
     ),
 ) -> None:
-    """Unlocks the selected profile."""
+    """
+    Unlocks the selected profile.
+
+    By default unlock is permanent and has no timeout.
+    """
     from clive.__private.cli.commands.unlock import Unlock
 
     common = BeekeeperOptionsGroup.get_instance()
     await Unlock(
         **common.as_dict(),
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option, allow_none=True),
+        unlock_time_mins=unlock_time_mins,
         include_create_new_profile=include_create_new_profile,
     ).run()
 

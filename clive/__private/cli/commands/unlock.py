@@ -1,6 +1,7 @@
 import errno
 import sys
 from dataclasses import dataclass
+from datetime import timedelta
 from getpass import getpass
 from typing import Final
 
@@ -32,7 +33,19 @@ ProfileSelectionOptions = dict[int, str]
 @dataclass(kw_only=True)
 class Unlock(BeekeeperBasedCommand):
     profile_name: str | None
+    unlock_time_mins: int | None = None
+    """None means permanent unlock."""
     include_create_new_profile: bool
+
+    @property
+    def _duration(self) -> timedelta | None:
+        if self.unlock_time_mins is None:
+            return None
+        return timedelta(minutes=self.unlock_time_mins)
+
+    @property
+    def _is_unlock_permanent(self) -> bool:
+        return self.unlock_time_mins is None
 
     async def validate(self) -> None:
         self._validate_profile_exists()
@@ -66,6 +79,8 @@ class Unlock(BeekeeperBasedCommand):
                 profile_name=profile_name,
                 password=password,
                 session=await self.beekeeper.session,
+                time=self._duration,
+                permanent=self._is_unlock_permanent,
             ).execute_with_result()
         except InvalidPasswordError as error:
             raise CLIInvalidPasswordError(profile_name) from error
