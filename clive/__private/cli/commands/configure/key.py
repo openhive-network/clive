@@ -5,7 +5,7 @@ from pathlib import Path
 import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
@@ -77,13 +77,7 @@ class RemoveKey(WorldBasedCommand):
     """Indicates whether to remove the key from the Beekeeper as well or just the alias association from the profile."""
 
     async def validate_inside_context_manager(self) -> None:
-        await self._validate_working_account()
         await super().validate_inside_context_manager()
-
-    async def _validate_working_account(self) -> None:
-        profile = self.profile
-        if not profile.accounts.has_working_account:
-            raise CLIWorkingAccountIsNotSetError(profile)
 
     async def _run(self) -> None:
         typer.echo(f"Removing a key aliased with `{self.alias}`...")

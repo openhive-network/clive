@@ -41,16 +41,6 @@ class CLIPrettyError(ClickException):
         self.exit_code = exit_code
 
 
-class CLIWorkingAccountIsNotSetError(CLIPrettyError):
-    def __init__(self, profile: Profile | None = None) -> None:
-        self.profile = profile
-        message = (
-            f"Working account is not set{f' for the `{profile.name}` profile' if profile else ''}.\n"
-            "Please check the `clive configure working-account add -h` command first."
-        )
-        super().__init__(message, errno.ENOENT)
-
-
 class CLIWorkingAccountIsAlreadySetError(CLIPrettyError):
     def __init__(self, profile: Profile | None = None) -> None:
         self.profile = profile
