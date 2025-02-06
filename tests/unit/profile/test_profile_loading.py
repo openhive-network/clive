@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-async def beekeeper_for_remote_use() -> AsyncIterator[AsyncBeekeeper]:
+async def beekeeper() -> AsyncIterator[AsyncBeekeeper]:
     async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper_cm:
         yield beekeeper_cm
 
@@ -37,9 +37,8 @@ def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, w
     assert world.profile.name == wallet_name, f"Profile {wallet_name} should be loaded"
 
 
-async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper_for_remote_use: AsyncBeekeeper) -> None:
+async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper: AsyncBeekeeper) -> None:
     # ARRANGE
-    beekeeper = beekeeper_for_remote_use
     additional_profile_name = "first"
     unlocked_profile_name = "second"
     additional_profile_name2 = "third"
