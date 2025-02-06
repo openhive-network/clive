@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import datetime
-import json
-from typing import TYPE_CHECKING, Any, Protocol, cast
+from typing import TYPE_CHECKING, Protocol, cast
 
 import wax
-from clive.__private.core.communication import CustomJSONEncoder
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
@@ -70,11 +68,8 @@ def __validate_wax_response(response: wax.python_result) -> None:
         raise WaxOperationFailedError(response.exception_message.decode())
 
 
-def __as_binary_json(item: OperationUnion | Transaction | dict[str, Any]) -> bytes:
+def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
-
-    if isinstance(item, dict):
-        return json.dumps(item, cls=CustomJSONEncoder).encode()
 
     if not isinstance(item, Transaction):
         item = convert_to_representation(item)
@@ -88,14 +83,6 @@ def validate_transaction(transaction: Transaction) -> None:
 
 def validate_operation(operation: OperationUnion) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
-
-
-def validate_proto_transaction(transaction: dict[str, Any]) -> None:
-    return __validate_wax_response(wax.validate_proto_transaction(__as_binary_json(transaction)))
-
-
-def validate_proto_operation(operation: dict[str, Any]) -> None:
-    return __validate_wax_response(wax.validate_proto_operation(__as_binary_json(operation)))
 
 
 def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
