@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
+from helpy import SuppressApiNotFound
+
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
@@ -19,7 +21,6 @@ from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
 )
-from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
 from clive.__private.models.disabled_api import DisabledAPI
 from clive.__private.models.hp_vests_balance import HpVestsBalance
 from clive.__private.models.schemas import (
@@ -208,7 +209,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_rc_accounts(self, data: FindRcAccounts | None) -> list[RcAccount]:
         assert data is not None, "Rc account data is missing..."
 
-        with SuppressNotExistingApis("rc_api"):
+        with SuppressApiNotFound("rc_api"):
             assert len(data.rc_accounts) == len(self.accounts), "RC accounts are missing some accounts..."
             return data.rc_accounts
         return []
@@ -216,7 +217,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_account_history_or_none(self, data: GetAccountHistory | None) -> GetAccountHistory | None:
         assert data is not None, "Account history info is missing..."
 
-        with SuppressNotExistingApis("account_history_api"):
+        with SuppressApiNotFound("account_history_api"):
             assert len(data.history) == 1, "Account history info malformed. Expected only one entry."
             return data
         return None
