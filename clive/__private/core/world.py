@@ -93,6 +93,16 @@ class World:
         return self._known_exchanges
 
     @property
+    def beekeeper(self) -> AsyncBeekeeper:
+        """
+        Beekeeper shouldn't be used for API calls in CLI/TUI. Instead, use commands which also handle errors.
+
+        Same applies for other beekeepy objects like session or wallet.
+        """
+        assert self._beekeeper is not None, "Beekeeper is not initialized"
+        return self._beekeeper
+
+    @property
     def beekeeper_settings(self) -> BeekeepySettings:
         """Should be used only for modifying beekeeper settings before setup is done."""
         use_instead_for_modify = "world.beekeeper.update_settings"
@@ -103,11 +113,6 @@ class World:
         )
         assert self._beekeeper is None, message
         return self._beekeeper_settings
-
-    @property
-    def _beekeeper_ensure(self) -> AsyncBeekeeper:
-        assert self._beekeeper is not None, "Beekeeper is not initialized"
-        return self._beekeeper
 
     @property
     def _session_ensure(self) -> AsyncSession:
@@ -147,7 +152,7 @@ class World:
     async def setup(self) -> Self:
         async with self.during_setup():
             self._beekeeper = await self._setup_beekeeper()
-            self._session = await self._beekeeper_ensure.session
+            self._session = await self.beekeeper.session
         return self
 
     async def close(self) -> None:

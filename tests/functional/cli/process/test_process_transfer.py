@@ -57,7 +57,7 @@ async def test_process_transfer(
 async def test_transfer_with_remote_beekeeper_option(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check clive process transfer command."""
     # ARRANGE
-    beekeeper_http_endpoint = cli_tester.world._beekeeper_ensure.http_endpoint
+    beekeeper_http_endpoint = cli_tester.world.beekeeper.http_endpoint
     operation = TransferOperation(
         from_=WORKING_ACCOUNT_NAME,
         to=RECEIVER,
