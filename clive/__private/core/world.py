@@ -93,6 +93,18 @@ class World:
         return self._known_exchanges
 
     @property
+    def beekeeper_settings(self) -> BeekeepySettings:
+        """Should be used only for modifying beekeeper settings before setup is done."""
+        use_instead_for_modify = "world.beekeeper.update_settings"
+        use_instead_for_read = "world.beekeeper.settings"
+        message = (
+            f"Usage impossible after setup, use `{use_instead_for_modify}` to modify "
+            f"or `{use_instead_for_read}` for read instead."
+        )
+        assert self._beekeeper is None, message
+        return self._beekeeper_settings
+
+    @property
     def _beekeeper_ensure(self) -> AsyncBeekeeper:
         assert self._beekeeper is not None, "Beekeeper is not initialized"
         return self._beekeeper
@@ -145,6 +157,7 @@ class World:
             self._node.teardown()
         if self._beekeeper is not None:
             self._beekeeper.teardown()
+            self._clear_beekeeper_members_after_close()
 
     async def create_new_profile(
         self,
@@ -224,10 +237,10 @@ class World:
         return Commands(self)
 
     async def _setup_beekeeper(self) -> AsyncBeekeeper:
-        if self._beekeeper_settings.http_endpoint is not None:
-            return await AsyncBeekeeper.remote_factory(url_or_settings=self._beekeeper_settings)
+        if self.beekeeper_settings.http_endpoint is not None:
+            return await AsyncBeekeeper.remote_factory(url_or_settings=self.beekeeper_settings)
 
-        return await AsyncBeekeeper.factory(settings=self._beekeeper_settings)
+        return await AsyncBeekeeper.factory(settings=self.beekeeper_settings)
 
     async def _update_node(self) -> None:
         if self._profile is None:
@@ -237,6 +250,11 @@ class World:
             self._node = Node(self._profile)
         else:
             self._node.change_related_profile(self._profile)
+
+    def _clear_beekeeper_members_after_close(self) -> None:
+        self._beekeeper = None
+        self._session = None
+        self._unlocked_wallet = None
 
     @classmethod
     def _setup_beekeepy_settings(cls) -> BeekeepySettings:

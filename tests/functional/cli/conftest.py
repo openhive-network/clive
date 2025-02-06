@@ -52,8 +52,8 @@ async def world(beekeeper_local: AsyncBeekeeper) -> World:
     token = await (await beekeeper_local.session).token
 
     world = World()
-    world._beekeeper_settings.http_endpoint = http_endpoint
-    world._beekeeper_settings.use_existing_session = token
+    world.beekeeper_settings.http_endpoint = http_endpoint
+    world.beekeeper_settings.use_existing_session = token
     return world
 
 
