@@ -46,13 +46,10 @@ async def prepare_profile() -> Profile:
 
 @pytest.fixture
 async def world(beekeeper_local: AsyncBeekeeper) -> World:
-    http_endpoint = beekeeper_local.settings.http_endpoint
-    assert http_endpoint is not None, "Running beekeeper should have http_endpoint set."
-
     token = await (await beekeeper_local.session).token
 
     world = World()
-    world.beekeeper_settings.http_endpoint = http_endpoint
+    world.beekeeper_settings.http_endpoint = beekeeper_local.http_endpoint
     world.beekeeper_settings.use_existing_session = token
     return world
 
@@ -103,7 +100,7 @@ async def cli_tester(
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)
     with ExitStack() as stack:
-        address = str(beekeeper_local.settings.http_endpoint)
+        address = str(beekeeper_local.http_endpoint)
         stack.enter_context(beekeeper_remote_address_env_context_factory(address))
         stack.enter_context(beekeeper_session_token_env_context_factory(await (await beekeeper_local.session).token))
         yield CLITester(cli, runner, prepare_beekeeper_wallet)
