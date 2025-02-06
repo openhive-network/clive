@@ -77,7 +77,8 @@ class World:
     @property
     def node(self) -> Node:
         """Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors."""
-        assert self._node is not None, "Node is not initialized"
+        message = "Node is not available. It requires profile to be loaded. Is the profile available?"
+        assert self._node is not None, message
         return self._node
 
     @property
@@ -99,7 +100,8 @@ class World:
 
         Same applies for other beekeepy objects like session or wallet.
         """
-        assert self._beekeeper is not None, "Beekeeper is not initialized"
+        message = "Beekeeper is not available. Did you forget to use as a context manager or call `setup`?"
+        assert self._beekeeper is not None, message
         return self._beekeeper
 
     @property
@@ -116,7 +118,8 @@ class World:
 
     @property
     def _session_ensure(self) -> AsyncSession:
-        assert self._session is not None, "Session is not initialized"
+        message = "Session is not available. Did you forget to use as a context manager or call `setup`?"
+        assert self._session is not None, message
         return self._session
 
     @property
@@ -125,7 +128,8 @@ class World:
 
     @property
     def _unlocked_wallet_ensure(self) -> AsyncUnlockedWallet:
-        assert self._unlocked_wallet is not None, "Wallet is not initialized"
+        message = "Wallet is not available. Did you forget to use as a context manager or call `setup`?"
+        assert self._unlocked_wallet is not None, message
         return self._unlocked_wallet
 
     async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
