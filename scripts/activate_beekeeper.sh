@@ -25,11 +25,15 @@ start_beekeeper_with_prepared_session_token() {
 # Unlock wallet for selected profile
 unlock_wallet() {
   local profile_name_arg=""
+  local unlock_time_mins_arg=""
   if [[ -n "$SELECTED_PROFILE" ]]; then
     profile_name_arg="--profile-name=${SELECTED_PROFILE}"
   fi
+  if [[ -n "$UNLOCK_TIME_MINS" ]]; then
+    unlock_time_mins_arg="--unlock-time=${UNLOCK_TIME_MINS}"
+  fi
   # shellcheck disable=SC2086
-  clive unlock $profile_name_arg --include-create-new-profile
+  clive unlock $profile_name_arg $unlock_time_mins_arg --include-create-new-profile
   return $?
 }
 

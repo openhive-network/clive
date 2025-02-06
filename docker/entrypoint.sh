@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
 SELECTED_PROFILE=""
+UNLOCK_TIME_MINS=""
 TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 
@@ -15,7 +16,8 @@ print_help() {
   echo "An entrypoint script for the Clive Docker container."
   echo "OPTIONS:"
   echo "  --cli                 Launch Clive in the interactive CLI mode (default is TUI)"
-  echo "  --profile-name NAME   Name of profile that will be used."
+  echo "  --profile-name NAME   Name of profile that will be used, default is profile selection."
+  echo "  --unlock-time MINUTES Unlock time in minutes, default is no timeout for unlock."
   echo "  --exec FILE           Path to bash script to be executed."
   echo "  -h, --help            Display this help screen and exit"
   echo
@@ -75,6 +77,11 @@ parse_arguments() {
         shift
         SELECTED_PROFILE="$1"
         export SELECTED_PROFILE
+        ;;
+      --unlock-time)
+        shift
+        UNLOCK_TIME_MINS="$1"
+        export UNLOCK_TIME_MINS
         ;;
       -h|--help)
         print_help

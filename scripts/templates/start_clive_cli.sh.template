@@ -15,7 +15,8 @@ print_help() {
     echo "  --data-dir=DIRECTORY_PATH      Points to a Clive data directory to store profile data. Defaults to ${HOME}/.clive directory."
     echo "  --docker-option=OPTION         Allows specifying additional Docker options to pass to underlying Docker run."
     echo "  --exec=PATH_TO_FILE            Path to bash script to be executed."
-    echo "  --profile-name=PROFILE_NAME    Name of profile that will be used."
+    echo "  --profile-name=PROFILE_NAME    Name of profile that will be used, default is profile selection."
+    echo "  --unlock-time=MINUTES          Unlock time in minutes, default is no timeout for unlock."
     echo "  --help                         Display this help screen and exit."
     echo
 }
@@ -51,6 +52,13 @@ handle_profile_name_option() {
     add_clive_arg "${profile_name}"
 }
 
+# Helper function for --unlock-time argument
+handle_unlock_time_option() {
+    local unlock_time_mins="$1"
+    add_clive_arg "--unlock-time"
+    add_clive_arg "${unlock_time_mins}"
+}
+
 # Override parse_args to handle --exec flag specifically for CLI mode
 parse_args() {
     while [ $# -gt 0 ]; do
@@ -68,6 +76,13 @@ parse_args() {
                 ;;
             --profile-name=*)
                 handle_profile_name_option "${1#*=}"
+                ;;
+            --unlock-time)
+                shift
+                handle_unlock_time_option "${1}"
+                ;;
+            --unlock-time=*)
+                handle_unlock_time_option "${1#*=}"
                 ;;
             *)
             new_args+=("$1")
