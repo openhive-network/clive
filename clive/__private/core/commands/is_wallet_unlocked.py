@@ -16,5 +16,4 @@ class IsWalletUnlocked(CommandWithResult[bool]):
     wallet: AsyncWallet
 
     async def _execute(self) -> None:
-        is_wallet_unlocked = await self.wallet.unlocked is not None
-        self._result = is_wallet_unlocked
+        self._result = await self.wallet.is_unlocked()
