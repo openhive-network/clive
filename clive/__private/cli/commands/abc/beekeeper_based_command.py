@@ -91,11 +91,10 @@ class BeekeeperBasedCommand(ContextualCLICommand[AsyncBeekeeper], BeekeeperCommo
             raise CLISessionNotLockedError
 
     async def _create_context_manager_instance(self) -> AsyncBeekeeper:
-        settings = safe_settings.beekeeper.settings_factory()
         return await (
-            AsyncBeekeeper.factory(settings=settings)
-            if settings.http_endpoint is None
-            else AsyncBeekeeper.remote_factory(url_or_settings=settings)
+            AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory())
+            if safe_settings.beekeeper.should_start_locally
+            else AsyncBeekeeper.remote_factory(url_or_settings=safe_settings.beekeeper.settings_remote_factory())
         )
 
     async def _hook_before_entering_context_manager(self) -> None:

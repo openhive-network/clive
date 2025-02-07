@@ -196,6 +196,10 @@ class SafeSettings:
             return self.remote_address is not None
 
         @property
+        def should_start_locally(self) -> bool:
+            return not self.is_remote_address_set
+
+        @property
         def communication_total_timeout_secs(self) -> float:
             return self._get_beekeeper_communication_total_timeout_secs()
 
@@ -227,7 +231,7 @@ class SafeSettings:
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
-        def settings_factory(self) -> BeekeepySettings:
+        def settings_remote_factory(self) -> BeekeepySettings:
             beekeepy_settings = BeekeepySettings()
 
             beekeepy_settings.working_directory = self._get_beekeeper_wallet_directory()
@@ -240,6 +244,15 @@ class SafeSettings:
             beekeepy_settings.close_timeout = timedelta(seconds=self.close_timeout)
 
             return beekeepy_settings
+
+        def settings_local_factory(self) -> BeekeepySettings:
+            beekeepy_settings = self.settings_remote_factory()
+            beekeepy_settings.http_endpoint = None
+            beekeepy_settings.use_existing_session = None
+            return beekeepy_settings
+
+        def settings_factory(self) -> BeekeepySettings:
+            return self.settings_local_factory() if self.should_start_locally else self.settings_remote_factory()
 
         def _get_beekeeper_remote_address(self) -> HttpUrl | None:
             return self._parent._get_url(BEEKEEPER_REMOTE_ADDRESS)

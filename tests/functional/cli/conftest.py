@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
     """CLI tests are remotely connecting to a locally started beekeeper by this fixture."""
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper_cm:
+    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
         yield beekeeper_cm
 
 
