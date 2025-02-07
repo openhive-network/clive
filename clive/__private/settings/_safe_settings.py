@@ -13,9 +13,11 @@ from helpy import Settings as HelpySettings
 from inflection import underscore
 
 from clive.__private.core.constants.setting_identifiers import (
+    BEEKEEPER_CLOSE_TIMEOUT,
     BEEKEEPER_COMMUNICATION_ATTEMPTS_AMOUNT,
     BEEKEEPER_COMMUNICATION_RETRIES_DELAY_SECS,
     BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS,
+    BEEKEEPER_INITIALIZATION_TIMEOUT,
     BEEKEEPER_REFRESH_TIMEOUT_SECS,
     BEEKEEPER_REMOTE_ADDRESS,
     BEEKEEPER_SESSION_TOKEN,
@@ -214,6 +216,14 @@ class SafeSettings:
             return self._get_beekeeper_session_token()
 
         @property
+        def initialization_timeout(self) -> float:
+            return self._get_beekeeper_initialization_timeout()
+
+        @property
+        def close_timeout(self) -> float:
+            return self._get_beekeeper_close_timeout()
+
+        @property
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
@@ -226,6 +236,8 @@ class SafeSettings:
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
             beekeepy_settings.max_retries = self.communication_attempts_amount
             beekeepy_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
+            beekeepy_settings.initialization_timeout = timedelta(seconds=self.initialization_timeout)
+            beekeepy_settings.close_timeout = timedelta(seconds=self.close_timeout)
 
             return beekeepy_settings
 
@@ -252,6 +264,12 @@ class SafeSettings:
             if beekeeper_session_token:
                 return str(beekeeper_session_token)
             return None
+
+        def _get_beekeeper_initialization_timeout(self) -> float:
+            return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT, default=5, minimum=1)
+
+        def _get_beekeeper_close_timeout(self) -> float:
+            return self._parent._get_number(BEEKEEPER_CLOSE_TIMEOUT, default=5, minimum=1)
 
     @dataclass
     class _Node(_Namespace):
