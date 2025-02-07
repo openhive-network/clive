@@ -64,7 +64,7 @@ class BeekeeperSpawn(ExternalCLICommand):
         if not self.echo_address_only:
             typer.echo("Launching beekeeper...")
 
-        async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper:
+        async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper:
             pid = beekeeper.detach()
 
             if self.echo_address_only:

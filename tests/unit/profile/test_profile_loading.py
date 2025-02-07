@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 async def beekeeper() -> AsyncIterator[AsyncBeekeeper]:
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_factory()) as beekeeper_cm:
+    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
         yield beekeeper_cm
 
 
