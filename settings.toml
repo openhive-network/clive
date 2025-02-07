@@ -7,7 +7,8 @@ LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only log
 MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 
 [default.beekeeper]
-REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
+REMOTE_ADDRESS = "" # Address of the beekeeper, if not given, beekeeper will start locally.
+SESSION_TOKEN = "" # If there is some existing session on the beekeeper, can be reused. Makes sense only when REMOTE_ADDRESS is given.
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 15
 COMMUNICATION_ATTEMPTS_AMOUNT = 1
 COMMUNICATION_RETRY_TIMEOUT_SECS = 0.2
