@@ -11,7 +11,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.constants.setting_identifiers import DATA_PATH
-from clive.__private.settings import clive_prefixed_envvar
+from clive.__private.settings import clive_prefixed_envvar, safe_settings
 from clive_local_tools.waiters import wait_for
 
 
@@ -33,7 +33,11 @@ async def test_close_on_signal(signal_number: signal.Signals) -> None:
         process = await asyncio.create_subprocess_exec(
             entry_point, stdout=out, stderr=out, stdin=subprocess.PIPE, env=envs
         )
-        await wait_for(lambda: beekeeper_pidfile.exists(), "Beekeeper did not spawn")
+        await wait_for(
+            lambda: beekeeper_pidfile.exists(),
+            "Beekeeper did not spawn",
+            timeout=safe_settings.beekeeper.initialization_timeout,
+        )
         process.send_signal(signal_number)
 
         # ASSERT
