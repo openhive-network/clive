@@ -75,6 +75,10 @@ class World:
         return self._profile
 
     @property
+    def is_profile_available(self) -> bool:
+        return self._profile is not None
+
+    @property
     def node(self) -> Node:
         """Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors."""
         message = "Node is not available. It requires profile to be loaded. Is the profile available?"
@@ -131,12 +135,6 @@ class World:
         message = "Wallet is not available. Did you forget to use as a context manager or call `setup`?"
         assert self._unlocked_wallet is not None, message
         return self._unlocked_wallet
-
-    async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
-        assert new_wallet.name in [
-            w.name for w in (await self._session_ensure.wallets)
-        ], "This wallet does not exists within this session"
-        self._unlocked_wallet = new_wallet
 
     @property
     def _should_sync_with_beekeeper(self) -> bool:
@@ -218,10 +216,6 @@ class World:
         self._profile = new_profile
         await self._update_node()
 
-    @property
-    def is_profile_available(self) -> bool:
-        return self._profile is not None
-
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
         if self._is_during_setup:
@@ -233,6 +227,12 @@ class World:
         if self._is_during_setup:
             return
         self._on_going_into_unlocked_mode()
+
+    async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
+        assert new_wallet.name in [
+            w.name for w in (await self._session_ensure.wallets)
+        ], "This wallet does not exists within this session"
+        self._unlocked_wallet = new_wallet
 
     async def _get_unlocked_wallet(self, session: AsyncSession) -> AsyncUnlockedWallet:
         return await GetUnlockedWallet(session=session).execute_with_result()
