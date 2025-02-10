@@ -45,20 +45,16 @@ TransactionSummary {
     }
 
     .actions {
-      width: 3fr;
-    }
-
-    ButtonMoveDown {
-      margin: 0 1;
-    }
-
-    ButtonRawJson {
-      margin-right: 1;
+      width: 35;
     }
 
     CliveButton {
-      width: 24%; /* solution described here: https://gitlab.syncad.com/hive/clive/-/merge_requests/388#note_169849 */
-      min-width: 1;
+      margin-left: 1;
+      min-width: 8;
+    }
+
+    ButtonRawJson {
+      margin-left: 0;
     }
   }
 
