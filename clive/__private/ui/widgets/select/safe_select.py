@@ -45,6 +45,8 @@ class SafeSelect(CliveWidget, Generic[SelectType]):
 
     DEFAULT_CSS = """
     SafeSelect {
+        width: 1fr;
+        height: auto;
         min-height: 3;
         align: center middle;
     }
