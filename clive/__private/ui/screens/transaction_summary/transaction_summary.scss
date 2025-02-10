@@ -64,11 +64,11 @@ TransactionSummary {
 
   #actions-container {
     margin: 1 0;
-    height: 3;
+    height: auto;
 
     ButtonContainer {
-      align: right top;
-      min-width: 71;
+      width: auto;
+      height: auto;
 
       CliveButton {
         width: 23;
@@ -85,11 +85,8 @@ TransactionSummary {
 
     KeyContainer {
       align: left top;
-      margin-left: 1;
-
-      SelectKey {
-        max-width: 32%;
-      }
+      margin-right: 1;
+      height: auto;
 
       KeyHint {
         text-style: bold;
