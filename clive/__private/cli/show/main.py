@@ -5,11 +5,12 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldOptionsGroup
-from clive.__private.cli.common.parameters import argument_related_options, arguments
+from clive.__private.cli.common.parameters import argument_related_options, arguments, options
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleAccountNameValue,
     EnsureSingleValue,
 )
+from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
@@ -140,19 +141,21 @@ async def show_proxy(
     ).run()
 
 
+witnesses_page_size = modified_param(
+    options.page_size, default=30, help="The number of witnesses presented on a single page."
+)
+witnesses_page_no = modified_param(
+    options.page_no, help="Page number of the witnesses list, considering the given page size."
+)
+
+
 @show.command(name="witnesses", param_groups=[WorldOptionsGroup])
 async def show_witnesses(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: Optional[str] = argument_related_options.account_name,
-    page_size: int = typer.Option(
-        30,
-        help="The number of witnesses presented on a single page.",
-    ),
-    page_no: int = typer.Option(
-        0,
-        help="Page number of the witnesses list, considering the given page size.",
-    ),
+    page_size: int = witnesses_page_size,
+    page_no: int = witnesses_page_no,
 ) -> None:
     """List witnesses and votes of selected account."""
     from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses
@@ -185,6 +188,12 @@ async def show_witness(
     ).run()
 
 
+proposals_page_size = modified_param(options.page_size, help="The number of proposals presented on a single page.")
+proposals_page_no = modified_param(
+    options.page_no, help="Page number of the proposals list, considering the given page size."
+)
+
+
 @show.command(name="proposals", param_groups=[WorldOptionsGroup])
 async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
@@ -202,14 +211,8 @@ async def show_proposals(  # noqa: PLR0913
         DEFAULT_STATUS,
         help="Proposals can be filtered by status.",
     ),
-    page_size: int = typer.Option(
-        10,
-        help="The number of proposals presented on a single page.",
-    ),
-    page_no: int = typer.Option(
-        0,
-        help="Page number of the proposals list, considering the given page size.",
-    ),
+    page_size: int = proposals_page_size,
+    page_no: int = proposals_page_no,
 ) -> None:
     """List proposals filtered by status."""
     from clive.__private.cli.commands.show.show_proposals import ShowProposals

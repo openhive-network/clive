@@ -10,9 +10,7 @@ from __future__ import annotations
 
 import typer
 
-from clive.__private.cli.common.parameters.modified_param import (
-    modified_param,
-)
+from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.common.parsers import (
     decimal_percent,
     liquid_asset,
