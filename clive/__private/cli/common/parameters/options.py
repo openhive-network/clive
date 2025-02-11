@@ -18,7 +18,11 @@ from clive.__private.cli.common.parsers import (
     liquid_asset,
     voting_asset,
 )
-from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
+from clive.__private.core.constants.cli import (
+    PAGE_NUMBER_OPTION_MINIMAL_VALUE,
+    PAGE_SIZE_OPTION_MINIMAL_VALUE,
+    PERFORM_WORKING_ACCOUNT_LOAD,
+)
 
 working_account_template = typer.Option(
     PERFORM_WORKING_ACCOUNT_LOAD,  # we don't know if account_name_option is required until the profile is loaded
@@ -91,3 +95,15 @@ memo_value = typer.Option(
     help="The memo to attach to the transfer.",
 )
 memo_value_optional = modified_param(memo_value, default=None)
+
+page_size = typer.Option(
+    10,
+    min=PAGE_SIZE_OPTION_MINIMAL_VALUE,
+    help="The number of entries presented on a single page.",
+)
+
+page_no = typer.Option(
+    0,
+    min=PAGE_NUMBER_OPTION_MINIMAL_VALUE,
+    help="Page number to display, considering the given page size.",
+)

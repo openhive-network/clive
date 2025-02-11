@@ -18,3 +18,6 @@ UNLOCK_CREATE_PROFILE_HELP: Final[str] = (
     "`clive configure profile add --profile-name PROFILE_NAME` and pass password to the standard input."
 )
 UNLOCK_CREATE_PROFILE_SELECT: Final[str] = "create a new profile"
+
+PAGE_SIZE_OPTION_MINIMAL_VALUE: Final[int] = 1
+PAGE_NUMBER_OPTION_MINIMAL_VALUE: Final[int] = 0
