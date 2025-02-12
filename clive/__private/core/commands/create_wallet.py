@@ -51,4 +51,4 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
         )
 
         if self.app_state:
-            await self.app_state.unlock(unlocked_wallet)
+            await self.app_state.unlock((unlocked_wallet, unlocked_profile_encryption_wallet))

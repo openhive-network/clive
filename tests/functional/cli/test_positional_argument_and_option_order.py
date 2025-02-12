@@ -8,19 +8,15 @@ from clive_local_tools.cli.checkers import assert_show_balances_title
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_NAMES
 
 if TYPE_CHECKING:
-    from clive.__private.core.profile import Profile
     from clive_local_tools.cli.cli_tester import CLITester
 
 ANY_ACCOUNT_NAME_IN_BLOCKCHAIN: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
 ANY_OTHER_ACCOUNT_NAME_IN_BLOCKCHAIN: Final[str] = WATCHED_ACCOUNTS_NAMES[1]
 
 
-def test_positional_have_default_value(
-    cli_tester: CLITester,
-    prepare_profile: Profile,
-) -> None:
+def test_positional_have_default_value(cli_tester: CLITester) -> None:
     # ARRANGE
-    profile = prepare_profile
+    profile = cli_tester.world.profile
     working_account_name_default = profile.accounts.working.name
 
     # ACT & ASSERT

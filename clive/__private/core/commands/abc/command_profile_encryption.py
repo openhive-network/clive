@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError, CommandRestricted
 from clive.__private.core.commands.exceptions import ProfileEncryptionKeyError
+from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
@@ -13,11 +14,18 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import PublicKey
 
 
+class CommandProfileEncryptionError(CommandExecutionNotPossibleError):
+    def __init__(self, command: CommandProfileEncryption) -> None:
+        super().__init__(command, reason="requires unlocked profile encryption wallet")
+
+
 @dataclass(kw_only=True)
-class CommandProfileEncryption(Command, ABC):
+class CommandProfileEncryption(CommandRestricted, ABC):
     """A command that requires profile encryption wallet unlocked."""
 
     unlocked_profile_encryption_wallet: AsyncUnlockedWallet
+
+    _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandProfileEncryptionError
 
     @property
     def encryption_wallet_name(self) -> str:
@@ -29,3 +37,6 @@ class CommandProfileEncryption(Command, ABC):
         if len(keys) != 1:
             raise ProfileEncryptionKeyError(self, len(keys))
         return keys[0]
+
+    async def _is_execution_possible(self) -> bool:
+        return await IsWalletUnlocked(wallet=self.unlocked_profile_encryption_wallet).execute_with_result()

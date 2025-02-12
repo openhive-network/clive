@@ -32,7 +32,7 @@ class Unlock(CommandPasswordSecured):
             await self.session.open_wallet(name=get_encryption_wallet_name(self.wallet_name))
         ).unlock(password=self.password)
         if self.app_state is not None:
-            await self.app_state.unlock(unlocked_wallet, unlocked_profile_encryption_wallet)
+            await self.app_state.unlock((unlocked_wallet, unlocked_profile_encryption_wallet))
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:

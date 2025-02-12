@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager, suppress
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
 from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
@@ -15,10 +15,9 @@ from clive.__private.core.commands.exceptions import NoProfileUnlockedError
 from clive.__private.core.commands.get_unlocked_profile_encryption_wallet import GetUnlockedProfileEncryptionWallet
 from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
 from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
-from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
-from clive.__private.core.profile import Profile, ProfileSavingError
+from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -57,9 +56,8 @@ class World:
         self._beekeeper_settings = self._setup_beekeepy_settings()
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
-        self._unlocked_profile_encryption_wallet: AsyncUnlockedWallet | None = None
         self._unlocked_wallet: AsyncUnlockedWallet | None = None
-        self._encryption_service: EncryptionService | None = None
+        self._unlocked_profile_encryption_wallet: AsyncUnlockedWallet | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -121,11 +119,6 @@ class World:
         return self._beekeeper_settings
 
     @property
-    def encryption_service(self) -> EncryptionService:
-        assert self._encryption_service is not None, "EncryptionService is not initialized"
-        return self._encryption_service
-
-    @property
     def _session_ensure(self) -> AsyncSession:
         message = "Session is not available. Did you forget to use as a context manager or call `setup`?"
         assert self._session is not None, message
@@ -158,7 +151,6 @@ class World:
             w.name for w in (await self._session_ensure.wallets)
         ], "This wallet does not exists within this session"
         self._unlocked_profile_encryption_wallet = new_wallet
-        self._encryption_service = EncryptionService(new_wallet)
 
     async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
         assert new_wallet.name in [
@@ -188,8 +180,6 @@ class World:
         return self
 
     async def close(self) -> None:
-        if self._profile is not None:
-            await self._profile.save(self.encryption_service)
         if self._node is not None:
             self._node.teardown()
         if self._beekeeper is not None:
@@ -226,7 +216,7 @@ class World:
             self.profile.delete()
         await self._set_unlocked_wallet(result.unlocked_wallet)
         await self._set_unlocked_profile_encryption_wallet(result.unlocked_profile_encryption_wallet)
-        await self.profile.save(self.encryption_service)
+        await self.commands.save_profile()
 
         generated_password = result.password
         actual_password = password or generated_password
@@ -238,8 +228,8 @@ class World:
         unlocked_profile_encryption_wallet = await self._get_unlocked_profile_encryption_wallet(self._session_ensure)
         await self._set_unlocked_profile_encryption_wallet(unlocked_profile_encryption_wallet)
 
-        profile_name = self._unlocked_profile_encryption_wallet_ensure.name
-        profile = await Profile.load(profile_name, self.encryption_service)
+        profile_name = self._unlocked_wallet_ensure.name
+        profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
             await self._commands.sync_state_with_beekeeper()
@@ -252,10 +242,6 @@ class World:
     async def switch_profile(self, new_profile: Profile) -> None:
         self._profile = new_profile
         await self._update_node()
-
-    async def save_profile(self) -> None:
-        with suppress(ProfileNotLoadedError, ProfileSavingError):
-            await self.profile.save(self.encryption_service)
 
     def is_profile_available(self) -> bool:
         return self.profile is not None
@@ -352,12 +338,6 @@ class TUIWorld(World, CliveDOMNode):
         await super().switch_profile(new_profile)
         self._update_profile_related_reactive_attributes()
 
-    async def save_profile(self) -> None:
-        try:
-            await self.profile.save(self.encryption_service)
-        except ProfileSavingError as error:
-            self.app.notify(str(error), severity="error")
-
     async def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
         await self.create_new_profile(WELCOME_PROFILE_NAME)
@@ -379,7 +359,7 @@ class TUIWorld(World, CliveDOMNode):
             await self._restart_dashboard_mode()
             await self._switch_to_welcome_profile()
 
-        self.app.run_worker(self.profile.save(self.encryption_service))
+        self.app.run_worker(self.commands.save_profile())
         self.app.run_worker(lock())
 
     def _on_going_into_unlocked_mode(self) -> None:
@@ -417,8 +397,11 @@ class CLIWorld(World):
             raise CLINoProfileUnlockedError from error
         return self
 
-    async def save_profile(self) -> None:
-        await self.profile.save(self.encryption_service)
+    @override
+    async def close(self) -> None:
+        if self._profile is not None and self._unlocked_profile_encryption_wallet is not None:
+            await self.commands.save_profile()
+        await super().close()
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
 import pytest
 
 from clive.__private.cli.exceptions import CLIBeekeeperRemoteAddressIsNotSetError, CLIBeekeeperSessionTokenNotSetError
+from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryptionError
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
 from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
@@ -30,18 +32,19 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
-    async with World() as world_cm:
-        await world_cm.create_new_profile_with_beekeeper_wallet(
-            ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD
-        )
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(
-                value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
+    with suppress(CommandProfileEncryptionError):
+        async with World() as world_cm:
+            await world_cm.create_new_profile_with_beekeeper_wallet(
+                ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD
             )
-        )
-        await world_cm.commands.sync_data_with_beekeeper()
-        await world_cm.save_profile()  # required for saving imported keys aliases
-        await world_cm.commands.lock_all()
+            world_cm.profile.keys.add_to_import(
+                PrivateKeyAliased(
+                    value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
+                )
+            )
+            await world_cm.commands.sync_data_with_beekeeper()
+            await world_cm.commands.save_profile()  # required for saving imported keys aliases
+            await world_cm.commands.lock_all()
     return cli_tester_locked
 
 

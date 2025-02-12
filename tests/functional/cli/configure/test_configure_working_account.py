@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive.__private.core.encryption import EncryptionService
 from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
@@ -16,9 +17,8 @@ async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     """Check clive configure working-account switch command."""
     # ARRANGE
     profile_name = cli_tester.world.profile.name
-    profile_account_checker = await ProfileAccountsChecker.create_async(
-        profile_name, cli_tester.world.encryption_service
-    )
+    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    profile_account_checker = await ProfileAccountsChecker.create_async(profile_name, encryption_service)
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
 
     # ACT

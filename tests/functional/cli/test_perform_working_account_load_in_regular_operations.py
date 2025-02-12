@@ -21,7 +21,6 @@ from clive_local_tools.testnet_block_log import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.profile import Profile
     from clive.__private.core.world import World
     from clive_local_tools.cli.cli_tester import CLITester
 
@@ -29,29 +28,25 @@ if TYPE_CHECKING:
 async def import_key(unlocked_world_cm: World, private_key: PrivateKeyAliased) -> None:
     unlocked_world_cm.profile.keys.add_to_import(private_key)
     await unlocked_world_cm.commands.sync_data_with_beekeeper()
-    await unlocked_world_cm.save_profile()  # save imported key aliases
+    await unlocked_world_cm.commands.save_profile()  # save imported key aliases
 
 
-async def test_perform_working_account_load_does_not_influence_unrelated_commands(
-    prepare_profile: Profile, cli_tester: CLITester
-) -> None:
+async def test_perform_working_account_load_does_not_influence_unrelated_commands(cli_tester: CLITester) -> None:
     """Command `clive show chain` needs profile but doesn't need working account set."""
     # ARRANGE
-    prepare_profile.accounts.unset_working_account()
-    await prepare_profile.save(cli_tester.world.encryption_service)
+    cli_tester.world.profile.accounts.unset_working_account()
+    await cli_tester.world.commands.save_profile()
 
     # ACT
     # ASSERT
     cli_tester.show_chain()
 
 
-async def test_negative_unlocked_profile_without_working_account(
-    prepare_profile: Profile, cli_tester: CLITester
-) -> None:
+async def test_negative_unlocked_profile_without_working_account(cli_tester: CLITester) -> None:
     # ARRANGE
     expected_error = "Working account is not set"
-    prepare_profile.accounts.unset_working_account()
-    await prepare_profile.save(cli_tester.world.encryption_service)
+    cli_tester.world.profile.accounts.unset_working_account()
+    await cli_tester.world.commands.save_profile()
 
     # ACT
     with pytest.raises(AssertionError) as exception_info:
@@ -73,7 +68,6 @@ async def test_explicitly_given_account_name_overrides_perform_working_account_l
 
 
 async def test_custom_authority_in_custom_json_operation(
-    prepare_beekeeper_wallet: World,
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
@@ -81,7 +75,7 @@ async def test_custom_authority_in_custom_json_operation(
     other_key = PrivateKeyAliased(
         value=ALT_WORKING_ACCOUNT2_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT2_KEY_ALIAS
     )
-    await import_key(prepare_beekeeper_wallet, other_key)
+    await import_key(cli_tester.world, other_key)
     custom_json: Final[str] = '{"foo": "bar"}'
     custom_id: Final[str] = "some_id"
     operation = CustomJsonOperation(

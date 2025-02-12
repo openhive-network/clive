@@ -44,10 +44,10 @@ class InvalidChainIdError(ProfileError):
 class ProfileSavingError(ProfileError):
     """Raised when profile can't be saved due to beekeeper communication error."""
 
-    ERROR_MESSAGE: ClassVar[str] = "beekeeper_api"
+    MESSAGE: ClassVar[str] = "Profile was not saved because communication with beekeeper failed."
 
     def __init__(self) -> None:
-        super().__init__("Profile was not saved because communication with beekeeper failed.")
+        super().__init__(ProfileSavingError.MESSAGE)
 
 
 class ProfileInvalidNameError(ProfileError):

@@ -39,11 +39,13 @@ from clive.__private.core.commands.get_wallet_names import GetWalletNames, Walle
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
+from clive.__private.core.commands.load_profile import LoadProfile
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.lock import Lock
 from clive.__private.core.commands.lock_all import LockAll
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
+from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
@@ -354,7 +356,10 @@ class Commands(Generic[WorldT_co]):
     async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncStateWithBeekeeper(
-                wallet=self._world._unlocked_wallet_ensure, app_state=self._world.app_state, source=source
+                wallet=self._world._unlocked_wallet_ensure,
+                profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
+                app_state=self._world.app_state,
+                source=source,
             )
         )
 
@@ -462,6 +467,22 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[AccountScheduledTransferData]:
         return await self.__surround_with_exception_handlers(
             FindScheduledTransfers(node=self._world.node, account_name=account_name)
+        )
+
+    async def save_profile(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            SaveProfile(
+                profile=self._world.profile,
+                unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
+            )
+        )
+
+    async def load_profile(self, *, profile_name: str) -> CommandWithResultWrapper[Profile]:
+        return await self.__surround_with_exception_handlers(
+            LoadProfile(
+                profile_name=profile_name,
+                unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
+            )
         )
 
     @overload
