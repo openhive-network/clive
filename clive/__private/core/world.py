@@ -228,9 +228,10 @@ class World:
         if self._should_sync_with_beekeeper:
             await self.commands.sync_state_with_beekeeper()
 
-    async def load_profile(self, profile_name: str) -> None:
-        profile = (await self.commands.load_profile(profile_name)).result_or_raise
-        await self.switch_profile(profile)
+    async def load_profile(self, profile_name: str, password: str) -> None:
+        assert not self.app_state.is_unlocked, "Application is already unlocked"
+        await self.commands.unlock(profile_name=profile_name, password=password, permanent=True)
+        await self.load_profile_based_on_beekepeer()
 
     async def switch_profile(self, new_profile: Profile) -> None:
         self._profile = new_profile
