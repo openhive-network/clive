@@ -10,6 +10,8 @@ from clive.__private.models import Asset, Transaction
 from clive.__private.models.schemas import TransferOperation
 from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
+from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
+from clive_local_tools.data.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -17,7 +19,6 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive import World
-    from clive_local_tools.data.models import WalletInfo
 
 DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
@@ -82,11 +83,12 @@ def test_setting_wrong_chain_id_raises_exception(profile_with_default_chain_id_f
 
 async def test_chain_id_is_retrieved_from_api_if_not_set(
     world: World,
-    wallet: WalletInfo,
     init_node: tt.InitNode,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     # any transaction so we could sign it, and hope that chain id will be retrieved from the node api
+    wallet = WalletInfo(name=generate_wallet_name(), password=generate_wallet_password(), keys=Keys(1))
+    await world.commands.import_key(key_to_import=wallet.private_key)
     transaction = Transaction(
         operations=[
             TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo=""),

@@ -9,7 +9,6 @@ import test_tools as tt
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
@@ -38,24 +37,16 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture
-async def prepare_profile() -> Profile:
-    return Profile.create(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-    )
-
-
-@pytest.fixture
-async def world() -> World:
-    return World()
-
-
-@pytest.fixture
-async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> None:
-    async with world as world_cm:
-        await world_cm.switch_profile(prepare_profile)
-        await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
+async def _prepare_profile_with_wallet_tui() -> None:
+    """Prepare profile and wallets using locally spawned beekeeper."""
+    async with World() as world_cm:
+        await world_cm.create_new_profile_with_beekeeper_wallet(
+            name=WORKING_ACCOUNT_DATA.account.name,
+            password=WORKING_ACCOUNT_PASSWORD,
+            working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+            watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
+        )
+        await world_cm.commands.sync_state_with_beekeeper()
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
@@ -80,7 +71,7 @@ def node_with_wallet() -> NodeWithWallet:
 @pytest.fixture
 async def prepared_env(
     node_with_wallet: NodeWithWallet,
-    prepare_beekeeper_wallet: None,  # noqa: ARG001
+    _prepare_profile_with_wallet_tui: None,
 ) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = node_with_wallet
     async with Clive().run_test() as pilot:

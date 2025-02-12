@@ -68,7 +68,6 @@ async def test_explicitly_given_account_name_overrides_perform_working_account_l
 
 
 async def test_custom_authority_in_custom_json_operation(
-    prepare_beekeeper_wallet: World,
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
@@ -76,7 +75,7 @@ async def test_custom_authority_in_custom_json_operation(
     other_key = PrivateKeyAliased(
         value=ALT_WORKING_ACCOUNT2_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT2_KEY_ALIAS
     )
-    await import_key(prepare_beekeeper_wallet, other_key)
+    await import_key(cli_tester.world, other_key)
     custom_json: Final[str] = '{"foo": "bar"}'
     custom_id: Final[str] = "some_id"
     operation = CustomJsonOperation(
