@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from functools import wraps
 from typing import TYPE_CHECKING, Generator
 
@@ -14,6 +14,7 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 from clive.__private.before_launch import prepare_before_launch
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
+from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryptionError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
@@ -94,8 +95,9 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 @pytest.fixture
 async def world() -> AsyncIterator[World]:
-    async with World() as world_cm:
-        yield world_cm
+    with suppress(CommandProfileEncryptionError):
+        async with World() as world_cm:
+            yield world_cm
 
 
 @pytest.fixture
@@ -115,7 +117,7 @@ async def init_node(
     init_node.run()
     await world.node.set_address(init_node.http_endpoint)
     prepare_profile_with_wallet._set_node_address(init_node.http_endpoint)
-    await prepare_profile_with_wallet.save(world.encryption_service)
+    await world.commands.save_profile()
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node
@@ -134,7 +136,7 @@ async def init_node_extra_apis(
     init_node.run()
     await world.node.set_address(init_node.http_endpoint)
     prepare_profile_with_wallet._set_node_address(init_node.http_endpoint)
-    await prepare_profile_with_wallet.save(world.encryption_service)
+    await world.commands.save_profile()
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node

@@ -8,6 +8,7 @@ from beekeepy import AsyncBeekeeper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
+from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
 from clive.__private.storage.service import PersistentStorageService
 
@@ -19,7 +20,7 @@ FIRST_PROFILE_NAME: Final[str] = "first"
 
 
 async def create_and_save_profile(profile_name: str) -> None:
-    async with await AsyncBeekeeper.factory() as beekeeper:
+    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper:
         result = await CreateWallet(
             session=await beekeeper.session, wallet_name=profile_name, password=profile_name
         ).execute_with_result()

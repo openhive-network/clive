@@ -14,7 +14,7 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
         InvalidPasswordError: "The password you entered is incorrect. Please try again.",
         NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
-        ProfileSavingError: ProfileSavingError.ERROR_MESSAGE,
+        ProfileSavingError: ProfileSavingError.MESSAGE,
     }
 
     def __init__(self) -> None:
