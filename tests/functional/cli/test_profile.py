@@ -23,6 +23,7 @@ async def test_unlocked_profile(cli_tester: CLITester) -> None:
 
 async def test_negative_no_unlocked_profile(cli_tester_locked: CLITester) -> None:
     # ARRANGE
+    cli_tester_locked.world.profile.skip_saving()
     expected_error = CLINoProfileUnlockedError.MESSAGE
 
     # ACT

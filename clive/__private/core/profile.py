@@ -162,6 +162,10 @@ class Profile(Context):
         """When no chain_id is set, it should be fetched from the node api."""
         self._chain_id = None
 
+    @property
+    def is_skip_saving(self) -> bool:
+        return self._skip_save
+
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
         self._skip_save = True

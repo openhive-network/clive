@@ -42,6 +42,7 @@ async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) ->
         await world_cm.commands.sync_data_with_beekeeper()
         await world_cm.commands.save_profile()  # required for saving imported keys aliases
         await world_cm.commands.lock_all()
+        world_cm.profile.skip_saving()
     return cli_tester_locked
 
 
@@ -76,6 +77,7 @@ async def test_negative_unlock_without_remote_address(cli_tester_without_remote_
 
 async def test_lock(cli_tester: CLITester) -> None:
     # ACT
+    cli_tester.world.profile.skip_saving()
     cli_tester.lock()
 
     # ASSERT
@@ -93,6 +95,7 @@ async def test_unlock_one_profile(cli_tester_locked: CLITester) -> None:
 async def test_second_profile(cli_tester_locked_with_second_profile: CLITester) -> None:
     # ARRANGE
     cli_tester = cli_tester_locked_with_second_profile
+    cli_tester.world.profile.skip_saving()
 
     # ACT
     cli_tester.unlock(profile_name=ALT_WORKING_ACCOUNT1_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
@@ -107,6 +110,7 @@ async def test_second_profile(cli_tester_locked_with_second_profile: CLITester) 
 
 async def test_negative_unlock_profile_name_invalid(cli_tester_locked: CLITester) -> None:
     # ARRANGE
+    cli_tester_locked.world.profile.skip_saving()
     invalid_profile_name = "invalid-profile-name"
     message = f"Profile `{invalid_profile_name}` does not exist."
 
@@ -118,6 +122,7 @@ async def test_negative_unlock_profile_name_invalid(cli_tester_locked: CLITester
 
 async def test_negative_unlock_password_invalid(cli_tester_locked: CLITester) -> None:
     # ARRANGE
+    cli_tester_locked.world.profile.skip_saving()
     invalid_password = "invalid-password"
     message = f"Password for profile `{WORKING_ACCOUNT_NAME}` is incorrect."
 

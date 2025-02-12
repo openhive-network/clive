@@ -43,6 +43,7 @@ async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_wi
 
 async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ARRANGE & ACT
+    world.profile.skip_saving()
     assert world.app_state.is_unlocked
     await world.commands.lock_all()
 
@@ -70,6 +71,7 @@ async def test_lock_after_given_time(
     wallet_password: str,
 ) -> None:
     # ARRANGE
+    world.profile.skip_saving()
     time_to_sleep: Final[timedelta] = timedelta(seconds=2)
     await world.commands.lock_all()
 

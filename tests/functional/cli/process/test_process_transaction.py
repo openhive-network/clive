@@ -128,6 +128,7 @@ async def test_negative_process_transaction_in_locked(
     )
     beekeeper = cli_tester.world.beekeeper
     await (await beekeeper.session).lock_all()
+    cli_tester.world.profile.skip_saving()
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

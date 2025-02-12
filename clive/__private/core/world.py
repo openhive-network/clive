@@ -326,6 +326,8 @@ class TUIWorld(World, CliveDOMNode):
 
     @override
     async def close(self) -> None:
+        if self._profile is not None and self.app_state.is_unlocked:
+            await self.commands.save_profile()
         if self._node is not None:
             self._node.teardown()
         if self._beekeeper is not None:
