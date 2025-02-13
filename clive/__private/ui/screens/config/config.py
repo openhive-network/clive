@@ -10,7 +10,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.account_management.account_management import AccountManagement
 from clive.__private.ui.screens.config.manage_key_aliases import ManageKeyAliases
-from clive.__private.ui.screens.config.switch_node_address.switch_node_address import SwitchNodeAddress
+from clive.__private.ui.screens.config.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
