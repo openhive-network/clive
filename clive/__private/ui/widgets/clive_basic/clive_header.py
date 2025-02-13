@@ -96,6 +96,8 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def go_to_transaction_summary(self) -> None:
+        if self.app.current_mode == "config":
+            self.app.switch_from_config_to_dashboard_mode()
         await self.app.action_go_to_transaction_summary()
 
 
@@ -107,6 +109,16 @@ class DashboardButton(OneLineButtonUnfocusable):
     @on(OneLineButton.Pressed)
     def go_to_dashboard(self) -> None:
         self.app.action_go_to_dashboard()
+
+
+class ConfigButton(OneLineButtonUnfocusable):
+    def __init__(self) -> None:
+        super().__init__("Config", variant="grey-lighten")
+        self.tooltip = "Go to config"
+
+    @on(OneLineButton.Pressed)
+    def go_to_config(self) -> None:
+        self.app.action_go_to_config()
 
 
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
@@ -355,6 +367,7 @@ class CliveHeader(CliveRawHeader):
 
     def _create_right_part_bar(self) -> ComposeResult:
         if not self.world.is_in_create_profile_mode:
+            yield ConfigButton()
             yield DashboardButton()
             yield CartStatus()
         yield NodeStatus()

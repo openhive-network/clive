@@ -23,6 +23,7 @@ from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
+from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
@@ -59,6 +60,7 @@ class Clive(App[int]):
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
         Binding("f8", "go_to_dashboard", "Dashboard", show=False),
+        Binding("f9", "go_to_config", "Config", show=False),
     ]
 
     SCREENS = {
@@ -70,6 +72,7 @@ class Clive(App[int]):
         "unlock": Unlock,
         "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
+        "config": Config,
     }
 
     header_expanded = var(default=False)
@@ -201,8 +204,17 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
+    def action_go_to_config(self) -> None:
+        if self.current_mode == "config":
+            self.get_screen_from_current_stack(Config).pop_until_active()
+        elif self.current_mode == "dashboard":
+            self.switch_from_dashboard_to_config_mode()
+
     def action_go_to_dashboard(self) -> None:
-        self.get_screen_from_current_stack(Dashboard).pop_until_active()
+        if self.current_mode == "dashboard":
+            self.get_screen_from_current_stack(Dashboard).pop_until_active()
+        elif self.current_mode == "config":
+            self.switch_from_config_to_dashboard_mode()
 
     async def action_go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -227,6 +239,18 @@ class Clive(App[int]):
 
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
+
+    def switch_from_config_to_dashboard_mode(self) -> None:
+        self.switch_mode("dashboard")
+        # reset config mode to drop all screens from screen stack
+        self.remove_mode("config")
+        self.add_mode("config", Config)
+
+    def switch_from_dashboard_to_config_mode(self) -> None:
+        self.switch_mode("config")
+        # reset dashboard mode to drop all screens from screen stack
+        self.remove_mode("dashboard")
+        self.add_mode("dashboard", Dashboard)
 
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]

@@ -93,4 +93,7 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
         if self._is_in_auto_working_account_mode() and not self.profile.accounts.has_working_account:
             return
 
+        if self.app.current_mode == "config":
+            self.app.switch_from_config_to_dashboard_mode()
+
         self.app.push_screen(AccountDetails(self.account))
