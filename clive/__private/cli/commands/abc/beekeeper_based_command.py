@@ -21,12 +21,6 @@ from clive.__private.settings import safe_settings
 class BeekeeperCommon:
     @property
     def beekeeper_remote_url(self) -> HttpUrl | None:
-        """
-        Select Beekeeper's remote URL address.
-
-        If `CLIVE_BEEKEEPER_REMOTE_ADDRESS` environment variable is set, that address will be used.
-        Otherwise value from settings will be used.
-        """
         return safe_settings.beekeeper.remote_address
 
     def validate_beekeeper_remote_address_set(self) -> None:
