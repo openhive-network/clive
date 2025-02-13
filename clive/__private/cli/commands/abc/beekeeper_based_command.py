@@ -27,9 +27,7 @@ class BeekeeperCommon:
         If `CLIVE_BEEKEEPER_REMOTE_ADDRESS` environment variable is set, that address will be used.
         Otherwise value from settings will be used.
         """
-        if safe_settings.beekeeper.is_remote_address_set:
-            return safe_settings.beekeeper.remote_address
-        return None
+        return safe_settings.beekeeper.remote_address
 
     def validate_beekeeper_remote_address_set(self) -> None:
         if self.beekeeper_remote_url is None:
