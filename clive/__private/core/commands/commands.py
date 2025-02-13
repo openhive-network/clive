@@ -41,7 +41,6 @@ from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 from clive.__private.core.commands.load_profile import LoadProfile
 from clive.__private.core.commands.load_transaction import LoadTransaction
-from clive.__private.core.commands.lock import Lock
 from clive.__private.core.commands.lock_all import LockAll
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
@@ -170,14 +169,6 @@ class Commands(Generic[WorldT_co]):
                 wallet_name=profile_name or self._world.profile.name,
                 time=time,
                 permanent=permanent,
-            )
-        )
-
-    async def lock(self) -> CommandWrapper:
-        return await self.__surround_with_exception_handlers(
-            Lock(
-                app_state=self._world.app_state,
-                unlocked_wallet=self._world._unlocked_wallet_ensure,
             )
         )
 
