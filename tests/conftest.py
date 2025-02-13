@@ -160,7 +160,7 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             if import_keys:
                 for pairs in wallet.keys.pairs:
                     await ImportKey(
-                        unlocked_wallet=world._unlocked_wallet_ensure,
+                        unlocked_wallet=world._unlocked_wallets_ensure.blockchain_keys,
                         key_to_import=pairs.private_key,
                     ).execute()
         return wallets

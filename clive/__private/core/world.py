@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
-from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
+from beekeepy import AsyncBeekeeper, AsyncSession
 from beekeepy import Settings as BeekeepySettings
 from textual.reactive import var
 from typing_extensions import override
@@ -16,6 +16,7 @@ from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -54,8 +55,7 @@ class World:
         self._beekeeper_settings = self._setup_beekeepy_settings()
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
-        self._unlocked_wallet: AsyncUnlockedWallet | None = None
-        self._unlocked_profile_encryption_wallet: AsyncUnlockedWallet | None = None
+        self._unlocked_wallets: WalletContainer | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -127,26 +127,14 @@ class World:
         return self._session
 
     @property
-    def _is_unlocked_profile_encryption_wallet_set(self) -> bool:
-        return self._unlocked_profile_encryption_wallet is not None
+    def _is_unlocked_wallets_set(self) -> bool:
+        return self._unlocked_wallets is not None
 
     @property
-    def _unlocked_profile_encryption_wallet_ensure(self) -> AsyncUnlockedWallet:
-        message = (
-            "Profile encryption wallet is not available." " Did you forget to use as a context manager or call `setup`?"
-        )
-        assert self._unlocked_profile_encryption_wallet is not None, message
-        return self._unlocked_profile_encryption_wallet
-
-    @property
-    def _is_unlocked_wallet_set(self) -> bool:
-        return self._unlocked_wallet is not None
-
-    @property
-    def _unlocked_wallet_ensure(self) -> AsyncUnlockedWallet:
-        message = "Wallet is not available. Did you forget to use as a context manager or call `setup`?"
-        assert self._unlocked_wallet is not None, message
-        return self._unlocked_wallet
+    def _unlocked_wallets_ensure(self) -> WalletContainer:
+        message = "Wallets are not available. Did you forget to use as a context manager or call `setup`?"
+        assert self._unlocked_wallets is not None, message
+        return self._unlocked_wallets
 
     @property
     def _should_sync_with_beekeeper(self) -> bool:
@@ -206,8 +194,10 @@ class World:
         result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
-        await self._set_unlocked_wallet(result.unlocked_wallet)
-        await self._set_unlocked_profile_encryption_wallet(result.unlocked_profile_encryption_wallet)
+        wallets = WalletContainer(
+            blockchain_keys=result.unlocked_wallet, profile_encryption=result.unlocked_profile_encryption_wallet
+        )
+        await self._set_unlocked_wallets(wallets)
         await self.commands.save_profile()
 
         generated_password = result.password
@@ -216,13 +206,15 @@ class World:
 
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_wallet = (await self.commands.get_unlocked_wallet()).result_or_raise
-        await self._set_unlocked_wallet(unlocked_wallet)
         unlocked_profile_encryption_wallet = (
             await self.commands.get_unlocked_profile_encryption_wallet()
         ).result_or_raise
-        await self._set_unlocked_profile_encryption_wallet(unlocked_profile_encryption_wallet)
+        wallets = WalletContainer(
+            blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
+        )
+        await self._set_unlocked_wallets(wallets)
 
-        profile_name = self._unlocked_wallet_ensure.name
+        profile_name = self._unlocked_wallets_ensure.name
         profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
@@ -249,17 +241,15 @@ class World:
             return
         self._on_going_into_unlocked_mode()
 
-    async def _set_unlocked_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
-        assert new_wallet.name in [
-            w.name for w in (await self._session_ensure.wallets)
-        ], "This wallet does not exists within this session"
-        self._unlocked_wallet = new_wallet
+    async def _set_unlocked_wallets(self, wallets: WalletContainer) -> None:
+        existing_wallet_names = [w.name for w in (await self._session_ensure.wallets)]
 
-    async def _set_unlocked_profile_encryption_wallet(self, new_wallet: AsyncUnlockedWallet) -> None:
-        assert new_wallet.name in [
-            w.name for w in (await self._session_ensure.wallets)
-        ], "This wallet does not exists within this session"
-        self._unlocked_profile_encryption_wallet = new_wallet
+        def _assert_wallet_exists(name: str) -> None:
+            assert name in existing_wallet_names, f"Wallet {name} does not exists within this session"
+
+        _assert_wallet_exists(wallets.blockchain_keys.name)
+        _assert_wallet_exists(wallets.profile_encryption.name)
+        self._unlocked_wallets = wallets
 
     def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
@@ -291,8 +281,7 @@ class World:
     def _clear_beekeeper_members_after_close(self) -> None:
         self._beekeeper = None
         self._session = None
-        self._unlocked_wallet = None
-        self._unlocked_profile_encryption_wallet = None
+        self._unlocked_wallets = None
 
     @classmethod
     def _setup_beekeepy_settings(cls) -> BeekeepySettings:

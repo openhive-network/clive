@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
     from beekeepy import AsyncWallet
@@ -25,6 +26,9 @@ class SyncStateWithBeekeeper(Command):
         unlocked_wallet = await self.wallet.unlocked
         unlocked_profile_encryption_wallet = await self.profile_encryption_wallet.unlocked
         if unlocked_wallet is not None and unlocked_profile_encryption_wallet is not None:
-            await self.app_state.unlock((unlocked_wallet, unlocked_profile_encryption_wallet))
+            wallets = WalletContainer(
+                blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
+            )
+            await self.app_state.unlock(wallets)
         else:
             self.app_state.lock(self.source)

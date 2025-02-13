@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
-
+    from clive.__private.core.wallet_container import WalletContainer
     from clive.__private.core.world import World
 
 LockSource = Literal["beekeeper_monitoring_thread", "unknown"]
@@ -27,15 +26,14 @@ class AppState:
 
     async def unlock(
         self,
-        wallets: tuple[AsyncUnlockedWallet, AsyncUnlockedWallet] | None = None,
+        wallets: WalletContainer | None = None,
     ) -> None:
         if self._is_unlocked:
             return
 
         self._is_unlocked = True
         if wallets:
-            await self.world._set_unlocked_wallet(wallets[0])
-            await self.world._set_unlocked_profile_encryption_wallet(wallets[1])
+            await self.world._set_unlocked_wallets(wallets)
         self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 
