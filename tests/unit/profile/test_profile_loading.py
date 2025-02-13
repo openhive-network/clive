@@ -27,7 +27,7 @@ async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str
     result = await CreateWallet(
         session=await beekeeper.session, wallet_name=profile_name, password=profile_name
     ).execute_with_result()
-    encryption_service = EncryptionService(result.unlocked_profile_encryption_wallet)
+    encryption_service = EncryptionService(result.unlocked_wallet, result.unlocked_profile_encryption_wallet)
     await Profile.create(profile_name).save(encryption_service)
     if lock:
         await result.unlocked_wallet.lock()

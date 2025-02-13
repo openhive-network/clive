@@ -25,7 +25,9 @@ async def test_configure_tracked_account_add(cli_tester: CLITester) -> None:
     # ARRANGE
     account_to_add = ALT_WORKING_ACCOUNT1_NAME
     profile_name = cli_tester.world.profile.name
-    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    encryption_service = EncryptionService(
+        cli_tester.world._unlocked_wallet_ensure, cli_tester.world._unlocked_profile_encryption_wallet_ensure
+    )
     profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT
@@ -54,7 +56,9 @@ async def test_configure_tracked_account_remove(cli_tester: CLITester) -> None:
     """Check clive configure tracked-account remove command."""
     # ARRANGE
     profile_name = cli_tester.world.profile.name
-    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    encryption_service = EncryptionService(
+        cli_tester.world._unlocked_wallet_ensure, cli_tester.world._unlocked_profile_encryption_wallet_ensure
+    )
     profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT
@@ -70,7 +74,9 @@ async def test_configure_tracked_account_remove_with_already_removed_account(cli
     # ARRANGE
     message = f"Account {ACCOUNT_TO_REMOVE} not found."
     profile_name = cli_tester.world.profile.name
-    encryption_service = EncryptionService(cli_tester.world._unlocked_profile_encryption_wallet_ensure)
+    encryption_service = EncryptionService(
+        cli_tester.world._unlocked_wallet_ensure, cli_tester.world._unlocked_profile_encryption_wallet_ensure
+    )
     profile_checker = ProfileAccountsChecker(profile_name, encryption_service)
 
     # ACT

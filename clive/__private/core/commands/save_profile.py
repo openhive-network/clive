@@ -16,5 +16,5 @@ class SaveProfile(CommandProfileEncryption, Command):
     profile: Profile
 
     async def _execute(self) -> None:
-        encryption_service = EncryptionService(self.unlocked_profile_encryption_wallet)
+        encryption_service = EncryptionService(self.unlocked_wallet, self.unlocked_profile_encryption_wallet)
         await self.profile.save(encryption_service)

@@ -46,8 +46,11 @@ class CreateProfile(BeekeeperBasedCommand):
                 raise
             raise CLICreatingProfileCommunicationError from error
 
+        wallet = result.unlocked_wallet
         encryption_wallet = result.unlocked_profile_encryption_wallet
-        await SaveProfile(unlocked_profile_encryption_wallet=encryption_wallet, profile=profile).execute()
+        await SaveProfile(
+            unlocked_wallet=wallet, unlocked_profile_encryption_wallet=encryption_wallet, profile=profile
+        ).execute()
 
     def _get_validated_password(self) -> str:
         if sys.stdin.isatty():

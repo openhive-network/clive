@@ -129,7 +129,8 @@ class Commands(Generic[WorldT_co]):
     async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
             DecryptWithProfileKey(
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallet_ensure,
+                unlocked_wallet=self._world._unlocked_wallet_ensure,
+                unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
                 encrypted_content=encrypted_content,
             )
         )
@@ -142,7 +143,8 @@ class Commands(Generic[WorldT_co]):
     async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
             EncryptWithProfileKey(
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallet_ensure,
+                unlocked_wallet=self._world._unlocked_wallet_ensure,
+                unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
                 content=content,
             )
         )
@@ -473,6 +475,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             SaveProfile(
                 profile=self._world.profile,
+                unlocked_wallet=self._world._unlocked_wallet_ensure,
                 unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
             )
         )
@@ -481,6 +484,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             LoadProfile(
                 profile_name=profile_name,
+                unlocked_wallet=self._world._unlocked_wallet_ensure,
                 unlocked_profile_encryption_wallet=self._world._unlocked_profile_encryption_wallet_ensure,
             )
         )
