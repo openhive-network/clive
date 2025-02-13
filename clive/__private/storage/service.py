@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable, TypeAlias
+from typing import TYPE_CHECKING, Final, Iterable, TypeAlias
 
-from clive.__private.core.encryption_helpers import get_profile_filename, is_profile_filename
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
@@ -37,6 +36,8 @@ class ProfileAlreadyExistsError(PersistentStorageServiceError):
 
 
 class PersistentStorageService:
+    PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
+
     ProfileNameToPath: TypeAlias = dict[str, Path]
 
     def __init__(self, encryption_service: EncryptionService) -> None:
@@ -111,6 +112,14 @@ class PersistentStorageService:
         return profile_name in cls.list_stored_profile_names()
 
     @classmethod
+    def is_profile_filename(cls, file_name: str) -> bool:
+        return file_name.endswith(cls.PROFILE_FILENAME_SUFFIX)
+
+    @classmethod
+    def get_profile_filename(cls, profile_name: str) -> str:
+        return f"{profile_name}{cls.PROFILE_FILENAME_SUFFIX}"
+
+    @classmethod
     def _get_storage_directory(cls) -> Path:
         return safe_settings.data_path / "data"
 
@@ -128,7 +137,7 @@ class PersistentStorageService:
         return {
             path.stem: path
             for path in versioned_storage_dir.iterdir()
-            if path.is_file() and is_profile_filename(path.name)
+            if path.is_file() and cls.is_profile_filename(path.name)
         }
 
     def _create_current_storage_symlink(self) -> None:
@@ -150,7 +159,7 @@ class PersistentStorageService:
         self._create_current_storage_symlink()
 
         encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
-        filepath = versioned_storage_dir / get_profile_filename(profile_name)
+        filepath = versioned_storage_dir / self.get_profile_filename(profile_name)
         filepath.write_text(encrypted_profile)
 
     async def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:

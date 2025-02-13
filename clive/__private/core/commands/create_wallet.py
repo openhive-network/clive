@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.encryption_helpers import get_encryption_wallet_name
+from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
     from beekeepy import AsyncSession, AsyncUnlockedWallet
@@ -40,7 +40,7 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
             is_password_generated = False
 
         unlocked_profile_encryption_wallet = await self.session.create_wallet(
-            name=get_encryption_wallet_name(self.wallet_name), password=password
+            name=EncryptionService.get_encryption_wallet_name(self.wallet_name), password=password
         )
         await unlocked_profile_encryption_wallet.generate_key()
         self._result = CreateWalletResult(

@@ -6,7 +6,7 @@ from beekeepy import AsyncSession, AsyncUnlockedWallet
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.exceptions import MultipleProfilesUnlockedError, NoProfileUnlockedError
-from clive.__private.core.encryption_helpers import is_encryption_wallet_name
+from clive.__private.core.encryption import EncryptionService
 
 
 @dataclass(kw_only=True)
@@ -15,7 +15,9 @@ class GetUnlockedWallet(CommandWithResult[AsyncUnlockedWallet]):
 
     async def _execute(self) -> None:
         unlocked = [
-            wallet for wallet in await self.session.wallets_unlocked if not is_encryption_wallet_name(wallet.name)
+            wallet
+            for wallet in await self.session.wallets_unlocked
+            if not EncryptionService.is_encryption_wallet_name(wallet.name)
         ]
         if len(unlocked) > 1:
             raise MultipleProfilesUnlockedError(self)

@@ -9,7 +9,7 @@ from clive.__private.core.commands.exceptions import (
     MultipleEncryptionWalletsUnlockedError,
     NoEncryptionWalletUnlockedError,
 )
-from clive.__private.core.encryption_helpers import is_encryption_wallet_name
+from clive.__private.core.encryption import EncryptionService
 
 
 @dataclass(kw_only=True)
@@ -17,7 +17,11 @@ class GetUnlockedProfileEncryptionWallet(CommandWithResult[AsyncUnlockedWallet])
     session: AsyncSession
 
     async def _execute(self) -> None:
-        unlocked = [wallet for wallet in await self.session.wallets_unlocked if is_encryption_wallet_name(wallet.name)]
+        unlocked = [
+            wallet
+            for wallet in await self.session.wallets_unlocked
+            if EncryptionService.is_encryption_wallet_name(wallet.name)
+        ]
         if len(unlocked) > 1:
             raise MultipleEncryptionWalletsUnlockedError(self)
         if len(unlocked) < 1:

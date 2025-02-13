@@ -7,10 +7,10 @@ from beekeepy import AsyncBeekeeper
 
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.encryption import EncryptionService
-from clive.__private.core.encryption_helpers import get_profile_filename
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
@@ -45,7 +45,7 @@ async def test_storage_dir_contains_expected_files() -> None:
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     current_revision_symlink = storage_data_dir / "current"
     revision_dir = storage_data_dir / EXPECTED_REVISION
-    filename = get_profile_filename(FIRST_PROFILE_NAME)
+    filename = PersistentStorageService.get_profile_filename(FIRST_PROFILE_NAME)
     profile_json_file = storage_data_dir / revision_dir / filename
 
     # ACT
