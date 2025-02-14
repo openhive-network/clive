@@ -4,10 +4,10 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from helpy import HttpUrl
-from helpy.exceptions import CommunicationError
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryptionError
+from clive.__private.core.commands.exceptions import CommandDecryptError, CommandEncryptError
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
@@ -185,12 +185,14 @@ class Profile(Context):
         ------
             ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
+            ProfileSavingError: If profile could not be saved due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         if self._skip_save:
             return
         try:
             await PersistentStorageService(encryption_service).save_profile(self)
-        except (CommunicationError, CommandProfileEncryptionError) as error:
+        except (CommandDecryptError, CommandEncryptError, CommandProfileEncryptionError) as error:
             raise ProfileSavingError from error
 
     def delete(self) -> None:
