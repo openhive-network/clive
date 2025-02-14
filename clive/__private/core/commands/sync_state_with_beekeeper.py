@@ -3,13 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
     from beekeepy import AsyncWallet
 
     from clive.__private.core.app_state import AppState, LockSource
+
+
+class InvalidWalletStateError(CommandError):
+    def __init__(self, command: Command) -> None:
+        super().__init__(
+            command, "There should be unlocked wallet with blockchain keys and unlocked profile encryption wallet."
+        )
 
 
 @dataclass(kw_only=True)
@@ -30,5 +37,7 @@ class SyncStateWithBeekeeper(Command):
                 blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
             )
             await self.app_state.unlock(wallets)
-        else:
+        elif unlocked_wallet is None and unlocked_profile_encryption_wallet is None:
             self.app_state.lock(self.source)
+        else:
+            raise InvalidWalletStateError(self)
