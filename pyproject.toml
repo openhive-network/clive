@@ -43,8 +43,8 @@ pydantic = "1.10.18"
 # remember to keep these versions adequate to one specified in test-tools
 schemas = "0.0.1.dev323+e5a1ba1"
 wax = "0.3.10.dev321+1384595"
-helpy = "0.0.1.dev326+8245998"
-beekeepy = "0.0.1.dev326+8245998"
+helpy = "0.0.1.dev327+6dbc448"
+beekeepy = "0.0.1.dev327+6dbc448"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
