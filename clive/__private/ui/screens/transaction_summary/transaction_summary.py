@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -16,6 +17,7 @@ from clive.__private.core.constants.tui.bindings import (
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
@@ -155,6 +157,7 @@ class TransactionSummary(BaseScreen):
         Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
         Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
         Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
+        Binding("f12", "load_transaction_from_file", "Open transaction file", show=False),  # override global binding - rebuild of cart table is required
     ]
     BIG_TITLE = "transaction summary"
 
@@ -185,13 +188,9 @@ class TransactionSummary(BaseScreen):
             yield CartTable()
 
     @on(ButtonOpenTransactionFromFile.Pressed)
-    def action_load_transaction_from_file(self) -> None:
-        notify_text = (
-            "Loading the transaction from the file will clear the current content of the cart."
-            if self.profile.transaction
-            else None
-        )
-        self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
+    async def action_load_transaction_from_file(self) -> None:
+        self.app.action_load_transaction_from_file()
+        await self._rebuild()
 
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
@@ -258,27 +257,6 @@ class TransactionSummary(BaseScreen):
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
             f" {'(signed)' if transaction.is_signed else ''}"
         )
-
-    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
-        if result is None:
-            return
-
-        file_path = result.file_path
-
-        try:
-            loaded_transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise
-        except LoadTransactionError as error:
-            self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
-            return
-
-        if not loaded_transaction.is_tapos_set:
-            self.notify("TaPoS metadata was not set, updating automatically...")
-            await self._update_transaction_metadata()
-
-        self.profile.transaction_file_path = file_path
-        self.profile.transaction = loaded_transaction
-        self.app.trigger_profile_watchers()
-        await self._rebuild()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard

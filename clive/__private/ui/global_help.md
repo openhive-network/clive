@@ -4,14 +4,15 @@
 
 ## Global bindings:
 
-| Binding  | Action                    |
-|:--------:|---------------------------|
-|   `F1`   | Show help                 |
-|   `F7`   | Go to transaction summary |
-|   `F8`   | Go to dashboard           |
-| `Ctrl+X` | Quit                      |
-| `Ctrl+S` | Screenshot                |
-|   `C`    | Clear notifications       |
+| Binding  | Action                     |
+|:--------:|----------------------------|
+|   `F1`   | Show help                  |
+|   `F7`   | Go to transaction summary  |
+|   `F8`   | Go to dashboard            |
+|  `F12`   | Load transaction from file |
+| `Ctrl+X` | Quit                       |
+| `Ctrl+S` | Screenshot                 |
+|   `C`    | Clear notifications        |
 
 
 ## How to select, copy and paste text inside TUI app like Clive?

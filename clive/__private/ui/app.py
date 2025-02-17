@@ -20,6 +20,7 @@ from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_pilot import ClivePilot
+from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
@@ -59,6 +60,7 @@ class Clive(App[int]):
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
         Binding("f8", "go_to_dashboard", "Dashboard", show=False),
+        Binding("f12", "load_transaction_from_file", "Load transaction from file", show=False),
     ]
 
     SCREENS = {
@@ -203,6 +205,9 @@ class Clive(App[int]):
 
     def action_go_to_dashboard(self) -> None:
         self.get_screen_from_current_stack(Dashboard).pop_until_active()
+
+    def action_load_transaction_from_file(self) -> None:
+        self.app.push_screen(LoadTransactionFromFileDialog())
 
     async def action_go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
