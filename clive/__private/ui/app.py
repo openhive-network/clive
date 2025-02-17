@@ -22,6 +22,7 @@ from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_pilot import ClivePilot
+from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
@@ -62,6 +63,7 @@ class Clive(App[int]):
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
         Binding("f8", "go_to_dashboard", "Dashboard", show=False),
+        Binding("ctrl+f12", "load_transaction_from_file", "Load transaction from file", show=False),
     ]
 
     SCREENS = {
@@ -210,6 +212,9 @@ class Clive(App[int]):
     def action_go_to_dashboard(self) -> None:
         self.get_screen_from_current_stack(Dashboard).pop_until_active()
 
+    def action_load_transaction_from_file(self) -> None:
+        self.push_screen(LoadTransactionFromFileDialog())
+
     async def action_go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
 
@@ -308,6 +313,10 @@ class Clive(App[int]):
             logger.debug(message)
 
         logger.debug("=================================================")
+
+    @on(LoadTransactionFromFileDialog.Confirmed)
+    async def _proceed_after_successfully_loading_transaction_from_file(self) -> None:
+        await self.action_go_to_transaction_summary()
 
     def _handle_exception(self, error: Exception) -> None:
         # We already had a situation where Textual swallowed an exception without logging it.
