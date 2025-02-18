@@ -17,10 +17,10 @@ class SaveProfile(CommandEncryption, Command):
     profile: Profile
 
     async def _execute(self) -> None:
-        if self.profile.is_skip_saving:
+        if self.profile.is_skip_save_set:
             return
         encryption_service = EncryptionService(WalletContainer(self.unlocked_wallet, self.unlocked_encryption_wallet))
         await self.profile.save(encryption_service)
 
     async def _is_execution_possible(self) -> bool:
-        return self.profile.is_skip_saving or await super()._is_execution_possible()
+        return self.profile.is_skip_save_set or await super()._is_execution_possible()
