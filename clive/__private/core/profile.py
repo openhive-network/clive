@@ -178,7 +178,7 @@ class Profile(Context):
         ------
             ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
-            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         if self._skip_save:
@@ -248,7 +248,7 @@ class Profile(Context):
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
-            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         return await PersistentStorageService(encryption_service).load_profile(name)

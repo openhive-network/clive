@@ -38,26 +38,11 @@ class ProfileAlreadyExistsError(PersistentStorageServiceError):
         super().__init__(self.message)
 
 
-class ProfileSavingError(PersistentStorageServiceError):
-    """Raised when profile can't be saved."""
+class ProfileEncryptionError(PersistentStorageServiceError):
+    """Raised when there is an issue with encryption or decryption of the profile e.g. during save or load."""
 
     MESSAGE: Final[str] = (
-        "Profile was not saved. "
-        "Maybe wallet is locked or communication with beekeeper failed?"
-        "This would mean encryption can't be done."
-    )
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
-
-
-class ProfileLoadingError(PersistentStorageServiceError):
-    """Raised when profile can't be loaded."""
-
-    MESSAGE: Final[str] = (
-        "Profile was not loaded. "
-        "Maybe wallet is locked or communication with beekeeper failed? "
-        "This would mean decryption can't be done."
+        "Profile encryption failed. Maybe the wallet is locked, or communication with the beekeeper failed?"
     )
 
     def __init__(self) -> None:
@@ -84,7 +69,7 @@ class PersistentStorageService:
         ------
             ProfileAlreadyExistsError: If given profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
-            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_with_name_already_exists_on_first_save(profile)
@@ -106,7 +91,7 @@ class PersistentStorageService:
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
-            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
@@ -195,7 +180,7 @@ class PersistentStorageService:
 
         Raises:
         ------
-            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         versioned_storage_dir = PersistentStorageService._get_storage_versioned_directory()
@@ -207,7 +192,7 @@ class PersistentStorageService:
         try:
             encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-            raise ProfileSavingError from error
+            raise ProfileEncryptionError from error
 
         filepath = versioned_storage_dir / self.get_profile_filename(profile_name)
         filepath.write_text(encrypted_profile)
@@ -223,7 +208,7 @@ class PersistentStorageService:
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
-            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+            ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         filepaths = self._get_storage_filepaths()
@@ -234,7 +219,7 @@ class PersistentStorageService:
                 try:
                     decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
                 except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-                    raise ProfileLoadingError from error
+                    raise ProfileEncryptionError from error
 
                 return ProfileStorageModel.parse_raw(decrypted_profile)
         raise ProfileDoesNotExistsError(profile_name)
