@@ -42,7 +42,6 @@ async def test_negative_configure_key_add_in_locked(
 ) -> None:
     """Check if clive configure add_key command throws exception when wallet is locked."""
     # ARRANGE
-    cli_tester_locked.world.profile.skip_saving()
     pk = PrivateKey.create()
     message = CLINoProfileUnlockedError.MESSAGE
 
@@ -73,7 +72,6 @@ async def test_negative_configure_key_remove_in_locked(
 ) -> None:
     """Check if clive configure key remove command throws exception when wallet is locked."""
     # ARRANGE
-    cli_tester_locked.world.profile.skip_saving()
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT

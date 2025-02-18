@@ -128,7 +128,7 @@ async def test_negative_process_transaction_in_locked(
     )
     beekeeper = cli_tester.world.beekeeper
     await (await beekeeper.session).lock_all()
-    cli_tester.world.profile.skip_saving()
+    cli_tester.world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
