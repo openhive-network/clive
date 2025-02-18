@@ -4,9 +4,9 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError
-from clive.__private.core.commands.exceptions import EncryptionKeyAmountError
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
@@ -25,6 +25,15 @@ class CommandRequiresUnlockedEncryptionWalletError(CommandExecutionNotPossibleEr
 
     def __init__(self, command: CommandEncryption) -> None:
         super().__init__(command, reason="requires both unlocked user wallet and encryption wallet.")
+
+
+class EncryptionKeyAmountError(CommandError):
+    def __init__(self, command: Command, number_of_keys: int) -> None:
+        message = (
+            f"Error retrieving encryption key. Number of keys: {number_of_keys}."
+            " There should be one and only one key."
+        )
+        super().__init__(command, message)
 
 
 @dataclass(kw_only=True)
