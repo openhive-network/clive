@@ -4,9 +4,14 @@ from dataclasses import dataclass
 
 from helpy.exceptions import CommunicationError
 
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_encryption import CommandEncryption
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.commands.exceptions import CommandEncryptError
+
+
+class CommandEncryptError(CommandError):
+    def __init__(self, command: Command) -> None:
+        super().__init__(command)
 
 
 @dataclass(kw_only=True)
