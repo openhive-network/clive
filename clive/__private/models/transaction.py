@@ -20,6 +20,8 @@ from clive.__private.models.schemas import Transaction as SchemasTransaction
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from clive.__private.visitors.operation.operation_visitor import OperationVisitor
+
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationUnion] = Field(default_factory=list)
@@ -94,6 +96,11 @@ class Transaction(SchemasTransaction):
 
     def with_hash(self) -> TransactionWithHash:
         return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
+
+    def accept(self, visitor: OperationVisitor) -> None:
+        """Accept a visitor and apply it to all operations in the transaction."""
+        for operation in self.operations:
+            visitor.visit(operation.value)  # type: ignore[attr-defined]
 
 
 class TransactionWithHash(Transaction):
