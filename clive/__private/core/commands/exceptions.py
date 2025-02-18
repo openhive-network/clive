@@ -32,13 +32,3 @@ class EncryptionKeyAmountError(CommandError):
             " There should be one and only one key."
         )
         super().__init__(command, message)
-
-
-class CommandDecryptError(CommandError):
-    def __init__(self, command: Command) -> None:
-        super().__init__(command)
-
-
-class CommandEncryptError(CommandError):
-    def __init__(self, command: Command) -> None:
-        super().__init__(command)
