@@ -13,5 +13,5 @@ class LoadProfile(CommandProfileEncryption, CommandWithResult[Profile]):
     profile_name: str
 
     async def _execute(self) -> None:
-        encryption_service = EncryptionService(self.unlocked_wallet, self.unlocked_profile_encryption_wallet)
+        encryption_service = EncryptionService(self.unlocked_wallet, self.unlocked_encryption_wallet)
         self._result = await Profile.load(self.profile_name, encryption_service)

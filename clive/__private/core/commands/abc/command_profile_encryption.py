@@ -24,17 +24,17 @@ class CommandProfileEncryptionError(CommandExecutionNotPossibleError):
 class CommandProfileEncryption(CommandInUnlocked, ABC):
     """A command that requires unlocked wallet and profile encryption wallet."""
 
-    unlocked_profile_encryption_wallet: AsyncUnlockedWallet
+    unlocked_encryption_wallet: AsyncUnlockedWallet
 
     _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandProfileEncryptionError
 
     @property
     def encryption_wallet_name(self) -> str:
-        return self.unlocked_profile_encryption_wallet.name
+        return self.unlocked_encryption_wallet.name
 
     @property
     async def encryption_public_key(self) -> PublicKey:
-        keys = await self.unlocked_profile_encryption_wallet.public_keys
+        keys = await self.unlocked_encryption_wallet.public_keys
         if len(keys) != 1:
             raise ProfileEncryptionKeyAmountError(self, len(keys))
         return keys[0]
@@ -42,5 +42,5 @@ class CommandProfileEncryption(CommandInUnlocked, ABC):
     async def _is_execution_possible(self) -> bool:
         return (
             await super()._is_execution_possible()
-            and await IsWalletUnlocked(wallet=self.unlocked_profile_encryption_wallet).execute_with_result()
+            and await IsWalletUnlocked(wallet=self.unlocked_encryption_wallet).execute_with_result()
         )

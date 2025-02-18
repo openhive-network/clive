@@ -129,7 +129,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             DecryptWithProfileKey(
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
+                unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
                 encrypted_content=encrypted_content,
             )
         )
@@ -143,7 +143,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             EncryptWithProfileKey(
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
+                unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
                 content=content,
             )
         )
@@ -468,7 +468,7 @@ class Commands(Generic[WorldT_co]):
             SaveProfile(
                 profile=self._world.profile,
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
+                unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
             )
         )
 
@@ -477,7 +477,7 @@ class Commands(Generic[WorldT_co]):
             LoadProfile(
                 profile_name=profile_name,
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
-                unlocked_profile_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
+                unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
             )
         )
 
