@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError
-from clive.__private.core.commands.exceptions import ProfileEncryptionKeyAmountError
+from clive.__private.core.commands.exceptions import EncryptionKeyAmountError
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
@@ -45,7 +45,7 @@ class CommandEncryption(CommandInUnlocked, ABC):
     async def encryption_public_key(self) -> PublicKey:
         keys = await self.unlocked_encryption_wallet.public_keys
         if len(keys) != 1:
-            raise ProfileEncryptionKeyAmountError(self, len(keys))
+            raise EncryptionKeyAmountError(self, len(keys))
         return keys[0]
 
     async def _is_execution_possible(self) -> bool:
