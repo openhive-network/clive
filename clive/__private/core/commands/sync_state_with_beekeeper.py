@@ -21,8 +21,8 @@ class InvalidWalletStateError(CommandError):
 
 @dataclass(kw_only=True)
 class SyncStateWithBeekeeper(Command):
-    wallet: AsyncWallet
-    profile_encryption_wallet: AsyncWallet
+    user_wallet: AsyncWallet
+    encryption_wallet: AsyncWallet
     app_state: AppState
     source: LockSource = "unknown"
 
@@ -30,12 +30,12 @@ class SyncStateWithBeekeeper(Command):
         await self.__sync_state()
 
     async def __sync_state(self) -> None:
-        unlocked_wallet = await self.wallet.unlocked
-        unlocked_profile_encryption_wallet = await self.profile_encryption_wallet.unlocked
-        if unlocked_wallet is not None and unlocked_profile_encryption_wallet is not None:
-            wallets = WalletContainer(unlocked_wallet, unlocked_profile_encryption_wallet)
-            await self.app_state.unlock(wallets)
-        elif unlocked_wallet is None and unlocked_profile_encryption_wallet is None:
+        unlocked_user_wallet = await self.user_wallet.unlocked
+        unlocked_encryption_wallet = await self.encryption_wallet.unlocked
+
+        if unlocked_user_wallet is not None and unlocked_encryption_wallet is not None:
+            await self.app_state.unlock(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
+        elif unlocked_user_wallet is None and unlocked_encryption_wallet is None:
             self.app_state.lock(self.source)
         else:
             raise InvalidWalletStateError(self)
