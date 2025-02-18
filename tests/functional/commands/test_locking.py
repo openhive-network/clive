@@ -45,7 +45,7 @@ async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) ->
     # ARRANGE & ACT
     world.profile.skip_saving()
     assert world.app_state.is_unlocked
-    await world.commands.lock_all()
+    await world.commands.lock()
 
     # ASSERT
     assert not world.app_state.is_unlocked
@@ -58,7 +58,7 @@ async def test_unlock_again(
 ) -> None:
     # ARRANGE & ACT
     assert world.app_state.is_unlocked
-    await world.commands.lock_all()
+    await world.commands.lock()
     await world.commands.unlock(password=wallet_password)
 
     # ASSERT
@@ -73,7 +73,7 @@ async def test_lock_after_given_time(
     # ARRANGE
     world.profile.skip_saving()
     time_to_sleep: Final[timedelta] = timedelta(seconds=2)
-    await world.commands.lock_all()
+    await world.commands.lock()
 
     # ACT
     await world.commands.unlock(password=wallet_password, time=time_to_sleep)

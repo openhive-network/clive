@@ -104,7 +104,7 @@ async def cli_tester(
 @pytest.fixture
 async def cli_tester_locked(cli_tester: CLITester) -> CLITester:
     """Token is set in environment variable. Beekeeper session is locked."""
-    await cli_tester.world.commands.lock_all()
+    await cli_tester.world.commands.lock()
     return cli_tester
 
 
