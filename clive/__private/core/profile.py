@@ -163,7 +163,7 @@ class Profile(Context):
         self._chain_id = None
 
     @property
-    def is_skip_saving(self) -> bool:
+    def is_skip_save_set(self) -> bool:
         return self._skip_save
 
     def skip_saving(self) -> None:
