@@ -10,7 +10,9 @@ from clive.__private.core.encryption import EncryptionService
 
 
 @dataclass(kw_only=True)
-class GetUnlockedWallet(CommandWithResult[AsyncUnlockedWallet]):
+class GetUnlockedUserWallet(CommandWithResult[AsyncUnlockedWallet]):
+    """Get the unlocked user wallet - the one containing keys imported by user."""
+
     session: AsyncSession
 
     async def _execute(self) -> None:

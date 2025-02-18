@@ -7,7 +7,7 @@ from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
+from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
@@ -68,7 +68,7 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper: AsyncBee
     assert (
         loaded_profile_name == unlocked_profile_name
     ), f"Unlocked profile is {unlocked_profile_name} but loaded is {loaded_profile_name}"
-    actual_unlocked_profile = await GetUnlockedWallet(session=await beekeeper.session).execute_with_result()
+    actual_unlocked_profile = await GetUnlockedUserWallet(session=await beekeeper.session).execute_with_result()
     assert actual_unlocked_profile.name == unlocked_profile_name
     assert Profile.list_profiles() == sorted([additional_profile_name, unlocked_profile_name, additional_profile_name2])
 

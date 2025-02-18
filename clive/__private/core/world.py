@@ -203,8 +203,8 @@ class World:
         return actual_password  # noqa: RET504
 
     async def load_profile_based_on_beekepeer(self) -> None:
-        unlocked_user_wallet = (await self.commands.get_unlocked_wallet()).result_or_raise
-        unlocked_encryption_wallet = (await self.commands.get_unlocked_profile_encryption_wallet()).result_or_raise
+        unlocked_user_wallet = (await self.commands.get_unlocked_user_wallet()).result_or_raise
+        unlocked_encryption_wallet = (await self.commands.get_unlocked_encryption_wallet()).result_or_raise
         await self._set_unlocked_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
 
         profile_name = self._unlocked_wallets_ensure.name

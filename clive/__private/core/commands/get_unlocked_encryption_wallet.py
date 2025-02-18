@@ -13,7 +13,9 @@ from clive.__private.core.encryption import EncryptionService
 
 
 @dataclass(kw_only=True)
-class GetUnlockedProfileEncryptionWallet(CommandWithResult[AsyncUnlockedWallet]):
+class GetUnlockedEncryptionWallet(CommandWithResult[AsyncUnlockedWallet]):
+    """Get the unlocked encryption wallet - the one containing encryption key managed by clive."""
+
     session: AsyncSession
 
     async def _execute(self) -> None:

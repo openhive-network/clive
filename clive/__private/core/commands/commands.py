@@ -33,8 +33,8 @@ from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
-from clive.__private.core.commands.get_unlocked_profile_encryption_wallet import GetUnlockedProfileEncryptionWallet
-from clive.__private.core.commands.get_unlocked_wallet import GetUnlockedWallet
+from clive.__private.core.commands.get_unlocked_encryption_wallet import GetUnlockedEncryptionWallet
+from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
@@ -181,13 +181,13 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def get_unlocked_profile_encryption_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
+    async def get_unlocked_encryption_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
         return await self.__surround_with_exception_handlers(
-            GetUnlockedProfileEncryptionWallet(session=self._world._session_ensure)
+            GetUnlockedEncryptionWallet(session=self._world._session_ensure)
         )
 
-    async def get_unlocked_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
-        return await self.__surround_with_exception_handlers(GetUnlockedWallet(session=self._world._session_ensure))
+    async def get_unlocked_user_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
+        return await self.__surround_with_exception_handlers(GetUnlockedUserWallet(session=self._world._session_ensure))
 
     async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:
         return await self.__surround_with_exception_handlers(
