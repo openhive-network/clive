@@ -29,7 +29,7 @@ class NoEncryptionWalletUnlockedError(CommandError):
         super().__init__(command, self.MESSAGE)
 
 
-class ProfileEncryptionKeyAmountError(CommandError):
+class EncryptionKeyAmountError(CommandError):
     def __init__(self, command: Command, number_of_keys: int) -> None:
         message = (
             f"Error retrieving encryption key. Number of keys: {number_of_keys}."
