@@ -33,7 +33,7 @@ class AppState:
 
         self._is_unlocked = True
         if wallets:
-            await self.world._set_unlocked_wallets(wallets)
+            await self.world.wallets.set_wallets(wallets)
         self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 

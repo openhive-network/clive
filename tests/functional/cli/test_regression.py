@@ -29,7 +29,7 @@ async def test_configure_node_set_address_regression_issue_345(
 
     # required to unset SECRETS_NODE_ADDRESS which is used in other tests and overrides the value set via this test
     with node_address_env_context_factory(None):
-        encryption_service = EncryptionService(cli_tester.world._unlocked_wallets_ensure)
+        encryption_service = EncryptionService(cli_tester.world.wallets._content)
         profile = await Profile.load(WORKING_ACCOUNT_NAME, encryption_service)
         actual_node_address = profile.node_address
         assert str(actual_node_address) == expected_node_address, "The node address was not set correctly."

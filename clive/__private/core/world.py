@@ -17,6 +17,7 @@ from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
+from clive.__private.core.wallet_manager import WalletManager
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -55,7 +56,7 @@ class World:
         self._beekeeper_settings = self._setup_beekeepy_settings()
         self._beekeeper: AsyncBeekeeper | None = None
         self._session: AsyncSession | None = None
-        self._unlocked_wallets: WalletContainer | None = None
+        self._wallets: WalletManager | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -98,6 +99,12 @@ class World:
         return self._known_exchanges
 
     @property
+    def wallets(self) -> WalletManager:
+        message = "Wallets are not available. Did you forget to use as a context manager or call `setup`?"
+        assert self._wallets is not None, message
+        return self._wallets
+
+    @property
     def beekeeper(self) -> AsyncBeekeeper:
         """
         Beekeeper shouldn't be used for API calls in CLI/TUI. Instead, use commands which also handle errors.
@@ -127,16 +134,6 @@ class World:
         return self._session
 
     @property
-    def _is_unlocked_wallets_set(self) -> bool:
-        return self._unlocked_wallets is not None
-
-    @property
-    def _unlocked_wallets_ensure(self) -> WalletContainer:
-        message = "Wallets are not available. Did you forget to use as a context manager or call `setup`?"
-        assert self._unlocked_wallets is not None, message
-        return self._unlocked_wallets
-
-    @property
     def _should_sync_with_beekeeper(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
 
@@ -159,6 +156,7 @@ class World:
         async with self.during_setup():
             self._beekeeper = await self._setup_beekeeper()
             self._session = await self.beekeeper.session
+            self._wallets = WalletManager(self._session)
         return self
 
     async def close(self) -> None:
@@ -168,7 +166,10 @@ class World:
             self._node.teardown()
         if self._beekeeper is not None:
             self._beekeeper.teardown()
-            self._clear_beekeeper_members_after_close()
+
+        self._beekeeper = None
+        self._session = None
+        self._wallets = None
 
     async def create_new_profile(
         self,
@@ -198,8 +199,7 @@ class World:
         result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
-        wallets = WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet)
-        await self._set_unlocked_wallets(wallets)
+        await self.wallets.set_wallets(WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet))
         await self.commands.save_profile()
 
         generated_password = result.password
@@ -209,9 +209,9 @@ class World:
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_user_wallet = (await self.commands.get_unlocked_user_wallet()).result_or_raise
         unlocked_encryption_wallet = (await self.commands.get_unlocked_encryption_wallet()).result_or_raise
-        await self._set_unlocked_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
+        await self.wallets.set_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
 
-        profile_name = self._unlocked_wallets_ensure.name
+        profile_name = self.wallets.name
         profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
         if self._should_sync_with_beekeeper:
@@ -237,16 +237,6 @@ class World:
         if self._is_during_setup:
             return
         self._on_going_into_unlocked_mode()
-
-    async def _set_unlocked_wallets(self, wallets: WalletContainer) -> None:
-        existing_wallet_names = [w.name for w in (await self._session_ensure.wallets)]
-
-        def _assert_wallet_exists(name: str) -> None:
-            assert name in existing_wallet_names, f"Wallet {name} does not exists within this session"
-
-        _assert_wallet_exists(wallets.user_wallet.name)
-        _assert_wallet_exists(wallets.encryption_wallet.name)
-        self._unlocked_wallets = wallets
 
     def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
@@ -274,11 +264,6 @@ class World:
             self._node = Node(self._profile)
         else:
             self._node.change_related_profile(self._profile)
-
-    def _clear_beekeeper_members_after_close(self) -> None:
-        self._beekeeper = None
-        self._session = None
-        self._unlocked_wallets = None
 
     @classmethod
     def _setup_beekeepy_settings(cls) -> BeekeepySettings:
