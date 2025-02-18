@@ -41,7 +41,7 @@ from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 from clive.__private.core.commands.load_profile import LoadProfile
 from clive.__private.core.commands.load_transaction import LoadTransaction
-from clive.__private.core.commands.lock_all import LockAll
+from clive.__private.core.commands.lock import Lock
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_profile import SaveProfile
@@ -172,10 +172,10 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def lock_all(self) -> CommandWrapper:
+    async def lock(self) -> CommandWrapper:
         """Lock all the wallets in the given beekeeper session."""
         return await self.__surround_with_exception_handlers(
-            LockAll(
+            Lock(
                 app_state=self._world.app_state,
                 session=self._world._session_ensure,
             )

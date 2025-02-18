@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class LockAll(Command):
+class Lock(Command):
     """Lock all the wallets in the given beekeeper session."""
 
     app_state: AppState | None = None
