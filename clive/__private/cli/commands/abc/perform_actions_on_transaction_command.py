@@ -10,15 +10,17 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
+    CLITransactionBadAccountError,
     CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
-from clive.__private.core.ensure_transaction import TransactionConvertibleType
+from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
+from clive.__private.visitors.operation.bad_account_visitor import BadAccountsCollector
 
 
 @dataclass(kw_only=True)
@@ -41,9 +43,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         self._validate_save_file_path()
         await super().validate()
 
+    async def validate_inside_context_manager(self) -> None:
+        await self._validate_bad_accounts()
+        await super().validate_inside_context_manager()
+
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
+
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
@@ -87,6 +94,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     def _validate_if_broadcasting_signed_transaction(self) -> None:
         if self.broadcast and not self.sign:
             raise CLITransactionNotSignedError
+
+    async def _validate_bad_accounts(self) -> None:
+        transaction_ensured = ensure_transaction(await self._get_transaction_content())
+        visitor = BadAccountsCollector(self.profile)
+        transaction_ensured.accept(visitor)
+        if visitor.bad_accounts:
+            raise CLITransactionBadAccountError(visitor.bad_accounts)
 
     def _get_transaction_created_message(self) -> str:
         return "created"
