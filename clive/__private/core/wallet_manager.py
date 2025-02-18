@@ -53,3 +53,6 @@ class WalletManager:
         assert_wallet_exists(wallets.encryption_wallet.name)
 
         self._wallets = wallets
+
+    def clear_wallets(self) -> None:
+        self._wallets = None
