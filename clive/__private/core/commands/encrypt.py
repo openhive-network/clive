@@ -11,7 +11,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandWithRes
 
 class CommandEncryptError(CommandError):
     def __init__(self, command: Command) -> None:
-        super().__init__(command)
+        super().__init__(command, "Failed to encrypt the content.")
 
 
 @dataclass(kw_only=True)
