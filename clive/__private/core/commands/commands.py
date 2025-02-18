@@ -26,9 +26,9 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
-from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
+from clive.__private.core.commands.decrypt import Decrypt
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
-from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
+from clive.__private.core.commands.encrypt import Encrypt
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
@@ -125,9 +125,9 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
+    async def decrypt(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
-            DecryptWithProfileKey(
+            Decrypt(
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
                 unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
                 encrypted_content=encrypted_content,
@@ -139,9 +139,9 @@ class Commands(Generic[WorldT_co]):
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
         )
 
-    async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
+    async def encrypt(self, *, content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
-            EncryptWithProfileKey(
+            Encrypt(
                 unlocked_wallet=self._world._unlocked_wallets_ensure.user_wallet,
                 unlocked_encryption_wallet=self._world._unlocked_wallets_ensure.encryption_wallet,
                 content=content,
