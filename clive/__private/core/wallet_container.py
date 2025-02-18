@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
 
 
-@dataclass(kw_only=True)
+@dataclass
 class WalletContainer:
     user_wallet: AsyncUnlockedWallet
     encryption_wallet: AsyncUnlockedWallet

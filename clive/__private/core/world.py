@@ -194,9 +194,7 @@ class World:
         result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
-        wallets = WalletContainer(
-            user_wallet=result.unlocked_wallet, encryption_wallet=result.unlocked_profile_encryption_wallet
-        )
+        wallets = WalletContainer(result.unlocked_wallet, result.unlocked_profile_encryption_wallet)
         await self._set_unlocked_wallets(wallets)
         await self.commands.save_profile()
 
@@ -209,7 +207,7 @@ class World:
         unlocked_profile_encryption_wallet = (
             await self.commands.get_unlocked_profile_encryption_wallet()
         ).result_or_raise
-        wallets = WalletContainer(user_wallet=unlocked_wallet, encryption_wallet=unlocked_profile_encryption_wallet)
+        wallets = WalletContainer(unlocked_wallet, unlocked_profile_encryption_wallet)
         await self._set_unlocked_wallets(wallets)
 
         profile_name = self._unlocked_wallets_ensure.name

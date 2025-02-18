@@ -36,7 +36,7 @@ class Unlock(CommandPasswordSecured):
         ).unlock(password=self.password)
 
         if self.app_state is not None:
-            wallets = WalletContainer(user_wallet=user_keys_wallet, encryption_wallet=encryption_key_wallet)
+            wallets = WalletContainer(user_keys_wallet, encryption_key_wallet)
             await self.app_state.unlock(wallets)
 
     def __get_unlock_seconds(self) -> int | None:
