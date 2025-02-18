@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured):
+    """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
+
     profile_name: str
     session: AsyncSession
     time: timedelta | None = None

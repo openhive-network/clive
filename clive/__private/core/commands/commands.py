@@ -152,7 +152,7 @@ class Commands(Generic[WorldT_co]):
         self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = False
     ) -> CommandWrapper:
         """
-        Return a CommandWrapper instance to unlock the wallet with given parameters.
+        Return a CommandWrapper instance to unlock the profile-related wallets (user keys and encryption key).
 
         Args:
         ----
@@ -173,6 +173,7 @@ class Commands(Generic[WorldT_co]):
         )
 
     async def lock_all(self) -> CommandWrapper:
+        """Lock all the wallets in the given beekeeper session."""
         return await self.__surround_with_exception_handlers(
             LockAll(
                 app_state=self._world.app_state,
