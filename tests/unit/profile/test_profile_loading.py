@@ -8,9 +8,8 @@ from beekeepy import AsyncBeekeeper
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
-from clive.__private.core.encryption import EncryptionService
+from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
-from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
 
@@ -28,10 +27,12 @@ async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str
     result = await CreateWallet(
         session=await beekeeper.session, wallet_name=profile_name, password=profile_name
     ).execute_with_result()
-    encryption_service = EncryptionService(
-        WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet)
-    )
-    await Profile.create(profile_name).save(encryption_service)
+    profile = Profile.create(profile_name)
+    await SaveProfile(
+        profile=profile,
+        unlocked_wallet=result.unlocked_user_wallet,
+        unlocked_encryption_wallet=result.unlocked_encryption_wallet,
+    ).execute()
     if lock:
         await result.unlocked_user_wallet.lock()
         await result.unlocked_encryption_wallet.lock()

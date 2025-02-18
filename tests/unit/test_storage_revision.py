@@ -6,9 +6,8 @@ import test_tools as tt
 from beekeepy import AsyncBeekeeper
 
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.encryption import EncryptionService
+from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
-from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
 from clive.__private.storage.service import PersistentStorageService
@@ -25,10 +24,12 @@ async def create_and_save_profile(profile_name: str) -> None:
         result = await CreateWallet(
             session=await beekeeper.session, wallet_name=profile_name, password=profile_name
         ).execute_with_result()
-        encryption_service = EncryptionService(
-            WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet)
-        )
-        await Profile.create(profile_name).save(encryption_service)
+        profile = Profile.create(profile_name)
+        await SaveProfile(
+            profile=profile,
+            unlocked_wallet=result.unlocked_user_wallet,
+            unlocked_encryption_wallet=result.unlocked_encryption_wallet,
+        ).execute()
 
 
 def test_storage_revision_doesnt_changed() -> None:
