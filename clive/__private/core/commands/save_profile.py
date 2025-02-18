@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryption
 from clive.__private.core.encryption import EncryptionService
+from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
@@ -18,7 +19,7 @@ class SaveProfile(CommandProfileEncryption, Command):
     async def _execute(self) -> None:
         if self.profile.is_skip_saving:
             return
-        encryption_service = EncryptionService(self.unlocked_wallet, self.unlocked_encryption_wallet)
+        encryption_service = EncryptionService(WalletContainer(self.unlocked_wallet, self.unlocked_encryption_wallet))
         await self.profile.save(encryption_service)
 
     async def _is_execution_possible(self) -> bool:
