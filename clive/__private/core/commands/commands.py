@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, TypeVar, over
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
-from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet, CreateWalletResult
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
@@ -462,10 +462,14 @@ class Commands(Generic[WorldT_co]):
             FindScheduledTransfers(node=self._world.node, account_name=account_name)
         )
 
-    async def save_profile(self) -> CommandWrapper:
+    async def save_profile(self) -> NoOpWrapper | CommandWrapper:
+        profile = self._world.profile
+        if profile.is_skip_save_set:
+            return NoOpWrapper()
+
         return await self.__surround_with_exception_handlers(
             SaveProfile(
-                profile=self._world.profile,
+                profile=profile,
                 unlocked_wallet=self._world.wallets.user_wallet,
                 unlocked_encryption_wallet=self._world.wallets.encryption_wallet,
             )
