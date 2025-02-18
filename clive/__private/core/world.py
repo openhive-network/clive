@@ -140,6 +140,10 @@ class World:
     def _should_sync_with_beekeeper(self) -> bool:
         return safe_settings.beekeeper.is_session_token_set
 
+    @property
+    def _should_save_profile_on_close(self) -> bool:
+        return self._profile is not None
+
     @asynccontextmanager
     async def during_setup(self) -> AsyncGenerator[None]:
         self._is_during_setup = True
@@ -158,7 +162,7 @@ class World:
         return self
 
     async def close(self) -> None:
-        if self._profile is not None:
+        if self._should_save_profile_on_close:
             await self.commands.save_profile()
         if self._node is not None:
             self._node.teardown()
@@ -303,6 +307,11 @@ class TUIWorld(World, CliveDOMNode):
     def _should_sync_with_beekeeper(self) -> bool:
         return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
 
+    @property
+    def _should_save_profile_on_close(self) -> bool:
+        """In TUI, it's not possible to save profile on some screens like Unlock/CreateProfile."""
+        return super()._should_save_profile_on_close and self.app_state.is_unlocked
+
     @override
     async def setup(self) -> Self:
         """
@@ -316,16 +325,6 @@ class TUIWorld(World, CliveDOMNode):
         except NoProfileUnlockedError:
             await self._switch_to_welcome_profile()
         return self
-
-    @override
-    async def close(self) -> None:
-        if self._profile is not None and self.app_state.is_unlocked:
-            await self.commands.save_profile()
-        if self._node is not None:
-            self._node.teardown()
-        if self._beekeeper is not None:
-            self._beekeeper.teardown()
-            self._clear_beekeeper_members_after_close()
 
     async def switch_profile(self, new_profile: Profile) -> None:
         await super().switch_profile(new_profile)
