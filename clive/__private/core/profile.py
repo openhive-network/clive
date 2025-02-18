@@ -7,7 +7,7 @@ from helpy import HttpUrl
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
-from clive.__private.core.commands.exceptions import CommandDecryptError, CommandEncryptError
+from clive.__private.core.commands.exceptions import CommandEncryptError
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
@@ -192,7 +192,7 @@ class Profile(Context):
             return
         try:
             await PersistentStorageService(encryption_service).save_profile(self)
-        except (CommandDecryptError, CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+        except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileSavingError from error
 
     def delete(self) -> None:
