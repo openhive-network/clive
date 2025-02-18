@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, Final
 
 from helpy import HttpUrl
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
-from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
@@ -39,15 +37,6 @@ class InvalidChainIdError(ProfileError):
 
     def __init__(self) -> None:
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
-
-
-class ProfileSavingError(ProfileError):
-    """Raised when profile can't be saved due to wallet being locked or beekeeper communication error."""
-
-    MESSAGE: ClassVar[str] = "Profile was not saved. Maybe wallet is locked or communication with beekeeper failed?"
-
-    def __init__(self) -> None:
-        super().__init__(ProfileSavingError.MESSAGE)
 
 
 class ProfileInvalidNameError(ProfileError):
@@ -181,19 +170,20 @@ class Profile(Context):
         """
         Save the current profile to the storage.
 
-        Raises: # noqa: D406
+        Args:
+        ----
+            encryption_service: Service for encrypting and decrypting data.
+
+        Raises:
         ------
             ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
-            ProfileSavingError: If profile could not be saved due to beekeeper wallet being locked
+            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
         if self._skip_save:
             return
-        try:
-            await PersistentStorageService(encryption_service).save_profile(self)
-        except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-            raise ProfileSavingError from error
+        await PersistentStorageService(encryption_service).save_profile(self)
 
     def delete(self) -> None:
         """
@@ -254,6 +244,12 @@ class Profile(Context):
         ----
             name: Name of the profile to load.
             encryption_service: Service for encrypting and decrypting data.
+
+        Raises:
+        ------
+            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
+            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         return await PersistentStorageService(encryption_service).load_profile(name)
 

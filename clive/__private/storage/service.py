@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Iterable, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Final, Iterable, TypeAlias
 
+from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
+from clive.__private.core.commands.decrypt import CommandDecryptError
+from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
@@ -24,6 +27,32 @@ class ProfileDoesNotExistsError(PersistentStorageServiceError):
         self.profile_name = profile_name
         self.message = f"Profile `{profile_name}` does not exist."
         super().__init__(self.message)
+
+
+class ProfileSavingError(PersistentStorageServiceError):
+    """Raised when profile can't be saved."""
+
+    MESSAGE: ClassVar[str] = (
+        "Profile was not saved. "
+        "Maybe wallet is locked or communication with beekeeper failed?"
+        "This would mean encryption can't be done."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(ProfileSavingError.MESSAGE)
+
+
+class ProfileLoadingError(PersistentStorageServiceError):
+    """Raised when profile can't be loaded."""
+
+    MESSAGE: ClassVar[str] = (
+        "Profile was not loaded. "
+        "Maybe wallet is locked or communication with beekeeper failed? "
+        "This would mean decryption can't be done."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(ProfileSavingError.MESSAGE)
 
 
 class ProfileAlreadyExistsError(PersistentStorageServiceError):
@@ -55,6 +84,8 @@ class PersistentStorageService:
         ------
             ProfileAlreadyExistsError: If given profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
+            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         self._raise_if_profile_with_name_already_exists_on_first_save(profile)
         profile.unset_is_newly_created()
@@ -75,6 +106,8 @@ class PersistentStorageService:
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
+            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
         profile_storage_model = await self._find_profile_storage_model_by_name(profile_name)
@@ -152,13 +185,30 @@ class PersistentStorageService:
         symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
 
     async def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
+        """
+        Save profile model to the storage.
+
+        Args:
+        ----
+            profile_name: Name of the profile to be saved.
+            profile_model: Profile model to be saved.
+
+        Raises:
+        ------
+            ProfileSavingError: If profile could not be saved e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
+        """
         versioned_storage_dir = PersistentStorageService._get_storage_versioned_directory()
 
         # create data directory if it doesn't exist
         versioned_storage_dir.mkdir(parents=True, exist_ok=True)
         self._create_current_storage_symlink()
 
-        encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
+        try:
+            encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
+        except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+            raise ProfileSavingError from error
+
         filepath = versioned_storage_dir / self.get_profile_filename(profile_name)
         filepath.write_text(encrypted_profile)
 
@@ -173,12 +223,19 @@ class PersistentStorageService:
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
+            ProfileLoadingError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         filepaths = self._get_storage_filepaths()
         for name, path in filepaths.items():
             if name == profile_name:
                 encrypted_profile = path.read_text()
-                decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+
+                try:
+                    decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+                except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+                    raise ProfileLoadingError from error
+
                 return ProfileStorageModel.parse_raw(decrypted_profile)
         raise ProfileDoesNotExistsError(profile_name)
 
