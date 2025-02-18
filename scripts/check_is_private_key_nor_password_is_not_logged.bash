@@ -7,6 +7,7 @@ function find_password_private_keys() {
         "Error in response from url"
         "Problem occurred during communication with"
         "CI_"
+        "clive_local_tools"
     )
 
     find . -path "*/clive/*/latest.log" -print0 |
