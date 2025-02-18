@@ -29,12 +29,12 @@ async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str
         session=await beekeeper.session, wallet_name=profile_name, password=profile_name
     ).execute_with_result()
     encryption_service = EncryptionService(
-        WalletContainer(result.unlocked_wallet, result.unlocked_profile_encryption_wallet)
+        WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet)
     )
     await Profile.create(profile_name).save(encryption_service)
     if lock:
-        await result.unlocked_wallet.lock()
-        await result.unlocked_profile_encryption_wallet.lock()
+        await result.unlocked_user_wallet.lock()
+        await result.unlocked_encryption_wallet.lock()
 
 
 def test_if_profile_is_loaded(world: World, prepare_profile_with_wallet: None, wallet_name: str) -> None:  # noqa: ARG001

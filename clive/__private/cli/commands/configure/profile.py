@@ -46,8 +46,8 @@ class CreateProfile(BeekeeperBasedCommand):
                 raise
             raise CLICreatingProfileCommunicationError from error
 
-        wallet = result.unlocked_wallet
-        encryption_wallet = result.unlocked_profile_encryption_wallet
+        wallet = result.unlocked_user_wallet
+        encryption_wallet = result.unlocked_encryption_wallet
         await SaveProfile(
             unlocked_wallet=wallet, unlocked_encryption_wallet=encryption_wallet, profile=profile
         ).execute()
