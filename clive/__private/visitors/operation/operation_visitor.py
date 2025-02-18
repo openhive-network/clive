@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.cli.exceptions import CLIPrettyError
+
 if TYPE_CHECKING:
     from clive.__private.models.schemas import (
         AccountCreateOperation,
@@ -61,6 +63,7 @@ if TYPE_CHECKING:
 class OperationVisitor:
     def _default_visit(self, operation: OperationUnion) -> None:
         """Fallback if no specific method exists for an operation type."""
+        raise CLIPrettyError(f"Visit function for `{operation.get_name_with_suffix()}` is not implemented.")
 
     def visit(self, operation: OperationUnion) -> None:
         """Determine the correct method to call based on operation type."""
