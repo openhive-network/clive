@@ -4,12 +4,21 @@ from dataclasses import dataclass
 
 from beekeepy import AsyncSession, AsyncUnlockedWallet
 
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.commands.exceptions import (
-    MultipleEncryptionWalletsUnlockedError,
-    NoEncryptionWalletUnlockedError,
-)
 from clive.__private.core.encryption import EncryptionService
+
+
+class MultipleEncryptionWalletsUnlockedError(CommandError):
+    def __init__(self, command: Command) -> None:
+        super().__init__(
+            command, "Multiple encryption wallets are unlocked on the beekeeper. There should be only one."
+        )
+
+
+class NoEncryptionWalletUnlockedError(CommandError):
+    def __init__(self, command: Command) -> None:
+        super().__init__(command, "There is no unlocked encryption wallet on the beekeeper. There should be only one.")
 
 
 @dataclass(kw_only=True)

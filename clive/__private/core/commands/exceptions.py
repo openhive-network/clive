@@ -11,15 +11,3 @@ class MultipleProfilesUnlockedError(CommandError):
 class NoProfileUnlockedError(CommandError):
     def __init__(self, command: Command) -> None:
         super().__init__(command, "There is no unlocked profile on the beekeeper.")
-
-
-class MultipleEncryptionWalletsUnlockedError(CommandError):
-    def __init__(self, command: Command) -> None:
-        super().__init__(
-            command, "Multiple encryption wallets are unlocked on the beekeeper. There should be only one."
-        )
-
-
-class NoEncryptionWalletUnlockedError(CommandError):
-    def __init__(self, command: Command) -> None:
-        super().__init__(command, "There is no unlocked encryption wallet on the beekeeper. There should be only one.")
