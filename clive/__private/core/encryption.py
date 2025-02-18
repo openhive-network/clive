@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
-from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
+from clive.__private.core.commands.decrypt import Decrypt
+from clive.__private.core.commands.encrypt import Encrypt
 
 if TYPE_CHECKING:
     from clive.__private.core.wallet_container import WalletContainer
@@ -24,14 +24,14 @@ class EncryptionService:
         return wallet_name.endswith(cls._ENCRYPTION_KEY_WALLET_NAME_SUFFIX)
 
     async def decrypt(self, encrypted_content: str) -> str:
-        return await DecryptWithProfileKey(
+        return await Decrypt(
             unlocked_wallet=self._wallets.user_wallet,
             unlocked_encryption_wallet=self._wallets.encryption_wallet,
             encrypted_content=encrypted_content,
         ).execute_with_result()
 
     async def encrypt(self, content: str) -> str:
-        return await EncryptWithProfileKey(
+        return await Encrypt(
             unlocked_wallet=self._wallets.user_wallet,
             unlocked_encryption_wallet=self._wallets.encryption_wallet,
             content=content,

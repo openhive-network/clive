@@ -7,7 +7,7 @@ from helpy import HttpUrl
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
-from clive.__private.core.commands.encrypt_with_profile_key import CommandEncryptError
+from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
