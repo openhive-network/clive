@@ -5,7 +5,7 @@ from typing import Final, TypeGuard
 from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
-from clive.__private.core.profile import ProfileSavingError
+from clive.__private.storage.service import ProfileSavingError
 
 
 class GeneralErrorNotificator(ErrorNotificator[Exception]):
