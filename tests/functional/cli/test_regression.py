@@ -4,9 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.core.commands.load_profile import LoadProfile
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -28,12 +26,8 @@ async def test_configure_node_set_address_regression_issue_345(
 
     # required to unset SECRETS_NODE_ADDRESS which is used in other tests and overrides the value set via this test
     with node_address_env_context_factory(None):
-        profile = await LoadProfile(
-            profile_name=WORKING_ACCOUNT_NAME,
-            unlocked_wallet=cli_tester.world.wallets.user_wallet,
-            unlocked_encryption_wallet=cli_tester.world.wallets.encryption_wallet,
-        ).execute_with_result()
-        actual_node_address = profile.node_address
+        await cli_tester.world.load_profile_based_on_beekepeer()  # reload profile
+        actual_node_address = cli_tester.world.profile.node_address
         assert str(actual_node_address) == expected_node_address, "The node address was not set correctly."
 
         # assert that running a command will raise a correct error
