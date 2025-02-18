@@ -10,18 +10,18 @@ if TYPE_CHECKING:
 
 
 class EncryptionService:
-    PROFILE_ENCRYPTION_WALLET_SUFFIX: Final[str] = "_profile_encryption"
+    _ENCRYPTION_KEY_WALLET_NAME_SUFFIX: Final[str] = "_encryption"
 
     def __init__(self, wallets: WalletContainer) -> None:
         self._wallets = wallets
 
     @classmethod
     def get_encryption_wallet_name(cls, profile_name: str) -> str:
-        return f"{profile_name}{cls.PROFILE_ENCRYPTION_WALLET_SUFFIX}"
+        return f"{profile_name}{cls._ENCRYPTION_KEY_WALLET_NAME_SUFFIX}"
 
     @classmethod
     def is_encryption_wallet_name(cls, wallet_name: str) -> bool:
-        return wallet_name.endswith(cls.PROFILE_ENCRYPTION_WALLET_SUFFIX)
+        return wallet_name.endswith(cls._ENCRYPTION_KEY_WALLET_NAME_SUFFIX)
 
     async def decrypt(self, encrypted_content: str) -> str:
         return await DecryptWithProfileKey(
