@@ -64,8 +64,10 @@ class OperationVisitor:
 
     def visit(self, operation: OperationUnion) -> None:
         """Determine the correct method to call based on operation type."""
-        method_name = f"visit_{operation.get_name_with_suffix()}"
-        visit_method = getattr(self, method_name, self._default_visit)
+        operation_name = operation.get_name_with_suffix()
+        method_name = f"visit_{operation_name}"
+        visit_method = getattr(self, method_name, None)
+        assert visit_method is not None, f"No visit method defined for {operation_name}"
         visit_method(operation)
 
     def visit_account_create_operation(self, operation: AccountCreateOperation) -> None:
