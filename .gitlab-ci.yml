@@ -192,6 +192,8 @@ testing_password_private_key_logging:
       artifacts: true
     - job: testing_tui
       artifacts: true
+    - job: testing_cli
+      artifacts: true
   script:
     - cd "${CI_PROJECT_DIR}/tests"
     - bash "${CI_PROJECT_DIR}/scripts/check_is_private_key_nor_password_is_not_logged.bash"
