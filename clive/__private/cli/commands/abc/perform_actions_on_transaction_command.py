@@ -11,14 +11,17 @@ from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
     CLITransactionNotSignedError,
+    CLITransactionUnknownAccountError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
-from clive.__private.core.ensure_transaction import TransactionConvertibleType
+from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
+from clive.__private.models.schemas import AccountName
 from clive.__private.validators.path_validator import PathValidator
+from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 
 
 @dataclass(kw_only=True)
@@ -37,13 +40,22 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
 
+    async def get_transaction(self) -> Transaction:
+        return ensure_transaction(await self._get_transaction_content())
+
     async def validate(self) -> None:
         self._validate_save_file_path()
         await super().validate()
 
+    async def validate_inside_context_manager(self) -> None:
+        if self.profile.is_known_accounts_enabled:
+            await self._validate_unknown_accounts()
+        await super().validate_inside_context_manager()
+
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
+
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
@@ -87,6 +99,16 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     def _validate_if_broadcasting_signed_transaction(self) -> None:
         if self.broadcast and not self.sign:
             raise CLITransactionNotSignedError
+
+    async def _validate_unknown_accounts(self) -> None:
+        transaction_ensured = await self.get_transaction()
+        visitor = PotentialKnownAccountCollector()
+        transaction_ensured.accept(visitor)
+        unknown_accounts = visitor.get_unknown_accounts(
+            [AccountName(known_account.name) for known_account in self.profile.accounts.known]
+        )
+        if unknown_accounts:
+            raise CLITransactionUnknownAccountError(unknown_accounts)
 
     def _get_transaction_created_message(self) -> str:
         return "created"
