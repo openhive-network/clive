@@ -19,6 +19,7 @@ from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
+from clive.__private.visitors.operation.known_account_visitor import KnownAccountsVisitor
 
 
 @dataclass(kw_only=True)
@@ -63,6 +64,9 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         if self.save_file is not None:
             typer.echo(f"Transaction was saved to {self.save_file}")
 
+        if self.broadcast:
+            self._add_accounts_to_profiles_known_accounts(transaction=transaction)
+
     def __get_key_to_sign(self) -> PublicKey | None:
         if self.sign is None:
             return None
@@ -96,3 +100,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
+
+    def _add_accounts_to_profiles_known_accounts(self, transaction: Transaction) -> None:
+        """Add accounts from all financial operations in transaction to known accounts."""
+        known_accounts_visitor = KnownAccountsVisitor()
+        transaction.accept(known_accounts_visitor)
+
+        if known_accounts_visitor.known_accounts:
+            profile = self.world.profile
+            for known_account in known_accounts_visitor.known_accounts:
+                if not profile.accounts.is_account_known(account=known_account):
+                    profile.accounts.known.add(known_account)
