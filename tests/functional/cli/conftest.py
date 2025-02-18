@@ -105,6 +105,7 @@ async def cli_tester(
 async def cli_tester_locked(cli_tester: CLITester) -> CLITester:
     """Token is set in environment variable. Beekeeper session is locked."""
     await cli_tester.world.commands.lock()
+    cli_tester.world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
     return cli_tester
 
 

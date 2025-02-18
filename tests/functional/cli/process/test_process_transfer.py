@@ -88,7 +88,6 @@ async def test_process_transfer_in_locked(
 ) -> None:
     """Check if clive process transfer throws exception when wallet is locked."""
     # ARRANGE
-    cli_tester_locked.world.profile.skip_saving()
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
