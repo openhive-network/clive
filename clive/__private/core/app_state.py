@@ -42,6 +42,7 @@ class AppState:
             return
 
         self._is_unlocked = False
+        self.world.wallets.clear_wallets()
         self.world.on_going_into_locked_mode(source)
         logger.info("Mode switched to LOCKED.")
 
