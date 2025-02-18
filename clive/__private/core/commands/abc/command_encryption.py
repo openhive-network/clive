@@ -15,7 +15,14 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import PublicKey
 
 
-class CommandProfileEncryptionError(CommandExecutionNotPossibleError):
+class CommandRequiresUnlockedEncryptionWalletError(CommandExecutionNotPossibleError):
+    """
+    Error raised when no encryption wallet is available for a command that requires it.
+
+    Since the regular user wallet should always be unlocked when the encryption wallet is unlocked and required,
+    this error is raised when either one of both wallets is not unlocked (user wallet or encryption wallet).
+    """
+
     def __init__(self, command: CommandEncryption) -> None:
         super().__init__(command, reason="requires both unlocked user wallet and encryption wallet.")
 
@@ -26,7 +33,9 @@ class CommandEncryption(CommandInUnlocked, ABC):
 
     unlocked_encryption_wallet: AsyncUnlockedWallet
 
-    _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandProfileEncryptionError
+    _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = (
+        CommandRequiresUnlockedEncryptionWalletError
+    )
 
     @property
     def encryption_wallet_name(self) -> str:
