@@ -82,7 +82,7 @@ async def test_lock_after_given_time(
 
     # ASSERT
     is_wallet_unlocked_in_beekeeper = await IsWalletUnlocked(
-        wallet=world._unlocked_wallets_ensure.blockchain_keys
+        wallet=world._unlocked_wallets_ensure.user_wallet
     ).execute_with_result()
     assert not is_wallet_unlocked_in_beekeeper, "Wallet should be locked in beekeeper"
 

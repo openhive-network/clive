@@ -11,17 +11,16 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class WalletContainer:
-    blockchain_keys: AsyncUnlockedWallet
-    profile_encryption: AsyncUnlockedWallet
+    user_wallet: AsyncUnlockedWallet
+    encryption_wallet: AsyncUnlockedWallet
 
     def __post_init__(self) -> None:
-        encryption_wallet_name = EncryptionService.get_encryption_wallet_name(self.blockchain_keys.name)
+        encryption_wallet_name = EncryptionService.get_encryption_wallet_name(self.user_wallet.name)
         message = (
-            f"wallet name {self.blockchain_keys.name} should match"
-            f" encryption wallet name {self.profile_encryption.name}"
+            f"wallet name {self.user_wallet.name} should match encryption wallet name {self.encryption_wallet.name}"
         )
-        assert encryption_wallet_name == self.profile_encryption.name, message
+        assert encryption_wallet_name == self.encryption_wallet.name, message
 
     @property
     def name(self) -> str:
-        return self.blockchain_keys.name
+        return self.user_wallet.name

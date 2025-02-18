@@ -195,7 +195,7 @@ class World:
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
         wallets = WalletContainer(
-            blockchain_keys=result.unlocked_wallet, profile_encryption=result.unlocked_profile_encryption_wallet
+            user_wallet=result.unlocked_wallet, encryption_wallet=result.unlocked_profile_encryption_wallet
         )
         await self._set_unlocked_wallets(wallets)
         await self.commands.save_profile()
@@ -209,9 +209,7 @@ class World:
         unlocked_profile_encryption_wallet = (
             await self.commands.get_unlocked_profile_encryption_wallet()
         ).result_or_raise
-        wallets = WalletContainer(
-            blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
-        )
+        wallets = WalletContainer(user_wallet=unlocked_wallet, encryption_wallet=unlocked_profile_encryption_wallet)
         await self._set_unlocked_wallets(wallets)
 
         profile_name = self._unlocked_wallets_ensure.name
@@ -247,8 +245,8 @@ class World:
         def _assert_wallet_exists(name: str) -> None:
             assert name in existing_wallet_names, f"Wallet {name} does not exists within this session"
 
-        _assert_wallet_exists(wallets.blockchain_keys.name)
-        _assert_wallet_exists(wallets.profile_encryption.name)
+        _assert_wallet_exists(wallets.user_wallet.name)
+        _assert_wallet_exists(wallets.encryption_wallet.name)
         self._unlocked_wallets = wallets
 
     def _on_going_into_locked_mode(self, _: LockSource) -> None:

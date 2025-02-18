@@ -33,9 +33,7 @@ class SyncStateWithBeekeeper(Command):
         unlocked_wallet = await self.wallet.unlocked
         unlocked_profile_encryption_wallet = await self.profile_encryption_wallet.unlocked
         if unlocked_wallet is not None and unlocked_profile_encryption_wallet is not None:
-            wallets = WalletContainer(
-                blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
-            )
+            wallets = WalletContainer(user_wallet=unlocked_wallet, encryption_wallet=unlocked_profile_encryption_wallet)
             await self.app_state.unlock(wallets)
         elif unlocked_wallet is None and unlocked_profile_encryption_wallet is None:
             self.app_state.lock(self.source)

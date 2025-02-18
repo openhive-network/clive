@@ -30,14 +30,13 @@ class Unlock(CommandPasswordSecured):
         if unlock_seconds := self.__get_unlock_seconds():
             await SetTimeout(session=self.session, seconds=unlock_seconds).execute()
 
-        unlocked_wallet = await (await self.session.open_wallet(name=self.profile_name)).unlock(password=self.password)
-        unlocked_profile_encryption_wallet = await (
+        user_keys_wallet = await (await self.session.open_wallet(name=self.profile_name)).unlock(password=self.password)
+        encryption_key_wallet = await (
             await self.session.open_wallet(name=EncryptionService.get_encryption_wallet_name(self.profile_name))
         ).unlock(password=self.password)
+
         if self.app_state is not None:
-            wallets = WalletContainer(
-                blockchain_keys=unlocked_wallet, profile_encryption=unlocked_profile_encryption_wallet
-            )
+            wallets = WalletContainer(user_wallet=user_keys_wallet, encryption_wallet=encryption_key_wallet)
             await self.app_state.unlock(wallets)
 
     def __get_unlock_seconds(self) -> int | None:

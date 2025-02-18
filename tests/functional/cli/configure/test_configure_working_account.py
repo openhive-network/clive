@@ -18,8 +18,8 @@ async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     # ARRANGE
     profile_name = cli_tester.world.profile.name
     encryption_service = EncryptionService(
-        cli_tester.world._unlocked_wallets_ensure.blockchain_keys,
-        cli_tester.world._unlocked_wallets_ensure.profile_encryption,
+        cli_tester.world._unlocked_wallets_ensure.user_wallet,
+        cli_tester.world._unlocked_wallets_ensure.encryption_wallet,
     )
     profile_account_checker = ProfileAccountsChecker(profile_name, encryption_service)
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
