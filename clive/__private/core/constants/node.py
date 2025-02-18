@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Final
 
+
 # HIVE config mapping (names and values correspond to the hived config.hpp, names can have unit postfix when needed)
 HIVE_OWNER_AUTH_RECOVERY_PERIOD_DAYS: Final[int] = 30
 HIVE_PROPOSAL_MAX_IDS_NUMBER: Final[int] = 5
@@ -28,9 +29,13 @@ VESTS_TO_REMOVE_DELEGATION: Final[int] = 0
 VESTS_TO_REMOVE_POWER_DOWN: Final[int] = 0
 PERCENT_TO_REMOVE_WITHDRAW_ROUTE: Final[Decimal] = Decimal(0)
 VALUE_TO_REMOVE_SCHEDULED_TRANSFER: Final[int] = 0
+CANCEL_PROXY_VALUE: Final[str] = ""
 
 # claim account
 HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION: Final[int] = 0
+
+# make transfer to from account value
+TRANSFER_TO_VESTING_RECEIVER_IS_FROM_VALUE: Final[str] = ""
 
 # governance
 GOVERNANCE_VOTES_VALIDITY_PERIOD: Final[timedelta] = timedelta(days=HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS)

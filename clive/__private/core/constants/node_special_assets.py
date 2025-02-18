@@ -13,7 +13,6 @@ from clive.__private.core.constants.node import (
 )
 from clive.__private.models import Asset
 
-# removal values
 SCHEDULED_TRANSFER_REMOVE_ASSETS: Final[tuple[Asset.Hive, Asset.Hbd]] = (
     Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
     Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
