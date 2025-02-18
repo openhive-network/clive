@@ -18,19 +18,19 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured):
-    app_state: AppState | None = None
+    profile_name: str
     session: AsyncSession
-    wallet_name: str
     time: timedelta | None = None
     permanent: bool = False
+    app_state: AppState | None = None
 
     async def _execute(self) -> None:
         if unlock_seconds := self.__get_unlock_seconds():
             await SetTimeout(session=self.session, seconds=unlock_seconds).execute()
 
-        unlocked_wallet = await (await self.session.open_wallet(name=self.wallet_name)).unlock(password=self.password)
+        unlocked_wallet = await (await self.session.open_wallet(name=self.profile_name)).unlock(password=self.password)
         unlocked_profile_encryption_wallet = await (
-            await self.session.open_wallet(name=EncryptionService.get_encryption_wallet_name(self.wallet_name))
+            await self.session.open_wallet(name=EncryptionService.get_encryption_wallet_name(self.profile_name))
         ).unlock(password=self.password)
         if self.app_state is not None:
             wallets = WalletContainer(

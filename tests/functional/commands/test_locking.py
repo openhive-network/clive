@@ -36,7 +36,7 @@ async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_wi
         await Unlock(
             app_state=world.app_state,
             session=world._session_ensure,
-            wallet_name="blabla",
+            profile_name="blabla",
             password="blabla",
         ).execute()
 

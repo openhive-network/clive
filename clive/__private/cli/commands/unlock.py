@@ -53,7 +53,7 @@ class Unlock(BeekeeperBasedCommand):
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
         try:
             await CoreUnlockCommand(
-                wallet_name=profile_name,
+                profile_name=profile_name,
                 password=password,
                 session=await self.beekeeper.session,
             ).execute()

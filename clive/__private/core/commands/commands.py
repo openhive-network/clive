@@ -166,7 +166,7 @@ class Commands(Generic[WorldT_co]):
                 password=password,
                 app_state=self._world.app_state,
                 session=self._world._session_ensure,
-                wallet_name=profile_name or self._world.profile.name,
+                profile_name=profile_name or self._world.profile.name,
                 time=time,
                 permanent=permanent,
             )
