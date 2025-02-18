@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.wallet_container import WalletContainer
@@ -13,10 +13,13 @@ if TYPE_CHECKING:
 
 
 class InvalidWalletStateError(CommandError):
+    MESSAGE: Final[str] = (
+        "The user wallet, containing its keys, and the encryption wallet must BOTH be unlocked or locked. "
+        "When they have different states, something went wrong."
+    )
+
     def __init__(self, command: Command) -> None:
-        super().__init__(
-            command, "There should be unlocked wallet with blockchain keys and unlocked profile encryption wallet."
-        )
+        super().__init__(command, self.MESSAGE)
 
 
 @dataclass(kw_only=True)
