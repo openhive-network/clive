@@ -81,9 +81,7 @@ async def test_lock_after_given_time(
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
-    is_wallet_unlocked_in_beekeeper = await IsWalletUnlocked(
-        wallet=world._unlocked_wallets_ensure.user_wallet
-    ).execute_with_result()
+    is_wallet_unlocked_in_beekeeper = await IsWalletUnlocked(wallet=world.wallets.user_wallet).execute_with_result()
     assert not is_wallet_unlocked_in_beekeeper, "Wallet should be locked in beekeeper"
 
     await world.commands.sync_state_with_beekeeper()
