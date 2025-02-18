@@ -4,13 +4,13 @@ from dataclasses import dataclass
 
 from helpy.exceptions import CommunicationError
 
-from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryption
+from clive.__private.core.commands.abc.command_encryption import CommandEncryption
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.exceptions import CommandEncryptError
 
 
 @dataclass(kw_only=True)
-class EncryptWithProfileKey(CommandProfileEncryption, CommandWithResult[str]):
+class EncryptWithProfileKey(CommandEncryption, CommandWithResult[str]):
     content: str
 
     async def _execute(self) -> None:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command import Command
-from clive.__private.core.commands.abc.command_profile_encryption import CommandProfileEncryption
+from clive.__private.core.commands.abc.command_encryption import CommandEncryption
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class SaveProfile(CommandProfileEncryption, Command):
+class SaveProfile(CommandEncryption, Command):
     profile: Profile
 
     async def _execute(self) -> None:

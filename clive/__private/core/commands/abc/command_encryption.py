@@ -16,13 +16,13 @@ if TYPE_CHECKING:
 
 
 class CommandProfileEncryptionError(CommandExecutionNotPossibleError):
-    def __init__(self, command: CommandProfileEncryption) -> None:
-        super().__init__(command, reason="requires unlocked wallet and profile encryption wallet")
+    def __init__(self, command: CommandEncryption) -> None:
+        super().__init__(command, reason="requires both unlocked user wallet and encryption wallet.")
 
 
 @dataclass(kw_only=True)
-class CommandProfileEncryption(CommandInUnlocked, ABC):
-    """A command that requires unlocked wallet and profile encryption wallet."""
+class CommandEncryption(CommandInUnlocked, ABC):
+    """A command that requires both unlocked user wallet and encryption wallet."""
 
     unlocked_encryption_wallet: AsyncUnlockedWallet
 
