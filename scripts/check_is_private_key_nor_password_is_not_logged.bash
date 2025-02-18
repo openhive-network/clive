@@ -4,7 +4,6 @@ set -euo pipefail
 
 function find_password_private_keys() {
      local exclude_patterns=(
-        "Error in response from url"
         "Problem occurred during communication with"
         "CI_"
         "clive_local_tools"
