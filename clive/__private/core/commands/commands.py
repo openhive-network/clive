@@ -350,8 +350,7 @@ class Commands(Generic[WorldT_co]):
     async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncStateWithBeekeeper(
-                user_wallet=self._world.wallets.user_wallet,
-                encryption_wallet=self._world.wallets.encryption_wallet,
+                wallets=self._world.wallets._content,
                 app_state=self._world.app_state,
                 source=source,
             )
