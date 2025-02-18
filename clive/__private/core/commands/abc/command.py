@@ -20,6 +20,10 @@ class CommandError(CliveError):
 class Command(ABC):
     """An abstract class that defines a common interface for executing commands."""
 
+    @property
+    def _should_skip_execution(self) -> bool:
+        return False
+
     @abstractmethod
     async def _execute(self) -> None:
         """
@@ -30,6 +34,9 @@ class Command(ABC):
 
     async def execute(self) -> None:
         """Execute the command. The result could be accessed via the `result` property."""
+        if self._should_skip_execution:
+            self._log_execution_skipped()
+            return
         self._log_execution_info()
         await self._execute()
 
@@ -39,3 +46,6 @@ class Command(ABC):
 
     def _log_execution_info(self) -> None:
         logger.debug(f"Executing command: {self.__class__.__name__}")
+
+    def _log_execution_skipped(self) -> None:
+        logger.debug(f"Skipping execution of command: {self.__class__.__name__}")
