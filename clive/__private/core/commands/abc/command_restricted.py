@@ -26,6 +26,11 @@ class CommandRestricted(Command, ABC):
         ------
             CommandExecutionNotPossibleError: If the command cannot be executed.
         """
+        if self._should_skip_execution:
+            # _is_execution_possible should not be called if the execution is skipped
+            await super().execute()
+            return
+
         if not await self._is_execution_possible():
             raise self._execution_impossible_error(self)
         await super().execute()
