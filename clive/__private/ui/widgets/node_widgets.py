@@ -2,20 +2,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from helpy import AsyncHived, HttpUrl
-from helpy import Settings as HelpySettings
+from helpy import HttpUrl
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.widgets import Static
 
+from clive.__private.core.node import Node
+from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
-
-    from clive.__private.core.node import Node
 
 
 class SelectedNodeAddress(Static):
@@ -61,17 +60,29 @@ class NodesList(Container, CliveWidget):
             yield NodeSelector()
 
     async def save_selected_node_address(self) -> bool:
-        new_address = self.query_exactly_one(NodeSelector).value_ensure
-
-        async with AsyncHived(settings=HelpySettings(http_endpoint=new_address)) as temp_node:
-            new_network_type = (await temp_node.api.database.get_version()).node_type
-
-        current_network_type = await self.node.cached.network_type
-
-        if new_network_type == current_network_type:
-            await self.node.set_address(new_address)
+        async def set_address(address: HttpUrl) -> None:
+            await self.node.set_address(address)
             self.app.trigger_node_watchers()
-            self.notify(f"Node address set to `{self._node.http_endpoint}`.")
+            self.notify(f"Node address set to `{address}`.")
+
+        new_address = self.query_exactly_one(NodeSelector).value_ensure
+        temp_profile = Profile.create("temporary", node_address=new_address)
+
+        async with Node(temp_profile) as temp_node:
+            is_new_node_online = await temp_node.cached.online
+            new_network_type = temp_node.cached.network_type_or_none
+
+        if not is_new_node_online:
+            self.notify("Cannot connect to an offline node.", severity="error")
+            return False
+
+        is_current_node_online = await self.node.cached.online
+        current_network_type = self.node.cached.network_type_or_none
+
+        if not is_current_node_online or new_network_type == current_network_type:
+            # When we have no connection, just set the address without comparing network types.
+            # When both nodes are online and have the same network type, we can just switch the address.
+            await set_address(new_address)
             return True
 
         # block possibility to stay connected to node with different network type
