@@ -7,8 +7,11 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models.schemas import convert_to_representation
 from clive.exceptions import CliveError
+from schemas.encoders import get_hf26_encoder
+from schemas.decoders import DecoderFactory
+from schemas.operations import convert_to_representation
+from clive.__private.models.schemas import OperationUnion
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -74,7 +77,17 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     if not isinstance(item, Transaction):
         item = convert_to_representation(item)
 
-    return item.json(by_alias=True).encode()
+    if isinstance(item, Transaction):
+        operations_representations = []
+        for operation in item.operations:
+            if isinstance(operation, OperationUnion):
+                operations_representations.append(convert_to_representation(operation))
+            else:
+                operations_representations.append(operation)
+        item.operations = operations_representations
+        return get_hf26_encoder().encode(item)
+    
+    return item.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
@@ -103,12 +116,12 @@ def serialize_transaction(transaction: Transaction) -> bytes:
     return result.result
 
 
-def deserialize_transaction(transaction: bytes) -> Transaction:
+def deserialize_transaction(transaction: bytes, decoder_factory: DecoderFactory) -> Transaction:
     from clive.__private.models import Transaction
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
-    return Transaction.parse_raw(result.result.decode())
+    return Transaction.parse_raw(result.result.decode(), decoder_factory=decoder_factory)
 
 
 def calculate_public_key(wif: str) -> PublicKey:

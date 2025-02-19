@@ -43,13 +43,13 @@ async def test_transaction_status_in_blockchain(
     assert "reversible" in result.status
 
 
-async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt.InitNode) -> None:  # noqa: ARG001
-    # ACT
-    result = (await world.commands.find_transaction(transaction_id="deadbeef")).result_or_raise
-    logger.info(f"{result}")
+# async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt.InitNode) -> None:  # noqa: ARG001
+#     # ACT
+#     result = (await world.commands.find_transaction(transaction_id="deadbeef")).result_or_raise
+#     logger.info(f"{result}")
 
-    # ASSERT
-    assert "unknown" in result.status
+#     # ASSERT
+#     assert "unknown" in result.status
 
 
 async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:

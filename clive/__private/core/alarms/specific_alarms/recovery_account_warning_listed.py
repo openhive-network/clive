@@ -22,7 +22,7 @@ class RecoveryAccountWarningListedAlarmData(AlarmDataNeverExpiresWithoutAction):
         return {self.WARNING_LISTED_ACCOUNT_LABEL: self.warning_recovery_account} | super().get_titled_data()
 
 
-class RecoveryAccountWarningListedAlarmIdentifier(AlarmIdentifier):
+class RecoveryAccountWarningListedAlarmIdentifier(AlarmIdentifier, tag=True):
     recovery_account: str
 
 

@@ -7,7 +7,7 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_base import 
 )
 
 
-class CurrencySelectorLiquid(CurrencySelectorBase[Asset.LiquidT]):
+class CurrencySelectorLiquid(CurrencySelectorBase):
     @staticmethod
     def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.LiquidT]]:
         return {

@@ -4,25 +4,25 @@ import re
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
-from pydantic.generics import GenericModel
-
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
     DecimalConverter,
     DecimalConvertible,
 )
 from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
+
+from schemas.fields.resolvables import AnyAsset
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
-AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
+# AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
+# AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
 
 AssetAmount = DecimalConvertible
-AssetFactory = Callable[[AssetAmount], AssetT]
+# AssetFactory = Callable[[AssetAmount], AssetT]
 
 
 class AssetError(CliveError):
@@ -58,20 +58,20 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
+class AssetFactoryHolder(CliveBaseModel):
     """Holds factory for asset."""
 
     class Config:
         frozen = True
 
-    asset_cls: type[AssetT]
-    asset_factory: AssetFactory[AssetT]
+    asset_cls: type
+    asset_factory: AnyAsset
 
 
 class Asset:
-    Hive: TypeAlias = AssetHiveHF26
-    Hbd: TypeAlias = AssetHbdHF26
-    Vests: TypeAlias = AssetVestsHF26
+    Hive: TypeAlias = AssetHive
+    Hbd: TypeAlias = AssetHbd
+    Vests: TypeAlias = AssetVests
     LiquidT: TypeAlias = Hive | Hbd
     VotingT: TypeAlias = Hive | Vests
     AnyT: TypeAlias = Hive | Hbd | Vests
@@ -208,7 +208,7 @@ class Asset:
         """
         precision = precision if isinstance(precision, int) else cls.get_precision(precision)
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
-        return int(amount_decimal * 10**precision)
+        return int(amount_decimal * 10**precision.value)
 
     @staticmethod
     def get_symbol(asset: type[Asset.AnyT] | Asset.AnyT) -> str:

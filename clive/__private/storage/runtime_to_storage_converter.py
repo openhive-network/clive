@@ -11,6 +11,7 @@ from clive.__private.storage.model import (
     TransactionCoreStorageModel,
     TransactionStorageModel,
 )
+from schemas.operations import convert_to_representation
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount

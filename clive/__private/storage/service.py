@@ -12,6 +12,7 @@ from clive.__private.storage.model import ProfileStorageModel, calculate_storage
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
+from schemas.decoders import get_hf26_decoder
 
 if TYPE_CHECKING:
     from clive.__private.core.encryption import EncryptionService

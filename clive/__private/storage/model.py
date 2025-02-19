@@ -4,6 +4,8 @@ from hashlib import sha256
 from pathlib import Path  # noqa: TCH003
 from typing import Any, Sequence
 
+import msgspec
+
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.base import CliveBaseModel
@@ -15,7 +17,7 @@ from clive.__private.models.schemas import (
 )
 
 
-class AlarmStorageModel(CliveBaseModel):
+class AlarmStorageModel(CliveBaseModel, kw_only=True):
     name: str
     is_harmless: bool = False
     identifier: AllAlarmIdentifiers
@@ -27,7 +29,7 @@ class TrackedAccountStorageModel(CliveBaseModel):
     alarms: Sequence[AlarmStorageModel] = []
 
 
-class KeyAliasStorageModel(CliveBaseModel):
+class KeyAliasStorageModel(CliveBaseModel, kw_only=True):
     alias: str
     public_key: str
 
@@ -55,7 +57,7 @@ class TransactionStorageModelSchema(TransactionStorageModel):
     transaction_core: TransactionCoreStorageModelSchema
 
 
-class ProfileStorageModel(CliveBaseModel):
+class ProfileStorageModel(CliveBaseModel, kw_only=True):
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
@@ -66,12 +68,12 @@ class ProfileStorageModel(CliveBaseModel):
     node_address: str
 
 
-class AlarmStorageModelSchema(AlarmStorageModel):
+class AlarmStorageModelSchema(AlarmStorageModel, kw_only=True):
     identifier: Any
     """Do not include alarm identifiers union in the schema so new alarms can be added without revision change."""
 
 
-class TrackedAccountStorageModelSchema(TrackedAccountStorageModel):
+class TrackedAccountStorageModelSchema(TrackedAccountStorageModel, kw_only=True):
     alarms: list[AlarmStorageModelSchema] = []  # noqa: RUF012
 
 
