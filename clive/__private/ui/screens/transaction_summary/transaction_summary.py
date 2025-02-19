@@ -8,7 +8,6 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.constants.tui.bindings import (
     BROADCAST_TRANSACTION_BINDING_KEY,
     LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
@@ -17,7 +16,6 @@ from clive.__private.core.constants.tui.bindings import (
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
@@ -30,7 +28,6 @@ from clive.__private.ui.screens.transaction_summary.transaction_metadata_contain
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
 from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
@@ -40,6 +37,8 @@ from clive.exceptions import NoItemSelectedError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
+
+    from clive.__private.core.profile import Profile
 
 
 class AlreadySignedHint(Label):
@@ -163,6 +162,8 @@ class TransactionSummary(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self._update_bindings()
+        self._previous_transaction = deepcopy(self.profile.transaction)
+        self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
 
     @property
     def key_container(self) -> KeyContainer:
@@ -215,7 +216,11 @@ class TransactionSummary(BaseScreen):
         self.app.action_load_transaction_from_file()
 
     @on(CartTable.Modified)
-    async def handle_cart_update(self) -> None:
+    async def handle_cart_update(self, event: CartTable.Modified) -> None:
+        modified_transaction = event.transaction
+        self._previous_transaction = modified_transaction
+        self.profile.transaction = modified_transaction
+        self.app.trigger_profile_watchers()
         await self._update_transaction_metadata()
         await self._rebuild_signatures_changed()
         await self.button_container.recompose()
@@ -321,3 +326,8 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
+
+    async def _rebuild_on_transaction_change(self, profile: Profile) -> None:
+        if self._previous_transaction != profile.transaction:
+            self._previous_transaction = profile.transaction
+            await self._rebuild()
