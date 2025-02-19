@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -36,6 +37,8 @@ from clive.exceptions import NoItemSelectedError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
+
+    from clive.__private.core.profile import Profile
 
 
 class AlreadySignedHint(Label):
@@ -159,6 +162,8 @@ class TransactionSummary(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self._update_bindings()
+        self._previous_transaction = deepcopy(self.profile.transaction)
+        self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
 
     @property
     def key_container(self) -> KeyContainer:
@@ -188,16 +193,12 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
-        async def save_transaction_to_file_cb(result: bool | None) -> None:
-            if result:
-                await self._rebuild()
-
         try:
             sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key), save_transaction_to_file_cb)
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -220,8 +221,14 @@ class TransactionSummary(BaseScreen):
         self.app.action_load_transaction_from_file()
 
     @on(CartTable.Modified)
-    async def handle_cart_update(self) -> None:
-        await self._update_transaction_metadata()
+    async def handle_cart_update(self, event: CartTable.Modified) -> None:
+        modified_transaction = event.transaction
+        # Set the previous transaction before triggering watchers to avoid a full rebuild. This ensures only a
+        # partial update is performed, as CartTable already handles the necessary changes internally.
+        self._previous_transaction = deepcopy(modified_transaction)
+        self.profile.transaction = modified_transaction
+        self.profile.transaction_file_path = None
+        self.app.trigger_profile_watchers()
         await self._rebuild_signatures_changed()
         await self.button_container.recompose()
         self._update_subtitle()
@@ -294,3 +301,8 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
+
+    async def _rebuild_on_transaction_change(self, profile: Profile) -> None:
+        if self._previous_transaction != profile.transaction:
+            await self._rebuild()
+            self._previous_transaction = deepcopy(profile.transaction)
