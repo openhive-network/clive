@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
@@ -28,6 +29,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.models import Transaction
     from clive.__private.models.schemas import OperationUnion
 
 
@@ -288,6 +290,10 @@ class CartTable(CliveCheckerboardTable):
     class Modified(Message):
         """Message sent when operations in CartTable were reordered or removed."""
 
+        def __init__(self, transaction: Transaction) -> None:
+            super().__init__()
+            self.transaction = transaction
+
     def __init__(self) -> None:
         super().__init__(header=CartHeader())
         self._cart_items_action_manager = CartItemsActionManager()
@@ -317,10 +323,10 @@ class CartTable(CliveCheckerboardTable):
                 await self.query_exactly_one(CartHeader).remove()
                 await self.mount(NoContentAvailable(self.NO_CONTENT_TEXT))
 
-        self.profile.remove_operation(item_to_remove.operation)
+        modified_transaction = deepcopy(self.profile.transaction)
+        modified_transaction.remove_operation(item_to_remove.operation)
         self._cart_items_action_manager.enable_action()
-        self.app.trigger_profile_watchers()
-        self.post_message(self.Modified())
+        self.post_message(self.Modified(modified_transaction))
 
     @on(CartItem.Move)
     async def move_item(self, event: CartItem.Move) -> None:
@@ -334,10 +340,10 @@ class CartTable(CliveCheckerboardTable):
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
 
-        self.profile.transaction.swap_operations(from_index, to_index)
+        modified_transaction = deepcopy(self.profile.transaction)
+        modified_transaction.swap_operations(from_index, to_index)
         self._cart_items_action_manager.enable_action()
-        self.app.trigger_profile_watchers()
-        self.post_message(self.Modified())
+        self.post_message(self.Modified(modified_transaction))
 
     @on(CartItem.Focus)
     def focus_item(self, event: CartItem.Focus) -> None:
