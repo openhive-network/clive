@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from pydantic import validator
 from pathlib import Path
 from typing import Any
 

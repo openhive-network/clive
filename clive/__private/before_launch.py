@@ -3,8 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from pydantic import Extra
-
+from schemas.policies.extra_fields import Extra
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
 from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
