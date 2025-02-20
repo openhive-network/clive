@@ -81,10 +81,10 @@ class ProfileStorageModelSchema(ProfileStorageModel, kw_only=True):
     transaction: TransactionStorageModelSchema
     tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
 
-
-def get_storage_model_schema_json() -> str:
-    schema = msgspec.json.schema(ProfileStorageModelSchema, schema_hook=schema_hook)
-    return msgspec.json.encode(schema)
+    @classmethod
+    def schema_json(cls) -> str:
+        schema = msgspec.json.schema(cls, schema_hook=schema_hook)
+        return msgspec.json.encode(schema)
 
 
 def schema_hook(obj: Any) -> dict:
@@ -95,6 +95,10 @@ def schema_hook(obj: Any) -> dict:
     if obj is HiveDateTime:
         return {"type": "string", "format": "date-time"}
     raise NotImplementedError(f"Objects of type {obj} are not supported")
+
+
+def get_storage_model_schema_json() -> str:
+    return ProfileStorageModelSchema.schema_json()
 
 
 def calculate_storage_model_revision() -> str:

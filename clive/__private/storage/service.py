@@ -191,7 +191,7 @@ class PersistentStorageService:
         self._create_current_storage_symlink()
 
         try:
-            encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
+            encrypted_profile = await self._encryption_service.encrypt(profile_model.json())
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
 
