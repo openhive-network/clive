@@ -196,7 +196,7 @@ testing_password_private_key_logging:
       artifacts: true
   script:
     - cd "${CI_PROJECT_DIR}/tests"
-    - bash "${CI_PROJECT_DIR}/scripts/check_is_private_key_nor_password_is_not_logged.bash"
+    - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
