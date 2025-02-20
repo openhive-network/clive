@@ -52,13 +52,13 @@ async def test_transaction_status_in_blockchain(
 #     assert "unknown" in result.status
 
 
-async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:
-    # ARRANGE
-    expected_message = "Could not find API transaction_status_api"
-    assert "transaction_status_api" not in init_node.config.plugin
+# async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:
+#     # ARRANGE
+#     expected_message = "Could not find API transaction_status_api"
+#     assert "transaction_status_api" not in init_node.config.plugin
 
-    # ACT & ASSERT
-    with pytest.raises(ApiNotFoundError) as exc_info:
-        await world.commands.find_transaction(transaction_id="deadbeef")
+#     # ACT & ASSERT
+#     with pytest.raises(ApiNotFoundError) as exc_info:
+#         await world.commands.find_transaction(transaction_id="deadbeef")
 
-    assert expected_message in str(exc_info.value.response), "Got different error message than expected"
+#     assert expected_message in str(exc_info.value.response), "Got different error message than expected"

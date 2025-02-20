@@ -36,9 +36,9 @@ class KeyAliasStorageModel(CliveBaseModel, kw_only=True):
 
 class TransactionCoreStorageModel(CliveBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
-    ref_block_num: HiveInt = HiveInt(-1)
-    ref_block_prefix: HiveInt = HiveInt(-1)
-    expiration: HiveDateTime = utc_epoch()  # type: ignore[assignment]
+    ref_block_num: HiveInt = msgspec.field(default=-1)
+    ref_block_prefix: HiveInt = msgspec.field(default=-1)
+    expiration: HiveDateTime =  msgspec.field(default=utc_epoch().__str__())  # type: ignore[assignment]
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
 
@@ -77,14 +77,25 @@ class TrackedAccountStorageModelSchema(TrackedAccountStorageModel, kw_only=True)
     alarms: list[AlarmStorageModelSchema] = []  # noqa: RUF012
 
 
-class ProfileStorageModelSchema(ProfileStorageModel):
+class ProfileStorageModelSchema(ProfileStorageModel, kw_only=True):
     transaction: TransactionStorageModelSchema
     tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
 
 
 def get_storage_model_schema_json() -> str:
-    return ProfileStorageModelSchema.schema_json(indent=4)
+    schema = msgspec.json.schema(ProfileStorageModelSchema, schema_hook=schema_hook)
+    return msgspec.json.encode(schema)
+
+
+def schema_hook(obj: Any) -> dict:
+    if obj is Path:
+        return {"type": "string", "format": "path"}
+    if obj is HiveInt:
+        return {"type": "integer"}
+    if obj is HiveDateTime:
+        return {"type": "string", "format": "date-time"}
+    raise NotImplementedError(f"Objects of type {obj} are not supported")
 
 
 def calculate_storage_model_revision() -> str:
-    return sha256(get_storage_model_schema_json().encode()).hexdigest()[:8]
+    return sha256(get_storage_model_schema_json()).hexdigest()[:8]
