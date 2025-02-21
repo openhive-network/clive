@@ -21,7 +21,7 @@ from clive.__private.models.schemas import Transaction as SchemasTransaction
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-from schemas.decoders import DecoderFactory
+# from schemas.decoders import DecoderFactory
 from schemas.operations import convert_to_representation
 
 
@@ -61,7 +61,7 @@ class Transaction(SchemasTransaction):
         """Get only the operation models from already stored operations representations."""
         return [op.value for op in self.operations]  # type: ignore[attr-defined]
 
-    @validator("operations", pre=True)
+    # @validator("operations", pre=True)
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
