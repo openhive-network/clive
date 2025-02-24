@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Final
 
+APP_QUIT_KEY_BINDING: Final[str] = "ctrl+q"
 NEXT_SCREEN_BINDING_KEY: Final[str] = "ctrl+n"
 PREVIOUS_SCREEN_BINDING_KEY: Final[str] = "ctrl+p"
 FINALIZE_TRANSACTION_BINDING_KEY: Final[str] = "f6"
