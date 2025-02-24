@@ -217,3 +217,12 @@ def calculate_witness_votes_hp(votes: int, data: TotalVestingProtocol) -> Asset.
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
     return cast("Asset.Hive", from_python_json_asset(result))
+
+
+def generate_password_based_private_key(
+    password: str, role: str = "memo", account_name: str = "anything"
+) -> PrivateKey:
+    from clive.__private.core.keys import PrivateKey
+
+    result = wax.generate_password_based_private_key(account_name.encode(), role.encode(), password.encode())
+    return PrivateKey(value=result.wif_private_key.decode())
