@@ -85,7 +85,7 @@ async def _create_profile_with_wallet(
 ) -> None:
     async with World() as world_cm:
         password = profile_name * 2
-        await world_cm.create_new_profile_with_beekeeper_wallet(profile_name, password, working_account_name)
+        await world_cm.create_new_profile_with_wallets(profile_name, password, working_account_name)
         tt.logger.info(f"password for profile `{profile_name}` is: `{password}`")
         world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
         await world_cm.commands.sync_data_with_beekeeper()

@@ -125,7 +125,7 @@ async def world() -> AsyncIterator[World]:
 
 @pytest.fixture
 async def prepare_profile_with_wallet(world: World, wallet_name: str, wallet_password: str) -> Profile:
-    await world.create_new_profile_with_beekeeper_wallet(wallet_name, wallet_password)
+    await world.create_new_profile_with_wallets(wallet_name, wallet_password)
     return world.profile
 
 

@@ -58,7 +58,7 @@ async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
 @pytest.fixture
 async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
     """Prepare profile and wallets using remote beekeeper."""
-    await world_cli.create_new_profile_with_beekeeper_wallet(
+    await world_cli.create_new_profile_with_wallets(
         name=WORKING_ACCOUNT_DATA.account.name,
         password=WORKING_ACCOUNT_PASSWORD,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
