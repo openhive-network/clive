@@ -18,7 +18,7 @@ from clive.__private.before_launch import (
 )
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
-from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
 from clive.__private.core.world import World
@@ -175,10 +175,10 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             for i in range(count)
         ]
         for wallet in wallets:
-            await CreateWallet(
+            await CreateProfileWallets(
                 app_state=world.app_state,
                 session=world._session_ensure,
-                wallet_name=wallet.name,
+                profile_name=wallet.name,
                 password=wallet.password,
             ).execute()
 

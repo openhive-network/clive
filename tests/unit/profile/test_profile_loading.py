@@ -6,7 +6,7 @@ import pytest
 from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
-from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
@@ -24,8 +24,8 @@ async def beekeeper() -> AsyncIterator[AsyncBeekeeper]:
 
 
 async def create_profile_and_wallet(beekeeper: AsyncBeekeeper, profile_name: str, *, lock: bool = False) -> None:
-    result = await CreateWallet(
-        session=await beekeeper.session, wallet_name=profile_name, password=profile_name
+    result = await CreateProfileWallets(
+        session=await beekeeper.session, profile_name=profile_name, password=profile_name
     ).execute_with_result()
     profile = Profile.create(profile_name)
     await SaveProfile(

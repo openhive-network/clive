@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
+from clive.__private.core.commands.create_user_wallet import CreateUserWallet
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
@@ -17,30 +18,31 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class CreateWalletResult:
+class CreateProfileWalletsResult:
     unlocked_user_wallet: AsyncUnlockedWallet
     unlocked_encryption_wallet: AsyncUnlockedWallet
 
 
 @dataclass(kw_only=True)
-class CreateWallet(CommandWithResult[CreateWalletResult]):
+class CreateProfileWallets(CommandWithResult[CreateProfileWalletsResult]):
     app_state: AppState | None = None
     session: AsyncSession
-    wallet_name: str
+    profile_name: str
     password: str
     unlock_time: timedelta | None = None
     permanent_unlock: bool = True
     """Will take precedence when `unlock_time` is also set."""
 
     async def _execute(self) -> None:
-        unlocked_encryption_wallet = await self.session.create_wallet(
-            name=EncryptionService.get_encryption_wallet_name(self.wallet_name), password=self.password
-        )
-        await unlocked_encryption_wallet.generate_key()
+        unlocked_encryption_wallet = await CreateEncryptionWallet(
+            session=self.session, profile_name=self.profile_name, password=self.password
+        ).execute_with_result()
 
-        unlocked_user_wallet = await self.session.create_wallet(name=self.wallet_name, password=self.password)
+        unlocked_user_wallet = await CreateUserWallet(
+            session=self.session, profile_name=self.profile_name, password=self.password
+        ).execute_with_result()
 
-        self._result = CreateWalletResult(unlocked_user_wallet, unlocked_encryption_wallet)
+        self._result = CreateProfileWalletsResult(unlocked_user_wallet, unlocked_encryption_wallet)
 
         if self.app_state:
             await self.app_state.unlock(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))

@@ -6,7 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
-from clive.__private.core.commands.create_wallet import CreateWallet, CreateWalletResult
+from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets, CreateProfileWalletsResult
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
     AccountScheduledTransferData,
@@ -105,30 +105,30 @@ class Commands(Generic[WorldT_co]):
         self._world = world
         self.__exception_handlers = [*(exception_handlers or [])]
 
-    async def create_wallet(
+    async def create_profile_wallets(
         self,
         *,
-        name: str | None = None,
+        profile_name: str | None = None,
         password: str,
         unlock_time: timedelta | None = None,
         permanent_unlock: bool = True,
-    ) -> CommandWithResultWrapper[CreateWalletResult]:
+    ) -> CommandWithResultWrapper[CreateProfileWalletsResult]:
         """
         Create a beekeeper wallet.
 
         Args:
         ----
-        name: Name of the new wallet. If None, the world profile_name will be unlocked.
+        profile_name: Name of the new wallets. If None, the world profile_name will be used.
         password: Password later used to unlock the wallet.
         unlock_time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
             permanently.
         permanent_unlock: Whether to unlock the wallet permanently. Will take precedence when `unlock_time` is also set.
         """
         return await self.__surround_with_exception_handlers(
-            CreateWallet(
+            CreateProfileWallets(
                 app_state=self._world.app_state,
                 session=self._world._session_ensure,
-                wallet_name=name if name is not None else self._world.profile.name,
+                profile_name=profile_name if profile_name is not None else self._world.profile.name,
                 password=password,
                 unlock_time=unlock_time,
                 permanent_unlock=permanent_unlock,
