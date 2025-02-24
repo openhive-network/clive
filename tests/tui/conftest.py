@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partialmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 import test_tools as tt
@@ -10,6 +10,7 @@ from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccoun
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
+from clive.__private.logger import logger
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -34,6 +35,14 @@ if TYPE_CHECKING:
 @pytest.fixture(autouse=True)
 def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Clive, "notify", partialmethod(Clive.notify, timeout=TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT))
+
+
+@pytest.fixture
+def logger_configuration_factory() -> Callable[[], None]:
+    def _logger_configuration_factory() -> None:
+        logger.setup(enable_textual=False)
+
+    return _logger_configuration_factory
 
 
 @pytest.fixture
