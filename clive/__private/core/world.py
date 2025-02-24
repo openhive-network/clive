@@ -167,6 +167,11 @@ class World:
         if self._beekeeper is not None:
             self._beekeeper.teardown()
 
+        self.app_state.lock()
+        self._beekeeper_settings = self._setup_beekeepy_settings()
+
+        self._profile = None
+        self._node = None
         self._beekeeper = None
         self._session = None
         self._wallets = None
