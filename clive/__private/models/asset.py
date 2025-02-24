@@ -190,7 +190,7 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10 ** asset.precision :.{asset.precision}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision().value :.{asset.precision()}f}"
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
@@ -206,9 +206,9 @@ class Asset:
         ------
         DecimalConversionNotANumberError: If given amount is not a valid number.
         """
-        precision = precision if isinstance(precision, int) else cls.get_precision(precision)
+        precision = precision if isinstance(precision, int) else cls.get_precision(precision).value
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
-        return int(amount_decimal * 10**precision.value)
+        return int(amount_decimal * 10**precision)
 
     @staticmethod
     def get_symbol(asset: type[Asset.AnyT] | Asset.AnyT) -> str:

@@ -153,8 +153,8 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time
         head_block_timestamp = int(head_block_time.timestamp())
-        last_update_timestamp = manabar.last_update_time
-        power_from_api = manabar.current_mana
+        last_update_timestamp = manabar.last_update_time.value
+        power_from_api = manabar.current_mana.value
         max_mana_value = iwax.calculate_vests_to_hp(max_mana, gdpo)
         mana_value = iwax.calculate_vests_to_hp(
             calculate_current_manabar_value(
@@ -166,7 +166,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             gdpo,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
-            head_block_time=head_block_time,
+            head_block_time=head_block_time.value,
             max_mana=max_mana,
             current_mana=power_from_api,
             last_update_time=last_update_timestamp,

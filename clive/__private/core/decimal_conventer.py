@@ -69,7 +69,7 @@ class DecimalConverter:
 
     @staticmethod
     def round_to_precision(amount: Decimal, precision: int) -> Decimal:
-        exponent = Decimal(10) ** (-1 * precision.value)
+        exponent = Decimal(10) ** (-1 * precision)
         return amount.quantize(exponent)
 
     @classmethod
