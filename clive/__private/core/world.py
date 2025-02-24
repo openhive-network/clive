@@ -60,6 +60,7 @@ class World:
 
         self._node: Node | None = None
         self._is_during_setup = False
+        self._is_during_closure = False
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -152,6 +153,14 @@ class World:
         finally:
             self._is_during_setup = False
 
+    @asynccontextmanager
+    async def during_closure(self) -> AsyncGenerator[None]:
+        self._is_during_closure = True
+        try:
+            yield
+        finally:
+            self._is_during_closure = False
+
     async def setup(self) -> Self:
         async with self.during_setup():
             self._beekeeper = await self._setup_beekeeper()
@@ -160,21 +169,22 @@ class World:
         return self
 
     async def close(self) -> None:
-        if self._should_save_profile_on_close:
-            await self.commands.save_profile()
-        if self._node is not None:
-            self._node.teardown()
-        if self._beekeeper is not None:
-            self._beekeeper.teardown()
+        async with self.during_closure():
+            if self._should_save_profile_on_close:
+                await self.commands.save_profile()
+            if self._node is not None:
+                self._node.teardown()
+            if self._beekeeper is not None:
+                self._beekeeper.teardown()
 
-        self.app_state.lock()
-        self._beekeeper_settings = self._setup_beekeepy_settings()
+            self.app_state.lock()
+            self._beekeeper_settings = self._setup_beekeepy_settings()
 
-        self._profile = None
-        self._node = None
-        self._beekeeper = None
-        self._session = None
-        self._wallets = None
+            self._profile = None
+            self._node = None
+            self._beekeeper = None
+            self._session = None
+            self._wallets = None
 
     async def create_new_profile(
         self,
@@ -227,13 +237,13 @@ class World:
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
-        if self._is_during_setup:
+        if self._is_during_setup or self._is_during_closure:
             return
         self._on_going_into_locked_mode(source)
 
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
-        if self._is_during_setup:
+        if self._is_during_setup or self._is_during_closure:
             return
         self._on_going_into_unlocked_mode()
 
