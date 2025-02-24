@@ -4,10 +4,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command import Command, CommandError
+from clive.__private.core.encryption import EncryptionService
+from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
+    from beekeepy import AsyncSession
+
     from clive.__private.core.app_state import AppState, LockSource
-    from clive.__private.core.wallet_container import WalletContainer
 
 
 class InvalidWalletStateError(CommandError):
@@ -22,7 +25,7 @@ class InvalidWalletStateError(CommandError):
 
 @dataclass(kw_only=True)
 class SyncStateWithBeekeeper(Command):
-    wallets: WalletContainer
+    session: AsyncSession
     app_state: AppState
     source: LockSource = "unknown"
 
@@ -30,13 +33,18 @@ class SyncStateWithBeekeeper(Command):
         await self.__sync_state()
 
     async def __sync_state(self) -> None:
-        wallets = self.wallets
-        is_user_wallet_unlocked = await wallets.user_wallet.is_unlocked()
-        is_encryption_wallet_unlocked = await wallets.encryption_wallet.is_unlocked()
+        wallets = await self.session.wallets_unlocked
 
-        if is_user_wallet_unlocked and is_encryption_wallet_unlocked:
-            await self.app_state.unlock(wallets)
-        elif not is_user_wallet_unlocked and not is_encryption_wallet_unlocked:
+        user_wallet = next(
+            (wallet for wallet in wallets if not EncryptionService.is_encryption_wallet_name(wallet.name)), None
+        )
+        encryption_wallet = next(
+            (wallet for wallet in wallets if EncryptionService.is_encryption_wallet_name(wallet.name)), None
+        )
+
+        if user_wallet and encryption_wallet:
+            await self.app_state.unlock(WalletContainer(user_wallet, encryption_wallet))
+        elif not user_wallet and not encryption_wallet:
             self.app_state.lock(self.source)
         else:
             raise InvalidWalletStateError(self)
