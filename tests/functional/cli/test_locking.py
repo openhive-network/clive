@@ -31,9 +31,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
     async with World() as world_cm:
-        await world_cm.create_new_profile_with_beekeeper_wallet(
-            ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD
-        )
+        await world_cm.create_new_profile_with_wallets(ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD)
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(
                 value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"

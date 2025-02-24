@@ -180,7 +180,7 @@ class World:
         profile = Profile.create(name, working_account, watched_accounts)
         await self.switch_profile(profile)
 
-    async def create_new_profile_with_beekeeper_wallet(
+    async def create_new_profile_with_wallets(
         self,
         name: str,
         password: str,

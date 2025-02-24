@@ -49,7 +49,7 @@ def logger_configuration_factory() -> Callable[[], None]:
 async def _prepare_profile_with_wallet_tui() -> None:
     """Prepare profile and wallets using locally spawned beekeeper."""
     async with World() as world_cm:
-        await world_cm.create_new_profile_with_beekeeper_wallet(
+        await world_cm.create_new_profile_with_wallets(
             name=WORKING_ACCOUNT_DATA.account.name,
             password=WORKING_ACCOUNT_PASSWORD,
             working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
