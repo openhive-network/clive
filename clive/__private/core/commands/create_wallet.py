@@ -36,20 +36,22 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
     """Will take precedence when `unlock_time` is also set."""
 
     async def _execute(self) -> None:
-        result = await self.session.create_wallet(name=self.wallet_name, password=self.password)
+        result = await self.session.create_wallet(
+            name=EncryptionService.get_encryption_wallet_name(self.wallet_name), password=self.password
+        )
+
         if isinstance(result, tuple):
-            unlocked_user_wallet, password = result
+            unlocked_encryption_wallet, password = result
             is_password_generated = True
         else:
-            unlocked_user_wallet = result
+            unlocked_encryption_wallet = result
             assert self.password is not None, "When no password is generated, it means it was provided."
             password = self.password
             is_password_generated = False
 
-        unlocked_encryption_wallet = await self.session.create_wallet(
-            name=EncryptionService.get_encryption_wallet_name(self.wallet_name), password=password
-        )
         await unlocked_encryption_wallet.generate_key()
+
+        unlocked_user_wallet = await self.session.create_wallet(name=self.wallet_name, password=password)
 
         self._result = CreateWalletResult(
             unlocked_user_wallet=unlocked_user_wallet,
@@ -59,7 +61,6 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
         )
 
         if self.app_state:
-            wallets = WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet)
-            await self.app_state.unlock(wallets)
+            await self.app_state.unlock(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
 
         await SetTimeout(session=self.session, time=self.unlock_time, permanent=self.permanent_unlock).execute()
