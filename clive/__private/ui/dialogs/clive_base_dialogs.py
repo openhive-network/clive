@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from textual import on
 from textual.binding import Binding
 from textual.containers import Center, Horizontal, Vertical
+from textual.events import Click
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import ModalScreen
@@ -18,7 +19,6 @@ from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.events import Click
 
 
 CliveDialogVariant = Literal["default", "error"]
@@ -87,9 +87,10 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
         self.content.remove_class(f"-{old_variant}")
         self.content.add_class(f"-{variant}")
 
-    def on_click(self, event: Click) -> None:
+    @on(Click)
+    def close_dialog(self, event: Click) -> None:
+        """Close the Dialog if the user clicks outside the modal content."""
         if self.get_widget_at(event.screen_x, event.screen_y)[0] is self:
-            # Close the screen if the user clicks outside the modal content
             self.dismiss()
 
     @abstractmethod
