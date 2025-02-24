@@ -18,7 +18,13 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_PASSWORD,
 )
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+from clive_local_tools.testnet_block_log import (
+    KNOWN_ACCOUNTS,
+    WATCHED_ACCOUNTS_DATA,
+    WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
+    run_node,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -64,6 +70,9 @@ async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
+    for know_account in KNOWN_ACCOUNTS:
+        world_cli.profile.accounts.add_known_account(know_account)
+    world_cli.profile.accounts.add_known_account(WORKING_ACCOUNT_NAME)
     await world_cli.commands.sync_state_with_beekeeper()
     world_cli.profile.keys.add_to_import(
         PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
