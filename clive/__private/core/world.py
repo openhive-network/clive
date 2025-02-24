@@ -183,12 +183,12 @@ class World:
     async def create_new_profile_with_beekeeper_wallet(
         self,
         name: str,
-        password: str | None = None,
+        password: str,
         working_account: str | WorkingAccount | None = None,
         watched_accounts: Iterable[WatchedAccount] | None = None,
-    ) -> str:
+    ) -> None:
         """
-        Create a new profile and a. wallet in beekeeper in one-go.
+        Create a new profile and wallets in beekeeper in one-go.
 
         Since beekeeper wallet will be created, profile will be also saved.
         If beekeeper wallet creation fails, profile will not be saved.
@@ -201,10 +201,6 @@ class World:
             self.profile.delete()
         await self.wallets.set_wallets(WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet))
         await self.commands.save_profile()
-
-        generated_password = result.password
-        actual_password = password or generated_password
-        return actual_password  # noqa: RET504
 
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_user_wallet = (await self.commands.get_unlocked_user_wallet()).result_or_raise

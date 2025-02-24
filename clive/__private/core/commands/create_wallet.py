@@ -20,9 +20,6 @@ if TYPE_CHECKING:
 class CreateWalletResult:
     unlocked_user_wallet: AsyncUnlockedWallet
     unlocked_encryption_wallet: AsyncUnlockedWallet
-    password: str
-    is_password_generated: bool
-    """Will be set if was generated because no password was provided when creating wallet."""
 
 
 @dataclass(kw_only=True)
@@ -30,35 +27,20 @@ class CreateWallet(CommandWithResult[CreateWalletResult]):
     app_state: AppState | None = None
     session: AsyncSession
     wallet_name: str
-    password: str | None
+    password: str
     unlock_time: timedelta | None = None
     permanent_unlock: bool = True
     """Will take precedence when `unlock_time` is also set."""
 
     async def _execute(self) -> None:
-        result = await self.session.create_wallet(
+        unlocked_encryption_wallet = await self.session.create_wallet(
             name=EncryptionService.get_encryption_wallet_name(self.wallet_name), password=self.password
         )
-
-        if isinstance(result, tuple):
-            unlocked_encryption_wallet, password = result
-            is_password_generated = True
-        else:
-            unlocked_encryption_wallet = result
-            assert self.password is not None, "When no password is generated, it means it was provided."
-            password = self.password
-            is_password_generated = False
-
         await unlocked_encryption_wallet.generate_key()
 
-        unlocked_user_wallet = await self.session.create_wallet(name=self.wallet_name, password=password)
+        unlocked_user_wallet = await self.session.create_wallet(name=self.wallet_name, password=self.password)
 
-        self._result = CreateWalletResult(
-            unlocked_user_wallet=unlocked_user_wallet,
-            unlocked_encryption_wallet=unlocked_encryption_wallet,
-            password=password,
-            is_password_generated=is_password_generated,
-        )
+        self._result = CreateWalletResult(unlocked_user_wallet, unlocked_encryption_wallet)
 
         if self.app_state:
             await self.app_state.unlock(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
