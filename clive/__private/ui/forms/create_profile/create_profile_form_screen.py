@@ -71,13 +71,13 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         profile = self.context.profile
         profile.name = profile_name
 
-        async def create_wallet() -> None:
+        async def create_wallets() -> None:
             await self.world.commands.create_profile_wallets(profile_name=profile_name, password=password)
 
         async def sync_data() -> None:
             await self.world.commands.sync_data_with_beekeeper(profile=profile)
 
-        self._owner.add_post_action(create_wallet, sync_data)
+        self._owner.add_post_action(create_wallets, sync_data)
 
     def _revalidate_repeat_password_input_when_password_changed(self) -> None:
         if not self._repeat_password_input.is_empty:

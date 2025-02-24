@@ -114,11 +114,11 @@ class Commands(Generic[WorldT_co]):
         permanent_unlock: bool = True,
     ) -> CommandWithResultWrapper[CreateProfileWalletsResult]:
         """
-        Create a beekeeper wallet.
+        Create a profile-related beekeeper wallets.
 
         Args:
         ----
-        profile_name: Name of the new wallets. If None, the world profile_name will be used.
+        profile_name: Names of the new wallets will be based on that. If None, the world profile_name will be used.
         password: Password later used to unlock the wallet.
         unlock_time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
             permanently.
