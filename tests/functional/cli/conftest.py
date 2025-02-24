@@ -7,7 +7,7 @@ import pytest
 from beekeepy import AsyncBeekeeper
 from typer.testing import CliRunner
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
@@ -18,7 +18,12 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_PASSWORD,
 )
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+from clive_local_tools.testnet_block_log import (
+    KNOWN_ACCOUNTS,
+    WATCHED_ACCOUNTS_DATA,
+    WORKING_ACCOUNT_DATA,
+    run_node,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -63,6 +68,7 @@ async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
         password=WORKING_ACCOUNT_PASSWORD,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
+        known_accounts=[KnownAccount(known_account) for known_account in KNOWN_ACCOUNTS],
     )
     await world_cli.commands.sync_state_with_beekeeper()
     world_cli.profile.keys.add_to_import(

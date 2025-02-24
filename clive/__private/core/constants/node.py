@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Final
 
-
 # HIVE config mapping (names and values correspond to the hived config.hpp, names can have unit postfix when needed)
 HIVE_OWNER_AUTH_RECOVERY_PERIOD_DAYS: Final[int] = 30
 HIVE_PROPOSAL_MAX_IDS_NUMBER: Final[int] = 5

@@ -92,8 +92,11 @@ def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     assert_output_contains(expected_output, output, command)
 
 
-def assert_output_contains(expected_output: str, output: str, command: str) -> None:
-    assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
+def assert_output_contains(expected_output: str, output: str, command: str | None = None) -> None:
+    if command:
+        assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
+    else:
+        assert expected_output in output, f"expected `{expected_output}` in output:\n{output}"
 
 
 def assert_no_delegations(context: CLITester | Result) -> None:

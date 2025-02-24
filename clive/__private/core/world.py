@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+    from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 
 
 class World:
@@ -127,8 +127,9 @@ class World:
         name: str,
         working_account: str | WorkingAccount | None = None,
         watched_accounts: Iterable[WatchedAccount] | None = None,
+        known_accounts: Iterable[KnownAccount] | None = None,
     ) -> None:
-        profile = Profile.create(name, working_account, watched_accounts)
+        profile = Profile.create(name, working_account, watched_accounts, known_accounts)
         await self.switch_profile(profile)
 
     async def create_new_profile_with_wallets(
@@ -137,6 +138,7 @@ class World:
         password: str,
         working_account: str | WorkingAccount | None = None,
         watched_accounts: Iterable[WatchedAccount] | None = None,
+        known_accounts: Iterable[KnownAccount] | None = None,
     ) -> None:
         """
         Create a new profile and wallets in beekeeper in one-go.
@@ -144,7 +146,7 @@ class World:
         Since beekeeper wallet will be created, profile will be also saved.
         If beekeeper wallet creation fails, profile will not be saved.
         """
-        await self.create_new_profile(name, working_account, watched_accounts)
+        await self.create_new_profile(name, working_account, watched_accounts, known_accounts)
 
         create_wallet_wrapper = await self.commands.create_profile_wallets(password=password)
         if create_wallet_wrapper.error_occurred:

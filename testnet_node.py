@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 from clive.__private.before_launch import prepare_before_launch
+from clive.__private.core.accounts.accounts import KnownAccount
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
@@ -24,12 +25,13 @@ from clive_local_tools.testnet_block_log import run_node
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
+    KNOWN_ACCOUNTS,
     WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_NAME,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
 
 def init_argparse(args: Sequence[str]) -> argparse.Namespace:
@@ -69,23 +71,30 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     await _create_profile_with_wallet(
         profile_name=WORKING_ACCOUNT_NAME,
         working_account_name=WORKING_ACCOUNT_NAME,
+        known_accounts=KNOWN_ACCOUNTS,
         private_key=WORKING_ACCOUNT_DATA.account.private_key,
         key_alias=WORKING_ACCOUNT_KEY_ALIAS,
     )
     await _create_profile_with_wallet(
         profile_name=ALT_WORKING_ACCOUNT1_NAME,
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
+        known_accounts=KNOWN_ACCOUNTS,
         private_key=ALT_WORKING_ACCOUNT1_DATA.account.private_key,
         key_alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     )
 
 
 async def _create_profile_with_wallet(
-    profile_name: str, working_account_name: str, private_key: str, key_alias: str
+    profile_name: str, working_account_name: str, known_accounts: Iterable[str], private_key: str, key_alias: str
 ) -> None:
     async with World() as world_cm:
         password = profile_name * 2
-        await world_cm.create_new_profile_with_wallets(profile_name, password, working_account_name)
+        await world_cm.create_new_profile_with_wallets(
+            profile_name,
+            password,
+            working_account_name,
+            known_accounts=[KnownAccount(known_account) for known_account in known_accounts],
+        )
         tt.logger.info(f"password for profile `{profile_name}` is: `{password}`")
         world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
         await world_cm.commands.sync_data_with_beekeeper()

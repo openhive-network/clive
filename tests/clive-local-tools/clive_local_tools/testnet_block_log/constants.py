@@ -48,3 +48,13 @@ ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
     hbds_liquid=tt.Asset.Tbd(121_000),
     vests=tt.Asset.Test(122_000),  # in hive power
 )
+
+UNKNOWN_ACCOUNT: Final[str] = "null"
+
+KNOWN_ACCOUNTS: Final[list[str]] = [
+    EMPTY_ACCOUNT.name,
+    *WATCHED_ACCOUNTS_NAMES,
+    WORKING_ACCOUNT_NAME,
+    ALT_WORKING_ACCOUNT1_NAME,
+    ALT_WORKING_ACCOUNT2_NAME,
+]

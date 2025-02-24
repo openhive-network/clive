@@ -425,3 +425,92 @@ class CLITester:
 
     def configure_known_account_remove(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(["configure", "known-account", "remove"], **extract_params(locals()))
+
+    def configure_known_account_enable(self) -> Result:
+        return self.__invoke_command_with_options(["configure", "known-account", "enable"], **extract_params(locals()))
+
+    def configure_known_account_disable(self) -> Result:
+        return self.__invoke_command_with_options(["configure", "known-account", "disable"], **extract_params(locals()))
+
+    def configure_profile_add(
+        self,
+        *,
+        profile_name: str | None = None,
+        password_stdin: str | None = None,
+    ) -> Result:
+        named_params = locals()
+        named_params.pop("password_stdin")
+        return self.__invoke_command_with_options(
+            ["configure", "profile", "add"], password_stdin, **extract_params(named_params)
+        )
+
+    def process_proxy_set(
+        self,
+        *,
+        proxy: str,
+        account_name: str | None = None,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "proxy", "set"], **extract_params(locals()))
+
+    def process_proxy_clear(
+        self,
+        *,
+        account_name: str | None = None,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "proxy", "clear"], **extract_params(locals()))
+
+    def process_transfer_schedule_create(  # noqa: PLR0913
+        self,
+        *,
+        to: str,
+        repeat: int,
+        frequency: str,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT,
+        pair_id: int = 0,
+        from_: str | None = None,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        memo: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(
+            ["process", "transfer-schedule", "create"], **extract_params(locals())
+        )
+
+    def process_transfer_schedule_modify(  # noqa: PLR0913
+        self,
+        *,
+        to: str,
+        repeat: int | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT | None = None,
+        frequency: str | None = None,
+        pair_id: int | None = None,
+        from_: str | None = None,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        memo: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(
+            ["process", "transfer-schedule", "modify"], **extract_params(locals())
+        )
+
+    def process_transfer_schedule_remove(  # noqa: PLR0913
+        self,
+        *,
+        to: str,
+        from_: str | None = None,
+        pair_id: int = 0,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(
+            ["process", "transfer-schedule", "remove"], **extract_params(locals())
+        )

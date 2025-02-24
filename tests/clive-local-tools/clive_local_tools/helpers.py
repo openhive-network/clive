@@ -1,9 +1,17 @@
 from __future__ import annotations
 
-import pytest
+from typing import TYPE_CHECKING
 
+import pytest
+from rich.panel import Panel
+from typer import rich_utils
+
+from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import TransactionId
+
+if TYPE_CHECKING:
+    from click import ClickException
 
 
 def get_transaction_id_from_output(output: str) -> str:
@@ -14,3 +22,21 @@ def get_transaction_id_from_output(output: str) -> str:
             validate_schema_field(TransactionId, transaction_id_field)
             return transaction_id_field
     pytest.fail(f"Could not find transaction id in output {output}")
+
+
+def get_formatted_error_message(error: ClickException) -> str:
+    panel = Panel(
+        rich_utils.highlighter(error.format_message()),
+        border_style=rich_utils.STYLE_ERRORS_PANEL_BORDER,
+        title=rich_utils.ERRORS_PANEL_TITLE,
+        title_align=rich_utils.ALIGN_ERRORS_PANEL,
+    )
+    console = rich_utils._get_rich_console(stderr=True)
+    console.width = TERMINAL_WIDTH
+    console.height = TERMINAL_HEIGHT
+    # Turn off colors, in order to prevent from adding ascii color markers.
+    # It causes errors while running `pytest -s`
+    console._color_system = None
+    with console.capture() as capture:
+        console.print(panel)
+    return capture.get()
