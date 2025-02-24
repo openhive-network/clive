@@ -1379,13 +1379,13 @@ url = "hive/tests/python/hive-local-tools/test-tools"
 
 [[package]]
 name = "textual"
-version = "1.0.0"
+version = "2.0.0"
 description = "Modern Text User Interface framework"
 optional = false
 python-versions = "<4.0.0,>=3.8.1"
 files = [
-    {file = "textual-1.0.0-py3-none-any.whl", hash = "sha256:2d4a701781c05104925e463ae370c630567c70c2880e92ab838052e3e23c986f"},
-    {file = "textual-1.0.0.tar.gz", hash = "sha256:bec9fe63547c1c552569d1b75d309038b7d456c03f86dfa3706ddb099b151399"},
+    {file = "textual-2.0.0-py3-none-any.whl", hash = "sha256:8de36e5f77e97e0e2b54fd895d474416f9c814b6fff542e6a5664e3a952fe1d6"},
+    {file = "textual-2.0.0.tar.gz", hash = "sha256:5b32816fb3f2ba6aabd589be295b68d78dd2d0f41279e549f499d9d8418e67cf"},
 ]
 
 [package.dependencies]
@@ -1660,4 +1660,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9381bcd7a47c23a850bee6809db12096c3b9d763daa9f767513623be6ae31622"
+content-hash = "ea05aefe29af9d8440b7e5e50e1259aa335dfd1131ed593c13ff8331b5f08911"
