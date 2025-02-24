@@ -72,7 +72,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         profile.name = profile_name
 
         async def create_wallet() -> None:
-            await self.world.commands.create_wallet(name=profile_name, password=password)
+            await self.world.commands.create_profile_wallets(profile_name=profile_name, password=password)
 
         async def sync_data() -> None:
             await self.world.commands.sync_data_with_beekeeper(profile=profile)

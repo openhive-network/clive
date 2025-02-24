@@ -12,7 +12,7 @@ from clive.__private.cli.exceptions import (
     CLIInvalidPasswordRepeatError,
     CLIPrettyError,
 )
-from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
@@ -42,8 +42,8 @@ class CreateProfile(BeekeeperBasedCommand):
         profile = Profile.create(self.profile_name, self.working_account_name)
 
         try:
-            result = await CreateWallet(
-                session=await self.beekeeper.session, wallet_name=profile.name, password=password
+            result = await CreateProfileWallets(
+                session=await self.beekeeper.session, profile_name=profile.name, password=password
             ).execute_with_result()
         except CommunicationError as error:
             if is_in_dev_mode():

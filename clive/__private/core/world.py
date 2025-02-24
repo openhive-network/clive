@@ -195,7 +195,7 @@ class World:
         """
         await self.create_new_profile(name, working_account, watched_accounts)
 
-        create_wallet_wrapper = await self.commands.create_wallet(password=password)
+        create_wallet_wrapper = await self.commands.create_profile_wallets(password=password)
         result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
