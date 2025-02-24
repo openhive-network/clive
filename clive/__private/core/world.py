@@ -142,34 +142,15 @@ class World:
     def _should_save_profile_on_close(self) -> bool:
         return self._profile is not None
 
-    @asynccontextmanager
-    async def during_setup(self) -> AsyncGenerator[None]:
-        self._is_during_setup = True
-        try:
-            yield
-        except Exception:
-            await self.close()
-            raise
-        finally:
-            self._is_during_setup = False
-
-    @asynccontextmanager
-    async def during_closure(self) -> AsyncGenerator[None]:
-        self._is_during_closure = True
-        try:
-            yield
-        finally:
-            self._is_during_closure = False
-
     async def setup(self) -> Self:
-        async with self.during_setup():
+        async with self._during_setup():
             self._beekeeper = await self._setup_beekeeper()
             self._session = await self.beekeeper.session
             self._wallets = WalletManager(self._session)
         return self
 
     async def close(self) -> None:
-        async with self.during_closure():
+        async with self._during_closure():
             if self._should_save_profile_on_close:
                 await self.commands.save_profile()
             if self._node is not None:
@@ -252,6 +233,25 @@ class World:
 
     def _on_going_into_unlocked_mode(self) -> None:
         """Override this method to hook when clive goes into the unlocked mode."""
+
+    @asynccontextmanager
+    async def _during_setup(self) -> AsyncGenerator[None]:
+        self._is_during_setup = True
+        try:
+            yield
+        except Exception:
+            await self.close()
+            raise
+        finally:
+            self._is_during_setup = False
+
+    @asynccontextmanager
+    async def _during_closure(self) -> AsyncGenerator[None]:
+        self._is_during_closure = True
+        try:
+            yield
+        finally:
+            self._is_during_closure = False
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
