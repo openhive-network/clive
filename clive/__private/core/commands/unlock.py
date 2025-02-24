@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from beekeepy.exceptions import NoWalletWithSuchNameError
 
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
+from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
+from clive.__private.core.commands.create_user_wallet import CreateUserWallet
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
@@ -13,9 +16,16 @@ from clive.__private.core.wallet_container import WalletContainer
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from beekeepy import AsyncSession
+    from beekeepy import AsyncSession, AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
+
+
+class CannotRecoverWalletsDuringUnlockError(CommandError):
+    MESSAGE: Final[str] = "Looks like beekeeper wallets no longer exist and we cannot do the recovery process."
+
+    def __init__(self, command: Command) -> None:
+        super().__init__(command, self.MESSAGE)
 
 
 @dataclass(kw_only=True)
@@ -32,17 +42,34 @@ class Unlock(CommandPasswordSecured):
     async def _execute(self) -> None:
         await SetTimeout(session=self.session, time=self.time, permanent=self.permanent).execute()
 
-        unlocked_encryption_wallet = await (
-            await self.session.open_wallet(name=EncryptionService.get_encryption_wallet_name(self.profile_name))
-        ).unlock(password=self.password)
+        encryption_wallet = await self._unlock_wallet(EncryptionService.get_encryption_wallet_name(self.profile_name))
+        user_wallet = await self._unlock_wallet(self.profile_name)
 
-        try:
-            user_wallet = await self.session.open_wallet(name=self.profile_name)
-        except NoWalletWithSuchNameError:
-            # create the user wallet if it's missing
-            unlocked_user_wallet = await self.session.create_wallet(name=self.profile_name, password=self.password)
-        else:
-            unlocked_user_wallet = await user_wallet.unlock(password=self.password)
+        if not encryption_wallet and not user_wallet:
+            # we should not recreate both wallets during the unlock process
+            # because when both wallets are deleted, we don't know what the previous password was
+            # so this could lead to a situation profile password will be changed when wallets are deleted
+            raise CannotRecoverWalletsDuringUnlockError(self)
+
+        if not encryption_wallet:
+            encryption_wallet = await CreateEncryptionWallet(
+                session=self.session, profile_name=self.profile_name, password=self.password
+            ).execute_with_result()
+
+        if not user_wallet:
+            user_wallet = await CreateUserWallet(
+                session=self.session, profile_name=self.profile_name, password=self.password
+            ).execute_with_result()
+
+        assert user_wallet is not None, "User wallet should be created at this point"
+        assert encryption_wallet is not None, "Encryption wallet should be created at this point"
 
         if self.app_state is not None:
-            await self.app_state.unlock(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
+            await self.app_state.unlock(WalletContainer(user_wallet, encryption_wallet))
+
+    async def _unlock_wallet(self, name: str) -> AsyncUnlockedWallet | None:
+        try:
+            wallet = await self.session.open_wallet(name=name)
+        except NoWalletWithSuchNameError:
+            return None
+        return await wallet.unlock(password=self.password)
