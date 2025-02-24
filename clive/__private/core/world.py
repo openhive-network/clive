@@ -201,10 +201,8 @@ class World:
         await self.create_new_profile(name, working_account, watched_accounts)
 
         create_wallet_wrapper = await self.commands.create_profile_wallets(password=password)
-        result = create_wallet_wrapper.result_or_raise
         if create_wallet_wrapper.error_occurred:
             self.profile.delete()
-        await self.wallets.set_wallets(WalletContainer(result.unlocked_user_wallet, result.unlocked_encryption_wallet))
         await self.commands.save_profile()
 
     async def load_profile_based_on_beekepeer(self) -> None:
