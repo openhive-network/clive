@@ -16,3 +16,6 @@ KNOWN_FIRST_PARTY_PACKAGES: Final[list[str]] = [
     "test_tools",
     "wax",
 ]
+
+WALLETS_AMOUNT_PER_PROFILE: Final[int] = 2
+"""Each profile can have up to 2 wallets: user wallet and encryption wallet."""
