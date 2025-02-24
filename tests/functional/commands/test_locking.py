@@ -5,10 +5,9 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from beekeepy.exceptions import NoWalletWithSuchNameError
 
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
-from clive.__private.core.commands.unlock import Unlock
+from clive.__private.core.commands.unlock import CannotRecoverWalletsDuringUnlockError, Unlock
 
 if TYPE_CHECKING:
     import clive
@@ -30,9 +29,9 @@ async def test_unlock(
     assert world.app_state.is_unlocked
 
 
-async def test_unlock_non_existing_wallet(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
+async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ACT & ASSERT
-    with pytest.raises(NoWalletWithSuchNameError):
+    with pytest.raises(CannotRecoverWalletsDuringUnlockError):
         await Unlock(
             app_state=world.app_state,
             session=world._session_ensure,
