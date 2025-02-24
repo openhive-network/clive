@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import asyncio
 from datetime import timedelta
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
 
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 from clive.__private.core.commands.unlock import CannotRecoverWalletsDuringUnlockError, Unlock
+from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
     import clive
@@ -38,6 +39,50 @@ async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_w
             profile_name="blabla",
             password="blabla",
         ).execute()
+
+
+@pytest.mark.parametrize("wallet_type", ["user_wallet", "encryption_wallet"])
+async def test_unlock_recovers_missing_wallet(
+    world: clive.World,
+    prepare_profile_with_wallet: Profile,
+    wallet_password: str,
+    wallet_type: Literal["user_wallet", "encryption_wallet"],
+) -> None:
+    # ARRANGE
+    profile = prepare_profile_with_wallet
+    beekeeper_working_directory = world.beekeeper.settings.working_directory
+    assert beekeeper_working_directory is not None, "Beekeeper working directory should be set"
+
+    wallet_filenames = {
+        "user_wallet": f"{profile.name}.wallet",
+        "encryption_wallet": f"{EncryptionService.get_encryption_wallet_name(profile.name)}.wallet",
+    }
+
+    wallet_filename = wallet_filenames[wallet_type]
+
+    wallet_filepath = beekeeper_working_directory / wallet_filename
+    assert wallet_filepath.is_file(), "Wallet should exist"
+
+    old_wallet_content = wallet_filepath.read_text()
+
+    # remove wallet
+    wallet_filepath.unlink()
+    assert not wallet_filepath.exists(), "Wallet should not exist"
+
+    # restart beekeeper so wallets are loaded again
+    await world.close()
+    await world.setup()
+
+    # ACT
+    # unlock takes place during load_profile
+    await world.load_profile(profile.name, wallet_password)
+
+    # ASSERT
+    assert world.app_state.is_unlocked
+    assert wallet_filepath.is_file(), "Wallet should be recovered"
+
+    new_wallet_content = wallet_filepath.read_text()
+    assert old_wallet_content == new_wallet_content, "Wallet content should be the same as before"
 
 
 async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
