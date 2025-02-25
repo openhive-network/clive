@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 from beekeepy.exceptions import NoWalletWithSuchNameError
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
 from clive.__private.core.commands.create_user_wallet import CreateUserWallet
 from clive.__private.core.commands.set_timeout import SetTimeout
@@ -20,6 +21,8 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
 
+WalletRecoveryStatus = Literal["nothing_to_recover", "encryption_wallet_recovered", "user_wallet_recovered"]
+
 
 class CannotRecoverWalletsDuringUnlockError(CommandError):
     MESSAGE: Final[str] = "Looks like beekeeper wallets no longer exist and we cannot do the recovery process."
@@ -29,7 +32,7 @@ class CannotRecoverWalletsDuringUnlockError(CommandError):
 
 
 @dataclass(kw_only=True)
-class Unlock(CommandPasswordSecured):
+class Unlock(CommandPasswordSecured, CommandWithResult[WalletRecoveryStatus]):
     """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
 
     profile_name: str
@@ -51,15 +54,19 @@ class Unlock(CommandPasswordSecured):
             # so this could lead to a situation profile password will be changed when wallets are deleted
             raise CannotRecoverWalletsDuringUnlockError(self)
 
+        self._result = "nothing_to_recover"
+
         if not encryption_wallet:
             encryption_wallet = await CreateEncryptionWallet(
                 session=self.session, profile_name=self.profile_name, password=self.password
             ).execute_with_result()
+            self._result = "encryption_wallet_recovered"
 
         if not user_wallet:
             user_wallet = await CreateUserWallet(
                 session=self.session, profile_name=self.profile_name, password=self.password
             ).execute_with_result()
+            self._result = "user_wallet_recovered"
 
         assert user_wallet is not None, "User wallet should be created at this point"
         assert encryption_wallet is not None, "Encryption wallet should be created at this point"

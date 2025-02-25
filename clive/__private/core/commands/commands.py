@@ -50,10 +50,14 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.sync_state_with_beekeeper import SyncStateWithBeekeeper
-from clive.__private.core.commands.unlock import Unlock
+from clive.__private.core.commands.unlock import Unlock, WalletRecoveryStatus
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
     UpdateTransactionMetadata,
+)
+from clive.__private.core.constants.wallet_recovery import (
+    USER_WALLET_RECOVERED_MESSAGE,
+    USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
 )
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
@@ -68,6 +72,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from beekeepy import AsyncUnlockedWallet, AsyncWallet
+    from textual.notifications import SeverityLevel
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
@@ -78,6 +83,7 @@ if TYPE_CHECKING:
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.profile import Profile
+    from clive.__private.core.types import NotifyLevel
     from clive.__private.core.world import CLIWorld, TUIWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
@@ -104,6 +110,9 @@ class Commands(Generic[WorldT_co]):
 
         self._world = world
         self.__exception_handlers = [*(exception_handlers or [])]
+
+    def _notify(self, message: str, *, level: NotifyLevel = "info") -> None:
+        """Send a notification message to the user."""
 
     async def create_profile_wallets(
         self,
@@ -160,7 +169,7 @@ class Commands(Generic[WorldT_co]):
 
     async def unlock(
         self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = True
-    ) -> CommandWrapper:
+    ) -> CommandWithResultWrapper[WalletRecoveryStatus]:
         """
         Return a CommandWrapper instance to unlock the profile-related wallets (user keys and encryption key).
 
@@ -172,7 +181,7 @@ class Commands(Generic[WorldT_co]):
             permanently.
         permanent: Whether to unlock the wallet permanently. Will take precedence when `time` is also set.
         """
-        return await self.__surround_with_exception_handlers(
+        wrapper = await self.__surround_with_exception_handlers(
             Unlock(
                 password=password,
                 app_state=self._world.app_state,
@@ -182,6 +191,12 @@ class Commands(Generic[WorldT_co]):
                 permanent=permanent,
             )
         )
+
+        if wrapper.success:
+            result = wrapper.result_or_raise
+            if result == "user_wallet_recovered":
+                self._notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
+        return wrapper
 
     async def lock(self) -> CommandWrapper:
         """Lock all the wallets in the given beekeeper session."""
@@ -589,9 +604,23 @@ class CLICommands(Commands["CLIWorld"]):
     def __init__(self, world: CLIWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
+    def _notify(self, message: str, *, level: NotifyLevel = "info") -> None:
+        from clive.__private.cli.notify import notify
+
+        notify(message, level=level)
+
 
 class TUICommands(Commands["TUIWorld"], CliveDOMNode):
     def __init__(self, world: TUIWorld) -> None:
         super().__init__(
             world, exception_handlers=[TUIErrorHandler, CommunicationFailureNotificator, GeneralErrorNotificator]
         )
+
+    def _notify(self, message: str, *, level: NotifyLevel = "info") -> None:
+        clive_to_textual_notification_level: dict[NotifyLevel, SeverityLevel] = {
+            "info": "information",
+            "warning": "warning",
+            "error": "warning",
+        }
+        assert level in clive_to_textual_notification_level, f"Unknown level: {level}"
+        self.app.notify(message, severity=clive_to_textual_notification_level[level])
