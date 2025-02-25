@@ -14,8 +14,14 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
     CLIProfileDoesNotExistsError,
 )
+from clive.__private.cli.notify import notify
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
+from clive.__private.core.commands.unlock import WalletRecoveryStatus
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
+from clive.__private.core.constants.wallet_recovery import (
+    USER_WALLET_RECOVERED_MESSAGE,
+    USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
+)
 from clive.__private.core.profile import Profile
 
 PASSWORD_SELECTION_ATTEMPTS: Final[int] = 3
@@ -56,15 +62,16 @@ class Unlock(BeekeeperBasedCommand):
 
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
         try:
-            await CoreUnlockCommand(
+            result = await CoreUnlockCommand(
                 profile_name=profile_name,
                 password=password,
                 session=await self.beekeeper.session,
-            ).execute()
+            ).execute_with_result()
         except InvalidPasswordError as error:
             raise CLIInvalidPasswordError(profile_name) from error
         except NoWalletWithSuchNameError as error:
             raise CLIPrettyError("Wallet with this name no longer exist on the beekeeper.", errno.ENOENT) from error
+        self._display_wallet_recovery_status(result)
 
     def _prompt_for_profile_name(self) -> str | None:
         options = self._generate_profile_options()
@@ -137,3 +144,7 @@ class Unlock(BeekeeperBasedCommand):
 
     def _display_create_profile_help_info(self) -> None:
         typer.echo(UNLOCK_CREATE_PROFILE_HELP)
+
+    def _display_wallet_recovery_status(self, status: WalletRecoveryStatus) -> None:
+        if status == "user_wallet_recovered":
+            notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
