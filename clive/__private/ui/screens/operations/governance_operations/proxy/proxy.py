@@ -17,7 +17,6 @@ from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
-    from rich.text import TextType
     from textual.app import ComposeResult
 
 
@@ -77,8 +76,8 @@ class Proxy(TabPane, CliveWidget):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: TextType) -> None:
-        super().__init__(title=title, id="proxy")
+    def __init__(self) -> None:
+        super().__init__(title="Proxy", id="proxy")
         self._current_proxy = self.profile.accounts.working.data.proxy
 
     def on_mount(self) -> None:

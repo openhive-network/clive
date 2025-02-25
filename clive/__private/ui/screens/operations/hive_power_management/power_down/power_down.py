@@ -35,7 +35,6 @@ from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
@@ -132,15 +131,8 @@ class PowerDown(TabPane, OperationActionBindings):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: TextType) -> None:
-        """
-        Initialize the PowerDown tab-pane.
-
-        Args:
-        ----
-        title: Title of the TabPane (will be displayed in a tab label).
-        """
-        super().__init__(title=title)
+    def __init__(self) -> None:
+        super().__init__(title="Power down")
         self._shares_input = HPVestsAmountInput()
         self._one_withdrawal_display = Notice(
             obj_to_watch=self._shares_input.input,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
 
@@ -27,11 +27,6 @@ from clive.__private.ui.widgets.location_indicator import LocationIndicator
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-POWER_UP_TAB_LABEL: Final[str] = "Power up"
-POWER_DOWN_TAB_LABEL: Final[str] = "Power down"
-WITHDRAW_ROUTES_TAB_LABEL: Final[str] = "Withdraw routes"
-DELEGATE_HIVE_POWER_LABEL: Final[str] = "Delegate"
-
 
 class HivePowerManagement(OperationBaseScreen):
     CSS_PATH = [
@@ -48,7 +43,7 @@ class HivePowerManagement(OperationBaseScreen):
                 yield WithdrawalInfo(provider)
             yield HivePowerAPR(provider)
             with CliveTabbedContent():
-                yield PowerUp(POWER_UP_TAB_LABEL)
-                yield PowerDown(POWER_DOWN_TAB_LABEL)
-                yield WithdrawRoutes(WITHDRAW_ROUTES_TAB_LABEL)
-                yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
+                yield PowerUp()
+                yield PowerDown()
+                yield WithdrawRoutes()
+                yield DelegateHivePower()

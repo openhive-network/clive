@@ -33,7 +33,6 @@ from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
-    from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
@@ -106,15 +105,8 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
     DEFAULT_AUTO_VEST: Final[bool] = False
 
-    def __init__(self, title: TextType) -> None:
-        """
-        Initialize a TabPane.
-
-        Args:
-        ----
-        title: Title of the TabPane (will be displayed in a tab label).
-        """
-        super().__init__(title=title)
+    def __init__(self) -> None:
+        super().__init__(title="Withdraw routes")
         self._account_input = ReceiverInput()
         self._percent_input = PercentInput()
         self._auto_vest_checkbox = Checkbox("Auto vest", value=self.DEFAULT_AUTO_VEST)

@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
-    from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.models import Asset
@@ -29,15 +28,8 @@ class PowerUp(TabPane, OperationActionBindings):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: TextType) -> None:
-        """
-        Initialize a TabPane.
-
-        Args:
-        ----
-        title: Title of the TabPane (will be displayed in a tab label).
-        """
-        super().__init__(title=title)
+    def __init__(self) -> None:
+        super().__init__(title="Power up")
         self._receiver_input = ReceiverInput("Receiver", value=self.working_account_name)
         self._asset_input = HiveAssetAmountInput()
 
