@@ -57,6 +57,8 @@ class Clive(App[int]):
         Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
         Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
+        Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
+        Binding("f8", "go_to_dashboard", "Dashboard", show=False),
     ]
 
     SCREENS = {
@@ -197,6 +199,19 @@ class Clive(App[int]):
 
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
+
+    def action_go_to_dashboard(self) -> None:
+        self.get_screen_from_current_stack(Dashboard).pop_until_active()
+
+    async def action_go_to_transaction_summary(self) -> None:
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if isinstance(self.screen, TransactionSummary):
+            return
+
+        if not self.world.profile.transaction.is_signed:
+            await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
+        await self.push_screen(TransactionSummary())
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()

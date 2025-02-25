@@ -96,14 +96,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def go_to_transaction_summary(self) -> None:
-        from clive.__private.ui.screens.transaction_summary import TransactionSummary
-
-        if isinstance(self.app.screen, TransactionSummary):
-            return
-
-        if not self.profile.transaction.is_signed:
-            await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
-        await self.app.push_screen(TransactionSummary())
+        await self.app.action_go_to_transaction_summary()
 
 
 class DashboardButton(OneLineButtonUnfocusable):
@@ -113,12 +106,7 @@ class DashboardButton(OneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     def go_to_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import Dashboard
-
-        if isinstance(self.app.screen, Dashboard):
-            return
-
-        self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
+        self.app.action_go_to_dashboard()
 
 
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
