@@ -19,7 +19,7 @@ class SavingsDataProvider(DataProvider[SavingsData]):
         wrapper = await self.commands.retrieve_savings_data(account_name=account_name)
 
         if wrapper.error_occurred:
-            self.notify(f"Failed to retrieve savings data: {wrapper.error}", severity="error")
+            self.notify("Failed to retrieve savings data.", severity="error")
             return
 
         result = wrapper.result_or_raise

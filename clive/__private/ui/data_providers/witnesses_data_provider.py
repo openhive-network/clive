@@ -39,7 +39,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
         )
 
         if wrapper.error_occurred:
-            self.notify(f"Failed to retrieve witnesses data: {wrapper.error}", severity="error")
+            self.notify("Failed to retrieve witnesses data.", severity="error")
             return
 
         result = wrapper.result_or_raise

@@ -20,7 +20,7 @@ class HivePowerDataProvider(DataProvider[HivePowerData]):
         wrapper = await self.commands.retrieve_hp_data(account_name=account_name)
 
         if wrapper.error_occurred:
-            self.notify(f"Failed to retrieve hive power data: {wrapper.error}", severity="error")
+            self.notify("Failed to retrieve hive power data.", severity="error")
             return
 
         result = wrapper.result_or_raise

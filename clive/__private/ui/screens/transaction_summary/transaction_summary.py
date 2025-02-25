@@ -238,21 +238,18 @@ class TransactionSummary(BaseScreen):
         save_as_binary = result.save_as_binary
         should_be_signed = result.should_be_signed
         transaction = self.profile.transaction.copy()
-        try:
-            transaction = (
-                await self.commands.perform_actions_on_transaction(
-                    content=transaction,
-                    sign_key=self._get_key_to_sign()
-                    if should_be_signed and not self.profile.transaction.is_signed
-                    else None,
-                    force_unsign=not should_be_signed,
-                    save_file_path=file_path,
-                    force_save_format="bin" if save_as_binary else "json",
-                )
-            ).result_or_raise
-        except Exception as error:  # noqa: BLE001
-            self.notify(f"Transaction save failed. Reason: {error}", severity="error")
+        wrapper = await self.commands.perform_actions_on_transaction(
+            content=transaction,
+            sign_key=self._get_key_to_sign() if should_be_signed and not self.profile.transaction.is_signed else None,
+            force_unsign=not should_be_signed,
+            save_file_path=file_path,
+            force_save_format="bin" if save_as_binary else "json",
+        )
+
+        if wrapper.error_occurred:
+            self.notify("Transaction save failed. Please try again.", severity="error")
             return
+
         self.profile.transaction.reset()
         self.profile.transaction_file_path = None
         self.app.trigger_profile_watchers()
@@ -287,16 +284,13 @@ class TransactionSummary(BaseScreen):
         from clive.__private.ui.screens.dashboard import Dashboard
 
         transaction = self.profile.transaction
-        try:
-            (
-                await self.commands.perform_actions_on_transaction(
-                    content=transaction,
-                    sign_key=self._get_key_to_sign() if not transaction.is_signed else None,
-                    broadcast=True,
-                )
-            ).raise_if_error_occurred()
-        except Exception as error:  # noqa: BLE001
-            self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
+        wrapper = await self.commands.perform_actions_on_transaction(
+            content=transaction,
+            sign_key=self._get_key_to_sign() if not transaction.is_signed else None,
+            broadcast=True,
+        )
+        if wrapper.error_occurred:
+            self.notify("Transaction broadcast failed. Please try again.", severity="error")
             return
 
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")

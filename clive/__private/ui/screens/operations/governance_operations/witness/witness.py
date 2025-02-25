@@ -83,7 +83,7 @@ class WitnessNameLabel(Label, CliveWidget):
         wrapper = await self.commands.find_witness(witness_name=self.__witness_name)
 
         if wrapper.error_occurred:
-            new_tooltip_text = f"Unable to retrieve witness information:\n{wrapper.error}"
+            new_tooltip_text = "Failed to retrieve witness information."
         else:
             witness = wrapper.result_or_raise
             created = humanize_datetime(witness.created)

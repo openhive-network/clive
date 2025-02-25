@@ -31,7 +31,7 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
         )
 
         if wrapper.error_occurred:
-            self.notify(f"Failed to retrieve proposals data: {wrapper.error}", severity="error")
+            self.notify("Failed to retrieve proposals data.", severity="error")
             return
 
         result = wrapper.result_or_raise

@@ -45,7 +45,7 @@ class WitnessDetailsDialog(CliveInfoDialog, CliveWidget):
         wrapper = await self.commands.find_witness(witness_name=self._witness_name)
 
         if wrapper.error_occurred:
-            new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"
+            new_witness_data = "Failed to retrieve witness information."
         else:
             witness = wrapper.result_or_raise
             url = witness.url
