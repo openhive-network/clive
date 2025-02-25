@@ -58,7 +58,7 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel):
+class AssetFactoryHolder(CliveBaseModel, frozen=True):
     """Holds factory for asset."""
 
     class Config:
@@ -206,7 +206,7 @@ class Asset:
         ------
         DecimalConversionNotANumberError: If given amount is not a valid number.
         """
-        precision = precision if isinstance(precision, int) else cls.get_precision(precision).value
+        precision = precision if isinstance(precision, int) else cls.get_precision(precision)
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
         return int(amount_decimal * 10**precision)
 
@@ -216,7 +216,7 @@ class Asset:
 
     @staticmethod
     def get_precision(asset: type[Asset.AnyT] | Asset.AnyT) -> int:
-        return asset.get_asset_information().precision
+        return asset.get_asset_information().precision.value
 
     @staticmethod
     def get_nai(asset: type[Asset.AnyT] | Asset.AnyT) -> str:

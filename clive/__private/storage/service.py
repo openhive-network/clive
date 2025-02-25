@@ -221,8 +221,7 @@ class PersistentStorageService:
                     decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
                 except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
                     raise ProfileEncryptionError from error
-
-                return ProfileStorageModel.parse_raw(decrypted_profile)
+                return ProfileStorageModel.parse_raw(decrypted_profile, get_hf26_decoder)
         raise ProfileDoesNotExistsError(profile_name)
 
     @classmethod
