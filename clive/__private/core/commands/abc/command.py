@@ -38,7 +38,11 @@ class Command(ABC):
             self._log_execution_skipped()
             return
         self._log_execution_info()
-        await self._execute()
+        try:
+            await self._execute()
+        except Exception as error:
+            self._log_execution_error(error)
+            raise
 
     @staticmethod
     async def execute_multiple(*commands: Command) -> None:
@@ -49,3 +53,6 @@ class Command(ABC):
 
     def _log_execution_skipped(self) -> None:
         logger.debug(f"Skipping execution of command: {self.__class__.__name__}")
+
+    def _log_execution_error(self, error: Exception) -> None:
+        logger.debug(f"Error occurred during {self.__class__.__name__} command execution. Error:\n{error!s}")
