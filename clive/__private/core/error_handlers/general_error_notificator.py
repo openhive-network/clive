@@ -4,7 +4,7 @@ from typing import Final, TypeGuard
 
 from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
-from clive.__private.core.commands.unlock import CannotRecoverWalletsDuringUnlockError
+from clive.__private.core.commands.recover_wallets import CannotRecoverWalletsError
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 from clive.__private.storage.service import ProfileEncryptionError
 
@@ -16,7 +16,7 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
         InvalidPasswordError: "The password you entered is incorrect. Please try again.",
         NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
         ProfileEncryptionError: "Profile encryption failed which means profile cannot be saved or loaded.",
-        CannotRecoverWalletsDuringUnlockError: CannotRecoverWalletsDuringUnlockError.MESSAGE,
+        CannotRecoverWalletsError: CannotRecoverWalletsError.MESSAGE,
     }
 
     def __init__(self) -> None:

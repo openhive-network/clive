@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Final, Literal
 import pytest
 
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
-from clive.__private.core.commands.unlock import CannotRecoverWalletsDuringUnlockError, Unlock
+from clive.__private.core.commands.recover_wallets import CannotRecoverWalletsError
+from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ async def test_unlock(
 
 async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ACT & ASSERT
-    with pytest.raises(CannotRecoverWalletsDuringUnlockError):
+    with pytest.raises(CannotRecoverWalletsError):
         await Unlock(
             app_state=world.app_state,
             session=world._session_ensure,
