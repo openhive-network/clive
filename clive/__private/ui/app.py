@@ -270,7 +270,7 @@ class Clive(App[int]):
         accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
         if wrapper.error_occurred:
-            logger.warning(f"Update alarms data failed: {wrapper.error}")
+            logger.error(f"Update alarms data failed: {wrapper.error}")
             return
 
         self.trigger_profile_watchers()
@@ -286,7 +286,7 @@ class Clive(App[int]):
                 # notify watchers when node goes offline
                 self.trigger_node_watchers()
 
-            logger.warning(f"Update node data failed: {wrapper.error}")
+            logger.error(f"Update node data failed: {wrapper.error}")
             return
 
         self.trigger_profile_watchers()
