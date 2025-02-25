@@ -50,6 +50,10 @@ async def test_unlock_recovers_missing_wallet(
 ) -> None:
     # ARRANGE
     profile = prepare_profile_with_wallet
+
+    encryption_wallet = (await world.commands.get_unlocked_encryption_wallet()).result_or_raise
+    encryption_keys_before = await encryption_wallet.public_keys
+
     beekeeper_working_directory = world.beekeeper.settings.working_directory
     assert beekeeper_working_directory is not None, "Beekeeper working directory should be set"
 
@@ -61,15 +65,14 @@ async def test_unlock_recovers_missing_wallet(
     wallet_filename = wallet_filenames[wallet_type]
 
     wallet_filepath = beekeeper_working_directory / wallet_filename
-    assert wallet_filepath.is_file(), "Wallet should exist"
-
-    old_wallet_content = wallet_filepath.read_text()
+    assert wallet_filepath.is_file(), "Wallet file should exist"
 
     # remove wallet
     wallet_filepath.unlink()
-    assert not wallet_filepath.exists(), "Wallet should not exist"
+    assert not wallet_filepath.exists(), "Wallet file should not exist"
 
-    # restart beekeeper so wallets are loaded again
+    # restart beekeeper so wallets are loaded again because beekeeper is caching them
+    # and recovery process is not triggered
     await world.close()
     await world.setup()
 
@@ -78,11 +81,17 @@ async def test_unlock_recovers_missing_wallet(
     await world.load_profile(profile.name, wallet_password)
 
     # ASSERT
-    assert world.app_state.is_unlocked
-    assert wallet_filepath.is_file(), "Wallet should be recovered"
+    assert world.app_state.is_unlocked, "Wallet should be unlocked"
+    assert wallet_filepath.is_file(), "Wallet file should be recovered"
 
-    new_wallet_content = wallet_filepath.read_text()
-    assert old_wallet_content == new_wallet_content, "Wallet content should be the same as before"
+    if wallet_type == "user_wallet":
+        user_wallet = (await world.commands.get_unlocked_user_wallet()).result_or_raise
+        public_keys = await user_wallet.public_keys
+        assert public_keys == [], "User wallet should be recovered with no keys"
+    else:
+        encryption_wallet = (await world.commands.get_unlocked_encryption_wallet()).result_or_raise
+        public_keys = await encryption_wallet.public_keys
+        assert public_keys == encryption_keys_before, "Encryption wallet should be recovered with the same keys"
 
 
 async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
