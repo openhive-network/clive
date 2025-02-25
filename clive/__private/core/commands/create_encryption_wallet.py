@@ -24,6 +24,6 @@ class CreateEncryptionWallet(CommandWithResult[AsyncUnlockedWallet]):
             name=EncryptionService.get_encryption_wallet_name(self.profile_name), password=self.password
         )
         await unlocked_encryption_wallet.import_key(
-            private_key=iwax.generate_password_based_private_key(self.password).value
+            private_key=iwax.generate_password_based_private_key(self.password, account_name=self.profile_name).value
         )
         self._result = unlocked_encryption_wallet
