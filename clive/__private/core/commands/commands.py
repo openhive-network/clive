@@ -50,7 +50,7 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.sync_state_with_beekeeper import SyncStateWithBeekeeper
-from clive.__private.core.commands.unlock import Unlock, WalletRecoveryStatus
+from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
     UpdateTransactionMetadata,
@@ -77,6 +77,7 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
     from clive.__private.core.commands.abc.command import Command
+    from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         AnyErrorHandlerContextManager,
@@ -169,7 +170,7 @@ class Commands(Generic[WorldT_co]):
 
     async def unlock(
         self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = True
-    ) -> CommandWithResultWrapper[WalletRecoveryStatus]:
+    ) -> CommandWithResultWrapper[RecoverWalletsStatus]:
         """
         Return a CommandWrapper instance to unlock the profile-related wallets (user keys and encryption key).
 

@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING
 
 from beekeepy.exceptions import NoWalletWithSuchNameError
 
-from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
-from clive.__private.core.commands.create_user_wallet import CreateUserWallet
+from clive.__private.core.commands.recover_wallets import RecoverWallets, RecoverWalletsStatus
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
@@ -21,18 +19,9 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
 
-WalletRecoveryStatus = Literal["nothing_to_recover", "encryption_wallet_recovered", "user_wallet_recovered"]
-
-
-class CannotRecoverWalletsDuringUnlockError(CommandError):
-    MESSAGE: Final[str] = "Looks like beekeeper wallets no longer exist and we cannot do the recovery process."
-
-    def __init__(self, command: Command) -> None:
-        super().__init__(command, self.MESSAGE)
-
 
 @dataclass(kw_only=True)
-class Unlock(CommandPasswordSecured, CommandWithResult[WalletRecoveryStatus]):
+class Unlock(CommandPasswordSecured, CommandWithResult[RecoverWalletsStatus]):
     """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
 
     profile_name: str
@@ -47,26 +36,23 @@ class Unlock(CommandPasswordSecured, CommandWithResult[WalletRecoveryStatus]):
 
         encryption_wallet = await self._unlock_wallet(EncryptionService.get_encryption_wallet_name(self.profile_name))
         user_wallet = await self._unlock_wallet(self.profile_name)
+        is_encryption_wallet_missing = encryption_wallet is None
+        is_user_wallet_missing = user_wallet is None
 
-        if not encryption_wallet and not user_wallet:
-            # we should not recreate both wallets during the unlock process
-            # because when both wallets are deleted, we don't know what the previous password was
-            # so this could lead to a situation profile password will be changed when wallets are deleted
-            raise CannotRecoverWalletsDuringUnlockError(self)
+        recover_wallets_result = await RecoverWallets(
+            password=self.password,
+            profile_name=self.profile_name,
+            session=self.session,
+            should_recover_encryption_wallet=is_encryption_wallet_missing,
+            should_recover_user_wallet=is_user_wallet_missing,
+        ).execute_with_result()
 
-        self._result = "nothing_to_recover"
+        self._result = recover_wallets_result.status
 
-        if not encryption_wallet:
-            encryption_wallet = await CreateEncryptionWallet(
-                session=self.session, profile_name=self.profile_name, password=self.password
-            ).execute_with_result()
-            self._result = "encryption_wallet_recovered"
-
-        if not user_wallet:
-            user_wallet = await CreateUserWallet(
-                session=self.session, profile_name=self.profile_name, password=self.password
-            ).execute_with_result()
-            self._result = "user_wallet_recovered"
+        if self._result == "encryption_wallet_recovered":
+            encryption_wallet = recover_wallets_result.recovered_wallet
+        elif self._result == "user_wallet_recovered":
+            user_wallet = recover_wallets_result.recovered_wallet
 
         assert user_wallet is not None, "User wallet should be created at this point"
         assert encryption_wallet is not None, "Encryption wallet should be created at this point"

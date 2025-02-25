@@ -15,8 +15,8 @@ from clive.__private.cli.exceptions import (
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.cli.notify import notify
+from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
-from clive.__private.core.commands.unlock import WalletRecoveryStatus
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
@@ -145,6 +145,6 @@ class Unlock(BeekeeperBasedCommand):
     def _display_create_profile_help_info(self) -> None:
         typer.echo(UNLOCK_CREATE_PROFILE_HELP)
 
-    def _display_wallet_recovery_status(self, status: WalletRecoveryStatus) -> None:
+    def _display_wallet_recovery_status(self, status: RecoverWalletsStatus) -> None:
         if status == "user_wallet_recovered":
             notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
