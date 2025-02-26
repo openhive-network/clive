@@ -102,17 +102,14 @@ class Unlock(BaseScreen):
         if not password_input.validate_passed() or not lock_after_time.is_valid:
             return
 
-        if not (
-            await self.commands.unlock(
-                profile_name=select_profile.value_ensure,
-                password=password_input.value_or_error,
-                permanent=lock_after_time.lock_duration is None,
-                time=lock_after_time.lock_duration,
-            )
-        ).success:
+        if not await self.world.load_profile(
+            profile_name=select_profile.value_ensure,
+            password=password_input.value_or_error,
+            permanent=lock_after_time.lock_duration is None,
+            time=lock_after_time.lock_duration,
+        ):
             return
 
-        await self.world.load_profile_based_on_beekepeer()
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
         self.app.update_alarms_data_asap_on_newest_node_data()
