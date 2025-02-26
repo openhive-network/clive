@@ -59,8 +59,8 @@ async def test_if_unlocked_profile_is_loaded_other_was_saved(beekeeper: AsyncBee
     token = await (await beekeeper.session).token
 
     cli_world = CLIWorld()
-    cli_world.beekeeper_settings.http_endpoint = beekeeper.http_endpoint
-    cli_world.beekeeper_settings.use_existing_session = token
+    cli_world.beekeeper_manager.settings.http_endpoint = beekeeper.http_endpoint
+    cli_world.beekeeper_manager.settings.use_existing_session = token
 
     async with cli_world as world_cm:
         loaded_profile_name = world_cm.profile.name

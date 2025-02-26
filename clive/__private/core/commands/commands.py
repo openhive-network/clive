@@ -137,7 +137,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             CreateProfileWallets(
                 app_state=self._world.app_state,
-                session=self._world._session_ensure,
+                session=self._world.beekeeper_manager.session,
                 profile_name=profile_name if profile_name is not None else self._world.profile.name,
                 password=password,
                 unlock_time=unlock_time,
@@ -148,8 +148,8 @@ class Commands(Generic[WorldT_co]):
     async def decrypt(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
             Decrypt(
-                unlocked_wallet=self._world.wallets.user_wallet,
-                unlocked_encryption_wallet=self._world.wallets.encryption_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
                 encrypted_content=encrypted_content,
             )
         )
@@ -162,8 +162,8 @@ class Commands(Generic[WorldT_co]):
     async def encrypt(self, *, content: str) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
             Encrypt(
-                unlocked_wallet=self._world.wallets.user_wallet,
-                unlocked_encryption_wallet=self._world.wallets.encryption_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
                 content=content,
             )
         )
@@ -186,7 +186,7 @@ class Commands(Generic[WorldT_co]):
             Unlock(
                 password=password,
                 app_state=self._world.app_state,
-                session=self._world._session_ensure,
+                session=self._world.beekeeper_manager.session,
                 profile_name=profile_name or self._world.profile.name,
                 time=time,
                 permanent=permanent,
@@ -204,21 +204,23 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             Lock(
                 app_state=self._world.app_state,
-                session=self._world._session_ensure,
+                session=self._world.beekeeper_manager.session,
             )
         )
 
     async def get_unlocked_encryption_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
         return await self.__surround_with_exception_handlers(
-            GetUnlockedEncryptionWallet(session=self._world._session_ensure)
+            GetUnlockedEncryptionWallet(session=self._world.beekeeper_manager.session)
         )
 
     async def get_unlocked_user_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:
-        return await self.__surround_with_exception_handlers(GetUnlockedUserWallet(session=self._world._session_ensure))
+        return await self.__surround_with_exception_handlers(
+            GetUnlockedUserWallet(session=self._world.beekeeper_manager.session)
+        )
 
     async def get_wallet_names(self, filter_by_status: WalletStatus = "all") -> CommandWithResultWrapper[list[str]]:
         return await self.__surround_with_exception_handlers(
-            GetWalletNames(session=self._world._session_ensure, filter_by_status=filter_by_status)
+            GetWalletNames(session=self._world.beekeeper_manager.session, filter_by_status=filter_by_status)
         )
 
     async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
@@ -240,7 +242,7 @@ class Commands(Generic[WorldT_co]):
         """
         return await self.__surround_with_exception_handlers(
             IsWalletUnlocked(
-                wallet=wallet if wallet is not None else self._world.wallets.user_wallet,
+                wallet=wallet if wallet is not None else self._world.beekeeper_manager.user_wallet,
             )
         )
 
@@ -254,7 +256,7 @@ class Commands(Generic[WorldT_co]):
         permanent: Whether to keep the wallets unlocked permanently. Will take precedence when `time` is also set.
         """
         return await self.__surround_with_exception_handlers(
-            SetTimeout(session=self._world._session_ensure, time=time, permanent=permanent)
+            SetTimeout(session=self._world.beekeeper_manager.session, time=time, permanent=permanent)
         )
 
     async def perform_actions_on_transaction(  # noqa: PLR0913
@@ -274,7 +276,7 @@ class Commands(Generic[WorldT_co]):
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.wallets.user_wallet if sign_key else None,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key else None,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
@@ -323,7 +325,7 @@ class Commands(Generic[WorldT_co]):
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
-                unlocked_wallet=self._world.wallets.user_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 transaction=transaction,
                 key=sign_with,
                 chain_id=chain_id or await self._world.node.chain_id,
@@ -354,7 +356,7 @@ class Commands(Generic[WorldT_co]):
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
             ImportKey(
-                unlocked_wallet=self._world.wallets.user_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 key_to_import=key_to_import,
             )
         )
@@ -362,7 +364,7 @@ class Commands(Generic[WorldT_co]):
     async def remove_key(self, *, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
-                unlocked_wallet=self._world.wallets.user_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 key_to_remove=key_to_remove,
             )
         )
@@ -377,7 +379,7 @@ class Commands(Generic[WorldT_co]):
         """
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                unlocked_wallet=self._world.wallets.user_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 profile=profile if profile is not None else self._world.profile,
             )
         )
@@ -385,7 +387,7 @@ class Commands(Generic[WorldT_co]):
     async def sync_state_with_beekeeper(self, source: LockSource = "unknown") -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncStateWithBeekeeper(
-                session=self._world._session_ensure,
+                session=self._world.beekeeper_manager.session,
                 app_state=self._world.app_state,
                 source=source,
             )
@@ -505,8 +507,8 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             SaveProfile(
                 profile=profile,
-                unlocked_wallet=self._world.wallets.user_wallet,
-                unlocked_encryption_wallet=self._world.wallets.encryption_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
             )
         )
 
@@ -514,8 +516,8 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             LoadProfile(
                 profile_name=profile_name,
-                unlocked_wallet=self._world.wallets.user_wallet,
-                unlocked_encryption_wallet=self._world.wallets.encryption_wallet,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
             )
         )
 

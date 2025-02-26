@@ -3,21 +3,18 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncGenerator, cast
 
-from beekeepy import AsyncBeekeeper, AsyncSession
-from beekeepy import Settings as BeekeepySettings
 from textual.reactive import var
 from typing_extensions import override
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
+from clive.__private.core.beekeeper_manager import BeekeeperManager
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
-from clive.__private.core.wallet_manager import WalletManager
-from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -29,6 +26,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from types import TracebackType
 
+    from beekeepy import AsyncBeekeeper
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
@@ -53,10 +51,7 @@ class World:
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self._beekeeper_settings = self._setup_beekeepy_settings()
-        self._beekeeper: AsyncBeekeeper | None = None
-        self._session: AsyncSession | None = None
-        self._wallets: WalletManager | None = None
+        self._beekeeper_manager = BeekeeperManager()
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -102,10 +97,8 @@ class World:
         return self._known_exchanges
 
     @property
-    def wallets(self) -> WalletManager:
-        message = "Wallets are not available. Did you forget to use as a context manager or call `setup`?"
-        assert self._wallets is not None, message
-        return self._wallets
+    def beekeeper_manager(self) -> BeekeeperManager:
+        return self._beekeeper_manager
 
     @property
     def beekeeper(self) -> AsyncBeekeeper:
@@ -114,27 +107,7 @@ class World:
 
         Same applies for other beekeepy objects like session or wallet.
         """
-        message = "Beekeeper is not available. Did you forget to use as a context manager or call `setup`?"
-        assert self._beekeeper is not None, message
-        return self._beekeeper
-
-    @property
-    def beekeeper_settings(self) -> BeekeepySettings:
-        """Should be used only for modifying beekeeper settings before setup is done."""
-        use_instead_for_modify = "world.beekeeper.update_settings"
-        use_instead_for_read = "world.beekeeper.settings"
-        message = (
-            f"Usage impossible after setup, use `{use_instead_for_modify}` to modify "
-            f"or `{use_instead_for_read}` for read instead."
-        )
-        assert self._beekeeper is None, message
-        return self._beekeeper_settings
-
-    @property
-    def _session_ensure(self) -> AsyncSession:
-        message = "Session is not available. Did you forget to use as a context manager or call `setup`?"
-        assert self._session is not None, message
-        return self._session
+        return self._beekeeper_manager.beekeeper
 
     @property
     def _should_save_profile_on_close(self) -> bool:
@@ -142,9 +115,7 @@ class World:
 
     async def setup(self) -> Self:
         async with self._during_setup():
-            self._beekeeper = await self._setup_beekeeper()
-            self._session = await self.beekeeper.session
-            self._wallets = WalletManager(self._session)
+            await self._beekeeper_manager.setup()
         return self
 
     async def close(self) -> None:
@@ -153,17 +124,12 @@ class World:
                 await self.commands.save_profile()
             if self._node is not None:
                 self._node.teardown()
-            if self._beekeeper is not None:
-                self._beekeeper.teardown()
+            self._beekeeper_manager.teardown()
 
             self.app_state.lock()
-            self._beekeeper_settings = self._setup_beekeepy_settings()
 
             self._profile = None
             self._node = None
-            self._beekeeper = None
-            self._session = None
-            self._wallets = None
 
     async def create_new_profile(
         self,
@@ -197,9 +163,9 @@ class World:
     async def load_profile_based_on_beekepeer(self) -> None:
         unlocked_user_wallet = (await self.commands.get_unlocked_user_wallet()).result_or_raise
         unlocked_encryption_wallet = (await self.commands.get_unlocked_encryption_wallet()).result_or_raise
-        await self.wallets.set_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
+        await self.beekeeper_manager.set_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
 
-        profile_name = self.wallets.name
+        profile_name = self.beekeeper_manager.name
         profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
         await self.commands.sync_state_with_beekeeper()
@@ -257,12 +223,6 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def _setup_beekeeper(self) -> AsyncBeekeeper:
-        if self.beekeeper_settings.http_endpoint is not None:
-            return await AsyncBeekeeper.remote_factory(url_or_settings=self.beekeeper_settings)
-
-        return await AsyncBeekeeper.factory(settings=self.beekeeper_settings)
-
     async def _update_node(self) -> None:
         if self._profile is None:
             if self._node is not None:
@@ -274,10 +234,6 @@ class World:
             self._node = Node(self._profile)
         else:
             self._node.change_related_profile(self._profile)
-
-    @classmethod
-    def _setup_beekeepy_settings(cls) -> BeekeepySettings:
-        return safe_settings.beekeeper.settings_factory()
 
 
 class TUIWorld(World, CliveDOMNode):

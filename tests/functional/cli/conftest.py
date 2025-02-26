@@ -49,8 +49,8 @@ async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
     token = await (await beekeeper_local.session).token
 
     world = World()
-    world.beekeeper_settings.http_endpoint = beekeeper_local.http_endpoint
-    world.beekeeper_settings.use_existing_session = token
+    world.beekeeper_manager.settings.http_endpoint = beekeeper_local.http_endpoint
+    world.beekeeper_manager.settings.use_existing_session = token
     async with world as world_cm:
         yield world_cm
 
