@@ -164,6 +164,7 @@ class TransactionSummary(BaseScreen):
         self._update_bindings()
         self._previous_transaction = deepcopy(self.profile.transaction)
         self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
+        self.watch(self.world, "node_reactive", self._update_bindings, init=False)
 
     @property
     def key_container(self) -> KeyContainer:
@@ -285,10 +286,14 @@ class TransactionSummary(BaseScreen):
             self.unbind(BROADCAST_TRANSACTION_BINDING_KEY)
             self.unbind(SAVE_TRANSACTION_TO_FILE_BINDING_KEY)
             self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
-        else:
-            self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
-            self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
+            return
+
+        self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
+        self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
+        if self.node.cached.online_or_none:
             self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+        else:
+            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)
