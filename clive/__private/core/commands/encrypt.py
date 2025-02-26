@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from helpy.exceptions import CommunicationError
+from beekeepy.exceptions import CommunicationError
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_encryption import CommandEncryption
