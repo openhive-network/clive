@@ -16,7 +16,7 @@ async def test_configure_working_account_switch(cli_tester: CLITester) -> None:
     """Check clive configure working-account switch command."""
     # ARRANGE
     profile_name = cli_tester.world.profile.name
-    profile_account_checker = ProfileAccountsChecker(profile_name, cli_tester.world.wallets._content)
+    profile_account_checker = ProfileAccountsChecker(profile_name, cli_tester.world.beekeeper_manager._content)
     account_to_switch = WATCHED_ACCOUNTS_NAMES[0]
 
     # ACT

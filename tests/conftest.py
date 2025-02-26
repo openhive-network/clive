@@ -177,7 +177,7 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
         for wallet in wallets:
             await CreateProfileWallets(
                 app_state=world.app_state,
-                session=world._session_ensure,
+                session=world.session,
                 profile_name=wallet.name,
                 password=wallet.password,
             ).execute()
@@ -185,7 +185,7 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             if import_keys:
                 for pairs in wallet.keys.pairs:
                     await ImportKey(
-                        unlocked_wallet=world.wallets.user_wallet,
+                        unlocked_wallet=world.beekeeper_manager.user_wallet,
                         key_to_import=pairs.private_key,
                     ).execute()
         return wallets
