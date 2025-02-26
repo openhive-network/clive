@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal, Vertical
+from textual.message import Message
 from textual.widgets import Label
 
 from clive.__private.core.constants.tui.bindings import REFRESH_TRANSACTION_METADATA_BINDING_KEY
@@ -39,12 +40,19 @@ class TransactionIdLabel(Label):
 
 
 class RefreshMetadataButton(RefreshOneLineButton):
+    class NodeStatusChanged(Message):
+        def __init__(self, *, node_status: bool) -> None:
+            super().__init__()
+            self.node_status = node_status
+
     def __init__(self) -> None:
         super().__init__(f"Refresh ({REFRESH_TRANSACTION_METADATA_BINDING_KEY.upper()})")
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:
-        self.display = bool(node.cached.online_or_none)  # don't display refresh button when node is offline
+        node_status = bool(node.cached.online_or_none)
+        self.display = node_status  # don't display refresh button when node is offline
+        self.post_message(self.NodeStatusChanged(node_status=node_status))
 
 
 class TransactionMetadataContainer(Horizontal, CliveWidget):

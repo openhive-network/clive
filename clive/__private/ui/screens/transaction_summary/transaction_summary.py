@@ -218,6 +218,14 @@ class TransactionSummary(BaseScreen):
         else:
             await refresh()
 
+    @on(RefreshMetadataButton.NodeStatusChanged)
+    def update_refresh_binding(self, event: RefreshMetadataButton.NodeStatusChanged) -> None:
+        new_node_status = event.node_status
+        if new_node_status:
+            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+        else:
+            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
+
     @on(CartTable.Modified)
     async def handle_cart_update(self, event: CartTable.Modified) -> None:
         modified_transaction = event.transaction
@@ -303,6 +311,9 @@ class TransactionSummary(BaseScreen):
             self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
             self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
             self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+            # handle for entering transaction summary with offline node
+            if not bool(self.node.cached.online_or_none):
+                self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)
