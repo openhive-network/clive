@@ -44,7 +44,8 @@ class RefreshMetadataButton(RefreshOneLineButton):
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:
-        self.display = bool(node.cached.online_or_none)  # don't display refresh button when node is offline
+        node_status = bool(node.cached.online_or_none)
+        self.display = node_status  # don't display refresh button when node is offline
 
 
 class TransactionMetadataContainer(Horizontal, CliveWidget):

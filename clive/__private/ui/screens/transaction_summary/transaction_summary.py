@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
 
+    from clive.__private.core.node import Node
     from clive.__private.core.profile import Profile
 
 
@@ -164,6 +165,7 @@ class TransactionSummary(BaseScreen):
         self._update_bindings()
         self._previous_transaction = deepcopy(self.profile.transaction)
         self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
+        self.watch(self.world, "node_reactive", self._update_refresh_binding, init=False)
 
     @property
     def key_container(self) -> KeyContainer:
@@ -313,12 +315,20 @@ class TransactionSummary(BaseScreen):
         else:
             self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
             self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
-            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+            if self.node.cached.online_or_none:
+                self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)
         subtitle.update(self._create_subtitle_content())
         subtitle.display = bool(self.profile.transaction_file_path)
+
+    def _update_refresh_binding(self, node: Node) -> None:
+        new_node_status = bool(node.cached.online_or_none)
+        if new_node_status and self.profile.transaction:
+            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+        else:
+            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
 
     async def _rebuild(self) -> None:
         await self.query_exactly_one(CartTable).rebuild()
