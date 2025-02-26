@@ -7,9 +7,9 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal, TypeVar, cast, get_args, overload
 
+from beekeepy import RemoteHandleSettings
 from beekeepy import Settings as BeekeepySettings
-from helpy import HttpUrl
-from helpy import Settings as HelpySettings
+from beekeepy.interfaces import HttpUrl
 from inflection import underscore
 
 from clive.__private.core.constants.setting_identifiers import (
@@ -311,14 +311,14 @@ class SafeSettings:
         def communication_retries_delay_secs(self) -> float:
             return self._get_node_communication_retries_delay_secs()
 
-        def settings_factory(self, http_endpoint: HttpUrl) -> HelpySettings:
-            helpy_settings = HelpySettings(http_endpoint=http_endpoint)
+        def settings_factory(self, http_endpoint: HttpUrl) -> RemoteHandleSettings:
+            communication_settings = RemoteHandleSettings(http_endpoint=http_endpoint)
 
-            helpy_settings.timeout = timedelta(seconds=self.communication_timeout_total_secs)
-            helpy_settings.max_retries = self.communication_attempts_amount
-            helpy_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
+            communication_settings.timeout = timedelta(seconds=self.communication_timeout_total_secs)
+            communication_settings.max_retries = self.communication_attempts_amount
+            communication_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
 
-            return helpy_settings
+            return communication_settings
 
         def _get_node_chain_id(self) -> str | None:
             from clive.__private.core.validate_schema_field import is_schema_field_valid
