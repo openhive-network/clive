@@ -249,3 +249,18 @@ class CLITransactionNotSignedError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionUnknownAccountError(CLIPrettyError):
+    """Raise when trying to perform transaction with operation(s) to unknown account."""
+
+    def __init__(self, *account_names: str) -> None:
+        self.account_names = list(account_names)
+
+        message = (
+            "Clive cannot perform the transaction because the "
+            f"target accounts: {self.account_names} are not on the list of known accounts.\n"
+            "To perform the transaction, add the target accounts to the list of known accounts.\n"
+            "See `clive configure known-account -h`"
+        )
+        super().__init__(message, errno.EINVAL)
