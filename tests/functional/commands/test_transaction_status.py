@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from helpy.exceptions import ApiNotFoundError
+from beekeepy.exceptions import ApiNotFoundError
 
 from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.logger import logger

@@ -3,7 +3,7 @@ import sys
 from dataclasses import dataclass
 from getpass import getpass
 
-from helpy.exceptions import CommunicationError
+from beekeepy.exceptions import CommunicationError
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
