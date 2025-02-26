@@ -6,7 +6,7 @@ import traceback
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from helpy.exceptions import CommunicationError
+from beekeepy.exceptions import CommunicationError
 from textual import on, work
 from textual._context import active_app
 from textual.app import App
