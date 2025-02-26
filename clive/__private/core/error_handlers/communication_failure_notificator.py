@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final, TypeGuard
 
-from helpy.exceptions import CommunicationError, TimeoutExceededError
+from beekeepy.exceptions import CommunicationError, TimeoutExceededError
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator

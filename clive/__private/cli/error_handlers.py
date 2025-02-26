@@ -1,6 +1,6 @@
 import errno
 
-from helpy.exceptions import CommunicationError
+from beekeepy.exceptions import CommunicationError
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
