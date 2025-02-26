@@ -33,7 +33,7 @@ class AppState:
 
         self._is_unlocked = True
         if wallets:
-            await self.world.wallets.set_wallets(wallets)
+            await self.world.beekeeper_manager.set_wallets(wallets)
         self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 
@@ -42,7 +42,7 @@ class AppState:
             return
 
         self._is_unlocked = False
-        self.world.wallets.clear_wallets()
+        self.world.beekeeper_manager.clear_wallets()
         self.world.on_going_into_locked_mode(source)
         logger.info("Mode switched to LOCKED.")
 

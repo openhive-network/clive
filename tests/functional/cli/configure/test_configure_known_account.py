@@ -21,7 +21,7 @@ async def test_configure_known_account_add(cli_tester: CLITester) -> None:
     """Check clive configure known-account add command."""
     # ARRANGE
     account_to_add = ALT_WORKING_ACCOUNT1_NAME
-    profile_checker = ProfileAccountsChecker(cli_tester.world.profile.name, cli_tester.world.wallets._content)
+    profile_checker = ProfileAccountsChecker(cli_tester.world.profile.name, cli_tester.world.beekeeper_manager._content)
 
     # ACT
     cli_tester.configure_known_account_add(account_name=account_to_add)
@@ -45,7 +45,7 @@ async def test_configure_known_account_add_already_known_account(cli_tester: CLI
 async def test_configure_known_account_remove(cli_tester: CLITester) -> None:
     """Check clive configure known-account remove command."""
     # ARRANGE
-    profile_checker = ProfileAccountsChecker(cli_tester.world.profile.name, cli_tester.world.wallets._content)
+    profile_checker = ProfileAccountsChecker(cli_tester.world.profile.name, cli_tester.world.beekeeper_manager._content)
     cli_tester.configure_known_account_add(account_name=ACCOUNT_TO_REMOVE)
     await profile_checker.assert_in_known_accounts(account_names=[ACCOUNT_TO_REMOVE])
 
