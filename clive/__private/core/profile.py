@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
-from helpy import HttpUrl
+from beekeepy.interfaces import HttpUrl
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.contextual import Context

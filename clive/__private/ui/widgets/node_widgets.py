@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from helpy import HttpUrl
+from beekeepy.interfaces import HttpUrl
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.widgets import Static

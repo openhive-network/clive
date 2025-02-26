@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from helpy import HttpUrl
+from beekeepy.interfaces import HttpUrl
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 

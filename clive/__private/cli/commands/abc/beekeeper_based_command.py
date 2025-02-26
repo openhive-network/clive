@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import typer
 from beekeepy import AsyncBeekeeper
-from helpy import HttpUrl
+from beekeepy.interfaces import HttpUrl
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
