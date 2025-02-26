@@ -264,3 +264,16 @@ class CLITransactionUnknownAccountError(CLIPrettyError):
             "See `clive configure known-account -h`"
         )
         super().__init__(message, errno.EINVAL)
+
+
+class CLITransactionBadAccountError(CLIPrettyError):
+    """Raise when trying to perform transaction with operation(s) to bad account."""
+
+    def __init__(self, *account_names: str) -> None:
+        self.account_names = list(account_names)
+
+        message = (
+            "Clive cannot perform the transaction because the "
+            f"target accounts: {self.account_names} are on the list of bad accounts."
+        )
+        super().__init__(message, errno.EINVAL)
