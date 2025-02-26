@@ -6,14 +6,16 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from helpy import AsyncHived, HttpUrl
-from helpy.exceptions import CommunicationError
+from beekeepy.exceptions import CommunicationError
 
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.settings import safe_settings
+from wax.helpy import AsyncHived
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from beekeepy.interfaces import HttpUrl
 
     from clive.__private.core.profile import Profile
     from clive.__private.models.schemas import Config, DynamicGlobalProperties, Version
