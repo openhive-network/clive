@@ -13,6 +13,7 @@ from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -126,3 +127,8 @@ async def cli_tester_without_session_token(
     """Token is not set in environment variable."""
     with beekeeper_session_token_env_context_factory(None):
         yield cli_tester
+
+
+@pytest.fixture
+def cli_profile_checker(cli_tester: CLITester) -> ProfileAccountsChecker:
+    return ProfileAccountsChecker(cli_tester.world.profile.name, cli_tester.world.wallets._content)
