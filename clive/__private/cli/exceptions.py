@@ -14,6 +14,7 @@ from clive.__private.core.constants.node import (
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.formatters.humanize import humanize_timedelta
 from clive.__private.models.asset import Asset
+from clive.__private.models.schemas import AccountName
 from clive.__private.settings import clive_prefixed_envvar
 
 if TYPE_CHECKING:
@@ -248,3 +249,19 @@ class CLITransactionNotSignedError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionBadAccountError(CLIPrettyError):
+    """Raise when trying to perform transaction with operation(s) to bad account."""
+
+    def __init__(self, accounts: set[AccountName] | AccountName | str) -> None:
+        self.accounts = accounts
+        message = "Cannot perform transaction. "
+
+        if isinstance(accounts, (AccountName, str)):
+            message += f"Target account {accounts} is on bad account list."
+        elif len(accounts) == 1:
+            message += f"Target account {''.join(accounts)} is on bad account list."
+        else:
+            message += f"Target accounts {', '.join(accounts)} are on bad account list."
+        super().__init__(message, errno.EINVAL)
