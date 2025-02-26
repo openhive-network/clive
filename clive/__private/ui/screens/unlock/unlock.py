@@ -4,6 +4,7 @@ import contextlib
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from beekeepy.exceptions import InvalidPasswordError
 from textual import on
 from textual.app import InvalidModeError
 from textual.containers import Horizontal
@@ -12,6 +13,7 @@ from textual.widgets import Button, Checkbox, Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
 from clive.__private.core.profile import Profile
+from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
@@ -113,17 +115,20 @@ class Unlock(BaseScreen):
         if not password_input.validate_passed() or not lock_after_time.is_valid:
             return
 
-        if not (
-            await self.commands.unlock(
+        try:
+            await self.world.load_profile(
                 profile_name=select_profile.value_ensure,
                 password=password_input.value_or_error,
                 permanent=lock_after_time.should_stay_unlocked,
                 time=lock_after_time.lock_duration,
             )
-        ).success:
+        except InvalidPasswordError:
+            logger.error(
+                f"Profile `{select_profile.value_ensure}` was not unlocked "
+                "because entered password is invalid, skipping switching modes"
+            )
             return
 
-        await self.world.load_profile_based_on_beekepeer()
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
         self.app.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)

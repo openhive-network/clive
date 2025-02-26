@@ -26,6 +26,7 @@ from clive.exceptions import ProfileNotLoadedError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from datetime import timedelta
     from types import TracebackType
 
     from typing_extensions import Self
@@ -203,9 +204,13 @@ class World:
         await self.switch_profile(profile)
         await self.commands.sync_state_with_beekeeper()
 
-    async def load_profile(self, profile_name: str, password: str) -> None:
+    async def load_profile(
+        self, profile_name: str, password: str, *, time: timedelta | None = None, permanent: bool = True
+    ) -> None:
         assert not self.app_state.is_unlocked, "Application is already unlocked"
-        await self.commands.unlock(profile_name=profile_name, password=password, permanent=True)
+        (
+            await self.commands.unlock(profile_name=profile_name, password=password, time=time, permanent=permanent)
+        ).raise_if_error_occurred()
         await self.load_profile_based_on_beekepeer()
 
     async def switch_profile(self, new_profile: Profile | None) -> None:
