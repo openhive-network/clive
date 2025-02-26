@@ -3,6 +3,8 @@ from __future__ import annotations
 import traceback
 from typing import TYPE_CHECKING, TypeAlias, get_args
 
+import test_tools as tt
+
 if TYPE_CHECKING:
     from types import TracebackType
 
@@ -17,7 +19,10 @@ class CLITestCommandError(AssertionError):
             tb: TracebackType = result.exc_info[2]
             tb_formatted = "".join(traceback.format_tb(tb))
             message += f"\nException:\n{result.exception!r}\n\nTraceback:\n{tb_formatted}"
+
+        tt.logger.error(message)
         super().__init__(message)
+
         self.command = command
         self.exit_code = exit_code
         self.stdout = stdout
