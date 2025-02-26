@@ -19,7 +19,7 @@ from clive.__private.settings import clive_prefixed_envvar
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from helpy import HttpUrl
+    from beekeepy.interfaces import HttpUrl
 
     from clive.__private.core.profile import Profile
 

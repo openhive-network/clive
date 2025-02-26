@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import aiohttp
 
 if TYPE_CHECKING:
-    from helpy import HttpUrl
+    from beekeepy.interfaces import HttpUrl
 
 
 async def is_url_reachable(url: HttpUrl) -> bool:
