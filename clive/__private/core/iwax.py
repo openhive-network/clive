@@ -11,6 +11,8 @@ from clive.exceptions import CliveError
 from schemas.encoders import get_hf26_encoder
 from schemas.decoders import DecoderFactory
 from schemas.operations import convert_to_representation
+from schemas.fields.hive_int import HiveInt
+
 from clive.__private.models.schemas import OperationUnion
 
 if TYPE_CHECKING:
@@ -25,10 +27,10 @@ class HpAPRProtocol(Protocol):
     """Simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
 
     @property
-    def head_block_number(self) -> int: ...
+    def head_block_number(self) -> int | HiveInt: ...
 
     @property
-    def vesting_reward_percent(self) -> int: ...
+    def vesting_reward_percent(self) -> int | HiveInt: ...
 
     virtual_supply: Asset.Hive
     total_vesting_fund_hive: Asset.Hive
@@ -180,8 +182,8 @@ def vests(amount: int) -> Asset.Vests:
 
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     result = wax.calculate_hp_apr(
-        head_block_num=data.head_block_number,
-        vesting_reward_percent=data.vesting_reward_percent,
+        head_block_num= data.head_block_number.value if isinstance(data.head_block_number, HiveInt) else data.head_block_number,
+        vesting_reward_percent= data.vesting_reward_percent.value if isinstance(data.vesting_reward_percent, HiveInt) else data.vesting_reward_percent,
         virtual_supply=to_python_json_asset(data.virtual_supply),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
     )

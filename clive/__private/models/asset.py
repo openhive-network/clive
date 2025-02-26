@@ -195,7 +195,7 @@ class Asset:
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
         precision = cls.get_precision(asset)
-        return DecimalConverter.convert(asset.amount) / DecimalConverter.convert(10**precision)
+        return DecimalConverter.convert(asset.amount.value) / DecimalConverter.convert(10**precision)
 
     @classmethod
     def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
