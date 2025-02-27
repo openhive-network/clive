@@ -350,7 +350,9 @@ class Clive(App[int]):
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
+        logger.debug(f"Current mode: {self.current_mode}")
         logger.debug(f"Screen stack: {self.screen_stack}")
+        logger.debug(f"Screen stacks: {self._screen_stacks}")
 
         response = await self.world.node.api.database.get_dynamic_global_properties()
         logger.debug(f"Current block: {response.head_block_number}")
