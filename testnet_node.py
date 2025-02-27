@@ -129,11 +129,15 @@ def launch_tui() -> None:
 def serve_forever() -> None:
     tt.logger.info("Serving forever... press Ctrl+C to exit")
 
-    while True:
-        time.sleep(1)
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        tt.logger.info("Exiting...")
+        return
 
 
-async def prepare(*, recreate_profiles: bool) -> None:
+async def prepare(*, recreate_profiles: bool) -> tt.RawNode:
     prepare_before_launch(enable_textual_logger=False, enable_stream_handlers=True)
     node = prepare_node()
     print_working_account_keys()
@@ -143,18 +147,22 @@ async def prepare(*, recreate_profiles: bool) -> None:
         prepare_before_launch(enable_textual_logger=False, enable_stream_handlers=True)
         await prepare_profiles(node)
 
+    return node
+
 
 def main() -> None:
     args = init_argparse(sys.argv[1:])
     should_prepare_profiles = args.prepare_profiles
     should_launch_tui = args.tui
 
-    asyncio.run(prepare(recreate_profiles=should_prepare_profiles))
+    node = asyncio.run(prepare(recreate_profiles=should_prepare_profiles))
 
     if should_launch_tui:
         launch_tui()
     else:
         serve_forever()
+
+    node.close()
 
 
 if __name__ == "__main__":
