@@ -263,20 +263,26 @@ class Clive(App[int]):
         self._refresh_node_data_interval.resume()
 
     def switch_mode_with_reset(self, new_mode: CliveModes) -> AwaitComplete:
-        previous_mode = self.current_mode
+        """
+        Switch mode and reset all other active modes.
+
+        The `App.switch_mode` method from Textual keeps the previous mode in the stack.
+        This method allows to switch to a new mode and have only a new mode in the stack without keeping
+        any screen stacks of other modes.
+
+        Args:
+        ----
+            new_mode: The mode to switch to.
+        """
 
         async def impl() -> None:
+            logger.debug(f"Switching mode from: `{self.current_mode}` to: `{new_mode}`")
             await self.switch_mode(new_mode)
-            await self.reset_mode(previous_mode)
 
-            if previous_mode == "create_profile":
-                if new_mode != "unlock":
-                    await self.reset_mode("unlock")
-            elif previous_mode == "unlock":
-                if new_mode != "create_profile":
-                    await self.reset_mode("create_profile")
-                if new_mode != "dashboard":
-                    await self.reset_mode("dashboard")
+            modes_to_keep = (new_mode, "_default")
+            modes_to_reset = [mode for mode in self._screen_stacks if mode not in modes_to_keep]
+            assert all(mode in self.MODES for mode in modes_to_reset), "Unexpected mode in modes_to_reset"
+            await self.reset_mode(*cast("list[CliveModes]", modes_to_reset))
 
         return AwaitComplete(impl()).call_next(self)
 
