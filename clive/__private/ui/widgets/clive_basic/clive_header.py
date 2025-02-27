@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Final
 
 from textual import events, on
 from textual.containers import Horizontal
 from textual.css.query import NoMatches
+from textual.dom import NoScreen
 from textual.events import Click
 from textual.message import Message
 from textual.widgets import Header, Static
@@ -285,12 +287,14 @@ class CliveRawHeader(Header, CliveWidget):
 
     def on_mount(self, event: Mount) -> None:
         # >>> start workaround for query_one(HeaderTitle) raising NoMatches error when title reactive is updated right
-        # after pop_screen happens
+        # after pop_screen happens, more details https://github.com/Textualize/textual/pull/4817
         def set_title() -> None:
-            self.query_exactly_one(HeaderTitle).text = self.screen_title
+            with contextlib.suppress(NoMatches, NoScreen):
+                self.query_exactly_one(HeaderTitle).text = self.screen_title
 
         def set_sub_title() -> None:
-            self.query_exactly_one(HeaderTitle).sub_text = self.screen_sub_title
+            with contextlib.suppress(NoMatches, NoScreen):
+                self.query_exactly_one(HeaderTitle).sub_text = self.screen_sub_title
 
         event.prevent_default()
 
