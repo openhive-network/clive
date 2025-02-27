@@ -275,10 +275,12 @@ class Clive(App[int]):
 
         return AwaitComplete(impl()).call_next(self)
 
-    def reset_mode(self, mode: CliveModes) -> AwaitComplete:
+    def reset_mode(self, *modes: CliveModes) -> AwaitComplete:
         async def impl() -> None:
-            await self.remove_mode(mode)
-            self.add_mode(mode, self.MODES[mode])
+            logger.debug(f"Resetting modes: {modes}")
+            for mode in modes:
+                await self.remove_mode(mode)
+                self.add_mode(mode, self.MODES[mode])
 
         return AwaitComplete(impl()).call_next(self)
 
