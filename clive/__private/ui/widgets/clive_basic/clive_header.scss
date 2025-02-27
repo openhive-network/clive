@@ -66,5 +66,9 @@ CliveHeader {
         color: $error;
       }
     }
+
+    ConfigButton {
+      min-width: 10;
+    }
   }
 }

@@ -23,7 +23,6 @@ from clive.__private.ui.dialogs.liquid_navigation_dialog import LiquidNavigation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.account_details import AccountDetails
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.operations import Operations, Savings
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
@@ -272,7 +271,7 @@ class Dashboard(BaseScreen):
         Binding("f3", "switch_working_account", "Switch working account"),
         Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
         Binding("f5", "switch_mode_into_locked", "Lock wallet"),
-        Binding("f6", "config", "Config"),
+        Binding("f6", "app.go_to_config", "Config"),
     ]
 
     def __init__(self) -> None:
@@ -322,9 +321,6 @@ class Dashboard(BaseScreen):
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
-
-    def action_config(self) -> None:
-        self.app.push_screen(Config())
 
     @CliveScreen.prevent_action_when_no_tracked_accounts()
     def action_switch_working_account(self) -> None:
