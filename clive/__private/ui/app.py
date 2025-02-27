@@ -4,7 +4,7 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, Awaitable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, TypeVar, cast
 
 from beekeepy.exceptions import CommunicationError
 from textual import on, work
@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
+    from clive.__private.ui.clive_screen import CliveScreen
     from clive.__private.ui.types import CliveModes
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -73,7 +74,7 @@ class Clive(App[int]):
         "dashboard": Dashboard,
     }
 
-    MODES = {
+    MODES: ClassVar[dict[CliveModes, type[CliveScreen]]] = {  # type: ignore[assignment]
         "unlock": Unlock,
         "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
