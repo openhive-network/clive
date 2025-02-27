@@ -242,6 +242,7 @@ class SafeSettings:
             beekeepy_settings.period_between_retries = timedelta(seconds=self.communication_retries_delay_secs)
             beekeepy_settings.initialization_timeout = timedelta(seconds=self.initialization_timeout)
             beekeepy_settings.close_timeout = timedelta(seconds=self.close_timeout)
+            beekeepy_settings.propagate_sigint = False
 
             return beekeepy_settings
 
