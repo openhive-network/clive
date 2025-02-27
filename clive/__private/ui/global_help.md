@@ -9,6 +9,7 @@
 |   `F1`   | Show help                 |
 |   `F7`   | Go to transaction summary |
 |   `F8`   | Go to dashboard           |
+|   `F9`   | Go to config              |
 | `Ctrl+Q` | Quit                      |
 | `Ctrl+S` | Screenshot                |
 |   `C`    | Clear notifications       |

@@ -7,4 +7,4 @@ if TYPE_CHECKING:
 
     ActiveBindingsMap: TypeAlias = dict[str, ActiveBinding]
 
-    CliveModes = Literal["unlock", "create_profile", "dashboard"]
+    CliveModes = Literal["unlock", "create_profile", "dashboard", "config"]

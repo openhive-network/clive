@@ -27,6 +27,7 @@ from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
+from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
@@ -67,6 +68,7 @@ class Clive(App[int]):
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
         Binding("f8", "go_to_dashboard", "Dashboard", show=False),
+        Binding("f9", "go_to_config", "Config", show=False),
     ]
 
     SCREENS = {
@@ -78,6 +80,7 @@ class Clive(App[int]):
         "unlock": Unlock,
         "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
+        "config": Config,
     }
 
     header_expanded = var(default=False)
@@ -231,18 +234,17 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
-    def action_go_to_dashboard(self) -> None:
-        self.get_screen_from_current_stack(Dashboard).pop_until_active()
+    async def action_go_to_config(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_config()
+
+    async def action_go_to_dashboard(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_dashboard()
 
     async def action_go_to_transaction_summary(self) -> None:
-        from clive.__private.ui.screens.transaction_summary import TransactionSummary
-
-        if isinstance(self.screen, TransactionSummary):
-            return
-
-        if not self.world.profile.transaction.is_signed:
-            await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
-        await self.push_screen(TransactionSummary())
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_transaction_summary()
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
@@ -374,6 +376,35 @@ class Clive(App[int]):
         self.pause_refresh_beekeeper_wallet_lock_status_interval()
 
         await self.world.commands.lock()
+
+    async def go_to_config(self) -> None:
+        if self.current_mode == "config":
+            self.get_screen_from_current_stack(Config).pop_until_active()
+        elif self.current_mode == "dashboard":
+            await self.switch_mode_with_reset("config")
+        else:
+            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+
+    async def go_to_dashboard(self) -> None:
+        if self.current_mode == "dashboard":
+            self.get_screen_from_current_stack(Dashboard).pop_until_active()
+        elif self.current_mode == "config":
+            await self.switch_mode_with_reset("dashboard")
+        else:
+            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+
+    async def go_to_transaction_summary(self) -> None:
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if isinstance(self.screen, TransactionSummary):
+            return
+
+        if self.current_mode == "config":
+            await self.switch_mode_with_reset("dashboard")
+
+        if not self.world.profile.transaction.is_signed:
+            await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
+        await self.push_screen(TransactionSummary())
 
     def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
         """Run work in a worker with a guard. It means that the work will be executed only if the guard is available."""
