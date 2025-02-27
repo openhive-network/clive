@@ -4,12 +4,13 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar, cast
 
 from helpy.exceptions import CommunicationError
 from textual import on, work
 from textual._context import active_app
 from textual.app import App
+from textual.await_complete import AwaitComplete
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
@@ -35,6 +36,9 @@ if TYPE_CHECKING:
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType
     from textual.worker import Worker
+
+    from clive.__private.ui.clive_screen import CliveScreen
+    from clive.__private.ui.types import CliveModes
 
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -68,7 +72,7 @@ class Clive(App[int]):
         "dashboard": Dashboard,
     }
 
-    MODES = {
+    MODES: ClassVar[dict[CliveModes, type[CliveScreen]]] = {  # type: ignore[assignment]
         "unlock": Unlock,
         "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
@@ -88,6 +92,12 @@ class Clive(App[int]):
     def world(self) -> TUIWorld:
         assert self._world is not None, "World is not set yet."
         return self._world
+
+    @property
+    def current_mode(self) -> CliveModes:
+        mode = super().current_mode
+        assert mode in self.MODES, f"Mode {mode} is not in the list of modes"
+        return cast("CliveModes", mode)
 
     @staticmethod
     def app_instance() -> Clive:
@@ -232,6 +242,26 @@ class Clive(App[int]):
 
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
+
+    def switch_mode_with_reset(self, new_mode: CliveModes) -> AwaitComplete:
+        previous_mode = self.current_mode
+        awaitable = self.switch_mode(new_mode)
+        self.reset_mode(previous_mode)
+
+        if previous_mode == "create_profile":
+            if new_mode != "unlock":
+                self.reset_mode("unlock")
+        elif previous_mode == "unlock":
+            if new_mode != "create_profile":
+                self.reset_mode("create_profile")
+            if new_mode != "dashboard":
+                self.reset_mode("dashboard")
+
+        return AwaitComplete(awaitable)
+
+    def reset_mode(self, mode: CliveModes) -> None:
+        self.remove_mode(mode)
+        self.add_mode(mode, self.MODES[mode])
 
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
