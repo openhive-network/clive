@@ -122,7 +122,8 @@ run_testnet() {
     exec python3 testnet_node.py -p -t
   else
     echo "Launching clive in CLI mode on testnet"
-    python3 testnet_node.py -p >${TESTNET_NODE_LOG_FILE} 2>&1 &
+    # We use setsid to detach from the process group because ctrl-c will kill the testnet_node.py
+    setsid python3 testnet_node.py -p >${TESTNET_NODE_LOG_FILE} 2>&1 &
     wait_for_testnet
     launch_cli
   fi
