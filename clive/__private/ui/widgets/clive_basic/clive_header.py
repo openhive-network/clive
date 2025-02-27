@@ -98,7 +98,8 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def go_to_transaction_summary(self) -> None:
-        await self.app.action_go_to_transaction_summary()
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker(self.app.action_go_to_transaction_summary())
 
 
 class DashboardButton(OneLineButtonUnfocusable):
