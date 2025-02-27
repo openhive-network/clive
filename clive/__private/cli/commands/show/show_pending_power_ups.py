@@ -43,7 +43,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         delayed_voting_interval = await self.__get_delayed_voting_interval()
 
         for entry in delayed_votes:
-            votes_vests = iwax.vests(entry.val)
+            votes_vests = iwax.vests(entry.val.value)
             hp_humanized = humanize_hive_power(iwax.calculate_vests_to_hp(votes_vests, gdpo))
             vests_humanized = humanize_asset(votes_vests)
             hp_aligned, vests_aligned = align_to_dot(hp_humanized, vests_humanized, center_to=amount_title)
@@ -54,4 +54,4 @@ class ShowPendingPowerUps(WorldBasedCommand):
 
     async def __get_delayed_voting_interval(self) -> timedelta:
         node_config = await self.world.node.cached.config
-        return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS)
+        return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS.value)

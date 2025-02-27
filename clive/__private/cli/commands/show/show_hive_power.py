@@ -131,7 +131,7 @@ class ShowHivePower(WorldBasedCommand):
         withdraw_routes_table.add_column("Auto vest", justify="right", style="green", no_wrap=True)
 
         for withdraw_route in self._hp_data.withdraw_routes:
-            withdraw_route_percent = hive_percent_to_percent(withdraw_route.percent)
+            withdraw_route_percent = hive_percent_to_percent(withdraw_route.percent.value)
             withdraw_routes_table.add_row(
                 withdraw_route.to_account,
                 humanize_percent(withdraw_route_percent),
