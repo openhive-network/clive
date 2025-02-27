@@ -242,7 +242,7 @@ class Clive(App[int]):
             return
 
         if self.current_mode == "config":
-            self.switch_mode_with_reset("dashboard")
+            await self.switch_mode_with_reset("dashboard")
 
         if not self.world.profile.transaction.is_signed:
             await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
@@ -264,23 +264,28 @@ class Clive(App[int]):
 
     def switch_mode_with_reset(self, new_mode: CliveModes) -> AwaitComplete:
         previous_mode = self.current_mode
-        awaitable = self.switch_mode(new_mode)
-        self.reset_mode(previous_mode)
 
-        if previous_mode == "create_profile":
-            if new_mode != "unlock":
-                self.reset_mode("unlock")
-        elif previous_mode == "unlock":
-            if new_mode != "create_profile":
-                self.reset_mode("create_profile")
-            if new_mode != "dashboard":
-                self.reset_mode("dashboard")
+        async def impl() -> None:
+            await self.switch_mode(new_mode)
+            await self.reset_mode(previous_mode)
 
-        return AwaitComplete(awaitable)
+            if previous_mode == "create_profile":
+                if new_mode != "unlock":
+                    await self.reset_mode("unlock")
+            elif previous_mode == "unlock":
+                if new_mode != "create_profile":
+                    await self.reset_mode("create_profile")
+                if new_mode != "dashboard":
+                    await self.reset_mode("dashboard")
 
-    def reset_mode(self, mode: CliveModes) -> None:
-        self.remove_mode(mode)
-        self.add_mode(mode, self.MODES[mode])
+        return AwaitComplete(impl()).call_next(self)
+
+    def reset_mode(self, mode: CliveModes) -> AwaitComplete:
+        async def impl() -> None:
+            await self.remove_mode(mode)
+            self.add_mode(mode, self.MODES[mode])
+
+        return AwaitComplete(impl()).call_next(self)
 
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
