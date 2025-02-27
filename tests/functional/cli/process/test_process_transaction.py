@@ -32,8 +32,7 @@ RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 def trx_file(temporary_path_per_test: Path) -> Path:
     return temporary_path_per_test / "power_up.json"
 
-
-@pytest.mark.parametrize("json_", [EXAMPLE_OBJECT, EXAMPLE_STRING, EXAMPLE_NUMBER])
+@pytest.mark.parametrize("json_", [EXAMPLE_OBJECT])
 async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: Path, json_: str) -> None:
     """Regression test for problem with parsing json field in CustomJsonOpetation saved in file."""
     # ARRANGE

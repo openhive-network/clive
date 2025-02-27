@@ -9,7 +9,7 @@ from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 from clive.__private.models.schemas import CustomJsonOperation
 from clive.__private.validators.json_validator import JsonValidator
-
+from schemas.operations import convert_to_representation
 
 @dataclass(kw_only=True)
 class ProcessCustomJson(OperationCommand):
@@ -20,6 +20,12 @@ class ProcessCustomJson(OperationCommand):
 
     async def _create_operation(self) -> CustomJsonOperation:
         json_ = self.ensure_json_from_json_string_or_path(self.json_or_path)
+        # return convert_to_representation(CustomJsonOperation(
+        #     id_=self.id_,
+        #     json_=json_,
+        #     required_auths=self.authorize_by_active,
+        #     required_posting_auths=self.authorize,
+        # ))
         return CustomJsonOperation(
             id_=self.id_,
             json_=json_,
