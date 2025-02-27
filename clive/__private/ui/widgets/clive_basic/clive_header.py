@@ -100,8 +100,9 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
         return f"Cart ({amount_text})"
 
     @on(OneLineButton.Pressed)
-    async def go_to_transaction_summary(self) -> None:
-        await self.app.action_go_to_transaction_summary()
+    def go_to_transaction_summary(self) -> None:
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(self.app.go_to_transaction_summary())
 
 
 class DashboardButton(OneLineButtonUnfocusable):
@@ -111,7 +112,19 @@ class DashboardButton(OneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     def go_to_dashboard(self) -> None:
-        self.app.action_go_to_dashboard()
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(self.app.go_to_dashboard())
+
+
+class ConfigButton(OneLineButtonUnfocusable):
+    def __init__(self) -> None:
+        super().__init__("Config", variant="grey-lighten")
+        self.tooltip = "Go to config"
+
+    @on(OneLineButton.Pressed)
+    def go_to_config(self) -> None:
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(self.app.go_to_config())
 
 
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
@@ -365,6 +378,7 @@ class CliveHeader(CliveRawHeader):
 
     def _create_right_part_bar(self) -> ComposeResult:
         if self.app_state.is_unlocked:
+            yield ConfigButton()
             yield DashboardButton()
             yield CartStatus()
         yield NodeStatus()
