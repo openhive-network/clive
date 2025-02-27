@@ -61,7 +61,7 @@ class FormScreen(FormScreenBase[ContextT], ABC):
             return
 
         if self.back_screen_mode == "back_to_unlock":
-            await self._back_to_unlock_screen()
+            self._back_to_unlock_screen()
             return
 
         self._owner.action_previous_screen()
@@ -105,5 +105,5 @@ class FormScreen(FormScreenBase[ContextT], ABC):
 
         self.bind(Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"))
 
-    async def _back_to_unlock_screen(self) -> None:
-        await self.app.switch_mode("unlock")
+    def _back_to_unlock_screen(self) -> None:
+        self.app.switch_mode_with_reset("unlock")

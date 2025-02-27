@@ -20,10 +20,5 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
         await self.world.switch_profile(profile)
 
         await self._owner.execute_post_actions()
-        await self._handle_modes_on_finish()
+        self.app.switch_mode_with_reset("dashboard")
         await self.commands.save_profile()
-
-    async def _handle_modes_on_finish(self) -> None:
-        await self.app.switch_mode("dashboard")
-        await self.app.remove_mode("create_profile")
-        await self.app.remove_mode("unlock")

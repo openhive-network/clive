@@ -97,7 +97,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
     @on(OneLineButton.Pressed)
     async def go_to_transaction_summary(self) -> None:
         if self.app.current_mode == "config":
-            self.app.switch_from_config_to_dashboard_mode()
+            self.app.switch_mode_with_reset("dashboard")
         await self.app.action_go_to_transaction_summary()
 
 
