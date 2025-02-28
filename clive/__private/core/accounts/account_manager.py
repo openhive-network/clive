@@ -7,7 +7,7 @@ from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
     WatchedAccountContainer,
 )
-from clive.__private.core.accounts.accounts import Account, TrackedAccount, WatchedAccount, WorkingAccount
+from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.accounts.exceptions import (
     AccountAlreadyExistsError,
     AccountNotFoundError,
@@ -297,3 +297,43 @@ class AccountManager:
         watched_account = self._watched_accounts.get(watched_account)
         self.watched.remove(watched_account)
         self.set_working_account(WorkingAccount.create_from_watched(watched_account))
+
+    def add_known_account(self, account_to_add: Account | str) -> None:
+        """
+        Add account to the known accounts.
+
+        Args:
+        ----
+            account_to_add: Account to add.
+
+        Raises:
+        ------
+            AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
+                (either as working or watched).
+            TryingToAddBadAccountError: If any of the accounts is a bad account.
+        """
+        if self.is_account_known(account_to_add):
+            raise AccountAlreadyExistsError(Account.ensure_account_name(account_to_add), "KnownAccount")
+        self.known.add(account_to_add)
+
+    def remove_known_account(self, account_to_remove: Account | str) -> None:
+        """
+        Remove accounts from remove accounts.
+
+        Won't raise an error if the account is not found.
+
+        Args:
+        ----
+            account_to_remove: Accounts to remove.
+        """
+        self.known.remove(account_to_remove)
+
+    def get_known_account(self, account_to_get: Account | str) -> KnownAccount:
+        """
+        Get known account by name.
+
+        Raises:  # noqa: D406
+        ------
+            AccountNotFoundError: If given account wasn't found.
+        """
+        return self.known.get(account_to_get)
