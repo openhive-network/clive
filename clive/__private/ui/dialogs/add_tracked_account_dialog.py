@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
 from textual.binding import Binding
 
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
@@ -27,8 +26,6 @@ class AddTrackedAccountDialog(CliveActionDialog):
         yield AccountManagementReference()
         yield self._add_account_container
 
-    @on(CliveActionDialog.Confirmed)
-    async def save_account(self) -> None:
+    async def _perform_confirmation(self) -> bool:
         is_account_saved = await self._add_account_container.save_account()
-        if is_account_saved:
-            self.dismiss()
+        return is_account_saved  # noqa: RET504
