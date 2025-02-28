@@ -146,6 +146,11 @@ class AccountManager:
         account_name = Account.ensure_account_name(account)
         return account_name in [tracked_account.name for tracked_account in self.tracked]
 
+    def is_account_unknown(self, account: str | Account) -> bool:
+        return not any(
+            [self.is_account_known(account), self.is_account_tracked(account), self.is_account_working(account)]
+        )
+
     @classmethod
     def is_account_bad(cls, account: str | Account) -> bool:
         account_name = Account.ensure_account_name(account)
