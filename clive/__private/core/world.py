@@ -142,11 +142,14 @@ class World:
     def _should_save_profile_on_close(self) -> bool:
         return self._profile is not None
 
+    async def _setup_impl(self) -> None:
+        self._beekeeper = await self._setup_beekeeper()
+        self._session = await self.beekeeper.session
+        self._wallets = WalletManager(self._session)
+
     async def setup(self) -> Self:
         async with self._during_setup():
-            self._beekeeper = await self._setup_beekeeper()
-            self._session = await self.beekeeper.session
-            self._wallets = WalletManager(self._session)
+            await self._setup_impl()
         return self
 
     async def close(self) -> None:
@@ -307,18 +310,17 @@ class TUIWorld(World, CliveDOMNode):
         return super()._should_save_profile_on_close and self.app_state.is_unlocked
 
     @override
-    async def setup(self) -> Self:
+    async def _setup_impl(self) -> None:
         """
         In TUIWorld we assume that profile (and node) is always loaded when entering context manager.
 
         It's initialized with None because reactive attribute initialization can't be delayed otherwise.
         """
-        await super().setup()
+        await super()._setup_impl()
         try:
             await self.load_profile_based_on_beekepeer()
         except NoProfileUnlockedError:
             await self._switch_to_welcome_profile()
-        return self
 
     async def switch_profile(self, new_profile: Profile) -> None:
         await super().switch_profile(new_profile)
@@ -374,13 +376,12 @@ class CLIWorld(World):
         return cast(CLICommands, super().commands)
 
     @override
-    async def setup(self) -> Self:
-        await super().setup()
+    async def _setup_impl(self) -> None:
+        await super()._setup_impl()
         try:
             await self.load_profile_based_on_beekepeer()
         except NoProfileUnlockedError as error:
             raise CLINoProfileUnlockedError from error
-        return self
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)
