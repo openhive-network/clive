@@ -31,4 +31,4 @@ class MarkAlarmAsHarmlessDialog(ConfirmActionDialog):
         self._alarm.is_harmless = True
         self.notify(f"Alarm `{self.alarm_info}` was marked as harmless.")
         self.app.trigger_profile_watchers()
-        self.app.pop_screen()
+        self.dismiss()
