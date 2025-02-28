@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
-
 from clive.__private.ui.dialogs.confirm_action_dialog import ConfirmActionDialog
 
 if TYPE_CHECKING:
@@ -26,9 +24,9 @@ class MarkAlarmAsHarmlessDialog(ConfirmActionDialog):
     def alarm_info(self) -> str:
         return self._alarm.get_alarm_basic_info()
 
-    @on(ConfirmActionDialog.Confirmed)
-    def mark_alarm_as_harmless(self) -> None:
+    async def _perform_confirmation(self) -> bool:
         self._alarm.is_harmless = True
         self.notify(f"Alarm `{self.alarm_info}` was marked as harmless.")
         self.app.trigger_profile_watchers()
-        self.dismiss()
+        self.call_later(self.app.pop_screen)  # pop the underlying AlarmInfoDialog
+        return True
