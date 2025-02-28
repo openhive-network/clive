@@ -31,4 +31,4 @@ class AddTrackedAccountDialog(CliveActionDialog):
     async def save_account(self) -> None:
         is_account_saved = await self._add_account_container.save_account()
         if is_account_saved:
-            self.app.pop_screen()
+            self.dismiss()
