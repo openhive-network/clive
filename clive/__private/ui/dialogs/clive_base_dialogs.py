@@ -102,7 +102,7 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
 
 
 class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
-    BINDINGS = [Binding("escape", "cancel", "Quit")]
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     class Confirmed(Message):
         """Inform the dialog that it should be confirmed."""
@@ -133,7 +133,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
 
 
 class CliveInfoDialog(CliveBaseDialog[ScreenResultT], ABC):
-    BINDINGS = [Binding("escape", "close", "Quit")]
+    BINDINGS = [Binding("escape", "close", "Close")]
 
     def create_buttons_content(self) -> ComposeResult:
         yield CloseOneLineButton()
