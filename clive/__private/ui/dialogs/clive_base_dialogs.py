@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
@@ -102,7 +102,7 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
         """Yield all the content with buttons."""
 
 
-class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
+class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
     BINDINGS = [Binding("escape", "cancel", "Quit")]
 
     class Confirmed(Message):
@@ -133,7 +133,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
         self.app.pop_screen()
 
 
-class CliveInfoDialog(CliveBaseDialog[ScreenResultT]):
+class CliveInfoDialog(CliveBaseDialog[ScreenResultT], ABC):
     BINDINGS = [Binding("escape", "close", "Quit")]
 
     def create_buttons_content(self) -> ComposeResult:
