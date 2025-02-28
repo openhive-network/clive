@@ -8,7 +8,7 @@ import test_tools as tt
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -46,7 +46,9 @@ async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
     cli_tester.process_savings_withdrawal(
         amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=actual_request_id
     )
-    expected_error = rf'unknown key: \["alice",{invalid_request_id}\] of type'
+    expected_error = (
+        rf"Savings withdraw for `owner` {WORKING_ACCOUNT_NAME} and 'request_id' {invalid_request_id} doesn't exist."
+    )
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as withdrawal_cancel_exception_info:
