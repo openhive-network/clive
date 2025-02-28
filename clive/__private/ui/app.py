@@ -230,7 +230,10 @@ class Clive(App[int]):
         self._refresh_node_data_interval.resume()
 
     def trigger_profile_watchers(self) -> None:
-        asyncio_run(self.world.commands.save_profile())
+        import asyncio
+        loop = asyncio.get_running_loop()
+        awaitable = self.world.commands.save_profile()
+        task = loop.create_task(awaitable)
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
     def trigger_node_watchers(self) -> None:
