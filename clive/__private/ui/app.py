@@ -292,7 +292,6 @@ class Clive(App[int]):
             logger.error(f"Update node data failed: {wrapper.error}")
             return
 
-        self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
     @work(name="beekeeper wallet lock status update worker")
