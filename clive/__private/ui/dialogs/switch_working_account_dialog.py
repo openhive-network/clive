@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
 from textual.binding import Binding
 
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
@@ -29,7 +28,6 @@ class SwitchWorkingAccountDialog(CliveActionDialog):
         yield AccountManagementReference()
         yield self._switch_working_account_container
 
-    @on(CliveActionDialog.Confirmed)
-    def confirm_selected_working_account(self) -> None:
+    async def _perform_confirmation(self) -> bool:
         self._switch_working_account_container.confirm_selected_working_account()
-        self.dismiss()
+        return True

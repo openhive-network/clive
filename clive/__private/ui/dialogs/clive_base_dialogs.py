@@ -20,7 +20,6 @@ from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-
 CliveDialogVariant = Literal["default", "error"]
 
 
@@ -123,14 +122,41 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
         yield ConfirmOneLineButton(self._confirm_button_text)
         yield CancelOneLineButton()
 
+    async def confirm_dialog(self) -> None:
+        """Confirm the dialog which means try to perform the action and close the dialog if successful."""
+        is_confirmed = await self._perform_confirmation()
+        if is_confirmed:
+            self.post_message(self.Confirmed())
+            self._close_when_confirmed()
+
+    async def cancel_dialog(self) -> None:
+        """Cancel the dialog which means close the dialog without performing any action."""
+        self._close_when_cancelled()
+
+    async def _perform_confirmation(self) -> bool:
+        """Perform the action of the dialog and return True if it was successful."""
+        return True
+
+    def _close_when_confirmed(self) -> None:
+        self.dismiss()
+
+    def _close_when_cancelled(self) -> None:
+        self.dismiss()
+
     @on(CliveInput.Submitted)
     @on(ConfirmOneLineButton.Pressed)
-    async def confirm_dialog(self) -> None:
-        self.post_message(self.Confirmed())
+    async def _confirm_with_event(self) -> None:
+        """By default, pressing the confirm button or submitting the input will confirm the dialog."""
+        await self.confirm_dialog()
 
     @on(CancelOneLineButton.Pressed)
-    def action_cancel(self) -> None:
-        self.dismiss()
+    async def _cancel_with_button(self) -> None:
+        """By default, pressing the cancel button will cancel the dialog."""
+        await self.cancel_dialog()
+
+    async def _action_cancel(self) -> None:
+        """By default, pressing the cancel key binding will cancel the dialog."""
+        await self.cancel_dialog()
 
 
 class CliveInfoDialog(CliveBaseDialog[None], ABC):
@@ -139,6 +165,15 @@ class CliveInfoDialog(CliveBaseDialog[None], ABC):
     def create_buttons_content(self) -> ComposeResult:
         yield CloseOneLineButton()
 
-    @on(CloseOneLineButton.Pressed)
-    def action_close(self) -> None:
+    async def _close(self) -> None:
+        """Close the dialog without performing any action."""
         self.dismiss()
+
+    @on(CloseOneLineButton.Pressed)
+    async def _close_with_button(self) -> None:
+        """By default, pressing the close button will close the dialog."""
+        await self._close()
+
+    async def _action_close(self) -> None:
+        """By default, pressing the close key binding will close the dialog."""
+        await self._close()

@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
 from textual.widgets import Static
 
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog, CliveDialogVariant
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.widgets.buttons import CancelOneLineButton, ConfirmOneLineButton
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
@@ -39,12 +37,8 @@ class ConfirmActionDialog(CliveActionDialog[bool]):
         with Section():
             yield Static(self._confirm_question, id="confirm-question")
 
-    @on(ConfirmOneLineButton.Pressed)
-    async def confirm_dialog(self) -> None:
+    def _close_when_confirmed(self) -> None:
         self.dismiss(result=True)
 
-    @on(CancelOneLineButton.Pressed)
-    def action_cancel(self, event: CancelOneLineButton.Pressed | None = None) -> None:
-        if event is not None:
-            event.prevent_default()
+    def _close_when_cancelled(self) -> None:
         self.dismiss(result=False)

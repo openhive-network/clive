@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
-
 from clive.__private.ui.dialogs.confirm_action_dialog import ConfirmActionDialog
 
 if TYPE_CHECKING:
@@ -27,8 +25,8 @@ class RemoveKeyAliasDialog(ConfirmActionDialog):
     def key_alias(self) -> str:
         return self._public_key.alias
 
-    @on(ConfirmActionDialog.Confirmed)
-    def remove_key_alias(self) -> None:
+    async def _perform_confirmation(self) -> bool:
         self.profile.keys.remove(self._public_key)
         self.notify(f"Key alias `{self.key_alias}` was removed.")
         self.app.trigger_profile_watchers()
+        return True
