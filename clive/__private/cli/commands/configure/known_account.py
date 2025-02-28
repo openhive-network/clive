@@ -23,7 +23,7 @@ class AddKnownAccount(WorldBasedCommand):
             raise CLIPrettyError(f"Can't add this account: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        self.profile.accounts.known.add(self.account_name)
+        self.profile.accounts.add_known_account(self.account_name)
 
 
 @dataclass(kw_only=True)
@@ -39,4 +39,4 @@ class RemoveKnownAccount(WorldBasedCommand):
             raise CLIPrettyError(f"Known account {self.account_name} not found.")
 
     async def _run(self) -> None:
-        self.profile.accounts.known.remove(self.account_name)
+        self.profile.accounts.remove_known_account(self.account_name)
