@@ -14,6 +14,7 @@ from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
@@ -229,6 +230,7 @@ class Clive(App[int]):
         self._refresh_node_data_interval.resume()
 
     def trigger_profile_watchers(self) -> None:
+        asyncio_run(self.world.commands.save_profile())
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
     def trigger_node_watchers(self) -> None:
