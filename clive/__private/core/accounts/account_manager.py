@@ -7,7 +7,7 @@ from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
     WatchedAccountContainer,
 )
-from clive.__private.core.accounts.accounts import Account, TrackedAccount, WatchedAccount, WorkingAccount
+from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.accounts.exceptions import (
     AccountAlreadyExistsError,
     AccountNotFoundError,
@@ -297,3 +297,43 @@ class AccountManager:
         watched_account = self._watched_accounts.get(watched_account)
         self.watched.remove(watched_account)
         self.set_working_account(WorkingAccount.create_from_watched(watched_account))
+
+    def add_known_account(self, *accounts_to_add: str | Account) -> None:
+        """
+        Add accounts to the known accounts list.
+
+        Args:
+        ----
+            accounts_to_add: Accounts that should be considered as known.
+
+        Raises:
+        ------
+            AccountAlreadyExistsError: If any of the accounts already exists in known accounts
+        """
+        self.known.add(*accounts_to_add)
+
+    def remove_known_account(self, *accounts_to_remove: str | Account) -> None:
+        """
+        Remove accounts from the known accounts list.
+
+        Won't raise an error if the account is not found.
+
+        Args:
+        ----
+            accounts_to_remove: Accounts that should no longer be considered as known.
+        """
+        self.known.remove(*accounts_to_remove)
+
+    def get_known_account(self, account_to_get: str | Account) -> KnownAccount:
+        """
+        Get known account by name.
+
+        Args:
+        ----
+            account_to_get: Account to get.
+
+        Raises:
+        ------
+            AccountNotFoundError: If given account wasn't found.
+        """
+        return self.known.get(account_to_get)
