@@ -32,4 +32,4 @@ class SwitchWorkingAccountDialog(CliveActionDialog):
     @on(CliveActionDialog.Confirmed)
     def confirm_selected_working_account(self) -> None:
         self._switch_working_account_container.confirm_selected_working_account()
-        self.app.pop_screen()
+        self.dismiss()

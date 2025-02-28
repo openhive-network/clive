@@ -130,7 +130,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
 
     @on(CancelOneLineButton.Pressed)
     def action_cancel(self) -> None:
-        self.app.pop_screen()
+        self.dismiss()
 
 
 class CliveInfoDialog(CliveBaseDialog[None], ABC):
@@ -141,4 +141,4 @@ class CliveInfoDialog(CliveBaseDialog[None], ABC):
 
     @on(CloseOneLineButton.Pressed)
     def action_close(self) -> None:
-        self.app.pop_screen()
+        self.dismiss()
