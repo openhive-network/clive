@@ -133,7 +133,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
         self.app.pop_screen()
 
 
-class CliveInfoDialog(CliveBaseDialog[ScreenResultT], ABC):
+class CliveInfoDialog(CliveBaseDialog[None], ABC):
     BINDINGS = [Binding("escape", "close", "Close")]
 
     def create_buttons_content(self) -> ComposeResult:
