@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class SwitchWorkingAccountDialog(CliveActionDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BINDINGS = [Binding("escape,f3", "cancel", "Quit")]
+    BINDINGS = [Binding("escape,f3", "cancel", "Cancel")]
     AUTO_FOCUS = "RadioSet"
 
     def __init__(self) -> None:
