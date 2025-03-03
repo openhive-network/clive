@@ -53,7 +53,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__check_if_correctly_implemented()
+        self._check_if_correctly_implemented()
 
     def _create_operation(self) -> OperationUnion | None | _NotImplemented:
         """Return a new operation based on the data from screen or None."""
@@ -114,69 +114,23 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def create_operations(self) -> list[OperationUnion] | None:
         return self._validate_and_notify(self._create_operations)
 
-    @on(FinalizeTransactionButton.Pressed)
-    async def action_finalize_transaction(self) -> None:
-        async def finalize() -> None:
-            if self._add_to_cart():
-                self._add_account_to_known_after_action()
-                self.profile.transaction_file_path = None
-                if self.profile.transaction.is_signed:
-                    self._send_cleared_signatures_notification()
-                await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
-                self._clear_inputs()
-                self._actions_after_clearing_inputs()
-                await self.app.push_screen(TransactionSummary())
+    async def action_add_to_cart(self) -> None:
+        await self._handle_add_to_cart_request()
 
-        async def finalize_cb(confirm: bool | None) -> None:
-            if confirm:
-                await finalize()
-
-        if not self._can_proceed_operation():  # For faster validation feedback to the user
-            return
-
-        if self._check_is_known_exchange_in_input():
-            await self.app.push_screen(ConfirmActionDialogWithKnownExchange(), finalize_cb)
-        else:
-            await finalize()
+    @on(AddToCartButton.Pressed)
+    async def add_to_cart_by_button(self) -> None:
+        await self._handle_add_to_cart_request()
 
     @on(CliveInput.Submitted)
-    @on(AddToCartButton.Pressed)
-    async def action_add_to_cart(self) -> None:
-        def add_to_cart() -> None:
-            if self._add_to_cart():
-                if self.profile.transaction.is_signed:
-                    self.profile.transaction.unsign()
-                    self._send_cleared_signatures_notification()
-                self.profile.transaction_file_path = None
-                self._add_account_to_known_after_action()
-                if self.POP_SCREEN_AFTER_ADDING_TO_CART:
-                    self.app.pop_screen()
-                self._clear_inputs()
-                self._actions_after_clearing_inputs()
-                self.notify("The operation was added to the cart.")
+    async def add_to_cart_with_event(self) -> None:
+        await self._handle_add_to_cart_request()
 
-        def add_to_cart_cb(confirm: bool | None) -> None:
-            if confirm:
-                add_to_cart()
+    async def action_finalize_transaction(self) -> None:
+        await self._handle_finalize_transaction_request()
 
-        if not self._can_proceed_operation():  # For faster validation feedback to the user
-            return
-
-        if self._check_is_known_exchange_in_input():
-            self.app.push_screen(ConfirmActionDialogWithKnownExchange(), add_to_cart_cb)
-        else:
-            add_to_cart()
-
-    def get_account_to_be_marked_as_known(self) -> str | Account | None:
-        """
-        Return the account (if overwritten) that should have been marked as known after action like add to cart.
-
-        Notice:
-        _______
-        If this method is not overridden, the account from the account name input (action receiver),
-        will be marked as known.
-        """
-        return None
+    @on(FinalizeTransactionButton.Pressed)
+    async def finalize_transaction_by_button(self) -> None:
+        await self._handle_finalize_transaction_request()
 
     def check_is_known_exchange_in_input(self) -> bool | None:
         """
@@ -186,6 +140,27 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         _______
         If this method is not overridden, the account from the account name input (action receiver),
         will be checked for being a known exchange.
+        """
+        return None
+
+    def ensure_operations_list(self) -> list[OperationUnion]:
+        operation = self.create_operation()
+        if operation is not None:
+            return [operation]
+
+        operations = self.create_operations()
+        if operations is not None:
+            return operations
+        return []
+
+    def get_account_to_be_marked_as_known(self) -> str | Account | None:
+        """
+        Return the account (if overwritten) that should have been marked as known after action like add to cart.
+
+        Notice:
+        _______
+        If this method is not overridden, the account from the account name input (action receiver),
+        will be marked as known.
         """
         return None
 
@@ -199,45 +174,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         self._additional_actions_after_clearing_inputs()
 
-    def _can_proceed_operation(self) -> bool:
-        if not self.create_operation() and not self.create_operations():
-            self.notify(INVALID_OPERATION_WARNING, severity="warning")
-            return False
-        return True
-
-    def _add_to_cart(self) -> bool:
-        """
-        Create a new operation and adds it to the cart.
-
-        Returns
-        -------
-        True if the operation was added to the cart successfully, False otherwise.
-        """
-        operations = self.ensure_operations_list()
-        assert operations, "when calling '_add_to_cart', operations must not be empty"
-
-        if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
-            for operation in operations:
-                if operation in self.profile.transaction:
-                    self.notify("Operation already in the cart", severity="error")
-                    return False
-
-        self.profile.add_operation(*operations)
-        self.app.trigger_profile_watchers()
-        return True
-
-    def _check_is_known_exchange_in_input(self) -> bool:
-        is_known_exchange_in_input = self.check_is_known_exchange_in_input()
-
-        if is_known_exchange_in_input is not None:
-            return is_known_exchange_in_input
-
-        with contextlib.suppress(NoMatches):
-            input_value = self.query_exactly_one(AccountNameInput).value_raw
-            return input_value in self.world.known_exchanges
-
-        return False
-
     def _add_account_to_known_after_action(self) -> None:
         """Add account that is given via parameter. If not given - add all accounts from the account name inputs."""
         account = self.get_account_to_be_marked_as_known()
@@ -250,28 +186,30 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         with contextlib.suppress(NoMatches):
             self.query_exactly_one(AccountNameInput).add_account_to_known()
 
-    def _clear_inputs(self) -> None:
-        inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
-        for widget in inputs:
-            widget.clear_validation()
+    def _actions_after_adding_to_cart(self) -> None:
+        """It's performing all actions needed after adding operation to cart."""
+        if self.profile.transaction.is_signed:
+            self.profile.transaction.unsign()
+            self._send_cleared_signatures_notification()
+        self.profile.transaction_file_path = None
+        self._add_account_to_known_after_action()
+        self._clear_inputs()
+        self._actions_after_clearing_inputs()
 
-    def _send_cleared_signatures_notification(self) -> None:
-        self.notify(
-            "Transaction signatures were removed since you changed the transaction content.",
-            severity="warning",
-        )
+    def _add_to_cart(self, operations: list[OperationUnion], *, notify: bool = True) -> None:
+        """Just adds given operations to cart."""
+        self.profile.add_operation(*operations)
+        self.app.trigger_profile_watchers()
+        if notify:
+            self.notify("The operation was added to the cart.")
 
-    def ensure_operations_list(self) -> list[OperationUnion]:
-        operation = self.create_operation()
-        if operation is not None:
-            return [operation]
+    def _can_proceed_operation(self) -> bool:
+        if not self.create_operation() and not self.create_operations():
+            self.notify(INVALID_OPERATION_WARNING, severity="warning")
+            return False
+        return True
 
-        operations = self.create_operations()
-        if operations is not None:
-            return operations
-        return []
-
-    def __check_if_correctly_implemented(self) -> None:
+    def _check_if_correctly_implemented(self) -> None:
         with self.app.suppressed_notifications():
             try:
                 create_operation_missing = isinstance(self._create_operation(), _NotImplemented)
@@ -285,3 +223,84 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         if sum([create_operation_missing, create_operations_missing]) != 1:
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
+
+    def _check_is_known_exchange_in_input(self) -> bool:
+        is_known_exchange_in_input = self.check_is_known_exchange_in_input()
+
+        if is_known_exchange_in_input is not None:
+            return is_known_exchange_in_input
+
+        with contextlib.suppress(NoMatches):
+            input_value = self.query_exactly_one(AccountNameInput).value_raw
+            return input_value in self.world.known_exchanges
+
+        return False
+
+    def _clear_inputs(self) -> None:
+        inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
+        for widget in inputs:
+            widget.clear_validation()
+
+    async def _handle_add_to_cart_request(self) -> None:
+        def add_operation_to_cart_and_perform_post_actions() -> None:
+            self._add_to_cart(operations_to_add)
+            self._actions_after_adding_to_cart()
+            if self.POP_SCREEN_AFTER_ADDING_TO_CART:
+                self.app.pop_screen()
+
+        def cb(confirm: bool | None) -> None:
+            if confirm:
+                add_operation_to_cart_and_perform_post_actions()
+
+        if not self._can_proceed_operation():  # For faster validation feedback to the user
+            return
+
+        operations_to_add = self.ensure_operations_list()
+        assert operations_to_add, "when calling '_add_to_cart', operations must not be empty"
+
+        if self._validate_operations_already_in_the_cart(operations_to_add):
+            return
+
+        if self._check_is_known_exchange_in_input():
+            self.app.push_screen(ConfirmActionDialogWithKnownExchange(), cb)
+        else:
+            add_operation_to_cart_and_perform_post_actions()
+
+    async def _handle_finalize_transaction_request(self) -> None:
+        async def finalize_and_perform_post_actions() -> None:
+            self._add_to_cart(operations_to_add, notify=False)
+            self._actions_after_adding_to_cart()
+            await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+            await self.app.push_screen(TransactionSummary())
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                await finalize_and_perform_post_actions()
+
+        if not self._can_proceed_operation():  # For faster validation feedback to the user
+            return
+
+        operations_to_add = self.ensure_operations_list()
+        assert operations_to_add, "when calling '_add_to_cart', operations must not be empty"
+
+        if self._validate_operations_already_in_the_cart(operations_to_add):
+            return
+
+        if self._check_is_known_exchange_in_input():
+            await self.app.push_screen(ConfirmActionDialogWithKnownExchange(), cb)
+        else:
+            await finalize_and_perform_post_actions()
+
+    def _send_cleared_signatures_notification(self) -> None:
+        self.notify(
+            "Transaction signatures were removed since you changed the transaction content.",
+            severity="warning",
+        )
+
+    def _validate_operations_already_in_the_cart(self, operations: list[OperationUnion]) -> bool:
+        if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES and any(
+            operation in self.profile.transaction for operation in operations
+        ):
+            self.notify("Operation already in the cart", severity="error")
+            return True
+        return False
