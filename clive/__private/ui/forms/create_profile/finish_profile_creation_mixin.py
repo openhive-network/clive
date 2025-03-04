@@ -20,8 +20,8 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
         await self.world.switch_profile(profile)
 
         await self._owner.execute_post_actions()
-        await self._handle_modes_on_finish()
         await self.commands.save_profile()
+        await self._handle_modes_on_finish()
 
     async def _handle_modes_on_finish(self) -> None:
         await self.app.switch_mode("dashboard")
