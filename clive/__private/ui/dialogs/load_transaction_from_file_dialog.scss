@@ -1,0 +1,22 @@
+LoadTransactionFromFileDialog {
+  CliveDialogContent {
+    width: 60%;
+    height: 90%;
+
+    Notice {
+      margin-bottom: 1;
+    }
+
+    DirectoryTree {
+      min-height: 3;
+    }
+
+    #directory-tree-hint {
+      color: $text-muted;
+    }
+
+    #path-input-container {
+      height: auto;
+    }
+  }
+}
