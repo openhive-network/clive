@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType
-    from textual.worker import Worker
+    from textual.worker import Worker, WorkType, ResultType
 
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -329,3 +329,30 @@ class Clive(App[int]):
         loop = asyncio.get_running_loop()  # can't use self._loop since it's not set yet
         for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
             loop.add_signal_handler(signal_number, callback)
+
+    def run_worker(
+        self,
+        work: WorkType[ResultType],
+        name: str | None = "",
+        group: str = "default",
+        description: str = "",
+        exit_on_error: bool = True,  # noqa: FBT001, FBT002
+        start: bool = True,  # noqa: FBT001, FBT002
+        exclusive: bool = False,  # noqa: FBT001, FBT002
+        thread: bool = False,  # noqa: FBT001, FBT002
+    ) -> Worker[ResultType]:
+        work_names = [worker.name for worker in self.workers]
+        if name is not None and name in work_names:
+            async def noop() -> None:
+                ...
+            return super().run_worker(noop())
+        return super().run_worker(
+            work=work,
+            name=name,
+            group=group,
+            description=description,
+            exit_on_error=exit_on_error,
+            start=start,
+            exclusive=exclusive,
+            thread=thread,
+        )

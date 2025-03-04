@@ -345,7 +345,7 @@ class TUIWorld(World, CliveDOMNode):
             await self._restart_dashboard_mode()
             await self._switch_to_welcome_profile()
 
-        self.app.run_worker(lock())
+        self.app.run_worker(lock(), name="going into locked mode")
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.trigger_app_state_watchers()
