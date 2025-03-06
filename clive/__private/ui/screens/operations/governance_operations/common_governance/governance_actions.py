@@ -86,7 +86,7 @@ class GovernanceActions(ScrollablePartFocusable, Generic[OperationActionT]):
             yield Static("Action", id="action-row")
             yield Static(self.NAME_OF_ACTION, id="action-name-row")
 
-    async def on_mount(self) -> None:  # type: ignore[override]
+    async def on_mount(self) -> None:
         await self.mount_operations_from_cart()
 
     async def add_row(self, identifier: str, *, vote: bool = False, pending: bool = False) -> None:

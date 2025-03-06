@@ -13,17 +13,9 @@ class CanFocusWithScrollbarsOnly(CliveWidget, AbstractClassMessagePump):
     Inherit from this class to make a widget focusable only when any scrollbar is active.
     """
 
-    def on_mount(self) -> None:
-        self.__enable_focus_only_when_scrollbar_is_active()
-
-    def watch_show_vertical_scrollbar(self) -> None:
-        self.__enable_focus_only_when_scrollbar_is_active()
-
-    def watch_show_horizontal_scrollbar(self) -> None:
-        self.__enable_focus_only_when_scrollbar_is_active()
-
-    def __enable_focus_only_when_scrollbar_is_active(self) -> None:
-        self.can_focus = any(self.scrollbars_enabled)
+    def allow_focus(self) -> bool:
+        # Known issue: https://github.com/Textualize/textual/issues/5609
+        return any(self.scrollbars_enabled)
 
 
 class ScrollablePartFocusable(VerticalScroll, CanFocusWithScrollbarsOnly):
