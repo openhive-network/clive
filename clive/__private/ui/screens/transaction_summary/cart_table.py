@@ -237,7 +237,9 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return [
             CliveCheckerBoardTableCell(self.humanize_operation_number()),
             CliveCheckerBoardTableCell(self.humanize_operation_name(), classes="operation-name"),
-            CliveCheckerBoardTableCell(self.humanize_operation_details(), classes="operation-details"),
+            CliveCheckerBoardTableCell(
+                Static(self.humanize_operation_details(), markup=False), classes="operation-details"
+            ),
             CliveCheckerBoardTableCell(self._create_buttons_container(), classes="actions"),
         ]
 
