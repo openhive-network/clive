@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual import events, on
 from textual.containers import Horizontal
 from textual.css.query import NoMatches
+from textual.events import Click
 from textual.message import Message
 from textual.widgets import Header, Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
@@ -24,7 +25,7 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.events import Click, Mount
+    from textual.events import Mount
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node import Node
@@ -47,8 +48,9 @@ class HeaderIcon(TextualHeaderIcon, CliveWidget):
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
 
-    def on_click(self, event: Click) -> None:  # type: ignore[override]
-        event.prevent_default()
+    @on(Click)
+    def expand_header(self, event: Click) -> None:
+        event.prevent_default()  # textual default is to show the command palette, we don't want that
         self.app.header_expanded = not self.app.header_expanded
 
 
@@ -269,12 +271,14 @@ class CliveRawHeader(Header, CliveWidget):
         with Horizontal():
             yield HeaderTitle()
 
-    def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
+    @on(Click)
+    def prevent_header_expanding(self, event: events.Click) -> None:
         """
         Override this method to prevent expanding header on click.
 
         Default behavior of the textual header is to expand on click.
         We do not want behavior like that, so we had to override the `_on_click` method.
+        We only allow for expanding the header by clicking on the HeaderIcon, not on the entire Header.
         """
         event.prevent_default()
 
