@@ -34,9 +34,9 @@ class Governance(OperationBaseScreen):
         with WitnessesDataProvider(paused=True), ProposalsDataProvider(paused=True), CliveTabbedContent(
             initial=self._initial_tab
         ):
-            yield Proxy("Proxy")
-            yield Witnesses("Witnesses")
-            yield Proposals("Proposals")
+            yield Proxy()
+            yield Witnesses()
+            yield Proposals()
 
     @on(CliveTabbedContent.TabActivated)
     def change_provider_status(self, event: CliveTabbedContent.TabActivated) -> None:

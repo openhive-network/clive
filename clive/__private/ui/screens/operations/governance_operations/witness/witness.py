@@ -42,7 +42,6 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 if TYPE_CHECKING:
     from typing import Final
 
-    from rich.text import TextType
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
@@ -291,8 +290,8 @@ class Witnesses(GovernanceTabPane):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: TextType) -> None:
-        super().__init__(title=title, id="witnesses")
+    def __init__(self) -> None:
+        super().__init__(title="Witnesses", id="witnesses")
 
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
