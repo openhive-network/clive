@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Coroutine
 from functools import wraps
-from typing import TYPE_CHECKING, ParamSpec
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeAlias
 
 from textual import on
 from textual.events import ScreenResume, ScreenSuspend
@@ -11,11 +12,10 @@ from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.logger import logger
+from clive.__private.ui.async_guard import AsyncGuard
 from clive.__private.ui.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from textual.widget import Widget
 
     from clive.__private.ui.app import Clive
@@ -39,6 +39,15 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
 
     class Resumed(Message):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
+
+    def __init__(
+        self,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
+        self._guard = AsyncGuard()
 
     @property
     def active_bindings(self) -> ActiveBindingsMap:
@@ -138,3 +147,31 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
 
         sorted_keys = container + non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}
+
+
+CliveScreenBoundT = TypeVar("CliveScreenBoundT", bound=CliveScreen)
+T: TypeAlias = Callable[[CliveScreenBoundT], Coroutine[Any, Any, Any]]
+
+
+def clive_on(message_type: type[Message]) -> Callable[[T[CliveScreenBoundT]], T[CliveScreenBoundT]]:
+    """
+    Use this decorator instead of `textual.on`.
+
+    This decorator executes function in textual worker and prevents function from executing twice
+    in case of double click on button.
+    """
+
+    def decorator(async_function: T[CliveScreenBoundT]) -> T[CliveScreenBoundT]:
+        @wraps(async_function)
+        @on(message_type)
+        async def wrapper(screen: CliveScreenBoundT) -> None:
+            async def coroutine_for_worker(screen: CliveScreenBoundT) -> None:
+                # this is where we modify original async function i.e. put the guard
+                with screen._guard.suppress(), screen._guard.guard():
+                    await async_function(screen)
+
+            screen.app.run_worker(coroutine_for_worker(screen))
+
+        return wrapper
+
+    return decorator
