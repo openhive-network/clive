@@ -129,12 +129,15 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
         non_fn_keys = [key for key in data if key not in fn_keys]
 
-        # place keys stored in container at the beginning of the list
-        container = []
-        for key in ("escape",):
+        prioritized = ("escape",)
+        prioritized_matches = []
+        for key in prioritized:
+            if key in fn_keys:
+                fn_keys.remove(key)
+                prioritized_matches.append(key)
             if key in non_fn_keys:
                 non_fn_keys.remove(key)
-                container.append(key)
+                prioritized_matches.append(key)
 
-        sorted_keys = container + non_fn_keys + fn_keys
-        return {key: data[key] for key in sorted_keys}
+        ordered_keys = prioritized_matches + non_fn_keys + fn_keys
+        return {key: data[key] for key in ordered_keys}
