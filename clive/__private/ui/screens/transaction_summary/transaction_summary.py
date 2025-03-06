@@ -238,9 +238,16 @@ class TransactionSummary(BaseScreen):
         save_as_binary = result.save_as_binary
         should_be_signed = result.should_be_signed
         transaction = self.profile.transaction.copy()
+
+        try:
+            sign_key = self._get_key_to_sign() if should_be_signed and not transaction.is_signed else None
+        except NoItemSelectedError:
+            self.notify("Transaction can't be saved because no key was selected.", severity="error")
+            return
+
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
-            sign_key=self._get_key_to_sign() if should_be_signed and not self.profile.transaction.is_signed else None,
+            sign_key=sign_key,
             force_unsign=not should_be_signed,
             save_file_path=file_path,
             force_save_format="bin" if save_as_binary else "json",
@@ -284,9 +291,16 @@ class TransactionSummary(BaseScreen):
         from clive.__private.ui.screens.dashboard import Dashboard
 
         transaction = self.profile.transaction
+
+        try:
+            sign_key = self._get_key_to_sign() if not transaction.is_signed else None
+        except NoItemSelectedError:
+            self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
+            return
+
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
-            sign_key=self._get_key_to_sign() if not transaction.is_signed else None,
+            sign_key=sign_key,
             broadcast=True,
         )
         if wrapper.error_occurred:
