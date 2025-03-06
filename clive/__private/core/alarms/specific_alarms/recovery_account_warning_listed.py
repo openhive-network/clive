@@ -32,7 +32,7 @@ class RecoveryAccountWarningListed(
     WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
 
     ALARM_DESCRIPTION = RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
-    FIX_ALARM_INFO = f"You should change it to account other than {list(WARNING_RECOVERY_ACCOUNTS)}"
+    FIX_ALARM_INFO = f"You should change it to account other than \\{list(WARNING_RECOVERY_ACCOUNTS)}"
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         if data.recovery_account not in self.WARNING_RECOVERY_ACCOUNTS:
