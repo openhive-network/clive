@@ -22,8 +22,6 @@ ADDITIONAL_CHARACTER_BINDINGS: Final[dict[str, str]] = create_binding_dict("a", 
 
 ESC_BINDING: Final[dict[str, str]] = create_binding_dict("escape")
 
-CTRLX_BINDING: Final[dict[str, str]] = create_binding_dict("ctrl+x")
-
 
 def dicts_equal_with_order(dict_a: dict[Any, Any], dict_b: dict[Any, Any]) -> bool:
     """
@@ -52,15 +50,6 @@ def test_sorting_with_esc_binding() -> None:
     # ARRANGE
     dict_to_sort = FN_BINDINGS_UNSORTED | ADDITIONAL_CHARACTER_BINDINGS | ESC_BINDING
     dict_sorted = ESC_BINDING | ADDITIONAL_CHARACTER_BINDINGS | FN_BINDINGS_SORTED
-
-    # ACT & ASSERT
-    assert dicts_equal_with_order(METHOD_TO_TEST(dict_to_sort), dict_sorted)
-
-
-def test_sorting_with_ctrlx_binding() -> None:
-    # ARRANGE
-    dict_to_sort = FN_BINDINGS_UNSORTED | ADDITIONAL_CHARACTER_BINDINGS | ESC_BINDING | CTRLX_BINDING
-    dict_sorted = CTRLX_BINDING | ESC_BINDING | ADDITIONAL_CHARACTER_BINDINGS | FN_BINDINGS_SORTED
 
     # ACT & ASSERT
     assert dicts_equal_with_order(METHOD_TO_TEST(dict_to_sort), dict_sorted)

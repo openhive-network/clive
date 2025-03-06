@@ -115,7 +115,7 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         """
         Sort bindings in a Clive-way.
 
-        By placing the CTRL+X key first, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
+        By placing the ESC key first, then non-fn keys and fn keys at the end of the dictionary.
         This is done so that the bindings in the footer are displayed in a correct, uniform way.
 
         Args:
@@ -131,7 +131,7 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
 
         # place keys stored in container at the beginning of the list
         container = []
-        for key in ("ctrl+x", "escape"):
+        for key in ("escape",):
             if key in non_fn_keys:
                 non_fn_keys.remove(key)
                 container.append(key)
