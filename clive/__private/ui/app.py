@@ -15,6 +15,7 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
+from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
@@ -55,7 +56,7 @@ class Clive(App[int]):
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
+        Binding(APP_QUIT_KEY_BINDING, "push_screen('quit')", "Quit", show=False),
         Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
