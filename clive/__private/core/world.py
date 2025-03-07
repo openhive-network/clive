@@ -135,10 +135,6 @@ class World:
         return self._session
 
     @property
-    def _should_sync_with_beekeeper(self) -> bool:
-        return safe_settings.beekeeper.is_session_token_set
-
-    @property
     def _should_save_profile_on_close(self) -> bool:
         return self._profile is not None
 
@@ -204,8 +200,7 @@ class World:
         profile_name = self.wallets.name
         profile = (await self.commands.load_profile(profile_name=profile_name)).result_or_raise
         await self.switch_profile(profile)
-        if self._should_sync_with_beekeeper:
-            await self.commands.sync_state_with_beekeeper()
+        await self.commands.sync_state_with_beekeeper()
 
     async def load_profile(self, profile_name: str, password: str) -> None:
         assert not self.app_state.is_unlocked, "Application is already unlocked"
@@ -296,10 +291,6 @@ class TUIWorld(World, CliveDOMNode):
     @property
     def is_in_create_profile_mode(self) -> bool:
         return self.profile.name == WELCOME_PROFILE_NAME
-
-    @property
-    def _should_sync_with_beekeeper(self) -> bool:
-        return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
 
     @property
     def _should_save_profile_on_close(self) -> bool:
