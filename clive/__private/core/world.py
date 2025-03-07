@@ -335,17 +335,17 @@ class TUIWorld(World, CliveDOMNode):
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         if source == "beekeeper_monitoring_thread":
             self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
-        self.app.pause_refresh_node_data_interval()
-        self.app.pause_refresh_alarms_data_interval()
-        self.node.cached.clear()
 
-        async def lock() -> None:
+        async def _lock() -> None:
+            await self.app.pause_refresh_node_data_interval()
+            await self.app.pause_refresh_alarms_data_interval()
+            self.node.cached.clear()
             self._add_welcome_modes()
             await self.app.switch_mode("unlock")
             await self._restart_dashboard_mode()
             await self._switch_to_welcome_profile()
 
-        self.app.run_worker(lock())
+        self.app.run_worker(_lock())
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.trigger_app_state_watchers()

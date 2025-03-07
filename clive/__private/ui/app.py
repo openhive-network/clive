@@ -214,16 +214,16 @@ class Clive(App[int]):
             await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
         await self.push_screen(TransactionSummary())
 
-    def pause_refresh_alarms_data_interval(self) -> None:
+    async def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
-        self.workers.cancel_group(self, "alarms_data")
+        [await work.wait() for work in self.workers if work.group == "alarms_data"]
 
     def resume_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.resume()
 
-    def pause_refresh_node_data_interval(self) -> None:
+    async def pause_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.pause()
-        self.workers.cancel_group(self, "node_data")
+        [await work.wait() for work in self.workers if work.group == "node_data"]
 
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
@@ -241,7 +241,7 @@ class Clive(App[int]):
         """Update alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
-            self.pause_refresh_alarms_data_interval()
+            await self.pause_refresh_alarms_data_interval()
             while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
                 await asyncio.sleep(0.1)
             await self.update_alarms_data().wait()
@@ -251,7 +251,7 @@ class Clive(App[int]):
 
     def update_data_from_node_asap(self) -> Worker[None]:
         async def _update_data_from_node_asap() -> None:
-            self.pause_refresh_node_data_interval()
+            await self.pause_refresh_node_data_interval()
             await self.update_data_from_node().wait()
             self.resume_refresh_node_data_interval()
 
