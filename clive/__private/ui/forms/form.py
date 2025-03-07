@@ -28,6 +28,14 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
         super().__init__()
 
+    @abstractmethod
+    def compose_form(self) -> Iterator[type[FormScreenBase[ContextT]]]:
+        """Yield screens types in the order they should be displayed."""
+
+    @abstractmethod
+    def _rebuild_context(self) -> None:
+        """Create brand new fresh context."""
+
     @property
     def screens_types(self) -> list[type[FormScreenBase[ContextT]]]:
         return self._screen_types
@@ -57,20 +65,6 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         # self.dismiss() won't work here because self is Form and not FormScreen
         self.app.pop_screen()
 
-    def _push_current_screen(self) -> None:
-        self.app.push_screen(self.current_screen_type(self))
-
-    def _check_valid_range(self, proposed_idx: int) -> bool:
-        return (proposed_idx >= 0) and (proposed_idx < len(self._screen_types))
-
-    @abstractmethod
-    def _rebuild_context(self) -> None:
-        """Create brand new fresh context."""
-
-    @abstractmethod
-    def compose_form(self) -> Iterator[type[FormScreenBase[ContextT]]]:
-        """Yield screens types in the order they should be displayed."""
-
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:
             self._post_actions.put_nowait(action)
@@ -88,3 +82,9 @@ class Form(Contextual[ContextT], CliveScreen[None]):
                 await action()
             else:
                 action()
+
+    def _push_current_screen(self) -> None:
+        self.app.push_screen(self.current_screen_type(self))
+
+    def _check_valid_range(self, proposed_idx: int) -> bool:
+        return (proposed_idx >= 0) and (proposed_idx < len(self._screen_types))
