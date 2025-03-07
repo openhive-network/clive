@@ -321,7 +321,7 @@ class CliveHeader(CliveRawHeader):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Bar(id="bar"):
-            if not self.world.is_in_create_profile_mode:
+            if self.app_state.is_unlocked:
                 with LeftPart():
                     yield from self._create_left_part_bar()
                 yield LockStatus()
@@ -336,7 +336,7 @@ class CliveHeader(CliveRawHeader):
                 yield from self._create_right_part_expandable()
 
     def on_mount(self, _: Mount) -> None:
-        if not self.world.is_in_create_profile_mode:
+        if self.app_state.is_unlocked:
             self.watch(self.world, "profile_reactive", self._update_alarm_display_showing)
 
     @on(LockStatus.WalletUnlocked)
@@ -359,7 +359,7 @@ class CliveHeader(CliveRawHeader):
         yield AlarmDisplay()
 
     def _create_right_part_bar(self) -> ComposeResult:
-        if not self.world.is_in_create_profile_mode:
+        if self.app_state.is_unlocked:
             yield DashboardButton()
             yield CartStatus()
         yield NodeStatus()

@@ -289,10 +289,6 @@ class TUIWorld(World, CliveDOMNode):
         return cast(TUICommands, super().commands)
 
     @property
-    def is_in_create_profile_mode(self) -> bool:
-        return self.profile.name == WELCOME_PROFILE_NAME
-
-    @property
     def _should_save_profile_on_close(self) -> bool:
         """In TUI, it's not possible to save profile on some screens like Unlock/CreateProfile."""
         return super()._should_save_profile_on_close and self.app_state.is_unlocked

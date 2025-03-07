@@ -53,7 +53,7 @@ class KeyAliasForm(BaseScreen, Contextual[KeyAliasFormContextT], ABC):
             yield from self._content_after_alias_input()
             yield self._public_key_input
             yield self._key_alias_input
-            if self.world.is_in_create_profile_mode:
+            if not self.app_state.is_unlocked:
                 yield NavigationButtons(is_finish=True)
         yield SelectCopyPasteHint()
 
