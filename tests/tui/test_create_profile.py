@@ -56,7 +56,7 @@ async def prepared_tui_on_create_profile(
         await clive_quit(pilot)
 
 
-async def crate_profile_until_set_account(
+async def create_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
     assert_is_screen_active(pilot, CreateProfileWelcomeFormScreen)
@@ -141,7 +141,7 @@ async def test_create_profile_watched_account_creation(prepared_tui_on_create_pr
     pilot = prepared_tui_on_create_profile
 
     # ACT
-    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await create_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await create_profile_mark_account_as_watched(pilot)
     await create_profile_finish(pilot)
 
@@ -155,7 +155,7 @@ async def test_create_profile_working_account_creation(prepared_tui_on_create_pr
     pilot = prepared_tui_on_create_profile
 
     # ACT
-    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await create_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await press_and_wait_for_screen(pilot, "enter", NewKeyAliasFormScreen)
     await create_profile_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
     await create_profile_finish(pilot)
@@ -171,7 +171,7 @@ async def test_create_profile_working_account_creation_no_key(prepared_tui_on_cr
     pilot = prepared_tui_on_create_profile
 
     # ACT
-    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await create_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await press_and_wait_for_screen(pilot, "enter", NewKeyAliasFormScreen)
     await create_profile_finish(pilot)
 
