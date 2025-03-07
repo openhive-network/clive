@@ -12,7 +12,7 @@ from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.form_context import FormContextT, NoContext
 
 if TYPE_CHECKING:
-    from clive.__private.ui.forms.form_screen import FormScreenBase
+    from clive.__private.ui.forms.form_screen import FormScreen
 
 PostAction = Command | Callable[[], Any]
 
@@ -22,22 +22,22 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screen_types: list[type[FormScreenBase[FormContextT]]] = [*list(self.compose_form())]
+        self._screen_types: list[type[FormScreen[FormContextT]]] = [*list(self.compose_form())]
         assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._post_actions = Queue[PostAction]()
 
         super().__init__(self._build_context())
 
     @abstractmethod
-    def compose_form(self) -> Iterator[type[FormScreenBase[FormContextT]]]:
+    def compose_form(self) -> Iterator[type[FormScreen[FormContextT]]]:
         """Yield screens types in the order they should be displayed."""
 
     @property
-    def screens_types(self) -> list[type[FormScreenBase[FormContextT]]]:
+    def screens_types(self) -> list[type[FormScreen[FormContextT]]]:
         return self._screen_types
 
     @property
-    def current_screen_type(self) -> type[FormScreenBase[FormContextT]]:
+    def current_screen_type(self) -> type[FormScreen[FormContextT]]:
         return self._screen_types[self._current_screen_index]
 
     @property
@@ -46,7 +46,7 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
 
     @property
     def is_should_finish_set_on_current_screen(self) -> bool:
-        return cast("FormScreenBase", self.app.screen).should_finish
+        return cast("FormScreen", self.app.screen).should_finish
 
     async def initialize(self) -> None:
         """Do actions that should be executed before the first form is displayed."""

@@ -12,7 +12,7 @@ from clive.__private.ui.forms.form import Form
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from clive.__private.ui.forms.form_screen import FormScreenBase
+    from clive.__private.ui.forms.form_screen import FormScreen
 
 
 class CreateProfileForm(Form):
@@ -23,7 +23,7 @@ class CreateProfileForm(Form):
     async def cleanup(self) -> None:
         await self.world.switch_profile(None)
 
-    def compose_form(self) -> Iterator[type[FormScreenBase]]:
+    def compose_form(self) -> Iterator[type[FormScreen]]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen

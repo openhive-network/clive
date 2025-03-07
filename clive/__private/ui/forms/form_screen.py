@@ -19,21 +19,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class FormScreenBase(CliveScreen, Contextual[FormContextT]):
-    def __init__(self, owner: Form[FormContextT]) -> None:
-        self._owner = owner
-        super().__init__()
-
-    @property
-    def context(self) -> FormContextT:
-        return self._owner.context
-
-    @property
-    def should_finish(self) -> bool:
-        return False
-
-
-class FormScreen(FormScreenBase[FormContextT], ABC):
+class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
     BINDINGS = [
         Binding(
             f"{PREVIOUS_SCREEN_BINDING_KEY},escape",
@@ -56,6 +42,14 @@ class FormScreen(FormScreenBase[FormContextT], ABC):
 
         notification_message: str | None = None
         """Message to be displayed in the notification."""
+
+    def __init__(self, owner: Form[FormContextT]) -> None:
+        self._owner = owner
+        super().__init__()
+
+    @property
+    def context(self) -> FormContextT:
+        return self._owner.context
 
     @property
     def should_finish(self) -> bool:
