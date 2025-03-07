@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
@@ -31,5 +30,5 @@ class CreateProfileForm(Form[CreateProfileContext]):
         yield NewKeyAliasFormScreen
 
     def _rebuild_context(self) -> None:
-        profile = Profile.create(WELCOME_PROFILE_NAME)
+        profile = Profile.create("temp")
         self.__context = CreateProfileContext(profile, Node(profile))

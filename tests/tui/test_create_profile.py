@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.ui.app import Clive
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
@@ -115,8 +114,8 @@ async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
 
 
 def assert_is_new_profile(pilot: ClivePilot) -> None:
-    assert pilot.app.world.profile, "Expected profile is not None"
-    assert pilot.app.world.profile.name == WELCOME_PROFILE_NAME, f"Expected profile name to be {WELCOME_PROFILE_NAME}"
+    assert pilot.app.world.profile, "Expected profile to be set"
+    assert pilot.app.world.profile.name == "temp_name", "Expected different profile name"
 
 
 def assert_working_account(pilot: ClivePilot, name: str) -> None:

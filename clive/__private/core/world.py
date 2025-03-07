@@ -12,7 +12,6 @@ from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
-from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
@@ -207,7 +206,7 @@ class World:
         await self.commands.unlock(profile_name=profile_name, password=password, permanent=True)
         await self.load_profile_based_on_beekepeer()
 
-    async def switch_profile(self, new_profile: Profile) -> None:
+    async def switch_profile(self, new_profile: Profile | None) -> None:
         self._profile = new_profile
         await self._update_node()
 
@@ -276,7 +275,11 @@ class World:
 
 class TUIWorld(World, CliveDOMNode):
     profile_reactive: Profile = var(None, init=False)  # type: ignore[assignment]
+    """Should be used only after unlocking the profile so it will be available then."""
+
     node_reactive: Node = var(None, init=False)  # type: ignore[assignment]
+    """Should be used only after unlocking the profile so it will be available then."""
+
     app_state: AppState = var(None, init=False)  # type: ignore[assignment]
 
     @override
@@ -304,17 +307,12 @@ class TUIWorld(World, CliveDOMNode):
         try:
             await self.load_profile_based_on_beekepeer()
         except NoProfileUnlockedError:
-            await self._switch_to_welcome_profile()
+            await self.switch_profile(None)
         return self
 
-    async def switch_profile(self, new_profile: Profile) -> None:
+    async def switch_profile(self, new_profile: Profile | None) -> None:
         await super().switch_profile(new_profile)
         self._update_profile_related_reactive_attributes()
-
-    async def _switch_to_welcome_profile(self) -> None:
-        """Set the profile to default (welcome)."""
-        await self.create_new_profile(WELCOME_PROFILE_NAME)
-        self.profile.skip_saving()
 
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
@@ -330,7 +328,7 @@ class TUIWorld(World, CliveDOMNode):
             self._add_welcome_modes()
             await self.app.switch_mode("unlock")
             await self._restart_dashboard_mode()
-            await self._switch_to_welcome_profile()
+            await self.switch_profile(None)
 
         self.app.run_worker(lock())
 
@@ -349,10 +347,14 @@ class TUIWorld(World, CliveDOMNode):
         self.app.add_mode("dashboard", Dashboard)
 
     def _update_profile_related_reactive_attributes(self) -> None:
-        if self._node is not None:
-            self.node_reactive = self._node
-        if self._profile is not None:
-            self.profile_reactive = self._profile
+        # There's no proper way to add some proxy reactive property on textual reactives that could raise error if
+        # not set yet, and still can be watched. See: https://github.com/Textualize/textual/discussions/4007
+
+        if self._node is None or self._profile is None:
+            assert not self.app_state.is_unlocked, "Profile and node should never be None when unlocked"
+
+        self.node_reactive = self._node  # type: ignore[assignment] # ignore that,  node_reactive shouldn't be accessed before unlocking
+        self.profile_reactive = self._profile  # type: ignore[assignment] # ignore that, profile_reactive shouldn't be accessed before unlocking
 
 
 class CLIWorld(World):
