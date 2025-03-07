@@ -10,8 +10,9 @@ from textual.message import Message
 from textual.reactive import var
 
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
-from clive.__private.core.contextual import ContextT, Contextual
+from clive.__private.core.contextual import Contextual
 from clive.__private.ui.clive_screen import CliveScreen
+from clive.__private.ui.forms.form_context import FormContextT
 from clive.__private.ui.forms.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
@@ -22,17 +23,17 @@ if TYPE_CHECKING:
 BackScreenModes = Literal["back_to_unlock", "nothing_to_back", "back_to_previous"]
 
 
-class FormScreenBase(CliveScreen, Contextual[ContextT]):
-    def __init__(self, owner: Form[ContextT]) -> None:
+class FormScreenBase(CliveScreen, Contextual[FormContextT]):
+    def __init__(self, owner: Form[FormContextT]) -> None:
         self._owner = owner
         super().__init__()
 
     @property
-    def context(self) -> ContextT:
+    def context(self) -> FormContextT:
         return self._owner.context
 
 
-class FormScreen(FormScreenBase[ContextT], ABC):
+class FormScreen(FormScreenBase[FormContextT], ABC):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
         Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
