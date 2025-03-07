@@ -21,7 +21,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screen_types: list[type[FormScreenBase[ContextT]]] = [*list(self.register_screen_builders())]
+        self._screen_types: list[type[FormScreenBase[ContextT]]] = [*list(self.compose_form())]
         assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._rebuild_context()
         self._post_actions = Queue[PostAction]()
@@ -68,8 +68,8 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         """Create brand new fresh context."""
 
     @abstractmethod
-    def register_screen_builders(self) -> Iterator[type[FormScreenBase[ContextT]]]:
-        """Return screens to display."""
+    def compose_form(self) -> Iterator[type[FormScreenBase[ContextT]]]:
+        """Yield screens types in the order they should be displayed."""
 
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:

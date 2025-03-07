@@ -23,7 +23,7 @@ class CreateProfileForm(Form[CreateProfileContext]):
     def context(self) -> CreateProfileContext:
         return self.__context
 
-    def register_screen_builders(self) -> Iterator[type[FormScreenBase[CreateProfileContext]]]:
+    def compose_form(self) -> Iterator[type[FormScreenBase[CreateProfileContext]]]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
