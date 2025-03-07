@@ -64,7 +64,7 @@ class FormScreen(FormScreenBase[ContextT], ABC):
             await self._back_to_unlock_screen()
             return
 
-        self._owner.action_previous_screen()
+        self._owner.previous_screen()
 
     @on(NextScreenButton.Pressed)
     @on(CliveInput.Submitted)
@@ -83,7 +83,7 @@ class FormScreen(FormScreenBase[ContextT], ABC):
             self.post_message(self.Finish())
             return
 
-        self._owner.action_next_screen()
+        self._owner.next_screen()
 
     @abstractmethod
     async def validate(self) -> ValidationFail | ValidationSuccess | None:

@@ -43,7 +43,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     def _skip_during_push_screen(self) -> list[ScreenBuilder[ContextT]]:
         return []
 
-    def action_next_screen(self) -> None:
+    def next_screen(self) -> None:
         if not self.__check_valid_range(self.__current_screen_index + 1):
             return
 
@@ -51,12 +51,12 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
         if self.__is_current_screen_to_skip():
             self.__skipped_screens.add(self.current_screen)
-            self.action_next_screen()
+            self.next_screen()
             return
 
         self.__push_current_screen()
 
-    def action_previous_screen(self) -> None:
+    def previous_screen(self) -> None:
         if not self.__check_valid_range(self.__current_screen_index - 1):
             return
 
@@ -64,7 +64,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
         if self.__is_current_screen_skipped():
             self.__skipped_screens.discard(self.current_screen)
-            self.action_previous_screen()
+            self.previous_screen()
             return
 
         # self.dismiss() won't work here because self is Form and not FormScreen
