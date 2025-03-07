@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.core.profile import Profile
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -33,8 +32,6 @@ class CreateProfileFormScreen(BaseScreen, FormScreen):
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)
         super().__init__(owner=owner)
-        if Profile.is_any_profile_saved():
-            self.back_screen_mode = "back_to_unlock"
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Enter profile data"):
