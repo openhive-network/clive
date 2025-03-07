@@ -19,10 +19,10 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     MINIMUM_SCREEN_COUNT = 2  # Rationale: it makes no sense to have only one screen in the form
 
     def __init__(self) -> None:
-        self.__current_screen_index = 0
-        self.__screens: list[ScreenBuilder[ContextT]] = [*list(self.register_screen_builders())]
-        self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
-        assert len(self.__screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
+        self._current_screen_index = 0
+        self._screens: list[ScreenBuilder[ContextT]] = [*list(self.register_screen_builders())]
+        self._skipped_screens: set[ScreenBuilder[ContextT]] = set()
+        assert len(self._screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._rebuild_context()
         self._post_actions = Queue[PostAction]()
 
@@ -30,57 +30,57 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     @property
     def screens(self) -> list[ScreenBuilder[ContextT]]:
-        return self.__screens
+        return self._screens
 
     @property
     def current_screen(self) -> ScreenBuilder[ContextT]:
-        return self.__screens[self.__current_screen_index]
+        return self._screens[self._current_screen_index]
 
     def on_mount(self) -> None:
-        assert self.__current_screen_index == 0
-        self.__push_current_screen()
+        assert self._current_screen_index == 0
+        self._push_current_screen()
 
     def _skip_during_push_screen(self) -> list[ScreenBuilder[ContextT]]:
         return []
 
     def next_screen(self) -> None:
-        if not self.__check_valid_range(self.__current_screen_index + 1):
+        if not self._check_valid_range(self._current_screen_index + 1):
             return
 
-        self.__current_screen_index += 1
+        self._current_screen_index += 1
 
-        if self.__is_current_screen_to_skip():
-            self.__skipped_screens.add(self.current_screen)
+        if self._is_current_screen_to_skip():
+            self._skipped_screens.add(self.current_screen)
             self.next_screen()
             return
 
-        self.__push_current_screen()
+        self._push_current_screen()
 
     def previous_screen(self) -> None:
-        if not self.__check_valid_range(self.__current_screen_index - 1):
+        if not self._check_valid_range(self._current_screen_index - 1):
             return
 
-        self.__current_screen_index -= 1
+        self._current_screen_index -= 1
 
-        if self.__is_current_screen_skipped():
-            self.__skipped_screens.discard(self.current_screen)
+        if self._is_current_screen_skipped():
+            self._skipped_screens.discard(self.current_screen)
             self.previous_screen()
             return
 
         # self.dismiss() won't work here because self is Form and not FormScreen
         self.app.pop_screen()
 
-    def __is_current_screen_to_skip(self) -> bool:
+    def _is_current_screen_to_skip(self) -> bool:
         return self.current_screen in self._skip_during_push_screen()
 
-    def __is_current_screen_skipped(self) -> bool:
-        return self.current_screen in self.__skipped_screens
+    def _is_current_screen_skipped(self) -> bool:
+        return self.current_screen in self._skipped_screens
 
-    def __push_current_screen(self) -> None:
+    def _push_current_screen(self) -> None:
         self.app.push_screen(self.current_screen(self))
 
-    def __check_valid_range(self, proposed_idx: int) -> bool:
-        return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))
+    def _check_valid_range(self, proposed_idx: int) -> bool:
+        return (proposed_idx >= 0) and (proposed_idx < len(self._screens))
 
     @abstractmethod
     def _rebuild_context(self) -> None:
