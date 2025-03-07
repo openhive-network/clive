@@ -10,7 +10,7 @@ from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_
 from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.forms.form_screen import FormScreen
-from clive.__private.ui.forms.navigation_buttons import NavigationButtons
+from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -51,6 +51,12 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
     def on_mount(self) -> None:
         self.app.update_data_from_node()
         self.app.resume_refresh_node_data_interval()
+
+    @on(PreviousScreenButton.Pressed)
+    async def action_previous_screen(self, event: PreviousScreenButton.Pressed | None = None) -> None:
+        self.app.pause_refresh_node_data_interval()
+        if event is None:
+            await super().action_previous_screen()
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):
