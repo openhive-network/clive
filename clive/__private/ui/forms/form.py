@@ -48,6 +48,9 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
     async def initialize(self) -> None:
         """Do actions that should be executed before the first form is displayed."""
 
+    async def cleanup(self) -> None:
+        """Do actions that should be executed when exiting the form."""
+
     def next_screen(self) -> None:
         if not self._check_valid_range(self._current_screen_index + 1):
             return

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual.app import InvalidModeError
 from textual.containers import Horizontal
 from textual.validation import Integer
 from textual.widgets import Button, Checkbox, Static
@@ -11,6 +13,7 @@ from textual.widgets import Button, Checkbox, Static
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
 from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
@@ -129,6 +132,10 @@ class Unlock(BaseScreen):
 
     @on(Button.Pressed, "#new-profile-button")
     async def create_new_profile(self) -> None:
+        with contextlib.suppress(InvalidModeError):
+            # If the mode is already added, we don't want to add it again
+            self.app.add_mode("create_profile", CreateProfileForm)
+
         await self.app.switch_mode("create_profile")
 
     @on(SelectProfile.Changed)

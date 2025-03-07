@@ -62,6 +62,7 @@ class FormScreen(FormScreenBase[FormContextT], ABC):
             return
 
         if self.back_screen_mode == "back_to_unlock":
+            await self._owner.cleanup()
             await self._back_to_unlock_screen()
             return
 
