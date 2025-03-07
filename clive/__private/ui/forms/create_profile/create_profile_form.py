@@ -31,12 +31,3 @@ class CreateProfileForm(Form[CreateProfileContext]):
     def _rebuild_context(self) -> None:
         profile = Profile.create(WELCOME_PROFILE_NAME)
         self.__context = CreateProfileContext(profile, Node(profile))
-
-    def _skip_during_push_screen(self) -> list[ScreenBuilder[CreateProfileContext]]:
-        screens_to_skip: list[ScreenBuilder[CreateProfileContext]] = []
-
-        # skip NewKeyAliasForm if there is no working account set
-        if not self.context.profile.accounts.has_working_account:
-            screens_to_skip.append(NewKeyAliasFormScreen)
-
-        return screens_to_skip
