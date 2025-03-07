@@ -51,6 +51,10 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
     def on_mount(self) -> None:
         self.app.update_data_from_node_asap()
 
+    async def action_previous_screen(self) -> None:
+        self.app.pause_refresh_node_data_interval()
+        await super().action_previous_screen()
+
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):
             yield AccountNameInput(
