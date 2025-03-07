@@ -21,20 +21,20 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     def __init__(self) -> None:
         self._current_screen_index = 0
-        self._screens: list[type[FormScreenBase[ContextT]]] = [*list(self.register_screen_builders())]
-        assert len(self._screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
+        self._screen_types: list[type[FormScreenBase[ContextT]]] = [*list(self.register_screen_builders())]
+        assert len(self._screen_types) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._rebuild_context()
         self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
     @property
-    def screens(self) -> list[type[FormScreenBase[ContextT]]]:
-        return self._screens
+    def screens_types(self) -> list[type[FormScreenBase[ContextT]]]:
+        return self._screen_types
 
     @property
-    def current_screen(self) -> type[FormScreenBase[ContextT]]:
-        return self._screens[self._current_screen_index]
+    def current_screen_type(self) -> type[FormScreenBase[ContextT]]:
+        return self._screen_types[self._current_screen_index]
 
     def on_mount(self) -> None:
         assert self._current_screen_index == 0
@@ -58,10 +58,10 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         self.app.pop_screen()
 
     def _push_current_screen(self) -> None:
-        self.app.push_screen(self.current_screen(self))
+        self.app.push_screen(self.current_screen_type(self))
 
     def _check_valid_range(self, proposed_idx: int) -> bool:
-        return (proposed_idx >= 0) and (proposed_idx < len(self._screens))
+        return (proposed_idx >= 0) and (proposed_idx < len(self._screen_types))
 
     @abstractmethod
     def _rebuild_context(self) -> None:
