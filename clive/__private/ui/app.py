@@ -230,6 +230,7 @@ class Clive(App[int]):
 
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
+        self.app.run_worker(self.world.commands.save_profile(), group="save profile", exclusive=True)
 
     def trigger_node_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.node_reactive)  # type: ignore[arg-type]
