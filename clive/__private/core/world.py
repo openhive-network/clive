@@ -83,8 +83,8 @@ class World:
     @property
     def node(self) -> Node:
         """Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors."""
-        message = "Node is not available. It requires profile to be loaded. Is the profile available?"
-        assert self._node is not None, message
+        if self._node is None:
+            raise ProfileNotLoadedError
         return self._node
 
     @property
