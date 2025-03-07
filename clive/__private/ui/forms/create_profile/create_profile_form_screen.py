@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 
 from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -23,13 +22,13 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
+class CreateProfileFormScreen(BaseScreen, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form[CreateProfileContext]) -> None:
+    def __init__(self, owner: Form) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)
@@ -68,14 +67,13 @@ class CreateProfileFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
         profile_name = self._profile_name_input.value_or_error
         password = self._password_input.value_or_error
 
-        profile = self.context.profile
-        profile.name = profile_name
+        self.profile.name = profile_name
 
         async def create_wallets() -> None:
             await self.world.commands.create_profile_wallets(profile_name=profile_name, password=password)
 
         async def sync_data() -> None:
-            await self.world.commands.sync_data_with_beekeeper(profile=profile)
+            await self.world.commands.sync_data_with_beekeeper(profile=self.profile)
 
         self._owner.add_post_action(create_wallets, sync_data)
 

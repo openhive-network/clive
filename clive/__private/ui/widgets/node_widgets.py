@@ -50,10 +50,6 @@ class NodesList(Container, CliveWidget):
     }
     """
 
-    def __init__(self, node: Node) -> None:
-        super().__init__()
-        self._node = node
-
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         with self.prevent(NodeSelector.Changed):

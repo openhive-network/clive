@@ -9,12 +9,8 @@ from textual.widgets import Input
 
 from clive.__private.core.constants.tui.placeholders import KEY_FILE_PATH_PLACEHOLDER
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
-from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import (
-    KeyAliasForm,
-    KeyAliasFormContextT,
-)
+from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
@@ -32,7 +28,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
 
 
-class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
+class NewKeyAliasBase(KeyAliasForm, ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
@@ -134,17 +130,13 @@ class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
         return self._key_alias_input.value_or_error
 
 
-class NewKeyAlias(NewKeyAliasBase[Profile]):
+class NewKeyAlias(NewKeyAliasBase):
     BIG_TITLE = "Configuration"
     SUBTITLE = "Manage key aliases"
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding("f6", "save", "Save"),
     ]
-
-    @property
-    def context(self) -> Profile:
-        return self.profile
 
     @on(CliveInput.Submitted)
     async def action_save(self) -> None:
@@ -154,11 +146,10 @@ class NewKeyAlias(NewKeyAliasBase[Profile]):
             return
 
         def set_key_alias_to_import() -> None:
-            self.context.keys.set_to_import([self._private_key_aliased])
+            self.profile.keys.set_to_import([self._private_key_aliased])
 
         if not self._handle_key_alias_change(set_key_alias_to_import):
             return
-
         await self._import_new_key()
         self.dismiss()
 

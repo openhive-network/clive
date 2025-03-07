@@ -7,7 +7,6 @@ from textual.binding import Binding
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.create_profile.finish_profile_creation_mixin import FinishProfileCreationMixin
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
@@ -29,7 +28,7 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishProfileCreationMixin):
+class SetAccountFormScreen(BaseScreen, FormScreen, FinishProfileCreationMixin):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
@@ -86,20 +85,20 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
 
     async def apply(self) -> None:
         # allow only for adding one account
-        self.context.profile.accounts.unset_working_account()
-        self.context.profile.accounts.watched.clear()
-        self.context.profile.accounts.known.clear()
+        self.profile.accounts.unset_working_account()
+        self.profile.accounts.watched.clear()
+        self.profile.accounts.known.clear()
 
         account_name = self.account_name
 
-        self.context.profile.accounts.known.add(account_name)
+        self.profile.accounts.known.add(account_name)
         if self.working_account_checkbox.value:
-            self.context.profile.accounts.set_working_account(account_name)
+            self.profile.accounts.set_working_account(account_name)
         else:
-            self.context.profile.accounts.watched.add(account_name)
+            self.profile.accounts.watched.add(account_name)
 
     def get_node(self) -> Node:
-        return self.context.node
+        return self.node
 
     @on(WorkingAccountCheckbox.Changed)
     def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:

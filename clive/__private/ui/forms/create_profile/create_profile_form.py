@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen
@@ -17,18 +15,14 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form_screen import FormScreenBase
 
 
-class CreateProfileForm(Form[CreateProfileContext]):
-    @property
-    def context(self) -> CreateProfileContext:
-        return self.__context
+class CreateProfileForm(Form):
+    async def initialize(self) -> None:
+        await self.world.create_new_profile("temp_name")
+        self.profile.skip_saving()
 
-    def compose_form(self) -> Iterator[type[FormScreenBase[CreateProfileContext]]]:
+    def compose_form(self) -> Iterator[type[FormScreenBase]]:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
         yield CreateProfileFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen
-
-    def _rebuild_context(self) -> None:
-        profile = Profile.create("temp")
-        self.__context = CreateProfileContext(profile, Node(profile))

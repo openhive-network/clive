@@ -13,20 +13,17 @@ from clive.__private.ui.widgets.section import Section
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.node import Node
-
 
 class SwitchNodeAddressDialog(CliveActionDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    def __init__(self, node: Node) -> None:
+    def __init__(self) -> None:
         super().__init__(border_title="Switch node address")
-        self._node = node
 
     def create_dialog_content(self) -> ComposeResult:
         with Section():
-            yield SelectedNodeAddress(self._node.http_endpoint)
-            yield NodesList(self._node)
+            yield SelectedNodeAddress(self.node.http_endpoint)
+            yield NodesList()
 
     @on(ConfirmButton.Pressed)
     async def switch_node_address(self) -> None:

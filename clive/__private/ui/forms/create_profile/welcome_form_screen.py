@@ -7,7 +7,6 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
-from clive.__private.ui.forms.create_profile.context import CreateProfileContext
 from clive.__private.ui.forms.form_screen import FormScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -24,12 +23,12 @@ class Description(Static):
     """Description of the welcome screen."""
 
 
-class CreateProfileWelcomeFormScreen(BaseScreen, FormScreen[CreateProfileContext]):
+class CreateProfileWelcomeFormScreen(BaseScreen, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form[CreateProfileContext]) -> None:
+    def __init__(self, owner: Form) -> None:
         super().__init__(owner)
         self._description = "Let's create profile!\n" + PRESS_HELP_MESSAGE
         self.back_screen_mode = "nothing_to_back"

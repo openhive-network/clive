@@ -16,8 +16,6 @@ from clive.__private.ui.widgets.location_indicator import LocationIndicator
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.node import Node
-
 
 class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
     BIG_TITLE: ClassVar[str] = ""
@@ -41,12 +39,8 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
     def push_switch_node_address_dialog(self) -> None:
         from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
 
-        self.app.push_screen(SwitchNodeAddressDialog(self.get_node()))
+        self.app.push_screen(SwitchNodeAddressDialog())
 
     @abstractmethod
     def create_main_panel(self) -> ComposeResult:
         """Yield the main panel widgets."""
-
-    def get_node(self) -> Node:
-        """Override this method to return the node other than the one in the world."""
-        return self.world.node

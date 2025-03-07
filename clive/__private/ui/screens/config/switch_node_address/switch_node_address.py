@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
@@ -19,15 +19,11 @@ class SwitchNodeAddress(BaseScreen):
     BIG_TITLE = "configuration"
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._node = self.get_node()
-
     def create_main_panel(self) -> ComposeResult:
         # Section is focusable bcs it's not possible to use scrolling via keyboard when Select is focused
         with SectionScrollable("Set node address", focusable=True):
-            yield SelectedNodeAddress(self._node.http_endpoint)
-            yield NodesList(self._node)
+            yield SelectedNodeAddress(self.node.http_endpoint)
+            yield NodesList()
 
     @on(NodeSelector.Changed)
     async def save_selected_node_address(self) -> None:
