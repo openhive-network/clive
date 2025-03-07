@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import inspect
 from abc import abstractmethod
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
 from queue import Queue
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, Iterable, cast
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextualHolder
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.form_context import FormContextT, NoContext
-
-if TYPE_CHECKING:
-    from clive.__private.ui.forms.form_screen import FormScreen
+from clive.__private.ui.forms.form_screen import FormScreen
 
 PostAction = Command | Callable[[], Any]
+
+ComposeFormResult = Iterable[type[FormScreen[FormContextT]]]
 
 
 class Form(ContextualHolder[FormContextT], CliveScreen[None]):
@@ -29,7 +29,7 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
         super().__init__(self._build_context())
 
     @abstractmethod
-    def compose_form(self) -> Iterator[type[FormScreen[FormContextT]]]:
+    def compose_form(self) -> ComposeFormResult[FormContextT]:
         """Yield screens types in the order they should be displayed."""
 
     @property
