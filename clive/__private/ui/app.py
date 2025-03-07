@@ -56,7 +56,7 @@ class Clive(App[int]):
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding(APP_QUIT_KEY_BINDING, "push_screen('quit')", "Quit", show=False),
+        Binding(APP_QUIT_KEY_BINDING, "quit", "Quit", show=False),
         Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
@@ -194,6 +194,9 @@ class Clive(App[int]):
             if isinstance(current_screen, screen):
                 return current_screen
         raise ScreenNotFoundError(f"Screen {screen} not found in stack")
+
+    async def action_quit(self) -> None:
+        self.push_screen(Quit())
 
     def action_help(self) -> None:
         if isinstance(self.screen, Help):
