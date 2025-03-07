@@ -228,9 +228,10 @@ class Clive(App[int]):
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
 
-    def trigger_profile_watchers(self) -> None:
+    def trigger_profile_watchers(self, *, save_profile: bool = True) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
-        self.app.run_worker(self.world.commands.save_profile(), group="save profile", exclusive=True)
+        if save_profile:
+            self.app.run_worker(self.world.commands.save_profile(), group="save profile", exclusive=True)
 
     def trigger_node_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.node_reactive)  # type: ignore[arg-type]
@@ -269,16 +270,18 @@ class Clive(App[int]):
 
     @work(name="alarms data update worker", group="node_data")
     async def update_alarms_data(self) -> None:
+        previous_profile_hash = hash(self.world.profile)
         accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
         if wrapper.error_occurred:
             logger.error(f"Update alarms data failed: {wrapper.error}")
             return
-
-        self.trigger_profile_watchers()
+        profile_changed = previous_profile_hash != hash(self.world.profile)
+        self.trigger_profile_watchers(save_profile=profile_changed)
 
     @work(name="node data update worker", group="alarms_data")
     async def update_data_from_node(self) -> None:
+        previous_profile_hash = hash(self.world.profile)
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
@@ -291,7 +294,8 @@ class Clive(App[int]):
             logger.error(f"Update node data failed: {wrapper.error}")
             return
 
-        self.trigger_profile_watchers()
+        profile_changed = previous_profile_hash != hash(self.world.profile)
+        self.trigger_profile_watchers(save_profile=profile_changed)
         self.trigger_node_watchers()
 
     @work(name="beekeeper wallet lock status update worker")

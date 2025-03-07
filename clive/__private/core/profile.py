@@ -14,6 +14,7 @@ from clive.__private.logger import logger
 from clive.__private.models import Transaction
 from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
 from clive.__private.settings import safe_settings
+from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.exceptions import CliveError
@@ -335,3 +336,6 @@ class Profile(Context):
     @staticmethod
     def _get_secret_node_address() -> HttpUrl | None:
         return safe_settings.secrets.node_address
+
+    def __hash__(self) -> int:
+        return hash(RuntimeToStorageConverter(self).create_storage_model())

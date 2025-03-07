@@ -65,6 +65,9 @@ class ProfileStorageModel(CliveBaseModel):
     chain_id: str | None = None
     node_address: str
 
+    def __hash__(self) -> int:
+        return hash(self.json(indent=4))
+
 
 class AlarmStorageModelSchema(AlarmStorageModel):
     identifier: Any
