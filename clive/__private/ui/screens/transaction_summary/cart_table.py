@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
+from textual.content import Content
 from textual.css.query import DOMQuery, NoMatches
 from textual.message import Message
 from textual.reactive import reactive
@@ -238,9 +239,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return [
             CliveCheckerBoardTableCell(self.humanize_operation_number()),
             CliveCheckerBoardTableCell(self.humanize_operation_name(), classes="operation-name"),
-            CliveCheckerBoardTableCell(
-                Static(self.humanize_operation_details(), markup=False), classes="operation-details"
-            ),
+            CliveCheckerBoardTableCell(Content(self.humanize_operation_details()), classes="operation-details"),
             CliveCheckerBoardTableCell(self._create_buttons_container(), classes="actions"),
         ]
 

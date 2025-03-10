@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Sequence, TypeAlias, TypeVar
 
 from textual.containers import Container
 from textual.widget import Widget
@@ -14,10 +14,11 @@ from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.visual import VisualType
 
 ContentT = TypeVar("ContentT", bound=Any)
 
-CellContent = str | Widget
+CellContent: TypeAlias = "VisualType | Widget"
 
 
 class CliveCheckerboardTableError(CliveDeveloperError):
@@ -80,7 +81,7 @@ class CliveCheckerBoardTableCell(Container):
         if isinstance(self._content, Widget):
             yield self._content
         else:
-            yield Static(self._content)
+            yield Static(self._content)  # type: ignore[arg-type] # See: https://github.com/Textualize/textual/pull/5618
 
     async def update_content(self, content: CellContent) -> None:
         self._content = content
