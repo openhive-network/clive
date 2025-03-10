@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.ui.forms.form_screen import FormScreen
+from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -18,16 +18,16 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.forms.form import Form
+    from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 
 
-class ProfileCredentialsFormScreen(BaseScreen, FormScreen):
+class ProfileCredentialsFormScreen(BaseScreen, CreateProfileFormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form) -> None:
+    def __init__(self, owner: CreateProfileForm) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)

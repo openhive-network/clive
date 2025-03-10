@@ -48,8 +48,12 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
         super().__init__()
 
     @property
+    def owner(self) -> Form[FormContextT]:
+        return self._owner
+
+    @property
     def context(self) -> FormContextT:
-        return self._owner.context
+        return self.owner.context
 
     @property
     def should_finish(self) -> bool:
@@ -57,7 +61,7 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
 
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
-        await self._owner.previous_screen()
+        await self.owner.previous_screen()
 
     @on(NextScreenButton.Pressed)
     @on(CliveInput.Submitted)
@@ -72,7 +76,7 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
 
             await self.apply()
 
-        await self._owner.next_screen()
+        await self.owner.next_screen()
 
     @abstractmethod
     async def validate(self) -> ValidationFail | ValidationSuccess | None:

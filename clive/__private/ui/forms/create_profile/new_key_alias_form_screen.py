@@ -1,25 +1,22 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from textual import on
 from textual.binding import Binding
 
 from clive.__private.logger import logger
-from clive.__private.ui.forms.form_screen import FormScreen
+from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 
-class NewKeyAliasFormScreen(NewKeyAliasBase, FormScreen):
+class NewKeyAliasFormScreen(NewKeyAliasBase, CreateProfileFormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
 
     @property
     def should_finish(self) -> bool:
