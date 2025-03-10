@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from clive.__private.core.profile import Profile
-from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
+from clive.__private.ui.forms.create_profile.profile_credentials_form_screen import ProfileCredentialsFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen
 from clive.__private.ui.forms.create_profile.welcome_form_screen import CreateProfileWelcomeFormScreen
 from clive.__private.ui.forms.form import ComposeFormResult, Form
@@ -19,7 +19,7 @@ class CreateProfileForm(Form):
     def compose_form(self) -> ComposeFormResult:
         if not Profile.is_any_profile_saved():
             yield CreateProfileWelcomeFormScreen
-        yield CreateProfileFormScreen
+        yield ProfileCredentialsFormScreen
         yield SetAccountFormScreen
         yield NewKeyAliasFormScreen
 

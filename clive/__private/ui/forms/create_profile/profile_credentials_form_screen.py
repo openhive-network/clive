@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class CreateProfileFormScreen(BaseScreen, FormScreen):
+class ProfileCredentialsFormScreen(BaseScreen, FormScreen):
     BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
@@ -45,7 +45,7 @@ class CreateProfileFormScreen(BaseScreen, FormScreen):
         # Validate the repeat password input again when password is changed and repeat was already touched.
         self.watch(self._password_input.input, "value", self._revalidate_repeat_password_input_when_password_changed)
 
-    async def validate(self) -> CreateProfileFormScreen.ValidationFail | None:
+    async def validate(self) -> ProfileCredentialsFormScreen.ValidationFail | None:
         try:
             CliveValidatedInput.validate_many_with_error(
                 self._profile_name_input, self._password_input, self._repeat_password_input
