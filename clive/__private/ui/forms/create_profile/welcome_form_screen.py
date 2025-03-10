@@ -24,7 +24,7 @@ class Description(Static):
     """Description of the welcome screen."""
 
 
-class CreateProfileWelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
+class WelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
     BINDINGS = [
         Binding("f1", "help", "Help"),
         Binding(f"{PREVIOUS_SCREEN_BINDING_KEY},escape", "_there_is_no_back", "Nothing", show=False),

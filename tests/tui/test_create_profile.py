@@ -8,7 +8,7 @@ from clive.__private.ui.app import Clive
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
 from clive.__private.ui.forms.create_profile.profile_credentials_form_screen import ProfileCredentialsFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen, WorkingAccountCheckbox
-from clive.__private.ui.forms.create_profile.welcome_form_screen import CreateProfileWelcomeFormScreen
+from clive.__private.ui.forms.create_profile.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -59,7 +59,7 @@ async def prepared_tui_on_create_profile(
 async def create_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
-    assert_is_screen_active(pilot, CreateProfileWelcomeFormScreen)
+    assert_is_screen_active(pilot, WelcomeFormScreen)
     assert_is_new_profile(pilot)
     await press_and_wait_for_screen(pilot, "enter", ProfileCredentialsFormScreen)
     assert_is_clive_composed_input_focused(
