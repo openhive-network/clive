@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.models.schemas import OperationUnion
+    from clive.__private.ui.widgets.clive_basic.clive_checkerboard_table import CellContent
 
 
 class ButtonMoveUp(CliveButton):
@@ -147,10 +148,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         elif self.is_last:
             self.unbind("ctrl+down")
 
-    def watch_operation_index(self, value: int) -> None:
+    async def watch_operation_index(self, value: int) -> None:
         assert self._is_operation_index_valid(value), "Operation index is invalid when trying to update."
         self._operation_index = value
-        self.operation_number_cell.update_content(self.humanize_operation_number())
+        await self.operation_number_cell.update_content(self.humanize_operation_number())
 
     def humanize_operation_number(self, *, before_removal: bool = False) -> str:
         cart_items = self.operations_amount - 1 if before_removal else self.operations_amount
@@ -313,7 +314,7 @@ class CartTable(CliveCheckerboardTable):
             self._focus_appropriate_item_on_deletion(item_to_remove)
             await item_to_remove.remove()
             if self._has_cart_items:
-                self._update_cart_items_on_deletion(removed_item=item_to_remove)
+                await self._update_cart_items_on_deletion(removed_item=item_to_remove)
                 self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
             else:
                 await self.query_exactly_one(CartHeader).remove()
@@ -333,7 +334,7 @@ class CartTable(CliveCheckerboardTable):
         assert to_index < len(self.profile.transaction), "Item cannot be moved to id greater than cart length."
 
         with self.app.batch_update():
-            self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
+            await self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
 
         self.profile.transaction.swap_operations(from_index, to_index)
@@ -347,14 +348,16 @@ class CartTable(CliveCheckerboardTable):
             if event.target_index == cart_item.operation_index:
                 cart_item.focus()
 
-    def _update_cart_items_on_deletion(self, removed_item: CartItem) -> None:
+    async def _update_cart_items_on_deletion(self, removed_item: CartItem) -> None:
         def update_indexes() -> None:
             for cart_item in cart_items_to_update_index:
                 cart_item.operation_index = cart_item.operation_index - 1
 
-        def update_operation_number() -> None:
+        async def update_operation_number() -> None:
             for cart_item in all_cart_items:
-                cart_item.operation_number_cell.update_content(cart_item.humanize_operation_number(before_removal=True))
+                await cart_item.operation_number_cell.update_content(
+                    cart_item.humanize_operation_number(before_removal=True)
+                )
 
         def update_evenness() -> None:
             self._set_evenness_styles(cart_items_to_update_index, starting_index=start_index)
@@ -364,7 +367,7 @@ class CartTable(CliveCheckerboardTable):
         cart_items_to_update_index = all_cart_items[start_index:]
         update_indexes()
         update_evenness()
-        update_operation_number()
+        await update_operation_number()
 
     def _disable_appropriate_button_on_deletion(self, removed_item: CartItem) -> None:
         if removed_item.is_first:
@@ -387,26 +390,24 @@ class CartTable(CliveCheckerboardTable):
 
         cart_item_to_focus.focus()
 
-    def _update_values_of_swapped_rows(self, from_index: int, to_index: int) -> None:
-        def extract_cells_and_data(row_index: int) -> tuple[list[CliveCheckerBoardTableCell], list[str]]:
+    async def _update_values_of_swapped_rows(self, from_index: int, to_index: int) -> None:
+        def extract_cells_and_data(row_index: int) -> tuple[list[CliveCheckerBoardTableCell], list[CellContent]]:
             row = self._cart_items[row_index]
             cells = row.query(CliveCheckerBoardTableCell)[1:-1]  # Skip "operation number" and "buttons container" cells
-            data: list[str] = []
-            for cell in cells:
-                content = cell.content
-                assert isinstance(content, str), f"Cell content is not a string: {content}"
-                data.append(content)
+            data = [cell.content for cell in cells]
             return list(cells), data
 
-        def swap_cell_data(source_cells: list[CliveCheckerBoardTableCell], target_data: list[str]) -> None:
+        async def swap_cell_data(
+            source_cells: list[CliveCheckerBoardTableCell], target_data: list[CellContent]
+        ) -> None:
             for cell, value in zip(source_cells, target_data):
-                cell.update_content(value)
+                await cell.update_content(value)
 
         from_cells, from_data = extract_cells_and_data(from_index)
         to_cells, to_data = extract_cells_and_data(to_index)
 
-        swap_cell_data(to_cells, from_data)
-        swap_cell_data(from_cells, to_data)
+        await swap_cell_data(to_cells, from_data)
+        await swap_cell_data(from_cells, to_data)
 
     def _focus_item_on_move(self, target_index: int) -> None:
         for cart_item in self._cart_items:
