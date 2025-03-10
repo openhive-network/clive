@@ -15,7 +15,7 @@ from clive.exceptions import CliveDeveloperError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-Content = TypeVar("Content", bound=Any)
+ContentT = TypeVar("ContentT", bound=Any)
 
 
 class CliveCheckerboardTableError(CliveDeveloperError):
@@ -180,7 +180,7 @@ class CliveCheckerboardTable(CliveWidget):
     def on_mount(self) -> None:
         if self.should_be_dynamic:
 
-            def delegate_work(content: Content) -> None:
+            def delegate_work(content: ContentT) -> None:
                 self.run_worker(self._mount_dynamic_rows(content))
 
             self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, delegate_work)
@@ -189,7 +189,7 @@ class CliveCheckerboardTable(CliveWidget):
         """Mount rows created in static mode."""
         self.mount_all(self._create_table_content())
 
-    async def _mount_dynamic_rows(self, content: Content) -> None:
+    async def _mount_dynamic_rows(self, content: ContentT) -> None:
         """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
@@ -203,13 +203,13 @@ class CliveCheckerboardTable(CliveWidget):
         self.update_previous_state(content)
         await self.rebuild(content)
 
-    async def rebuild(self, content: Content | None = None) -> None:
+    async def rebuild(self, content: ContentT | None = None) -> None:
         """Rebuilds whole table - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(self._create_table_content(content))
 
-    async def rebuild_rows(self, content: Content | None = None) -> None:
+    async def rebuild_rows(self, content: ContentT | None = None) -> None:
         """Rebuilds table rows - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query(CliveCheckerboardTableRow).remove()
@@ -217,7 +217,7 @@ class CliveCheckerboardTable(CliveWidget):
             new_rows = self._create_table_rows(content)
             await self.mount_all(new_rows)
 
-    def _create_table_rows(self, content: Content | None = None) -> Sequence[CliveCheckerboardTableRow]:
+    def _create_table_rows(self, content: ContentT | None = None) -> Sequence[CliveCheckerboardTableRow]:
         if content is not None and not self.is_anything_to_display(content):
             # if content is given, we can check if there is anything to display and return earlier
             return []
@@ -236,7 +236,7 @@ class CliveCheckerboardTable(CliveWidget):
         self._set_evenness_styles(rows)
         return rows
 
-    def _create_table_content(self, content: Content | None = None) -> list[Widget]:
+    def _create_table_content(self, content: ContentT | None = None) -> list[Widget]:
         rows = self._create_table_rows(content)
 
         if not rows:
@@ -248,7 +248,7 @@ class CliveCheckerboardTable(CliveWidget):
         title = self._title if isinstance(self._title, Widget) else SectionTitle(self._title)
         return [title, self._header, *rows]
 
-    def create_dynamic_rows(self, content: Content) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
+    def create_dynamic_rows(self, content: ContentT) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
         Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
@@ -279,7 +279,7 @@ class CliveCheckerboardTable(CliveWidget):
     def should_be_dynamic(self) -> bool:
         return bool(self.ATTRIBUTE_TO_WATCH)
 
-    def check_if_should_be_updated(self, content: Content) -> bool:  # noqa: ARG002
+    def check_if_should_be_updated(self, content: ContentT) -> bool:  # noqa: ARG002
         """
         Must be overridden by the child class when using dynamic table.
 
@@ -323,11 +323,11 @@ class CliveCheckerboardTable(CliveWidget):
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
-    def is_anything_to_display(self, content: Content) -> bool:  # noqa: ARG002
+    def is_anything_to_display(self, content: ContentT) -> bool:  # noqa: ARG002
         """Check whether there are elements to display. Should be overridden to create a custom condition."""
         return True
 
-    def update_previous_state(self, content: Content) -> None:  # noqa: ARG002
+    def update_previous_state(self, content: ContentT) -> None:  # noqa: ARG002
         """
         Must be overridden if the `ATTRIBUTE_TO_WATCH` class-var is set.
 
