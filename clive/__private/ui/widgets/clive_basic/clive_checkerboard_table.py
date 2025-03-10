@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
 ContentT = TypeVar("ContentT", bound=Any)
 
+CellContent = str | Widget
+
 
 class CliveCheckerboardTableError(CliveDeveloperError):
     pass
@@ -64,7 +66,7 @@ class CliveCheckerBoardTableCell(Container):
     }
     """
 
-    def __init__(self, content: str | Widget, id_: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, content: CellContent, id_: str | None = None, classes: str | None = None) -> None:
         """
         Initialise the checkerboard table cell.
 
@@ -78,7 +80,7 @@ class CliveCheckerBoardTableCell(Container):
         self._content = content
 
     @property
-    def content(self) -> str | Widget:
+    def content(self) -> CellContent:
         return self._content
 
     def compose(self) -> ComposeResult:
@@ -87,7 +89,7 @@ class CliveCheckerBoardTableCell(Container):
         else:
             yield Static(self._content)
 
-    def update_content(self, content: str) -> None:
+    def update_content(self, content: CellContent) -> None:
         if isinstance(content, Widget):
             raise InvalidContentUpdateError
         self._content = content
