@@ -11,7 +11,6 @@ ENVVAR_PREFIX: Final[str] = "CLIVE"
 KNOWN_FIRST_PARTY_PACKAGES: Final[list[str]] = [
     "beekeepy",
     "clive_local_tools",
-    "helpy",
     "schemas",
     "test_tools",
     "wax",
