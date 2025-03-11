@@ -13,6 +13,7 @@ from textual.app import App
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
+from textual.worker import WorkerCancelled
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.profile import Profile
@@ -239,8 +240,13 @@ class Clive(App[int]):
     @work(name="node and alarms data asap worker")
     async def update_alarms_data_asap_on_newest_node_data(self) -> None:
         """Update alarms on the newest possible node data."""
-        await self.update_data_from_node().wait()
-        await self.update_alarms_data().wait()
+        try:
+            await self.update_data_from_node().wait()
+            await self.update_alarms_data().wait()
+        except WorkerCancelled:
+            # this worker could be cancelled by periodic node/alarms data update we need to resume timers
+            self.resume_refresh_node_data_interval()
+            self.resume_refresh_alarms_data_interval()
 
     @work(name="alarms data update worker", group="node_data")
     async def update_alarms_data(self) -> None:
