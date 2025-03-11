@@ -49,7 +49,8 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
         return self.app.query_exactly_one(WorkingAccountCheckbox)
 
     def on_mount(self) -> None:
-        self.app.update_data_from_node_asap()
+        self.app.update_data_from_node()
+        self.app.resume_refresh_node_data_interval()
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):

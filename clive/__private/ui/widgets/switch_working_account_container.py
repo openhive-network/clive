@@ -165,7 +165,7 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
 
     def _perform_actions_after_accounts_modification(self) -> None:
         self.app.trigger_profile_watchers()
-        self.app.update_alarms_data_asap()
+        self.app.update_alarms_data()
 
     def _handle_selected_account_changed(self, profile: Profile) -> None:
         """Due to the dynamic nature, we must take into account that tracked accounts may be modified elsewhere."""
