@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType
-    from textual.worker import Worker
 
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -237,37 +236,17 @@ class Clive(App[int]):
     def trigger_app_state_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
-    def update_alarms_data_asap(self) -> Worker[None]:
-        """Update alarms as soon as possible after node data becomes available."""
-
-        async def _update_alarms_data_asap() -> None:
-            self.pause_refresh_alarms_data_interval()
-            while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
-                await asyncio.sleep(0.1)
-            await self.update_alarms_data().wait()
-            self.resume_refresh_alarms_data_interval()
-
-        return self.run_worker(_update_alarms_data_asap())
-
-    def update_data_from_node_asap(self) -> Worker[None]:
-        async def _update_data_from_node_asap() -> None:
-            self.pause_refresh_node_data_interval()
-            await self.update_data_from_node().wait()
-            self.resume_refresh_node_data_interval()
-
-        return self.run_worker(_update_data_from_node_asap())
-
-    def update_alarms_data_asap_on_newest_node_data(self) -> Worker[None]:
+    @work(name="node and alarms data asap worker")
+    async def update_alarms_data_asap_on_newest_node_data(self) -> None:
         """Update alarms on the newest possible node data."""
-
-        async def _update_alarms_data_asap_on_newest_node_data() -> None:
-            await self.update_data_from_node_asap().wait()
-            await self.update_alarms_data_asap().wait()
-
-        return self.run_worker(_update_alarms_data_asap_on_newest_node_data())
+        await self.update_data_from_node().wait()
+        await self.update_alarms_data().wait()
 
     @work(name="alarms data update worker", group="node_data")
     async def update_alarms_data(self) -> None:
+        self.pause_refresh_alarms_data_interval()
+        while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
+            await asyncio.sleep(0.1)
         accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
         if wrapper.error_occurred:
@@ -275,9 +254,11 @@ class Clive(App[int]):
             return
 
         self.trigger_profile_watchers()
+        self.resume_refresh_alarms_data_interval()
 
     @work(name="node data update worker", group="alarms_data")
     async def update_data_from_node(self) -> None:
+        self.pause_refresh_node_data_interval()
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
@@ -292,6 +273,7 @@ class Clive(App[int]):
 
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
+        self.resume_refresh_node_data_interval()
 
     @work(name="beekeeper wallet lock status update worker")
     async def update_wallet_lock_status_from_beekeeper(self) -> None:

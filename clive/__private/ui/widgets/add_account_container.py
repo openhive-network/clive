@@ -79,5 +79,5 @@ class AddAccountContainer(Horizontal, CliveWidget):
 
         self.app.trigger_profile_watchers()
         self._account_input.input.clear()
-        self.app.update_alarms_data_asap()
+        self.app.update_alarms_data()
         return True
