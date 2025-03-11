@@ -244,6 +244,9 @@ class Clive(App[int]):
             await self.update_data_from_node().wait()
             await self.update_alarms_data().wait()
         except WorkerCancelled:
+            import pytest
+
+            pytest.fail("ezsobma node and alarms data asap worker was cancelled")
             # this worker could be cancelled by periodic node/alarms data update we need to resume timers
             self.resume_refresh_node_data_interval()
             self.resume_refresh_alarms_data_interval()
