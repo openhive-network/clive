@@ -3,8 +3,6 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from pydantic import Extra
-
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
 from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
@@ -13,7 +11,7 @@ from clive.dev import is_in_dev_mode
 
 
 def _disable_schemas_extra_fields_check() -> None:
-    set_policies(ExtraFieldsPolicy(policy=Extra.allow), MissingFieldsInGetConfigPolicy(allow=True))
+    set_policies(ExtraFieldsPolicy(allow=True), MissingFieldsInGetConfigPolicy(allow=True))
 
 
 def _create_clive_data_directory() -> None:
@@ -35,8 +33,6 @@ def _log_in_dev_mode() -> None:
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_handlers: bool = False) -> None:
-    _disable_schemas_extra_fields_check()
-
     if is_in_dev_mode():
         # logger also refers to settings, so we need to set it before logger setup
         settings.setenv("dev")

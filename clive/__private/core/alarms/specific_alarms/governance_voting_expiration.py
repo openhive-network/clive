@@ -38,7 +38,7 @@ class GovernanceVotingExpiration(Alarm[DateTimeAlarmIdentifier, GovernanceVoting
             self.disable_alarm()
             return
 
-        new_identifier = DateTimeAlarmIdentifier(value=expiration)
+        new_identifier = DateTimeAlarmIdentifier(value=expiration)  # type: ignore[arg-type]
         self.enable_alarm(new_identifier, alarm_data)
         return
 

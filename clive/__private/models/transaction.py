@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from pydantic import Field, validator
+from msgspec import field
 
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -25,12 +25,12 @@ if TYPE_CHECKING:
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationUnion] = Field(default_factory=list)
-    ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
-    extensions: list[Any] = Field(default_factory=list)
-    signatures: list[Signature] = Field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = field(default_factory=list)
+    ref_block_num: HiveInt = field(default_factory=lambda: HiveInt(-1))
+    ref_block_prefix: HiveInt = field(default_factory=lambda: HiveInt(-1))
+    expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
+    extensions: list[Any] = field(default_factory=list)
+    signatures: list[Signature] = field(default_factory=list)
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
@@ -58,9 +58,8 @@ class Transaction(SchemasTransaction):
     @property
     def operations_models(self) -> list[OperationUnion]:
         """Get only the operation models from already stored operations representations."""
-        return [op.value for op in self.operations]  # type: ignore[attr-defined]
+        return [op.value for op in self.operations]
 
-    @validator("operations", pre=True)
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
@@ -72,7 +71,7 @@ class Transaction(SchemasTransaction):
 
     def remove_operation(self, *operations: OperationUnion) -> None:
         for op in self.operations:
-            if op.value in operations:  # type: ignore[attr-defined]
+            if op.value in operations:
                 self.operations.remove(op)
                 return
 
@@ -83,8 +82,8 @@ class Transaction(SchemasTransaction):
 
     def reset(self) -> None:
         self.operations = []
-        self.ref_block_num = HiveInt(-1)
-        self.ref_block_prefix = HiveInt(-1)
+        self.ref_block_num = -1
+        self.ref_block_prefix = -1
         self.expiration = HiveDateTime.now() + timedelta(minutes=30)
         self.extensions = []
         self.signatures = []
@@ -96,7 +95,7 @@ class Transaction(SchemasTransaction):
         self.signatures.clear()
 
     def with_hash(self) -> TransactionWithHash:
-        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
+        return TransactionWithHash(**self.dict(), transaction_id=self.calculate_transaction_id())
 
     def accept(self, visitor: OperationVisitor) -> None:
         """Accept a visitor and apply it to all operations in the transaction."""
@@ -120,5 +119,5 @@ class Transaction(SchemasTransaction):
         return visitor.get_unknown_accounts(already_known_accounts)
 
 
-class TransactionWithHash(Transaction):
+class TransactionWithHash(Transaction, kw_only=True):
     transaction_id: TransactionId

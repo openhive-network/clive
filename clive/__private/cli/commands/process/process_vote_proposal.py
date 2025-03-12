@@ -19,7 +19,7 @@ class ProcessVoteProposal(OperationCommand):
         self.proposal_ids.sort()
         return UpdateProposalVotesOperation(
             voter=self.account_name,
-            proposal_ids=self.proposal_ids,
+            proposal_ids=[self.proposal_ids],  # type: ignore[list-item]
             approve=self.approve,
             extensions=[],
         )

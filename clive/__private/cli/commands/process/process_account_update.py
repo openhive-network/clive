@@ -70,23 +70,23 @@ def is_on_auths_list[T: (AccountName, PublicKey)](elem: T, auths: list[tuple[T, 
 
 
 def add_account(auth: Authority, account: str, weight: int) -> Authority:
-    if is_on_auths_list(AccountName(account), auth.account_auths):
+    if is_on_auths_list(account, auth.account_auths):
         raise CLIPrettyError(f"Account {account} is current account authority")
-    account_weight_tuple = (AccountName(account), HiveInt(weight))
+    account_weight_tuple = (account, weight)
     auth.account_auths.append(account_weight_tuple)
     return auth
 
 
 def add_key(auth: Authority, key: str, weight: int) -> Authority:
-    if is_on_auths_list(PublicKey(key), auth.key_auths):
+    if is_on_auths_list(key, auth.key_auths):
         raise CLIPrettyError(f"Key {key} is current key authority")
-    key_weight_tuple = (PublicKey(key), HiveInt(weight))
+    key_weight_tuple = (key, weight)
     auth.key_auths.append(key_weight_tuple)
     return auth
 
 
 def remove_account(auth: Authority, account: str) -> Authority:
-    if not is_on_auths_list(AccountName(account), auth.account_auths):
+    if not is_on_auths_list(account, auth.account_auths):
         raise CLIPrettyError(f"Account {account} is not current account authority")
     auth.account_auths = [
         account_weight_tuple for account_weight_tuple in auth.account_auths if account_weight_tuple[0] != account
@@ -112,7 +112,7 @@ def modify_key(auth: Authority, key: str, weight: int) -> Authority:
 
 
 def set_threshold(auth: Authority, threshold: int) -> Authority:
-    auth.weight_threshold = HiveInt(threshold)
+    auth.weight_threshold = threshold
     return auth
 
 

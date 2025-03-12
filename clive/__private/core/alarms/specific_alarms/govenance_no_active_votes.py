@@ -26,7 +26,7 @@ class GovernanceNoActiveVotes(Alarm[DateTimeAlarmIdentifier, GovernanceNoActiveV
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         expiration = data.governance_vote_expiration_ts
         if is_null_date(expiration):
-            new_identifier = DateTimeAlarmIdentifier(value=expiration)
+            new_identifier = DateTimeAlarmIdentifier(value=expiration)  # type: ignore[arg-type]
             self.enable_alarm(new_identifier, GovernanceNoActiveVotesAlarmData(expiration_date=expiration))
             return
 
