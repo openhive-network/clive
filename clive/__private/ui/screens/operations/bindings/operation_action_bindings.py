@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final
 
-from pydantic import ValidationError
+from msgspec import ValidationError
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
@@ -70,7 +70,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         Validate operations from callback result. If any of them is invalid, notifies the user and returns None.
 
-        First it checks for any unhandled ValidationError (which may lead to app crash) from pydantic
+        First it checks for any unhandled ValidationError (which may lead to app crash) from msgspec
         and then performs a wax validation.
 
         Args:

@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 from textual.containers import Center
 from textual.widgets import Pretty
 
+from clive.__private.models.schemas import convert_to_representation
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.widgets.section import Section
-from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
