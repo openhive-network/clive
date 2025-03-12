@@ -53,12 +53,20 @@ class LockAfterTime(Horizontal):
         )
 
     @property
+    def should_stay_unlocked(self) -> bool:
+        return self._checkbox.value
+
+    @property
     def is_valid(self) -> bool:
+        if self.should_stay_unlocked:
+            return True
+
         return self._lock_after_time_input.validate_passed()
 
     @property
     def lock_duration(self) -> timedelta | None:
-        if not self.is_valid or self._checkbox.value:
+        """Return lock duration. None means should stay unlocked (permanent unlock)."""
+        if self.should_stay_unlocked:
             return None
 
         return timedelta(minutes=self._lock_after_time_input.value_or_error)
@@ -106,7 +114,7 @@ class Unlock(BaseScreen):
             await self.commands.unlock(
                 profile_name=select_profile.value_ensure,
                 password=password_input.value_or_error,
-                permanent=lock_after_time.lock_duration is None,
+                permanent=lock_after_time.should_stay_unlocked,
                 time=lock_after_time.lock_duration,
             )
         ).success:
