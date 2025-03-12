@@ -32,7 +32,7 @@ def get_time_offset() -> str:
 def run_node(webserver_http_endpoint: str | None = None, *, use_faketime: bool = False) -> tt.RawNode:
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
-    alternate_chain_spec = tt.AlternateChainSpecs.parse_file(get_alternate_chain_spec_path())
+    alternate_chain_spec = tt.AlternateChainSpecs.parse_file(path=get_alternate_chain_spec_path())
     time_offset = get_time_offset() if use_faketime else None
 
     node = tt.RawNode()
