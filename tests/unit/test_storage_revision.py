@@ -9,13 +9,16 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage.model import (
+    ProfileStorageModelSchema,
+    calculate_storage_model_revision,
+)
 from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-EXPECTED_REVISION: Final[str] = "c600278a"
+EXPECTED_REVISION: Final[str] = "6e591423"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -76,7 +79,7 @@ async def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: 
 
     def mock_schema_json(*, by_alias: bool = False, ref_template: str = "", **dumps_kwargs: Any) -> str:  # noqa: ARG001
         """Mock used for simulating the situation when the schema has changed."""
-        return "anything"
+        return b"anything"
 
     # ACT & ASSERT
     # we need to have more than one revision of profile data for this test

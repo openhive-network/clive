@@ -7,7 +7,7 @@ import pytest
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.models.schemas import OperationUnion, RepresentationBase
+    from clive.__private.models.schemas import OperationUnion
 
 from beekeepy.exceptions import ErrorInResponseError
 from click.testing import Result
@@ -48,8 +48,7 @@ def assert_operations_placed_in_blockchain(
     )
     operations_to_check = list(expected_operations)
     for operation_representation in transaction.operations:
-        _operation_representation: RepresentationBase[OperationUnion] = operation_representation
-        operation = _operation_representation.value
+        operation = operation_representation.value
         if operation in operations_to_check:
             operations_to_check.remove(operation)
 
