@@ -10,6 +10,7 @@ from clive.__private.logger import logger
 from clive.__private.models import Asset
 from clive.__private.models.schemas import TransferOperation
 
+
 if TYPE_CHECKING:
     import test_tools as tt
 
@@ -43,7 +44,7 @@ async def test_transaction_status_in_blockchain(
     assert "reversible" in result.status
 
 
-async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt.InitNode) -> None:  # noqa: ARG001
+async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt.InitNode) -> None:
     # ACT
     result = (await world.commands.find_transaction(transaction_id="deadbeef")).result_or_raise
     logger.info(f"{result}")
