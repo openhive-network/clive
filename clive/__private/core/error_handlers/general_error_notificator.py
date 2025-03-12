@@ -5,6 +5,7 @@ from typing import Final, TypeGuard
 from beekeepy.exceptions import InvalidPasswordError, NotExistingKeyError, NoWalletWithSuchNameError
 
 from clive.__private.core.commands.recover_wallets import CannotRecoverWalletsError
+from clive.__private.core.commands.save_profile import ProfileSavingFailedError
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 from clive.__private.storage.service import ProfileEncryptionError
 
@@ -18,6 +19,7 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
         NotExistingKeyError: "Key does not exist in the wallet.",
         ProfileEncryptionError: "Profile encryption failed which means profile cannot be saved or loaded.",
         CannotRecoverWalletsError: CannotRecoverWalletsError.MESSAGE,
+        ProfileSavingFailedError: ProfileSavingFailedError.MESSAGE,
     }
 
     def __init__(self) -> None:
