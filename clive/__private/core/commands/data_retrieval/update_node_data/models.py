@@ -28,8 +28,8 @@ class Manabar:
         if self.max_value <= 0:
             return DecimalConverter.convert(0, precision=precision)
 
-        raw_value = Decimal(self.value.amount)
-        raw_max_value = Decimal(self.max_value.amount)
+        raw_value = Decimal(self.value.amount.value)
+        raw_max_value = Decimal(self.max_value.amount.value)
         percentage = raw_value * 100 / raw_max_value
         return DecimalConverter.round_to_precision(percentage, precision=precision)
 

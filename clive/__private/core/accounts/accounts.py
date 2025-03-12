@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
-
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import AccountName
@@ -73,7 +71,7 @@ class Account:
         """
         try:
             validate_schema_field(AccountName, name)
-        except ValidationError as error:
+        except Exception as error:
             raise InvalidAccountNameError(name) from error
 
     @classmethod

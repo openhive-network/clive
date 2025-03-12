@@ -12,6 +12,7 @@ from clive.__private.storage.model import ProfileStorageModel, calculate_storage
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
+from schemas.decoders import get_hf26_decoder
 
 if TYPE_CHECKING:
     from clive.__private.core.encryption import EncryptionService
@@ -190,7 +191,7 @@ class PersistentStorageService:
         self._create_current_storage_symlink()
 
         try:
-            encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
+            encrypted_profile = await self._encryption_service.encrypt(profile_model.json())
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
 
@@ -220,8 +221,7 @@ class PersistentStorageService:
                     decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
                 except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
                     raise ProfileEncryptionError from error
-
-                return ProfileStorageModel.parse_raw(decrypted_profile)
+                return ProfileStorageModel.parse_raw(decrypted_profile, get_hf26_decoder)
         raise ProfileDoesNotExistsError(profile_name)
 
     @classmethod

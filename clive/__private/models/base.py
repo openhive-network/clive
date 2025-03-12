@@ -1,71 +1,59 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Callable
+from pathlib import Path
+from typing import Any, Iterable, Literal
 
-from pydantic import BaseModel
+import msgspec
 
 from clive.__private.core.constants.date import TIME_FORMAT_WITH_SECONDS
 from clive.__private.models.schemas import Serializable
+from schemas.decoders import DecoderFactory
+from schemas.encoders import enc_hook_base
 
-if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
+DictStrAny = dict[str, Any]
 
 
-class CliveBaseModel(BaseModel):
+class CliveBaseModel(msgspec.Struct):
     class Config:
         allow_population_by_field_name = True
-        json_encoders = {  # noqa: RUF012; pydantic convention
+        json_encoders = {
             datetime: lambda d: d.strftime(TIME_FORMAT_WITH_SECONDS),
             Serializable: lambda x: x.serialize(),
         }
 
-    def json(  # noqa: PLR0913
+    def json(
         self,
         *,
-        include: AbstractSetIntStr | MappingIntStrAny | None = None,
-        exclude: AbstractSetIntStr | MappingIntStrAny | None = None,
-        by_alias: bool = True,  # modified, most of the time we want to dump by alias
-        skip_defaults: bool | None = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        encoder: Callable[[Any], Any] | None = None,
-        models_as_dict: bool = True,
-        ensure_ascii: bool = False,  # modified, so unicode characters are not escaped, will properly dump e.g. polish characters # noqa: E501
-        **dumps_kwargs: Any,
-    ) -> str:
-        return super().json(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-            encoder=encoder,
-            models_as_dict=models_as_dict,
-            ensure_ascii=ensure_ascii,
-            **dumps_kwargs,
+        str_keys: bool = False,
+        builtin_types: Iterable[type] | None = None,
+        order: Literal[None, "deterministic", "sorted"] = None,
+    ) -> DictStrAny:
+        return json.dumps(
+            msgspec.to_builtins(
+                obj=self, enc_hook=enc_hook_base, str_keys=str_keys, builtin_types=builtin_types, order=order
+            )
         )
 
-    def dict(  # noqa: PLR0913
+    def dict(
         self,
         *,
-        include: AbstractSetIntStr | MappingIntStrAny | None = None,
-        exclude: AbstractSetIntStr | MappingIntStrAny | None = None,
-        by_alias: bool = True,  # modified, most of the time we want to dump by alias
-        skip_defaults: bool | None = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
+        str_keys: bool = False,
+        builtin_types: Iterable[type] | None = None,
+        order: Literal[None, "deterministic", "sorted"] = None,
     ) -> DictStrAny:
-        return super().dict(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
+        return msgspec.to_builtins(
+            obj=self, enc_hook=enc_hook_base, str_keys=str_keys, builtin_types=builtin_types, order=order
         )
+
+    @classmethod
+    def parse_file(cls, path: Path, decoder_factory: DecoderFactory) -> str:
+        with open(path, encoding="utf-8") as file:
+            raw = file.read()
+            return cls.parse_raw(raw, decoder_factory)
+
+    @classmethod
+    def parse_raw(cls, raw: str, decoder_factory: DecoderFactory) -> str:
+        decoder = decoder_factory(cls)
+        return decoder.decode(raw)

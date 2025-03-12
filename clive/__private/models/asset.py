@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
-from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
-
-from pydantic.generics import GenericModel
+from typing import TYPE_CHECKING, TypeAlias
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -12,17 +9,14 @@ from clive.__private.core.decimal_conventer import (
     DecimalConvertible,
 )
 from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
+from schemas.fields.resolvables import AnyAsset
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
-AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
-
 AssetAmount = DecimalConvertible
-AssetFactory = Callable[[AssetAmount], AssetT]
 
 
 class AssetError(CliveError):
@@ -58,20 +52,20 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
+class AssetFactoryHolder(CliveBaseModel, frozen=True):
     """Holds factory for asset."""
 
     class Config:
         frozen = True
 
-    asset_cls: type[AssetT]
-    asset_factory: AssetFactory[AssetT]
+    asset_cls: type
+    asset_factory: AnyAsset
 
 
 class Asset:
-    Hive: TypeAlias = AssetHiveHF26
-    Hbd: TypeAlias = AssetHbdHF26
-    Vests: TypeAlias = AssetVestsHF26
+    Hive: TypeAlias = AssetHive
+    Hbd: TypeAlias = AssetHbd
+    Vests: TypeAlias = AssetVests
     LiquidT: TypeAlias = Hive | Hbd
     VotingT: TypeAlias = Hive | Vests
     AnyT: TypeAlias = Hive | Hbd | Vests
@@ -190,12 +184,12 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10 ** asset.precision :.{asset.precision}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision().value :.{asset.precision()}f}"
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
         precision = cls.get_precision(asset)
-        return DecimalConverter.convert(asset.amount) / DecimalConverter.convert(10**precision)
+        return DecimalConverter.convert(asset.amount.value) / DecimalConverter.convert(10**precision)
 
     @classmethod
     def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
@@ -216,7 +210,7 @@ class Asset:
 
     @staticmethod
     def get_precision(asset: type[Asset.AnyT] | Asset.AnyT) -> int:
-        return asset.get_asset_information().precision
+        return asset.get_asset_information().precision.value
 
     @staticmethod
     def get_nai(asset: type[Asset.AnyT] | Asset.AnyT) -> str:

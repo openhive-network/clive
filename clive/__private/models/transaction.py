@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import timedelta
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from pydantic import Field, validator
+from msgspec import field
 
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -13,21 +14,23 @@ from clive.__private.models.schemas import (
     OperationUnion,
     Signature,
     TransactionId,
-    convert_to_representation,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+# from schemas.decoders import DecoderFactory
+from schemas.operations import convert_to_representation
+
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationUnion] = Field(default_factory=list)
-    ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
-    extensions: list[Any] = Field(default_factory=list)
-    signatures: list[Signature] = Field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = field(default_factory=list)
+    ref_block_num: HiveInt = field(default_factory=lambda: HiveInt(-1))
+    ref_block_prefix: HiveInt = field(default_factory=lambda: HiveInt(-1))
+    expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
+    extensions: list[Any] = field(default_factory=list)
+    signatures: list[Signature] = field(default_factory=list)
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
@@ -57,7 +60,6 @@ class Transaction(SchemasTransaction):
         """Get only the operation models from already stored operations representations."""
         return [op.value for op in self.operations]  # type: ignore[attr-defined]
 
-    @validator("operations", pre=True)
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
@@ -93,8 +95,23 @@ class Transaction(SchemasTransaction):
         self.signatures.clear()
 
     def with_hash(self) -> TransactionWithHash:
-        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
+        return TransactionWithHash(**self.dict(), transaction_id=self.calculate_transaction_id())
+
+    # class DecoderFactory(Protocol):
+    #     def __call__(cls: type[PreconfiguredBaseModel]) -> Decoder:
+    #         ...
+
+    @classmethod
+    def parse_file(cls, path: Path, decoder_factory: DecoderFactory) -> str:
+        with open(path, encoding="utf-8") as file:
+            raw = file.read()
+            return cls.parse_raw(raw, decoder_factory)
+
+    @classmethod
+    def parse_raw(cls, raw: str, decoder_factory: DecoderFactory) -> str:
+        decoder = decoder_factory(cls)
+        return decoder.decode(raw)
 
 
-class TransactionWithHash(Transaction):
+class TransactionWithHash(Transaction, kw_only=True):
     transaction_id: TransactionId

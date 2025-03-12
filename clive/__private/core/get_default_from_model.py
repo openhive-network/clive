@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import Any, TypeVar, overload
+
+import msgspec
 
 from clive.exceptions import CliveError
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel
 
 ExpectT = TypeVar("ExpectT")
 
@@ -19,17 +18,17 @@ class NoMatchesError(CliveError):
 
 
 @overload
-def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) -> Any: ...  # noqa: ANN401
+def get_default_from_model(model: type[msgspec.Struct] | msgspec.Struct, field_name: str) -> Any: ...  # noqa: ANN401
 
 
 @overload
 def get_default_from_model(
-    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT]
+    model: type[msgspec.Struct] | msgspec.Struct, field_name: str, expect_type: type[ExpectT]
 ) -> ExpectT: ...
 
 
 def get_default_from_model(
-    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT] | None = None
+    model: type[msgspec.Struct] | msgspec.Struct, field_name: str, expect_type: type[ExpectT] | None = None
 ) -> ExpectT | Any:
     """Get default value from pydantic model."""
     field = model.__fields__.get(field_name, None)

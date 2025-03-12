@@ -5,6 +5,7 @@ from typing import Any, TypeAlias
 
 from clive.__private.models import Transaction
 from clive.__private.models.schemas import OperationBase, OperationUnion
+from schemas.operations import convert_to_representation
 
 TransactionConvertibleType: TypeAlias = OperationBase | Iterable[OperationBase] | Transaction
 
@@ -31,9 +32,8 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
 
     if isinstance(content, Transaction):
         return content
-
     if isinstance(content, OperationBase):
-        operations = [content]
+        operations = [convert_to_representation(content)]
     elif isinstance(content, Iterable):
         operations = [__ensure_operation(x) for x in content]
     else:

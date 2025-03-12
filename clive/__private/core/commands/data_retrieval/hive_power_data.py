@@ -102,8 +102,8 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         received_shares = data.core_account.received_vesting_shares
         delegated_shares = data.core_account.delegated_vesting_shares
         total_shares = owned_shares + received_shares - delegated_shares - data.core_account.vesting_withdraw_rate
-        to_withdraw_vests = iwax.vests(data.core_account.to_withdraw)
-        withdrawn_vests = iwax.vests(data.core_account.withdrawn)
+        to_withdraw_vests = iwax.vests(data.core_account.to_withdraw.value)
+        withdrawn_vests = iwax.vests(data.core_account.withdrawn.value)
         remaining_vests = to_withdraw_vests - withdrawn_vests
 
         return HivePowerData(

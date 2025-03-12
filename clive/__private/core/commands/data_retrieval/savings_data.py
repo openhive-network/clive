@@ -69,7 +69,7 @@ class SavingsData:
         if len(all_transfers) >= max_number_of_request_ids:
             raise RequestIdError("Maximum quantity of request ids is 100")
 
-        last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id
+        last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id.value
         return last_occupied_id + 1
 
     def get_pending_transfers_aligned_amounts(self) -> list[str]:
