@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Callable, Protocol, cast
+
+import msgspec
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models.schemas import convert_to_representation
+from clive.__private.models.schemas import OperationUnion
 from clive.exceptions import CliveError
+from schemas.encoders import get_hf26_encoder
+from schemas.fields.assets._base import AssetNaiAmount
+from schemas.fields.hive_int import HiveInt
+from schemas.operations import convert_to_representation
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -22,10 +28,10 @@ class HpAPRProtocol(Protocol):
     """Simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
 
     @property
-    def head_block_number(self) -> int: ...
+    def head_block_number(self) -> int | HiveInt: ...
 
     @property
-    def vesting_reward_percent(self) -> int: ...
+    def vesting_reward_percent(self) -> int | HiveInt: ...
 
     virtual_supply: Asset.Hive
     total_vesting_fund_hive: Asset.Hive
@@ -46,7 +52,7 @@ def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset
 
     asset_cls = Asset.resolve_nai(result.nai.decode())
-    return asset_cls(amount=int(result.amount.decode()))
+    return asset_cls(amount=AssetNaiAmount(result.amount.decode()))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
@@ -65,7 +71,7 @@ def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
 
 def __validate_wax_response(response: wax.python_result) -> None:
     if response.status == wax.python_error_code.fail:
-        raise WaxOperationFailedError(response.exception_message.decode())
+        raise WaxOperationFailedError(response.exception_message)
 
 
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
@@ -74,7 +80,17 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     if not isinstance(item, Transaction):
         item = convert_to_representation(item)
 
-    return item.json(by_alias=True).encode()
+    if isinstance(item, Transaction):
+        operations_representations = []
+        for operation in item.operations:
+            if isinstance(operation, OperationUnion):
+                operations_representations.append(convert_to_representation(operation))
+            else:
+                operations_representations.append(operation)
+        item.operations = operations_representations
+        return get_hf26_encoder().encode(item)
+
+    return item.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
@@ -103,12 +119,16 @@ def serialize_transaction(transaction: Transaction) -> bytes:
     return result.result
 
 
-def deserialize_transaction(transaction: bytes) -> Transaction:
+def deserialize_transaction(
+    transaction: bytes, decoder_factory: Callable[[type[msgspec.T]], msgspec.json.Decoder[msgspec.T]]
+) -> Transaction:
     from clive.__private.models import Transaction
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
-    return Transaction.parse_raw(result.result.decode())
+    trx = Transaction.parse_raw(result.result.decode(), decoder_factory=decoder_factory)
+    assert trx is Transaction, "Transaction have incompatible type"
+    return trx
 
 
 def calculate_public_key(wif: str) -> PublicKey:
@@ -167,8 +187,12 @@ def vests(amount: int) -> Asset.Vests:
 
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     result = wax.calculate_hp_apr(
-        head_block_num=data.head_block_number,
-        vesting_reward_percent=data.vesting_reward_percent,
+        head_block_num=data.head_block_number.value
+        if isinstance(data.head_block_number, HiveInt)
+        else data.head_block_number,
+        vesting_reward_percent=data.vesting_reward_percent.value
+        if isinstance(data.vesting_reward_percent, HiveInt)
+        else data.vesting_reward_percent,
         virtual_supply=to_python_json_asset(data.virtual_supply),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
     )

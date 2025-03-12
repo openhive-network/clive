@@ -57,11 +57,11 @@ def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
     """
     from clive.__private.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
 
-    _allowed_assets: tuple[type[Asset.AnyT], ...] = allowed_assets  # type: ignore[assignment]
+    _allowed_assets: tuple[type[Asset.AnyT], ...] = allowed_assets
     allowed_symbols_message = f"Only {[Asset.get_symbol(allowed) for allowed in _allowed_assets]} are allowed."
 
     try:
-        asset: ParsedAssetT = Asset.from_legacy(raw)  # type: ignore[assignment]
+        asset: ParsedAssetT = Asset.from_legacy(raw)
     except UnknownAssetTypeError as error:
         raise typer.BadParameter(f"{error} {allowed_symbols_message}") from None
     except AssetAmountInvalidFormatError as error:
@@ -75,7 +75,7 @@ def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
 def liquid_asset(raw: str) -> Asset.LiquidT:
     from clive.__private.models.asset import Asset
 
-    return _parse_asset(raw, *get_args(Asset.LiquidT))  # type: ignore[no-any-return]
+    return _parse_asset(raw, *get_args(Asset.LiquidT))
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
@@ -83,7 +83,7 @@ def voting_asset(raw: str) -> Asset.VotingT:
 
     raw = raw.upper().replace("HP", "HIVE")
 
-    return _parse_asset(raw, *get_args(Asset.VotingT))  # type: ignore[no-any-return]
+    return _parse_asset(raw, *get_args(Asset.VotingT))
 
 
 def hive_asset(raw: str) -> Asset.Hive:

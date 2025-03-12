@@ -8,6 +8,7 @@ from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
 from clive.__private.ui.screens.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
+from schemas.fields.integers import Uint16t
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -39,5 +40,5 @@ class RemoveWithdrawVestingRoute(OperationSummary):
             from_account=self.working_account_name,
             to_account=self._withdraw_route.to_account,
             auto_vest=self._withdraw_route.auto_vest,
-            percent=PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
+            percent=Uint16t(PERCENT_TO_REMOVE_WITHDRAW_ROUTE),
         )

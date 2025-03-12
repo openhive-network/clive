@@ -7,9 +7,9 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_base import 
 )
 
 
-class CurrencySelectorHive(CurrencySelectorBase[Asset.Hive]):
+class CurrencySelectorHive(CurrencySelectorBase):
     @staticmethod
-    def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.Hive]]:
+    def _create_selectable() -> dict[str, AssetFactoryHolder]:
         return {
             "HIVE": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
         }

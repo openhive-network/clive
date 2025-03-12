@@ -26,6 +26,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         console = Console()
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
+        assert delayed_votes is not None, "Delayed votes are None"
 
         if len(delayed_votes) == 0:
             message = (
@@ -43,15 +44,15 @@ class ShowPendingPowerUps(WorldBasedCommand):
         delayed_voting_interval = await self.__get_delayed_voting_interval()
 
         for entry in delayed_votes:
-            votes_vests = iwax.vests(entry.val)
+            votes_vests = iwax.vests(entry.val.value)
             hp_humanized = humanize_hive_power(iwax.calculate_vests_to_hp(votes_vests, gdpo))
             vests_humanized = humanize_asset(votes_vests)
             hp_aligned, vests_aligned = align_to_dot(hp_humanized, vests_humanized, center_to=amount_title)
-            delayed_votes_table.add_row(humanize_datetime(entry.time + delayed_voting_interval), hp_aligned)
+            delayed_votes_table.add_row(humanize_datetime(entry.time.value + delayed_voting_interval), hp_aligned)
             delayed_votes_table.add_row("", vests_aligned, end_section=True)
 
         console.print(delayed_votes_table)
 
     async def __get_delayed_voting_interval(self) -> timedelta:
         node_config = await self.world.node.cached.config
-        return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS)
+        return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS.value)

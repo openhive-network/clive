@@ -19,7 +19,7 @@ from clive.__private.settings import clive_prefixed_envvar, safe_settings
 class BeekeeperInfo(BeekeeperBasedCommand):
     async def _run(self) -> None:
         session = await self.beekeeper.session
-        info = (await session.get_info()).json(by_alias=True)
+        info = (await session.get_info()).json()
         typer.echo(info)
 
 

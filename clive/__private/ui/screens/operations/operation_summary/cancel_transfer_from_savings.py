@@ -26,7 +26,7 @@ class CancelTransferFromSavings(OperationSummary):
 
     @property
     def realized_on(self) -> str:
-        return humanize.humanize_datetime(self._transfer.complete)
+        return humanize.humanize_datetime(self._transfer.complete.value)
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Request id", str(self._transfer.request_id))
@@ -41,5 +41,5 @@ class CancelTransferFromSavings(OperationSummary):
 
         return CancelTransferFromSavingsOperation(
             from_=self.from_account,
-            request_id=request_id,
+            request_id=request_id.value,
         )

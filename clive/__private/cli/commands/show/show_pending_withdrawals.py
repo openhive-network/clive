@@ -43,7 +43,7 @@ class ShowPendingWithdrawals(WorldBasedCommand):
             table.add_row(
                 f"{transfer.to}",
                 f"{Asset.to_legacy(transfer.amount)}",
-                f"{humanize_datetime(transfer.complete)}",
+                f"{humanize_datetime(transfer.complete.value)}",
                 f"{transfer.memo}",
                 f"{transfer.request_id}",
             )

@@ -48,7 +48,7 @@ class VestingDelegationExpirationData:
         return cls(
             delegator=schema.delegator,
             amount=HpVestsBalance.create(schema.vesting_shares, dgpo),
-            expiration=schema.expiration,
+            expiration=schema.expiration.value,
         )
 
 

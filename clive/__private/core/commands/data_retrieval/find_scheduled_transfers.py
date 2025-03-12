@@ -243,13 +243,13 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
             ScheduledTransfer(
                 from_=rt.from_,
                 to=rt.to,
-                trigger_date=rt.trigger_date,
+                trigger_date=rt.trigger_date.value,
                 amount=rt.amount,
                 memo=rt.memo,
-                recurrence=rt.recurrence,
-                remaining_executions=rt.remaining_executions,
-                pair_id=rt.pair_id,
-                consecutive_failures=rt.consecutive_failures,
+                recurrence=rt.recurrence.value,
+                remaining_executions=rt.remaining_executions.value,
+                pair_id=rt.pair_id.value,
+                consecutive_failures=rt.consecutive_failures.value,
             )
             for rt in data.recurrent_transfers
         ]

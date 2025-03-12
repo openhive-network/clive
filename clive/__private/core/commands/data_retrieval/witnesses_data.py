@@ -202,12 +202,12 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     def __create_witness_data(self, witness: Witness, data: SanitizedData, *, rank: int | None = None) -> WitnessData:
         return WitnessData(
             witness.owner,
-            created=witness.created,
+            created=witness.created.value,
             rank=rank,
-            votes=humanize_votes_with_suffix(witness.votes, data.gdpo),
-            missed_blocks=witness.total_missed,
+            votes=humanize_votes_with_suffix(witness.votes.value, data.gdpo),
+            missed_blocks=witness.total_missed.value,
             voted=witness.owner in data.witnesses_votes,
-            last_block=witness.last_confirmed_block_num,
+            last_block=witness.last_confirmed_block_num.value,
             price_feed=humanize_hbd_exchange_rate(witness.hbd_exchange_rate),
             version=witness.running_version,
             url=witness.url,

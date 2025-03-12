@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on
@@ -47,6 +48,7 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 from clive.exceptions import RequestIdError
+from schemas.decoders import get_hf26_decoder
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -142,7 +144,7 @@ class PendingTransfer(CliveCheckerboardTableRow):
         super().__init__(
             CliveCheckerBoardTableCell(pending_transfer.to),
             CliveCheckerBoardTableCell(aligned_amount),
-            CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
+            CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete.value)),
             CliveCheckerBoardTableCell(pending_transfer.memo),
             CliveCheckerBoardTableCell(CancelOneLineButton()),
         )
@@ -256,14 +258,15 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return None
 
         data = {
-            "from_": self.default_receiver,
+            "from": self.default_receiver,
             "to": self._to_account_input.value_or_error,
             "amount": self._amount_input.value_or_error,
             "memo": self._memo_input.value_or_error,
         }
 
         if self._to_button.value:
-            return TransferToSavingsOperation(**data)
+            decoder_transfer_to_savings = get_hf26_decoder(TransferToSavingsOperation)
+            return decoder_transfer_to_savings.decode(json.dumps(data))
 
         try:
             request_id = self._create_request_id()
@@ -271,7 +274,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        return TransferFromSavingsOperation(**data, request_id=request_id)
+        decoder_transfer_from_savings = get_hf26_decoder(TransferFromSavingsOperation)
+        data["request_id"] = request_id
+        return decoder_transfer_from_savings.decode(json.dumps(data))
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")

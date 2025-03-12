@@ -52,7 +52,7 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
 
     def compose(self) -> ComposeResult:
         if self.profile.transaction:
-            expiration = humanize.humanize_datetime(self.profile.transaction.expiration)
+            expiration = humanize.humanize_datetime(self.profile.transaction.expiration.value)
             yield TaposHolder(self.profile.transaction)
             yield TransactionExpirationLabel(f"Expiration: {expiration}")
             with Vertical(id="label-and-button-container"):

@@ -66,7 +66,7 @@ class WithdrawRoutesDisplay(CliveWidget):
             return
 
         withdraw_routes = {
-            withdraw_route.to_account: humanize_percent(hive_percent_to_percent(withdraw_route.percent))
+            withdraw_route.to_account: humanize_percent(hive_percent_to_percent(withdraw_route.percent.value))
             for withdraw_route in content.withdraw_routes
         }
         self.query_exactly_one("#withdraw-routes-header", Static).update("Your withdraw routes")

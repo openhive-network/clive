@@ -126,10 +126,10 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 proxy=info.core.proxy,
                 last_refresh=utc_now(),
                 last_history_entry=info.last_history_entry,
-                last_account_update=info.core.last_account_update,
-                pending_claimed_accounts=info.core.pending_claimed_accounts,
+                last_account_update=info.core.last_account_update.value,
+                pending_claimed_accounts=info.core.pending_claimed_accounts.value,
                 recovery_account=info.core.recovery_account,
-                governance_vote_expiration_ts=info.core.governance_vote_expiration_ts,
+                governance_vote_expiration_ts=info.core.governance_vote_expiration_ts.value,
                 vote_manabar=self.__update_manabar(
                     gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
                 ),
@@ -148,13 +148,13 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
             return utc_epoch()
-        return data.history[0][1].timestamp
+        return data.history[0][1].timestamp.value
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time
         head_block_timestamp = int(head_block_time.timestamp())
-        last_update_timestamp = manabar.last_update_time
-        power_from_api = manabar.current_mana
+        last_update_timestamp = manabar.last_update_time.value
+        power_from_api = manabar.current_mana.value
         max_mana_value = iwax.calculate_vests_to_hp(max_mana, gdpo)
         mana_value = iwax.calculate_vests_to_hp(
             calculate_current_manabar_value(
@@ -166,7 +166,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             gdpo,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
-            head_block_time=head_block_time,
+            head_block_time=head_block_time.value,
             max_mana=max_mana,
             current_mana=power_from_api,
             last_update_time=last_update_timestamp,
