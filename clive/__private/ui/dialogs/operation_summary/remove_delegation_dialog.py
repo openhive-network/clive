@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class RemoveDelegationDialog(OperationSummaryBaseDialog):
     """Dialog to remove delegation."""
 
-    def __init__(self, delegation: VestingDelegation[Asset.Vests], pretty_hp_amount: str) -> None:
+    def __init__(self, delegation: VestingDelegation, pretty_hp_amount: str) -> None:
         super().__init__("Remove delegation")
         self._delegation = delegation
         self._pretty_hp_amount = pretty_hp_amount

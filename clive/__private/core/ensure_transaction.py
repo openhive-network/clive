@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import OperationBase, OperationUnion
+from clive.__private.models.schemas import OperationBase, OperationRepresentationUnion, convert_to_representation
 
 type TransactionConvertibleType = OperationBase | Iterable[OperationBase] | Transaction
 
@@ -25,18 +25,18 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     The transaction.
     """
 
-    def __ensure_operation(item: Any) -> OperationUnion:  # noqa: ANN401
+    def __ensure_operation(item: Any) -> OperationBase:  # noqa: ANN401
         assert isinstance(item, OperationBase)
-        return item  # type: ignore[return-value]
+        return item
 
     if isinstance(content, Transaction):
         return content
-
     if isinstance(content, OperationBase):
-        operations = [content]
+        operations = [convert_to_representation(content)]
     elif isinstance(content, Iterable):
-        operations = [__ensure_operation(x) for x in content]
+        operations = [convert_to_representation(__ensure_operation(x)) for x in content]
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
-
+    for op in operations:
+        assert isinstance(op, OperationRepresentationUnion), "Virtual operations are not allowed"
     return Transaction(operations=operations)

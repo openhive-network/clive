@@ -41,7 +41,7 @@ class SanitizedData:
     gdpo: DynamicGlobalProperties
     core_account: Account
     withdraw_routes: list[WithdrawRoute]
-    delegations: list[VestingDelegation[Asset.Vests]]
+    delegations: list[VestingDelegation]
 
 
 @dataclass
@@ -52,7 +52,7 @@ class HivePowerData:
     delegated_balance: HpVestsBalance
     next_vesting_withdrawal: datetime
     withdraw_routes: list[WithdrawRoute]
-    delegations: list[VestingDelegation[Asset.Vests]]
+    delegations: list[VestingDelegation]
     to_withdraw: HpVestsBalance
     withdrawn: HpVestsBalance
     remaining: HpVestsBalance
@@ -138,6 +138,6 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         assert data is not None, "ListWithdrawVestingRoutes data is missing"
         return data.routes
 
-    def _assert_delegations(self, data: FindVestingDelegations | None) -> list[VestingDelegation[Asset.Vests]]:
+    def _assert_delegations(self, data: FindVestingDelegations | None) -> list[VestingDelegation]:
         assert data is not None, "FindVestingDelegations data is missing"
         return data.delegations

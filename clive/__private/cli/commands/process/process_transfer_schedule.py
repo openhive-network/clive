@@ -59,10 +59,8 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
             return []
 
         recurrent_transfer_extension = RecurrentTransferPairIdExtension(pair_id=self.pair_id)
-        extension = RecurrentTransferPairIdRepresentation(
-            type=recurrent_transfer_extension.get_name(), value=recurrent_transfer_extension
-        )
-        return [extension.dict(by_alias=True)]
+        extension = RecurrentTransferPairIdRepresentation(value=recurrent_transfer_extension)
+        return [extension.dict()]
 
     def _identity_check(self, scheduled_transfer: ScheduledTransfer) -> bool:
         """Determine if a scheduled transfer matches destination and the specified pair ID."""
@@ -124,6 +122,9 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
             raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
 
     async def _create_operation(self) -> RecurrentTransferOperation:
+        assert self.repeat is not None, "Value of repeat is None."
+        assert self.memo is not None, "Value of memo is None."
+        assert self.amount is not None, "Value of amount is None."
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
