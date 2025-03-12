@@ -256,14 +256,14 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return None
 
         data = {
-            "from_": self.default_receiver,
+            "from": self.default_receiver,
             "to": self._to_account_input.value_or_error,
             "amount": self._amount_input.value_or_error,
             "memo": self._memo_input.value_or_error,
         }
 
         if self._to_button.value:
-            return TransferToSavingsOperation(**data)
+            return TransferToSavingsOperation.parse_builtins(data)
 
         try:
             request_id = self._create_request_id()
@@ -271,7 +271,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        return TransferFromSavingsOperation(**data, request_id=request_id)
+        data["request_id"] = request_id  # type: ignore[assignment]
+        return TransferFromSavingsOperation.parse_builtins(data)
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")

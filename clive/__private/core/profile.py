@@ -8,15 +8,19 @@ from beekeepy.interfaces import HttpUrl
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
-from schemas.decoders import is_matching_model
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
+from clive.__private.models.schemas import (
+    ChainId,
+    OperationRepresentationUnion,
+    OperationUnion,
+)
 from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.exceptions import CliveError
+from schemas.decoders import is_matching_model
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

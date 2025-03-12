@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final
 
-from pydantic import ValidationError
+from msgspec import ValidationError
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches

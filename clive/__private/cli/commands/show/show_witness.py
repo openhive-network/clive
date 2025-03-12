@@ -33,7 +33,7 @@ class ShowWitness(WorldBasedCommand):
         hbd_savings_apr: str | None = None
         if witness.props.hbd_interest_rate:
             hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
-        props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"}, deep=True)
+        props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"})
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
 
