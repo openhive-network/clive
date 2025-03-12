@@ -4,7 +4,7 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, TypeVar, cast, get_args
 
 from beekeepy.exceptions import CommunicationError
 from textual import on, work
@@ -31,6 +31,7 @@ from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
+from clive.__private.ui.types import CliveModes
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -42,7 +43,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import LockSource
     from clive.__private.ui.clive_screen import CliveScreen
-    from clive.__private.ui.types import CliveModes
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
@@ -111,7 +111,8 @@ class Clive(App[int]):
     @property
     def current_mode(self) -> CliveModes:
         mode = super().current_mode
-        assert mode in self.MODES, f"Mode {mode} is not in the list of modes"
+        modes = get_args(CliveModes)
+        assert mode in modes, f"Mode {mode} is not in the list of modes: {modes}"
         return cast("CliveModes", mode)
 
     @staticmethod
@@ -186,7 +187,7 @@ class Clive(App[int]):
         self._register_quit_signals()
         self._world = await TUIWorld().setup()
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         self._refresh_node_data_interval = self.set_interval(
             safe_settings.node.refresh_rate_secs, self._retrigger_update_data_from_node, pause=True
         )
@@ -206,10 +207,7 @@ class Clive(App[int]):
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
             self.set_interval(debug_loop_period_secs, self._debug_log)
 
-        if Profile.is_any_profile_saved():
-            self.switch_mode("unlock")
-        else:
-            self.switch_mode("create_profile")
+        await self._switch_to_initial_mode()
 
     async def on_unmount(self) -> None:
         if self._world is not None:
@@ -478,7 +476,17 @@ class Clive(App[int]):
         if self.is_worker_group_empty("wallet_lock_status"):
             self.update_wallet_lock_status_from_beekeeper()
 
-    async def _switch_mode_into_locked(self, source: LockSource) -> None:
+    async def _switch_to_initial_mode(self) -> None:
+        if not Profile.is_any_profile_saved():
+            await self.switch_mode("create_profile")
+            return
+
+        if self.world.app_state.is_unlocked:
+            await self._switch_mode_into_unlocked()
+        else:
+            await self._switch_mode_into_locked()
+
+    async def _switch_mode_into_locked(self, source: LockSource = "unknown") -> None:
         if source == "beekeeper_wallet_lock_status_update_worker":
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
@@ -487,7 +495,9 @@ class Clive(App[int]):
         # There might be ongoing workers that should be cancelled (e.g. DynamicWidget update)
         self._cancel_workers_except_current()
 
-        self.world.node.cached.clear()
+        if self.world.is_node_available:
+            self.world.node.cached.clear()
+
         await self.switch_mode_with_reset("unlock")
         await self.world.switch_profile(None)
 
