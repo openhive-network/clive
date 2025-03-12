@@ -89,11 +89,8 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         )
 
     def on_mount(self) -> None:
-        def delegate_work_rebuild_tracked_accounts(profile: Profile) -> None:
-            self.run_worker(self._rebuild_tracked_accounts(profile))
-
         self.watch(self.world, "profile_reactive", self._update_local_profile)
-        self.watch(self, "local_profile", delegate_work_rebuild_tracked_accounts)
+        self.watch(self, "local_profile", self._rebuild_tracked_accounts)
 
     def _update_local_profile(self, profile: Profile) -> None:
         if self.local_profile.accounts.tracked == profile.accounts.tracked:

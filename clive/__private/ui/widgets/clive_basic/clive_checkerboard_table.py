@@ -173,11 +173,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     def on_mount(self) -> None:
         if self.should_be_dynamic:
-
-            def delegate_work(content: ContentT) -> None:
-                self.run_worker(self._mount_dynamic_rows(content))
-
-            self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, delegate_work)
+            self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, self._mount_dynamic_rows)
 
     def _mount_static_rows(self) -> None:
         """Mount rows created in static mode."""
