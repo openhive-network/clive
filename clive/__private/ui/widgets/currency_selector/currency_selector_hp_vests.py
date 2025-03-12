@@ -1,14 +1,20 @@
 from __future__ import annotations
 
-from clive.__private.models import Asset
-from clive.__private.models.asset import AssetFactoryHolder
+from typing import TypedDict
+
+from clive.__private.models.asset import AssetFactoryHolderHbd, AssetFactoryHolderHive, AssetFactoryHolderVests
 from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
 
 
-class CurrencySelectorHpVests(CurrencySelectorBase[Asset.Hive | Asset.Vests]):
+class AssetFactoryDict(TypedDict):
+    HP: AssetFactoryHolderHive
+    VESTS: AssetFactoryHolderVests
+
+
+class CurrencySelectorHpVests(CurrencySelectorBase):
     @staticmethod
-    def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.Hive | Asset.Vests]]:
+    def _create_selectable() -> dict[str, AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests]:
         return {
-            "HP": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
-            "VESTS": AssetFactoryHolder(asset_cls=Asset.Vests, asset_factory=Asset.vests),
+            "HP": AssetFactoryHolderHive(),
+            "VESTS": AssetFactoryHolderVests(),
         }

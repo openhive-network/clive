@@ -319,8 +319,7 @@ class SafeSettings:
             return remote_handle_settings
 
         def _get_node_chain_id(self) -> str | None:
-            from schemas.decoders import is_matching_model
-            from clive.__private.models.schemas import ChainId
+            from clive.__private.models.schemas import ChainId, is_matching_model
 
             setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")
@@ -331,7 +330,7 @@ class SafeSettings:
             value_ = cast("str", value)
 
             if not is_matching_model(value_, ChainId):
-                details = f"Chain ID should be {ChainId.max_length} characters long."
+                details = f"Chain ID should be {ChainId._meta().max_length} characters long."  # type: ignore[attr-defined]
                 raise SettingsValueError(setting_name=setting_name, value=value_, details=details)
             return value_
 

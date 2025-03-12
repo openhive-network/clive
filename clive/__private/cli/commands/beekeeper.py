@@ -25,7 +25,7 @@ class BeekeeperInfo(WorldBasedCommand):
 
     async def _run(self) -> None:
         session = await self.world.beekeeper_manager.beekeeper.session
-        info = (await session.get_info()).json(by_alias=True)
+        info = (await session.get_info()).json()
         typer.echo(info)
 
 

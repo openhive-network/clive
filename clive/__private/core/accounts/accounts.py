@@ -3,11 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
-
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from schemas.clive.validate_schema_field import validate_schema_field
-from clive.__private.models.schemas import AccountName
+from clive.__private.models.schemas import AccountName, is_matching_model
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -71,10 +68,8 @@ class Account:
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """
-        try:
-            validate_schema_field(AccountName, name)
-        except ValidationError as error:
-            raise InvalidAccountNameError(name) from error
+        if not is_matching_model(name, AccountName):
+            raise InvalidAccountNameError(name)
 
     @classmethod
     def is_valid(cls, name: str) -> bool:

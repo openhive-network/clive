@@ -1,25 +1,21 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
-from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
-
-from pydantic.generics import GenericModel
+from typing import TYPE_CHECKING, Callable, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
     DecimalConverter,
     DecimalConvertible,
 )
-from schemas.clive.base import CliveBaseModel
-from clive.__private.models.schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetNaiAmount, AssetVests, PreconfiguredBaseModel
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
-AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
+AssetT = TypeVar("AssetT", bound=AssetHive | AssetHbd | AssetVests)
+AssetExplicitT = TypeVar("AssetExplicitT", AssetHive, AssetHbd, AssetVests)
 
 AssetAmount = DecimalConvertible
 AssetFactory = Callable[[AssetAmount], AssetT]
@@ -58,20 +54,10 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
-    """Holds factory for asset."""
-
-    class Config:
-        frozen = True
-
-    asset_cls: type[AssetT]
-    asset_factory: AssetFactory[AssetT]
-
-
 class Asset:
-    Hive: TypeAlias = AssetHiveHF26  # noqa: UP040  # used in isinstance check
-    Hbd: TypeAlias = AssetHbdHF26  # noqa: UP040  # used in isinstance check
-    Vests: TypeAlias = AssetVestsHF26  # noqa: UP040  # used in isinstance check
+    Hive: TypeAlias = AssetHive  # noqa: UP040  # used in isinstance check
+    Hbd: TypeAlias = AssetHbd  # noqa: UP040  # used in isinstance check
+    Vests: TypeAlias = AssetVests  # noqa: UP040  # used in isinstance check
     LiquidT: TypeAlias = Hive | Hbd  # noqa: UP040  # used in isinstance check
     VotingT: TypeAlias = Hive | Vests  # noqa: UP040  # used in isinstance check
     AnyT: TypeAlias = Hive | Hbd | Vests  # noqa: UP040  # used in isinstance check
@@ -140,7 +126,7 @@ class Asset:
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount), "Should be a number.") from error
         else:
-            return asset(amount=amount)
+            return asset(amount=AssetNaiAmount(amount))
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
@@ -182,7 +168,7 @@ class Asset:
         if not result.is_valid:
             raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
-        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
+        return asset_cls(amount=AssetNaiAmount(cls.__convert_amount_to_internal_representation(amount, asset_cls)))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:
@@ -190,7 +176,7 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10**asset.precision:.{asset.precision}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision() :.{asset.precision()}f}"
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
@@ -233,3 +219,24 @@ class Asset:
     @staticmethod
     def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
         return isinstance(asset, Asset.Vests)
+
+
+class AssetFactoryHolderHive(PreconfiguredBaseModel):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetHive
+    asset_factory: Callable[[int | str | Decimal], AssetHive] = Asset.hive
+
+
+class AssetFactoryHolderHbd(PreconfiguredBaseModel):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetHbd
+    asset_factory: Callable[[int | str | Decimal], AssetHbd] = Asset.hbd
+
+
+class AssetFactoryHolderVests(PreconfiguredBaseModel):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetVests
+    asset_factory: Callable[[int | str | Decimal], AssetVests] = Asset.vests

@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual.validation import Validator
 
-from schemas.decoders import is_matching_model
-from clive.__private.models.schemas import AccountName
+from clive.__private.models.schemas import AccountName, is_matching_model
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult
