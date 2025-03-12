@@ -9,13 +9,16 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage.model import (
+    ProfileStorageModelSchema,
+    calculate_storage_model_revision,
+)
 from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-EXPECTED_REVISION: Final[str] = "4e460ebb"
+EXPECTED_REVISION: Final[str] = "8dca43b9"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
