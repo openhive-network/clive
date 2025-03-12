@@ -16,7 +16,7 @@ async def choose_asset_token(pilot: ClivePilot, asset_token: LiquidAssetToken) -
     if asset_token == "HBD":
         await pilot.press("down", "down", "enter")
     selected_asset = pilot.app.screen.query_exactly_one(CurrencySelectorLiquid).value
-    assert isinstance(selected_asset, AssetFactoryHolder), (
+    assert isinstance(selected_asset, AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests), (
         f"Expected 'AssetFactoryHolder', current is {type(selected_asset)}."
     )
     selected_asset_cls = selected_asset.asset_cls

@@ -40,7 +40,9 @@ def assert_pending_withrawals(context: CLITester | Result, account_name: str, as
     result = context.show_pending_withdrawals() if isinstance(context, CLITester) else context
     output = result.output
     assert any(
-        account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
+        account_name in line
+        and asset_amount.pretty_amount() in line
+        and asset_amount.token() in line.upper()
         for line in output.split("\n")
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
 
