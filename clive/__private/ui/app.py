@@ -191,10 +191,7 @@ class Clive(App[int]):
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
             self.set_interval(debug_loop_period_secs, self.__debug_log)
 
-        if Profile.is_any_profile_saved():
-            self.switch_mode("unlock")
-        else:
-            self.switch_mode("create_profile")
+        self._switch_to_initial_mode()
 
     async def on_unmount(self) -> None:
         if self._world is not None:
@@ -392,3 +389,14 @@ class Clive(App[int]):
         loop = asyncio.get_running_loop()  # can't use self._loop since it's not set yet
         for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
             loop.add_signal_handler(signal_number, callback)
+
+    def _switch_to_initial_mode(self) -> None:
+        if not Profile.is_any_profile_saved():
+            self.switch_mode("create_profile")
+            return
+
+        if self.world.app_state.is_unlocked:
+            self.switch_mode("dashboard")
+            self.update_alarms_data_asap_on_newest_node_data()
+        else:
+            self.switch_mode("unlock")
