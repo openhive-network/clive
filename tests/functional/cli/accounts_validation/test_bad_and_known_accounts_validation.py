@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.cli.exceptions import CLITransactionUnknownAccountError
+from clive.__private.cli.exceptions import CLITransactionBadAccountError, CLITransactionUnknownAccountError
+from clive.__private.core.accounts.account_manager import _load_bad_accounts_from_file
 from clive_local_tools.cli.checkers import assert_output_contains
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
@@ -19,22 +20,33 @@ if TYPE_CHECKING:
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
 KNOWN_ACCOUNT: Final[str] = KNOWN_ACCOUNTS[0]
-EXPECTED_ERROR_MSG: Final[str] = get_formatted_error_message(CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT))
+BAD_ACCOUNT: Final[str] = _load_bad_accounts_from_file()[0]
+EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG: Final[str] = get_formatted_error_message(
+    CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT)
+)
+EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE = get_formatted_error_message(CLITransactionBadAccountError(BAD_ACCOUNT))
+
+VALIDATION_RECEIVERS: Final[list[str]] = [UNKNOWN_ACCOUNT, KNOWN_ACCOUNT, BAD_ACCOUNT]
+VALIDATION_IDS: Final[list[str]] = ["unknown_account", "known_account", "bad_account"]
 
 
-VALIDATION_RECEIVERS: Final[list[str]] = [UNKNOWN_ACCOUNT, KNOWN_ACCOUNT]
-VALIDATION_IDS: Final[list[str]] = ["unknown_account", "known_account"]
+def _assert_operation_to_bad_account_fails(send_operation_cb: Callable[[], None]) -> None:
+    with pytest.raises(CLITestCommandError) as error:
+        send_operation_cb()
+    assert_output_contains(EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE, error.value.stdout)
 
 
 def _assert_operation_to_unknown_account_fails(send_operation_cb: Callable[[], None]) -> None:
     with pytest.raises(CLITestCommandError) as error:
         send_operation_cb()
-    assert_output_contains(EXPECTED_ERROR_MSG, error.value.stdout)
+    assert_output_contains(EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG, error.value.stdout)
 
 
-def _assert_validation_of_known_accounts(send_operation_cb: Callable[[], None], receiver: str) -> None:
+def _assert_validation_of_accounts(send_operation_cb: Callable[[], None], receiver: str) -> None:
     if receiver == UNKNOWN_ACCOUNT:
         _assert_operation_to_unknown_account_fails(send_operation_cb)
+    elif receiver == BAD_ACCOUNT:
+        _assert_operation_to_bad_account_fails(send_operation_cb)
     else:
         send_operation_cb()
 
@@ -46,7 +58,7 @@ async def test_validation_of_delegate_vesting_shares(cli_tester: CLITester, rece
         cli_tester.process_delegations_set(delegatee=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -57,7 +69,7 @@ async def test_validation_of_setting_withdrawal_routes(cli_tester: CLITester, re
         cli_tester.process_withdraw_routes_set(to=receiver, percent=percent, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -67,7 +79,7 @@ async def test_validation_of_savings_withdrawal(cli_tester: CLITester, receiver:
         cli_tester.process_savings_withdrawal(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -77,7 +89,7 @@ async def test_validation_of_deposing_savings(cli_tester: CLITester, receiver: s
         cli_tester.process_savings_deposit(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -87,7 +99,7 @@ async def test_validation_of_powering_up(cli_tester: CLITester, receiver: str) -
         cli_tester.process_power_up(amount=AMOUNT, to=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 async def test_validation_of_powering_up_to_self(cli_tester: CLITester) -> None:
@@ -96,7 +108,7 @@ async def test_validation_of_powering_up_to_self(cli_tester: CLITester) -> None:
         cli_tester.process_power_up(amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, WORKING_ACCOUNT_NAME)
+    _assert_validation_of_accounts(send_operation, WORKING_ACCOUNT_NAME)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -106,7 +118,7 @@ async def test_validation_of_transfer(cli_tester: CLITester, receiver: str) -> N
         cli_tester.process_transfer(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -116,7 +128,7 @@ async def test_validation_of_setting_proxy(cli_tester: CLITester, receiver: str)
         cli_tester.process_proxy_set(proxy=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
@@ -132,7 +144,7 @@ async def test_validation_of_creating_scheduled_transfer(cli_tester: CLITester, 
         )
 
     # ACT & ASSERT
-    _assert_validation_of_known_accounts(send_operation, receiver)
+    _assert_validation_of_accounts(send_operation, receiver)
 
 
 async def test_no_validation_of_removing_withdraw_routes_to_account_that_was_known(
