@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable
-    from textual.visual import SupportsVisual
+    from textual.visual import VisualType
 
     from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import (
         DynamicLabelCallbackType,
@@ -67,7 +67,7 @@ class TitledLabel(CliveWidget):
         )
 
     @property
-    def value(self) -> RenderableType | SupportsVisual:
+    def value(self) -> VisualType:
         return self._value_label.renderable
 
     def compose(self) -> ComposeResult:

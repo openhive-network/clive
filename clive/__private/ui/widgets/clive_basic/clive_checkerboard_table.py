@@ -81,7 +81,7 @@ class CliveCheckerBoardTableCell(Container):
         if isinstance(self._content, Widget):
             yield self._content
         else:
-            yield Static(self._content)  # type: ignore[arg-type] # See: https://github.com/Textualize/textual/pull/5618
+            yield Static(self._content)
 
     async def update_content(self, content: CellContent) -> None:
         self._content = content
