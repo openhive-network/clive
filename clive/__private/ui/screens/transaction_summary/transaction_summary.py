@@ -307,7 +307,7 @@ class TransactionSummary(BaseScreen):
         self.app.trigger_profile_watchers()
 
     async def _rebuild_signatures_changed(self) -> None:
-        await self.transaction_metadata_container.recompose()
+        await self.transaction_metadata_container.update_metadata_labels()
         await self.key_container.recompose()
 
     def _get_key_to_sign(self) -> PublicKey:
@@ -340,5 +340,5 @@ class TransactionSummary(BaseScreen):
 
     async def _rebuild_on_transaction_change(self, profile: Profile) -> None:
         if self._previous_transaction != profile.transaction:
-            self._previous_transaction = profile.transaction
             await self._rebuild()
+            self._previous_transaction = profile.transaction
