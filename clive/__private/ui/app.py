@@ -13,6 +13,7 @@ from textual.app import App
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
+from textual.worker import WorkerCancelled
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
@@ -242,12 +243,21 @@ class Clive(App[int]):
     def trigger_app_state_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
-    def update_alarms_data_asap_on_newest_node_data(self) -> Worker[None]:
+    def update_alarms_data_asap_on_newest_node_data(self, *, suppress_cancelled_error: bool = False) -> Worker[None]:
         """Update alarms on the newest possible node data."""
+
         async def update_alarms_data_on_newest_node_data() -> None:
-            await self.update_data_from_node().wait()
-            await self.update_alarms_data().wait()
-        return self.run_worker(update_alarms_data_on_newest_node_data())
+            try:
+                await self.update_data_from_node().wait()
+                await self.update_alarms_data().wait()
+            except WorkerCancelled as error:
+                logger.warning("Update alarms data on newest node data cancelled.")
+                if not suppress_cancelled_error:
+                    logger.warning(f"Re-raising exception: {error}")
+                    raise
+                logger.warning(f"Ignoring exception: {error}")
+
+        return self.run_worker(update_alarms_data_on_newest_node_data(), exclusive=True)
 
     @work(name="alarms data update worker", group="alarms_data", exclusive=True)
     async def update_alarms_data(self) -> None:

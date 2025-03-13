@@ -123,7 +123,7 @@ class Unlock(BaseScreen):
         await self.world.load_profile_based_on_beekepeer()
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
-        self.app.update_alarms_data_asap_on_newest_node_data()
+        self.app.update_alarms_data_asap_on_newest_node_data(suppress_cancelled_error=True)
         self.app.resume_refresh_node_data_interval()
         self.app.resume_refresh_alarms_data_interval()
 

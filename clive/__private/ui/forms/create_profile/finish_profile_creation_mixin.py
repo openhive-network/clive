@@ -14,7 +14,8 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
 
     async def _finish(self) -> None:
         self._owner.add_post_action(
-            self.app.update_alarms_data_asap_on_newest_node_data, self.app.resume_refresh_alarms_data_interval
+            lambda: self.app.update_alarms_data_asap_on_newest_node_data(suppress_cancelled_error=True),
+            self.app.resume_refresh_alarms_data_interval,
         )
 
         profile = self.context.profile
