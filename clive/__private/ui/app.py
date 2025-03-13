@@ -163,10 +163,10 @@ class Clive(App[int]):
 
     def on_mount(self) -> None:
         self._refresh_node_data_interval = self.set_interval(
-            safe_settings.node.refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
+            safe_settings.node.refresh_rate_secs, self._retrigger_update_data_from_node, pause=True
         )
         self._refresh_alarms_data_interval = self.set_interval(
-            safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
+            safe_settings.node.refresh_alarms_rate_secs, self._retrigger_update_alarms_data, pause=True
         )
 
         self._refresh_beekeeper_wallet_lock_status_interval = self.set_interval(
@@ -309,3 +309,14 @@ class Clive(App[int]):
         loop = asyncio.get_running_loop()  # can't use self._loop since it's not set yet
         for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
             loop.add_signal_handler(signal_number, callback)
+
+    def _is_worker_group_empty(self, group: str) -> bool:
+        return not bool([worker for worker in self.workers if worker.group == group])
+
+    def _retrigger_update_data_from_node(self) -> None:
+        if self._is_worker_group_empty("node_data"):
+            self.update_data_from_node()
+
+    def _retrigger_update_alarms_data(self) -> None:
+        if self._is_worker_group_empty("alarms_data"):
+            self.update_alarms_data()
