@@ -97,8 +97,10 @@ async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTui
     node, wallet, pilot = prepared_env
     await pilot.app.world.load_profile(WORKING_ACCOUNT_DATA.account.name, WORKING_ACCOUNT_PASSWORD)
 
-    # update the data (pilot skips onboarding/unlocking via TUI - updating is handled there)
+    # update the data and resume timers (pilot skips onboarding/unlocking via TUI - updating is handled there)
     await pilot.app.update_alarms_data_asap_on_newest_node_data().wait()
+    pilot.app.resume_refresh_node_data_interval()
+    pilot.app.resume_refresh_alarms_data_interval()
 
     await pilot.app.push_screen(Dashboard())
     await wait_for_screen(pilot, Dashboard)

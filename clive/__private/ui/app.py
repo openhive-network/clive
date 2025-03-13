@@ -245,10 +245,7 @@ class Clive(App[int]):
     def update_alarms_data_asap_on_newest_node_data(self) -> Worker[None]:
         """Update alarms on the newest possible node data."""
         self.update_data_from_node()
-        worker = self.update_alarms_data()
-        self.resume_refresh_node_data_interval()
-        self.resume_refresh_alarms_data_interval()
-        return worker
+        return self.update_alarms_data()
 
     @work(name="alarms data update worker", group="alarms_data", exclusive=True)
     async def update_alarms_data(self) -> None:

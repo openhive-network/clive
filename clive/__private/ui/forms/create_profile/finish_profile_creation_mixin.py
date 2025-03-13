@@ -13,7 +13,9 @@ class FinishProfileCreationMixin(FormScreenBase[CreateProfileContext]):
         self.app.run_worker(self._finish())
 
     async def _finish(self) -> None:
-        self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
+        self._owner.add_post_action(
+            self.app.update_alarms_data_asap_on_newest_node_data, self.app.resume_refresh_alarms_data_interval
+        )
 
         profile = self.context.profile
         profile.enable_saving()

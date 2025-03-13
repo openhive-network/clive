@@ -124,6 +124,8 @@ class Unlock(BaseScreen):
         await self.app.switch_mode("dashboard")
         self._remove_welcome_modes()
         self.app.update_alarms_data_asap_on_newest_node_data()
+        self.app.resume_refresh_node_data_interval()
+        self.app.resume_refresh_alarms_data_interval()
 
     @on(Button.Pressed, "#new-profile-button")
     async def create_new_profile(self) -> None:
