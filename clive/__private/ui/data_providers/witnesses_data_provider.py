@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import work
 from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesData, WitnessesDataRetrieval
@@ -26,8 +25,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
         self.__mode: WitnessesDataRetrieval.Modes = WitnessesDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
-    @work(name="witnesses data update worker")
-    async def update(self) -> None:
+    async def _update(self) -> None:
         proxy = self.profile.accounts.working.data.proxy
         account_name = proxy if proxy else self.profile.accounts.working.name
 

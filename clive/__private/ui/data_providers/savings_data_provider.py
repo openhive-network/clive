@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from textual import work
 from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
@@ -13,8 +12,7 @@ class SavingsDataProvider(DataProvider[SavingsData]):
     _content: SavingsData | None = var(None, init=False)  # type: ignore[assignment]
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
-    @work(name="savings data update worker")
-    async def update(self) -> None:
+    async def _update(self) -> None:
         account_name = self.profile.accounts.working.name
         wrapper = await self.commands.retrieve_savings_data(account_name=account_name)
 

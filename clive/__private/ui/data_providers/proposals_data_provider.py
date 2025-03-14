@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import work
 from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
@@ -21,8 +20,7 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
         self.__order_direction: ProposalsDataRetrieval.OrderDirections = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
         self.__status: ProposalsDataRetrieval.Statuses = ProposalsDataRetrieval.DEFAULT_STATUS
 
-    @work(name="proposals data update worker")
-    async def update(self) -> None:
+    async def _update(self) -> None:
         proxy = self.profile.accounts.working.data.proxy
         account_name = proxy if proxy else self.profile.accounts.working.name
 

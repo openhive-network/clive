@@ -319,13 +319,13 @@ class Clive(App[int]):
         for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
             loop.add_signal_handler(signal_number, callback)
 
-    def _is_worker_group_empty(self, group: str) -> bool:
+    def is_worker_group_empty(self, group: str) -> bool:
         return not bool([worker for worker in self.workers if worker.group == group])
 
     def _retrigger_update_data_from_node(self) -> None:
-        if self._is_worker_group_empty("node_data"):
+        if self.is_worker_group_empty("node_data"):
             self.update_data_from_node()
 
     def _retrigger_update_alarms_data(self) -> None:
-        if self._is_worker_group_empty("alarms_data"):
+        if self.is_worker_group_empty("alarms_data"):
             self.update_alarms_data()

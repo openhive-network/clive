@@ -3,7 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Final, Generic, TypeVar
 
-from textual import on, work
+from inflection import underscore
+from textual import on
 from textual.containers import Container
 from textual.reactive import var
 from textual.worker import Worker, WorkerState
@@ -63,15 +64,20 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
         if not paused and init_update:
             self.update()
 
-        self.interval = self.set_interval(safe_settings.node.refresh_rate_secs, self.update, pause=paused)
+        self.interval = self.set_interval(
+            safe_settings.node.refresh_rate_secs, self._update_if_not_ongoing, pause=paused
+        )
+
+    def update(self) -> Worker[None]:
+        name = self.get_worker_name()
+        return self.run_worker(self._update(), name=name, group=name, exclusive=True)
 
     @abstractmethod
-    @work
-    async def update(self) -> None:
+    async def _update(self) -> None:
         """
         Define the logic to update the provider data.
 
-        The name of the worker can be included by overriding the work decorator, e.g.: @work("my work").
+        The name and group of the worker is inferred from the class name.
         """
 
     @on(Worker.StateChanged)
@@ -106,3 +112,11 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
         self.interval.resume()
 
         return worker
+
+    def get_worker_name(self) -> str:
+        return f"{underscore(self.__class__.__name__)} update worker"
+
+    def _update_if_not_ongoing(self) -> None:
+        name = self.get_worker_name()
+        if self.app.is_worker_group_empty(name):
+            self.update()
