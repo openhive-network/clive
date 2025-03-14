@@ -243,10 +243,10 @@ class Clive(App[int]):
     def trigger_app_state_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
-    def update_alarms_data_asap_on_newest_node_data(self, *, suppress_cancelled_error: bool = False) -> Worker[None]:
-        """Update alarms on the newest possible node data."""
+    def update_alarms_data_on_newest_node_data(self, *, suppress_cancelled_error: bool = False) -> Worker[None]:
+        """There is periodic work refreshing alarms data and node data, this method triggers immediate update."""
 
-        async def update_alarms_data_on_newest_node_data() -> None:
+        async def _update_alarms_data_on_newest_node_data() -> None:
             try:
                 await self.update_data_from_node().wait()
                 await self.update_alarms_data().wait()
@@ -257,7 +257,7 @@ class Clive(App[int]):
                     raise
                 logger.warning(f"Ignoring exception: {error}")
 
-        return self.run_worker(update_alarms_data_on_newest_node_data(), exclusive=True)
+        return self.run_worker(_update_alarms_data_on_newest_node_data(), exclusive=True)
 
     @work(name="alarms data update worker", group="alarms_data", exclusive=True)
     async def update_alarms_data(self) -> None:
