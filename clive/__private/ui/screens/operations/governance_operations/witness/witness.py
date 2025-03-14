@@ -6,14 +6,13 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal
-from textual.events import Click, Enter
+from textual.events import Click
 from textual.message import Message
 from textual.validation import Integer
 from textual.widgets import Label, Static
 
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_WITNESSES_VOTES
-from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.models.schemas import AccountWitnessVoteOperation
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
@@ -68,7 +67,7 @@ class WitnessDetailsLabel(Label):
 
 
 class WitnessNameLabel(Label, CliveWidget):
-    """Created because textual is not responding `on(Enter)` in Witness Grid."""
+    """Label with witness name."""
 
     def __init__(self, witness_name: str, classes: str) -> None:
         super().__init__(
@@ -76,30 +75,6 @@ class WitnessNameLabel(Label, CliveWidget):
             id=f"{convert_witness_name_to_widget_id(witness_name)}-witness-info",
             classes=classes,
         )
-        self.__witness_name = witness_name
-
-    @on(Enter)
-    async def __update_tooltip_text(self) -> None:
-        wrapper = await self.commands.find_witness(witness_name=self.__witness_name)
-
-        if wrapper.error_occurred:
-            new_tooltip_text = "Failed to retrieve witness information."
-        else:
-            witness = wrapper.result_or_raise
-            created = humanize_datetime(witness.created)
-            missed_blocks = witness.total_missed
-            last_block = witness.last_confirmed_block_num
-            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)
-            version = witness.running_version
-            new_tooltip_text = f"""\
-        created: {created}
-        missed blocks: {missed_blocks}
-        last block: {last_block}
-        price feed: {price_feed}
-        version: {version}\
-    """
-
-        self.tooltip = new_tooltip_text
 
 
 class Witness(GovernanceTableRow[WitnessData]):

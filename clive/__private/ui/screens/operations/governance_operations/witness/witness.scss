@@ -27,7 +27,6 @@ Witnesses {
     grid-columns: 2fr 1fr 3fr 2fr 2fr;
     height: auto;
 
-    WitnessNameLabel,
     WitnessDetailsLabel {
       &:hover {
         background: $panel;
