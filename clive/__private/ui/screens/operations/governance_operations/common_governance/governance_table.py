@@ -39,23 +39,23 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
 
         self.button_up.visible = False
 
+    @abstractmethod
+    def create_custom_columns(self) -> ComposeResult:
+        """Yield custom columns for each table."""
+
+    @property
+    def is_proxy_set(self) -> bool:
+        return bool(self.profile.accounts.working.data.proxy)
+
     def compose(self) -> ComposeResult:
         yield from self.create_additional_headlines()
         yield self.button_up
         yield from self.create_custom_columns()
         yield self.button_down
 
-    @abstractmethod
-    def create_custom_columns(self) -> ComposeResult:
-        """Yield custom columns for each table."""
-
     def create_additional_headlines(self) -> ComposeResult:
         """Yield custom headlines that will be placed above the arrows and column names."""
         return []
-
-    @property
-    def is_proxy_set(self) -> bool:
-        return bool(self.profile.accounts.working.data.proxy)
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
@@ -76,6 +76,14 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
     def _create_row(self, data: GovernanceDataT, *, even: bool = False) -> GovernanceTableRow[GovernanceDataT]:
         """Return row widget."""
 
+    @property
+    def is_data_empty(self) -> bool:
+        if self._data is None:
+            #  When _data is None - still waiting for the response.
+            return False
+
+        return not bool(self._data)
+
     def compose(self) -> ComposeResult:
         if self.is_data_empty:
             yield Label("No elements to display")
@@ -89,14 +97,6 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
                     yield self._create_row(element, even=True)
                 else:
                     yield self._create_row(element)
-
-    @property
-    def is_data_empty(self) -> bool:
-        if self._data is None:
-            #  When _data is None - still waiting for the response.
-            return False
-
-        return not bool(self._data)
 
 
 class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):
@@ -132,30 +132,27 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         self._row_data: GovernanceDataT = row_data
         self._evenness = "even" if even else "odd"
 
-    def on_mount(self) -> None:
-        self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
+    @property
+    @abstractmethod
+    def action_identifier(self) -> str:
+        """Return witness name or proposal id to mount the action correctly."""
 
-    def compose(self) -> ComposeResult:
-        self.governance_checkbox = GovernanceCheckbox(
-            is_voted=self._row_data.voted,
-            initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
-            disabled=bool(self.profile.accounts.working.data.proxy) or self.is_operation_in_cart,
-        )
-        yield self.governance_checkbox
-        yield from self.create_row_content()
+    @property
+    @abstractmethod
+    def is_operation_in_cart(self) -> bool:
+        """Check if operation is already in the cart."""
+
+    @abstractmethod
+    def create_row_content(self) -> ComposeResult:
+        """Contains all the information that should be displayed about the item."""
+
+    @abstractmethod
+    def get_action_row_id(self) -> str:
+        """Return an id of the action row."""
 
     @on(GovernanceCheckbox.Clicked)
     def focus_myself(self) -> None:
         self.focus()
-
-    def dimm_on_disabled_checkbox(self, value: bool) -> None:  # noqa: FBT001
-        if value:
-            self.add_class("dimmed")
-            return
-        self.remove_class("dimmed")
-
-    def action_toggle_checkbox(self) -> None:
-        self.governance_checkbox.toggle()
 
     @on(GovernanceCheckbox.Changed)
     async def change_action_status(self) -> None:
@@ -175,15 +172,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def evenness(self) -> str:
         return self._evenness
 
-    @abstractmethod
-    def create_row_content(self) -> ComposeResult:
-        """Contains all the information that should be displayed about the item."""
-
-    @property
-    @abstractmethod
-    def action_identifier(self) -> str:
-        """Return witness name or proposal id to mount the action correctly."""
-
     @property
     def is_already_in_actions_container(self) -> bool:
         """Check if operation is already in the action container."""
@@ -194,14 +182,26 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         else:
             return True
 
-    @abstractmethod
-    def get_action_row_id(self) -> str:
-        """Return an id of the action row."""
+    def on_mount(self) -> None:
+        self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
 
-    @property
-    @abstractmethod
-    def is_operation_in_cart(self) -> bool:
-        """Check if operation is already in the cart."""
+    def compose(self) -> ComposeResult:
+        self.governance_checkbox = GovernanceCheckbox(
+            is_voted=self._row_data.voted,
+            initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
+            disabled=bool(self.profile.accounts.working.data.proxy) or self.is_operation_in_cart,
+        )
+        yield self.governance_checkbox
+        yield from self.create_row_content()
+
+    def dimm_on_disabled_checkbox(self, value: bool) -> None:  # noqa: FBT001
+        if value:
+            self.add_class("dimmed")
+            return
+        self.remove_class("dimmed")
+
+    def action_toggle_checkbox(self) -> None:
+        self.governance_checkbox.toggle()
 
 
 class GovernanceTable(
@@ -222,36 +222,53 @@ class GovernanceTable(
         self._header = self.create_header()
         self._is_loading = True
 
-    def compose(self) -> ComposeResult:
-        yield self.header
+    @property
+    @abstractmethod
+    def data(self) -> list[GovernanceDataT]:
+        """Return data from data provider."""
 
-    def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
+    @property
+    @abstractmethod
+    def provider(self) -> GovernanceDataProviderT:
+        """Query and return appropriate data provider."""
 
-    async def sync_list(self, *, focus_first_element: bool = False) -> None:
-        await self.loading_set()
+    @abstractmethod
+    def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataT]:
+        """Return the instance of the new witnesses or proposals list."""
 
-        new_list = self.create_new_list_widget()
+    @abstractmethod
+    def create_header(self) -> GovernanceListHeader:
+        pass
 
-        with self.app.batch_update():
-            await self.query(GovernanceListWidget).remove()  # type: ignore[type-abstract]
-            await self.mount(new_list)
+    @property
+    def is_data_available(self) -> bool:
+        return self.provider.is_content_set
 
-        if focus_first_element:
-            first_row = self.query(GovernanceTableRow).first()  # type: ignore[type-abstract]
-            first_row.focus()
+    @property
+    def data_chunk(self) -> list[GovernanceDataT] | None:
+        if not self.is_data_available:
+            return None
 
-        self.set_loaded()
+        return self.data[self._element_index : self._element_index + self.MAX_ELEMENTS_ON_PAGE]
 
-    async def loading_set(self) -> None:
-        self._is_loading = True
-        with contextlib.suppress(NoMatches):
-            selected_list = self.query_exactly_one(GovernanceListWidget)  # type: ignore[type-abstract]
-            await selected_list.query("*").remove()
-            await selected_list.mount(Label("Loading..."))
+    @property
+    def data_length(self) -> int:
+        if not self.is_data_available:
+            return 0
 
-    def set_loaded(self) -> None:
-        self._is_loading = False
+        return len(self.data)
+
+    @property
+    def element_index(self) -> int:
+        return self._element_index
+
+    @property
+    def header(self) -> GovernanceListHeader:
+        return self._header
+
+    @property
+    def is_proxy_set(self) -> bool:
+        return bool(self.profile.accounts.working.data.proxy)
 
     @on(PageDownOneLineButton.Pressed)
     async def action_next_page(self) -> None:
@@ -291,6 +308,37 @@ class GovernanceTable(
 
         await self.sync_list(focus_first_element=True)
 
+    def compose(self) -> ComposeResult:
+        yield self.header
+
+    def on_mount(self) -> None:
+        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
+
+    async def sync_list(self, *, focus_first_element: bool = False) -> None:
+        await self.loading_set()
+
+        new_list = self.create_new_list_widget()
+
+        with self.app.batch_update():
+            await self.query(GovernanceListWidget).remove()  # type: ignore[type-abstract]
+            await self.mount(new_list)
+
+        if focus_first_element:
+            first_row = self.query(GovernanceTableRow).first()  # type: ignore[type-abstract]
+            first_row.focus()
+
+        self.set_loaded()
+
+    async def loading_set(self) -> None:
+        self._is_loading = True
+        with contextlib.suppress(NoMatches):
+            selected_list = self.query_exactly_one(GovernanceListWidget)  # type: ignore[type-abstract]
+            await selected_list.query("*").remove()
+            await selected_list.mount(Label("Loading..."))
+
+    def set_loaded(self) -> None:
+        self._is_loading = False
+
     async def reset_page(self) -> None:
         self._element_index = 0
         self._header.button_up.visible = False
@@ -298,51 +346,3 @@ class GovernanceTable(
 
         if not self._is_loading:
             await self.sync_list()
-
-    @property
-    @abstractmethod
-    def data(self) -> list[GovernanceDataT]:
-        """Return data from data provider."""
-
-    @property
-    def is_data_available(self) -> bool:
-        return self.provider.is_content_set
-
-    @property
-    def data_chunk(self) -> list[GovernanceDataT] | None:
-        if not self.is_data_available:
-            return None
-
-        return self.data[self._element_index : self._element_index + self.MAX_ELEMENTS_ON_PAGE]
-
-    @property
-    def data_length(self) -> int:
-        if not self.is_data_available:
-            return 0
-
-        return len(self.data)
-
-    @property
-    def element_index(self) -> int:
-        return self._element_index
-
-    @property
-    def header(self) -> GovernanceListHeader:
-        return self._header
-
-    @property
-    def is_proxy_set(self) -> bool:
-        return bool(self.profile.accounts.working.data.proxy)
-
-    @property
-    @abstractmethod
-    def provider(self) -> GovernanceDataProviderT:
-        """Query and return appropriate data provider."""
-
-    @abstractmethod
-    def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataT]:
-        """Return the instance of the new witnesses or proposals list."""
-
-    @abstractmethod
-    def create_header(self) -> GovernanceListHeader:
-        pass
