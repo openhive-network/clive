@@ -44,6 +44,15 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         self._vote = vote
         self._pending = pending
 
+    @staticmethod
+    @abstractmethod
+    def create_action_row_id(identifier: str) -> str:
+        """Create css id of the action row."""
+
+    @property
+    def action_identifier(self) -> str:
+        return self._identifier
+
     def compose(self) -> ComposeResult:
         if self._pending:
             yield Label("Pending", classes="action-pending action-label")
@@ -55,15 +64,6 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         else:
             yield Label("Unvote", classes="action-unvote action-label")
         yield Label(str(self.action_identifier), classes="action-identifier")
-
-    @property
-    def action_identifier(self) -> str:
-        return self._identifier
-
-    @staticmethod
-    @abstractmethod
-    def create_action_row_id(identifier: str) -> str:
-        pass
 
 
 class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposalVotesOperation)](
@@ -79,6 +79,34 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
         self._actions_to_perform: dict[str, bool] = {}
         """A dict with action identifier as key and action to pe performed as value"""
         self._actions_votes = 0
+
+    @staticmethod
+    @abstractmethod
+    def create_action_row_id(identifier: str) -> str:
+        """Return id of the action row."""
+
+    @abstractmethod
+    async def mount_operations_from_cart(self) -> None:
+        """Check cart and mount all appropriate operations."""
+
+    @abstractmethod
+    def should_be_added_to_actions(self, operation: object) -> TypeIs[OperationT]:
+        """Check if the action should be added to the actions table."""
+
+    @abstractmethod
+    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
+        """Create an action row."""
+
+    @property
+    def actions_votes(self) -> int:
+        return self._actions_votes
+
+    @property
+    def actions_to_perform(self) -> dict[str, bool]:
+        return self._actions_to_perform
+
+    def hook_on_row_added(self) -> None:
+        """Create any action when an action row is added to the action table."""
 
     def compose(self) -> ComposeResult:
         yield SectionTitle("Actions to be performed")
@@ -126,31 +154,3 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     def delete_from_actions(self, identifier: str) -> None:
         self._actions_to_perform.pop(identifier)
-
-    @property
-    def actions_votes(self) -> int:
-        return self._actions_votes
-
-    @property
-    def actions_to_perform(self) -> dict[str, bool]:
-        return self._actions_to_perform
-
-    def hook_on_row_added(self) -> None:
-        """Create any action when an action row is added to the action table."""
-
-    @staticmethod
-    @abstractmethod
-    def create_action_row_id(identifier: str) -> str:
-        """Return id of the action row."""
-
-    @abstractmethod
-    async def mount_operations_from_cart(self) -> None:
-        """Check cart and mount all appropriate operations."""
-
-    @abstractmethod
-    def should_be_added_to_actions(self, operation: object) -> TypeIs[OperationT]:
-        """Check if the action should be added to the actions table."""
-
-    @abstractmethod
-    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
-        pass
