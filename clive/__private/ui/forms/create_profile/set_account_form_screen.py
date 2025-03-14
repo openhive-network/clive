@@ -55,6 +55,7 @@ class SetAccountFormScreen(BaseScreen, FormScreen[CreateProfileContext], FinishP
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self, event: PreviousScreenButton.Pressed | None = None) -> None:
         self.app.pause_refresh_node_data_interval()
+        self.node.cached.clear()
         if event is None:
             await super().action_previous_screen()
 
