@@ -221,8 +221,10 @@ class Clive(App[int]):
         if isinstance(self.screen, TransactionSummary):
             return
 
-        if not self.world.profile.transaction.is_signed:
-            await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
+        transaction = self.world.profile.transaction
+
+        if not transaction.is_signed and transaction:
+            await self.world.commands.update_transaction_metadata(transaction=transaction)
         await self.push_screen(TransactionSummary())
 
     def pause_refresh_alarms_data_interval(self) -> None:
