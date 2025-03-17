@@ -161,27 +161,43 @@ class CliveCheckerboardTable(CliveWidget):
     """attribute name to trigger an update of the table and to download new data"""
     NO_CONTENT_TEXT: ClassVar[str] = "No content available"
 
-    def __init__(self, *, header: Widget, title: Widget | str | None = None) -> None:
+    def __init__(self, *, header: Widget, title: str | Widget | None = None, init_dynamic: bool = True) -> None:
+        """
+        Initialise the checkerboard table.
+
+        Args:
+        ----
+        header: Header of the table.
+        title: Title of the table.
+        init_dynamic: Whether the table should be created right away because data is already available.
+            If not set will display "Loading..." until the data is received.
+        """
         super().__init__()
         self._title = title
         self._header = header
+        self._init_dynamic = init_dynamic
 
     def compose(self) -> ComposeResult:
-        if self.should_be_dynamic:
+        if not self.should_be_dynamic:
+            yield from self._create_table_content()
+            return
+
+        if self.should_be_dynamic and not self._init_dynamic:
             yield Static("Loading...", id="loading-static")
-        else:
-            self._mount_static_rows()
+            return
+
+        content = self._get_dynamic_initial_content()
+        if is_updated(content):
+            self.update_previous_state(content)
+        yield from self._create_table_content(content)
 
     def on_mount(self) -> None:
         if self.should_be_dynamic:
-            self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, self._mount_dynamic_rows)
+            self.watch(
+                self.object_to_watch, self.ATTRIBUTE_TO_WATCH, self._update_dynamic_table, init=not self._init_dynamic
+            )
 
-    def _mount_static_rows(self) -> None:
-        """Mount rows created in static mode."""
-        self.mount_all(self._create_table_content())
-
-    async def _mount_dynamic_rows(self, content: ContentT) -> None:
-        """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
+    async def _update_dynamic_table(self, content: ContentT) -> None:
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
@@ -208,6 +224,9 @@ class CliveCheckerboardTable(CliveWidget):
             new_rows = self._create_table_rows(content)
             await self.mount_all(new_rows)
 
+    def _get_dynamic_initial_content(self) -> object:
+        return getattr(self.object_to_watch, self.ATTRIBUTE_TO_WATCH)
+
     def _create_table_rows(
         self, content: ContentT | NotUpdatedYet | None = None
     ) -> Sequence[CliveCheckerboardTableRow]:
@@ -219,6 +238,10 @@ class CliveCheckerboardTable(CliveWidget):
             assert (
                 content is not None
             ), "Content must be provided when creating dynamic rows. Maybe you should use static table?"
+
+            if is_not_updated_yet(content):
+                return []
+
             rows = self.create_dynamic_rows(content)
         else:
             assert (
