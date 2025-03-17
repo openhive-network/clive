@@ -259,10 +259,10 @@ class Proposals(GovernanceTabPane):
 
     def compose(self) -> ComposeResult:
         self.__proposals_table = ProposalsTable()
+        yield ProposalsOrderChange()
         with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__proposals_table
             yield ProposalsActions()
-        yield ProposalsOrderChange()
 
     @on(ProposalsOrderChange.Search)
     async def change_order(self, message: ProposalsOrderChange.Search) -> None:
