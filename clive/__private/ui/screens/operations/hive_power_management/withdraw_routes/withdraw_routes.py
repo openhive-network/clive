@@ -71,7 +71,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
     NO_CONTENT_TEXT = "You have no withdraw routes"
 
     def __init__(self) -> None:
-        super().__init__(header=WithdrawRoutesHeader(), title="Current withdraw routes")
+        super().__init__(header=WithdrawRoutesHeader(), title="Current withdraw routes", init_dynamic=False)
         self._previous_withdraw_routes: list[SchemasWithdrawRoute] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:

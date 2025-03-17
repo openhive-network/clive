@@ -81,7 +81,7 @@ class DelegationsTable(CliveCheckerboardTable):
     NO_CONTENT_TEXT = "You have no delegations"
 
     def __init__(self) -> None:
-        super().__init__(header=DelegationsTableHeader(), title="Current delegations")
+        super().__init__(header=DelegationsTableHeader(), title="Current delegations", init_dynamic=False)
         self._previous_delegations: list[VestingDelegation[Asset.Vests]] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:

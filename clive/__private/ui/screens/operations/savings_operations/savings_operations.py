@@ -158,7 +158,7 @@ class PendingTransfers(CliveCheckerboardTable):
     NO_CONTENT_TEXT = "You have no pending transfers"
 
     def __init__(self) -> None:
-        super().__init__(header=PendingTransfersHeader(), title=SectionTitle(""))
+        super().__init__(header=PendingTransfersHeader(), title=SectionTitle(""), init_dynamic=False)
         self._previous_pending_transfers: list[SavingsWithdrawal] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:

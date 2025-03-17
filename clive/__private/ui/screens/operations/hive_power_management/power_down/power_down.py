@@ -92,7 +92,7 @@ class PendingPowerDown(CliveCheckerboardTable):
     NO_CONTENT_TEXT = "You have no pending power down"
 
     def __init__(self) -> None:
-        super().__init__(header=PendingPowerDownHeader(), title="Current power down")
+        super().__init__(header=PendingPowerDownHeader(), title="Current power down", init_dynamic=False)
         self._previous_next_vesting_withdrawal: datetime | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[CliveCheckerboardTableRow]:
