@@ -326,6 +326,9 @@ class CartTable(CliveCheckerboardTable):
 
         modified_transaction = deepcopy(self.profile.transaction)
         modified_transaction.remove_operation(item_to_remove.operation)
+        if not bool(modified_transaction):
+            # if last operation was removed from transaction, reset it
+            modified_transaction.reset()
         self._cart_items_action_manager.enable_action()
         self.post_message(self.Modified(modified_transaction))
 
