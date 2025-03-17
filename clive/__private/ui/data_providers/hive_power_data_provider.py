@@ -4,10 +4,11 @@ from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 
 
 class HivePowerDataProvider(DataProvider[HivePowerData]):
-    _content: HivePowerData | None = var(None, init=False)  # type: ignore[assignment]
+    _content: HivePowerData | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__(paused=paused, init_update=init_update)

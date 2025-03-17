@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.not_updated_yet import is_updated
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class APR(DynamicLabel, AbstractClassMessagePump):
             obj_to_watch=provider,
             attribute_name="_content",
             callback=self._get_apr,
-            first_try_callback=lambda content: content is not None,
+            first_try_callback=is_updated,
         )
         self._provider = provider
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.formatters.humanize import humanize_vest_to_hive_ratio
+from clive.__private.ui.not_updated_yet import is_updated
 from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ class HpVestsFactor(Notice):
             obj_to_watch=provider,
             attribute_name="_content",
             callback=self._get_hp_vests_factor,
-            first_try_callback=lambda content: content is not None,
+            first_try_callback=is_updated,
         )
 
     def _get_hp_vests_factor(self, content: HivePowerData) -> str:

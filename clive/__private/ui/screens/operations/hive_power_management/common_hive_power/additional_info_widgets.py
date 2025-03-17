@@ -11,6 +11,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_hp_vests_apr,
 )
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.not_updated_yet import is_updated
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.section_title import SectionTitle
@@ -60,7 +61,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
             "_content",
             self._get_next_withdrawal_date,
             id_="withdrawal-info-date",
-            first_try_callback=lambda content: content is not None,
+            first_try_callback=is_updated,
         )
         yield SectionTitle("To withdraw", id_="to-withdraw-header")
         yield DynamicLabel(
@@ -68,14 +69,14 @@ class WithdrawalInfo(Vertical, CliveWidget):
             "_content",
             self._get_to_withdraw_hp,
             id_="withdrawal-info-vests-amount",
-            first_try_callback=lambda content: content is not None,
+            first_try_callback=is_updated,
         )
         yield DynamicLabel(
             self._provider,
             "_content",
             self._get_to_withdraw_vests,
             id_="withdrawal-info-hp-amount",
-            first_try_callback=lambda content: content is not None,
+            first_try_callback=is_updated,
         )
 
     def _get_next_withdrawal_date(self, content: HivePowerData) -> str:

@@ -13,6 +13,7 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_not_updated_yet
 from clive.exceptions import CliveError
 
 ProviderContentT = TypeVar("ProviderContentT")
@@ -26,7 +27,8 @@ class ProviderNotSetYetError(ProviderError):
     _MESSAGE: Final[str] = """
 Provider content was referenced before the update actually occurred.
 You're probably using it too early.
-If you are sure, you can use the `updated` property to check if content is ready or `_content` which may be None."""
+If you are sure, you can use the `updated` property to check if content is ready
+ or `_content` which may be NotUpdatedYet."""
 
     def __init__(self) -> None:
         super().__init__(self._MESSAGE)
@@ -41,7 +43,7 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
     method, but could be also done by using the provider methods.
     """
 
-    _content: ProviderContentT | None = var(None, init=False)  # type: ignore[assignment]
+    _content: ProviderContentT | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
     updated: bool = var(default=False)  # type: ignore[assignment]
@@ -87,13 +89,14 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
 
     @property
     def content(self) -> ProviderContentT:
-        if self._content is None:
+        if not self.is_content_set:
             raise ProviderNotSetYetError
+        assert not isinstance(self._content, NotUpdatedYet), "Already checked."
         return self._content
 
     @property
     def is_content_set(self) -> bool:
-        return self._content is not None
+        return not is_not_updated_yet(self._content)
 
     def stop(self) -> None:
         self.interval.stop()

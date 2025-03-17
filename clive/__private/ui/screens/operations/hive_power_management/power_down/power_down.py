@@ -6,6 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
+from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_percent
@@ -15,7 +16,7 @@ from clive.__private.models.schemas import WithdrawVestingOperation
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.not_updated_yet import NotUpdatedYet
+from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_not_updated_yet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
 from clive.__private.ui.widgets.buttons import CancelOneLineButton, GenerousButton
@@ -37,8 +38,6 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-
 
 class WithdrawRoutesDisplay(CliveWidget):
     """Widget used just to inform user to which account has withdrawal route and how much % it is."""
@@ -55,10 +54,12 @@ class WithdrawRoutesDisplay(CliveWidget):
     def on_mount(self) -> None:
         self.watch(self.provider, "_content", self._update_withdraw_routes)
 
-    def _update_withdraw_routes(self, content: HivePowerData | None) -> None:
+    def _update_withdraw_routes(self, content: HivePowerData | NotUpdatedYet) -> None:
         """Update withdraw routes pretty widget."""
-        if content is None:  # data not received yet
+        if is_not_updated_yet(content):
             return
+
+        assert isinstance(content, HivePowerData), "Content should be HivePowerData."
 
         if not content.withdraw_routes:
             self.query_exactly_one("#withdraw-routes-header", Static).update("You have no withdraw routes")

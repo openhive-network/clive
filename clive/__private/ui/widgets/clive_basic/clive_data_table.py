@@ -7,6 +7,7 @@ from textual.widgets import Static
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.not_updated_yet import is_not_updated_yet
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -77,9 +78,6 @@ class CliveDataTableRow(Horizontal, CliveWidget):
 
     def refresh_row(self, content: Any) -> None:  # noqa: ANN401
         """Iterate through the cells and update each of them."""
-        if content is None:  # data not received yet
-            return
-
         for cell, value in zip(self.cells, self.get_new_values(content), strict=True):
             cell.update(value)
 
@@ -133,7 +131,7 @@ class CliveDataTable(CliveWidget):
             self.watch(self.provider, "_content", self.refresh_rows)
 
     def refresh_rows(self, content: Any) -> None:  # noqa: ANN401
-        if content is None:  # data not received yet
+        if is_not_updated_yet(content):
             return
 
         with self.app.batch_update():

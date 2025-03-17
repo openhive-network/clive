@@ -6,6 +6,7 @@ from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesData, WitnessesDataRetrieval
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 
 if TYPE_CHECKING:
     from textual.worker import Worker
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 class WitnessesDataProvider(DataProvider[WitnessesData]):
     """A class for retrieving information about witnesses stored in a WitnessesData dataclass."""
 
-    _content: WitnessesData | None = var(None, init=False)  # type: ignore[assignment]
+    _content: WitnessesData | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
     """It is used to check whether witnesses data has been refreshed and to store witnesses data."""
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:

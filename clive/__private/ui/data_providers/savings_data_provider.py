@@ -4,12 +4,13 @@ from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 
 
 class SavingsDataProvider(DataProvider[SavingsData]):
     """A class for retrieving information about savings stored in a SavingsData dataclass."""
 
-    _content: SavingsData | None = var(None, init=False)  # type: ignore[assignment]
+    _content: SavingsData | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
     async def _update(self) -> None:

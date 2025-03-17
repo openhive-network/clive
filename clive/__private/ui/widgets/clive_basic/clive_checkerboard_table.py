@@ -8,6 +8,7 @@ from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_not_updated_yet, is_updated
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
@@ -184,7 +185,7 @@ class CliveCheckerboardTable(CliveWidget):
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
-        if content is None:  # data not received yet
+        if is_not_updated_yet(content):
             return
 
         if not self.check_if_should_be_updated(content):
@@ -193,13 +194,13 @@ class CliveCheckerboardTable(CliveWidget):
         self.update_previous_state(content)
         await self.rebuild(content)
 
-    async def rebuild(self, content: ContentT | None = None) -> None:
+    async def rebuild(self, content: ContentT | NotUpdatedYet | None = None) -> None:
         """Rebuilds whole table - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(self._create_table_content(content))
 
-    async def rebuild_rows(self, content: ContentT | None = None) -> None:
+    async def rebuild_rows(self, content: ContentT | NotUpdatedYet | None = None) -> None:
         """Rebuilds table rows - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query(CliveCheckerboardTableRow).remove()
@@ -207,8 +208,10 @@ class CliveCheckerboardTable(CliveWidget):
             new_rows = self._create_table_rows(content)
             await self.mount_all(new_rows)
 
-    def _create_table_rows(self, content: ContentT | None = None) -> Sequence[CliveCheckerboardTableRow]:
-        if content is not None and not self.is_anything_to_display(content):
+    def _create_table_rows(
+        self, content: ContentT | NotUpdatedYet | None = None
+    ) -> Sequence[CliveCheckerboardTableRow]:
+        if content is not None and is_updated(content) and not self.is_anything_to_display(content):
             # if content is given, we can check if there is anything to display and return earlier
             return []
 
@@ -226,7 +229,7 @@ class CliveCheckerboardTable(CliveWidget):
         self._set_evenness_styles(rows)
         return rows
 
-    def _create_table_content(self, content: ContentT | None = None) -> list[Widget]:
+    def _create_table_content(self, content: ContentT | NotUpdatedYet | None = None) -> list[Widget]:
         rows = self._create_table_rows(content)
 
         if not rows:

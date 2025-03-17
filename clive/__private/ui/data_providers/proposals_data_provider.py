@@ -6,13 +6,14 @@ from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 
 if TYPE_CHECKING:
     from textual.worker import Worker
 
 
 class ProposalsDataProvider(DataProvider[ProposalsData]):
-    _content: ProposalsData | None = var(None, init=False)  # type: ignore[assignment]
+    _content: ProposalsData | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__(paused=paused, init_update=init_update)
