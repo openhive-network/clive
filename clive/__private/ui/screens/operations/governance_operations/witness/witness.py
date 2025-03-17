@@ -270,11 +270,11 @@ class Witnesses(GovernanceTabPane):
 
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
+        yield WitnessManualSearch()
 
         with ScrollablePart(), Horizontal(id="witnesses-content"):
             yield self.__witness_table
             yield WitnessesActions()
-        yield WitnessManualSearch()
 
     def _create_operations(self) -> list[OperationUnion] | None:
         actual_number_of_votes = self.screen.query_exactly_one(WitnessesActions).actual_number_of_votes
