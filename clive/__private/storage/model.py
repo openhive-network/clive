@@ -64,6 +64,7 @@ class ProfileStorageModel(CliveBaseModel):
     transaction: TransactionStorageModel | None = None
     chain_id: str | None = None
     node_address: str
+    should_enable_known_accounts: bool = True
 
     def __hash__(self) -> int:
         return hash(self.json(indent=4))

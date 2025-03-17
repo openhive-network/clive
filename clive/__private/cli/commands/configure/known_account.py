@@ -40,3 +40,15 @@ class RemoveKnownAccount(WorldBasedCommand):
 
     async def _run(self) -> None:
         self.profile.accounts.remove_known_account(self.account_name)
+
+
+@dataclass(kw_only=True)
+class EnableKnownAccounts(WorldBasedCommand):
+    async def _run(self) -> None:
+        self.profile.enable_known_accounts()
+
+
+@dataclass(kw_only=True)
+class DisableKnownAccounts(WorldBasedCommand):
+    async def _run(self) -> None:
+        self.profile.disable_known_accounts()

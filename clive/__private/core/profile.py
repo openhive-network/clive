@@ -64,6 +64,8 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        *,
+        should_enable_known_accounts: bool = True,
     ) -> None:
         self._assert_no_direct_initialization(init_key)
 
@@ -84,6 +86,7 @@ class Profile:
 
         self._skip_save = False
         self._hash_of_stored_profile: int | None = None
+        self._should_enable_known_accounts = should_enable_known_accounts
 
     def __hash__(self) -> int:
         return hash(RuntimeToStorageConverter(self).create_storage_model())
@@ -173,6 +176,16 @@ class Profile:
     def copy(self) -> Self:
         return deepcopy(self)
 
+    def enable_known_accounts(self) -> None:
+        self._should_enable_known_accounts = True
+
+    def disable_known_accounts(self) -> None:
+        self._should_enable_known_accounts = False
+
+    @property
+    def should_enable_known_accounts(self) -> bool:
+        return self._should_enable_known_accounts
+
     async def save(self, encryption_service: EncryptionService) -> None:
         """
         Save the current profile to the storage.
@@ -221,6 +234,8 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        *,
+        should_enable_known_accounts: bool = True,
     ) -> Profile:
         cls.validate_profile_name(name)
         return cls._create_instance(
@@ -233,6 +248,7 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
+            should_enable_known_accounts=should_enable_known_accounts,
         )
 
     @classmethod
@@ -285,6 +301,8 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        *,
+        should_enable_known_accounts: bool = True,
     ) -> Self:
         """Create new instance bypassing blocked direct initializer call."""
         return cls(
@@ -298,6 +316,7 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
+            should_enable_known_accounts=should_enable_known_accounts,
         )
 
     def _update_hash_of_stored_profile(self, new_hash: int | None = None) -> None:
