@@ -64,6 +64,7 @@ class ProfileStorageModel(CliveBaseModel):
     transaction: TransactionStorageModel | None = None
     chain_id: str | None = None
     node_address: str
+    known_accounts_enabled: bool = True
 
 
 class AlarmStorageModelSchema(AlarmStorageModel):

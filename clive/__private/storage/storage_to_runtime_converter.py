@@ -40,6 +40,7 @@ class StorageToRuntimeConverter:
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
             is_newly_created=False,
+            enable_known_accounts=self._model.known_accounts_enabled,
         )
 
     def _working_account_from_profile_storage_model(self) -> WorkingAccount | None:

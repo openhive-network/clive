@@ -33,6 +33,7 @@ class RuntimeToStorageConverter:
             transaction=self._transaction_to_model(),
             chain_id=self._profile.chain_id,
             node_address=str(self._profile.node_address),
+            known_accounts_enabled=self._profile.is_known_accounts_enabled,
         )
 
     def _working_account_to_model_representation(self) -> str | None:

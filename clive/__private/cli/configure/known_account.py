@@ -20,7 +20,7 @@ async def add_known_account(
     account_name: Optional[str] = _account_name_add_argument,
     account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
-    """Add an account to the known accounts."""
+    """Add an account to the list of known accounts."""
     from clive.__private.cli.commands.configure.known_account import AddKnownAccount
 
     common = WorldOptionsGroup.get_instance()
@@ -40,10 +40,38 @@ async def remove_known_account(
     account_name: Optional[str] = _account_name_remove_argument,
     account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
-    """Remove an account from the known accounts."""
+    """Remove an account from the list of known accounts."""
     from clive.__private.cli.commands.configure.known_account import RemoveKnownAccount
 
     common = WorldOptionsGroup.get_instance()
     await RemoveKnownAccount(
         **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
+
+
+@known_account.command(name="enable", param_groups=[WorldOptionsGroup])
+async def enable_known_accounts(
+    ctx: typer.Context,  # noqa: ARG001
+) -> None:
+    """
+    CLI - If you want to broadcast an operation, you must first add the target account to the list of known accounts.
+    TUI - The target account is added to the list of known accounts automatically after broadcasting the transaction.
+    """  # noqa: D205
+    from clive.__private.cli.commands.configure.known_account import EnableKnownAccounts
+
+    common = WorldOptionsGroup.get_instance()
+    await EnableKnownAccounts(**common.as_dict()).run()
+
+
+@known_account.command(name="disable", param_groups=[WorldOptionsGroup])
+async def disable_know_accounts(
+    ctx: typer.Context,  # noqa: ARG001
+) -> None:
+    """
+    CLI - The target account is not checked if it is on the list of known accounts.
+    TUI - The target account is not added to the list of known accounts automatically after broadcasting the transaction.
+    """  # noqa: D205, E501
+    from clive.__private.cli.commands.configure.known_account import DisableKnownAccounts
+
+    common = WorldOptionsGroup.get_instance()
+    await DisableKnownAccounts(**common.as_dict()).run()

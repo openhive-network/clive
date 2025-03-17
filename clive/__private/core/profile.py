@@ -65,6 +65,7 @@ class Profile:
         node_address: str | HttpUrl | None = None,
         *,
         is_newly_created: bool = True,
+        enable_known_accounts: bool = True,
     ) -> None:
         self._assert_no_direct_initialization(init_key)
 
@@ -85,6 +86,7 @@ class Profile:
 
         self._skip_save = False
         self._is_newly_created = is_newly_created
+        self._known_accounts_enabled = enable_known_accounts
 
     @property
     def is_newly_created(self) -> bool:
@@ -164,6 +166,16 @@ class Profile:
 
     def copy(self) -> Self:
         return deepcopy(self)
+
+    def enable_known_accounts(self) -> None:
+        self._known_accounts_enabled = True
+
+    def disable_known_accounts(self) -> None:
+        self._known_accounts_enabled = False
+
+    @property
+    def is_known_accounts_enabled(self) -> bool:
+        return self._known_accounts_enabled
 
     async def save(self, encryption_service: EncryptionService) -> None:
         """
@@ -281,6 +293,7 @@ class Profile:
         node_address: str | HttpUrl | None = None,
         *,
         is_newly_created: bool = True,
+        enable_known_accounts: bool = True,
     ) -> Self:
         """Create new instance bypassing blocked direct initializer call."""
         return cls(
@@ -295,6 +308,7 @@ class Profile:
             chain_id,
             node_address,
             is_newly_created=is_newly_created,
+            enable_known_accounts=enable_known_accounts,
         )
 
     def _get_initial_node_address(self, given_node_address: str | HttpUrl | None = None) -> HttpUrl:
