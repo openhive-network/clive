@@ -21,4 +21,4 @@ class Lock(Command):
     async def _execute(self) -> None:
         await self.session.lock_all()
         if self.app_state:
-            self.app_state.lock()
+            await self.app_state.lock()

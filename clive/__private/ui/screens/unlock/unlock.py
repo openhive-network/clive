@@ -108,32 +108,33 @@ class Unlock(BaseScreen):
     @on(Button.Pressed, "#unlock-button")
     @on(CliveInput.Submitted)
     async def unlock(self) -> None:
-        password_input = self.query_exactly_one(PasswordInput)
-        select_profile = self.query_exactly_one(SelectProfile)
-        lock_after_time = self.query_exactly_one(LockAfterTime)
+        async def impl() -> None:
+            password_input = self.query_exactly_one(PasswordInput)
+            select_profile = self.query_exactly_one(SelectProfile)
+            lock_after_time = self.query_exactly_one(LockAfterTime)
 
-        if not password_input.validate_passed() or not lock_after_time.is_valid:
-            return
+            if not password_input.validate_passed() or not lock_after_time.is_valid:
+                return
 
-        try:
-            await self.world.load_profile(
-                profile_name=select_profile.value_ensure,
-                password=password_input.value_or_error,
-                permanent=lock_after_time.should_stay_unlocked,
-                time=lock_after_time.lock_duration,
-            )
-        except InvalidPasswordError:
-            logger.error(
-                f"Profile `{select_profile.value_ensure}` was not unlocked "
-                "because entered password is invalid, skipping switching modes"
-            )
-            return
+            try:
+                await self.world.load_profile(
+                    profile_name=select_profile.value_ensure,
+                    password=password_input.value_or_error,
+                    permanent=lock_after_time.should_stay_unlocked,
+                    time=lock_after_time.lock_duration,
+                )
+            except InvalidPasswordError:
+                logger.error(
+                    f"Profile `{select_profile.value_ensure}` was not unlocked "
+                    "because entered password is invalid, skipping switching modes"
+                )
+                return
 
-        await self.app.switch_mode("dashboard")
-        self._remove_welcome_modes()
-        self.app.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
-        self.app.resume_refresh_node_data_interval()
-        self.app.resume_refresh_alarms_data_interval()
+            await self.app._switch_mode_into_unlocked()
+
+        # Has to be done in a separate task to avoid deadlock.
+        # More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(impl())
 
     @on(Button.Pressed, "#new-profile-button")
     async def create_new_profile(self) -> None:
@@ -146,7 +147,3 @@ class Unlock(BaseScreen):
     @on(SelectProfile.Changed)
     def clear_password_input(self) -> None:
         self.query_exactly_one(PasswordInput).clear_validation()
-
-    def _remove_welcome_modes(self) -> None:
-        self.app.remove_mode("unlock")
-        self.app.remove_mode("create_profile")

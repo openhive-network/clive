@@ -59,6 +59,6 @@ class SyncStateWithBeekeeper(Command):
         if user_wallet and encryption_wallet:
             await self.app_state.unlock(WalletContainer(user_wallet, encryption_wallet))
         elif not user_wallet and not encryption_wallet:
-            self.app_state.lock(self.source)
+            await self.app_state.lock(self.source)
         else:
             raise InvalidWalletStateError(self)

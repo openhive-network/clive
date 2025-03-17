@@ -329,8 +329,8 @@ class Dashboard(BaseScreen):
         self.app.push_screen(AddTrackedAccountDialog())
 
     async def action_switch_mode_into_locked(self) -> None:
-        await self.app.world.commands.save_profile()
-        await self.app.world.commands.lock()
+        with self.app._screen_remove_guard.suppress(), self.app._screen_remove_guard.guard():
+            await self.app.switch_mode_into_locked()
 
     @property
     def has_working_account(self) -> bool:

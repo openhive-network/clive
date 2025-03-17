@@ -26,20 +26,22 @@ class CreateProfileForm(Form):
     async def exit_form(self) -> None:
         # when this form is displayed during onboarding, there is no previous screen to go back to
         # so this method won't be called
-        await self.app.switch_mode("unlock")
-        self.app.remove_mode("create_profile")
+
+        async def impl() -> None:
+            await self.app.switch_mode("unlock")
+            await self.app.remove_mode("create_profile")
+
+        # Has to be done in a separate task to avoid deadlock.
+        # More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(impl())
 
     async def finish_form(self) -> None:
-        async def handle_modes() -> None:
-            await self.app.switch_mode("dashboard")
-            self.app.remove_mode("create_profile")
-            self.app.remove_mode("unlock")
+        async def impl() -> None:
+            await self.execute_post_actions()
+            self.profile.enable_saving()
+            await self.commands.save_profile()
+            await self.app._switch_mode_into_unlocked()
 
-        self.add_post_action(
-            lambda: self.app.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True),
-            self.app.resume_refresh_alarms_data_interval,
-        )
-        await self.execute_post_actions()
-        await handle_modes()
-        self.profile.enable_saving()
-        await self.commands.save_profile()
+        # Has to be done in a separate task to avoid deadlock.
+        # More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(impl())

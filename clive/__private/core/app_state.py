@@ -34,16 +34,16 @@ class AppState:
         self._is_unlocked = True
         if wallets:
             await self.world.beekeeper_manager.set_wallets(wallets)
-        self.world.on_going_into_unlocked_mode()
+        await self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 
-    def lock(self, source: LockSource = "unknown") -> None:
+    async def lock(self, source: LockSource = "unknown") -> None:
         if not self._is_unlocked:
             return
 
         self._is_unlocked = False
         self.world.beekeeper_manager.clear_wallets()
-        self.world.on_going_into_locked_mode(source)
+        await self.world.on_going_into_locked_mode(source)
         logger.info("Mode switched to LOCKED.")
 
     def __hash__(self) -> int:

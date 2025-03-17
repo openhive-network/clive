@@ -36,4 +36,7 @@ class TUIErrorHandler(ErrorHandlerContextManager[Exception]):
         return ResultNotAvailable(error)
 
     def _switch_to_locked_mode(self) -> None:
-        self._app.world.app_state.lock()
+        async def impl() -> None:
+            await self._app.switch_mode_into_locked(save_profile=False)
+
+        self._app.run_worker_with_screen_remove_guard(impl())

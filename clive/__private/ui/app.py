@@ -1,20 +1,22 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Awaitable, TypeVar, cast
 
 from beekeepy.exceptions import CommunicationError
 from textual import on, work
 from textual._context import active_app
-from textual.app import App
+from textual.app import App, UnknownModeError
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 from textual.worker import WorkerCancelled
 
+from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
 from clive.__private.core.profile import Profile
@@ -37,6 +39,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultType
     from textual.worker import Worker
 
+    from clive.__private.core.app_state import LockSource
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
@@ -84,6 +87,16 @@ class Clive(App[int]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._world: TUIWorld | None = None
+
+        self._screen_remove_guard = AsyncGuard()
+        """
+        Due to https://github.com/Textualize/textual/issues/5008.
+
+        Any action that involves removing a screen like remove_mode/switch_screen/pop_screen
+        cannot be awaited in the @on handler like Button.Pressed because it will deadlock the app.
+        Workaround is to not await mentioned action or run it in a separate task if something later needs to await it.
+        This workaround can create race conditions, so we need to guard against it.
+        """
 
     @property
     def world(self) -> TUIWorld:
@@ -293,6 +306,27 @@ class Clive(App[int]):
         if self.world._beekeeper_manager:
             await self.world.commands.sync_state_with_beekeeper("beekeeper_wallet_lock_status_update_worker")
 
+    async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
+        if save_profile:
+            await self.world.commands.save_profile()
+        await self.world.commands.lock()
+
+    def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
+        """Run work in a worker with a guard. It means that the work will be executed only if the guard is available."""
+
+        async def work_with_release() -> None:
+            try:
+                await awaitable
+            finally:
+                guard.release()
+
+        with guard.suppress():
+            guard.acquire()
+            self.run_worker(work_with_release())
+
+    def run_worker_with_screen_remove_guard(self, awaitable: Awaitable[None]) -> None:
+        self.run_worker_with_guard(awaitable, self._screen_remove_guard)
+
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
@@ -335,3 +369,36 @@ class Clive(App[int]):
     def _retrigger_update_alarms_data(self) -> None:
         if self.is_worker_group_empty("alarms_data"):
             self.update_alarms_data()
+
+    async def _switch_mode_into_locked(self, source: LockSource) -> None:
+        async def restart_dashboard_mode() -> None:
+            await self.remove_mode("dashboard")
+            self.add_mode("dashboard", Dashboard)
+
+        def add_welcome_modes() -> None:
+            self.add_mode("create_profile", CreateProfileForm)
+            self.add_mode("unlock", Unlock)
+
+        if source == "beekeeper_wallet_lock_status_update_worker":
+            self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
+
+        self.pause_refresh_node_data_interval()
+        self.pause_refresh_alarms_data_interval()
+        self.world.node.cached.clear()
+        add_welcome_modes()
+        await self.switch_mode("unlock")
+        await restart_dashboard_mode()
+        await self.world.switch_profile(None)
+
+    async def _switch_mode_into_unlocked(self) -> None:
+        async def remove_welcome_modes() -> None:
+            with contextlib.suppress(UnknownModeError):
+                await self.remove_mode("create_profile")
+            with contextlib.suppress(UnknownModeError):
+                await self.remove_mode("unlock")
+
+        await self.switch_mode("dashboard")
+        await remove_welcome_modes()
+        self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
+        self.resume_refresh_node_data_interval()
+        self.resume_refresh_alarms_data_interval()

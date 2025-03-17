@@ -16,9 +16,6 @@ from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.ui.clive_dom_node import CliveDOMNode
-from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
-from clive.__private.ui.screens.dashboard import Dashboard
-from clive.__private.ui.screens.unlock import Unlock
 from clive.exceptions import ProfileNotLoadedError
 
 if TYPE_CHECKING:
@@ -116,7 +113,7 @@ class World:
                 self._node.teardown()
             self._beekeeper_manager.teardown()
 
-            self.app_state.lock()
+            await self.app_state.lock()
 
             self._profile = None
             self._node = None
@@ -173,22 +170,22 @@ class World:
         self._profile = new_profile
         await self._update_node()
 
-    def on_going_into_locked_mode(self, source: LockSource) -> None:
+    async def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
         if self._is_during_setup or self._is_during_closure:
             return
-        self._on_going_into_locked_mode(source)
+        await self._on_going_into_locked_mode(source)
 
-    def on_going_into_unlocked_mode(self) -> None:
+    async def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
         if self._is_during_setup or self._is_during_closure:
             return
-        self._on_going_into_unlocked_mode()
+        await self._on_going_into_unlocked_mode()
 
-    def _on_going_into_locked_mode(self, _: LockSource) -> None:
+    async def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
 
-    def _on_going_into_unlocked_mode(self) -> None:
+    async def _on_going_into_unlocked_mode(self) -> None:
         """Override this method to hook when clive goes into the unlocked mode."""
 
     @asynccontextmanager
@@ -270,31 +267,11 @@ class TUIWorld(World, CliveDOMNode):
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
 
-    def _on_going_into_locked_mode(self, source: LockSource) -> None:
-        if source == "beekeeper_wallet_lock_status_update_worker":
-            self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
-        self.app.pause_refresh_node_data_interval()
-        self.app.pause_refresh_alarms_data_interval()
-        self.node.cached.clear()
-
-        async def lock() -> None:
-            self._add_welcome_modes()
-            await self.app.switch_mode("unlock")
-            await self._restart_dashboard_mode()
-            await self.switch_profile(None)
-
-        self.app.run_worker(lock())
+    async def _on_going_into_locked_mode(self, source: LockSource) -> None:
+        await self.app._switch_mode_into_locked(source)
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
-
-    def _add_welcome_modes(self) -> None:
-        self.app.add_mode("create_profile", CreateProfileForm)
-        self.app.add_mode("unlock", Unlock)
-
-    async def _restart_dashboard_mode(self) -> None:
-        await self.app.remove_mode("dashboard")
-        self.app.add_mode("dashboard", Dashboard)
 
     def _update_profile_related_reactive_attributes(self) -> None:
         # There's no proper way to add some proxy reactive property on textual reactives that could raise error if

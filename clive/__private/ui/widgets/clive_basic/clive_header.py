@@ -203,8 +203,9 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def lock_wallet(self) -> None:
-        await self.commands.save_profile()
-        await self.commands.lock()
+        # Has to be done in a separate task to avoid deadlock.
+        # More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker_with_screen_remove_guard(self.app.switch_mode_into_locked())
 
     def _wallet_to_locked_changed(self) -> None:
         self.post_message(self.WalletLocked())
