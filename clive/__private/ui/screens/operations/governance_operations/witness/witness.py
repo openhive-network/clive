@@ -270,11 +270,11 @@ class Witnesses(GovernanceTabPane):
 
     def compose(self) -> ComposeResult:
         self._witness_table = WitnessesTable()
+        yield WitnessManualSearch()
 
         with ScrollablePart(), Horizontal(id="witnesses-content"):
             yield self._witness_table
             yield WitnessesActions()
-        yield WitnessManualSearch()
 
     @on(WitnessManualSearch.Search)
     async def search_witnesses(self, message: WitnessManualSearch.Search) -> None:
