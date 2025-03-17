@@ -33,7 +33,7 @@ source = [
 python = "^3.10"
 dynaconf = "3.1.11"
 loguru = "0.7.2"
-textual = { git = "https://github.com/Textualize/textual", rev = "d9f7ffdad56bda27048a8bb7b70627dd90cc4c8e" }
+textual = "3.0.0"
 aiohttp = "3.9.1"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"

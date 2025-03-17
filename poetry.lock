@@ -1363,27 +1363,23 @@ url = "hive/tests/python/hive-local-tools/test-tools"
 
 [[package]]
 name = "textual"
-version = "2.1.2"
+version = "3.0.0"
 description = "Modern Text User Interface framework"
 optional = false
-python-versions = "^3.8.1"
-files = []
-develop = false
+python-versions = "<4.0.0,>=3.8.1"
+files = [
+    {file = "textual-3.0.0-py3-none-any.whl", hash = "sha256:21ffa46cff719338e6f34510d9249d76279af32598e311a1505285c436f35ab6"},
+    {file = "textual-3.0.0.tar.gz", hash = "sha256:0bf9f8523541340d5357724d60868db652fb287ac7b13e6cf4553d45a6d9a9d5"},
+]
 
 [package.dependencies]
 markdown-it-py = {version = ">=2.1.0", extras = ["linkify", "plugins"]}
 platformdirs = ">=3.6.0,<5"
 rich = ">=13.3.3"
-typing-extensions = "^4.4.0"
+typing-extensions = ">=4.4.0,<5.0.0"
 
 [package.extras]
 syntax = ["tree-sitter (>=0.23.0)", "tree-sitter-bash (>=0.23.0)", "tree-sitter-css (>=0.23.0)", "tree-sitter-go (>=0.23.0)", "tree-sitter-html (>=0.23.0)", "tree-sitter-java (>=0.23.0)", "tree-sitter-javascript (>=0.23.0)", "tree-sitter-json (>=0.24.0)", "tree-sitter-markdown (>=0.3.0)", "tree-sitter-python (>=0.23.0)", "tree-sitter-regex (>=0.24.0)", "tree-sitter-rust (>=0.23.0)", "tree-sitter-sql (>=0.3.0,<0.3.8)", "tree-sitter-toml (>=0.6.0)", "tree-sitter-xml (>=0.7.0)", "tree-sitter-yaml (>=0.6.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/Textualize/textual"
-reference = "d9f7ffdad56bda27048a8bb7b70627dd90cc4c8e"
-resolved_reference = "d9f7ffdad56bda27048a8bb7b70627dd90cc4c8e"
 
 [[package]]
 name = "textual-dev"
@@ -1654,4 +1650,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1a08148da8f2092e32b1b48bb27824bc67c52245238e28cb6d95a23405746455"
+content-hash = "7e933f9b85c87e0cda7693ac7b1b2642c26ff48760d3cbccc1ff1930bb310885"
