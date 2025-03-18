@@ -72,7 +72,7 @@ class World:
     @property
     def profile(self) -> Profile:
         if self._profile is None:
-            raise ProfileNotLoadedError
+            raise ProfileNotLoadedError("World profile cannot be accessed before it is loaded.")
         return self._profile
 
     @property
@@ -83,7 +83,9 @@ class World:
     def node(self) -> Node:
         """Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors."""
         if self._node is None:
-            raise ProfileNotLoadedError
+            raise ProfileNotLoadedError(
+                "World node cannot be accessed before profile is loaded as it is profile dependent."
+            )
         return self._node
 
     @property
