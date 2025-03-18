@@ -153,9 +153,6 @@ class TransactionSummary(BaseScreen):
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "app.load_transaction_from_file", "Open transaction file"),
-        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
-        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
-        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
     ]
     BIG_TITLE = "transaction summary"
 
