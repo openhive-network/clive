@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from clive.__private.core.wallet_container import WalletContainer
     from clive.__private.core.world import World
 
-LockSource = Literal["beekeeper_monitoring_thread", "unknown"]
+LockSource = Literal["beekeeper_wallet_lock_status_update_worker", "unknown"]
 
 
 @dataclass

@@ -271,7 +271,7 @@ class TUIWorld(World, CliveDOMNode):
         self.node.change_related_profile(profile)
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
-        if source == "beekeeper_monitoring_thread":
+        if source == "beekeeper_wallet_lock_status_update_worker":
             self.app.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
         self.app.pause_refresh_node_data_interval()
         self.app.pause_refresh_alarms_data_interval()
