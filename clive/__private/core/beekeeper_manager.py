@@ -56,6 +56,11 @@ class BeekeeperManager:
 
     @property
     def beekeeper(self) -> AsyncBeekeeper:
+        """
+        Beekeeper shouldn't be used for API calls in CLI/TUI. Instead, use commands which also handle errors.
+
+        Same applies for other beekeepy objects like session or wallet.
+        """
         message = "Beekeeper is not available. Did you forget to use as a context manager or call `setup`?"
         assert self._beekeeper is not None, message
         return self._beekeeper

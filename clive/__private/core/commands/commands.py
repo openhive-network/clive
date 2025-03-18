@@ -226,7 +226,7 @@ class Commands(Generic[WorldT_co]):
     async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
         return await self.__surround_with_exception_handlers(
             IsPasswordValid(
-                beekeeper=self._world.beekeeper,
+                beekeeper=self._world.beekeeper_manager.beekeeper,
                 wallet_name=self._world.profile.name,
                 password=password,
             )

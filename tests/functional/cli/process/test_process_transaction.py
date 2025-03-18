@@ -126,7 +126,7 @@ async def test_negative_process_transaction_in_locked(
         broadcast=False,
         save_file=trx_file(tmp_path),
     )
-    beekeeper = cli_tester.world.beekeeper
+    beekeeper = cli_tester.world.beekeeper_manager.beekeeper
     await (await beekeeper.session).lock_all()
     cli_tester.world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
 

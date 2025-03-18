@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from types import TracebackType
 
-    from beekeepy import AsyncBeekeeper
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
@@ -99,15 +98,6 @@ class World:
     @property
     def beekeeper_manager(self) -> BeekeeperManager:
         return self._beekeeper_manager
-
-    @property
-    def beekeeper(self) -> AsyncBeekeeper:
-        """
-        Beekeeper shouldn't be used for API calls in CLI/TUI. Instead, use commands which also handle errors.
-
-        Same applies for other beekeepy objects like session or wallet.
-        """
-        return self._beekeeper_manager.beekeeper
 
     @property
     def _should_save_profile_on_close(self) -> bool:

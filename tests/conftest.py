@@ -163,7 +163,7 @@ async def init_node_extra_apis(
 
 @pytest.fixture
 def beekeeper(world: World) -> AsyncBeekeeper:
-    return world.beekeeper
+    return world.beekeeper_manager.beekeeper
 
 
 @pytest.fixture

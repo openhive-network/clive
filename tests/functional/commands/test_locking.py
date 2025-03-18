@@ -12,6 +12,8 @@ from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
+    from beekeepy import AsyncBeekeeper
+
     import clive
     from clive.__private.core.profile import Profile
 
@@ -46,6 +48,7 @@ async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_w
 async def test_unlock_recovers_missing_wallet(
     world: clive.World,
     prepare_profile_with_wallet: Profile,
+    beekeeper: AsyncBeekeeper,
     wallet_password: str,
     wallet_type: Literal["user_wallet", "encryption_wallet"],
 ) -> None:
@@ -55,7 +58,7 @@ async def test_unlock_recovers_missing_wallet(
     encryption_wallet = (await world.commands.get_unlocked_encryption_wallet()).result_or_raise
     encryption_keys_before = await encryption_wallet.public_keys
 
-    beekeeper_working_directory = world.beekeeper.settings.working_directory
+    beekeeper_working_directory = beekeeper.settings.working_directory
     assert beekeeper_working_directory is not None, "Beekeeper working directory should be set"
 
     wallet_filenames = {
