@@ -298,8 +298,14 @@ class Clive(App[int]):
         logger.debug(f"Currently focused: {self.focused}")
         logger.debug(f"Screen stack: {self.screen_stack}")
 
-        response = await self.world.node.api.database.get_dynamic_global_properties()
-        logger.debug(f"Current block: {response.head_block_number}")
+        if self.world.is_profile_available:
+            cached_dgpo = self.world.node.cached.dynamic_global_properties_or_none
+            message = (
+                f"Currently cached head block number: {cached_dgpo.head_block_number}"
+                if cached_dgpo
+                else "Node cache seems to be empty, no head block number available."
+            )
+            logger.debug(message)
 
         logger.debug("=================================================")
 
