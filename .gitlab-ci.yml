@@ -213,7 +213,6 @@ deploy_wheel_to_pypi:
   extends: .docker_image_builder_job_template
   stage: build_and_deploy_docker
   needs:
-    - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
     - job: deploy_wheel_to_gitlab
@@ -306,7 +305,6 @@ build_and_publish_tagged_image:
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
   needs:
-    - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
     - job: deploy_wheel_to_gitlab
