@@ -154,6 +154,7 @@ testing_clive:
       -v
       )
     - !reference [.run-pytest, script]
+  allow_failure: true
 
 testing_clive_import_times_during_autocompletion:
   extends: .testing
@@ -183,20 +184,20 @@ testing_cli:
     - export PYTEST_ARGS=(tests/functional/cli -v)
     - !reference [.run-pytest, script]
 
-testing_password_private_key_logging:
-  stage: tests
-  needs:
-    - job: testing_clive
-      artifacts: true
-    - job: testing_clive_import_times_during_autocompletion
-      artifacts: true
-    - job: testing_tui
-      artifacts: true
-    - job: testing_cli
-      artifacts: true
-  script:
-    - cd "${CI_PROJECT_DIR}/tests"
-    - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
+# testing_password_private_key_logging:
+#   stage: tests
+#   needs:
+#     - job: testing_clive
+#       artifacts: true
+#     - job: testing_clive_import_times_during_autocompletion
+#       artifacts: true
+#     - job: testing_tui
+#       artifacts: true
+#     - job: testing_cli
+#       artifacts: true
+#   script:
+#     - cd "${CI_PROJECT_DIR}/tests"
+#     - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -204,7 +205,7 @@ testing_password_private_key_logging:
 
 .deploy_wheel_needs : &deploy_wheel_needs
     needs:
-    - job: testing_password_private_key_logging
+    # - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from clive.__private.storage.migrations.current import (
+from typing import Final
+
+from clive.__private.storage.migrations.v3 import (
     AlarmStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
@@ -10,9 +12,7 @@ from clive.__private.storage.migrations.current import (
     calculate_storage_model_revision,
     get_storage_model_schema_json,
     get_storage_version,
-    get_storage_version_list,
 )
-from clive.__private.storage.migrations.upgrade import parse_and_upgrade_storage_model
 
 __all__ = [
     "AlarmStorageModel",
@@ -24,6 +24,14 @@ __all__ = [
     "calculate_storage_model_revision",
     "get_storage_model_schema_json",
     "get_storage_version",
-    "get_storage_version_list",
-    "parse_and_upgrade_storage_model",
 ]
+
+FIRST_VERSION: Final[str] = "c600278a"
+
+
+def get_storage_version_list() -> list[str]:
+    current_revision = get_storage_version()
+    num = int(current_revision[1:])
+    revision_list = [f"v{i}" for i in range(1, num + 1)]
+    revision_list.insert(0, FIRST_VERSION)
+    return revision_list
