@@ -192,7 +192,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.profile.transaction.unsign()
             self._send_cleared_signatures_notification()
         self.profile.transaction_file_path = None
-        self._add_account_to_known_after_action()
+        if self.profile.is_known_accounts_enabled:
+            self._add_account_to_known_after_action()
         self._clear_inputs()
         self._actions_after_clearing_inputs()
 
