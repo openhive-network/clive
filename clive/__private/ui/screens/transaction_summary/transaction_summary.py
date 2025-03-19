@@ -309,6 +309,7 @@ class TransactionSummary(BaseScreen):
 
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
         self.profile.transaction.reset()
+        self.profile.transaction_file_path = None
         self.app.trigger_profile_watchers()
         self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
