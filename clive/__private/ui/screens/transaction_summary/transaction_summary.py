@@ -304,6 +304,9 @@ class TransactionSummary(BaseScreen):
             broadcast=True,
         )
         if wrapper.error_occurred:
+            # recompose key container in case fail of broadcast when transaction was already signed
+            if transaction.is_signed:
+                await self.key_container.recompose()
             self.notify("Transaction broadcast failed. Please try again.", severity="error")
             return
 
