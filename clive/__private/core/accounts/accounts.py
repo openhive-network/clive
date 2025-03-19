@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from schemas.clive.validate_schema_field import validate_schema_field
+from schemas.decoders import is_matching_model
 from clive.__private.models.schemas import AccountName
 from clive.exceptions import CliveError
 
@@ -70,7 +70,7 @@ class Account:
         InvalidAccountNameError: if the given account name is invalid.
         """
         try:
-            validate_schema_field(AccountName, name)
+            is_matching_model(name, AccountName)
         except Exception as error:
             raise InvalidAccountNameError(name) from error
 

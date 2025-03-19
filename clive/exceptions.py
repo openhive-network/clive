@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from typing import Final
-from schemas.clive.get_default_from_model import CliveError
 
+class CliveError(Exception):
+    """Base class for all clive exceptions."""
 
 class CliveDeveloperError(Exception):
     """Base class for all clive developer exceptions."""
