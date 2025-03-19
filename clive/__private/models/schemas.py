@@ -53,6 +53,7 @@ from schemas.apis.database_api.fundaments_of_reponses import (
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.transaction_status_api import FindTransaction
+from schemas.decoders import is_matching_model, validate_schema_field
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
@@ -246,6 +247,8 @@ __all__ = [  # noqa: RUF022
     "set_policies",
     # other
     "convert_to_representation",
+    "is_matching_model",
+    "validate_schema_field",
     "RepresentationBase",
     "Serializable",
 ]

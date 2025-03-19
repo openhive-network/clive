@@ -9,10 +9,9 @@ from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
-from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
+from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion, is_matching_model
 from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.service import PersistentStorageService
@@ -156,7 +155,7 @@ class Profile:
         Raises:
             InvalidChainIdError: If the format of the provided chain ID is wrong.
         """
-        if not is_schema_field_valid(ChainId, value):
+        if not is_matching_model(value, ChainId):
             raise InvalidChainIdError
 
         self._chain_id = value
