@@ -9,7 +9,7 @@ from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
-from clive.__private.core.validate_schema_field import is_schema_field_valid
+from schemas.decoders import is_matching_model
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
 from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
@@ -154,7 +154,7 @@ class Profile:
         ----
             value: Chain id to be set. If None, it will be fetched from the node api.
         """
-        if not is_schema_field_valid(ChainId, value):
+        if not is_matching_model(value, ChainId):
             raise InvalidChainIdError
 
         self._chain_id = value

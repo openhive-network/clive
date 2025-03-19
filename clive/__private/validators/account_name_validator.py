@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual.validation import Validator
 
-from clive.__private.core.validate_schema_field import is_schema_field_valid
+from schemas.decoders import is_matching_model
 from clive.__private.models.schemas import AccountName
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class AccountNameValidator(Validator):
         super().__init__()
 
     def validate(self, value: str) -> ValidationResult:
-        if is_schema_field_valid(AccountName, value):
+        if is_matching_model(value, AccountName):
             return self.success()
 
         return self.failure(self.INVALID_ACCOUNT_NAME_FAILURE_DESCRIPTION, value)
