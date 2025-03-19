@@ -1,8 +1,7 @@
 from __future__ import annotations
-
 from abc import ABC
 
-from clive.__private.models.base import CliveBaseModel
+from schemas.clive.base import CliveBaseModel
 from clive.__private.models.schemas import HiveDateTime  # noqa: TCH001
 
 
