@@ -8,7 +8,7 @@ import msgspec
 
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
 from clive.__private.core.date_utils import utc_epoch
-from clive.__private.models.base import CliveBaseModel
+from schemas.clive.base import CliveBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,

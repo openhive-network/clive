@@ -8,7 +8,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.base import CliveBaseModel
+from schemas.clive.base import CliveBaseModel
 from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 from schemas.fields.resolvables import AnyAsset

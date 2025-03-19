@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from clive.__private.core.validate_schema_field import validate_schema_field
+from schemas.clive.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import AccountName
 from clive.exceptions import CliveError
 

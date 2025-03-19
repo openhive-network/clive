@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from clive.__private.core.validate_schema_field import validate_schema_field
+from schemas.clive.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import TransactionId
 
 
