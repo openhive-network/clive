@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
 
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
-from clive.__private.models.asset import Asset
+from clive.__private.core.constants.node_special_assets import DELEGATION_REMOVE_ASSETS
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
@@ -82,7 +81,7 @@ async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> No
     operation = DelegateVestingSharesOperation(
         delegator=WORKING_ACCOUNT_DATA.account.name,
         delegatee=DELEGATEE_ACCOUNT.name,
-        vesting_shares=Asset.vests(VESTS_TO_REMOVE_DELEGATION),
+        vesting_shares=DELEGATION_REMOVE_ASSETS[1],
     )
 
     # ACT

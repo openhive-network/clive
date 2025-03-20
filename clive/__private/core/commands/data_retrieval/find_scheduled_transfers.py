@@ -8,7 +8,6 @@ from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSFER
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
@@ -36,9 +35,9 @@ AllowedFutureSorts = Literal[
 
 AllowedSorts = TypeVar("AllowedSorts", AllowedBaseSorts, AllowedFutureSorts)
 
-LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
-LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
-LACK_OF_FUNDS: Final[list[Asset.Hbd | Asset.Hive]] = [LACK_OF_FUNDS_HBD_AMOUNT, LACK_OF_FUNDS_HIVE_AMOUNT]
+ZERO_HBD_ASSET: Final[Asset.Hbd] = Asset.hbd(0)
+ZERO_HIVE_ASSET: Final[Asset.Hive] = Asset.hive(0)
+LACK_OF_FUNDS_ASSETS: Final[list[Asset.Hbd | Asset.Hive]] = [ZERO_HBD_ASSET, ZERO_HIVE_ASSET]
 
 
 class FindRecurrentTransferError(CommandError):
@@ -93,7 +92,7 @@ class FutureScheduledTransfer:
     trigger_date: datetime
 
     def is_lack_of_funds(self) -> bool:
-        return self.possible_amount in LACK_OF_FUNDS
+        return self.possible_amount in LACK_OF_FUNDS_ASSETS
 
 
 TypeOfTransfers = ScheduledTransfer | FutureScheduledTransfer
@@ -146,7 +145,7 @@ class AccountScheduledTransferData:
         )
 
     def calculate_possible_amount(self, balance: Asset.LiquidT, amount: Asset.LiquidT) -> Asset.LiquidT:
-        lack_of_funds: Asset.LiquidT = LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(amount) else LACK_OF_FUNDS_HBD_AMOUNT
+        lack_of_funds: Asset.LiquidT = ZERO_HIVE_ASSET if Asset.is_hive(amount) else ZERO_HBD_ASSET
         return balance - amount if balance > amount else lack_of_funds
 
     def get_next_upcoming_future_scheduled_transfers(self, next_upcoming: int) -> AccountFutureScheduledTransferData:
@@ -160,7 +159,7 @@ class AccountScheduledTransferData:
                     from_=st.from_,
                     memo=st.memo,
                     pair_id=st.pair_id,
-                    possible_amount=LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(st.amount) else LACK_OF_FUNDS_HBD_AMOUNT,
+                    possible_amount=ZERO_HIVE_ASSET.copy() if Asset.is_hive(st.amount) else ZERO_HBD_ASSET.copy(),
                     recurrence=st.recurrence,
                     remaining_executions=remains,
                     to=st.to,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
+from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.models import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
@@ -31,5 +31,5 @@ class CancelPowerDownDialog(OperationSummaryBaseDialog):
     def _create_operation(self) -> WithdrawVestingOperation:
         return WithdrawVestingOperation(
             account=self.profile.accounts.working.name,
-            vesting_shares=Asset.vests(VESTS_TO_REMOVE_POWER_DOWN),
+            vesting_shares=POWER_DOWN_REMOVE_ASSET.copy(),
         )

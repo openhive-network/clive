@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
-from clive.__private.models.asset import Asset
+from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.models.schemas import WithdrawVestingOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
@@ -103,7 +102,7 @@ async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester
     cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign=WORKING_ACCOUNT_KEY_ALIAS)
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
-        vesting_shares=Asset.vests(VESTS_TO_REMOVE_POWER_DOWN),
+        vesting_shares=POWER_DOWN_REMOVE_ASSET,
     )
 
     # ACT

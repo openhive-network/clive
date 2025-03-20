@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import (
@@ -16,10 +16,9 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.constants.node import (
     SCHEDULED_TRANSFER_MAX_LIFETIME,
     SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
-    VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
 )
+from clive.__private.core.constants.node_special_assets import SCHEDULED_TRANSFER_REMOVE_ASSETS
 from clive.__private.core.date_utils import timedelta_to_int_hours
-from clive.__private.models import Asset
 from clive.__private.models.schemas import (
     RecurrentTransferOperation,
     RecurrentTransferPairIdExtension,
@@ -31,11 +30,7 @@ if TYPE_CHECKING:
         AccountScheduledTransferData,
         ScheduledTransfer,
     )
-
-SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
-    Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
-    Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
-]
+    from clive.__private.models import Asset
 
 
 @dataclass(kw_only=True)
@@ -127,9 +122,9 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
         """
         Validate amount for create, and modify calls.
 
-        It should be different than values from SCHEDULED_TRANSFER_REMOVE_VALUES.
+        It should be different than values from SCHEDULED_TRANSFER_REMOVE_ASSETS.
         """
-        if self.amount in SCHEDULED_TRANSFER_REMOVE_VALUES:
+        if self.amount in SCHEDULED_TRANSFER_REMOVE_ASSETS:
             raise ProcessTransferScheduleInvalidAmountError
 
     def validate_existence_lifetime(self) -> None:
@@ -189,7 +184,7 @@ class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
-            amount=Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
+            amount=SCHEDULED_TRANSFER_REMOVE_ASSETS[0].copy(),
             memo=self.scheduled_transfer_ensure.memo,
             recurrence=self.scheduled_transfer_ensure.recurrence,
             # We can't rewrite the executions value.

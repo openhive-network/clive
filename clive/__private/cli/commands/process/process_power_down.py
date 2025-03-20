@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import PowerDownInProgressError
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
+from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.core.ensure_vests import ensure_vests_async
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
@@ -39,4 +39,4 @@ class ProcessPowerDownStart(ProcessPowerDown):
 
 @dataclass(kw_only=True)
 class ProcessPowerDownCancel(ProcessPowerDown):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: Asset.vests(VESTS_TO_REMOVE_POWER_DOWN))
+    amount: Asset.VotingT = field(init=False, default_factory=lambda: POWER_DOWN_REMOVE_ASSET.copy())
