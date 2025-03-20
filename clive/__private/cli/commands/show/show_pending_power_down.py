@@ -9,13 +9,13 @@ from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
     humanize_asset,
     humanize_datetime,
     humanize_hive_power,
 )
-from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.models import HpVestsBalance
@@ -30,7 +30,7 @@ class ShowPendingPowerDown(WorldBasedCommand):
         wrapper = await self.world.commands.retrieve_hp_data(account_name=self.account_name)
         hp_data = wrapper.result_or_raise
 
-        if hp_data.to_withdraw.vests_balance == Asset.vests(0):
+        if hp_data.to_withdraw.vests_balance == POWER_DOWN_REMOVE_ASSET:
             message = f"There is no pending power down operation for account `{self.account_name}`."
             console.print(colorize_content_not_available(message))
             return

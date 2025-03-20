@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import PowerDownInProgressError
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
+from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.core.ensure_vests import ensure_vests_async
-from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
+
+if TYPE_CHECKING:
+    from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)
@@ -33,10 +36,10 @@ class ProcessPowerDownStart(ProcessPowerDown):
     async def _validate_no_pending_power_down(self) -> None:
         wrapper = await self.world.commands.retrieve_hp_data(account_name=self.account_name)
         hp_data = wrapper.result_or_raise
-        if hp_data.to_withdraw.vests_balance != Asset.vests(0):
+        if hp_data.to_withdraw.vests_balance != POWER_DOWN_REMOVE_ASSET:
             raise PowerDownInProgressError
 
 
 @dataclass(kw_only=True)
 class ProcessPowerDownCancel(ProcessPowerDown):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: Asset.vests(VESTS_TO_REMOVE_POWER_DOWN))
+    amount: Asset.VotingT = field(init=False, default=POWER_DOWN_REMOVE_ASSET)
