@@ -6,6 +6,7 @@ from textual.binding import Binding
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.alarms.alarms import Alarms
+from clive.__private.ui.screens.account_details.authority import Authority
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetTabPane
@@ -34,5 +35,6 @@ class AccountDetails(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with CliveTabbedContent():
             yield Alarms(self._account)
+            yield Authority(self._account)
             yield NotImplementedYetTabPane(OPERATIONS_TAB_PANE_TITLE)
             yield NotImplementedYetTabPane(BALANCES_TAB_PANE_TITLE)
