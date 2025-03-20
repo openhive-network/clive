@@ -1,0 +1,142 @@
+Authority {
+  #filter-and-modify {
+    width: auto;
+    height: auto;
+
+    #button-container {
+      margin: 2 0 0 2;
+      width: 1fr;
+      height: auto;
+
+      #modify-button {
+        min-width: 1fr;
+      }
+    }
+
+    FilterAuthority {
+      border-title-style: bold;
+      border-title-color: $text;
+      border-title-background: $primary;
+      border: $primary outer;
+      padding-top: 1;
+      width: 10fr;
+      height: auto;
+
+      CliveButton {
+        width: 1fr;
+        min-width: 1fr;
+      }
+
+      ClearButton {
+        margin: 0 1;
+      }
+
+      AuthorityInput {
+        width: 6fr;
+      }
+
+      AccountFilterCollapsible {
+        border-title-background: $primary;
+        border-title-color: $text;
+        border-title-style: bold;
+        margin-right: 1;
+        width: 3fr;
+
+        Contents {
+          padding: 1 0 0 0;
+        }
+      }
+    }
+  }
+
+  AuthorityRoles {
+    margin-top: 1;
+
+    SectionBody {
+      padding: 1 1 0 1;
+    }
+
+    AccountCollapsible {
+      margin-bottom: 1;
+      border-top: none;
+      padding-bottom: 0;
+    }
+
+    AccountCollapsible.-collapsed {
+      padding-bottom: 0;
+    }
+
+    AuthorityType {
+      background-tint: $foreground 10%;
+      margin-bottom: 1;
+      border-top: none;
+      padding: 0 0 0 1;
+
+      Horizontal {
+        width: 1fr;
+        height: auto;
+
+        Container {
+          align-horizontal: right;
+          height: auto;
+
+          #threshold-and-weights {
+            align: right middle;
+            margin-right: 1;
+            width: auto;
+          }
+        }
+      }
+
+      &:focus-within {
+        background-tint: $foreground 20%;
+      }
+    }
+
+    AuthorityType.-collapsed {
+      padding-bottom: 0;
+      height: 1;
+    }
+
+    AuthorityTable {
+      margin-right: 1;
+
+      AuthorityHeader {
+        height: 1;
+
+        Static {
+          content-align: center middle;
+        }
+      }
+
+      AuthorityItem,
+      MemoItem {
+        content-align: center middle;
+
+        CliveCheckerBoardTableCell {
+          height: auto;
+
+          Static {
+            height: auto;
+          }
+        }
+      }
+
+      .key-or-account {
+        width: 12fr;
+      }
+
+      .memo-key {
+        width: 13fr;
+      }
+
+      .weight {
+        width: 1fr;
+      }
+
+      .action {
+        width: 2fr;
+      }
+    }
+  }
+}
