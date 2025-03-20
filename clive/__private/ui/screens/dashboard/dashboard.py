@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
-    from clive.__private.core.app_state import AppState
     from clive.__private.core.commands.data_retrieval.update_node_data import Manabar
     from clive.__private.core.profile import Profile
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
@@ -291,7 +290,6 @@ class Dashboard(BaseScreen):
 
     def on_mount(self) -> None:
         self.watch(self.world, "profile_reactive", self._update_account_containers)
-        self.watch(self.world, "app_state", self._update_mode)
 
     async def _update_account_containers(self, profile: Profile) -> None:
         if self.tracked_accounts == self._previous_tracked_accounts:
@@ -314,9 +312,6 @@ class Dashboard(BaseScreen):
             accounts_container = self.query_exactly_one(AccountsContainer)
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
-
-    def _update_mode(self, app_state: AppState) -> None:
-        self.is_unlocked = app_state.is_unlocked
 
     @CliveScreen.prevent_action_when_no_working_account()
     @CliveScreen.prevent_action_when_no_accounts_node_data()

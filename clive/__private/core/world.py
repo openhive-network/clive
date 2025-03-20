@@ -285,9 +285,6 @@ class TUIWorld(World, CliveDOMNode):
 
         self.app.run_worker(lock())
 
-    def _on_going_into_unlocked_mode(self) -> None:
-        self.app.trigger_app_state_watchers()
-
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
 
