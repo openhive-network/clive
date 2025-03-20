@@ -1,0 +1,115 @@
+Authority {
+  #filter-and-modify {
+    width: auto;
+    height: auto;
+
+    #button-container {
+      margin: 2 0 0 2;
+      height: auto;
+
+      #modify-button {
+        min-width: 1fr;
+      }
+    }
+
+    FilterAuthority {
+      border-title-style: bold;
+      border-title-color: $text;
+      border-title-background: $primary;
+      border: $primary outer;
+      padding-top: 1;
+      width: auto;
+      height: auto;
+
+      CliveButton {
+        width: 0.6fr;
+        min-width: 0.6fr;
+      }
+
+      CancelButton {
+        margin: 0 1;
+      }
+
+      AuthorityInput {
+        width: 4fr;
+      }
+
+      Collapsible {
+        margin-right: 1;
+        width: 2fr;
+
+        Contents {
+          padding: 1 0 0 0;
+        }
+      }
+    }
+  }
+
+  AuthorityRoles {
+    margin-top: 1;
+
+    SectionBody {
+      padding: 1 1 0 1;
+    }
+
+    AccountCollapsible {
+      margin-bottom: 1;
+      border-top: none;
+      padding-bottom: 0;
+    }
+
+    AccountCollapsible.-collapsed {
+      padding-bottom: 0;
+    }
+
+    AuthorityType {
+      margin-bottom: 1;
+      border-top: none;
+
+      Horizontal {
+        width: 1fr;
+        height: auto;
+      }
+
+      &:focus-within {
+        background-tint: $foreground 10%;
+      }
+    }
+
+    AuthorityType.-collapsed {
+      padding-bottom: 0;
+      height: 1;
+    }
+
+    AuthorityTable {
+      margin-right: 1;
+
+      AuthorityHeader {
+        height: 1;
+      }
+
+      AuthorityHeader,
+      AuthorityRow {
+        Static {
+          content-align: center middle;
+        }
+      }
+
+      .key-or-account {
+        width: 11fr;
+      }
+
+      .memo-key {
+        width: 13fr;
+      }
+
+      .weight {
+        width: 2fr;
+      }
+
+      .action {
+        width: 2fr;
+      }
+    }
+  }
+}
