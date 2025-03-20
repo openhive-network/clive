@@ -19,7 +19,6 @@ from clive_local_tools.testnet_block_log import (
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_NAME,
 )
-
 from schemas.fields.resolvables import JsonString
 
 if TYPE_CHECKING:

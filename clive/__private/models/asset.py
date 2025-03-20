@@ -8,9 +8,9 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from schemas.clive.base import CliveBaseModel
 from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
+from schemas.clive.base import CliveBaseModel
 from schemas.fields.resolvables import AnyAsset
 
 if TYPE_CHECKING:

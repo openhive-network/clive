@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Final
 
+
 class CliveError(Exception):
     """Base class for all clive exceptions."""
+
 
 class CliveDeveloperError(Exception):
     """Base class for all clive developer exceptions."""

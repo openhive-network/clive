@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from clive_local_tools.cli.exceptions import CLITestCommandError
 import pytest
 import test_tools as tt
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.models.schemas import CustomJsonOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
 )
+from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
-from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 
 if TYPE_CHECKING:
     from pathlib import Path

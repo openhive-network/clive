@@ -302,7 +302,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
 class SavingsAPR(APR):
     def _get_apr(self, content: SavingsData) -> str:
-        return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate), with_label=True)
+        return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate.value), with_label=True)
 
 
 class Savings(OperationBaseScreen):

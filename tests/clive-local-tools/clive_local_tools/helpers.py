@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from schemas.decoders import is_matching_model
 from clive.__private.models.schemas import TransactionId
+from schemas.decoders import is_matching_model
 
 
 def get_transaction_id_from_output(output: str) -> str:

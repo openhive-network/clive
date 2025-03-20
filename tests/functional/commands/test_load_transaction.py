@@ -8,7 +8,6 @@ from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.models import Asset, Transaction
 from clive.__private.models.schemas import TransferOperation
-from schemas.encoders import get_hf26_encoder
 from schemas.operations.representation_types import HF26RepresentationTransferOperation
 
 if TYPE_CHECKING:
