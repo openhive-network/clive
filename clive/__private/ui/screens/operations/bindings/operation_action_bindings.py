@@ -20,11 +20,11 @@ from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.buttons import AddToCartButton, FinalizeTransactionButton
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.asset_amount_base_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
     CliveValidatedInputError,
 )
+from clive.__private.ui.widgets.inputs.process_add_to_cart_input import ProcessAddToCartInput
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -121,7 +121,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     async def add_to_cart_by_button(self) -> None:
         await self._handle_add_to_cart_request()
 
-    @on(CliveInput.Submitted)
+    @on(ProcessAddToCartInput.Submitted)
     async def add_to_cart_with_event(self) -> None:
         await self._handle_add_to_cart_request()
 
