@@ -33,6 +33,7 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
 )
 from clive.__private.ui.widgets.buttons import ClearButton, SearchButton
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
@@ -146,6 +147,7 @@ class WitnessManualSearch(Grid):
             ],
             always_show_title=True,
             required=False,
+            process_add_to_cart=False,
         )
 
     def compose(self) -> ComposeResult:
@@ -155,6 +157,7 @@ class WitnessManualSearch(Grid):
         yield ClearButton()
 
     @on(SearchButton.Pressed)
+    @on(CliveInput.Submitted)
     def search_witnesses(self) -> None:
         if not CliveValidatedInput.validate_many(self._witness_input, self._limit_input):
             return
