@@ -38,6 +38,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
     from typing import Final
@@ -278,6 +279,8 @@ class Witnesses(GovernanceTabPane):
         with ScrollablePart(), Horizontal(id="witnesses-content"):
             yield self.__witness_table
             yield WitnessesActions()
+
+        yield TransactionButtons()
 
     def _create_operations(self) -> list[OperationUnion] | None:
         actual_number_of_votes = self.screen.query_exactly_one(WitnessesActions).actual_number_of_votes

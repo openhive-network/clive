@@ -32,6 +32,7 @@ from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 
 if TYPE_CHECKING:
     from typing import Final
@@ -263,6 +264,7 @@ class Proposals(GovernanceTabPane):
         with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__proposals_table
             yield ProposalsActions()
+        yield TransactionButtons()
 
     @on(ProposalsOrderChange.Search)
     async def change_order(self, message: ProposalsOrderChange.Search) -> None:
