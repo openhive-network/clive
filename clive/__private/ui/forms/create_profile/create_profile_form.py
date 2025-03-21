@@ -28,8 +28,7 @@ class CreateProfileForm(Form):
         # so this method won't be called
 
         async def impl() -> None:
-            await self.app.switch_mode("unlock")
-            await self.app.remove_mode("create_profile")
+            await self.app.switch_mode_with_reset("unlock")
 
         # Has to be done in a separate task to avoid deadlock.
         # More: https://github.com/Textualize/textual/issues/5008

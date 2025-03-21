@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
@@ -10,7 +9,8 @@ from typing import TYPE_CHECKING, Any, Awaitable, TypeVar, cast
 from beekeepy.exceptions import CommunicationError
 from textual import on, work
 from textual._context import active_app
-from textual.app import App, UnknownModeError
+from textual.app import App
+from textual.await_complete import AwaitComplete
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
+    from clive.__private.ui.types import CliveModes
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
@@ -102,6 +103,12 @@ class Clive(App[int]):
     def world(self) -> TUIWorld:
         assert self._world is not None, "World is not set yet."
         return self._world
+
+    @property
+    def current_mode(self) -> CliveModes:
+        mode = super().current_mode
+        assert mode in self.MODES, f"Mode {mode} is not in the list of modes"
+        return cast("CliveModes", mode)
 
     @staticmethod
     def app_instance() -> Clive:
@@ -306,6 +313,39 @@ class Clive(App[int]):
         if self.world._beekeeper_manager:
             await self.world.commands.sync_state_with_beekeeper("beekeeper_wallet_lock_status_update_worker")
 
+    def switch_mode_with_reset(self, new_mode: CliveModes) -> AwaitComplete:
+        """
+        Switch mode and reset all other active modes.
+
+        The `App.switch_mode` method from Textual keeps the previous mode in the stack.
+        This method allows to switch to a new mode and have only a new mode in the stack without keeping
+        any other screen stacks.
+
+        Args:
+        ----
+            new_mode: The mode to switch to.
+        """
+
+        async def impl() -> None:
+            logger.debug(f"Switching mode from: `{self.current_mode}` to: `{new_mode}`")
+            await self.switch_mode(new_mode)
+
+            modes_to_keep = (new_mode, "_default")
+            modes_to_reset = [mode for mode in self._screen_stacks if mode not in modes_to_keep]
+            assert all(mode in self.MODES for mode in modes_to_reset), "Unexpected mode in modes_to_reset"
+            await self.reset_mode(*cast("list[CliveModes]", modes_to_reset))
+
+        return AwaitComplete(impl()).call_next(self)
+
+    def reset_mode(self, *modes: CliveModes) -> AwaitComplete:
+        async def impl() -> None:
+            logger.debug(f"Resetting modes: {modes}")
+            for mode in modes:
+                await self.remove_mode(mode)
+                self.add_mode(mode, self.MODES[mode])
+
+        return AwaitComplete(impl()).call_next(self)
+
     async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
         if save_profile:
             await self.world.commands.save_profile()
@@ -371,34 +411,17 @@ class Clive(App[int]):
             self.update_alarms_data()
 
     async def _switch_mode_into_locked(self, source: LockSource) -> None:
-        async def restart_dashboard_mode() -> None:
-            await self.remove_mode("dashboard")
-            self.add_mode("dashboard", Dashboard)
-
-        def add_welcome_modes() -> None:
-            self.add_mode("create_profile", CreateProfileForm)
-            self.add_mode("unlock", Unlock)
-
         if source == "beekeeper_wallet_lock_status_update_worker":
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
         self.pause_refresh_node_data_interval()
         self.pause_refresh_alarms_data_interval()
         self.world.node.cached.clear()
-        add_welcome_modes()
-        await self.switch_mode("unlock")
-        await restart_dashboard_mode()
+        await self.switch_mode_with_reset("unlock")
         await self.world.switch_profile(None)
 
     async def _switch_mode_into_unlocked(self) -> None:
-        async def remove_welcome_modes() -> None:
-            with contextlib.suppress(UnknownModeError):
-                await self.remove_mode("create_profile")
-            with contextlib.suppress(UnknownModeError):
-                await self.remove_mode("unlock")
-
-        await self.switch_mode("dashboard")
-        await remove_welcome_modes()
+        await self.switch_mode_with_reset("dashboard")
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_refresh_node_data_interval()
         self.resume_refresh_alarms_data_interval()
