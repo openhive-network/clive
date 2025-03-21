@@ -197,7 +197,7 @@ class Clive(App[int]):
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
-            self.set_interval(debug_loop_period_secs, self.__debug_log)
+            self.set_interval(debug_loop_period_secs, self._debug_log)
 
         if Profile.is_any_profile_saved():
             self.switch_mode("unlock")
@@ -367,10 +367,12 @@ class Clive(App[int]):
     def run_worker_with_screen_remove_guard(self, awaitable: Awaitable[None]) -> None:
         self.run_worker_with_guard(awaitable, self._screen_remove_guard)
 
-    async def __debug_log(self) -> None:
+    async def _debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
+        logger.debug(f"Current mode: {self.current_mode}")
         logger.debug(f"Screen stack: {self.screen_stack}")
+        logger.debug(f"Screen stacks: {self._screen_stacks}")
 
         if self.world.is_profile_available:
             cached_dgpo = self.world.node.cached.dynamic_global_properties_or_none
