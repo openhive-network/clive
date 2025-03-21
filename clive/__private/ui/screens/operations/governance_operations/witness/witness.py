@@ -86,7 +86,7 @@ class WitnessNameLabel(Label, CliveWidget):
             new_tooltip_text = "Failed to retrieve witness information."
         else:
             witness = wrapper.result_or_raise
-            created = humanize_datetime(witness.created)
+            created = humanize_datetime(witness.created.value)
             missed_blocks = witness.total_missed
             last_block = witness.last_confirmed_block_num
             price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)

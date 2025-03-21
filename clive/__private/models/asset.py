@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, Callable, TypeAlias
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -52,14 +52,6 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel, frozen=True):
-    """Holds factory for asset."""
-
-    class Config:
-        frozen = True
-
-    asset_cls: type
-    asset_factory: AnyAsset
 
 
 class Asset:
@@ -227,3 +219,24 @@ class Asset:
     @staticmethod
     def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
         return isinstance(asset, Asset.Vests)
+
+
+class AssetFactoryHolderHive(CliveBaseModel, frozen=True):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetHive
+    asset_factory: Callable[[int | str | Decimal], AssetHive] = Asset.hive
+
+
+class AssetFactoryHolderHbd(CliveBaseModel, frozen=True):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetHbd
+    asset_factory: Callable[[int | str | Decimal], AssetHbd] = Asset.hbd
+
+
+class AssetFactoryHolderVests(CliveBaseModel, frozen=True):
+    """Holds factory for asset."""
+
+    asset_cls: type = AssetVests
+    asset_factory: Callable[[int | str | Decimal], AssetVests] = Asset.vests

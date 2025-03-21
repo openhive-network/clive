@@ -126,10 +126,10 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 proxy=info.core.proxy,
                 last_refresh=utc_now(),
                 last_history_entry=info.last_history_entry,
-                last_account_update=info.core.last_account_update,
-                pending_claimed_accounts=info.core.pending_claimed_accounts,
+                last_account_update=info.core.last_account_update.value,
+                pending_claimed_accounts=info.core.pending_claimed_accounts.value,
                 recovery_account=info.core.recovery_account,
-                governance_vote_expiration_ts=info.core.governance_vote_expiration_ts,
+                governance_vote_expiration_ts=info.core.governance_vote_expiration_ts.value,
                 vote_manabar=self.__update_manabar(
                     gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
                 ),
@@ -148,7 +148,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
             return utc_epoch()
-        return data.history[0][1].timestamp
+        return data.history[0][1].timestamp.value
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time
