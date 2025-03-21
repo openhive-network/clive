@@ -42,7 +42,7 @@ class AccountNamePatternInput(TextInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             validators=[
-                Length(minimum=1, maximum=AccountName.max_length),
+                Length(minimum=1, maximum=AccountName.__metadata__[0].max_length),
             ],
             validate_on=validate_on,
             valid_empty=valid_empty,

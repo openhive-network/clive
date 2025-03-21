@@ -26,6 +26,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         console = Console()
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
+        assert delayed_votes is not None, "Delayed votes are None"
 
         if len(delayed_votes) == 0:
             message = (
@@ -47,7 +48,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
             hp_humanized = humanize_hive_power(iwax.calculate_vests_to_hp(votes_vests, gdpo))
             vests_humanized = humanize_asset(votes_vests)
             hp_aligned, vests_aligned = align_to_dot(hp_humanized, vests_humanized, center_to=amount_title)
-            delayed_votes_table.add_row(humanize_datetime(entry.time + delayed_voting_interval), hp_aligned)
+            delayed_votes_table.add_row(humanize_datetime(entry.time.value + delayed_voting_interval), hp_aligned)
             delayed_votes_table.add_row("", vests_aligned, end_section=True)
 
         console.print(delayed_votes_table)

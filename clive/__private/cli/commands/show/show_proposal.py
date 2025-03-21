@@ -17,7 +17,7 @@ class ShowProposal(WorldBasedCommand):
         proposal = wrapper.result_or_raise
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        votes = humanize_votes_with_comma(proposal.total_votes, gdpo)
+        votes = humanize_votes_with_comma(proposal.total_votes.value, gdpo)
         daily_pay = Asset.pretty_amount(proposal.daily_pay)
 
         table = Table(title=f"Details of proposal with id `{self.proposal_id}`", show_header=False)
@@ -25,8 +25,8 @@ class ShowProposal(WorldBasedCommand):
         table.add_row("proposal id", f"{proposal.proposal_id}")
         table.add_row("creator", f"{proposal.creator}")
         table.add_row("receiver", f"{proposal.receiver}")
-        table.add_row("start date", f"{humanize_datetime(proposal.start_date, with_time=False)}")
-        table.add_row("end date", f"{humanize_datetime(proposal.end_date, with_time=False)}")
+        table.add_row("start date", f"{humanize_datetime(proposal.start_date.value, with_time=False)}")
+        table.add_row("end date", f"{humanize_datetime(proposal.end_date.value, with_time=False)}")
         table.add_row("daily pay", f"{daily_pay} HBD")
         table.add_row("subject", f"{proposal.subject}")
         table.add_row("permlink", f"{proposal.permlink}")

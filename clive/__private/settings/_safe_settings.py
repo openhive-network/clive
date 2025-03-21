@@ -333,7 +333,7 @@ class SafeSettings:
             value_ = cast(str, value)
 
             if not is_matching_model(value_, ChainId):
-                details = "Chain ID should be 64 characters long."
+                details = f"Chain ID should be {ChainId.__metadata__[0].max_length} characters long."
                 raise SettingsValueError(setting_name=setting_name, value=value_, details=details)
             return value_
 

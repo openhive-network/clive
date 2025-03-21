@@ -95,7 +95,7 @@ from schemas.operations import (
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.representation_types import HF26Representation
+from schemas.operations.representation_types import HF26Representation, HF26RepresentationRecurrentTransferOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
 from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
 from schemas.transaction import Transaction
@@ -253,7 +253,7 @@ WitnessSchedule = GetWitnessSchedule
 # extensions
 
 RecurrentTransferPairIdExtension = RecurrentTransferPairId
-RecurrentTransferPairIdRepresentation = HF26Representation
+RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferOperation
 
 # basic fields
 
