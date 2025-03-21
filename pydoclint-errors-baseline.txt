@@ -741,7 +741,7 @@ clive/__private/ui/widgets/ellipsed_static.py
 --------------------
 clive/__private/ui/widgets/inputs/account_name_pattern_input.py
     DOC101: Method `AccountNamePatternInput.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AccountNamePatternInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, value: str | None].
+    DOC103: Method `AccountNamePatternInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, process_add_to_cart: bool, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, value: str | None].
 --------------------
 clive/__private/ui/widgets/inputs/asset_amount_base_input.py
     DOC502: Method `AssetAmountInput._value` has a "Raises" section in the docstring, but there are not "raise" statements in the body
@@ -778,7 +778,7 @@ clive/__private/ui/widgets/inputs/clive_validated_input.py
 --------------------
 clive/__private/ui/widgets/inputs/integer_input.py
     DOC101: Method `IntegerInput.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `IntegerInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | int | None].
+    DOC103: Method `IntegerInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, process_add_to_cart: bool, required: bool, show_invalid_reasons: bool, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | int | None].
 --------------------
 clive/__private/ui/widgets/inputs/labelized_input.py
     DOC101: Method `LabelizedInput.__init__`: Docstring contains fewer arguments than in function signature.
@@ -818,7 +818,7 @@ clive/__private/ui/widgets/inputs/set_profile_name_input.py
 --------------------
 clive/__private/ui/widgets/inputs/text_input.py
     DOC101: Method `TextInput.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `TextInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, password: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | None].
+    DOC103: Method `TextInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, password: bool, placeholder: str, process_add_to_cart: bool, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | None].
 --------------------
 clive/__private/ui/widgets/known_exchange_handler.py
     DOC601: Class `KnownExchangeHandler`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)

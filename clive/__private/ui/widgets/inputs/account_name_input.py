@@ -44,6 +44,7 @@ class AccountNameInput(TextInput):
         id: The ID of the input in the DOM.
         classes: The CSS classes for the input.
         disabled: Whether the input is disabled.
+        process_add_to_cart: Whether the input should process add to cart.
     """
 
     _KNOWN_ACCOUNT_CLASS: Final[str] = "-known-account"
@@ -98,6 +99,7 @@ class AccountNameInput(TextInput):
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
+        process_add_to_cart: bool = True,
     ) -> None:
         super().__init__(
             title=title,
@@ -114,6 +116,7 @@ class AccountNameInput(TextInput):
             id=id,
             classes=classes,
             disabled=disabled,
+            process_add_to_cart=process_add_to_cart,
         )
         self._show_known_account = show_known_account
         self._show_bad_account = show_bad_account

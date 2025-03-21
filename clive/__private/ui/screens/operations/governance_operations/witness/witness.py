@@ -146,6 +146,7 @@ class WitnessManualSearch(Grid):
             ],
             always_show_title=True,
             required=False,
+            process_add_to_cart=False,
         )
 
     def compose(self) -> ComposeResult:
