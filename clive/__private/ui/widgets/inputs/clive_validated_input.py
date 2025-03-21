@@ -11,6 +11,7 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
+from clive.__private.ui.widgets.inputs.process_add_to_cart_input import ProcessAddToCartInput
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -115,6 +116,7 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
+        process_add_to_cart: bool = True,
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
@@ -127,23 +129,46 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         show_invalid_reasons: Whether to show the reasons why validation failed.
         """
         super().__init__(id=id, classes=classes, disabled=disabled)
-        self.input = CliveInput(
-            title=title,
-            value=value,
-            placeholder=placeholder,
-            always_show_title=always_show_title,
-            include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
-            required=required,
-            password=password,
-            restrict=restrict,
-            type=type,
-            max_length=max_length,
-            highlighter=highlighter,
-            suggester=suggester,
-            validators=validators,
-            validate_on=validate_on,
-            valid_empty=valid_empty,
+        self.input = (
+            ProcessAddToCartInput(
+                title=title,
+                value=value,
+                placeholder=placeholder,
+                always_show_title=always_show_title,
+                include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
+                required=required,
+                password=password,
+                restrict=restrict,
+                type=type,
+                max_length=max_length,
+                highlighter=highlighter,
+                suggester=suggester,
+                validators=validators,
+                validate_on=validate_on,
+                valid_empty=valid_empty,
+            )
+            if process_add_to_cart
+            else (
+                CliveInput(
+                    title=title,
+                    value=value,
+                    placeholder=placeholder,
+                    always_show_title=always_show_title,
+                    include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
+                    required=required,
+                    password=password,
+                    restrict=restrict,
+                    type=type,
+                    max_length=max_length,
+                    highlighter=highlighter,
+                    suggester=suggester,
+                    validators=validators,
+                    validate_on=validate_on,
+                    valid_empty=valid_empty,
+                )
+            )
         )
+
         self._should_show_invalid_reasons = show_invalid_reasons
         self.pretty = Pretty([])
         self.pretty.display = False

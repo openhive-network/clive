@@ -75,6 +75,7 @@ class AccountNameInput(TextInput):
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
+        process_add_to_cart: bool = True,
     ) -> None:
         """
         Initialize the widget.
@@ -99,6 +100,7 @@ class AccountNameInput(TextInput):
             id=id,
             classes=classes,
             disabled=disabled,
+            process_add_to_cart=process_add_to_cart,
         )
         self._show_known_account = show_known_account
         self._show_bad_account = show_bad_account

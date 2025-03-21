@@ -58,4 +58,5 @@ class ProxyInput(AccountNameInput):
             id=id,
             classes=classes,
             disabled=disabled,
+            process_add_to_cart=False,
         )
