@@ -32,6 +32,7 @@ class AccountNamePatternInput(TextInput):
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
+        process_add_to_cart: bool = False,
     ) -> None:
         super().__init__(
             title=title,
@@ -49,4 +50,5 @@ class AccountNamePatternInput(TextInput):
             id=id,
             classes=classes,
             disabled=disabled,
+            process_add_to_cart=process_add_to_cart,
         )

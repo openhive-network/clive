@@ -31,6 +31,7 @@ class TextInput(CliveValidatedInput[str]):
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
+        process_add_to_cart: bool = True,
     ) -> None:
         super().__init__(
             title=title,
@@ -48,6 +49,7 @@ class TextInput(CliveValidatedInput[str]):
             id=id,
             classes=classes,
             disabled=disabled,
+            process_add_to_cart=process_add_to_cart,
         )
 
     @property
