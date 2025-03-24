@@ -83,7 +83,6 @@ class PersistentStorageService:
         profile_model = RuntimeToStorageConverter(profile).create_storage_model()
 
         await self._save_profile_model(profile_name, profile_model)
-        profile.unset_is_newly_created()
 
     async def load_profile(self, profile_name: str) -> Profile:
         """
@@ -238,8 +237,7 @@ class PersistentStorageService:
 
     def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: Profile) -> None:
         profile_name = profile.name
-        is_newly_created = profile.is_newly_created
         existing_profile_names = self.list_stored_profile_names()
 
-        if is_newly_created and profile_name in existing_profile_names:
+        if profile.is_newly_created and profile_name in existing_profile_names:
             raise ProfileAlreadyExistsError(profile_name, existing_profile_names)

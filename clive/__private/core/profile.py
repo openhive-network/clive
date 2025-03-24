@@ -64,8 +64,6 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
-        *,
-        is_newly_created: bool = True,
     ) -> None:
         self._assert_no_direct_initialization(init_key)
 
@@ -85,21 +83,20 @@ class Profile:
         self.set_chain_id(chain_id or self._default_chain_id())
 
         self._skip_save = False
-        self._is_newly_created = is_newly_created
         self._hash_of_stored_profile: int | None = None
 
     def __hash__(self) -> int:
         return hash(RuntimeToStorageConverter(self).create_storage_model())
 
     @property
-    def is_newly_created(self) -> bool:
-        """Determine if the profile is newly created (has not been saved yet)."""
-        return self._is_newly_created
-
-    @property
     def hash_of_stored_profile(self) -> int | None:
         """Return hash of stored profile, None if profile is not stored."""
         return self._hash_of_stored_profile
+
+    @property
+    def is_newly_created(self) -> bool:
+        """Determine if the profile is newly created (has not been saved yet)."""
+        return self._hash_of_stored_profile is None
 
     @classmethod
     def is_any_profile_saved(cls) -> bool:
@@ -108,9 +105,6 @@ class Profile:
     @classmethod
     def is_only_one_profile_saved(cls) -> bool:
         return len(cls.list_profiles()) == 1
-
-    def unset_is_newly_created(self) -> None:
-        self._is_newly_created = False
 
     @property
     def accounts(self) -> AccountManager:
@@ -241,7 +235,6 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
-            is_newly_created=True,
         )
 
     @classmethod
@@ -294,8 +287,6 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
-        *,
-        is_newly_created: bool = True,
     ) -> Self:
         """Create new instance bypassing blocked direct initializer call."""
         return cls(
@@ -309,7 +300,6 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
-            is_newly_created=is_newly_created,
         )
 
     def _update_hash_of_stored_profile(self, new_hash: int | None = None) -> None:

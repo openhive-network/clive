@@ -39,7 +39,6 @@ class StorageToRuntimeConverter:
             transaction_file_path=self._transaction_file_path_from_storage_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
-            is_newly_created=False,
         )
 
     def _working_account_from_profile_storage_model(self) -> WorkingAccount | None:
