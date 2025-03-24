@@ -32,6 +32,7 @@ from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
+from schemas.fields.integers import Int64t
 
 if TYPE_CHECKING:
     from typing import Final
@@ -295,7 +296,7 @@ class Proposals(GovernanceTabPane):
         return [
             UpdateProposalVotesOperation(
                 voter=working_account_name,
-                proposal_ids=proposal_ids,
+                proposal_ids=[Int64t(proposal_id) for proposal_id in proposal_ids],
                 approve=approve,
                 extensions=[],
             )

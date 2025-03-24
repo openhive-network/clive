@@ -31,12 +31,12 @@ class DecliningVotingRightsInProgress(Alarm[DateTimeAlarmIdentifier, DecliningVo
             self.disable_alarm()
             return
 
-        effective_date = request.effective_date.value
+        effective_date = request.effective_date
         new_identifier = DateTimeAlarmIdentifier(value=effective_date)
         self.enable_alarm(
             new_identifier,
             DecliningVotingRightsInProgressAlarmData(
-                start_date=self._calculate_start_process_date(effective_date).value, end_date=effective_date
+                start_date=self._calculate_start_process_date(effective_date.value), end_date=effective_date.value
             ),
         )
         return

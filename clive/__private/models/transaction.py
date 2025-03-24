@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import timedelta
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from msgspec import field
@@ -14,6 +13,7 @@ from clive.__private.models.schemas import (
     OperationUnion,
     Signature,
     TransactionId,
+    OperationRepresentationBase,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
@@ -25,7 +25,7 @@ from schemas.operations import convert_to_representation
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationUnion] = field(default_factory=list)
+    operations: list[OperationRepresentationBase] = field(default_factory=list)
     ref_block_num: HiveInt = field(default_factory=lambda: HiveInt(-1))
     ref_block_prefix: HiveInt = field(default_factory=lambda: HiveInt(-1))
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
@@ -41,7 +41,7 @@ class Transaction(SchemasTransaction):
             return operation in self.operations_models
         return operation in self.operations
 
-    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
+    def __iter__(self) -> Iterator[OperationUnion]:
         return iter(self.operations_models)
 
     def __len__(self) -> int:
@@ -58,7 +58,7 @@ class Transaction(SchemasTransaction):
     @property
     def operations_models(self) -> list[OperationUnion]:
         """Get only the operation models from already stored operations representations."""
-        return [op.value for op in self.operations]  # type: ignore[attr-defined]
+        return [op.value for op in self.operations]
 
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
@@ -71,7 +71,7 @@ class Transaction(SchemasTransaction):
 
     def remove_operation(self, *operations: OperationUnion) -> None:
         for op in self.operations:
-            if op.value in operations:  # type: ignore[attr-defined]
+            if op.value in operations:
                 self.operations.remove(op)
                 return
 
@@ -96,21 +96,6 @@ class Transaction(SchemasTransaction):
 
     def with_hash(self) -> TransactionWithHash:
         return TransactionWithHash(**self.dict(), transaction_id=self.calculate_transaction_id())
-
-    # class DecoderFactory(Protocol):
-    #     def __call__(cls: type[PreconfiguredBaseModel]) -> Decoder:
-    #         ...
-
-    @classmethod
-    def parse_file(cls, path: Path, decoder_factory: DecoderFactory) -> str:
-        with open(path, encoding="utf-8") as file:
-            raw = file.read()
-            return cls.parse_raw(raw, decoder_factory)
-
-    @classmethod
-    def parse_raw(cls, raw: str, decoder_factory: DecoderFactory) -> str:
-        decoder = decoder_factory(cls)
-        return decoder.decode(raw)
 
 
 class TransactionWithHash(Transaction, kw_only=True):

@@ -273,7 +273,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             head_block_id=data.gdpo.head_block_id,
             head_block_number=data.gdpo.head_block_number.value,
             head_block_produced_by=data.gdpo.current_witness,
-            head_block_time=data.gdpo.time,
+            head_block_time=data.gdpo.time.value,
             last_irreversible_block_num=data.gdpo.last_irreversible_block_num.value,
             maximum_block_size=data.gdpo.maximum_block_size.value,
             median_hive_price=data.current_price_feed,

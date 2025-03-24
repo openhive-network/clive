@@ -127,7 +127,7 @@ def update_authority(
 ) -> AccountUpdate2Operation:
     auth_attribute = getattr(operation, attribute)
     if not auth_attribute:
-        auth_attribute = Authority(weight_threshold=1, account_auths=[], key_auths=[])
+        auth_attribute = Authority(weight_threshold=HiveInt(1), account_auths=[], key_auths=[])
         setattr(operation, attribute, auth_attribute)
     setattr(operation, attribute, callback(auth_attribute))
     return operation

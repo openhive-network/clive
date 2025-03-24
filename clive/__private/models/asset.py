@@ -11,7 +11,6 @@ from clive.__private.core.decimal_conventer import (
 from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 from schemas.clive.base import CliveBaseModel
-from schemas.fields.resolvables import AnyAsset
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -50,8 +49,6 @@ class UnknownAssetNaiError(AssetError):
         self.nai = nai
         message = f"Unknown asset nai: '{nai}'"
         super().__init__(message)
-
-
 
 
 class Asset:
@@ -221,21 +218,21 @@ class Asset:
         return isinstance(asset, Asset.Vests)
 
 
-class AssetFactoryHolderHive(CliveBaseModel, frozen=True):
+class AssetFactoryHolderHive(CliveBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetHive
     asset_factory: Callable[[int | str | Decimal], AssetHive] = Asset.hive
 
 
-class AssetFactoryHolderHbd(CliveBaseModel, frozen=True):
+class AssetFactoryHolderHbd(CliveBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetHbd
     asset_factory: Callable[[int | str | Decimal], AssetHbd] = Asset.hbd
 
 
-class AssetFactoryHolderVests(CliveBaseModel, frozen=True):
+class AssetFactoryHolderVests(CliveBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetVests

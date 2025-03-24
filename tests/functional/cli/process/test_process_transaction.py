@@ -14,6 +14,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
+from schemas.fields.resolvables import JsonString
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -41,7 +42,7 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         required_auths=[],
         required_posting_auths=[WORKING_ACCOUNT_DATA.account.name],
         id_=ID,
-        json_=json_,
+        json_=JsonString(json_),
     )
 
     # ACT

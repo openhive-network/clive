@@ -48,7 +48,7 @@ class Delegation(CliveCheckerboardTableRow):
     """Row of the `DelegationsTable`."""
 
     def __init__(
-        self, delegation: VestingDelegation[Asset.Vests], aligned_hp_amount: str, aligned_vests_amount: str
+        self, delegation: VestingDelegation, aligned_hp_amount: str, aligned_vests_amount: str
     ) -> None:
         """
         Initialize the delegation row.
@@ -82,7 +82,7 @@ class DelegationsTable(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(header=DelegationsTableHeader(), title="Current delegations")
-        self._previous_delegations: list[VestingDelegation[Asset.Vests]] | NotUpdatedYet = NotUpdatedYet()
+        self._previous_delegations: list[VestingDelegation] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:
         aligned_hp, aligned_vests = content.get_delegations_aligned_amounts()

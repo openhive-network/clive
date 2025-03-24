@@ -69,8 +69,8 @@ class SavingsData:
         if len(all_transfers) >= max_number_of_request_ids:
             raise RequestIdError("Maximum quantity of request ids is 100")
 
-        last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id.value
-        return last_occupied_id + 1
+        last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id
+        return last_occupied_id.value + 1
 
     def get_pending_transfers_aligned_amounts(self) -> list[str]:
         """Return dot-aligned amounts of pending transfers."""
@@ -102,8 +102,8 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
 
     async def _process_data(self, data: SanitizedData) -> SavingsData:
         return SavingsData(
-            hbd_interest_rate=data.dgpo.hbd_interest_rate,
-            last_interest_payment=data.core_account.savings_hbd_last_interest_payment,
+            hbd_interest_rate=data.dgpo.hbd_interest_rate.value,
+            last_interest_payment=data.core_account.savings_hbd_last_interest_payment.value,
             pending_transfers=data.pending_transfers,
             hbd_savings_balance=data.core_account.savings_hbd_balance,
             hive_savings_balance=data.core_account.savings_balance,

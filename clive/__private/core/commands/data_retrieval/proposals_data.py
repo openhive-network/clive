@@ -133,14 +133,14 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     def __create_proposal_data(self, proposal: SchemasProposal, data: SanitizedData) -> Proposal:
         return Proposal(
             title=proposal.subject,
-            proposal_id=proposal.proposal_id,
+            proposal_id=proposal.proposal_id.value,
             creator=proposal.creator,
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
-            votes=humanize_votes_with_suffix(proposal.total_votes, data.gdpo),
+            votes=humanize_votes_with_suffix(proposal.total_votes.value, data.gdpo),
             status=proposal.status,
-            start_date=proposal.start_date,
-            end_date=proposal.end_date,
+            start_date=proposal.start_date.value,
+            end_date=proposal.end_date.value,
             voted=proposal in data.list_voted_proposals,
         )
 
@@ -163,7 +163,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         return [self.__create_proposal_data(proposal, data) for proposal in proposals]
 
     def __get_proposals_ids(self, proposals: list[SchemasProposal]) -> list[int]:
-        return [proposal.proposal_id for proposal in proposals]
+        return [proposal.proposal_id.value for proposal in proposals]
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"

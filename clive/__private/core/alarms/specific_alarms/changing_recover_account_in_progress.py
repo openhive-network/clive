@@ -40,8 +40,8 @@ class ChangingRecoveryAccountInProgress(Alarm[DateTimeAlarmIdentifier, ChangingR
         self.enable_alarm(
             new_identifier,
             ChangingRecoveryAccountInProgressAlarmData(
-                start_date=self._calculate_start_process_date(request.effective_on),
-                end_date=request.effective_on,
+                start_date=self._calculate_start_process_date(request.effective_on.value),
+                end_date=request.effective_on.value,
                 new_recovery_account=request.recovery_account,
             ),
         )

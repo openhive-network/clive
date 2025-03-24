@@ -23,14 +23,14 @@ class ShowWitness(WorldBasedCommand):
         witness = wrapper.result_or_raise
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        votes = humanize_votes_with_comma(witness.votes, gdpo)
+        votes = humanize_votes_with_comma(witness.votes.value, gdpo)
 
         account_creation_fee: str | None = None
         if witness.props.account_creation_fee:
             account_creation_fee = witness.props.account_creation_fee.as_legacy()
         hbd_savings_apr: str | None = None
         if witness.props.hbd_interest_rate:
-            hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
+            hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate.value))
         props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"}, deep=True)
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
