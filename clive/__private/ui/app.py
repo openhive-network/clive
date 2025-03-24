@@ -191,7 +191,9 @@ class Clive(App[int]):
         )
 
         self._refresh_beekeeper_wallet_lock_status_interval = self.set_interval(
-            safe_settings.beekeeper.refresh_timeout_secs, self.update_wallet_lock_status_from_beekeeper
+            safe_settings.beekeeper.refresh_timeout_secs,
+            self._retrigger_update_wallet_lock_status_from_beekeeper,
+            pause=True,
         )
 
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
@@ -254,6 +256,13 @@ class Clive(App[int]):
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
 
+    def pause_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
+        self._refresh_beekeeper_wallet_lock_status_interval.pause()
+        self.workers.cancel_group(self, "wallet_lock_status")
+
+    def resume_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
+        self._refresh_beekeeper_wallet_lock_status_interval.resume()
+
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
@@ -308,10 +317,9 @@ class Clive(App[int]):
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
-    @work(name="beekeeper wallet lock status update worker")
+    @work(name="beekeeper wallet lock status update worker", group="wallet_lock_status")
     async def update_wallet_lock_status_from_beekeeper(self) -> None:
-        if self.world._beekeeper_manager:
-            await self.world.commands.sync_state_with_beekeeper("beekeeper_wallet_lock_status_update_worker")
+        await self.world.commands.sync_state_with_beekeeper("beekeeper_wallet_lock_status_update_worker")
 
     def switch_mode_with_reset(self, new_mode: CliveModes) -> AwaitComplete:
         """
@@ -349,6 +357,10 @@ class Clive(App[int]):
     async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
         if save_profile:
             await self.world.commands.save_profile()
+
+        # needs to be done before beekeeper API call to avoid race condition between manual lock and timeout lock
+        self.pause_refresh_beekeeper_wallet_lock_status_interval()
+
         await self.world.commands.lock()
 
     def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
@@ -412,12 +424,17 @@ class Clive(App[int]):
         if self.is_worker_group_empty("alarms_data"):
             self.update_alarms_data()
 
+    def _retrigger_update_wallet_lock_status_from_beekeeper(self) -> None:
+        if self.is_worker_group_empty("wallet_lock_status"):
+            self.update_wallet_lock_status_from_beekeeper()
+
     async def _switch_mode_into_locked(self, source: LockSource) -> None:
         if source == "beekeeper_wallet_lock_status_update_worker":
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
         self.pause_refresh_node_data_interval()
         self.pause_refresh_alarms_data_interval()
+        self.pause_refresh_beekeeper_wallet_lock_status_interval()
         self.world.node.cached.clear()
         await self.switch_mode_with_reset("unlock")
         await self.world.switch_profile(None)
@@ -427,3 +444,4 @@ class Clive(App[int]):
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_refresh_node_data_interval()
         self.resume_refresh_alarms_data_interval()
+        self.resume_refresh_beekeeper_wallet_lock_status_interval()
