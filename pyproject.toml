@@ -42,8 +42,8 @@ pydantic = "1.10.18"
 
 # remember to keep these versions adequate to one specified in test-tools
 schemas = "0.0.1.dev323+e5a1ba1"
-beekeepy = "0.0.1.dev338+58e0bf7"
-wax = "0.3.10.dev558+3a636d1"
+beekeepy = "0.0.1.dev340+6ae1979"
+wax = "0.3.10.dev595+b0211db"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
