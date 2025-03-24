@@ -26,12 +26,4 @@ GovernanceCheckbox {
       text-style: bold reverse;
     }
   }
-
-  .-voted {
-    color: $success-darken-3;
-  }
-
-  .-unvoted {
-    color: $error;
-  }
 }
