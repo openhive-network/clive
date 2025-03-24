@@ -14,7 +14,7 @@ from textual.await_complete import AwaitComplete
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
-from textual.worker import WorkerCancelled
+from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
@@ -435,6 +435,10 @@ class Clive(App[int]):
         self.pause_refresh_node_data_interval()
         self.pause_refresh_alarms_data_interval()
         self.pause_refresh_beekeeper_wallet_lock_status_interval()
+
+        # There might be ongoing workers that should be cancelled (e.g. DynamicWidget update)
+        self._cancel_workers_except_current()
+
         self.world.node.cached.clear()
         await self.switch_mode_with_reset("unlock")
         await self.world.switch_profile(None)
@@ -445,3 +449,13 @@ class Clive(App[int]):
         self.resume_refresh_node_data_interval()
         self.resume_refresh_alarms_data_interval()
         self.resume_refresh_beekeeper_wallet_lock_status_interval()
+
+    def _cancel_workers_except_current(self) -> None:
+        try:
+            current_worker = get_current_worker()
+        except NoActiveWorker:
+            current_worker = None
+
+        for worker in self.workers:
+            if worker != current_worker:
+                worker.cancel()
