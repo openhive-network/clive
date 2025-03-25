@@ -195,6 +195,7 @@ class Clive(App[int]):
             self._retrigger_update_wallet_lock_status_from_beekeeper,
             pause=True,
         )
+        self.watch(self.world, "profile_reactive", self.save_profile_in_worker)
 
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
@@ -388,6 +389,13 @@ class Clive(App[int]):
 
     def run_worker_with_screen_remove_guard(self, awaitable: Awaitable[None]) -> None:
         self.run_worker_with_guard(awaitable, self._screen_remove_guard)
+
+    def save_profile_in_worker(self, profile: Profile | None) -> None:
+        async def impl() -> None:
+            if profile is not None:
+                await self.world.commands.save_profile()
+
+        self.app.run_worker(impl(), name="save profile worker", group="save_profile", exclusive=True)
 
     async def _debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
