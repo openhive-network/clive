@@ -24,6 +24,10 @@ from clive.__private.ui.widgets.buttons import PageDownOneLineButton, PageUpOneL
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.ui.screens.operations.governance_operations.common_governance.governance_actions import (
+        GovernanceActionStatus,
+    )
+
 GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
 GovernanceDataProviderT = TypeVar("GovernanceDataProviderT", bound=DataProvider[Any])
 
@@ -115,9 +119,10 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         """Message send when user request by GovernanceCheckbox to change the action status."""
 
         action_identifier: str
-        vote: bool
-        add: bool
-        """If True, add action to the actions container, if False - remove."""
+        operation_entity: str | int
+        """Account witness name or proposal id."""
+        status: GovernanceActionStatus
+        add: bool = False
 
     def __init__(self, row_data: GovernanceDataT, *, even: bool = False) -> None:
         """
@@ -155,12 +160,15 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         self.focus()
 
     @on(GovernanceCheckbox.Changed)
-    async def change_action_status(self) -> None:
+    async def change_action_status(self, event: GovernanceCheckbox.Changed) -> None:
         self.post_message(
             self.ChangeActionStatus(
                 action_identifier=self.action_identifier,
-                vote=not self.row_data.voted,
-                add=self.governance_checkbox.value,
+                operation_entity=self.row_data.name
+                if isinstance(self.row_data, WitnessData)
+                else self.row_data.proposal_id,  # type: ignore[attr-defined] # that is guaranteed here to be a ProposalData
+                status=event.status,
+                add=event.add,
             )
         )
 
@@ -189,7 +197,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         self.governance_checkbox = GovernanceCheckbox(
             is_voted=self._row_data.voted,
             initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
-            disabled=bool(self.profile.accounts.working.data.proxy) or self.is_operation_in_cart,
+            pending=self.is_operation_in_cart,
         )
         yield self.governance_checkbox
         yield from self.create_row_content()

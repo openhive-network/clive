@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
+from textual.message import Message
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
@@ -48,6 +49,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
     POP_SCREEN_AFTER_ADDING_TO_CART: ClassVar[bool] = False
+
+    class OperationAddedToCart(Message):
+        """Message send when operation was added to the cart."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -199,6 +203,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def _add_to_cart(self, operations: list[OperationUnion], *, notify: bool = True) -> None:
         """Just adds given operations to cart."""
         self.profile.add_operation(*operations)
+        self.post_message(self.OperationAddedToCart())
         self.app.trigger_profile_watchers()
         if notify:
             self.notify("The operation was added to the cart.")

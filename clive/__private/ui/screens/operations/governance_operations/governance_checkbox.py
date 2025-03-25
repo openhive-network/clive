@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, cast
 
 from textual import on
 from textual.events import Click
@@ -9,6 +10,9 @@ from textual.widgets import Checkbox, Label
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.screens.operations.governance_operations.common_governance.governance_actions import (
+    GovernanceActionStatus,
+)
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -26,14 +30,19 @@ class CheckBoxWithoutFocus(Checkbox):
 class GovernanceCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
+    @dataclass
     class Changed(Message):
         """Message send when checkbox in WitnessCheckbox changed."""
+
+        status: GovernanceActionStatus
+        add: bool = False
 
     class Clicked(Message):
         """Message send when WitnessCheckbox is clicked."""
 
-    def __init__(self, *, is_voted: bool = False, initial_state: bool = False, disabled: bool = False) -> None:
-        super().__init__(disabled=disabled)
+    def __init__(self, *, is_voted: bool = False, initial_state: bool = False, pending: bool = False) -> None:
+        super().__init__()
+        self._pending = pending
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
 
@@ -42,9 +51,6 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
         yield Label("Vote" if not self.__is_voted else "Unvote")
 
     def toggle(self) -> None:
-        if self.disabled:
-            return
-
         if self.__checkbox.value:
             self.__checkbox.value = False
             return
@@ -57,10 +63,16 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:
-        self.post_message(self.Changed())
+        vote_status = "unvote" if self.__is_voted else "vote"
+
+        if self._pending:
+            self.post_message(self.Changed(cast(GovernanceActionStatus, f"pending_{vote_status}")))
+            self._pending = False
+            return
+
+        self.post_message(self.Changed(cast(GovernanceActionStatus, vote_status), add=self.__checkbox.value))
 
     @on(Click)
     def clicked(self) -> None:
-        if not self.disabled:
-            self.toggle()
-            self.post_message(self.Clicked())
+        self.toggle()
+        self.post_message(self.Clicked())

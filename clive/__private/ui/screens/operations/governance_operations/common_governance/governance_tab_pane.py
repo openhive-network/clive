@@ -9,6 +9,7 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
     GovernanceActions,
 )
 from clive.__private.ui.screens.operations.governance_operations.common_governance.governance_table import (
+    GovernanceTable,
     GovernanceTableRow,
 )
 
@@ -17,13 +18,30 @@ class GovernanceTabPane(TabPane, OperationActionBindings):
     """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
-    POP_SCREEN_AFTER_ADDING_TO_CART = True
+
+    @on(OperationActionBindings.OperationAddedToCart)
+    async def restore_actions_and_table(self) -> None:
+        await self.query_exactly_one(GovernanceActions).restore()  # type: ignore[type-abstract]
+        await self.query_exactly_one(GovernanceTable).reset_page()  # type: ignore[type-abstract]
 
     @on(GovernanceTableRow.ChangeActionStatus)
     async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:
         actions = self.query_exactly_one(GovernanceActions)  # type: ignore[type-abstract]
 
-        if event.add:
-            await actions.add_row(identifier=event.action_identifier, vote=event.vote)
-        else:
-            await actions.remove_row(identifier=event.action_identifier, vote=event.vote)
+        match event.status:
+            case "pending_vote":
+                await actions.remove_row(
+                    identifier=event.action_identifier, operation_entity=event.operation_entity, vote=True, pending=True
+                )
+            case "pending_unvote":
+                await actions.remove_row(
+                    identifier=event.action_identifier,
+                    operation_entity=event.operation_entity,
+                    vote=False,
+                    pending=True,
+                )
+            case _:
+                if event.add:
+                    await actions.add_row(identifier=event.action_identifier, vote=event.status == "vote")
+                else:
+                    await actions.remove_row(identifier=event.action_identifier, vote=event.status == "vote")

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, ClassVar, Generic, Literal, TypeVar
 
 from textual.containers import Horizontal
 from textual.css.query import NoMatches
@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 OperationActionT = TypeVar("OperationActionT", AccountWitnessVoteOperation, UpdateProposalVotesOperation)
 
+GovernanceActionStatus = Literal["vote", "unvote", "pending_vote", "pending_unvote"]
+
 
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     """
@@ -30,6 +32,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
+    GOVERNANCE_ACTION_CSS_CLASS = "governance-actions"
 
     def __init__(self, identifier: str, *, vote: bool, pending: bool = False) -> None:
         """
@@ -41,7 +44,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         vote: Action to be performed - vote or not.
         pending: Indicates if the operation with such identifier is already in the cart.
         """
-        super().__init__(id=self.create_action_row_id(identifier))
+        super().__init__(id=self.create_action_row_id(identifier), classes=self.GOVERNANCE_ACTION_CSS_CLASS)
         self._identifier = identifier
         self._vote = vote
         self._pending = pending
@@ -117,6 +120,15 @@ class GovernanceActions(ScrollablePartFocusable, Generic[OperationActionT]):
     async def on_mount(self) -> None:
         await self.mount_operations_from_cart()
 
+    async def restore(self) -> None:
+        with self.app.batch_update():
+            actions = self.query(".governance-actions")
+            for action in actions:
+                await action.remove()
+
+            await self.mount_operations_from_cart()
+            self._actions_to_perform.clear()
+
     async def add_row(self, identifier: str, *, vote: bool = False, pending: bool = False) -> None:
         # check if action is already in the list, if so - return
 
@@ -136,7 +148,14 @@ class GovernanceActions(ScrollablePartFocusable, Generic[OperationActionT]):
 
         self.hook_on_row_added()
 
-    async def remove_row(self, identifier: str, *, vote: bool = False) -> None:
+    async def remove_row(
+        self,
+        identifier: str,
+        *,
+        operation_entity: str | int | None = None,
+        vote: bool = False,
+        pending: bool = False,
+    ) -> None:
         try:
             await self.get_widget_by_id(self.create_action_row_id(identifier)).remove()
         except NoMatches:
@@ -147,10 +166,38 @@ class GovernanceActions(ScrollablePartFocusable, Generic[OperationActionT]):
         else:
             self._actions_votes += 1
 
-        self.delete_from_actions(identifier)
+        if not pending:
+            self.delete_from_actions(identifier)
+            return
+
+        assert operation_entity is not None, "Operation entity must be provided when removing pending operation"
+        self._remove_op_from_cart(operation_entity)  # we're sure here that we must remove the operation from the cart
 
     def add_to_actions(self, identifier: str, *, vote: bool) -> None:
         self._actions_to_perform[identifier] = vote
 
     def delete_from_actions(self, identifier: str) -> None:
         self._actions_to_perform.pop(identifier)
+
+    def _remove_op_from_cart(self, entity: str | int) -> None:
+        if isinstance(entity, int):
+            for op in self.profile.transaction:
+                if (
+                    isinstance(op, UpdateProposalVotesOperation)
+                    and entity in op.proposal_ids
+                    and self.profile.accounts.working.name == op.voter
+                ):
+                    if len(op.proposal_ids) == 1:
+                        self.profile.transaction.remove_operation(op)
+                    else:
+                        op.proposal_ids.remove(entity)  # type: ignore[arg-type]
+                    return
+
+        for op in self.profile.transaction:
+            if (
+                isinstance(op, AccountWitnessVoteOperation)
+                and entity == op.witness
+                and self.profile.accounts.working.name == op.account
+            ):
+                self.profile.transaction.remove_operation(op)
+                return
