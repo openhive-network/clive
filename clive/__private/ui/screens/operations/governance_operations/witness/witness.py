@@ -31,7 +31,7 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
     GovernanceTable,
     GovernanceTableRow,
 )
-from clive.__private.ui.widgets.buttons import ClearButton, SearchButton
+from clive.__private.ui.widgets.buttons.search_operation_buttons import ClearOneLineButton, SearchOneLineButton
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
@@ -151,10 +151,10 @@ class WitnessManualSearch(Grid):
     def compose(self) -> ComposeResult:
         yield self._witness_input
         yield self._limit_input
-        yield SearchButton()
-        yield ClearButton()
+        yield SearchOneLineButton()
+        yield ClearOneLineButton()
 
-    @on(SearchButton.Pressed)
+    @on(SearchOneLineButton.Pressed)
     def search_witnesses(self) -> None:
         if not CliveValidatedInput.validate_many(self._witness_input, self._limit_input):
             return
@@ -165,7 +165,7 @@ class WitnessManualSearch(Grid):
 
         self.post_message(self.Search(pattern, limit))
 
-    @on(ClearButton.Pressed)
+    @on(ClearOneLineButton.Pressed)
     def clear_searched_witnesses(self) -> None:
         self._witness_input.input.clear()
         self._limit_input.input.value = str(self.LIMIT_MAXIMUM)
