@@ -73,12 +73,17 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_with_name_already_exists_on_first_save(profile)
-        profile.unset_is_newly_created()
+        profile_hash = hash(profile)
+        if profile.hash_of_stored_profile == profile_hash:
+            logger.debug("Invoked save_profile but profile didn't change since last load/save.")
+            return
 
+        profile._update_hash_of_stored_profile(profile_hash)
         profile_name = profile.name
         profile_model = RuntimeToStorageConverter(profile).create_storage_model()
 
         await self._save_profile_model(profile_name, profile_model)
+        profile.unset_is_newly_created()
 
     async def load_profile(self, profile_name: str) -> Profile:
         """
@@ -97,7 +102,9 @@ class PersistentStorageService:
         self._raise_if_profile_not_stored(profile_name)
         profile_storage_model = await self._find_profile_storage_model_by_name(profile_name)
 
-        return StorageToRuntimeConverter(profile_storage_model).create_profile()
+        profile = StorageToRuntimeConverter(profile_storage_model).create_profile()
+        profile._update_hash_of_stored_profile()
+        return profile
 
     @classmethod
     def delete_profile(cls, profile_name: str) -> None:

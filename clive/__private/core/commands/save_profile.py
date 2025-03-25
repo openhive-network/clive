@@ -28,7 +28,7 @@ class SaveProfile(CommandEncryption, Command):
 
     @property
     def _should_skip_execution(self) -> bool:
-        return self.profile.is_skip_save_set
+        return not self.profile.should_be_saved
 
     async def _execute(self) -> None:
         encryption_service = EncryptionService(WalletContainer(self.unlocked_wallet, self.unlocked_encryption_wallet))
