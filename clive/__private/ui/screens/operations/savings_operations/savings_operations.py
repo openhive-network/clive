@@ -265,8 +265,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         }
 
         if self._to_button.value:
-            decoder = get_hf26_decoder(TransferToSavingsOperation)
-            return decoder.decode(json.dumps(data))
+            decoder_transfer_to_savings = get_hf26_decoder(TransferToSavingsOperation)
+            return decoder_transfer_to_savings.decode(json.dumps(data))
 
         try:
             request_id = self._create_request_id()
@@ -274,9 +274,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        decoder = get_hf26_decoder(TransferFromSavingsOperation)
+        decoder_transfer_from_savings = get_hf26_decoder(TransferFromSavingsOperation)
         data["request_id"] = request_id
-        return decoder.decode(json.dumps(data))
+        return decoder_transfer_from_savings.decode(json.dumps(data))
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
+from __private.models.schemas import OperationRepresentationBase
 from textual.containers import Center
 from textual.widgets import Pretty
 
@@ -13,7 +14,7 @@ from schemas.operations import convert_to_representation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.schemas import OperationBase, OperationRepresentationBase
+    from clive.__private.models.schemas import OperationBase
 
 
 class RawJsonDialog(CliveInfoDialog):

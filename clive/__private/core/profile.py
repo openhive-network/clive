@@ -13,7 +13,7 @@ from clive.__private.logger import logger
 from clive.__private.models import Transaction
 from clive.__private.models.schemas import (
     ChainId,
-    OperationRepresentationBase,
+    OperationRepresentationUnion,
     OperationUnion,
 )
 from clive.__private.settings import safe_settings
@@ -129,7 +129,7 @@ class Profile(Context):
         return self.transaction.operations_models
 
     @property
-    def operation_representations(self) -> list[OperationRepresentationBase]:
+    def operation_representations(self) -> list[OperationRepresentationUnion]:
         return self.transaction.operations
 
     def add_operation(self, *operations: OperationUnion) -> None:

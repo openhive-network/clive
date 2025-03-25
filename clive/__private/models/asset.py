@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Callable, TypeAlias
+from typing import TYPE_CHECKING, Callable, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -17,6 +17,12 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
 AssetAmount = DecimalConvertible
+
+AssetT = TypeVar("AssetT", bound=AssetHive | AssetHbd | AssetVests)
+AssetExplicitT = TypeVar("AssetExplicitT", AssetHive, AssetHbd, AssetVests)
+
+AssetAmount = DecimalConvertible
+AssetFactory = Callable[[AssetAmount], AssetT]
 
 
 class AssetError(CliveError):
@@ -124,7 +130,7 @@ class Asset:
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount), "Should be a number.") from error
         else:
-            return asset(amount=amount)
+            return asset(amount=AssetNaiAmount(amount))
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
@@ -166,7 +172,7 @@ class Asset:
         if not result.is_valid:
             raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
-        return asset_cls(amount=cls.__convert_amount_to_internal_representation(AssetNaiAmount(amount), asset_cls))
+        return asset_cls(amount=AssetNaiAmount(cls.__convert_amount_to_internal_representation(amount, asset_cls)))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:

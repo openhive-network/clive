@@ -11,7 +11,7 @@ from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
-    OperationRepresentationBase,
+    OperationRepresentationUnion,
     Signature,
 )
 from schemas.clive.base import CliveBaseModel
@@ -35,7 +35,7 @@ class KeyAliasStorageModel(CliveBaseModel, kw_only=True):
 
 
 class TransactionCoreStorageModel(CliveBaseModel):
-    operations: list[OperationRepresentationBase] = []  # noqa: RUF012
+    operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = msgspec.field(default=HiveInt(-1))
     ref_block_prefix: HiveInt = msgspec.field(default=HiveInt(-1))
     expiration: HiveDateTime = msgspec.field(default=utc_epoch().__str__())  # type: ignore[assignment]

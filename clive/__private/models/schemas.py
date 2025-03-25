@@ -167,9 +167,9 @@ __all__ = [
     "RecurrentTransferPairIdRepresentation",
     # assets
     "AssetBase",
-    "AssetHbdHF26",
-    "AssetHiveHF26",
-    "AssetVestsHF26",
+    "AssetHbd",
+    "AssetHive",
+    "AssetVests",
     # basic fields
     "AccountName",
     "ChainId",
@@ -219,8 +219,8 @@ __all__ = [
 
 ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
-OperationRepresentationBase = Hf26OperationRepresentation
-OperationRepresentationUnion = AnyHf26Operation
+OperationRepresentationBase = AnyHf26Operation
+OperationRepresentationUnion = Hf26OperationRepresentation
 OperationUnion = Operation
 
 # virtual operation BASIC aliases
