@@ -32,7 +32,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.__private.models import Asset
     from clive.__private.models.schemas import VestingDelegation
 
 
@@ -47,9 +46,7 @@ class DelegationsTableHeader(Horizontal):
 class Delegation(CliveCheckerboardTableRow):
     """Row of the `DelegationsTable`."""
 
-    def __init__(
-        self, delegation: VestingDelegation, aligned_hp_amount: str, aligned_vests_amount: str
-    ) -> None:
+    def __init__(self, delegation: VestingDelegation, aligned_hp_amount: str, aligned_vests_amount: str) -> None:
         """
         Initialize the delegation row.
 

@@ -11,6 +11,7 @@ from clive.__private.core.decimal_conventer import (
 from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 from schemas.clive.base import CliveBaseModel
+from schemas.fields.assets._base import AssetNaiAmount
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -165,7 +166,7 @@ class Asset:
         if not result.is_valid:
             raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
-        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
+        return asset_cls(amount=cls.__convert_amount_to_internal_representation(AssetNaiAmount(amount), asset_cls))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:

@@ -9,11 +9,11 @@ from msgspec import field
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
+    OperationRepresentationBase,
     OperationRepresentationUnion,
     OperationUnion,
     Signature,
     TransactionId,
-    OperationRepresentationBase,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 

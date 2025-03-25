@@ -12,6 +12,7 @@ from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models.schemas import OperationUnion
 from clive.exceptions import CliveError
 from schemas.encoders import get_hf26_encoder
+from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.hive_int import HiveInt
 from schemas.operations import convert_to_representation
 
@@ -51,7 +52,7 @@ def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset
 
     asset_cls = Asset.resolve_nai(result.nai.decode())
-    return asset_cls(amount=int(result.amount.decode()))
+    return asset_cls(amount=AssetNaiAmount(result.amount.decode()))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:

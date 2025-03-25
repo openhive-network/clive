@@ -9,6 +9,7 @@ from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SI
 from clive.__private.models.schemas import UpdateProposalVotesOperation
 from schemas.fields.integers import Int64t
 
+
 @dataclass(kw_only=True)
 class ProcessVoteProposal(OperationCommand):
     account_name: str

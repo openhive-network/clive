@@ -92,10 +92,12 @@ from schemas.operations import (
     TransferToVestingOperation,
     UpdateProposalVotesOperation,
     WithdrawVestingOperation,
+    Hf26OperationRepresentation,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.representation_types import HF26Representation, HF26RepresentationRecurrentTransferOperation
+from schemas.operations.representation_types import HF26Representation
+from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
 from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
 from schemas.transaction import Transaction
@@ -217,7 +219,7 @@ __all__ = [
 
 ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
-OperationRepresentationBase = HF26Representation
+OperationRepresentationBase = Hf26OperationRepresentation
 OperationRepresentationUnion = AnyHf26Operation
 OperationUnion = Operation
 
@@ -253,7 +255,7 @@ WitnessSchedule = GetWitnessSchedule
 # extensions
 
 RecurrentTransferPairIdExtension = RecurrentTransferPairId
-RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferOperation
+RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferPairIdOperation
 
 # basic fields
 

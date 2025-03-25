@@ -92,7 +92,9 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
     await world.commands.import_key(key_to_import=wallet.private_key)
     transaction = Transaction(
         operations=[
-            convert_to_representation(TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo="")),
+            convert_to_representation(
+                TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo="")
+            ),
         ]
     )
 

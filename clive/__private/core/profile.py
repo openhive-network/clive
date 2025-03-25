@@ -11,7 +11,11 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
+from clive.__private.models.schemas import (
+    ChainId,
+    OperationRepresentationBase,
+    OperationUnion,
+)
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
@@ -125,7 +129,7 @@ class Profile(Context):
         return self.transaction.operations_models
 
     @property
-    def operation_representations(self) -> list[OperationRepresentationUnion]:
+    def operation_representations(self) -> list[OperationRepresentationBase]:
         return self.transaction.operations
 
     def add_operation(self, *operations: OperationUnion) -> None:

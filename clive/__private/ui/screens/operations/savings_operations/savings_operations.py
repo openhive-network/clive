@@ -48,7 +48,6 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 from clive.exceptions import RequestIdError
-from schemas.fields.integers import Uint32t
 from schemas.decoders import get_hf26_decoder
 
 if TYPE_CHECKING:
@@ -264,7 +263,6 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             "amount": self._amount_input.value_or_error,
             "memo": self._memo_input.value_or_error,
         }
-
 
         if self._to_button.value:
             decoder = get_hf26_decoder(TransferToSavingsOperation)
