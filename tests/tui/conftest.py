@@ -99,9 +99,7 @@ async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTui
 
     # update the data and resume timers (pilot skips onboarding/unlocking via TUI - updating is handled there)
     await pilot.app.update_alarms_data_on_newest_node_data().wait()
-    pilot.app.resume_refresh_node_data_interval()
-    pilot.app.resume_refresh_alarms_data_interval()
-    pilot.app.resume_refresh_beekeeper_wallet_lock_status_interval()
+    pilot.app.resume_periodic_intervals()
 
     await pilot.app.push_screen(Dashboard())
     await wait_for_screen(pilot, Dashboard)

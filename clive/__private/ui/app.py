@@ -263,6 +263,16 @@ class Clive(App[int]):
     def resume_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
         self._refresh_beekeeper_wallet_lock_status_interval.resume()
 
+    def pause_periodic_intervals(self) -> None:
+        self.pause_refresh_node_data_interval()
+        self.pause_refresh_alarms_data_interval()
+        self.pause_refresh_beekeeper_wallet_lock_status_interval()
+
+    def resume_periodic_intervals(self) -> None:
+        self.resume_refresh_node_data_interval()
+        self.resume_refresh_alarms_data_interval()
+        self.resume_refresh_beekeeper_wallet_lock_status_interval()
+
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile_reactive)  # type: ignore[arg-type]
 
@@ -432,9 +442,7 @@ class Clive(App[int]):
         if source == "beekeeper_wallet_lock_status_update_worker":
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
-        self.pause_refresh_node_data_interval()
-        self.pause_refresh_alarms_data_interval()
-        self.pause_refresh_beekeeper_wallet_lock_status_interval()
+        self.pause_periodic_intervals()
 
         # There might be ongoing workers that should be cancelled (e.g. DynamicWidget update)
         self._cancel_workers_except_current()
@@ -446,9 +454,7 @@ class Clive(App[int]):
     async def _switch_mode_into_unlocked(self) -> None:
         await self.switch_mode_with_reset("dashboard")
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
-        self.resume_refresh_node_data_interval()
-        self.resume_refresh_alarms_data_interval()
-        self.resume_refresh_beekeeper_wallet_lock_status_interval()
+        self.resume_periodic_intervals()
 
     def _cancel_workers_except_current(self) -> None:
         try:
