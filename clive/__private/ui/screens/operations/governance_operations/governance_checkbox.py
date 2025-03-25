@@ -35,26 +35,23 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
 
     def __init__(self, *, is_voted: bool = False, initial_state: bool = False, disabled: bool = False) -> None:
         super().__init__(disabled=disabled)
-        self.__is_voted = is_voted
-        self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
-
-    def compose(self) -> ComposeResult:
-        yield self.__checkbox
-        yield Label("Vote" if not self.__is_voted else "Unvote")
-
-    def toggle(self) -> None:
-        if self.disabled:
-            return
-
-        if self.__checkbox.value:
-            self.__checkbox.value = False
-            return
-
-        self.__checkbox.value = True
+        self._is_voted = is_voted
+        self._checkbox = CheckBoxWithoutFocus(value=initial_state)
 
     @property
     def value(self) -> bool:
-        return self.__checkbox.value
+        return self._checkbox.value
+
+    def compose(self) -> ComposeResult:
+        yield self._checkbox
+        yield Label("Vote" if not self._is_voted else "Unvote")
+
+    def toggle(self) -> None:
+        if self._checkbox.value:
+            self._checkbox.value = False
+            return
+
+        self._checkbox.value = True
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:
