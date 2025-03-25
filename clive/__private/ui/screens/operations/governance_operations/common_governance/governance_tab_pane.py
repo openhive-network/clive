@@ -4,6 +4,7 @@ from textual import on
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.governance_operations.common_governance.governance_actions import (
     GovernanceActions,
@@ -20,6 +21,7 @@ class GovernanceTabPane(TabPane, OperationActionBindings):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     @on(OperationActionBindings.OperationAddedToCart)
+    @on(OperationBaseScreen.Resumed)
     async def restore_actions_and_table(self) -> None:
         await self.query_exactly_one(GovernanceActions).restore()  # type: ignore[type-abstract]
         await self.query_exactly_one(GovernanceTable).reset_page()  # type: ignore[type-abstract]
