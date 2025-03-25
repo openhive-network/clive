@@ -43,34 +43,34 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
     def __init__(self, *, is_voted: bool = False, initial_state: bool = False, pending: bool = False) -> None:
         super().__init__()
         self._pending = pending
-        self.__is_voted = is_voted
-        self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
-
-    def compose(self) -> ComposeResult:
-        yield self.__checkbox
-        yield Label("Vote" if not self.__is_voted else "Unvote")
-
-    def toggle(self) -> None:
-        if self.__checkbox.value:
-            self.__checkbox.value = False
-            return
-
-        self.__checkbox.value = True
+        self._is_voted = is_voted
+        self._checkbox = CheckBoxWithoutFocus(value=initial_state)
 
     @property
     def value(self) -> bool:
-        return self.__checkbox.value
+        return self._checkbox.value
+
+    def compose(self) -> ComposeResult:
+        yield self._checkbox
+        yield Label("Vote" if not self._is_voted else "Unvote")
+
+    def toggle(self) -> None:
+        if self._checkbox.value:
+            self._checkbox.value = False
+            return
+
+        self._checkbox.value = True
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:
-        vote_status = "unvote" if self.__is_voted else "vote"
+        vote_status = "unvote" if self._is_voted else "vote"
 
         if self._pending:
             self.post_message(self.Changed(cast(GovernanceActionStatus, f"pending_{vote_status}")))
             self._pending = False
             return
 
-        self.post_message(self.Changed(cast(GovernanceActionStatus, vote_status), add=self.__checkbox.value))
+        self.post_message(self.Changed(cast(GovernanceActionStatus, vote_status), add=self._checkbox.value))
 
     @on(Click)
     def clicked(self) -> None:
