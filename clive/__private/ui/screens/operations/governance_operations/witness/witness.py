@@ -32,6 +32,7 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
     GovernanceTableRow,
 )
 from clive.__private.ui.widgets.buttons import ClearButton, SearchButton
+from clive.__private.ui.widgets.buttons.search_operation_buttons import ClearOneLineButton, SearchOneLineButton
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
@@ -154,8 +155,8 @@ class WitnessManualSearch(Grid):
     def compose(self) -> ComposeResult:
         yield self._witness_input
         yield self._limit_input
-        yield SearchButton()
-        yield ClearButton()
+        yield SearchOneLineButton()
+        yield ClearOneLineButton()
 
     @on(SearchButton.Pressed)
     @on(CliveInput.Submitted)
