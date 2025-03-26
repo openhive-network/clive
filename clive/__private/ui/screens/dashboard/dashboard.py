@@ -15,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
+from clive.__private.logger import logger
 from clive.__private.models import Asset
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
@@ -278,6 +279,10 @@ class Dashboard(BaseScreen):
         super().__init__()
         self._previous_tracked_accounts = self.tracked_accounts
         # used to check whether working or watched accounts have changed.
+        first_key = self.profile.keys.first
+        logger.debug(f"FIRST KEY VALUE: {first_key.value}")
+        logger.debug(f"KEY VALUE IN PROFILE KEYS?: {first_key.value in self.profile.keys}")
+        logger.debug(f"KEY VALUE WITH ALIAS IN PROFILE KEYS?: {first_key in self.profile.keys}")
 
     def create_main_panel(self) -> ComposeResult:
         with Body(), AccountsContainer():
