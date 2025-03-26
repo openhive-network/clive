@@ -69,7 +69,7 @@ The launch command (depending on the branch and chain version you want to use, e
 like:
 
  ```bash
-docker pull registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest && docker run -ti --detach-keys 'ctrl-@,ctrl-q' --registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest
+docker pull registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest && docker run -ti --detach-keys 'ctrl-@,ctrl-q' registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest
  ```
 
 If you want to run clive in the interactive CLI mode, you should include the `--cli` flag in the command:
