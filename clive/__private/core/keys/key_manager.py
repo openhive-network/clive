@@ -49,7 +49,7 @@ class KeyManager:
 
     def __contains__(self, key: str | PublicKey | PublicKeyAliased | PrivateKey | PrivateKeyAliased) -> bool:
         """Check if a key is in the key manager. Possible types are determined by the __eq__ of keys."""
-        return key in self.__keys
+        return key in list(self.__keys)
 
     @property
     def first(self) -> PublicKeyAliased:
