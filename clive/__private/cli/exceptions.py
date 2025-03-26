@@ -8,12 +8,13 @@ from click import ClickException
 from clive.__private.core.constants.node import (
     PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
     SCHEDULED_TRANSFER_MAX_LIFETIME,
-    VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
-    VESTS_TO_REMOVE_DELEGATION,
+)
+from clive.__private.core.constants.node_special_assets import (
+    DELEGATIONS_REMOVE_ASSETS,
+    SCHEDULED_TRANSFER_REMOVE_ASSETS,
 )
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
-from clive.__private.core.formatters.humanize import humanize_timedelta
-from clive.__private.models.asset import Asset
+from clive.__private.core.formatters.humanize import humanize_asset, humanize_timedelta
 from clive.__private.settings import clive_prefixed_envvar
 
 if TYPE_CHECKING:
@@ -110,8 +111,9 @@ class WithdrawRoutesZeroPercentError(CLIPrettyError):
 
 class DelegationsZeroAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        remove_assets = " or ".join(humanize_asset(asset) for asset in DELEGATIONS_REMOVE_ASSETS)
         message = (
-            f"Delegation amount can't be {VESTS_TO_REMOVE_DELEGATION}, "
+            f"Delegation amount can't be {remove_assets}, "
             "if you want to remove delegation then use command `clive process delegations remove`"
         )
         super().__init__(message, errno.EPERM)
@@ -142,11 +144,10 @@ class ProcessTransferScheduleDoesNotExistsError(CLIPrettyError):
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
-        hive_symbol = Asset.get_symbol(Asset.Hive)
-        hbd_symbol = Asset.get_symbol(Asset.Hbd)
+        remove_assets = " or ".join(humanize_asset(asset) for asset in SCHEDULED_TRANSFER_REMOVE_ASSETS)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
-            f"commands must be greater than {VALUE_TO_REMOVE_SCHEDULED_TRANSFER} {hive_symbol}/{hbd_symbol}.\n"
+            f"commands must be greater than {remove_assets}.\n"
             "If you want to remove scheduled transfer, please use `clive process transfer-schedule remove` command."
         )
         super().__init__(message, errno.EPERM)

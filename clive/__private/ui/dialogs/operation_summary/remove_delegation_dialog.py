@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
+from clive.__private.core.constants.node_special_assets import DELEGATIONS_REMOVE_ASSETS
 from clive.__private.models import Asset
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
@@ -42,5 +42,5 @@ class RemoveDelegationDialog(OperationSummaryBaseDialog):
         return DelegateVestingSharesOperation(
             delegator=self.working_account_name,
             delegatee=self._delegation.delegatee,
-            vesting_shares=Asset.vests(VESTS_TO_REMOVE_DELEGATION),
+            vesting_shares=DELEGATIONS_REMOVE_ASSETS[1],
         )
