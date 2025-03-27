@@ -7,24 +7,26 @@
 # Table of contents
 
 1. [Introduction](#introduction)
-2. [Requirements](#requirements)
+2. [Running](#running)
 3. [Installation in development mode](#installation-in-development-mode)
-4. [Running](#running)
-5. [Running via Docker](#running-via-docker)
+4. [Running in development / running from CLI](#running-in-development--running-from-cli)
 
 # Introduction
 
 **clive** is a portmanteau of two words: CLI (command-line-interface) and Hive. Clive is an command line application for interacting with
 the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Clive also has a terminal user-interface (TUI) that supports mouse-based navigation that is inspired by midnight commander. Both the CLI and the TUI are written in Python. Clive is being designed in part to replace the original Hive CLI which is primarily used by power users and for writing tests for Hive.
 
-# Requirements
+# Running
 
-- python3.10
-- poetry (for development)
+The recommended way to run Clive is by using one of the dedicated scripts: `start_clive.sh` or `start_clive_cli.sh`.
+These scripts are generated during the CI pipeline and are available for download from the artifacts (for authorized users only).
+
+The latest version of the Clive startup scripts can also be obtained from:
+https://gtg.openhive.network/get/clive/
 
 # Installation in development mode
 
-Since clive is still in development, it's not available on PyPI. To install it in development mode, it's recommended
+To install Clive in the development mode, it's recommended
 to install it via poetry as it includes dependencies used during development.
 
 1. [Install poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
@@ -48,32 +50,12 @@ to install it via poetry as it includes dependencies used during development.
     poetry install  # Install CLIVE and its dev-dependencies in the virtual environment
     ```
 
-# Running
+# Running in development / running from CLI
 
 You can simply invoke the TUI application by running the `clive` command.
-If you want to use the CLI mode, pass an argument to the `clive` command.
+If you want to use the CLI mode, pass an argument to the `clive` command like `--help`.
 
  ```bash
  clive         # Run the TUI application
  clive --help  # Run the CLI application
- ```
-
-# Running via Docker
-
-In order to run clive via Docker, you need to have Docker installed on your machine. You can find the installation
-instructions [here](https://docs.docker.com/get-docker/).
-
-You can then run a docker container with your desired version of Clive.
-Specify the first 8 characters of the commit you want to use, or use the "latest" postfix.
-The launch command (depending on the branch and chain version you want to use, e.g. TUI latest develop on testnet) will look
-like:
-
- ```bash
-docker pull registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest && docker run -ti --detach-keys 'ctrl-@,ctrl-q' registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest
- ```
-
-If you want to run clive in the interactive CLI mode, you should include the `--cli` flag in the command:
-
- ```bash
-docker run -ti registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest --cli
  ```
