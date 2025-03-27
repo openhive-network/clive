@@ -222,7 +222,7 @@ class PersistentStorageService:
                 except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
                     raise ProfileEncryptionError from error
                 profile_storage_model = ProfileStorageModel.parse_raw(decrypted_profile, get_hf26_decoder)
-                assert profile_storage_model is ProfileStorageModel
+                assert isinstance(profile_storage_model, ProfileStorageModel)
                 return profile_storage_model
         raise ProfileDoesNotExistsError(profile_name)
 

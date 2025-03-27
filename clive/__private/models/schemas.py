@@ -93,6 +93,7 @@ from schemas.operations import (
     UpdateProposalVotesOperation,
     WithdrawVestingOperation,
     Hf26OperationRepresentation,
+    Hf26Operations,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
@@ -221,7 +222,7 @@ ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
 OperationRepresentationBase = AnyHf26Operation
 OperationRepresentationUnion = Hf26OperationRepresentation
-OperationUnion = Operation
+OperationUnion = Hf26Operations
 
 # virtual operation BASIC aliases
 

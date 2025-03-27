@@ -275,7 +275,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return None
 
         decoder_transfer_from_savings = get_hf26_decoder(TransferFromSavingsOperation)
-        data["request_id"] = request_id
+        data["request_id"] = request_id  # type: ignore[assignment]
         return decoder_transfer_from_savings.decode(json.dumps(data))
 
     def _create_transfer_time_reminder(self) -> Notice:

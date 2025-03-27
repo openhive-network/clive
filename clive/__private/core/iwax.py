@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models import Asset, Transaction
-    from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import PriceFeed
 
 T = TypeVar("T")
 
@@ -68,7 +68,7 @@ def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
         case "VESTS":
             return wax.vests(amount=int(asset.amount))
         case _:
-            raise UnknownAssetTypeError(asset.nai)
+            raise UnknownAssetTypeError(asset.nai())
 
 
 def __validate_wax_response(response: wax.python_result) -> None:
@@ -80,19 +80,19 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
 
     if not isinstance(item, Transaction):
-        item: OperationRepresentationBase = convert_to_representation(item)
+        item_repr: OperationRepresentationBase = convert_to_representation(item)
 
     if isinstance(item, Transaction):
         operations_representations = []
         for operation in item.operations:
-            if isinstance(operation, OperationUnion):
+            if isinstance(operation, OperationUnion):  # weryfikacja
                 operations_representations.append(convert_to_representation(operation))
             else:
                 operations_representations.append(operation)
         item.operations = operations_representations
         return get_hf26_encoder().encode(item)
 
-    return item.json().encode()
+    return item_repr.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
@@ -129,7 +129,7 @@ def deserialize_transaction(
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
     trx = Transaction.parse_raw(result.result.decode(), decoder_factory=decoder_factory)
-    assert trx is Transaction, "Transaction have incompatible type"
+    assert isinstance(trx, Transaction), "Transaction have incompatible type"
     return trx
 
 

@@ -79,7 +79,7 @@ async def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: 
 
     def mock_schema_json(*, by_alias: bool = False, ref_template: str = "", **dumps_kwargs: Any) -> str:  # noqa: ARG001
         """Mock used for simulating the situation when the schema has changed."""
-        return b"anything"
+        return "anything"
 
     # ACT & ASSERT
     # we need to have more than one revision of profile data for this test

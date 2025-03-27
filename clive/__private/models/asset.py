@@ -16,8 +16,6 @@ from schemas.fields.assets._base import AssetNaiAmount
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetAmount = DecimalConvertible
-
 AssetT = TypeVar("AssetT", bound=AssetHive | AssetHbd | AssetVests)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHive, AssetHbd, AssetVests)
 

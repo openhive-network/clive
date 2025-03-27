@@ -9,7 +9,6 @@ from msgspec import field
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
-    OperationRepresentationBase,
     OperationRepresentationUnion,
     OperationUnion,
     Signature,
@@ -25,7 +24,7 @@ from schemas.operations import convert_to_representation
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationBase] = field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = field(default_factory=list)
     ref_block_num: HiveInt = field(default_factory=lambda: HiveInt(-1))
     ref_block_prefix: HiveInt = field(default_factory=lambda: HiveInt(-1))
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
@@ -61,9 +60,9 @@ class Transaction(SchemasTransaction):
         return [op.value for op in self.operations]
 
     @classmethod
-    def convert_operations(cls, value: Any) -> list[OperationRepresentationBase]:  # noqa: ANN401
+    def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
-        return [convert_to_representation(op) for op in value]
+        return [convert_to_representation(op) for op in value]  # type: ignore[misc]
 
     def add_operation(self, *operations: OperationUnion) -> None:
         operation_representations = self.convert_operations(operations)

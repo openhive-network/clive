@@ -113,6 +113,7 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
     async def _create_operation(self) -> RecurrentTransferOperation:
         assert self.repeat is not None, "Value of repeat is None."
         assert self.memo is not None, "Value of memo is None."
+        assert self.amount is not None, "Value of amount is None."
 
         return RecurrentTransferOperation(
             from_=self.from_account,
