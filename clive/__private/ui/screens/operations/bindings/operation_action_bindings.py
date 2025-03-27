@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final
 
+from msgspec import ValidationError
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
@@ -82,7 +83,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         except CliveValidatedInputError as error:
             self.notify(str(error), severity="error")
             return None
-        except Exception as error:
+        except ValidationError as error:
             self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
 from textual import on
 from textual.containers import Horizontal, Vertical
@@ -106,7 +106,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         ------
         AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
-        return self._currency_selector.create_asset(self.value_raw)
+        return cast(AssetInputT, self._currency_selector.create_asset(self.value_raw))
 
     @property
     def default_asset_type(self) -> type[AssetInputT]:

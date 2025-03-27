@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING, cast
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models.asset import (
@@ -12,6 +13,9 @@ from clive.__private.models.asset import (
     AssetT,
 )
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
+
+if TYPE_CHECKING:
+    from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 
 
 class CurrencySelectorBase(
@@ -49,9 +53,9 @@ class CurrencySelectorBase(
     @property
     def asset_factory(self) -> AssetFactory[AssetT]:
         """Return selected asset factory."""
-        return self.value_ensure.asset_factory
+        return cast(AssetFactory[AssetT], self.value_ensure.asset_factory)
 
-    def select_asset(self, asset_type: type) -> None:
+    def select_asset(self, asset_type: type[AssetT]) -> None:
         """
         Select asset by its type.
 
@@ -61,7 +65,7 @@ class CurrencySelectorBase(
         """
         self.value = self._get_selectable(asset_type)
 
-    def create_asset(self, amount: AssetAmount) -> AssetT:
+    def create_asset(self, amount: AssetAmount) -> AssetHive | AssetHbd | AssetVests:
         """
         Create asset from amount.
 

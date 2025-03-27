@@ -19,7 +19,6 @@ from clive.__private.models.schemas import Transaction as SchemasTransaction
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-# from schemas.decoders import DecoderFactory
 from schemas.operations import convert_to_representation
 
 

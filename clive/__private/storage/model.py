@@ -87,7 +87,7 @@ class ProfileStorageModelSchema(ProfileStorageModel, kw_only=True):
         return msgspec.json.encode(schema).decode()
 
 
-def schema_hook(obj: Any) -> dict[str, str]:
+def schema_hook(obj: Any) -> dict[str, str]:  # noqa: ANN401
     if obj is Path:
         return {"type": "string", "format": "path"}
     if obj is HiveInt:

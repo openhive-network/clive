@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from textual.containers import Center
 from textual.widgets import Pretty
 
-from clive.__private.models.schemas import OperationRepresentationBase
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.widgets.section import Section
 from schemas.operations import convert_to_representation
@@ -14,7 +13,7 @@ from schemas.operations import convert_to_representation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.schemas import OperationBase
+    from clive.__private.models.schemas import OperationBase, OperationRepresentationBase
 
 
 class RawJsonDialog(CliveInfoDialog):

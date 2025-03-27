@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Callable, Protocol, TypeVar, cast
-
-import msgspec
+from typing import TYPE_CHECKING, Protocol, TypeVar, cast
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
@@ -11,6 +9,7 @@ from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models.schemas import OperationRepresentationBase, OperationUnion
 from clive.exceptions import CliveError
+from schemas.decoders import get_hf26_decoder
 from schemas.encoders import get_hf26_encoder
 from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.hive_int import HiveInt
@@ -121,14 +120,12 @@ def serialize_transaction(transaction: Transaction) -> bytes:
     return result.result
 
 
-def deserialize_transaction(
-    transaction: bytes, decoder_factory: Callable[[type[T]], msgspec.json.Decoder[T]]
-) -> Transaction:
+def deserialize_transaction(transaction: bytes) -> Transaction:
     from clive.__private.models import Transaction
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
-    trx = Transaction.parse_raw(result.result.decode(), decoder_factory=decoder_factory)
+    trx = Transaction.parse_raw(result.result.decode(), decoder_factory=get_hf26_decoder)
     assert isinstance(trx, Transaction), "Transaction have incompatible type"
     return trx
 

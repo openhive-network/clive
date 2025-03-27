@@ -30,7 +30,7 @@ class LoadTransaction(CommandWithResult[Transaction]):
             return
 
         with contextlib.suppress(WaxOperationFailedError, JSONDecodeError, Exception):
-            self._result = iwax.deserialize_transaction(self.file_path.read_bytes(), decoder_factory=get_hf26_decoder)
+            self._result = iwax.deserialize_transaction(self.file_path.read_bytes())
             return
 
         raise LoadTransactionError(self, f"Failed to parse transaction from file: {self.file_path}")

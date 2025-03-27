@@ -15,7 +15,6 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 """
 
 # ruff: noqa
-# type: ignore
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
