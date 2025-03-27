@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Callable, Protocol, cast
+from typing import TYPE_CHECKING, Callable, Protocol, TypeVar, cast
 
 import msgspec
 
@@ -9,7 +9,7 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models.schemas import OperationUnion
+from clive.__private.models.schemas import OperationRepresentationBase, OperationUnion
 from clive.exceptions import CliveError
 from schemas.encoders import get_hf26_encoder
 from schemas.fields.assets._base import AssetNaiAmount
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models import Asset, Transaction
     from clive.__private.models.schemas import OperationUnion, PriceFeed
+
+T = TypeVar("T")
 
 
 class HpAPRProtocol(Protocol):
@@ -78,7 +80,7 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
 
     if not isinstance(item, Transaction):
-        item = convert_to_representation(item)
+        item: OperationRepresentationBase = convert_to_representation(item)
 
     if isinstance(item, Transaction):
         operations_representations = []
@@ -120,7 +122,7 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 
 
 def deserialize_transaction(
-    transaction: bytes, decoder_factory: Callable[[type[msgspec.T]], msgspec.json.Decoder[msgspec.T]]
+    transaction: bytes, decoder_factory: Callable[[type[T]], msgspec.json.Decoder[T]]
 ) -> Transaction:
     from clive.__private.models import Transaction
 

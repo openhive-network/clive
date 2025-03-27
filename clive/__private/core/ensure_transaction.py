@@ -35,7 +35,7 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     if isinstance(content, OperationBase):
         operations = [convert_to_representation(content)]
     elif isinstance(content, Iterable):
-        operations = [__ensure_operation(x) for x in content]
+        operations = [convert_to_representation(__ensure_operation(x)) for x in content]
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 

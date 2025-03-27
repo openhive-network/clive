@@ -244,3 +244,10 @@ class AssetFactoryHolderVests(CliveBaseModel):
 
     asset_cls: type = AssetVests
     asset_factory: Callable[[int | str | Decimal], AssetVests] = Asset.vests
+
+
+class AssetFactoryHolder(CliveBaseModel):
+    """Holds factory for asset."""
+
+    asset_cls: type[AssetT]
+    asset_factory: AssetFactory[AssetT]

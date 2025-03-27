@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from __private.models.schemas import OperationRepresentationBase
 from textual.containers import Center
 from textual.widgets import Pretty
 
+from clive.__private.models.schemas import OperationRepresentationBase
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.widgets.section import Section
 from schemas.operations import convert_to_representation
