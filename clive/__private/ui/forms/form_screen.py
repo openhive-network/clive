@@ -25,7 +25,7 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
             f"{PREVIOUS_SCREEN_BINDING_KEY},escape",
             "previous_screen",
             "Previous screen",
-            key_display=PREVIOUS_SCREEN_BINDING_KEY,
+            key_display="^p",
         ),
         Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
     ]
