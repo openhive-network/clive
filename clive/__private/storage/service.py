@@ -77,10 +77,8 @@ class PersistentStorageService:
             logger.debug("Saving profile skipped... Looks like was explicitly skipped or hash didn't changed.")
             return
 
-        profile_name = profile.name
         profile_model = RuntimeToStorageConverter(profile).create_storage_model()
-
-        await self._save_profile_model(profile_name, profile_model)
+        await self._save_profile_model(profile_model)
         profile._update_hash_of_stored_profile()
 
     async def load_profile(self, profile_name: str) -> Profile:
@@ -174,7 +172,7 @@ class PersistentStorageService:
         symlink_dir.unlink(missing_ok=True)
         symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
 
-    async def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
+    async def _save_profile_model(self, profile_model: ProfileStorageModel) -> None:
         """
         Save profile model to the storage.
 
@@ -199,7 +197,7 @@ class PersistentStorageService:
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
 
-        filepath = versioned_storage_dir / self.get_profile_filename(profile_name)
+        filepath = versioned_storage_dir / self.get_profile_filename(profile_model.name)
         filepath.write_text(encrypted_profile)
 
     async def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
