@@ -8,7 +8,13 @@ from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
+from clive.__private.storage.model import (
+    ProfileStorageModel,
+    compare_versions,
+    get_storage_version,
+    get_storage_version_list,
+    parse_and_upgrade_storage_model,
+)
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -52,7 +58,7 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 class PersistentStorageService:
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
 
-    ProfileNameToPath: TypeAlias = dict[str, Path]
+    ProfileNameVersionToPath: TypeAlias = dict[tuple[str, str], Path]
 
     def __init__(self, encryption_service: EncryptionService) -> None:
         self._encryption_service = encryption_service
@@ -108,7 +114,7 @@ class PersistentStorageService:
     @classmethod
     def delete_profile(cls, profile_name: str) -> None:
         """
-        Remove profile with the given name from the storage.
+        Remove profile with the given name from the storage, removes all storage versions.
 
         Args:
         ----
@@ -120,15 +126,15 @@ class PersistentStorageService:
         """
         cls._raise_if_profile_not_stored(profile_name)
         filepaths = cls._get_storage_filepaths()
-        for name, path in filepaths.items():
+        for (name, _version), path in filepaths.items():
             if name == profile_name:
                 path.unlink()
 
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
-        """List all stored profile names sorted alphabetically."""
+        """List all stored profile names sorted alphabetically including older storage versions."""
         filepaths = cls._get_storage_filepaths()
-        profile_names = filepaths.keys()
+        profile_names = {name for (name, _version), _path in filepaths.items()}
         return sorted(profile_names)
 
     @classmethod
@@ -149,31 +155,21 @@ class PersistentStorageService:
 
     @classmethod
     def _get_storage_versioned_directory(cls) -> Path:
-        """Get the directory where the storage file is stored in a versioned way."""
-        revision = calculate_storage_model_revision()
-        return cls._get_storage_directory() / revision
+        """Get the directory where the current version of the storage file is stored."""
+        return cls._get_storage_directory() / get_storage_version()
 
     @classmethod
-    def _get_storage_filepaths(cls) -> ProfileNameToPath:
-        versioned_storage_dir = cls._get_storage_versioned_directory()
-        if not versioned_storage_dir.exists():
-            return {}
-        return {
-            path.stem: path
-            for path in versioned_storage_dir.iterdir()
-            if path.is_file() and cls.is_profile_filename(path.name)
-        }
-
-    def _create_current_storage_symlink(self) -> None:
-        versioned_storage_dir = self._get_storage_versioned_directory()
-        symlink_dir = self._get_storage_directory() / "current"
-
-        if symlink_dir.resolve() == versioned_storage_dir:
-            logger.debug("Current storage symlink already points to the current version. Skipping symlink creation.")
-            return
-
-        symlink_dir.unlink(missing_ok=True)
-        symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
+    def _get_storage_filepaths(cls) -> ProfileNameVersionToPath:
+        storage_dir = cls._get_storage_directory()
+        allowed_versions = get_storage_version_list()
+        paths = cls.ProfileNameVersionToPath()
+        for profile_file_path in storage_dir.glob(f"*/*{cls.PROFILE_FILENAME_SUFFIX}"):
+            path = Path(profile_file_path)
+            profile_name = path.stem
+            version = cls._calculate_version(path)
+            if version in allowed_versions:
+                paths[profile_name, version] = path
+        return paths
 
     async def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
         """
@@ -193,7 +189,6 @@ class PersistentStorageService:
 
         # create data directory if it doesn't exist
         versioned_storage_dir.mkdir(parents=True, exist_ok=True)
-        self._create_current_storage_symlink()
 
         try:
             encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
@@ -205,7 +200,7 @@ class PersistentStorageService:
 
     async def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
         """
-        Find profile storage model by name in the given container of profiles.
+        Find latest version of profile storage model by name in the clive data directory.
 
         Args:
         ----
@@ -218,16 +213,26 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         filepaths = self._get_storage_filepaths()
-        for name, path in filepaths.items():
-            if name == profile_name:
-                encrypted_profile = path.read_text()
+        selected_path: Path | None = None
+        for (n, v), path in filepaths.items():
+            if n == profile_name and (
+                selected_path is None or compare_versions(v, self._calculate_version(selected_path)) > 0
+            ):
+                selected_path = path
 
-                try:
-                    decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
-                except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-                    raise ProfileEncryptionError from error
+        if selected_path is not None:
+            encrypted_profile = selected_path.read_text()
 
-                return ProfileStorageModel.parse_raw(decrypted_profile)
+            try:
+                decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+            except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+                raise ProfileEncryptionError from error
+
+            selected_version = self._calculate_version(selected_path)
+            model = parse_and_upgrade_storage_model(decrypted_profile, selected_version)
+            if selected_version != get_storage_version():
+                await self._save_profile_model(profile_name, model)
+            return model
         raise ProfileDoesNotExistsError(profile_name)
 
     @classmethod
@@ -241,3 +246,7 @@ class PersistentStorageService:
 
         if profile.is_newly_created and profile_name in existing_profile_names:
             raise ProfileAlreadyExistsError(profile_name, existing_profile_names)
+
+    @classmethod
+    def _calculate_version(cls, path: Path) -> str:
+        return path.parent.name
