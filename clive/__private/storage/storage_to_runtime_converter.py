@@ -35,7 +35,7 @@ class StorageToRuntimeConverter:
             watched_accounts=self._watched_accounts_from_profile_storage_model(),
             known_accounts=self._known_accounts_from_profile_storage_model(),
             key_aliases=self._key_aliases_from_profile_storage_model(),
-            transaction=self._transaction_core_from_storage_model(),
+            transaction=self._schemas_transaction_from_storage_model(),
             transaction_file_path=self._transaction_file_path_from_storage_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
@@ -68,20 +68,20 @@ class StorageToRuntimeConverter:
     def _key_aliases_from_profile_storage_model(self) -> set[PublicKeyAliased]:
         return {self._key_alias_from_model(key) for key in self._model.key_aliases}
 
-    def _transaction_core_from_storage_model(self) -> Transaction | None:
+    def _schemas_transaction_from_storage_model(self) -> Transaction | None:
         transaction_storage_model = self._model.transaction
 
         if transaction_storage_model is None:
             return None
 
-        transaction_core = transaction_storage_model.transaction_core
+        schemas_transaction = transaction_storage_model.schemas_transaction
         return Transaction(
-            operations=deepcopy(transaction_core.operations),
-            ref_block_num=transaction_core.ref_block_num,
-            ref_block_prefix=transaction_core.ref_block_prefix,
-            expiration=transaction_core.expiration,
-            extensions=deepcopy(transaction_core.extensions),
-            signatures=deepcopy(transaction_core.signatures),
+            operations=deepcopy(schemas_transaction.operations),
+            ref_block_num=schemas_transaction.ref_block_num,
+            ref_block_prefix=schemas_transaction.ref_block_prefix,
+            expiration=schemas_transaction.expiration,
+            extensions=deepcopy(schemas_transaction.extensions),
+            signatures=deepcopy(schemas_transaction.signatures),
         )
 
     def _transaction_file_path_from_storage_model(self) -> Path | None:
