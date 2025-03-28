@@ -69,18 +69,8 @@ class ProfileStorageModel(StorageBaseModel):
         return hash(self.json(indent=4))
 
 
-class AlarmStorageModelSchema(AlarmStorageModel):
-    identifier: Any
-    """Do not include alarm identifiers union in the schema so new alarms can be added without revision change."""
-
-
-class TrackedAccountStorageModelSchema(TrackedAccountStorageModel):
-    alarms: list[AlarmStorageModelSchema] = []  # noqa: RUF012
-
-
 class ProfileStorageModelSchema(ProfileStorageModel):
     transaction: TransactionStorageModelSchema
-    tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
 
 
 def get_storage_model_schema_json() -> str:
