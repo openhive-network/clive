@@ -78,11 +78,11 @@ class PersistentStorageService:
             logger.debug("Invoked save_profile but profile didn't change since last load/save.")
             return
 
-        profile._update_hash_of_stored_profile(profile_hash)
         profile_name = profile.name
         profile_model = RuntimeToStorageConverter(profile).create_storage_model()
 
         await self._save_profile_model(profile_name, profile_model)
+        profile._update_hash_of_stored_profile(profile_hash)
 
     async def load_profile(self, profile_name: str) -> Profile:
         """
