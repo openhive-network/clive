@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Sequence
 
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
-from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
@@ -36,7 +36,7 @@ class TransactionCoreStorageModel(StorageBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = HiveInt(-1)
     ref_block_prefix: HiveInt = HiveInt(-1)
-    expiration: HiveDateTime = utc_epoch()  # type: ignore[assignment]
+    expiration: HiveDateTime = datetime.fromtimestamp(0, tz=timezone.utc)  # type: ignore[assignment]
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
 
