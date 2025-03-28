@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import errno
-from typing import TYPE_CHECKING, Final, Iterable
+from typing import TYPE_CHECKING, Final
 
 from click import ClickException
 
@@ -254,27 +254,13 @@ class CLITransactionNotSignedError(CLIPrettyError):
 class CLITransactionUnknownAccountError(CLIPrettyError):
     """Raise when trying to perform transaction with operation(s) to unknown account."""
 
-    def __init__(self, accounts: Iterable[str]) -> None:
-        if isinstance(accounts, str):
-            self.accounts = {accounts}
-        else:
-            self.accounts = set(accounts)
+    def __init__(self, *account_names: str) -> None:
+        self.account_names = list(account_names)
 
-        if len(self.accounts) == 1:
-            account_str = next(iter(self.accounts))
-            message = (
-                "Clive cannot perform the transaction because the "
-                f"target account {account_str} is not on the list of known accounts.\n"
-                "To perform the transaction, add the target account to the list of known accounts. "
-                "See clive configure known-account -h"
-            )
-        else:
-            accounts_str = ", ".join(sorted(self.accounts))
-            message = (
-                "Clive cannot perform the transaction because the "
-                f"target accounts {accounts_str} are not on the list of known accounts.\n"
-                "To perform the transaction, add the target account to the list of known accounts. "
-                "See clive configure known-account -h"
-            )
-
+        message = (
+            "Clive cannot perform the transaction because the "
+            f"target accounts: {self.account_names} are not on the list of known accounts.\n"
+            "To perform the transaction, add the target accounts to the list of known accounts. "
+            "See `clive configure known-account -h`"
+        )
         super().__init__(message, errno.EINVAL)
