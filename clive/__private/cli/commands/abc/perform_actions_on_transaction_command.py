@@ -101,9 +101,9 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
-        transaction_ensured = await self.get_transaction()
         visitor = PotentialKnownAccountCollector()
-        transaction_ensured.accept(visitor)
+        transaction = await self.get_transaction()
+        transaction.accept(visitor)
         unknown_accounts = visitor.get_unknown_accounts(
             [AccountName(known_account.name) for known_account in self.profile.accounts.known]
         )
