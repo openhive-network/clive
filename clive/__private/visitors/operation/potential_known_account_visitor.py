@@ -27,6 +27,8 @@ if TYPE_CHECKING:
 
 
 class PotentialKnownAccountCollector(OperationVisitor):
+    """Collects accounts that could potentially be known basing on the operations that are made to them."""
+
     def __init__(self) -> None:
         self.accounts: set[AccountName] = set()
 
