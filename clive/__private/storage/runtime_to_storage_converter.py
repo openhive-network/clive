@@ -3,12 +3,12 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
+from clive.__private.models.schemas import Transaction
 from clive.__private.storage.model import (
     AlarmStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
     TrackedAccountStorageModel,
-    TransactionCoreStorageModel,
     TransactionStorageModel,
 )
 
@@ -49,7 +49,7 @@ class RuntimeToStorageConverter:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
     def _transaction_to_model(self) -> TransactionStorageModel:
-        transaction_core = TransactionCoreStorageModel(
+        schemas_transaction = Transaction(
             operations=deepcopy(self._profile.operation_representations),
             ref_block_num=self._profile.transaction.ref_block_num,
             ref_block_prefix=self._profile.transaction.ref_block_prefix,
@@ -58,7 +58,7 @@ class RuntimeToStorageConverter:
             signatures=deepcopy(self._profile.transaction.signatures),
         )
         return TransactionStorageModel(
-            transaction_core=transaction_core, transaction_file_path=self._profile.transaction_file_path
+            schemas_transaction=schemas_transaction, transaction_file_path=self._profile.transaction_file_path
         )
 
     def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModel:
