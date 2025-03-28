@@ -19,7 +19,6 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import AccountName
 from clive.__private.validators.path_validator import PathValidator
 from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 
@@ -104,9 +103,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         visitor = PotentialKnownAccountCollector()
         transaction = await self.get_transaction()
         transaction.accept(visitor)
-        unknown_accounts = visitor.get_unknown_accounts(
-            [AccountName(known_account.name) for known_account in self.profile.accounts.known]
-        )
+        unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
         if unknown_accounts:
             raise CLITransactionUnknownAccountError(unknown_accounts)
 

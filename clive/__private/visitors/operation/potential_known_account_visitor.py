@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from typing_extensions import override
 
@@ -12,8 +12,8 @@ from clive.__private.core.constants.node_special_assets import (
 from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 
 if TYPE_CHECKING:
+    from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.models.schemas import (
-        AccountName,
         AccountWitnessProxyOperation,
         CancelTransferFromSavingsOperation,
         DelegateVestingSharesOperation,
@@ -30,15 +30,17 @@ class PotentialKnownAccountCollector(OperationVisitor):
     """Collects accounts that could potentially be known basing on the operations that are made to them."""
 
     def __init__(self) -> None:
-        self.accounts: set[AccountName] = set()
+        self.accounts: set[str] = set()
+        """Names of accounts that could potentially be known."""
 
-    def get_unknown_accounts(self, already_known_accounts: list[AccountName]) -> list[AccountName]:
-        return [account for account in self.accounts if account not in already_known_accounts]
+    def get_unknown_accounts(self, already_known_accounts: Iterable[KnownAccount]) -> list[str]:
+        already_known_accounts_names = [account.name for account in already_known_accounts]
+        return [account for account in self.accounts if account not in already_known_accounts_names]
 
     @override
     def visit_account_witness_proxy_operation(self, operation: AccountWitnessProxyOperation) -> None:
         if operation.proxy:
-            self.accounts.add(operation.proxy)  # type: ignore[arg-type]
+            self.accounts.add(operation.proxy)
 
     @override
     def visit_delegate_vesting_shares_operation(self, operation: DelegateVestingSharesOperation) -> None:
@@ -70,7 +72,7 @@ class PotentialKnownAccountCollector(OperationVisitor):
     @override
     def visit_transfer_to_vesting_operation(self, operation: TransferToVestingOperation) -> None:
         if operation.to:
-            self.accounts.add(operation.to)  # type: ignore[arg-type]
+            self.accounts.add(operation.to)
 
     @override
     def visit_cancel_transfer_from_savings_operation(self, operation: CancelTransferFromSavingsOperation) -> None:
