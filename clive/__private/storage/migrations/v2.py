@@ -23,6 +23,14 @@ class TrackedAccountStorageModel(StorageBaseModel):
     name: str
     alarms: Sequence[AlarmStorageModel] = []
 
+    @validator("alarms", pre=True, always=True)
+    def validate_alarms(cls, value: list[Any]) -> Sequence[AlarmStorageModel]:  # noqa: N805
+        try:
+            return [AlarmStorageModel.parse_obj(entry) for entry in value]
+        except (ValueError, TypeError):
+            logger.warning("Failed to parse alarms loaded from file")
+            return []
+
 
 class KeyAliasStorageModel(StorageBaseModel):
     alias: str
