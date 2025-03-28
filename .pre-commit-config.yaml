@@ -13,7 +13,7 @@ repos:
       - id: trailing-whitespace
         exclude: ".*_pattern.txt|.*wallet|.*config.ini"
       - id: end-of-file-fixer
-        exclude: ".*_pattern.txt|.*config.ini|.*alternate-chain-spec.json|.*timestamp|.*wallet"
+        exclude: ".*_pattern.txt|.*config.ini|.*alternate-chain-spec.json|.*timestamp|.*wallet|.*profile"
   - repo: https://github.com/python-poetry/poetry
     rev: 1.7.1
     hooks:
