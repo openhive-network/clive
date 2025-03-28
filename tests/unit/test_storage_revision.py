@@ -17,8 +17,8 @@ from clive.__private.storage.service import PersistentStorageService
 if TYPE_CHECKING:
     from typing import Callable
 
-EXPECTED_REVISION_HASH: Final[str] = "c600278a"
-EXPECTED_VERSION: Final[str] = "v3"
+EXPECTED_REVISION_HASH: Final[str] = "ec33120b"
+EXPECTED_VERSION: Final[str] = "v2"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -62,7 +62,7 @@ async def test_storage_dir_contains_expected_files() -> None:
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
-    assert version_dir.is_dir(), "Revision dir is not a directory or is missing."
+    assert version_dir.is_dir(), f"Expected revision directory {version_dir} is not a directory or is missing."
     assert profile_file.is_file(), "Profile file is not a file or is missing."
     assert profile_file.read_text(), "Profile file is empty."
 
@@ -70,11 +70,10 @@ async def test_storage_dir_contains_expected_files() -> None:
 @pytest.mark.parametrize(
     ("func", "expected_hash"),
     [
-        (migrations.v1.calculate_storage_model_revision, "c600278a"),
-        (migrations.v2.calculate_storage_model_revision, "c600278a"),
-        (migrations.v3.calculate_storage_model_revision, "c600278a"),
+        (migrations.v1.calculate_storage_model_revision, "b17e241d"),
+        (migrations.v2.calculate_storage_model_revision, "ec33120b"),
     ],
-    ids=["version_1", "version_2", "version_3"],
+    ids=["version_1", "version_2"],
 )
 async def test_storage_revision_hash_in_older_versions(func: Callable[[], str], expected_hash: str) -> None:
     message = (
@@ -83,4 +82,3 @@ async def test_storage_revision_hash_in_older_versions(func: Callable[[], str], 
         " of storage might not work properly, check cli tests for performing storage migration"
     )
     assert func() == expected_hash, message
-
