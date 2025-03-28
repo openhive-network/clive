@@ -65,6 +65,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 from clive.__private.core.error_handlers.tui_error_handler import TUIErrorHandler
+from clive.__private.logger import logger
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
@@ -501,7 +502,8 @@ class Commands(Generic[WorldT_co]):
 
     async def save_profile(self) -> NoOpWrapper | CommandWrapper:
         profile = self._world.profile
-        if profile.is_skip_save_set:
+        if not profile.should_be_saved:
+            logger.debug("Saving profile skipped... Looks like was explicitly skipped or hash didn't changed.")
             return NoOpWrapper()
 
         return await self.__surround_with_exception_handlers(
