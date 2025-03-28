@@ -4,7 +4,10 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Sequence
 
+from pydantic import validator
+
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
+from clive.__private.logger import logger
 from clive.__private.models.schemas import Transaction  # noqa: TCH001
 from clive.__private.storage.migrations.storage_base_model import StorageBaseModel
 
@@ -47,6 +50,14 @@ class ProfileStorageModel(StorageBaseModel):
 
     def __hash__(self) -> int:
         return hash(self.json(indent=4))
+
+    @validator("transaction", pre=True, always=True)
+    def validate_transaction(cls, value: object) -> TransactionStorageModel | None:  # noqa: N805
+        try:
+            return TransactionStorageModel.parse_obj(value) if value is not None else None
+        except (ValueError, TypeError):
+            logger.warning("Failed to parse transaction loaded from file")
+            return None
 
 
 class ProfileStorageModelSchema(ProfileStorageModel):
