@@ -44,7 +44,7 @@ class SetAccountFormScreen(BaseScreen, CreateProfileFormScreen):
 
     @property
     def working_account_checkbox(self) -> WorkingAccountCheckbox:
-        return self.app.query_exactly_one(WorkingAccountCheckbox)
+        return self.query_exactly_one(WorkingAccountCheckbox)
 
     def on_mount(self) -> None:
         self.app.update_data_from_node()
