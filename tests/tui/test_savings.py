@@ -62,7 +62,7 @@ OTHER_RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 
 
 def is_to_savings_radio_button_checked(pilot: ClivePilot) -> bool:
-    radio_buttons = pilot.app.query_one(CliveRadioButton)
+    radio_buttons = pilot.app.screen.query_one(CliveRadioButton)
     return radio_buttons.value
 
 

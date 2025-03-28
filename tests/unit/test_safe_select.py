@@ -52,7 +52,7 @@ class SelectApp(App[None]):
 async def test_getting_safe_select_value_with_min_amount_of_items_and_nothing_selected() -> None:
     async with SelectApp().run_test() as pilot:
         app: SelectApp = pilot.app  # type: ignore[assignment]
-        select = app.query_exactly_one(SafeSelect)
+        select = app.screen.query_exactly_one(SafeSelect)
 
         assert isinstance(select._content, Select)
         with pytest.raises(NoItemSelectedError, match="No item is selected yet from"):
@@ -69,7 +69,7 @@ class SelectAppInitial(App[None]):
 async def test_getting_safe_select_value_with_min_amount_of_items_and_default_selected() -> None:
     async with SelectAppInitial().run_test() as pilot:
         app: SelectAppInitial = pilot.app  # type: ignore[assignment]
-        select = app.query_exactly_one(SafeSelect)
+        select = app.screen.query_exactly_one(SafeSelect)
 
         assert isinstance(select._content, Select)
         assert select.value == app.INITIAL_VALUE
