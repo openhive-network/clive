@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Final, Literal, cast
 
+import msgspec
 from textual import on
 from textual.containers import Grid, Horizontal
 from textual.widgets import Label, RadioSet, Static, TabPane
@@ -265,8 +266,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         }
 
         if self._to_button.value:
-            decoder_transfer_to_savings = get_hf26_decoder(TransferToSavingsOperation)
-            return cast(TransferToSavingsOperation, decoder_transfer_to_savings.decode(json.dumps(data)))
+            return TransferToSavingsOperation.parse_builtins(data, decoder_factory=get_hf26_decoder)
 
         try:
             request_id = self._create_request_id()
@@ -274,9 +274,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        decoder_transfer_from_savings = get_hf26_decoder(TransferFromSavingsOperation)
         data["request_id"] = request_id  # type: ignore[assignment]
-        return cast(TransferFromSavingsOperation, decoder_transfer_from_savings.decode(json.dumps(data)))
+        return TransferFromSavingsOperation.parse_builtins(data, decoder_factory=get_hf26_decoder)
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")
