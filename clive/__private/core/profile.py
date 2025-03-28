@@ -188,8 +188,6 @@ class Profile:
             ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
-        if self._skip_save:
-            return
         await PersistentStorageService(encryption_service).save_profile(self)
 
     def delete(self) -> None:
