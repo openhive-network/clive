@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from clive.__private.storage.migrations.current import (
+from clive.__private.storage.migrations.v1 import (
     AlarmStorageModel,
     KeyAliasStorageModel,
+    TrackedAccountStorageModel,
+)
+from clive.__private.storage.migrations.v2 import (
     ProfileStorageModel,
     ProfileStorageModelSchema,
-    TrackedAccountStorageModel,
     TransactionStorageModel,
     calculate_storage_model_revision,
-    get_storage_version,
+    get_storage_model_schema_json,
 )
-from clive.__private.storage.migrations.upgrade import parse_and_upgrade_storage_model
-from clive.__private.storage.migrations.version import FIRST_REVISION, Version
+from clive.__private.storage.migrations.version import Version
 
 __all__ = [
     "AlarmStorageModel",
@@ -20,9 +21,10 @@ __all__ = [
     "ProfileStorageModelSchema",
     "TrackedAccountStorageModel",
     "TransactionStorageModel",
-    "FIRST_REVISION",
-    "Version",
     "calculate_storage_model_revision",
-    "get_storage_version",
-    "parse_and_upgrade_storage_model",
+    "get_storage_model_schema_json",
 ]
+
+
+def get_storage_version() -> Version:
+    return Version.V2

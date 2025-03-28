@@ -6,10 +6,15 @@ authors = ["Wiesław Kędzierski <wkedzierski@syncad.com>"]
 packages = [
     { include = "clive_local_tools" },
 ]
+include = [
+    "clive_local_tools/storage_migration/prepared_data/**/*",
+    "clive_local_tools/storage_migration/with_alarms/**/*",
+    "clive_local_tools/storage_migration/with_operations/**/*",
+    "clive_local_tools/storage_migration/without_alarms_and_operations/**/*",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-
 
 [build-system]
 requires = ["poetry-core"]

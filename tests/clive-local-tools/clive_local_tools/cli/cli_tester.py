@@ -425,3 +425,9 @@ class CLITester:
 
     def configure_known_account_remove(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(["configure", "known-account", "remove"], **extract_params(locals()))
+
+    def show_profiles(self) -> Result:
+        return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
+
+    def configure_profile_remove(self, *, profile_name: str, force: bool | None = None) -> Result:
+        return self.__invoke_command_with_options(["configure", "profile", "remove"], **extract_params(locals()))

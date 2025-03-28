@@ -8,7 +8,13 @@ from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
+from clive.__private.storage.model import (
+    FIRST_REVISION,
+    ProfileStorageModel,
+    Version,
+    get_storage_version,
+    parse_and_upgrade_storage_model,
+)
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -26,6 +32,13 @@ class ProfileDoesNotExistsError(PersistentStorageServiceError):
     def __init__(self, profile_name: str) -> None:
         self.profile_name = profile_name
         self.message = f"Profile `{profile_name}` does not exist."
+        super().__init__(self.message)
+
+
+class MultipleProfileVersionsError(PersistentStorageServiceError):
+    def __init__(self, profile_name: str) -> None:
+        self.profile_name = profile_name
+        self.message = f"Multiple versions or backups of profile `{profile_name}` exist."
         super().__init__(self.message)
 
 
@@ -49,10 +62,16 @@ class ProfileEncryptionError(PersistentStorageServiceError):
         super().__init__(self.MESSAGE)
 
 
+class UnknownVersionError(PersistentStorageServiceError):
+    def __init__(self, version: str) -> None:
+        super().__init__(f"version {version} is unknown.")
+
+
 class PersistentStorageService:
+    BACKUP_FILENAME_SUFFIX: Final[str] = ".backup"
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
 
-    ProfileNameToPath: TypeAlias = dict[str, Path]
+    ProfileNameVersionToPath: TypeAlias = dict[tuple[str, Version], Path]
 
     def __init__(self, encryption_service: EncryptionService) -> None:
         self._encryption_service = encryption_service
@@ -99,20 +118,22 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
-        profile_storage_model = await self._find_profile_storage_model_by_name(profile_name)
+        profile_storage_model = await self._find_or_migrate_profile_storage_model_by_name(profile_name)
 
         profile = StorageToRuntimeConverter(profile_storage_model).create_profile()
         profile._update_hash_of_stored_profile()
         return profile
 
     @classmethod
-    def delete_profile(cls, profile_name: str) -> None:
+    def delete_profile(cls, profile_name: str, *, force: bool = False) -> None:
         """
-        Remove profile with the given name from the storage.
+        Remove profile with the given name from the storage, removes all storage versions.
 
         Args:
         ----
             profile_name: Name of the profile to be removed.
+            force: If True, remove all profile versions, also not migrated/backed-up.
+                If False and multiple versions exist, raise error.
 
         Raises:
         ------
@@ -120,15 +141,21 @@ class PersistentStorageService:
         """
         cls._raise_if_profile_not_stored(profile_name)
         filepaths = cls._get_storage_filepaths()
-        for name, path in filepaths.items():
-            if name == profile_name:
-                path.unlink()
+        backup_filepaths = cls._get_backup_filepaths()
+
+        to_remove = [path for (name, _version), path in filepaths.items() if name == profile_name]
+        to_remove.extend([path for (name, _version), path in backup_filepaths.items() if name == profile_name])
+        if not force and len(to_remove) > 1:
+            raise MultipleProfileVersionsError(profile_name)
+        for path in to_remove:
+            path.unlink()
+        cls._remove_profile_directory(profile_name)
 
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
-        """List all stored profile names sorted alphabetically."""
+        """List all stored profile names sorted alphabetically including older storage versions."""
         filepaths = cls._get_storage_filepaths()
-        profile_names = filepaths.keys()
+        profile_names = {name for (name, _version), _path in filepaths.items()}
         return sorted(profile_names)
 
     @classmethod
@@ -140,40 +167,43 @@ class PersistentStorageService:
         return file_name.endswith(cls.PROFILE_FILENAME_SUFFIX)
 
     @classmethod
-    def get_profile_filename(cls, profile_name: str) -> str:
-        return f"{profile_name}{cls.PROFILE_FILENAME_SUFFIX}"
+    def get_profile_directory(cls, profile_name: str) -> Path:
+        return cls._get_storage_directory() / profile_name
+
+    @classmethod
+    def get_profile_filename(cls) -> str:
+        version_string = get_storage_version().value
+        return f"{version_string}{cls.PROFILE_FILENAME_SUFFIX}"
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
         return safe_settings.data_path / "data"
 
     @classmethod
-    def _get_storage_versioned_directory(cls) -> Path:
-        """Get the directory where the storage file is stored in a versioned way."""
-        revision = calculate_storage_model_revision()
-        return cls._get_storage_directory() / revision
+    def _get_filepaths(cls, path_extension: str) -> ProfileNameVersionToPath:
+        storage_dir = cls._get_storage_directory()
+        paths = cls.ProfileNameVersionToPath()
+        for profile_file_path in storage_dir.glob(f"*/*{path_extension}"):
+            path = Path(profile_file_path)
+            if cls._is_valid_profile_filepath(path):
+                profile_name = cls._profile_name_from_path(path)
+                version = cls._version_from_path(path)
+                paths[profile_name, version] = path
+        return paths
 
     @classmethod
-    def _get_storage_filepaths(cls) -> ProfileNameToPath:
-        versioned_storage_dir = cls._get_storage_versioned_directory()
-        if not versioned_storage_dir.exists():
-            return {}
-        return {
-            path.stem: path
-            for path in versioned_storage_dir.iterdir()
-            if path.is_file() and cls.is_profile_filename(path.name)
-        }
+    def _get_storage_filepaths(cls) -> ProfileNameVersionToPath:
+        return cls._get_filepaths(cls.PROFILE_FILENAME_SUFFIX)
 
-    def _create_current_storage_symlink(self) -> None:
-        versioned_storage_dir = self._get_storage_versioned_directory()
-        symlink_dir = self._get_storage_directory() / "current"
+    @classmethod
+    def _get_backup_filepaths(cls) -> ProfileNameVersionToPath:
+        return cls._get_filepaths(cls.BACKUP_FILENAME_SUFFIX)
 
-        if symlink_dir.resolve() == versioned_storage_dir:
-            logger.debug("Current storage symlink already points to the current version. Skipping symlink creation.")
-            return
-
-        symlink_dir.unlink(missing_ok=True)
-        symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
+    @classmethod
+    def _remove_profile_directory(cls, profile_name: str) -> None:
+        profile_dir = cls.get_profile_directory(profile_name)
+        if profile_dir.exists():
+            profile_dir.rmdir()
 
     async def _save_profile_model(self, profile_name: str, profile_model: ProfileStorageModel) -> None:
         """
@@ -189,23 +219,27 @@ class PersistentStorageService:
             ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
-        versioned_storage_dir = PersistentStorageService._get_storage_versioned_directory()
+        profile_directory = self.get_profile_directory(profile_name)
 
         # create data directory if it doesn't exist
-        versioned_storage_dir.mkdir(parents=True, exist_ok=True)
-        self._create_current_storage_symlink()
+        profile_directory.mkdir(parents=True, exist_ok=True)
 
         try:
             encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
 
-        filepath = versioned_storage_dir / self.get_profile_filename(profile_name)
+        filepath = profile_directory / self.get_profile_filename()
         filepath.write_text(encrypted_profile)
 
-    async def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
+    async def _find_or_migrate_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
         """
-        Find profile storage model by name in the given container of profiles.
+        Find current version of profile storage model by name in the clive data directory or migrate older version.
+
+        Returns:
+            ProfileStorageModel in current version if profile in current version exists,
+            otherwise in older version that was most recently modified is taken and migrated to current version,
+            this older version is then moved to backup.
 
         Args:
         ----
@@ -218,17 +252,36 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         filepaths = self._get_storage_filepaths()
-        for name, path in filepaths.items():
-            if name == profile_name:
-                encrypted_profile = path.read_text()
+        selected_path: Path | None = None
+        for (n, _v), path in filepaths.items():
+            if n == profile_name and self._storage_path_le(selected_path, path):
+                selected_path = path
 
-                try:
-                    decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
-                except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-                    raise ProfileEncryptionError from error
+        if selected_path is not None:
+            encrypted_profile = selected_path.read_text()
 
-                return ProfileStorageModel.parse_raw(decrypted_profile)
+            try:
+                decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+            except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+                raise ProfileEncryptionError from error
+
+            selected_version = self._version_from_path(selected_path)
+            model = parse_and_upgrade_storage_model(decrypted_profile, selected_version)
+            if selected_version != get_storage_version():
+                await self._save_profile_model(profile_name, model)
+                self._move_profile_to_backup(selected_path)
+            return model
         raise ProfileDoesNotExistsError(profile_name)
+
+    def _move_profile_to_backup(self, path: Path) -> None:
+        version = self._version_from_path(path)
+        if version == Version.V0:
+            profile_name = self._profile_name_from_path(path)
+            backup_path = path.parent / f"{profile_name}{self.BACKUP_FILENAME_SUFFIX}"
+            path.replace(backup_path)
+            return
+        backup_path = path.parent / f"{version}{self.BACKUP_FILENAME_SUFFIX}"
+        path.replace(backup_path)
 
     @classmethod
     def _raise_if_profile_not_stored(cls, profile_name: str) -> None:
@@ -241,3 +294,36 @@ class PersistentStorageService:
 
         if profile.is_newly_created and profile_name in existing_profile_names:
             raise ProfileAlreadyExistsError(profile_name, existing_profile_names)
+
+    @classmethod
+    def _is_valid_profile_filepath(cls, path: Path) -> bool:
+        is_suffix_correct = path.suffix in [cls.PROFILE_FILENAME_SUFFIX, cls.BACKUP_FILENAME_SUFFIX]
+        if path.parent.name == FIRST_REVISION:
+            return is_suffix_correct
+        version_string = path.stem
+        return is_suffix_correct and any(version_enum.value == version_string for version_enum in list(Version))
+
+    @classmethod
+    def _profile_name_from_path(cls, path: Path) -> str:
+        profile_name_or_dir = path.parent.name
+        if profile_name_or_dir == FIRST_REVISION:
+            return path.stem
+        return profile_name_or_dir
+
+    @classmethod
+    def _version_from_path(cls, path: Path) -> Version:
+        assert cls._is_valid_profile_filepath(path), f"profile stored on path {path} has unknown version"
+        if path.parent.name == FIRST_REVISION:
+            return Version.V0
+        version = path.stem
+        return Version(version)
+
+    @classmethod
+    def _storage_path_le(cls, path1: Path | None, path2: Path) -> bool:
+        if path1 is None:
+            return True
+        if cls._version_from_path(path2) is get_storage_version():
+            return True
+        if cls._version_from_path(path1) is get_storage_version():
+            return False
+        return path1.stat().st_mtime <= path2.stat().st_mtime
