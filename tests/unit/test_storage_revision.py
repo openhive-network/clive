@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Final
 
+import pytest
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
 
@@ -9,13 +10,15 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage import migrations
+from clive.__private.storage.model import calculate_storage_model_revision, get_storage_version
 from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
-    from _pytest.monkeypatch import MonkeyPatch
+    from typing import Callable
 
-EXPECTED_REVISION: Final[str] = "c600278a"
+EXPECTED_REVISION_HASH: Final[str] = "c600278a"
+EXPECTED_VERSION: Final[str] = "v3"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -34,23 +37,24 @@ async def create_and_save_profile(profile_name: str) -> None:
 
 def test_storage_revision_doesnt_changed() -> None:
     # ACT
-    actual_revision = calculate_storage_model_revision()
+    actual_revision_hash = calculate_storage_model_revision()
+    actual_version = get_storage_version()
 
     # ASSERT
     message = (
         "Storage model revision has changed. If you are sure that it is expected,"
         " please update the expected revision."
     )
-    assert actual_revision == EXPECTED_REVISION, message
+    assert actual_revision_hash == EXPECTED_REVISION_HASH, message
+    assert actual_version == EXPECTED_VERSION, "Storage model version has changed."
 
 
 async def test_storage_dir_contains_expected_files() -> None:
     # ARRANGE
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
-    current_revision_symlink = storage_data_dir / "current"
-    revision_dir = storage_data_dir / EXPECTED_REVISION
+    version_dir = storage_data_dir / EXPECTED_VERSION
     filename = PersistentStorageService.get_profile_filename(FIRST_PROFILE_NAME)
-    profile_json_file = storage_data_dir / revision_dir / filename
+    profile_file = storage_data_dir / version_dir / filename
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
@@ -58,42 +62,25 @@ async def test_storage_dir_contains_expected_files() -> None:
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
-    assert current_revision_symlink.is_symlink(), "Current revision path is not a symlink or is missing."
-    assert revision_dir.is_dir(), "Revision dir is not a directory or is missing."
-    assert (
-        current_revision_symlink.resolve() == revision_dir
-    ), "Current revision symlink does not point to the expected revision dir."
-    assert profile_json_file.is_file(), "Profile JSON file is not a file or is missing."
-    assert profile_json_file.read_text(), "Profile JSON file is empty."
+    assert version_dir.is_dir(), "Revision dir is not a directory or is missing."
+    assert profile_file.is_file(), "Profile file is not a file or is missing."
+    assert profile_file.read_text(), "Profile file is empty."
 
 
-async def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: MonkeyPatch) -> None:
-    # ARRANGE
-    storage_data_dir = tt.context.get_current_directory() / "clive/data"
-    current_revision_symlink = storage_data_dir / "current"
-    new_revision_dir = storage_data_dir / "ee087417"
-    profile_name_in_new_revision = "second"
+@pytest.mark.parametrize(
+    ("func", "expected_hash"),
+    [
+        (migrations.v1.calculate_storage_model_revision, "c600278a"),
+        (migrations.v2.calculate_storage_model_revision, "c600278a"),
+        (migrations.v3.calculate_storage_model_revision, "c600278a"),
+    ],
+    ids=["version_1", "version_2", "version_3"],
+)
+async def test_storage_revision_hash_in_older_versions(func: Callable[[], str], expected_hash: str) -> None:
+    message = (
+        "Revision hash in older storage versions shouldn't change,"
+        " it means older storage versions may not be loaded properly and migration"
+        " of storage might not work properly, check cli tests for performing storage migration"
+    )
+    assert func() == expected_hash, message
 
-    def mock_schema_json(*, by_alias: bool = False, ref_template: str = "", **dumps_kwargs: Any) -> str:  # noqa: ARG001
-        """Mock used for simulating the situation when the schema has changed."""
-        return "anything"
-
-    # ACT & ASSERT
-    # we need to have more than one revision of profile data for this test
-    await create_and_save_profile(FIRST_PROFILE_NAME)
-
-    # stimulate the situation when the schema has changed, causing different revision
-    monkeypatch.setattr(ProfileStorageModelSchema, "schema_json", mock_schema_json)
-
-    assert not new_revision_dir.is_dir(), "New revision dir should not yet exist."
-    assert Profile.list_profiles() == [], "There should be no profiles yet in new revision."
-
-    await create_and_save_profile(profile_name_in_new_revision)
-
-    assert new_revision_dir.is_dir(), "New revision dir should exist."
-
-    message = "Current revision symlink should point to new revision."
-    assert current_revision_symlink.resolve() == new_revision_dir, message
-
-    message = "There should be only one profile saved in new revision."
-    assert Profile.list_profiles() == [profile_name_in_new_revision], message
