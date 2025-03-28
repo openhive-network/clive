@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 from textual import on
 from textual.containers import Grid, Horizontal
@@ -266,7 +266,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         if self._to_button.value:
             decoder_transfer_to_savings = get_hf26_decoder(TransferToSavingsOperation)
-            return decoder_transfer_to_savings.decode(json.dumps(data))
+            return cast(TransferToSavingsOperation, decoder_transfer_to_savings.decode(json.dumps(data)))
 
         try:
             request_id = self._create_request_id()
@@ -276,7 +276,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         decoder_transfer_from_savings = get_hf26_decoder(TransferFromSavingsOperation)
         data["request_id"] = request_id  # type: ignore[assignment]
-        return decoder_transfer_from_savings.decode(json.dumps(data))
+        return cast(TransferFromSavingsOperation, decoder_transfer_from_savings.decode(json.dumps(data)))
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")

@@ -61,7 +61,7 @@ class Transaction(SchemasTransaction):
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
-        return [convert_to_representation(op) for op in value]  # type: ignore[misc]
+        return [convert_to_representation(op) for op in value]
 
     def add_operation(self, *operations: OperationUnion) -> None:
         operation_representations = self.convert_operations(operations)
