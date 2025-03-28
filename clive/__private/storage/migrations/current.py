@@ -35,3 +35,7 @@ def get_storage_version_list() -> list[str]:
     revision_list = [f"v{i}" for i in range(1, num + 1)]
     revision_list.insert(0, FIRST_VERSION)
     return revision_list
+
+
+def compare_versions(a: str, b: str) -> int:
+    return get_storage_version_list().index(a) - get_storage_version_list().index(b)
