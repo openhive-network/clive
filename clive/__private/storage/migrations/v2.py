@@ -6,33 +6,33 @@ from typing import Any, Sequence
 
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
 from clive.__private.core.date_utils import utc_epoch
-from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
     OperationRepresentationUnion,
     Signature,
 )
+from clive.__private.storage.migrations.storage_base_model import StorageBaseModel
 
 
-class AlarmStorageModel(CliveBaseModel):
+class AlarmStorageModel(StorageBaseModel):
     name: str
     is_harmless: bool = False
     identifier: AllAlarmIdentifiers
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
-class TrackedAccountStorageModel(CliveBaseModel):
+class TrackedAccountStorageModel(StorageBaseModel):
     name: str
     alarms: Sequence[AlarmStorageModel] = []
 
 
-class KeyAliasStorageModel(CliveBaseModel):
+class KeyAliasStorageModel(StorageBaseModel):
     alias: str
     public_key: str
 
 
-class TransactionCoreStorageModel(CliveBaseModel):
+class TransactionCoreStorageModel(StorageBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = HiveInt(-1)
     ref_block_prefix: HiveInt = HiveInt(-1)
@@ -46,7 +46,7 @@ class TransactionCoreStorageModelSchema(TransactionCoreStorageModel):
     """Do not include really complex structure of operation union type in the schema."""
 
 
-class TransactionStorageModel(CliveBaseModel):
+class TransactionStorageModel(StorageBaseModel):
     transaction_core: TransactionCoreStorageModel
     transaction_file_path: Path | None = None
 
@@ -55,7 +55,7 @@ class TransactionStorageModelSchema(TransactionStorageModel):
     transaction_core: TransactionCoreStorageModelSchema
 
 
-class ProfileStorageModel(CliveBaseModel):
+class ProfileStorageModel(StorageBaseModel):
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
