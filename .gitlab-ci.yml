@@ -37,6 +37,9 @@ variables:
   # uses registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image:python-poetry-1.7-3.10
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:d38883407b5860a89e7491b1de4153c516dc5ae87ca9988fba0ed0400e97f98f"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image${CLIVE_TESTNET_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/clive/clive-base-image:3.10-slim-bookworm
+  CLIVE_BASE_IMAGE_TAG: "@sha256:d6fb823ef98d45eb9e131f87e58f5f1a59d9778b52592e4024974363dd2f93aa"
+  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/clive/clive-base-image${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
@@ -259,7 +262,7 @@ deploy_wheel_to_pypi:
     - when: never
   variables:
     GIT_DEPTH: 0
-    BASE_IMAGE: "python:3.10-slim-bookworm"
+    BASE_IMAGE: $CLIVE_BASE_IMAGE
     BUILD_INSTANCE_ARGS: ""
 
     TAG_COMMIT: ${CI_COMMIT_SHORT_SHA}
@@ -348,7 +351,7 @@ build_and_publish_tagged_image:
 
   variables:
     GIT_DEPTH: 0
-    BASE_IMAGE: "python:3.10-slim-bookworm"
+    BASE_IMAGE: $CLIVE_BASE_IMAGE
 
   script:
     - scripts/ci-helpers/build_and_publish_instance.sh
