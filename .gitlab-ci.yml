@@ -34,6 +34,9 @@ variables:
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
   CI_BASE_IMAGE_TAG: "@sha256:080b16fd53013aeb9b89b00a8dfc90fecf886173f46448b05f45cee376c43330"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image:python-poetry-1.7-3.10
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:d38883407b5860a89e7491b1de4153c516dc5ae87ca9988fba0ed0400e97f98f"
+  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image${CLIVE_TESTNET_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
@@ -309,7 +312,7 @@ build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   <<: *clive_testnet_needs
   variables:
-    BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
+    BASE_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 # extends standard build procedure by additional tagging to branch name based tag
@@ -399,7 +402,7 @@ build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
   <<: *clive_testnet_needs
   variables:
-    BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
+    BASE_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
     STABLE_IMAGE_TAG: "testnet-${CI_COMMIT_REF_NAME}"
 
