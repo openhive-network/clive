@@ -61,7 +61,7 @@ class NodesList(Container, CliveWidget):
             self.app.trigger_node_watchers()
             self.notify(f"Node address set to `{address}`.")
 
-        new_address = self.query_exactly_one(NodeSelector).value_ensure
+        new_address = self.query_exactly_one(NodeSelector).selection_ensure
         temp_profile = Profile.create("temporary", node_address=new_address)
 
         async with Node(temp_profile) as temp_node:

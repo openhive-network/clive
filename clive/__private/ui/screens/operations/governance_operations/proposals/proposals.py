@@ -243,9 +243,9 @@ class ProposalsOrderChange(Vertical):
 
     @on(CliveSelect.Changed)
     def search_witnesses(self) -> None:
-        order_by = self.__order_by_select.value_ensure
-        order_direction = self.__order_direction_select.value_ensure
-        status = self.__proposal_status_select.value_ensure
+        order_by = self.__order_by_select.selection_ensure
+        order_direction = self.__order_direction_select.selection_ensure
+        status = self.__proposal_status_select.selection_ensure
         self.post_message(self.Search(order_by, order_direction, status))
 
 

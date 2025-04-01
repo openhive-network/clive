@@ -41,12 +41,12 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
     @property
     def asset_cls(self) -> type[AssetT]:
         """Returns selected asset type."""
-        return self.value_ensure.asset_cls
+        return self.selection_ensure.asset_cls
 
     @property
     def asset_factory(self) -> AssetFactory[AssetT]:
         """Return selected asset factory."""
-        return self.value_ensure.asset_factory
+        return self.selection_ensure.asset_factory
 
     def select_asset(self, asset_type: type[AssetT]) -> None:
         """

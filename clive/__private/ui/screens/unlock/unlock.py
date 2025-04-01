@@ -115,14 +115,14 @@ class Unlock(BaseScreen):
 
             try:
                 await self.world.load_profile(
-                    profile_name=select_profile.value_ensure,
+                    profile_name=select_profile.selection_ensure,
                     password=password_input.value_or_error,
                     permanent=lock_after_time.should_stay_unlocked,
                     time=lock_after_time.lock_duration,
                 )
             except InvalidPasswordError:
                 logger.error(
-                    f"Profile `{select_profile.value_ensure}` was not unlocked "
+                    f"Profile `{select_profile.selection_ensure}` was not unlocked "
                     "because entered password is invalid, skipping switching modes"
                 )
                 return

@@ -34,4 +34,4 @@ class SwitchNodeAddress(BaseScreen):
             with self.prevent(NodeSelector.Changed):
                 node_selector.value = self.profile.node_address
         else:
-            self.query_exactly_one(SelectedNodeAddress).node_address = node_selector.value_ensure
+            self.query_exactly_one(SelectedNodeAddress).node_address = node_selector.selection_ensure
