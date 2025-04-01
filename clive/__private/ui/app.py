@@ -436,7 +436,7 @@ class Clive(App[int]):
         logger.debug(f"Screen stack: {self.screen_stack}")
         logger.debug(f"Screen stacks: {self._screen_stacks}")
 
-        if self.world.is_profile_available:
+        if self.world.is_node_available:
             cached_dgpo = self.world.node.cached.dynamic_global_properties_or_none
             message = (
                 f"Currently cached head block number: {cached_dgpo.head_block_number}"

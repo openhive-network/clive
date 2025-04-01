@@ -81,6 +81,10 @@ class World:
         return self._node
 
     @property
+    def is_node_available(self) -> bool:
+        return self._node is not None
+
+    @property
     def app_state(self) -> AppState:
         return self._app_state
 
@@ -109,8 +113,8 @@ class World:
         async with self._during_closure():
             if self._should_save_profile_on_close:
                 await self.commands.save_profile()
-            if self._node is not None:
-                self._node.teardown()
+            if self.is_node_available:
+                self.node.teardown()
             self._beekeeper_manager.teardown()
 
             await self.app_state.lock()
@@ -215,15 +219,15 @@ class World:
 
     async def _update_node(self) -> None:
         if not self.is_profile_available:
-            if self._node is not None:
-                self._node.teardown()
+            if self.is_node_available:
+                self.node.teardown()
             self._node = None
             return
 
-        if self._node is None:
-            self._node = Node(self.profile)
+        if self.is_node_available:
+            self.node.change_related_profile(self.profile)
         else:
-            self._node.change_related_profile(self.profile)
+            self._node = Node(self.profile)
 
 
 class TUIWorld(World, CliveDOMNode):
@@ -279,7 +283,7 @@ class TUIWorld(World, CliveDOMNode):
         # There's no proper way to add some proxy reactive property on textual reactives that could raise error if
         # not set yet, and still can be watched. See: https://github.com/Textualize/textual/discussions/4007
 
-        if self._node is None or not self.is_profile_available:
+        if not self.is_node_available or not self.is_profile_available:
             assert not self.app_state.is_unlocked, "Profile and node should never be None when unlocked"
 
         self.node_reactive = self._node  # type: ignore[assignment] # ignore that,  node_reactive shouldn't be accessed before unlocking
