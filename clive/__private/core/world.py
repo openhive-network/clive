@@ -98,7 +98,7 @@ class World:
 
     @property
     def _should_save_profile_on_close(self) -> bool:
-        return self._profile is not None
+        return self.is_profile_available
 
     async def setup(self) -> Self:
         async with self._during_setup():
@@ -214,16 +214,16 @@ class World:
         return Commands(self)
 
     async def _update_node(self) -> None:
-        if self._profile is None:
+        if not self.is_profile_available:
             if self._node is not None:
                 self._node.teardown()
             self._node = None
             return
 
         if self._node is None:
-            self._node = Node(self._profile)
+            self._node = Node(self.profile)
         else:
-            self._node.change_related_profile(self._profile)
+            self._node.change_related_profile(self.profile)
 
 
 class TUIWorld(World, CliveDOMNode):
@@ -279,7 +279,7 @@ class TUIWorld(World, CliveDOMNode):
         # There's no proper way to add some proxy reactive property on textual reactives that could raise error if
         # not set yet, and still can be watched. See: https://github.com/Textualize/textual/discussions/4007
 
-        if self._node is None or self._profile is None:
+        if self._node is None or not self.is_profile_available:
             assert not self.app_state.is_unlocked, "Profile and node should never be None when unlocked"
 
         self.node_reactive = self._node  # type: ignore[assignment] # ignore that,  node_reactive shouldn't be accessed before unlocking
