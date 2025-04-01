@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.core.accounts.accounts import Account
 
 
 class World:
@@ -125,9 +125,9 @@ class World:
     async def create_new_profile(
         self,
         name: str,
-        working_account: str | WorkingAccount | None = None,
-        watched_accounts: Iterable[WatchedAccount] | None = None,
-        known_accounts: Iterable[KnownAccount] | None = None,
+        working_account: str | Account | None = None,
+        watched_accounts: Iterable[str | Account] | None = None,
+        known_accounts: Iterable[str | Account] | None = None,
     ) -> None:
         profile = Profile.create(name, working_account, watched_accounts, known_accounts)
         await self.switch_profile(profile)
@@ -136,9 +136,9 @@ class World:
         self,
         name: str,
         password: str,
-        working_account: str | WorkingAccount | None = None,
-        watched_accounts: Iterable[WatchedAccount] | None = None,
-        known_accounts: Iterable[KnownAccount] | None = None,
+        working_account: str | Account | None = None,
+        watched_accounts: Iterable[str | Account] | None = None,
+        known_accounts: Iterable[str | Account] | None = None,
     ) -> None:
         """
         Create a new profile and wallets in beekeeper in one-go.

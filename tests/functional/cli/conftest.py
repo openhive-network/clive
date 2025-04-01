@@ -7,7 +7,6 @@ import pytest
 from beekeepy import AsyncBeekeeper
 from typer.testing import CliRunner
 
-from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
@@ -20,8 +19,9 @@ from clive_local_tools.data.constants import (
 )
 from clive_local_tools.testnet_block_log import (
     KNOWN_ACCOUNTS,
-    WATCHED_ACCOUNTS_DATA,
+    WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
     run_node,
 )
 
@@ -64,11 +64,11 @@ async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
 async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
     """Prepare profile and wallets using remote beekeeper."""
     await world_cli.create_new_profile_with_wallets(
-        name=WORKING_ACCOUNT_DATA.account.name,
+        name=WORKING_ACCOUNT_NAME,
         password=WORKING_ACCOUNT_PASSWORD,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-        known_accounts=[KnownAccount(known_account) for known_account in KNOWN_ACCOUNTS],
+        working_account=WORKING_ACCOUNT_NAME,
+        watched_accounts=WATCHED_ACCOUNTS_NAMES,
+        known_accounts=KNOWN_ACCOUNTS,
     )
     await world_cli.commands.sync_state_with_beekeeper()
     world_cli.profile.keys.add_to_import(

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Callable
 import pytest
 import test_tools as tt
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
@@ -16,7 +15,12 @@ from clive.__private.ui.app import Clive
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+from clive_local_tools.testnet_block_log import (
+    WATCHED_ACCOUNTS_NAMES,
+    WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
+    run_node,
+)
 from clive_local_tools.tui.checkers import assert_is_dashboard, assert_is_screen_active
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
@@ -49,10 +53,10 @@ async def _prepare_profile_with_wallet_tui() -> None:
     """Prepare profile and wallets using locally spawned beekeeper."""
     async with World() as world_cm:
         await world_cm.create_new_profile_with_wallets(
-            name=WORKING_ACCOUNT_DATA.account.name,
+            name=WORKING_ACCOUNT_NAME,
             password=WORKING_ACCOUNT_PASSWORD,
-            working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-            watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
+            working_account=WORKING_ACCOUNT_NAME,
+            watched_accounts=WATCHED_ACCOUNTS_NAMES,
         )
         await world_cm.commands.sync_state_with_beekeeper()
         world_cm.profile.keys.add_to_import(

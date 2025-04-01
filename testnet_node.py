@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 from clive.__private.before_launch import prepare_before_launch
-from clive.__private.core.accounts.accounts import KnownAccount
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
@@ -93,7 +92,7 @@ async def _create_profile_with_wallet(
             profile_name,
             password,
             working_account_name,
-            known_accounts=[KnownAccount(known_account) for known_account in known_accounts],
+            known_accounts=known_accounts,
         )
         tt.logger.info(f"password for profile `{profile_name}` is: `{password}`")
         world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
