@@ -101,14 +101,6 @@ class Profile:
         """Determine if the profile is newly created (has not been saved yet)."""
         return self._hash_of_stored_profile is None
 
-    @classmethod
-    def is_any_profile_saved(cls) -> bool:
-        return bool(cls.list_profiles())
-
-    @classmethod
-    def is_only_one_profile_saved(cls) -> bool:
-        return len(cls.list_profiles()) == 1
-
     @property
     def accounts(self) -> AccountManager:
         return self._accounts
@@ -134,6 +126,18 @@ class Profile:
     def operation_representations(self) -> list[OperationRepresentationUnion]:
         return self.transaction.operations
 
+    @property
+    def is_skip_save_set(self) -> bool:
+        return self._skip_save
+
+    @property
+    def should_be_saved(self) -> bool:
+        return not self.is_skip_save_set and self.hash_of_stored_profile != hash(self)
+
+    @property
+    def should_enable_known_accounts(self) -> bool:
+        return self._should_enable_known_accounts
+
     def add_operation(self, *operations: OperationUnion) -> None:
         self.transaction.add_operation(*operations)
 
@@ -157,14 +161,6 @@ class Profile:
         """When no chain_id is set, it should be fetched from the node api."""
         self._chain_id = None
 
-    @property
-    def is_skip_save_set(self) -> bool:
-        return self._skip_save
-
-    @property
-    def should_be_saved(self) -> bool:
-        return not self.is_skip_save_set and self.hash_of_stored_profile != hash(self)
-
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
         self._skip_save = True
@@ -181,10 +177,6 @@ class Profile:
 
     def disable_known_accounts(self) -> None:
         self._should_enable_known_accounts = False
-
-    @property
-    def should_enable_known_accounts(self) -> bool:
-        return self._should_enable_known_accounts
 
     async def save(self, encryption_service: EncryptionService) -> None:
         """
@@ -214,13 +206,13 @@ class Profile:
         self._unset_hash_of_stored_profile()
         self.delete_by_name(self.name)
 
-    @staticmethod
-    def validate_profile_name(name: str) -> None:
-        result = ProfileNameValidator().validate(name)
-        if result.is_valid:
-            return
+    @classmethod
+    def is_any_profile_saved(cls) -> bool:
+        return bool(cls.list_profiles())
 
-        raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
+    @classmethod
+    def is_only_one_profile_saved(cls) -> bool:
+        return len(cls.list_profiles()) == 1
 
     @classmethod
     def create(  # noqa: PLR0913
@@ -319,6 +311,29 @@ class Profile:
             should_enable_known_accounts=should_enable_known_accounts,
         )
 
+    @staticmethod
+    def validate_profile_name(name: str) -> None:
+        result = ProfileNameValidator().validate(name)
+        if result.is_valid:
+            return
+
+        raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
+
+    @staticmethod
+    def _default_chain_id() -> str | None:
+        return safe_settings.node.chain_id
+
+    @staticmethod
+    def _default_node_addresses() -> list[HttpUrl]:
+        return [
+            HttpUrl("api.hive.blog", protocol="https"),
+            HttpUrl("api.openhive.network", protocol="https"),
+        ]
+
+    @staticmethod
+    def _get_secret_node_address() -> HttpUrl | None:
+        return safe_settings.secrets.node_address
+
     def _update_hash_of_stored_profile(self, new_hash: int | None = None) -> None:
         """Update the hash of stored profile to a given value. None means recalculate."""
         self._hash_of_stored_profile = new_hash if new_hash is not None else hash(self)
@@ -348,18 +363,3 @@ class Profile:
     def _assert_no_direct_initialization(self, init_key: object) -> None:
         message = f"Please use {self.create} to create a new profile or {self.load} to load an existing one."
         assert init_key is self._INIT_KEY, message
-
-    @staticmethod
-    def _default_chain_id() -> str | None:
-        return safe_settings.node.chain_id
-
-    @staticmethod
-    def _default_node_addresses() -> list[HttpUrl]:
-        return [
-            HttpUrl("api.hive.blog", protocol="https"),
-            HttpUrl("api.openhive.network", protocol="https"),
-        ]
-
-    @staticmethod
-    def _get_secret_node_address() -> HttpUrl | None:
-        return safe_settings.secrets.node_address
