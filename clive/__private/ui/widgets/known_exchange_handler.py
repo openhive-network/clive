@@ -34,6 +34,10 @@ class KnownExchangeHandler(CliveWidget):
     """
     MEMO_REQUIRED_VALIDATION_MESSAGE: Final[str] = "Memo is required by the known exchange account!"
 
+    @property
+    def memo_input(self) -> MemoInput:
+        return self.query_exactly_one(MemoInput)
+
     @on(ReceiverInput.KnownExchangeDetected)
     def set_known_exchange_mode(self) -> None:
         self._change_selector_state(disable=True)
@@ -45,7 +49,10 @@ class KnownExchangeHandler(CliveWidget):
         self._change_memo_requirement(required=False)
 
     def on_mount(self) -> None:
-        self._previous_memo_placeholder = self.query_exactly_one(MemoInput).input.unmodified_placeholder
+        memo_input = self.memo_input.input
+        self._previous_memo_placeholder = memo_input.unmodified_placeholder
+        self._previous_memo_required = memo_input.required
+        self._previous_memo_always_show_title = memo_input.always_show_title
 
     def _change_selector_state(self, *, disable: bool) -> None:
         """Disables/enables the selector from `LiquidAssetAmountInput`."""
@@ -61,26 +68,17 @@ class KnownExchangeHandler(CliveWidget):
 
     def _change_memo_requirement(self, *, required: bool) -> None:
         """Make memo input required or optional."""
-        memo_input = self.query_exactly_one(MemoInput)
+        memo_input = self.memo_input
 
         if required:
-            # This won't work correctly when the memo was required BEFORE the exchange is detected
-            # and always_show_title is True because we always make memo optional and
-            # disable always_show_title when exchange is gone.
-            # It means we do not preserve the original state after the exchange is gone.
-            assert not memo_input.input.required, f"Shouldn't use {type(self)} with required memo input!"
-            assert (
-                not memo_input.input.always_show_title
-            ), f"Shouldn't use {type(self)} with memo input that already always shows title!"
-
             memo_input.input.always_show_title = True
             self._modify_placeholder(memo_input, required=required)
             memo_input.make_required(message=self.MEMO_REQUIRED_VALIDATION_MESSAGE)
             return
 
-        memo_input.input.always_show_title = False
-        self._modify_placeholder(memo_input, required=required)
-        memo_input.make_optional()
+        memo_input.input.always_show_title = self._previous_memo_always_show_title
+        self._modify_placeholder(memo_input, required=self._previous_memo_required)
+        memo_input.make_required() if self._previous_memo_required else memo_input.make_optional()
 
     def _modify_placeholder(self, memo_input: MemoInput, *, required: bool) -> None:
         if required:
