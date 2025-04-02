@@ -34,12 +34,23 @@ class KnownExchangeHandler(CliveWidget):
     """
     MEMO_REQUIRED_VALIDATION_MESSAGE: Final[str] = "Memo is required by the known exchange account!"
 
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._previous_memo_placeholder = ""
+        self._previous_memo_required = False
+        self._previous_memo_always_show_title = False
+
     @property
     def memo_input(self) -> MemoInput:
         return self.query_exactly_one(MemoInput)
 
+    def on_mount(self) -> None:
+        self._update_previous_state()
+
     @on(ReceiverInput.KnownExchangeDetected)
     def set_known_exchange_mode(self) -> None:
+        self._update_previous_state()
         self._change_selector_state(disable=True)
         self._change_memo_requirement(required=True)
 
@@ -48,7 +59,7 @@ class KnownExchangeHandler(CliveWidget):
         self._change_selector_state(disable=False)
         self._change_memo_requirement(required=False)
 
-    def on_mount(self) -> None:
+    def _update_previous_state(self) -> None:
         memo_input = self.memo_input.input
         self._previous_memo_placeholder = memo_input.unmodified_placeholder
         self._previous_memo_required = memo_input.required
