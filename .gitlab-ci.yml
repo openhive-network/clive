@@ -31,8 +31,8 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
-  CI_BASE_IMAGE_TAG: "@sha256:080b16fd53013aeb9b89b00a8dfc90fecf886173f46448b05f45cee376c43330"
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1
+  CI_BASE_IMAGE_TAG: "@sha256:813f18c42929193036fc4e0017981c16913766442ef8d146313c64785df29c2e"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
   # uses registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image:python-poetry-1.7-3.10
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:d38883407b5860a89e7491b1de4153c516dc5ae87ca9988fba0ed0400e97f98f"
@@ -45,7 +45,7 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: 3a471e21c852f662c5017636eba178be08d11bb1
+    ref: db8c64b081d6f2415402250ed7e6f0a6f8001e67
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
     ref: 689c9ac584a4ec4ebd8b623d1ed34c58ea76f1bd
