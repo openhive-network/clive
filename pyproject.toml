@@ -30,33 +30,33 @@ source = [
 
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 dynaconf = "3.1.11"
 loguru = "0.7.2"
 textual = "3.0.1"
-aiohttp = "3.9.1"
+aiohttp = "3.11.14"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 pydantic = "1.10.18"
 
 # remember to keep these versions adequate to one specified in test-tools
-schemas = "0.0.1.dev323+e5a1ba1"
-beekeepy = "0.0.1.dev338+58e0bf7"
-wax = "0.3.10.dev558+3a636d1"
+schemas = "0.0.1.dev331+7181389"
+beekeepy = "0.0.1.dev352+ef6b8c6"
+wax = "0.3.10.dev606+7d17dff"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
-pytest = "7.2.0"  # required by test-tools, otherwise they will fail
+pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
 pre-commit = "2.21.0"
-pytest = "7.2.0"
+pytest = "8.3.5"
 pytest-asyncio = "0.21.0"
-pytest-xdist = "3.1.0"
+pytest-xdist = "3.6.1"
 pytest-timeout = "2.3.1"
 ruff = "0.6.5"
 types-pyyaml = "6.0.12.4"
