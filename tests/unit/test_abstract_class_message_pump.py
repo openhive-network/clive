@@ -59,7 +59,8 @@ def test_textual_still_errors_with_abc_inheritance() -> None:
 def test_instantiating_class_inheriting_from_abstract_class_with_abstract_method() -> None:
     # ARRANGE
     expected_error_message = (
-        "Can't instantiate abstract class MockSubclassWithoutAbstractMethod with abstract method abstract_method"
+        "Can't instantiate abstract class MockSubclassWithoutAbstractMethod without an implementation for"
+        " abstract method 'abstract_method'"
     )
 
     # ACT & ASSERT
