@@ -6,7 +6,7 @@ ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
 FROM $HIVED_IMAGE AS hived_image
 
-FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10 AS stripped_beekeeper_source
+FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1 AS stripped_beekeeper_source
 
 COPY --from=hived_image "/home/hived/bin/beekeeper" "/home/hived/bin/beekeeper"
 RUN strip -p /home/hived/bin/beekeeper -o /home/hived_admin/beekeeper.stripped
