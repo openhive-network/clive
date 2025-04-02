@@ -75,3 +75,10 @@ class ReceiverInput(AccountNameInput):
             self.post_message(self.KnownExchangeGone())
 
         super()._handle_valid_account_name()
+
+    def _handle_invalid_account_name(self) -> None:
+        if self._was_known_exchange_in_input:
+            self._was_known_exchange_in_input = False
+            self.post_message(self.KnownExchangeGone())
+
+        super()._handle_invalid_account_name()
