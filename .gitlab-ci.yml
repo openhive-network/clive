@@ -47,11 +47,7 @@ include:
   - project: 'hive/hive'
     ref: db8c64b081d6f2415402250ed7e6f0a6f8001e67
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
-  - project: 'hive/common-ci-configuration'
-    ref: 689c9ac584a4ec4ebd8b623d1ed34c58ea76f1bd
-    file:
-      - '/templates/python_projects.gitlab-ci.yml'
-      - '/templates/docker_image_jobs.gitlab-ci.yml'
+    # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
 
 image: ${CI_BASE_IMAGE}
 
