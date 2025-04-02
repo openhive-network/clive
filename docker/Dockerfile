@@ -1,4 +1,4 @@
-# syntax=registry.gitlab.syncad.com/hive/clive/dockerfile:1.5
+# syntax=registry.gitlab.syncad.com/hive/common-ci-configuration/dockerfile:1.5
 ARG HIVED_IMAGE
 ARG BASE_IMAGE
 
