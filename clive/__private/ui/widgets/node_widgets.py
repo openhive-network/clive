@@ -59,6 +59,7 @@ class NodesList(Container, CliveWidget):
         async def set_address(address: HttpUrl) -> None:
             await self.node.set_address(address)
             self.app.trigger_node_watchers()
+            self.world.wax_interface.endpoint_url = address
             self.notify(f"Node address set to `{address}`.")
 
         new_address = self.query_exactly_one(NodeSelector).selection_ensure
