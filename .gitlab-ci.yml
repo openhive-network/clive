@@ -34,12 +34,12 @@ variables:
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1
   CI_BASE_IMAGE_TAG: "@sha256:813f18c42929193036fc4e0017981c16913766442ef8d146313c64785df29c2e"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image:python-poetry-1.7-3.10
-  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:d38883407b5860a89e7491b1de4153c516dc5ae87ca9988fba0ed0400e97f98f"
-  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image${CLIVE_TESTNET_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python:3.12.9-slim-bookworm
-  CLIVE_BASE_IMAGE_TAG: "@sha256:931bdcd3ecbaa230cde88cb3dabca72017be4dae45f9b8c3616fc9947782eca3"
-  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python${CLIVE_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04@sha256:8ccd75ced8a1064b7eff8b4baef5ed66522c06df4a1c9df1759b65eb041c3cc0
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:8ccd75ced8a1064b7eff8b4baef5ed66522c06df4a1c9df1759b65eb041c3cc0"
+  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04${CLIVE_TESTNET_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04@sha256:aa235bdadebaa4764b923900e9fa1d17c82adddd431aaa86e1fece47cc478380
+  CLIVE_BASE_IMAGE_TAG: "@sha256:aa235bdadebaa4764b923900e9fa1d17c82adddd431aaa86e1fece47cc478380"
+  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
