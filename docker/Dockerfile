@@ -60,7 +60,7 @@ FROM preconfigured_base_image AS python_installer
 USER root
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     apt-get update && \
-    apt-get install -y python3-venv git && \
+    apt-get install -y git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
