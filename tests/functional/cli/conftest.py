@@ -84,7 +84,7 @@ async def node(
     node_address_env_context_factory: EnvContextFactory, world_cli: World, _prepare_profile_with_wallet_cli: Profile
 ) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
-    await world_cli.node.set_address(node.http_endpoint)
+    await world_cli.set_address(node.http_endpoint)
     address = str(node.http_endpoint)
     with node_address_env_context_factory(address):
         yield node

@@ -57,7 +57,7 @@ class NodesList(Container, CliveWidget):
 
     async def save_selected_node_address(self) -> bool:
         async def set_address(address: HttpUrl) -> None:
-            await self.node.set_address(address)
+            await self.world.set_address(address)
             self.app.trigger_node_watchers()
             self.notify(f"Node address set to `{address}`.")
 

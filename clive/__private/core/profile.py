@@ -363,7 +363,7 @@ class Profile:
         """
         Set the node address.
 
-        It is marked as not intended for usage because you rather should use Node.set_address instead.
+        It is marked as not intended for usage because you rather should use world.set_address instead.
         """
         self._node_address = value
         if value not in self._backup_node_addresses:

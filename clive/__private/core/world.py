@@ -16,6 +16,8 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.exceptions import ProfileNotLoadedError
+from wax.wax_factory import create_hive_chain
+from wax.wax_options import WaxChainOptions
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable
@@ -23,7 +25,10 @@ if TYPE_CHECKING:
     from types import TracebackType
     from typing import Self
 
+    from beekeepy.interfaces import HttpUrl
+
     from clive.__private.core.accounts.accounts import Account
+    from wax import IHiveChainInterface
 
 
 class World:
@@ -46,6 +51,7 @@ class World:
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
         self._beekeeper_manager = BeekeeperManager()
+        self._wax_interface: IHiveChainInterface | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -99,6 +105,14 @@ class World:
         return self._beekeeper_manager
 
     @property
+    def wax_interface(self) -> IHiveChainInterface:
+        if self._wax_interface is None:
+            raise ProfileNotLoadedError(
+                "Wax interface cannot be accessed before profile is loaded as it is profile dependent."
+            )
+        return self._wax_interface
+
+    @property
     def _should_save_profile_on_close(self) -> bool:
         return self.is_profile_available
 
@@ -119,6 +133,7 @@ class World:
 
             self._profile = None
             self._node = None
+            self._wax_interface = None
 
     async def create_new_profile(
         self,
@@ -170,9 +185,14 @@ class World:
         ).raise_if_error_occurred()
         await self.load_profile_based_on_beekepeer()
 
+    async def set_address(self, address: HttpUrl) -> None:
+        await self.node._set_address(address)
+        self.wax_interface.endpoint_url = address
+
     async def switch_profile(self, new_profile: Profile | None) -> None:
         self._profile = new_profile
         await self._update_node()
+        await self._update_wax_interface()
 
     async def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
@@ -211,6 +231,11 @@ class World:
         finally:
             self._is_during_closure = False
 
+    async def _create_wax_interface(self) -> None:
+        chain_id = await self.node.chain_id
+        wax_chain_options = WaxChainOptions(chain_id=chain_id, endpoint_url=self.profile.node_address)
+        self._wax_interface = create_hive_chain(wax_chain_options)
+
     async def _setup(self) -> None:
         await self._beekeeper_manager.setup()
 
@@ -228,6 +253,15 @@ class World:
             self.node.change_related_profile(self.profile)
         else:
             self._node = Node(self.profile)
+
+    async def _update_wax_interface(self) -> None:
+        if not self.is_profile_available:
+            self._wax_interface = None
+            return
+        if self._wax_interface:
+            self._wax_interface.endpoint_url = self.profile.node_address
+        else:
+            await self._create_wax_interface()
 
 
 class TUIWorld(World, CliveDOMNode):

@@ -210,7 +210,13 @@ class Node(AsyncHived):
             self.settings.timeout = timedelta(seconds=(timeout_total_secs or self.settings.timeout.seconds))
             yield
 
-    async def set_address(self, address: HttpUrl) -> None:
+    async def _set_address(self, address: HttpUrl) -> None:
+        """
+        Set the node address.
+
+        It is marked as not intended for usage because you rather should use world.set_address
+        instead (it also sets wax interface)
+        """
         self.__profile._set_node_address(address)
         self.cached.clear()
 

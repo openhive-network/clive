@@ -138,7 +138,7 @@ async def init_node(
     init_node = tt.InitNode()
     init_node.config.log_json_rpc = "jsonrpc"
     init_node.run()
-    await world.node.set_address(init_node.http_endpoint)
+    await world.set_address(init_node.http_endpoint)
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node
@@ -155,7 +155,7 @@ async def init_node_extra_apis(
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
-    await world.node.set_address(init_node.http_endpoint)
+    await world.set_address(init_node.http_endpoint)
     address = str(init_node.http_endpoint)
     with node_address_env_context_factory(address):
         yield init_node
