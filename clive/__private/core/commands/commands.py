@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
+from clive.__private.core.commands.collect_account_authorities import CollectAccountAuthorities
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets, CreateProfileWalletsResult
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
@@ -96,6 +97,8 @@ if TYPE_CHECKING:
         TransactionStatus,
         Witness,
     )
+    from wax.models.authority import WaxAccountAuthorityInfo
+    from wax.models.basic import AccountName
 
 
 class Commands[WorldT: World]:
@@ -519,6 +522,16 @@ class Commands[WorldT: World]:
                 profile_name=profile_name,
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
+            )
+        )
+
+    async def collect_account_authorities(
+        self, *, account_name: AccountName
+    ) -> CommandWithResultWrapper[WaxAccountAuthorityInfo]:
+        return await self.__surround_with_exception_handlers(
+            CollectAccountAuthorities(
+                wax_interface=self._world.wax_interface,
+                account=account_name,
             )
         )
 
