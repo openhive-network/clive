@@ -16,7 +16,6 @@ power_up = CliveTyper(name="power-up", help="Perform power-up by sending transfe
 
 @power_up.callback(invoke_without_command=True)
 async def process_power_up(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
     amount: str = typer.Option(

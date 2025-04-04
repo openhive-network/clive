@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-import typer  # noqa: TCH002
-
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 
@@ -14,8 +12,7 @@ power_down = CliveTyper(name="power-down", help="Perform power-down, send withdr
 
 
 @power_down.command(name="start")
-async def process_power_down_start(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_power_down_start(
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
     sign: str | None = options.sign,
@@ -41,8 +38,7 @@ async def process_power_down_start(  # noqa: PLR0913
 
 
 @power_down.command(name="restart")
-async def process_power_down_restart(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_power_down_restart(
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
     sign: str | None = options.sign,
@@ -65,7 +61,6 @@ async def process_power_down_restart(  # noqa: PLR0913
 
 @power_down.command(name="cancel")
 async def process_power_down_cancel(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001

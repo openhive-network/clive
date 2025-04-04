@@ -17,7 +17,6 @@ _node_address_argument = typer.Argument(
 
 @node.command(name="set")
 async def set_node(
-    ctx: typer.Context,  # noqa: ARG001
     node_address: str | None = _node_address_argument,
     node_address_option: str | None = argument_related_options.node_address,
 ) -> None:

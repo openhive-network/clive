@@ -12,7 +12,6 @@ withdraw_routes = CliveTyper(name="withdraw-routes", help="Set or remove vesting
 
 @withdraw_routes.command(name="set")
 async def process_withdraw_routes_set(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name_required,
     percent: Decimal = options.percent,
@@ -41,8 +40,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
 
 
 @withdraw_routes.command(name="remove")
-async def process_withdraw_routes_remove(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_withdraw_routes_remove(
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name_required,
     sign: str | None = options.sign,

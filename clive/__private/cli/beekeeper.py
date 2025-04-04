@@ -8,7 +8,7 @@ beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
 
 @beekeeper.command()
-async def info(ctx: typer.Context) -> None:  # noqa: ARG001
+async def info() -> None:
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
@@ -28,7 +28,6 @@ async def spawn(
 
 @beekeeper.command()
 async def create_session(
-    ctx: typer.Context,  # noqa: ARG001
     echo_token_only: bool = typer.Option(default=False, help="Display only token."),  # noqa: FBT001
 ) -> None:
     """Create beekeeper session."""

@@ -52,7 +52,6 @@ _profile_name_unlock_argument = typer.Argument(
 
 @cli.command(name="unlock")
 async def unlock(
-    ctx: typer.Context,  # noqa: ARG001
     profile_name: str | None = _profile_name_unlock_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
     unlock_time_mins: int | None = typer.Option(
@@ -78,9 +77,7 @@ async def unlock(
 
 
 @cli.command(name="lock")
-async def lock(
-    ctx: typer.Context,  # noqa: ARG001
-) -> None:
+async def lock() -> None:
     """
     Locks the profile.
 

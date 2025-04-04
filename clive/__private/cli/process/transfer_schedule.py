@@ -56,7 +56,6 @@ _repeat_value_optional = modified_param(_repeat_value, default=None)
 
 @transfer_schedule.command(name="create")
 async def process_transfer_schedule_create(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     amount: str = options.liquid_amount,
@@ -87,7 +86,6 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
 
 @transfer_schedule.command(name="modify")
 async def process_transfer_schedule_modify(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     amount: str = options.liquid_amount_optional,
@@ -122,7 +120,6 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
 
 @transfer_schedule.command(name="remove")
 async def process_transfer_schedule_remove(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     pair_id: int | None = _pair_id_value_none,

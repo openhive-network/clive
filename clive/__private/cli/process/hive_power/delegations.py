@@ -22,7 +22,6 @@ _delegatee_account_name = typer.Option(
 
 @delegations.command(name="set")
 async def process_delegations_set(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     delegatee: str = _delegatee_account_name,
     amount: str = options.voting_amount,
@@ -46,8 +45,7 @@ async def process_delegations_set(  # noqa: PLR0913
 
 
 @delegations.command(name="remove")
-async def process_delegations_remove(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_delegations_remove(
     account_name: str = options.account_name,
     delegatee: str = _delegatee_account_name,
     sign: str | None = options.sign,

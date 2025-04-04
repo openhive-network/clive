@@ -10,7 +10,6 @@ custom_json = CliveTyper(name="custom-json", help="Send raw custom json operatio
 
 @custom_json.callback(invoke_without_command=True)
 async def process_custom_json(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     authorize: list[str] = modified_param(
         options.working_account_list_template,
         param_decls=("--authorize",),

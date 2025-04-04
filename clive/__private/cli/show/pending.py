@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-import typer  # noqa: TCH002
-
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options, arguments
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleAccountNameValue
@@ -13,7 +9,6 @@ pending = CliveTyper(name="pending", help="Show operations in progress.")
 
 @pending.command(name="withdrawals")
 async def show_pending_withdrawals(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -27,7 +22,6 @@ async def show_pending_withdrawals(
 
 @pending.command(name="power-ups")
 async def show_pending_power_ups(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -39,7 +33,6 @@ async def show_pending_power_ups(
 
 @pending.command(name="power-down")
 async def show_pending_power_down(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -51,7 +44,6 @@ async def show_pending_power_down(
 
 @pending.command(name="removed-delegations")
 async def show_pending_removed_delegations(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:

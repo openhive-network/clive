@@ -18,7 +18,6 @@ _account_name_switch_argument = typer.Argument(
 
 @working_account.command(name="switch")
 async def switch_working_account(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = _account_name_switch_argument,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:

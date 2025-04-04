@@ -16,8 +16,7 @@ _proposal_id = typer.Option(
 
 
 @vote_proposal.command(name="add")
-async def process_vote_proposal_add(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_vote_proposal_add(
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
     sign: str | None = options.sign,
@@ -38,8 +37,7 @@ async def process_vote_proposal_add(  # noqa: PLR0913
 
 
 @vote_proposal.command(name="remove")
-async def process_vote_proposal_remove(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_vote_proposal_remove(
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
     sign: str | None = options.sign,

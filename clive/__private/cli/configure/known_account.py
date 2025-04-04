@@ -16,7 +16,6 @@ _account_name_add_argument = typer.Argument(
 
 @known_account.command(name="add")
 async def add_known_account(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str | None = _account_name_add_argument,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -33,7 +32,6 @@ _account_name_remove_argument = modified_param(
 
 @known_account.command(name="remove")
 async def remove_known_account(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str | None = _account_name_remove_argument,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:

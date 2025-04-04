@@ -25,7 +25,6 @@ _alias_argument = typer.Argument(
 
 @key.command(name="add")
 async def add_key(
-    ctx: typer.Context,  # noqa: ARG001
     key: str | None = _key_argument,
     key_option: str | None = argument_related_options.key,
     alias: str | None = _alias_argument,
@@ -47,7 +46,6 @@ _alias_remove_argument = typer.Argument(
 
 @key.command(name="remove")
 async def remove_key(
-    ctx: typer.Context,  # noqa: ARG001
     alias: str | None = _alias_remove_argument,
     alias_option: str | None = argument_related_options.alias,
     from_beekeeper: bool = typer.Option(  # noqa: FBT001

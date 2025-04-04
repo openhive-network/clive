@@ -30,7 +30,7 @@ async def show_profiles() -> None:
 
 
 @show.command(name="profile")
-async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
+async def show_profile() -> None:
     """Show profile information."""
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
@@ -38,7 +38,7 @@ async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
 
 
 @show.command(name="accounts")
-async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
+async def show_accounts() -> None:
     """Show all accounts stored in the profile."""
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
@@ -46,7 +46,7 @@ async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
 
 
 @show.command(name="keys")
-async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
+async def show_keys() -> None:
     """Show all the public keys stored in Clive."""
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
@@ -55,7 +55,6 @@ async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
 
 @show.command(name="balances")
 async def show_balances(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -66,7 +65,7 @@ async def show_balances(
 
 
 @show.command(name="node")
-async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
+async def show_node() -> None:
     """Show address of the currently selected node."""
     from clive.__private.cli.commands.show.show_node import ShowNode
 
@@ -80,7 +79,6 @@ _transaction_id_argument = typer.Argument(
 
 @show.command(name="transaction-status")
 async def show_transaction_status(
-    ctx: typer.Context,  # noqa: ARG001
     transaction_id: str | None = _transaction_id_argument,
     transaction_id_option: str | None = argument_related_options.transaction_id,
 ) -> None:
@@ -120,7 +118,6 @@ else:
 
 @show.command(name="proxy")
 async def show_proxy(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -142,7 +139,6 @@ witnesses_page_no = modified_param(
 
 @show.command(name="witnesses")
 async def show_witnesses(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
     page_size: int = witnesses_page_size,
@@ -163,7 +159,6 @@ _witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS
 
 @show.command(name="witness")
 async def show_witness(
-    ctx: typer.Context,  # noqa: ARG001
     name: str | None = _witness_name_argument,
     name_option: str | None = argument_related_options.name,
 ) -> None:
@@ -183,7 +178,6 @@ proposals_page_no = modified_param(
 
 @show.command(name="proposals")
 async def show_proposals(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
     order_by: OrdersEnum = typer.Option(
@@ -231,7 +225,6 @@ _proposal_id_argument = typer.Argument(
 
 @show.command(name="proposal")
 async def show_proposal(
-    ctx: typer.Context,  # noqa: ARG001
     proposal_id: int | None = _proposal_id_argument,
     proposal_id_option: int | None = argument_related_options.proposal_id,
 ) -> None:
@@ -245,7 +238,6 @@ async def show_proposal(
 
 @show.command(name="owner-authority")
 async def show_owner_authority(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -260,7 +252,6 @@ async def show_owner_authority(
 
 @show.command(name="active-authority")
 async def show_active_authority(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -275,7 +266,6 @@ async def show_active_authority(
 
 @show.command(name="posting-authority")
 async def show_posting_authority(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -290,7 +280,6 @@ async def show_posting_authority(
 
 @show.command(name="memo-key")
 async def show_memo_key(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -301,7 +290,7 @@ async def show_memo_key(
 
 
 @show.command(name="chain")
-async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
+async def show_chain() -> None:
     """Fetch from blockchain and display chain info."""
     from clive.__private.cli.commands.show.show_chain import ShowChain
 
@@ -310,7 +299,6 @@ async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
 
 @show.command(name="hive-power")
 async def show_hive_power(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -322,7 +310,6 @@ async def show_hive_power(
 
 @show.command(name="new-account-token")
 async def show_new_account_token(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -338,7 +325,6 @@ async def show_new_account_token(
 
 @show.command(name="transfer-schedule")
 async def show_transfer_schedule(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
@@ -350,7 +336,6 @@ async def show_transfer_schedule(
 
 @show.command(name="account")
 async def show_account(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:

@@ -18,7 +18,6 @@ _profile_name_create_argument = typer.Argument(
 
 @profile.command(name="add")
 async def create_profile(
-    ctx: typer.Context,  # noqa: ARG001
     profile_name: str | None = _profile_name_create_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
     working_account_name: str | None = typer.Option(None, help="The name of the working account.", show_default=False),

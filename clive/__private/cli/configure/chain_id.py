@@ -18,7 +18,6 @@ _chain_id_argument = typer.Argument(
 
 @chain_id.command(name="set")
 async def set_chain_id(
-    ctx: typer.Context,  # noqa: ARG001
     chain_id: str | None = _chain_id_argument,
     chain_id_option: str | None = argument_related_options.chain_id,
 ) -> None:
@@ -33,9 +32,7 @@ async def set_chain_id(
 
 
 @chain_id.command(name="unset")
-async def unset_chain_id(
-    ctx: typer.Context,  # noqa: ARG001
-) -> None:
+async def unset_chain_id() -> None:
     """
     Unset the actual chain ID for the profile.
 

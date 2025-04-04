@@ -9,8 +9,7 @@ proxy = CliveTyper(name="proxy", help="Set, change or remove a proxy.")
 
 
 @proxy.command(name="set")
-async def process_proxy_set(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_proxy_set(
     account_name: str = options.account_name,
     proxy: str = typer.Option(..., help="Name of new proxy account."),
     sign: str | None = options.sign,
@@ -31,7 +30,6 @@ async def process_proxy_set(  # noqa: PLR0913
 
 @proxy.command(name="clear")
 async def process_proxy_clear(
-    ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001

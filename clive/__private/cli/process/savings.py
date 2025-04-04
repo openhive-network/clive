@@ -15,7 +15,6 @@ savings = CliveTyper(name="savings", help="Manage your savings.")
 
 @savings.command(name="deposit")
 async def process_deposit(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
@@ -42,7 +41,6 @@ async def process_deposit(  # noqa: PLR0913
 
 @savings.command(name="withdrawal")
 async def process_withdrawal(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
@@ -73,8 +71,7 @@ async def process_withdrawal(  # noqa: PLR0913
 
 
 @savings.command(name="withdrawal-cancel")
-async def process_withdrawal_cancel(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_withdrawal_cancel(
     from_account: str = options.from_account_name,
     request_id: int = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
     sign: str | None = options.sign,

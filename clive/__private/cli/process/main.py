@@ -45,7 +45,6 @@ process.add_typer(custom_json)
 
 @process.command(name="transfer")
 async def transfer(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
     amount: str = options.liquid_amount,
@@ -83,7 +82,6 @@ else:
 
 @process.command(name="transaction")
 async def process_transaction(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
     from_file: str = typer.Option(..., help="The file to load the transaction from.", show_default=False),
     force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
@@ -110,8 +108,7 @@ async def process_transaction(  # noqa: PLR0913
 
 
 @process.command(name="update-memo-key")
-async def process_update_memo_key(  # noqa: PLR0913
-    ctx: typer.Context,  # noqa: ARG001
+async def process_update_memo_key(
     account_name: str = options.account_name,
     memo_key: str = typer.Option(
         ...,
