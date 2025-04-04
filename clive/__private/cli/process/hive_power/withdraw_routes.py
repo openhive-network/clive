@@ -1,5 +1,6 @@
-from decimal import Decimal
-from typing import Optional
+from __future__ import annotations
+
+from decimal import Decimal  # noqa: TCH003
 
 import typer
 
@@ -20,9 +21,9 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
         help="If auto-vest is set, then the amount of the Hive is immediately converted into HP on the balance. "
         "With no-auto-vest there is no conversion from Hive into HP.",
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes
@@ -44,9 +45,9 @@ async def process_withdraw_routes_remove(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name_required,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Clear withdraw route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutesRemove

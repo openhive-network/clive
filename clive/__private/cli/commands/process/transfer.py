@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.models import Asset
 from clive.__private.models.schemas import TransferOperation
+
+if TYPE_CHECKING:
+    from clive.__private.models import Asset
 
 
 @dataclass(kw_only=True)

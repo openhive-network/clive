@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -20,9 +22,9 @@ async def process_power_up(  # noqa: PLR0913
     amount: str = typer.Option(
         ..., parser=hive_asset, help="The amount to transfer to vesting. (e.g. 2.500 HIVE)", show_default=False
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Perform power-up by sending transfer_to_vesting_operation."""
     from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp

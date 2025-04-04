@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
-from clive.__private.core.ensure_transaction import TransactionConvertibleType
-from clive.__private.models.schemas import OperationUnion
+
+if TYPE_CHECKING:
+    from clive.__private.core.ensure_transaction import TransactionConvertibleType
+    from clive.__private.models.schemas import OperationUnion
 
 
 @dataclass(kw_only=True)

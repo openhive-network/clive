@@ -1,5 +1,7 @@
-from datetime import timedelta
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
+
+from datetime import timedelta  # noqa: TCH003
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -62,9 +64,9 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     frequency: timedelta = _frequency_value,
     memo: str = options.memo_value,
     pair_id: int = _pair_id_value,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
@@ -89,13 +91,13 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     amount: str = options.liquid_amount_optional,
-    repeat: Optional[int] = _repeat_value_optional,
-    frequency: Optional[timedelta] = _frequency_value_optional,
-    memo: Optional[str] = options.memo_value_optional,
-    pair_id: Optional[int] = _pair_id_value_none,
-    sign: Optional[str] = options.sign,
+    repeat: int | None = _repeat_value_optional,
+    frequency: timedelta | None = _frequency_value_optional,
+    memo: str | None = options.memo_value_optional,
+    pair_id: int | None = _pair_id_value_none,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """
     Modify an existing recurrent transfer.
@@ -123,10 +125,10 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
-    pair_id: Optional[int] = _pair_id_value_none,
-    sign: Optional[str] = options.sign,
+    pair_id: int | None = _pair_id_value_none,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Remove an existing recurrent transfer."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from rich.columns import Columns
 from rich.console import Console, Group
@@ -10,9 +12,11 @@ from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
-from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import AccountScheduledTransferData
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.core.shorthand_timedelta import timedelta_to_shorthand_timedelta
+
+if TYPE_CHECKING:
+    from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import AccountScheduledTransferData
 
 ERROR_LACK_OF_FUNDS_MESSAGE_RAW: Final[str] = "Possible lack of funds."
 DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT: Final[int] = 10

@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 import errno
+from typing import TYPE_CHECKING
 
 from beekeepy.exceptions import CommunicationError
 
-from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.dev import is_in_dev_mode
+
+if TYPE_CHECKING:
+    from clive.__private.cli.clive_typer import CliveTyper
 
 
 def register_error_handlers(cli: CliveTyper) -> None:

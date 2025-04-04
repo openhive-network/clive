@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
 
-import typer
+from typing import TYPE_CHECKING, cast
+
+import typer  # noqa: TCH002
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
@@ -16,9 +18,9 @@ async def process_power_down_start(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """
     Start power down with given amount.
@@ -43,9 +45,9 @@ async def process_power_down_restart(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """
     Restart power down with given amount.
@@ -65,9 +67,9 @@ async def process_power_down_restart(  # noqa: PLR0913
 async def process_power_down_cancel(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Stop power down by setting amount to 0."""
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel

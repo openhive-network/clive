@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from functools import partial
+from typing import TYPE_CHECKING
 
 from rich.columns import Columns
 from rich.console import Console, Group
@@ -8,8 +11,6 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.accounts.accounts import TrackedAccount
-from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from clive.__private.core.commands.data_retrieval.update_node_data.models import NodeData
 from clive.__private.core.formatters.humanize import (
     humanize_asset,
     humanize_datetime,
@@ -18,6 +19,10 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.models import Asset
+
+if TYPE_CHECKING:
+    from clive.__private.core.alarms.alarms_storage import AlarmsStorage
+    from clive.__private.core.commands.data_retrieval.update_node_data.models import NodeData
 
 
 @dataclass(kw_only=True)

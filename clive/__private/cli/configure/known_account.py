@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -17,8 +17,8 @@ _account_name_add_argument = typer.Argument(
 @known_account.command(name="add")
 async def add_known_account(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: Optional[str] = _account_name_add_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name: str | None = _account_name_add_argument,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Add an account to the known accounts."""
     from clive.__private.cli.commands.configure.known_account import AddKnownAccount
@@ -34,8 +34,8 @@ _account_name_remove_argument = modified_param(
 @known_account.command(name="remove")
 async def remove_known_account(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: Optional[str] = _account_name_remove_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name: str | None = _account_name_remove_argument,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Remove an account from the known accounts."""
     from clive.__private.cli.commands.configure.known_account import RemoveKnownAccount

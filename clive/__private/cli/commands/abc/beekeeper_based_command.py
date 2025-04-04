@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from abc import ABC
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import typer
 from beekeepy import AsyncBeekeeper
-from beekeepy.interfaces import HttpUrl
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -15,6 +17,9 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.commands.get_wallet_names import GetWalletNames
 from clive.__private.core.url_utils import is_url_reachable
 from clive.__private.settings import safe_settings
+
+if TYPE_CHECKING:
+    from beekeepy.interfaces import HttpUrl
 
 
 @dataclass(kw_only=True)

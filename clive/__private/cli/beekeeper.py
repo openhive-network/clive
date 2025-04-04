@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper

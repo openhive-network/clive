@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.types import AuthorityType
+
+if TYPE_CHECKING:
+    from clive.__private.cli.types import AuthorityType
 
 
 @dataclass(kw_only=True)

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, Optional, cast, get_args
+from typing import TYPE_CHECKING, cast, get_args
 
 import typer
 
@@ -48,9 +50,9 @@ async def transfer(  # noqa: PLR0913
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Transfer some funds to another account."""
     from clive.__private.cli.commands.process.transfer import Transfer
@@ -87,9 +89,9 @@ async def process_transaction(  # noqa: PLR0913
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
@@ -117,9 +119,9 @@ async def process_update_memo_key(  # noqa: PLR0913
         help="New memo public key that will be set for account.",
         show_default=False,
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Set memo key."""
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate, set_memo_key

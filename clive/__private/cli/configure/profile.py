@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -19,11 +19,9 @@ _profile_name_create_argument = typer.Argument(
 @profile.command(name="add")
 async def create_profile(
     ctx: typer.Context,  # noqa: ARG001
-    profile_name: Optional[str] = _profile_name_create_argument,
-    profile_name_option: Optional[str] = argument_related_options.profile_name,
-    working_account_name: Optional[str] = typer.Option(
-        None, help="The name of the working account.", show_default=False
-    ),
+    profile_name: str | None = _profile_name_create_argument,
+    profile_name_option: str | None = argument_related_options.profile_name,
+    working_account_name: str | None = typer.Option(None, help="The name of the working account.", show_default=False),
 ) -> None:
     """
     Create a new profile. Password for new profile is provided by stdin.
@@ -46,7 +44,7 @@ _profile_name_delete_argument = modified_param(
 @profile.command(name="remove")
 async def delete_profile(
     profile_name: str = _profile_name_delete_argument,
-    profile_name_option: Optional[str] = argument_related_options.profile_name,
+    profile_name_option: str | None = argument_related_options.profile_name,
 ) -> None:
     """Delete a profile."""
     from clive.__private.cli.commands.configure.profile import DeleteProfile

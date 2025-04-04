@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.configure.chain_id import chain_id
 from clive.__private.cli.configure.key import key

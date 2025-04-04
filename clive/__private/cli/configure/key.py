@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -26,10 +26,10 @@ _alias_argument = typer.Argument(
 @key.command(name="add")
 async def add_key(
     ctx: typer.Context,  # noqa: ARG001
-    key: Optional[str] = _key_argument,
-    key_option: Optional[str] = argument_related_options.key,
-    alias: Optional[str] = _alias_argument,
-    alias_option: Optional[str] = argument_related_options.alias,
+    key: str | None = _key_argument,
+    key_option: str | None = argument_related_options.key,
+    alias: str | None = _alias_argument,
+    alias_option: str | None = argument_related_options.alias,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
@@ -48,8 +48,8 @@ _alias_remove_argument = typer.Argument(
 @key.command(name="remove")
 async def remove_key(
     ctx: typer.Context,  # noqa: ARG001
-    alias: Optional[str] = _alias_remove_argument,
-    alias_option: Optional[str] = argument_related_options.alias,
+    alias: str | None = _alias_remove_argument,
+    alias_option: str | None = argument_related_options.alias,
     from_beekeeper: bool = typer.Option(  # noqa: FBT001
         default=False,
         help="Remove the key from the Beekeeper as well.",

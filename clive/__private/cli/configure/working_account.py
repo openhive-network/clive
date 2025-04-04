@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -20,7 +20,7 @@ _account_name_switch_argument = typer.Argument(
 async def switch_working_account(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = _account_name_switch_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Switch the working account."""
     from clive.__private.cli.commands.configure.working_account import SwitchWorkingAccount

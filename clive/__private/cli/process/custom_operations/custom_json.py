@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -34,9 +34,9 @@ async def process_custom_json(  # noqa: PLR0913
         help="Custom json content. This can be a path to a file or a string itself.",
         show_default=False,
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Send custom json operation, json can be provided as string or file."""
     from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson

@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -16,16 +18,16 @@ claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 async def process_claim_new_account_token(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     creator: str = options.account_name,
-    fee: Optional[str] = typer.Option(
+    fee: str | None = typer.Option(
         None,
         parser=hive_asset,
         help="Current account creation fee, if present must be exactly the value returned by clive show chain."
         " If not specified resource credits will be used to obtain token.",
         show_default=False,
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Obtain account creation token, pay either with HIVE or RC."""
     from clive.__private.cli.commands.process.process_claim_new_account_token import ProcessClaimNewAccountToken

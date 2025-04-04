@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
@@ -9,9 +12,11 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
 )
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
-from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
 from clive.__private.settings import safe_settings
+
+if TYPE_CHECKING:
+    from clive.__private.core.profile import Profile
 
 
 @dataclass(kw_only=True)

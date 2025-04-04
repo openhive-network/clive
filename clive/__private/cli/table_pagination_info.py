@@ -1,6 +1,10 @@
-import math
+from __future__ import annotations
 
-from rich.table import Table
+import math
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rich.table import Table
 
 
 def add_pagination_info_to_table_if_needed(table: Table, page_no: int, page_size: int, all_entries: int) -> None:

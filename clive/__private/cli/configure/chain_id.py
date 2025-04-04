@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -19,8 +19,8 @@ _chain_id_argument = typer.Argument(
 @chain_id.command(name="set")
 async def set_chain_id(
     ctx: typer.Context,  # noqa: ARG001
-    chain_id: Optional[str] = _chain_id_argument,
-    chain_id_option: Optional[str] = argument_related_options.chain_id,
+    chain_id: str | None = _chain_id_argument,
+    chain_id_option: str | None = argument_related_options.chain_id,
 ) -> None:
     """
     Set/change the chain ID for the profile.

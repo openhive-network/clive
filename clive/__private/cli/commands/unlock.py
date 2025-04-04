@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import errno
 import sys
 from dataclasses import dataclass
 from datetime import timedelta
 from getpass import getpass
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import typer
 from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
@@ -16,7 +18,6 @@ from clive.__private.cli.exceptions import (
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.cli.notify import notify
-from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
 from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.constants.wallet_recovery import (
@@ -24,6 +25,9 @@ from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
 )
 from clive.__private.core.profile import Profile
+
+if TYPE_CHECKING:
+    from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
 
 PASSWORD_SELECTION_ATTEMPTS: Final[int] = 3
 PROFILE_SELECTION_ATTEMPTS: Final[int] = 3

@@ -1,15 +1,19 @@
+from __future__ import annotations
+
 import errno
 import inspect
 from abc import ABC, abstractmethod
 from dataclasses import Field, dataclass, field, fields
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
-from clive.__private.core.profile import Profile
+
+if TYPE_CHECKING:
+    from clive.__private.core.profile import Profile
 
 
 @dataclass(kw_only=True)

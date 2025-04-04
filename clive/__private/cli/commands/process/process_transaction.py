@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 import errno
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
+
+if TYPE_CHECKING:
+    from clive.__private.models import Transaction
 
 
 @dataclass(kw_only=True)

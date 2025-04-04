@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import Optional, cast
+from typing import cast
 
 import typer
 
@@ -55,7 +57,7 @@ async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
 async def show_balances(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
@@ -79,8 +81,8 @@ _transaction_id_argument = typer.Argument(
 @show.command(name="transaction-status")
 async def show_transaction_status(
     ctx: typer.Context,  # noqa: ARG001
-    transaction_id: Optional[str] = _transaction_id_argument,
-    transaction_id_option: Optional[str] = argument_related_options.transaction_id,
+    transaction_id: str | None = _transaction_id_argument,
+    transaction_id_option: str | None = argument_related_options.transaction_id,
 ) -> None:
     """Print status of a specific transaction."""
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
@@ -120,7 +122,7 @@ else:
 async def show_proxy(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show proxy of selected account."""
     from clive.__private.cli.commands.show.show_proxy import ShowProxy
@@ -142,7 +144,7 @@ witnesses_page_no = modified_param(
 async def show_witnesses(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
     page_size: int = witnesses_page_size,
     page_no: int = witnesses_page_no,
 ) -> None:
@@ -162,8 +164,8 @@ _witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS
 @show.command(name="witness")
 async def show_witness(
     ctx: typer.Context,  # noqa: ARG001
-    name: Optional[str] = _witness_name_argument,
-    name_option: Optional[str] = argument_related_options.name,
+    name: str | None = _witness_name_argument,
+    name_option: str | None = argument_related_options.name,
 ) -> None:
     """Show details of a specified witness."""
     from clive.__private.cli.commands.show.show_witness import ShowWitness
@@ -183,7 +185,7 @@ proposals_page_no = modified_param(
 async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
     order_by: OrdersEnum = typer.Option(
         DEFAULT_ORDER,
         help="Proposals listing can be ordered by criteria.",
@@ -230,8 +232,8 @@ _proposal_id_argument = typer.Argument(
 @show.command(name="proposal")
 async def show_proposal(
     ctx: typer.Context,  # noqa: ARG001
-    proposal_id: Optional[int] = _proposal_id_argument,
-    proposal_id_option: Optional[int] = argument_related_options.proposal_id,
+    proposal_id: int | None = _proposal_id_argument,
+    proposal_id_option: int | None = argument_related_options.proposal_id,
 ) -> None:
     """Show details of a specified proposal."""
     from clive.__private.cli.commands.show.show_proposal import ShowProposal
@@ -245,7 +247,7 @@ async def show_proposal(
 async def show_owner_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display owner authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -260,7 +262,7 @@ async def show_owner_authority(
 async def show_active_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display active authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -275,7 +277,7 @@ async def show_active_authority(
 async def show_posting_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display posting authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -290,7 +292,7 @@ async def show_posting_authority(
 async def show_memo_key(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display memo key of selected account."""
     from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
@@ -310,7 +312,7 @@ async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
 async def show_hive_power(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show info about hive power related to account including delegations and withdraw routes."""
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
@@ -322,7 +324,7 @@ async def show_hive_power(
 async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """
     Show number of possessed tokens for account creation.
@@ -338,7 +340,7 @@ async def show_new_account_token(
 async def show_transfer_schedule(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain information about recurrent transfers of selected account."""
     from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
@@ -350,7 +352,7 @@ async def show_transfer_schedule(
 async def show_account(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
-    account_name_option: Optional[str] = argument_related_options.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show information about given account."""
     from clive.__private.cli.commands.show.show_account import ShowAccount

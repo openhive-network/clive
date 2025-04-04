@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import errno
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import rich
 import typer
@@ -13,12 +16,14 @@ from clive.__private.cli.exceptions import (
     CLITransactionNotSignedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
-from clive.__private.core.ensure_transaction import TransactionConvertibleType
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
+
+if TYPE_CHECKING:
+    from clive.__private.core.ensure_transaction import TransactionConvertibleType
+    from clive.__private.core.keys import PublicKey
+    from clive.__private.models import Transaction
 
 
 @dataclass(kw_only=True)

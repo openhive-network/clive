@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -18,9 +20,9 @@ async def process_deposit(  # noqa: PLR0913
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Immediately deposit funds to savings account."""
     from clive.__private.cli.commands.process.process_deposit import ProcessDeposit
@@ -45,14 +47,14 @@ async def process_withdrawal(  # noqa: PLR0913
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
-    request_id: Optional[int] = typer.Option(
+    request_id: int | None = typer.Option(
         None,
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
         show_default=False,
     ),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
     from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal
@@ -75,9 +77,9 @@ async def process_withdrawal_cancel(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     request_id: int = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Cancel previously initiated withdrawal from savings account."""
     from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel

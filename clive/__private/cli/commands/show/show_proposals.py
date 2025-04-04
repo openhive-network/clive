@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -6,11 +8,14 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.table_pagination_info import add_pagination_info_to_table_if_needed
-from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_bool
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.proposals_data import Proposal, ProposalsData
+    from clive.__private.core.commands.data_retrieval.proposals_data import (
+        Proposal,
+        ProposalsData,
+        ProposalsDataRetrieval,
+    )
 
 
 @dataclass(kw_only=True)

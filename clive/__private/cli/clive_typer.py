@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import inspect
 import sys
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any, ClassVar, NewType, Optional, TypeVar
+from typing import Any, ClassVar, NewType, TypeVar
 
 import typer
 from click import ClickException
@@ -49,8 +51,8 @@ class CliveTyper(typer.Typer):
     def __init__(
         self,
         *,
-        name: Optional[str] = Default(None),
-        help: Optional[str] = Default(None),  # noqa: A002
+        name: str | None = Default(None),
+        help: str | None = Default(None),  # noqa: A002
         chain: bool = Default(value=False),
     ) -> None:
         super().__init__(

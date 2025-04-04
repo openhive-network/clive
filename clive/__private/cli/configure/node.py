@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import typer
 
@@ -18,8 +18,8 @@ _node_address_argument = typer.Argument(
 @node.command(name="set")
 async def set_node(
     ctx: typer.Context,  # noqa: ARG001
-    node_address: Optional[str] = _node_address_argument,
-    node_address_option: Optional[str] = argument_related_options.node_address,
+    node_address: str | None = _node_address_argument,
+    node_address_option: str | None = argument_related_options.node_address,
 ) -> None:
     """Set the node address for the profile."""
     from clive.__private.cli.commands.configure.node import SetNode
