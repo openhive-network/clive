@@ -132,8 +132,6 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.per-file-ignores]
 "clive/__private/cli/**" = [
-    "I002", # Missing required import: {name}; TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
-    "FA", # future annotations; TODO: related to above
     "B008", # Do not perform function call {name} in argument defaults; in Typer it is common to do that # TODO: should be disabled more specifically but requires restructuring typer interface (e.g. storing all typer functions in cli/interface)
 ]
 "clive/__private/cli/common/**" = [
