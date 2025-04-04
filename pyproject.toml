@@ -134,9 +134,6 @@ required-imports = ["from __future__ import annotations"]
 "clive/__private/cli/**" = [
     "B008", # Do not perform function call {name} in argument defaults; in Typer it is common to do that # TODO: should be disabled more specifically but requires restructuring typer interface (e.g. storing all typer functions in cli/interface)
 ]
-"clive/__private/cli/common/**" = [
-    "RUF009", # Do not perform function call {name} in dataclass defaults; common pattern for common options
-]
 "clive/__private/ui/**" = [
     "PLR0913", # Too many arguments in function definition; too restrictive; # TODO: could be fixed or disabled in place
     "RUF012", # Mutable class attributes should be annotated with typing.ClassVar; TODO: Check if we can fix it, it's kinda Textual-specific
