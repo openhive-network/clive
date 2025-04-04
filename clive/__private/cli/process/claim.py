@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, options
+from clive.__private.cli.common import options
 from clive.__private.cli.common.parsers import hive_asset
 
 if TYPE_CHECKING:
@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 
 
-@claim.command(name="new-account-token", param_groups=[OperationOptionsGroup])
-async def process_claim_new_account_token(
+@claim.command(name="new-account-token")
+async def process_claim_new_account_token(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     creator: str = options.account_name,
     fee: Optional[str] = typer.Option(
@@ -23,10 +23,18 @@ async def process_claim_new_account_token(
         " If not specified resource credits will be used to obtain token.",
         show_default=False,
     ),
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Obtain account creation token, pay either with HIVE or RC."""
     from clive.__private.cli.commands.process.process_claim_new_account_token import ProcessClaimNewAccountToken
 
-    common = OperationOptionsGroup.get_instance()
     fee_ = cast("Asset.Hive", fee) if fee else None
-    await ProcessClaimNewAccountToken(**common.as_dict(), creator=creator, fee=fee_).run()
+    await ProcessClaimNewAccountToken(
+        creator=creator,
+        fee=fee_,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
+    ).run()

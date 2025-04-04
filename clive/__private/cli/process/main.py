@@ -1,11 +1,11 @@
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, cast, get_args
+from typing import TYPE_CHECKING, Optional, cast, get_args
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, options
+from clive.__private.cli.common import options
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
@@ -41,25 +41,29 @@ process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
 
 
-@process.command(name="transfer", param_groups=[OperationOptionsGroup])
-async def transfer(
+@process.command(name="transfer")
+async def transfer(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Transfer some funds to another account."""
     from clive.__private.cli.commands.process.transfer import Transfer
 
-    operation_common = OperationOptionsGroup.get_instance()
     amount_ = cast("Asset.LiquidT", amount)
     await Transfer(
-        **operation_common.as_dict(),
         from_account=from_account,
         to=to,
         amount=amount_,
         memo=memo,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
     ).run()
 
 
@@ -75,14 +79,17 @@ else:
     )
 
 
-@process.command(name="transaction", param_groups=[OperationOptionsGroup])
-async def process_transaction(
+@process.command(name="transaction")
+async def process_transaction(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_file: str = typer.Option(..., help="The file to load the transaction from.", show_default=False),
     force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
     ),
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
@@ -90,17 +97,18 @@ async def process_transaction(
     if isinstance(already_signed_mode, Enum):
         already_signed_mode = already_signed_mode.value
 
-    common = OperationOptionsGroup.get_instance()
     await ProcessTransaction(
-        **common.as_dict(),
         from_file=from_file,
         force_unsign=force_unsign,
         already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
     ).run()
 
 
-@process.command(name="update-memo-key", param_groups=[OperationOptionsGroup])
-async def process_update_memo_key(
+@process.command(name="update-memo-key")
+async def process_update_memo_key(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     memo_key: str = typer.Option(
@@ -109,13 +117,15 @@ async def process_update_memo_key(
         help="New memo public key that will be set for account.",
         show_default=False,
     ),
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Set memo key."""
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate, set_memo_key
 
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
 
-    common = OperationOptionsGroup.get_instance()
-    operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name)
+    operation = ProcessAccountUpdate(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file)
     operation.add_callback(update_memo_key_callback)
     await operation.run()

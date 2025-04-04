@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, modified_param, options
+from clive.__private.cli.common import modified_param, options
 from clive.__private.cli.common.parsers import scheduled_transfer_frequency_parser
 from clive.__private.core.constants.node import (
     SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
@@ -52,7 +52,7 @@ _repeat_value = typer.Option(
 _repeat_value_optional = modified_param(_repeat_value, default=None)
 
 
-@transfer_schedule.command(name="create", param_groups=[OperationOptionsGroup])
+@transfer_schedule.command(name="create")
 async def process_transfer_schedule_create(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
@@ -62,14 +62,14 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     frequency: timedelta = _frequency_value,
     memo: str = options.memo_value,
     pair_id: int = _pair_id_value,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
 
-    common = OperationOptionsGroup.get_instance()
-
     await ProcessTransferScheduleCreate(
-        **common.as_dict(),
         from_account=from_account,
         to=to,
         amount=cast("Asset.LiquidT", amount),
@@ -77,10 +77,13 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         frequency=frequency,
         memo=memo,
         pair_id=pair_id,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
     ).run()
 
 
-@transfer_schedule.command(name="modify", param_groups=[OperationOptionsGroup])
+@transfer_schedule.command(name="modify")
 async def process_transfer_schedule_modify(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
@@ -90,6 +93,9 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     frequency: Optional[timedelta] = _frequency_value_optional,
     memo: Optional[str] = options.memo_value_optional,
     pair_id: Optional[int] = _pair_id_value_none,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """
     Modify an existing recurrent transfer.
@@ -98,9 +104,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     """
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleModify
 
-    common = OperationOptionsGroup.get_instance()
     await ProcessTransferScheduleModify(
-        **common.as_dict(),
         from_account=from_account,
         to=to,
         amount=cast("Asset.LiquidT", amount),
@@ -108,18 +112,30 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         frequency=frequency,
         memo=memo,
         pair_id=pair_id,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
     ).run()
 
 
-@transfer_schedule.command(name="remove", param_groups=[OperationOptionsGroup])
-async def process_transfer_schedule_remove(
+@transfer_schedule.command(name="remove")
+async def process_transfer_schedule_remove(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     pair_id: Optional[int] = _pair_id_value_none,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Remove an existing recurrent transfer."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove
 
-    common = OperationOptionsGroup.get_instance()
-    await ProcessTransferScheduleRemove(**common.as_dict(), from_account=from_account, to=to, pair_id=pair_id).run()
+    await ProcessTransferScheduleRemove(
+        from_account=from_account,
+        to=to,
+        pair_id=pair_id,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
+    ).run()

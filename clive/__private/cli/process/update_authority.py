@@ -7,7 +7,7 @@ import typer
 from click import Context, pass_context
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, options
+from clive.__private.cli.common import options
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -146,8 +146,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         update_function = partial(update_authority, attribute=authority, callback=modify_key_function)
         add_callback_to_update_command(ctx, update_function)
 
-    @update.callback(param_groups=[OperationOptionsGroup], invoke_without_command=True, result_callback=send_update)
-    async def set_threshold(
+    @update.callback(invoke_without_command=True, result_callback=send_update)
+    async def set_threshold(  # noqa: PLR0913
         ctx: typer.Context,
         account_name: str = options.account_name,
         threshold: Optional[int] = typer.Option(
@@ -155,6 +155,9 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             help="Set Threshold",
             show_default=False,
         ),
+        sign: Optional[str] = options.sign,
+        broadcast: bool = options.broadcast,  # noqa: FBT001
+        save_file: Optional[str] = options.save_file,
     ) -> None:
         """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
         from clive.__private.cli.commands.process.process_account_update import (
@@ -163,8 +166,12 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             update_authority,
         )
 
-        operation_common = OperationOptionsGroup.get_instance()
-        update_command = ProcessAccountUpdate(**operation_common.as_dict(), account_name=account_name)
+        update_command = ProcessAccountUpdate(
+            account_name=account_name,
+            sign=sign,
+            broadcast=broadcast,
+            save_file=save_file,
+        )
         if threshold:
             set_threshold_function = partial(set_threshold, threshold=threshold)
             update_function = partial(update_authority, attribute=authority, callback=set_threshold_function)

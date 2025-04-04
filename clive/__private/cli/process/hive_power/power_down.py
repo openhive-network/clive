@@ -1,9 +1,9 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, options
+from clive.__private.cli.common import options
 
 if TYPE_CHECKING:
     from clive.__private.models import Asset
@@ -11,11 +11,14 @@ if TYPE_CHECKING:
 power_down = CliveTyper(name="power-down", help="Perform power-down, send withdraw_vesting_operation.")
 
 
-@power_down.command(name="start", param_groups=[OperationOptionsGroup])
-async def process_power_down_start(
+@power_down.command(name="start")
+async def process_power_down_start(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """
     Start power down with given amount.
@@ -24,17 +27,25 @@ async def process_power_down_start(
     """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownStart
 
-    common = OperationOptionsGroup.get_instance()
     amount_ = cast("Asset.Hive", amount)
-    operation = ProcessPowerDownStart(**common.as_dict(), account_name=account_name, amount=amount_)
+    operation = ProcessPowerDownStart(
+        account_name=account_name,
+        amount=amount_,
+        sign=sign,
+        broadcast=broadcast,
+        save_file=save_file,
+    )
     await operation.run()
 
 
-@power_down.command(name="restart", param_groups=[OperationOptionsGroup])
-async def process_power_down_restart(
+@power_down.command(name="restart")
+async def process_power_down_restart(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """
     Restart power down with given amount.
@@ -43,20 +54,23 @@ async def process_power_down_restart(
     """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDown
 
-    common = OperationOptionsGroup.get_instance()
     amount_ = cast("Asset.Hive", amount)
-    operation = ProcessPowerDown(**common.as_dict(), account_name=account_name, amount=amount_)
+    operation = ProcessPowerDown(
+        account_name=account_name, amount=amount_, sign=sign, broadcast=broadcast, save_file=save_file
+    )
     await operation.run()
 
 
-@power_down.command(name="cancel", param_groups=[OperationOptionsGroup])
+@power_down.command(name="cancel")
 async def process_power_down_cancel(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
+    sign: Optional[str] = options.sign,
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: Optional[str] = options.save_file,
 ) -> None:
     """Stop power down by setting amount to 0."""
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel
 
-    common = OperationOptionsGroup.get_instance()
-    operation = ProcessPowerDownCancel(**common.as_dict(), account_name=account_name)
+    operation = ProcessPowerDownCancel(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file)
     await operation.run()
