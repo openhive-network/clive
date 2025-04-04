@@ -4,7 +4,6 @@ from typing import Optional, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import WorldOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options, arguments, options
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleAccountNameValue,
@@ -28,34 +27,31 @@ async def show_profiles() -> None:
     await ShowProfiles().run()
 
 
-@show.command(name="profile", param_groups=[WorldOptionsGroup])
+@show.command(name="profile")
 async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show profile information."""
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowProfile(**common.as_dict()).run()
+    await ShowProfile().run()
 
 
-@show.command(name="accounts", param_groups=[WorldOptionsGroup])
+@show.command(name="accounts")
 async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all accounts stored in the profile."""
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowAccounts(**common.as_dict()).run()
+    await ShowAccounts().run()
 
 
-@show.command(name="keys", param_groups=[WorldOptionsGroup])
+@show.command(name="keys")
 async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all the public keys stored in Clive."""
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowKeys(**common.as_dict()).run()
+    await ShowKeys().run()
 
 
-@show.command(name="balances", param_groups=[WorldOptionsGroup])
+@show.command(name="balances")
 async def show_balances(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -64,19 +60,15 @@ async def show_balances(
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowBalances(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowBalances(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
-@show.command(name="node", param_groups=[WorldOptionsGroup])
+@show.command(name="node")
 async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show address of the currently selected node."""
     from clive.__private.cli.commands.show.show_node import ShowNode
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowNode(**common.as_dict()).run()
+    await ShowNode().run()
 
 
 _transaction_id_argument = typer.Argument(
@@ -84,7 +76,7 @@ _transaction_id_argument = typer.Argument(
 )
 
 
-@show.command(name="transaction-status", param_groups=[WorldOptionsGroup])
+@show.command(name="transaction-status")
 async def show_transaction_status(
     ctx: typer.Context,  # noqa: ARG001
     transaction_id: Optional[str] = _transaction_id_argument,
@@ -93,9 +85,8 @@ async def show_transaction_status(
     """Print status of a specific transaction."""
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
 
-    common = WorldOptionsGroup.get_instance()
     await ShowTransactionStatus(
-        **common.as_dict(), transaction_id=EnsureSingleValue("transaction-id").of(transaction_id, transaction_id_option)
+        transaction_id=EnsureSingleValue("transaction-id").of(transaction_id, transaction_id_option)
     ).run()
 
 
@@ -125,7 +116,7 @@ else:
     DEFAULT_STATUS = ProposalsDataRetrieval.DEFAULT_STATUS
 
 
-@show.command(name="proxy", param_groups=[WorldOptionsGroup])
+@show.command(name="proxy")
 async def show_proxy(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -134,9 +125,7 @@ async def show_proxy(
     """Show proxy of selected account."""
     from clive.__private.cli.commands.show.show_proxy import ShowProxy
 
-    common = WorldOptionsGroup.get_instance()
     await ShowProxy(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
     ).run()
 
@@ -149,7 +138,7 @@ witnesses_page_no = modified_param(
 )
 
 
-@show.command(name="witnesses", param_groups=[WorldOptionsGroup])
+@show.command(name="witnesses")
 async def show_witnesses(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -160,9 +149,7 @@ async def show_witnesses(
     """List witnesses and votes of selected account."""
     from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses
 
-    common = WorldOptionsGroup.get_instance()
     await ShowWitnesses(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         page_size=page_size,
         page_no=page_no,
@@ -172,7 +159,7 @@ async def show_witnesses(
 _witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False)
 
 
-@show.command(name="witness", param_groups=[WorldOptionsGroup])
+@show.command(name="witness")
 async def show_witness(
     ctx: typer.Context,  # noqa: ARG001
     name: Optional[str] = _witness_name_argument,
@@ -181,9 +168,7 @@ async def show_witness(
     """Show details of a specified witness."""
     from clive.__private.cli.commands.show.show_witness import ShowWitness
 
-    common = WorldOptionsGroup.get_instance()
     await ShowWitness(
-        **common.as_dict(),
         name=EnsureSingleValue("name").of(name, name_option),
     ).run()
 
@@ -194,7 +179,7 @@ proposals_page_no = modified_param(
 )
 
 
-@show.command(name="proposals", param_groups=[WorldOptionsGroup])
+@show.command(name="proposals")
 async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -225,9 +210,7 @@ async def show_proposals(  # noqa: PLR0913
     order_direction_ = cast(ProposalsDataRetrieval.OrderDirections, order_direction.value)
     status_ = cast(ProposalsDataRetrieval.Statuses, status.value)
 
-    common = WorldOptionsGroup.get_instance()
     await ShowProposals(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         order_by=order_by_,
         order_direction=order_direction_,
@@ -244,7 +227,7 @@ _proposal_id_argument = typer.Argument(
 )
 
 
-@show.command(name="proposal", param_groups=[WorldOptionsGroup])
+@show.command(name="proposal")
 async def show_proposal(
     ctx: typer.Context,  # noqa: ARG001
     proposal_id: Optional[int] = _proposal_id_argument,
@@ -253,14 +236,12 @@ async def show_proposal(
     """Show details of a specified proposal."""
     from clive.__private.cli.commands.show.show_proposal import ShowProposal
 
-    common = WorldOptionsGroup.get_instance()
     await ShowProposal(
-        **common.as_dict(),
         proposal_id=EnsureSingleValue[int]("proposal-id").of(proposal_id, proposal_id_option),
     ).run()
 
 
-@show.command(name="owner-authority", param_groups=[WorldOptionsGroup])
+@show.command(name="owner-authority")
 async def show_owner_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -269,15 +250,13 @@ async def show_owner_authority(
     """Fetch from blockchain and display owner authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
-    common = WorldOptionsGroup.get_instance()
     await ShowAuthority(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="owner",
     ).run()
 
 
-@show.command(name="active-authority", param_groups=[WorldOptionsGroup])
+@show.command(name="active-authority")
 async def show_active_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -286,15 +265,13 @@ async def show_active_authority(
     """Fetch from blockchain and display active authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
-    common = WorldOptionsGroup.get_instance()
     await ShowAuthority(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="active",
     ).run()
 
 
-@show.command(name="posting-authority", param_groups=[WorldOptionsGroup])
+@show.command(name="posting-authority")
 async def show_posting_authority(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -303,15 +280,13 @@ async def show_posting_authority(
     """Fetch from blockchain and display posting authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
-    common = WorldOptionsGroup.get_instance()
     await ShowAuthority(
-        **common.as_dict(),
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="posting",
     ).run()
 
 
-@show.command(name="memo-key", param_groups=[WorldOptionsGroup])
+@show.command(name="memo-key")
 async def show_memo_key(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -320,22 +295,18 @@ async def show_memo_key(
     """Fetch from blockchain and display memo key of selected account."""
     from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowMemoKey(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowMemoKey(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
-@show.command(name="chain", param_groups=[WorldOptionsGroup])
+@show.command(name="chain")
 async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
     """Fetch from blockchain and display chain info."""
     from clive.__private.cli.commands.show.show_chain import ShowChain
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowChain(**common.as_dict()).run()
+    await ShowChain().run()
 
 
-@show.command(name="hive-power", param_groups=[WorldOptionsGroup])
+@show.command(name="hive-power")
 async def show_hive_power(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -344,13 +315,10 @@ async def show_hive_power(
     """Show info about hive power related to account including delegations and withdraw routes."""
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowHivePower(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowHivePower(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
-@show.command(name="new-account-token", param_groups=[WorldOptionsGroup])
+@show.command(name="new-account-token")
 async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -363,13 +331,10 @@ async def show_new_account_token(
     """
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowNewAccountToken(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowNewAccountToken(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
-@show.command(name="transfer-schedule", param_groups=[WorldOptionsGroup])
+@show.command(name="transfer-schedule")
 async def show_transfer_schedule(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -378,13 +343,10 @@ async def show_transfer_schedule(
     """Fetch from blockchain information about recurrent transfers of selected account."""
     from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowTransferSchedule(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowTransferSchedule(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
-@show.command(name="account", param_groups=[WorldOptionsGroup])
+@show.command(name="account")
 async def show_account(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = arguments.account_name,
@@ -393,7 +355,4 @@ async def show_account(
     """Show information about given account."""
     from clive.__private.cli.commands.show.show_account import ShowAccount
 
-    common = WorldOptionsGroup.get_instance()
-    await ShowAccount(
-        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
-    ).run()
+    await ShowAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

@@ -3,7 +3,6 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import WorldOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
@@ -17,7 +16,7 @@ _chain_id_argument = typer.Argument(
 )
 
 
-@chain_id.command(name="set", param_groups=[WorldOptionsGroup])
+@chain_id.command(name="set")
 async def set_chain_id(
     ctx: typer.Context,  # noqa: ARG001
     chain_id: Optional[str] = _chain_id_argument,
@@ -30,11 +29,10 @@ async def set_chain_id(
     """
     from clive.__private.cli.commands.configure.chain_id import SetChainId
 
-    common = WorldOptionsGroup.get_instance()
-    await SetChainId(**common.as_dict(), chain_id=EnsureSingleValue("chain-id").of(chain_id, chain_id_option)).run()
+    await SetChainId(chain_id=EnsureSingleValue("chain-id").of(chain_id, chain_id_option)).run()
 
 
-@chain_id.command(name="unset", param_groups=[WorldOptionsGroup])
+@chain_id.command(name="unset")
 async def unset_chain_id(
     ctx: typer.Context,  # noqa: ARG001
 ) -> None:
@@ -45,5 +43,4 @@ async def unset_chain_id(
     """
     from clive.__private.cli.commands.configure.chain_id import UnsetChainId
 
-    common = WorldOptionsGroup.get_instance()
-    await UnsetChainId(**common.as_dict()).run()
+    await UnsetChainId().run()

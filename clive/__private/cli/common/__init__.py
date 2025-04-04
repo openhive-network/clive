@@ -3,7 +3,6 @@ from .parameters.groups import (
     OperationOptionsGroup,
     ParameterGroup,
     TransferOptionsGroup,
-    WorldOptionsGroup,
 )
 
 __all__ = [
@@ -14,5 +13,4 @@ __all__ = [
     "OperationOptionsGroup",
     "ParameterGroup",
     "TransferOptionsGroup",
-    "WorldOptionsGroup",
 ]
