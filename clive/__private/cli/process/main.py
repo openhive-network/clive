@@ -1,11 +1,11 @@
 from enum import Enum
 from functools import partial
-from typing import get_args
+from typing import TYPE_CHECKING, cast, get_args
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationOptionsGroup, TransferOptionsGroup, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
@@ -19,6 +19,9 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
+
+if TYPE_CHECKING:
+    from clive.__private.models import Asset
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
@@ -38,17 +41,26 @@ process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
 
 
-@process.command(name="transfer", param_groups=[OperationOptionsGroup, TransferOptionsGroup])
+@process.command(name="transfer", param_groups=[OperationOptionsGroup])
 async def transfer(
     ctx: typer.Context,  # noqa: ARG001
+    from_account: str = options.from_account_name,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
+    amount: str = options.liquid_amount,
+    memo: str = options.memo_value,
 ) -> None:
     """Transfer some funds to another account."""
     from clive.__private.cli.commands.process.transfer import Transfer
 
     operation_common = OperationOptionsGroup.get_instance()
-    transfer_common = TransferOptionsGroup.get_instance()
-    await Transfer(**operation_common.as_dict(), **transfer_common.as_dict(), to=to).run()
+    amount_ = cast("Asset.LiquidT", amount)
+    await Transfer(
+        **operation_common.as_dict(),
+        from_account=from_account,
+        to=to,
+        amount=amount_,
+        memo=memo,
+    ).run()
 
 
 if is_tab_completion_active():

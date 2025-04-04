@@ -2,7 +2,6 @@ from .parameters import argument_related_options, arguments, modified_param, opt
 from .parameters.groups import (
     OperationOptionsGroup,
     ParameterGroup,
-    TransferOptionsGroup,
 )
 
 __all__ = [
@@ -12,5 +11,4 @@ __all__ = [
     "modified_param",
     "OperationOptionsGroup",
     "ParameterGroup",
-    "TransferOptionsGroup",
 ]
