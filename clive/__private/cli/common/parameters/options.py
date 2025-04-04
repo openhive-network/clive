@@ -8,6 +8,8 @@ In such a situation, the option should be defined in the command module itself.
 
 from __future__ import annotations
 
+from functools import partial
+
 import typer
 
 from clive.__private.cli.common.parameters.modified_param import modified_param
@@ -17,6 +19,7 @@ from clive.__private.cli.common.parsers import (
     voting_asset,
 )
 from clive.__private.core.constants.cli import (
+    OPERATION_COMMON_OPTIONS_PANEL_TITLE,
     PAGE_NUMBER_OPTION_MINIMAL_VALUE,
     PAGE_SIZE_OPTION_MINIMAL_VALUE,
     PERFORM_WORKING_ACCOUNT_LOAD,
@@ -105,3 +108,21 @@ page_no = typer.Option(
     min=PAGE_NUMBER_OPTION_MINIMAL_VALUE,
     help="Page number to display, considering the given page size.",
 )
+
+# OPERATION COMMON OPTIONS >>
+
+_operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
+
+sign = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with.", show_default=False))
+broadcast = _operation_common_option(
+    typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
+)
+save_file = _operation_common_option(
+    typer.Option(
+        None,
+        help="The file to save the transaction to (format is determined by file extension - .bin or .json).",
+        show_default=False,
+    )
+)
+
+# << OPERATION COMMON OPTIONS
