@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, Optional
+from typing import Final
 
 import typer
 
@@ -32,7 +32,7 @@ if not is_tab_completion_active():
 
 @cli.callback(invoke_without_command=True)
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None, "--version", "-V", help="Show the current version and exit.", is_eager=True
     ),
 ) -> None:
@@ -53,9 +53,9 @@ _profile_name_unlock_argument = typer.Argument(
 @cli.command(name="unlock")
 async def unlock(
     ctx: typer.Context,  # noqa: ARG001
-    profile_name: Optional[str] = _profile_name_unlock_argument,
-    profile_name_option: Optional[str] = argument_related_options.profile_name,
-    unlock_time_mins: Optional[int] = typer.Option(
+    profile_name: str | None = _profile_name_unlock_argument,
+    profile_name_option: str | None = argument_related_options.profile_name,
+    unlock_time_mins: int | None = typer.Option(
         None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout.", show_default=False
     ),
     include_create_new_profile: bool = typer.Option(  # noqa: FBT001

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import typer
 from click import Context, pass_context
@@ -150,14 +150,14 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     async def set_threshold(  # noqa: PLR0913
         ctx: typer.Context,
         account_name: str = options.account_name,
-        threshold: Optional[int] = typer.Option(
+        threshold: int | None = typer.Option(
             None,
             help="Set Threshold",
             show_default=False,
         ),
-        sign: Optional[str] = options.sign,
+        sign: str | None = options.sign,
         broadcast: bool = options.broadcast,  # noqa: FBT001
-        save_file: Optional[str] = options.save_file,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
         from clive.__private.cli.commands.process.process_account_update import (

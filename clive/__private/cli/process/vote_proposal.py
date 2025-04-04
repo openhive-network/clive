@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
@@ -22,9 +20,9 @@ async def process_vote_proposal_add(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Vote for a proposal."""
     from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
@@ -44,9 +42,9 @@ async def process_vote_proposal_remove(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign: Optional[str] = options.sign,
+    sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: Optional[str] = options.save_file,
+    save_file: str | None = options.save_file,
 ) -> None:
     """Unvote proposal."""
     from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
