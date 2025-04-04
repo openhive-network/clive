@@ -1,9 +1,7 @@
-import contextlib
+import inspect
 import sys
 from collections.abc import Callable
-from dataclasses import fields
-from functools import wraps
-from inspect import Parameter, isawaitable, signature
+from functools import partial, wraps
 from typing import Any, ClassVar, NewType, Optional, TypeVar
 
 import typer
@@ -12,8 +10,6 @@ from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
 from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
-from clive.__private.cli.common import ParameterGroup
-from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroupInstanceNotAvailableError
 from clive.__private.core._async import asyncio_run
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
@@ -81,62 +77,21 @@ class CliveTyper(typer.Typer):
 
         return decorator
 
-    def __common_decorator(
-        self,
-        fun: Callable[..., Any],
-        param_groups: list[type[ParameterGroup]] | None = None,
-        **kwargs: Any,
-    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
-        param_groups = param_groups or []
+    def callback(self, *args: Any, **kwargs: Any) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        return partial(self._maybe_run_async, super().callback(*args, **kwargs))
 
-        def decorator(f: CommandFunctionType) -> CommandFunctionType:
-            @wraps(f)
-            def wrapper(*args: Any, **_kwargs: Any) -> Any:  # noqa: ANN401
-                if len(args) > 0:
-                    raise RuntimeError("Positional arguments are not supported")
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        return partial(self._maybe_run_async, super().command(*args, **kwargs))
 
-                for param_group in param_groups:
-                    _kwargs = self.__patch_wrapper_kwargs(param_group, **_kwargs)
+    @staticmethod
+    def _maybe_run_async(decorator: Any, func: Any) -> Any:  # noqa: ANN401
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+            return asyncio_run(func(*args, **kwargs))
 
-                result = f(*args, **_kwargs)
-
-                if isawaitable(result):
-                    asyncio_run(result)
-
-            for param_group in param_groups:
-                self.__patch_command_sig(wrapper, param_group)
-
-            return fun(**kwargs)(wrapper)  # type: ignore[no-any-return]
-
-        return decorator
-
-    def command(  # type: ignore[override]
-        self,
-        name: Optional[str] = None,
-        param_groups: list[type[ParameterGroup]] | None = None,
-        *,
-        help: Optional[str] = None,  # noqa: A002
-        epilog: Optional[str] = None,
-    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
-        return self.__common_decorator(super().command, name=name, param_groups=param_groups, help=help, epilog=epilog)
-
-    def callback(  # type: ignore[override]
-        self,
-        name: Optional[str] = Default(None),
-        param_groups: list[type[ParameterGroup]] | None = None,
-        *,
-        help: Optional[str] = Default(None),  # noqa: A002
-        invoke_without_command: bool = Default(value=False),
-        result_callback: Optional[Callable[..., Any]] = Default(None),
-    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
-        return self.__common_decorator(
-            super().callback,
-            name=name,
-            param_groups=param_groups,
-            help=help,
-            invoke_without_command=invoke_without_command,
-            result_callback=result_callback,
-        )
+        if inspect.iscoroutinefunction(func):
+            return decorator(wrapper)
+        return decorator(func)
 
     def __handle_error(self, error: ExceptionT) -> None:
         handler = self.__get_error_handler(error)
@@ -173,52 +128,3 @@ class CliveTyper(typer.Typer):
                 return self.__clive_error_handlers__.pop(type_)
 
         raise error  # reraise if no handler is available
-
-    @staticmethod
-    def __patch_wrapper_kwargs(param_group_cls: type[ParameterGroup], **kwargs: Any) -> dict[str, Any]:
-        if (ctx := kwargs.get("ctx")) is None:
-            raise RuntimeError("Context should be provided")
-
-        group_params: dict[str, Any] = {}
-
-        with contextlib.suppress(ParameterGroupInstanceNotAvailableError):
-            group_params.update(param_group_cls.get_instance().as_dict())
-
-        for field in fields(param_group_cls):
-            if field.metadata.get("ignore", False):
-                continue
-
-            value = kwargs.pop(field.name)
-
-            if value == field.default:
-                continue
-
-            group_params[field.name] = value
-
-        param_group_cls(**group_params)
-        setattr(ctx, param_group_cls.get_name(), group_params)
-
-        return {"ctx": ctx, **kwargs}
-
-    @staticmethod
-    def __patch_command_sig(wrapper: Any, param_group_cls: type[ParameterGroup]) -> None:  # noqa: ANN401
-        sig = signature(wrapper)
-        new_parameters = sig.parameters.copy()
-
-        group_fields = fields(param_group_cls)
-
-        for field in group_fields:
-            if field.metadata.get("ignore", False):
-                continue
-            new_parameters[field.name] = Parameter(
-                name=field.name,
-                kind=Parameter.KEYWORD_ONLY,
-                default=field.default,
-                annotation=field.type,
-            )
-        for kwarg in sig.parameters.values():
-            if kwarg.kind == Parameter.KEYWORD_ONLY and kwarg.name != "ctx" and kwarg.name not in new_parameters:
-                new_parameters[kwarg.name] = kwarg.replace(default=kwarg.default)
-
-        new_sig = sig.replace(parameters=tuple(new_parameters.values()))
-        wrapper.__signature__ = new_sig
