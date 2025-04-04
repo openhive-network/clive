@@ -1,6 +1,5 @@
 from .parameters import argument_related_options, arguments, modified_param, options
 from .parameters.groups import (
-    BeekeeperOptionsGroup,
     OperationOptionsGroup,
     ParameterGroup,
     TransferOptionsGroup,
@@ -12,7 +11,6 @@ __all__ = [
     "arguments",
     "options",
     "modified_param",
-    "BeekeeperOptionsGroup",
     "OperationOptionsGroup",
     "ParameterGroup",
     "TransferOptionsGroup",

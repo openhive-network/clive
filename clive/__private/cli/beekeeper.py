@@ -1,18 +1,16 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import BeekeeperOptionsGroup
 
 beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
 
-@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
+@beekeeper.command()
 async def info(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
-    common = BeekeeperOptionsGroup.get_instance()
-    await BeekeeperInfo(**common.as_dict()).run()
+    await BeekeeperInfo().run()
 
 
 @beekeeper.command()
@@ -26,7 +24,7 @@ async def spawn(
     await BeekeeperSpawn(background=background, echo_address_only=echo_address_only).run()
 
 
-@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
+@beekeeper.command()
 async def create_session(
     ctx: typer.Context,  # noqa: ARG001
     echo_token_only: bool = typer.Option(default=False, help="Display only token."),  # noqa: FBT001
@@ -34,8 +32,7 @@ async def create_session(
     """Create beekeeper session."""
     from clive.__private.cli.commands.beekeeper import BeekeeperCreateSession
 
-    common = BeekeeperOptionsGroup.get_instance()
-    await BeekeeperCreateSession(**common.as_dict(), echo_token_only=echo_token_only).run()
+    await BeekeeperCreateSession(echo_token_only=echo_token_only).run()
 
 
 @beekeeper.command()

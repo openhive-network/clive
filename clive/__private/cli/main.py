@@ -6,7 +6,6 @@ import typer
 
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import BeekeeperOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.completion import is_tab_completion_active
@@ -51,7 +50,7 @@ _profile_name_unlock_argument = typer.Argument(
 )
 
 
-@cli.command(name="unlock", param_groups=[BeekeeperOptionsGroup])
+@cli.command(name="unlock")
 async def unlock(
     ctx: typer.Context,  # noqa: ARG001
     profile_name: Optional[str] = _profile_name_unlock_argument,
@@ -71,16 +70,14 @@ async def unlock(
     """
     from clive.__private.cli.commands.unlock import Unlock
 
-    common = BeekeeperOptionsGroup.get_instance()
     await Unlock(
-        **common.as_dict(),
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option, allow_none=True),
         unlock_time_mins=unlock_time_mins,
         include_create_new_profile=include_create_new_profile,
     ).run()
 
 
-@cli.command(name="lock", param_groups=[BeekeeperOptionsGroup])
+@cli.command(name="lock")
 async def lock(
     ctx: typer.Context,  # noqa: ARG001
 ) -> None:
@@ -91,5 +88,4 @@ async def lock(
     """
     from clive.__private.cli.commands.lock import Lock
 
-    common = BeekeeperOptionsGroup.get_instance()
-    await Lock(**common.as_dict()).run()
+    await Lock().run()
