@@ -25,6 +25,7 @@ from clive.__private.ui.screens.transaction_summary.transaction_metadata_contain
     RefreshMetadataButton,
     TransactionMetadataContainer,
 )
+from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
@@ -227,7 +228,7 @@ class TransactionSummary(BaseScreen):
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
-            return f"Loaded from [blue]{self.profile.transaction_file_path}[/]"
+            return f"Loaded from {colorize_path(self.profile.transaction_file_path)}"
         return ""
 
     async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
@@ -262,7 +263,7 @@ class TransactionSummary(BaseScreen):
         self.app.trigger_profile_watchers()
         await self._rebuild()
         self.notify(
-            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
+            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to {colorize_path(file_path)}"
             f" {'(signed)' if transaction.is_signed else ''}"
         )
 
