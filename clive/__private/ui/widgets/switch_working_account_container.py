@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class AccountRadioButton(CliveRadioButton):
-    WORKING_ACCOUNT_IDENTIFIER: Final[str] = "[yellow italic](working)[/]"
+    WORKING_ACCOUNT_IDENTIFIER: Final[str] = "[$accent italic](working)[/]"
 
     def __init__(self, account: TrackedAccount) -> None:
         is_working = isinstance(account, WorkingAccount)
