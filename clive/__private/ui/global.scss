@@ -7,19 +7,6 @@ TabPane {
   padding: 1 2 0 2;
 }
 
-Tabs {
-  &:focus {
-    .underline--bar {
-      background: $foreground 100%;
-    }
-
-    Tab.-active {
-      text-style: bold reverse;
-      background: white;
-    }
-  }
-}
-
 RadioSet {
   background: $panel-darken-1 !important;
 
