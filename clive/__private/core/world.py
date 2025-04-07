@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, cast, override
 
 from textual.reactive import var
 
-from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper_manager import BeekeeperManager
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
@@ -334,8 +333,8 @@ class CLIWorld(World):
         await super()._setup()
         try:
             await self.load_profile_based_on_beekepeer()
-        except NoProfileUnlockedError as error:
-            raise CLINoProfileUnlockedError from error
+        except NoProfileUnlockedError:
+            await self.switch_profile(None)
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)

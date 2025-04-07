@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Final
 import typer
 from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
-from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIInvalidPasswordError,
     CLIInvalidSelectionError,
@@ -18,7 +18,6 @@ from clive.__private.cli.exceptions import (
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.cli.notify import notify
-from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
@@ -35,11 +34,15 @@ ProfileSelectionOptions = dict[int, str]
 
 
 @dataclass(kw_only=True)
-class Unlock(BeekeeperBasedCommand):
+class Unlock(WorldBasedCommand):
     profile_name: str | None
     unlock_time_mins: int | None = None
     """None means permanent unlock."""
     include_create_new_profile: bool
+
+    @property
+    def should_require_unlocked_wallet(self) -> bool:
+        return False
 
     @property
     def _duration(self) -> timedelta | None:
@@ -56,7 +59,7 @@ class Unlock(BeekeeperBasedCommand):
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
-        await self.validate_session_is_locked()
+        await self._validate_session_is_locked()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -79,13 +82,14 @@ class Unlock(BeekeeperBasedCommand):
 
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
         try:
-            result = await CoreUnlockCommand(
-                profile_name=profile_name,
-                password=password,
-                session=await self.beekeeper.session,
-                time=self._duration,
-                permanent=self._is_unlock_permanent,
-            ).execute_with_result()
+            result = (
+                await self.world.commands.unlock(
+                    profile_name=profile_name,
+                    password=password,
+                    time=self._duration,
+                    permanent=self._is_unlock_permanent,
+                )
+            ).result_or_raise
         except InvalidPasswordError as error:
             raise CLIInvalidPasswordError(profile_name) from error
         except NoWalletWithSuchNameError as error:

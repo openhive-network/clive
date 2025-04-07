@@ -6,8 +6,8 @@ from dataclasses import dataclass
 import typer
 from beekeepy import AsyncBeekeeper, close_already_running_beekeeper
 
-from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
     CLIBeekeeperLocallyAlreadyRunningError,
@@ -18,19 +18,31 @@ from clive.__private.settings import clive_prefixed_envvar, safe_settings
 
 
 @dataclass(kw_only=True)
-class BeekeeperInfo(BeekeeperBasedCommand):
+class BeekeeperInfo(WorldBasedCommand):
+    @property
+    def should_require_unlocked_wallet(self) -> bool:
+        return False
+
     async def _run(self) -> None:
-        session = await self.beekeeper.session
+        session = await self.world.beekeeper_manager.beekeeper.session
         info = (await session.get_info()).json(by_alias=True)
         typer.echo(info)
 
 
 @dataclass(kw_only=True)
-class BeekeeperCreateSession(BeekeeperBasedCommand):
+class BeekeeperCreateSession(WorldBasedCommand):
     echo_token_only: bool
 
+    @property
+    def should_validate_if_session_token_required(self) -> bool:
+        return False
+
+    @property
+    def should_require_unlocked_wallet(self) -> bool:
+        return False
+
     async def _run(self) -> None:
-        session = await self.beekeeper.create_session()
+        session = await self.world.beekeeper_manager.beekeeper.create_session()
         token = await session.token
         if self.echo_token_only:
             message = token
@@ -41,10 +53,6 @@ class BeekeeperCreateSession(BeekeeperBasedCommand):
                 f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
             )
         typer.echo(message=message)
-
-    @property
-    def _is_session_token_required(self) -> bool:
-        return False
 
     async def _hook_before_entering_context_manager(self) -> None:
         """Display information about using Beekeeper if not using echo-token-only flag."""
