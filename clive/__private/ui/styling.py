@@ -5,19 +5,19 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     from rich.text import TextType
 
-SHORTCUT_STYLING: Final[str] = "yellow italic"
-SYSTEM_COLOR: Final[str] = "cyan"
-SOON_STYLING: Final[str] = "#FF8C00"
-SOON_LABEL: Final[str] = f"[{SOON_STYLING}]soon[/]"
+SHORTCUT_STYLING: Final[str] = "$accent italic"
+SYSTEM_STYLING: Final[str] = "$success"
+SOON_STYLING: Final[str] = "$accent italic"
+SOON_TEXT: Final[str] = "soon"
 
 
-def colorize_shortcut(message: str) -> str:
-    return f"[{SHORTCUT_STYLING}]{message}[/]"
+def colorize_shortcut(shortcut: str) -> str:
+    return f"[{SHORTCUT_STYLING}]{shortcut}[/]"
 
 
-def colorize_system_text(message: str) -> str:
-    return f"[{SYSTEM_COLOR}]{message}[/]"
+def colorize_system_text(system: str) -> str:
+    return f"[{SYSTEM_STYLING}]{system}[/]"
 
 
 def label_future_functionality(message: TextType) -> str:
-    return f"{message} {SOON_LABEL}"
+    return f"{message} [{SOON_STYLING}]{SOON_TEXT}[/]"
