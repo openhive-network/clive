@@ -7,14 +7,13 @@ from getpass import getpass
 
 from beekeepy.exceptions import CommunicationError
 
-from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLICreatingProfileCommunicationError,
     CLIInvalidPasswordRepeatError,
     CLIPrettyError,
 )
-from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
@@ -24,7 +23,7 @@ from clive.dev import is_in_dev_mode
 
 
 @dataclass(kw_only=True)
-class CreateProfile(BeekeeperBasedCommand):
+class CreateProfile(WorldBasedCommand):
     profile_name: str
     working_account_name: str | None = None
 
@@ -36,7 +35,7 @@ class CreateProfile(BeekeeperBasedCommand):
             )
 
     async def validate_inside_context_manager(self) -> None:
-        await self.validate_session_is_locked()
+        await self._validate_session_is_locked()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -44,9 +43,9 @@ class CreateProfile(BeekeeperBasedCommand):
         profile = Profile.create(self.profile_name, self.working_account_name)
 
         try:
-            result = await CreateProfileWallets(
-                session=await self.beekeeper.session, profile_name=profile.name, password=password
-            ).execute_with_result()
+            result = (
+                await self.world.commands.create_profile_wallets(profile_name=profile.name, password=password)
+            ).result_or_raise
         except CommunicationError as error:
             if is_in_dev_mode():
                 raise

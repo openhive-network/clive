@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 def register_error_handlers(cli: CliveTyper) -> None:
-    @cli.error_handler(Exception)
+    # @cli.error_handler(Exception)
     def pretty_show_any_error(error: Exception) -> None:
         if is_in_dev_mode():
             raise error
