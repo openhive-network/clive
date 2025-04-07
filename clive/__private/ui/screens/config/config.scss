@@ -1,11 +1,18 @@
 Config {
-  DialogContainer {
-    #hint {
-      text-align: center;
-    }
+  Section {
+    margin: 1 2 0 2;
 
-    Button {
-      width: 1fr;
+    SectionBody {
+      align-horizontal: center;
+
+      OneLineButton {
+        margin-top: 1;
+        width: 40%;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
     }
   }
 }
