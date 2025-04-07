@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 SHORTCUT_STYLING: Final[str] = "$accent italic"
 SYSTEM_STYLING: Final[str] = "$success"
+WITNESS_NAME_STYLING: Final[str] = "$accent italic"
 
 PATH_STYLING: Final[str] = "green italic"
 """TODO: Change to $accent after https://github.com/Textualize/textual/issues/5716"""
@@ -23,6 +24,10 @@ def colorize_shortcut(shortcut: str) -> str:
 
 def colorize_system_text(system: str) -> str:
     return f"[{SYSTEM_STYLING}]{system}[/]"
+
+
+def colorize_witness_name(witness_name: str) -> str:
+    return f"[{WITNESS_NAME_STYLING}]{witness_name}[/]"
 
 
 def colorize_path(path: str | Path) -> str:

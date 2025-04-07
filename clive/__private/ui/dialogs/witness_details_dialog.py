@@ -13,6 +13,7 @@ from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.styling import colorize_witness_name
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ class WitnessDetailsDialog(CliveInfoDialog, CliveWidget):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, witness_name: str) -> None:
-        super().__init__(border_title=f"Details for [yellow]{witness_name}[/] witness")
+        super().__init__(border_title=f"Details for {colorize_witness_name(witness_name)} witness")
         self._witness_name = witness_name
         self._witness_widget = WitnessDetailsWidget()
         self._witness_widget.loading = True
