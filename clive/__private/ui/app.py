@@ -263,17 +263,17 @@ class Clive(App[int]):
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
 
-    def pause_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
+    async def pause_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
         self._refresh_beekeeper_wallet_lock_status_interval.pause()
-        self.workers.cancel_group(self, self._WALLET_LOCK_STATUS_WORKER_GROUP_NAME)
+        await self._wait_for_worker_group_except_current(self._WALLET_LOCK_STATUS_WORKER_GROUP_NAME)
 
     def resume_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
         self._refresh_beekeeper_wallet_lock_status_interval.resume()
 
-    def pause_periodic_intervals(self) -> None:
+    async def pause_periodic_intervals(self) -> None:
         self.pause_refresh_node_data_interval()
         self.pause_refresh_alarms_data_interval()
-        self.pause_refresh_beekeeper_wallet_lock_status_interval()
+        await self.pause_refresh_beekeeper_wallet_lock_status_interval()
 
     def resume_periodic_intervals(self) -> None:
         self.resume_refresh_node_data_interval()
@@ -376,7 +376,7 @@ class Clive(App[int]):
             await self.world.commands.save_profile()
 
         # needs to be done before beekeeper API call to avoid race condition between manual lock and timeout lock
-        self.pause_refresh_beekeeper_wallet_lock_status_interval()
+        await self.pause_refresh_beekeeper_wallet_lock_status_interval()
 
         await self.world.commands.lock()
 
@@ -495,7 +495,7 @@ class Clive(App[int]):
         if source == "beekeeper_wallet_lock_status_update_worker":
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
-        self.pause_periodic_intervals()
+        await self.pause_periodic_intervals()
 
         # There might be ongoing workers that should be cancelled (e.g. DynamicWidget update)
         self._cancel_workers_except_current()
@@ -511,12 +511,20 @@ class Clive(App[int]):
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_periodic_intervals()
 
-    def _cancel_workers_except_current(self) -> None:
+    def _get_current_worker(self) -> Worker[Any] | None:
         try:
-            current_worker = get_current_worker()
+            return get_current_worker()
         except NoActiveWorker:
-            current_worker = None
+            return None
+
+    def _cancel_workers_except_current(self) -> None:
+        current_worker = self._get_current_worker()
 
         for worker in self.workers:
             if worker != current_worker:
                 worker.cancel()
+
+    async def _wait_for_worker_group_except_current(self, group_name: str) -> None:
+        for worker in self.workers:
+            if worker.group == group_name and self._get_current_worker() != worker:
+                await worker.wait()
