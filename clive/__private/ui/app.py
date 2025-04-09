@@ -4,7 +4,7 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, TypeVar, cast, get_args
+from typing import TYPE_CHECKING, Any, Awaitable, ClassVar, Final, TypeVar, cast, get_args
 
 from beekeepy.exceptions import CommunicationError
 from textual import on, work
@@ -82,6 +82,10 @@ class Clive(App[int]):
         "dashboard": Dashboard,
         "config": Config,
     }
+
+    _WALLET_LOCK_STATUS_WORKER_GROUP_NAME: Final[str] = "wallet_lock_status"
+    _NODE_DATA_WORKER_GROUP_NAME: Final[str] = "node_data"
+    _ALARMS_DATA_WORKER_GROUP_NAME: Final[str] = "alarms_data"
 
     header_expanded = var(default=False)
     """Synchronize the expanded header state in all created header objects."""
@@ -247,21 +251,21 @@ class Clive(App[int]):
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
-        self.workers.cancel_group(self, "alarms_data")
+        self.workers.cancel_group(self, self._ALARMS_DATA_WORKER_GROUP_NAME)
 
     def resume_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.resume()
 
     def pause_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.pause()
-        self.workers.cancel_group(self, "node_data")
+        self.workers.cancel_group(self, self._NODE_DATA_WORKER_GROUP_NAME)
 
     def resume_refresh_node_data_interval(self) -> None:
         self._refresh_node_data_interval.resume()
 
     def pause_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
         self._refresh_beekeeper_wallet_lock_status_interval.pause()
-        self.workers.cancel_group(self, "wallet_lock_status")
+        self.workers.cancel_group(self, self._WALLET_LOCK_STATUS_WORKER_GROUP_NAME)
 
     def resume_refresh_beekeeper_wallet_lock_status_interval(self) -> None:
         self._refresh_beekeeper_wallet_lock_status_interval.resume()
@@ -301,7 +305,7 @@ class Clive(App[int]):
 
         return self.run_worker(_update_alarms_data_on_newest_node_data(), exclusive=True)
 
-    @work(name="alarms data update worker", group="alarms_data", exclusive=True)
+    @work(name="alarms data update worker", group=_ALARMS_DATA_WORKER_GROUP_NAME, exclusive=True)
     async def update_alarms_data(self) -> None:
         while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
             await asyncio.sleep(0.1)
@@ -313,7 +317,7 @@ class Clive(App[int]):
 
         self.trigger_profile_watchers()
 
-    @work(name="node data update worker", group="node_data", exclusive=True)
+    @work(name="node data update worker", group=_NODE_DATA_WORKER_GROUP_NAME, exclusive=True)
     async def update_data_from_node(self) -> None:
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
@@ -330,7 +334,7 @@ class Clive(App[int]):
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
-    @work(name="beekeeper wallet lock status update worker", group="wallet_lock_status")
+    @work(name="beekeeper wallet lock status update worker", group=_WALLET_LOCK_STATUS_WORKER_GROUP_NAME)
     async def update_wallet_lock_status_from_beekeeper(self) -> None:
         await self.world.commands.sync_state_with_beekeeper("beekeeper_wallet_lock_status_update_worker")
 
@@ -466,15 +470,15 @@ class Clive(App[int]):
         return not bool([worker for worker in self.workers if worker.group == group])
 
     def _retrigger_update_data_from_node(self) -> None:
-        if self.is_worker_group_empty("node_data"):
+        if self.is_worker_group_empty(self._NODE_DATA_WORKER_GROUP_NAME):
             self.update_data_from_node()
 
     def _retrigger_update_alarms_data(self) -> None:
-        if self.is_worker_group_empty("alarms_data"):
+        if self.is_worker_group_empty(self._ALARMS_DATA_WORKER_GROUP_NAME):
             self.update_alarms_data()
 
     def _retrigger_update_wallet_lock_status_from_beekeeper(self) -> None:
-        if self.is_worker_group_empty("wallet_lock_status"):
+        if self.is_worker_group_empty(self._WALLET_LOCK_STATUS_WORKER_GROUP_NAME):
             self.update_wallet_lock_status_from_beekeeper()
 
     async def _switch_to_initial_mode(self) -> None:
