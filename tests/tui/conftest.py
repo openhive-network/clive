@@ -21,7 +21,6 @@ from clive_local_tools.tui.checkers import assert_is_dashboard, assert_is_screen
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
 from clive_local_tools.tui.textual_helpers import wait_for_screen
-from clive_local_tools.tui.workaround_incompatibility_with_fixtures import event_loop  # noqa: F401
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
