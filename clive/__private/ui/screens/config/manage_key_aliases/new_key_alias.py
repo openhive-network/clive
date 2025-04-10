@@ -26,9 +26,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+    from wax.models.basic import PublicKey
 
 
-class NewKeyAliasBase(KeyAliasForm, ABC):
+class NewKeyAliasBase(KeyAliasForm[bool], ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
@@ -138,11 +139,23 @@ class NewKeyAlias(NewKeyAliasBase):
         Binding("f6", "save", "Save"),
     ]
 
+    def __init__(self, public_key_to_validate: PublicKey | None = None, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._public_key_to_validate = public_key_to_validate
+
     @on(CliveInput.Submitted)
     async def action_save(self) -> None:
         try:
             self._validate()
         except FailedManyValidationError:
+            return
+
+        if self._public_key_to_validate and self._public_key_input.input.value != self._public_key_to_validate:
+            self.notify(
+                f"The public key generated from the given private key must match the one selected in the "
+                f"authority table ({self._public_key_to_validate})",
+                severity="error",
+            )
             return
 
         def set_key_alias_to_import() -> None:
@@ -151,7 +164,7 @@ class NewKeyAlias(NewKeyAliasBase):
         if not self._handle_key_alias_change(set_key_alias_to_import):
             return
         await self._import_new_key()
-        self.dismiss()
+        self.dismiss(result=True)
 
     async def _import_new_key(self) -> None:
         await self.commands.sync_data_with_beekeeper()

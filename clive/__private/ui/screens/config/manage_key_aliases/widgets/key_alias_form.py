@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from textual.screen import ScreenResultType
 from textual.widgets import Static
 
 from clive.__private.core.keys import KeyAliasAlreadyInUseError
@@ -24,7 +25,7 @@ class SubTitle(Static):
     pass
 
 
-class KeyAliasForm(BaseScreen, ABC):
+class KeyAliasForm(BaseScreen[ScreenResultType], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     SECTION_TITLE: ClassVar[str] = "Change me in subclass"
