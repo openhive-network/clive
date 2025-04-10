@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
 
 
-class EditKeyAlias(KeyAliasForm):
+class EditKeyAlias(KeyAliasForm[None]):
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding("f6", "save", "Save"),

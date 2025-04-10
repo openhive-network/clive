@@ -111,4 +111,4 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
     def _push_current_screen(self) -> None:
         assert self._current_screen_index < len(self._screen_types), "Current screen index is out of bounds"
         assert self._current_screen_index >= 0, "Current screen index is out of bounds"
-        self.app.push_screen(self.current_screen_type(self))
+        self.app.push_screen(self.current_screen_type(owner=self))

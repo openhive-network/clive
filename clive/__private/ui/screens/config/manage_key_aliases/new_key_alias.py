@@ -19,16 +19,18 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
 )
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
+from clive.__private.validators.private_key_validator import PrivateKeyValidator
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
 
+    from clive.__private.core.keys import PublicKey
     from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
 
 
-class NewKeyAliasBase(KeyAliasForm, ABC):
+class NewKeyAliasBase(KeyAliasForm[bool], ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
@@ -36,7 +38,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
     SECTION_TITLE: ClassVar[str] = "Add key alias"
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = True
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, public_key_to_match: str | PublicKey | None = None, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
@@ -45,6 +47,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
             password=True,
             required=self.IS_PRIVATE_KEY_REQUIRED,
             id="key-input",
+            validators=PrivateKeyValidator(public_key_to_match=public_key_to_match),
         )
         self.__key_file_path: Path | None = None
 
@@ -106,7 +109,8 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 
         Raises
         ------
-        FailedManyValidationError: when key alias or private key inputs are invalid.
+        FailedManyValidationError: when key alias / private key inputs are invalid or private key does
+        not match given public key.
         """
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
@@ -138,6 +142,9 @@ class NewKeyAlias(NewKeyAliasBase):
         Binding("f6", "save", "Save"),
     ]
 
+    def __init__(self, public_key_to_validate: str | PublicKey | None = None, *args: Any, **kwargs: Any) -> None:
+        super().__init__(public_key_to_validate, *args, **kwargs)
+
     @on(CliveInput.Submitted)
     async def action_save(self) -> None:
         try:
@@ -151,7 +158,7 @@ class NewKeyAlias(NewKeyAliasBase):
         if not self._handle_key_alias_change(set_key_alias_to_import):
             return
         await self._import_new_key()
-        self.dismiss()
+        self.dismiss(result=True)
 
     async def _import_new_key(self) -> None:
         await self.commands.sync_data_with_beekeeper()
