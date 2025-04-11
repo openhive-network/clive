@@ -86,48 +86,36 @@ class ProposalsStatusSelect(CliveSelect[ProposalsDataRetrieval.Statuses]):
 class ProposalInformation(Vertical):
     def __init__(self, proposal: ProposalData, evenness: str) -> None:
         super().__init__()
-        self.__proposal = proposal
-        self.__evenness = evenness
+        self._proposal = proposal
+        self._evenness = evenness
 
     def compose(self) -> ComposeResult:
         with Horizontal(classes="row-proposal-information"):
-            yield Label(f"#{self.__proposal.proposal_id}", classes=f"proposal-id-{self.__evenness} proposal-id")
-            yield Label(self.__proposal.status, classes=f"proposal-row-{self.__evenness} proposal-status")
-            yield Label(self.__proposal.votes, classes=f"proposal-row-{self.__evenness} proposal-votes")
-            yield Label(
-                f"Daily: {self.__proposal.daily_pay} HBD", classes=f"proposal-row-{self.__evenness} proposal-pay"
-            )
+            yield Label(f"#{self._proposal.proposal_id}", classes=f"proposal-id-{self._evenness} proposal-id")
+            yield Label(self._proposal.status, classes=f"proposal-row-{self._evenness} proposal-status")
+            yield Label(self._proposal.votes, classes=f"proposal-row-{self._evenness} proposal-votes")
+            yield Label(f"Daily: {self._proposal.daily_pay} HBD", classes=f"proposal-row-{self._evenness} proposal-pay")
         with Horizontal(classes="row-proposal-information"):
-            yield EllipsedStatic(self.__proposal.title, classes=f"proposal-row-{self.__evenness} proposal-title")
+            yield EllipsedStatic(self._proposal.title, classes=f"proposal-row-{self._evenness} proposal-title")
         with Horizontal(classes="row-proposal-information"):
-            yield Label(self.__get_receiver_info(), classes=f"proposal-row-{self.__evenness} proposal-accounts")
+            yield Label(self._get_receiver_info(), classes=f"proposal-row-{self._evenness} proposal-accounts")
             yield Label(
                 (
-                    f"{humanize_datetime(self.__proposal.start_date, with_time=False)} -"
-                    f" {humanize_datetime(self.__proposal.end_date, with_time=False)}"
+                    f"{humanize_datetime(self._proposal.start_date, with_time=False)} -"
+                    f" {humanize_datetime(self._proposal.end_date, with_time=False)}"
                 ),
-                classes=f"proposal-row-{self.__evenness} proposal-date",
+                classes=f"proposal-row-{self._evenness} proposal-date",
             )
 
-    def __get_receiver_info(self) -> str:
-        message = f"by {self.__proposal.creator}"
-        if self.__proposal.creator != self.__proposal.receiver:
-            message += f" for {self.__proposal.receiver}"
+    def _get_receiver_info(self) -> str:
+        message = f"by {self._proposal.creator}"
+        if self._proposal.creator != self._proposal.receiver:
+            message += f" for {self._proposal.receiver}"
         return message
 
 
 class Proposal(GovernanceTableRow[ProposalData]):
     """Check if there is a proposal in the action table - if so, move True to the GovernanceCheckbox parameter."""
-
-    def create_row_content(self) -> ComposeResult:
-        yield ProposalInformation(self.row_data, self.evenness)
-
-    @property
-    def action_identifier(self) -> str:
-        return str(self.row_data.proposal_id)
-
-    def get_action_row_id(self) -> str:
-        return ProposalActionRow.create_action_row_id(self.action_identifier)
 
     @property
     def is_operation_in_cart(self) -> bool:
@@ -139,6 +127,16 @@ class Proposal(GovernanceTableRow[ProposalData]):
                 return True
         return False
 
+    @property
+    def action_identifier(self) -> str:
+        return str(self.row_data.proposal_id)
+
+    def create_row_content(self) -> ComposeResult:
+        yield ProposalInformation(self.row_data, self.evenness)
+
+    def get_action_row_id(self) -> str:
+        return ProposalActionRow.create_action_row_id(self.action_identifier)
+
 
 class ProposalActionRow(GovernanceActionRow):
     @staticmethod
@@ -148,6 +146,14 @@ class ProposalActionRow(GovernanceActionRow):
 
 class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Proposal"
+
+    @property
+    def provider(self) -> ProposalsDataProvider:
+        return self.screen.query_exactly_one(ProposalsDataProvider)
+
+    @staticmethod
+    def create_action_row_id(identifier: str) -> str:
+        return ProposalActionRow.create_action_row_id(identifier)
 
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
@@ -163,10 +169,6 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
 
     def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
         return ProposalActionRow(identifier, vote=vote)
-
-    @staticmethod
-    def create_action_row_id(identifier: str) -> str:
-        return ProposalActionRow.create_action_row_id(identifier)
 
     def add_operation_to_cart(self, identifier: str, *, vote: bool = False) -> None:
         proposal_id = int(identifier)
@@ -205,10 +207,6 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
 
                 op.proposal_ids.remove(proposal_id)  # type: ignore[arg-type]
 
-    @property
-    def provider(self) -> ProposalsDataProvider:
-        return self.screen.query_exactly_one(ProposalsDataProvider)
-
 
 class ProposalsList(GovernanceListWidget[ProposalData]):
     def _create_row(self, data: ProposalData, *, even: bool = False) -> Proposal:
@@ -225,6 +223,14 @@ class ProposalsListHeader(GovernanceListHeader):
 
 
 class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
+    @property
+    def provider(self) -> ProposalsDataProvider:
+        return self.screen.query_exactly_one(ProposalsDataProvider)
+
+    @property
+    def data(self) -> list[ProposalData]:
+        return self.provider.content.proposals
+
     async def change_order(
         self,
         order: ProposalsDataRetrieval.Orders,
@@ -240,14 +246,6 @@ class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
     def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:
         return ProposalsList(self.data_chunk)
 
-    @property
-    def provider(self) -> ProposalsDataProvider:
-        return self.screen.query_exactly_one(ProposalsDataProvider)
-
-    @property
-    def data(self) -> list[ProposalData]:
-        return self.provider.content.proposals
-
 
 class ProposalsOrderChange(Vertical):
     @dataclass
@@ -262,9 +260,9 @@ class ProposalsOrderChange(Vertical):
         super().__init__()
 
         with self.prevent(CliveSelect.Changed):
-            self.__order_by_select = ProposalsOrderSelect()
-            self.__order_direction_select = ProposalsOrderDirectionSelect()
-            self.__proposal_status_select = ProposalsStatusSelect()
+            self._order_by_select = ProposalsOrderSelect()
+            self._order_direction_select = ProposalsOrderDirectionSelect()
+            self._proposal_status_select = ProposalsStatusSelect()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
@@ -272,15 +270,15 @@ class ProposalsOrderChange(Vertical):
             yield Label("Order direction")
             yield Label("Status")
         with Horizontal(id="order-list-selectors"):
-            yield self.__order_by_select
-            yield self.__order_direction_select
-            yield self.__proposal_status_select
+            yield self._order_by_select
+            yield self._order_direction_select
+            yield self._proposal_status_select
 
     @on(CliveSelect.Changed)
-    def search_witnesses(self) -> None:
-        order_by = self.__order_by_select.selection_ensure
-        order_direction = self.__order_direction_select.selection_ensure
-        status = self.__proposal_status_select.selection_ensure
+    def search_proposal(self) -> None:
+        order_by = self._order_by_select.selection_ensure
+        order_direction = self._order_direction_select.selection_ensure
+        status = self._proposal_status_select.selection_ensure
         self.post_message(self.Search(order_by, order_direction, status))
 
 
@@ -293,14 +291,14 @@ class Proposals(GovernanceTabPane):
         super().__init__(title="Proposals", id="proposals")
 
     def compose(self) -> ComposeResult:
-        self.__proposals_table = ProposalsTable()
+        self._proposals_table = ProposalsTable()
         yield ProposalsOrderChange()
         with ScrollablePart(), Horizontal(classes="vote-actions"):
-            yield self.__proposals_table
+            yield self._proposals_table
             yield ProposalsActions()
 
     @on(ProposalsOrderChange.Search)
     async def change_order(self, message: ProposalsOrderChange.Search) -> None:
-        await self.__proposals_table.change_order(
+        await self._proposals_table.change_order(
             order=message.order_by, order_direction=message.order_direction, status=message.status
         )
