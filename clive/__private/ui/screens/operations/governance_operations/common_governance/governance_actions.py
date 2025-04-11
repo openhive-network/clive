@@ -66,6 +66,7 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
     NAME_OF_ACTION: ClassVar[str] = "Action"
+    ACTION_CSS_CLASS: ClassVar[str] = "action-row"
 
     def __init__(self) -> None:
         super().__init__()
@@ -119,7 +120,9 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
             self.get_widget_by_id(self.create_action_row_id(identifier))
             return
 
-        await self.mount(self.create_action_row(identifier, vote=vote))
+        action_row = self.create_action_row(identifier, vote=vote)
+        action_row.add_class(self.ACTION_CSS_CLASS)
+        await self.mount(action_row)
 
         if vote:
             self._actions_votes += 1
@@ -143,3 +146,9 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
             self._actions_votes += 1
 
         self.remove_operation_from_cart(identifier, vote=vote)
+
+    async def restore(self) -> None:
+        """Remove all rows from the actions table and mount all operations from the cart."""
+        for action_row in self.query(f".{self.ACTION_CSS_CLASS}"):
+            await action_row.remove()
+        await self.mount_operations_from_cart()
