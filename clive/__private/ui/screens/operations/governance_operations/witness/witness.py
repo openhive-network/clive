@@ -82,6 +82,19 @@ class Witness(GovernanceTableRow[WitnessData]):
 
     BINDINGS = [Binding("f3", "show_details", "Details")]
 
+    @property
+    def is_operation_in_cart(self) -> bool:
+        expected_operation = AccountWitnessVoteOperation(
+            account=self.profile.accounts.working.name,
+            witness=self.row_data.name,
+            approve=not self.row_data.voted,
+        )
+        return expected_operation in self.profile.transaction
+
+    @property
+    def action_identifier(self) -> str:
+        return self.row_data.name
+
     def create_row_content(self) -> ComposeResult:
         class_name = f"witness-row-{self.evenness}"
         yield Label(
@@ -99,21 +112,8 @@ class Witness(GovernanceTableRow[WitnessData]):
     async def action_show_details(self) -> None:
         await self.app.push_screen(WitnessDetailsDialog(witness_name=self.row_data.name))
 
-    @property
-    def action_identifier(self) -> str:
-        return self.row_data.name
-
     def get_action_row_id(self) -> str:
         return WitnessesActions.create_action_row_id(self.action_identifier)
-
-    @property
-    def is_operation_in_cart(self) -> bool:
-        expected_operation = AccountWitnessVoteOperation(
-            account=self.profile.accounts.working.name,
-            witness=self.row_data.name,
-            approve=not self.row_data.voted,
-        )
-        return expected_operation in self.profile.transaction
 
 
 class WitnessManualSearch(Grid):
@@ -183,6 +183,21 @@ class WitnessActionRow(GovernanceActionRow):
 class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
+    @property
+    def actual_number_of_votes(self) -> int:
+        amount = self.actions_votes
+        if self.provider.is_content_set:
+            amount += self.provider.content.number_of_votes
+        return amount
+
+    @property
+    def provider(self) -> WitnessesDataProvider:
+        return self.screen.query_exactly_one(WitnessesDataProvider)
+
+    @staticmethod
+    def create_action_row_id(identifier: str) -> str:
+        return WitnessActionRow.create_action_row_id(identifier)
+
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
@@ -193,10 +208,6 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
             isinstance(operation, AccountWitnessVoteOperation)
             and operation.account == self.profile.accounts.working.name
         )
-
-    @staticmethod
-    def create_action_row_id(identifier: str) -> str:
-        return WitnessActionRow.create_action_row_id(identifier)
 
     def add_operation_to_cart(self, identifier: str, *, vote: bool = False) -> None:
         operation = AccountWitnessVoteOperation(
@@ -232,17 +243,6 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
             self.notify(f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}")
 
-    @property
-    def actual_number_of_votes(self) -> int:
-        amount = self.actions_votes
-        if self.provider.is_content_set:
-            amount += self.provider.content.number_of_votes
-        return amount
-
-    @property
-    def provider(self) -> WitnessesDataProvider:
-        return self.screen.query_exactly_one(WitnessesDataProvider)
-
 
 class WitnessesList(GovernanceListWidget[WitnessData]):
     def _create_row(self, data: WitnessData, *, even: bool = False) -> Witness:
@@ -266,6 +266,14 @@ class WitnessesListHeader(GovernanceListHeader):
 class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 30
 
+    @property
+    def provider(self) -> WitnessesDataProvider:
+        return self.screen.query_exactly_one(WitnessesDataProvider)
+
+    @property
+    def data(self) -> list[WitnessData]:
+        return list(self.provider.content.witnesses.values())
+
     async def search_witnesses(self, pattern: str, limit: int) -> None:
         await self.provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
         await self.reset_page()
@@ -280,14 +288,6 @@ class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
     def create_header(self) -> GovernanceListHeader:
         return WitnessesListHeader()
 
-    @property
-    def provider(self) -> WitnessesDataProvider:
-        return self.screen.query_exactly_one(WitnessesDataProvider)
-
-    @property
-    def data(self) -> list[WitnessData]:
-        return list(self.provider.content.witnesses.values())
-
 
 class Witnesses(GovernanceTabPane):
     """TabPane with all content about witnesses."""
@@ -298,17 +298,17 @@ class Witnesses(GovernanceTabPane):
         super().__init__(title="Witnesses", id="witnesses")
 
     def compose(self) -> ComposeResult:
-        self.__witness_table = WitnessesTable()
+        self._witness_table = WitnessesTable()
         yield WitnessManualSearch()
 
         with ScrollablePart(), Horizontal(id="witnesses-content"):
-            yield self.__witness_table
+            yield self._witness_table
             yield WitnessesActions()
 
     @on(WitnessManualSearch.Search)
     async def search_witnesses(self, message: WitnessManualSearch.Search) -> None:
-        await self.__witness_table.search_witnesses(pattern=message.pattern, limit=message.limit)
+        await self._witness_table.search_witnesses(pattern=message.pattern, limit=message.limit)
 
     @on(WitnessManualSearch.Clear)
     async def clear_searched_witnesses(self, _: WitnessManualSearch.Clear) -> None:
-        await self.__witness_table.clear_searched_witnesses()
+        await self._witness_table.clear_searched_witnesses()
