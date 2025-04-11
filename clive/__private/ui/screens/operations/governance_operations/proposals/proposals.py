@@ -39,8 +39,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
-    from clive.__private.models.schemas import OperationUnion
-
 
 class ProposalsOrderSelect(CliveSelect[ProposalsDataRetrieval.Orders]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Orders]]] = [
@@ -161,7 +159,7 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
                 for proposal_id in operation.proposal_ids:
-                    await self.add_row(identifier=str(proposal_id), pending=True)
+                    await self.add_row(identifier=str(proposal_id), vote=operation.approve)
 
     def should_be_added_to_actions(self, operation: object) -> TypeIs[UpdateProposalVotesOperation]:
         return (
@@ -169,8 +167,8 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
             and operation.voter == self.profile.accounts.working.name
         )
 
-    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
-        return ProposalActionRow(identifier, vote=vote, pending=pending)
+    def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
+        return ProposalActionRow(identifier, vote=vote)
 
 
 class ProposalsList(GovernanceListWidget[ProposalData]):
@@ -267,49 +265,3 @@ class Proposals(GovernanceTabPane):
         await self._proposals_table.change_order(
             order=message.order_by, order_direction=message.order_direction, status=message.status
         )
-
-    def _create_operations(self) -> list[OperationUnion] | None:
-        working_account_name = self.profile.accounts.working.name
-
-        batched_proposals_ids_to_unvote = self.__split_proposals(approve=False)
-        batched_proposals_ids_to_vote = self.__split_proposals(approve=True)
-
-        if not batched_proposals_ids_to_unvote and not batched_proposals_ids_to_vote:
-            return None
-
-        vote_operations = self.__create_vote_operations(
-            batched_proposals_ids_to_vote, working_account_name, approve=True
-        )
-
-        unvote_operations = self.__create_vote_operations(
-            batched_proposals_ids_to_unvote, working_account_name, approve=False
-        )
-
-        return vote_operations + unvote_operations  # type: ignore[return-value]
-
-    def __create_vote_operations(
-        self, batched_proposal_ids: list[list[int]], working_account_name: str, *, approve: bool
-    ) -> list[UpdateProposalVotesOperation]:
-        return [
-            UpdateProposalVotesOperation(
-                voter=working_account_name,
-                proposal_ids=proposal_ids,
-                approve=approve,
-                extensions=[],
-            )
-            for proposal_ids in batched_proposal_ids
-        ]
-
-    def __split_proposals(self, *, approve: bool = True) -> list[list[int]]:
-        operations_to_perform = self.screen.query_exactly_one(ProposalsActions).actions_to_perform
-        proposals_ids_to_return = [
-            int(proposal_id)
-            for proposal_id, action_approve in operations_to_perform.items()
-            if action_approve == approve
-        ]
-        proposals_ids_to_return.sort()
-
-        return [
-            proposals_ids_to_return[i : i + MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION]
-            for i in range(0, len(proposals_ids_to_return), MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION)
-        ]
