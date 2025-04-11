@@ -172,24 +172,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def evenness(self) -> str:
         return self._evenness
 
-    @property
-    def is_already_in_actions_container(self) -> bool:
-        """Check if operation is already in the action container."""
-        try:
-            self.screen.get_widget_by_id(self.get_action_row_id())
-        except NoMatches:
-            return False
-        else:
-            return True
-
     def on_mount(self) -> None:
         self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
 
     def compose(self) -> ComposeResult:
         self.governance_checkbox = GovernanceCheckbox(
             is_voted=self._row_data.voted,
-            initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
-            disabled=bool(self.profile.accounts.working.data.proxy) or self.is_operation_in_cart,
+            initial_state=self.is_operation_in_cart,
+            disabled=bool(self.profile.accounts.working.data.proxy),
         )
         yield self.governance_checkbox
         yield from self.create_row_content()

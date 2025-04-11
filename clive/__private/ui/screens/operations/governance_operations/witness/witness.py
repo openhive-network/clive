@@ -44,7 +44,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
-    from clive.__private.models.schemas import OperationUnion
 
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
 
@@ -199,7 +198,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
-                await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
+                await self.add_row(identifier=operation.witness, vote=operation.approve)
 
     def should_be_added_to_actions(self, operation: object) -> TypeIs[AccountWitnessVoteOperation]:
         return (
@@ -207,8 +206,8 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
             and operation.account == self.profile.accounts.working.name
         )
 
-    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
-        return WitnessActionRow(identifier, vote=vote, pending=pending)
+    def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
+        return WitnessActionRow(identifier, vote=vote)
 
     def hook_on_row_added(self) -> None:
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
@@ -276,6 +275,19 @@ class Witnesses(GovernanceTabPane):
             yield self._witness_table
             yield WitnessesActions()
 
+    def add_operation_to_cart(self, identifier: str, *, vote: bool = False) -> None:
+        operation = self._create_operation(identifier, vote=vote)
+
+        if operation in self.profile.transaction:
+            return
+
+        self.profile.transaction.add_operation(operation)
+        self.app.trigger_profile_watchers()
+
+    def remove_operation_from_cart(self, identifier: str, *, vote: bool = False) -> None:
+        self.profile.transaction.remove_operation(self._create_operation(identifier, vote=vote))
+        self.app.trigger_profile_watchers()
+
     @on(WitnessManualSearch.Search)
     async def search_witnesses(self, message: WitnessManualSearch.Search) -> None:
         await self._witness_table.search_witnesses(pattern=message.pattern, limit=message.limit)
@@ -284,19 +296,10 @@ class Witnesses(GovernanceTabPane):
     async def clear_searched_witnesses(self, _: WitnessManualSearch.Clear) -> None:
         await self._witness_table.clear_searched_witnesses()
 
-    def _create_operations(self) -> list[OperationUnion] | None:
-        actual_number_of_votes = self.screen.query_exactly_one(WitnessesActions).actual_number_of_votes
-
-        if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
-            self.notify(
-                f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}!", severity="error"
-            )
-            return None
-
-        working_account_name = self.profile.accounts.working.name
-        operations_to_perform = self.screen.query_exactly_one(WitnessesActions).actions_to_perform
-
-        return [
-            AccountWitnessVoteOperation(account=working_account_name, witness=witness, approve=approve)
-            for witness, approve in operations_to_perform.items()
-        ]
+    def _create_operation(self, witness: str, *, vote: bool) -> AccountWitnessVoteOperation:
+        """Create account witness vote operation based on the given parameters."""
+        return AccountWitnessVoteOperation(
+            account=self.profile.accounts.working.name,
+            witness=witness,
+            approve=vote,
+        )

@@ -29,7 +29,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, identifier: str, *, vote: bool, pending: bool = False) -> None:
+    def __init__(self, identifier: str, *, vote: bool) -> None:
         """
         Initialize the GovernanceActionRow.
 
@@ -37,12 +37,10 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         ----
         identifier: Used to pass the identifier of the action. It is used to create id of the widget.
         vote: Action to be performed - vote or not.
-        pending: Indicates if the operation with such identifier is already in the cart.
         """
         super().__init__(id=self.create_action_row_id(identifier))
         self._identifier = identifier
         self._vote = vote
-        self._pending = pending
 
     @staticmethod
     @abstractmethod
@@ -54,11 +52,6 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         return self._identifier
 
     def compose(self) -> ComposeResult:
-        if self._pending:
-            yield Label("Pending", classes="action-pending action-label")
-            yield Label(str(self.action_identifier), classes="action-identifier")
-            return
-
         if self._vote:
             yield Label("Vote", classes="action-vote action-label")
         else:
@@ -76,8 +69,6 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     def __init__(self) -> None:
         super().__init__()
-        self._actions_to_perform: dict[str, bool] = {}
-        """A dict with action identifier as key and action to pe performed as value"""
         self._actions_votes = 0
 
     @staticmethod
@@ -94,16 +85,12 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
         """Check if the action should be added to the actions table."""
 
     @abstractmethod
-    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
+    def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
         """Create an action row."""
 
     @property
     def actions_votes(self) -> int:
         return self._actions_votes
-
-    @property
-    def actions_to_perform(self) -> dict[str, bool]:
-        return self._actions_to_perform
 
     def hook_on_row_added(self) -> None:
         """Create any action when an action row is added to the action table."""
@@ -117,22 +104,19 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
     async def on_mount(self) -> None:
         await self.mount_operations_from_cart()
 
-    async def add_row(self, identifier: str, *, vote: bool = False, pending: bool = False) -> None:
+    async def add_row(self, identifier: str, *, vote: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
             self.get_widget_by_id(self.create_action_row_id(identifier))
             return
 
-        await self.mount(self.create_action_row(identifier, vote=vote, pending=pending))
+        await self.mount(self.create_action_row(identifier, vote=vote))
 
         if vote:
             self._actions_votes += 1
         else:
             self._actions_votes -= 1
-
-        if not pending:
-            self.add_to_actions(identifier, vote=vote)
 
         self.hook_on_row_added()
 
@@ -146,11 +130,3 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
             self._actions_votes -= 1
         else:
             self._actions_votes += 1
-
-        self.delete_from_actions(identifier)
-
-    def add_to_actions(self, identifier: str, *, vote: bool) -> None:
-        self._actions_to_perform[identifier] = vote
-
-    def delete_from_actions(self, identifier: str) -> None:
-        self._actions_to_perform.pop(identifier)
