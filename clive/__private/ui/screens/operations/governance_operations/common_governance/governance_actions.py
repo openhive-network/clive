@@ -111,7 +111,8 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
             self.get_widget_by_id(self.create_action_row_id(identifier))
             return
 
-        await self.mount(self.create_action_row(identifier, vote=vote))
+        action_row = self.create_action_row(identifier, vote=vote)
+        await self.mount(action_row)
 
         if vote:
             self._actions_votes += 1
@@ -131,3 +132,10 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
             self._actions_votes -= 1
         else:
             self._actions_votes += 1
+
+    async def rebuild(self) -> None:
+        """Remove all rows from the actions table and mount all operations from the cart."""
+        with self.app.batch_update():
+            for action_row in self.query(GovernanceActionRow):  # type: ignore[type-abstract]
+                await action_row.remove()
+            await self.mount_operations_from_cart()
