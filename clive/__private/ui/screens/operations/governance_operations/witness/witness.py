@@ -45,7 +45,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
-    from clive.__private.models.schemas import OperationUnion
 
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
 
@@ -187,7 +186,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
-                await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
+                await self.add_row(identifier=operation.witness, vote=operation.approve)
 
     def should_be_added_to_actions(self, operation: object) -> TypeIs[AccountWitnessVoteOperation]:
         return (
@@ -199,8 +198,35 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     def create_action_row_id(identifier: str) -> str:
         return WitnessActionRow.create_action_row_id(identifier)
 
-    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
-        return WitnessActionRow(identifier, vote=vote, pending=pending)
+    def add_operation_to_cart(self, identifier: str, *, vote: bool = False) -> None:
+        operation = AccountWitnessVoteOperation(
+            account=self.profile.accounts.working.name,
+            witness=identifier,
+            approve=vote,
+        )
+
+        if operation in self.profile.transaction:
+            return
+
+        self.profile.transaction.add_operation(
+            AccountWitnessVoteOperation(
+                account=self.profile.accounts.working.name,
+                witness=identifier,
+                approve=vote,
+            )
+        )
+
+    def remove_operation_from_cart(self, identifier: str, *, vote: bool = False) -> None:
+        self.profile.transaction.remove_operation(
+            AccountWitnessVoteOperation(
+                account=self.profile.accounts.working.name,
+                witness=identifier,
+                approve=vote,
+            )
+        )
+
+    def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
+        return WitnessActionRow(identifier, vote=vote)
 
     def hook_on_row_added(self) -> None:
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
@@ -278,23 +304,6 @@ class Witnesses(GovernanceTabPane):
         with ScrollablePart(), Horizontal(id="witnesses-content"):
             yield self.__witness_table
             yield WitnessesActions()
-
-    def _create_operations(self) -> list[OperationUnion] | None:
-        actual_number_of_votes = self.screen.query_exactly_one(WitnessesActions).actual_number_of_votes
-
-        if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
-            self.notify(
-                f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}!", severity="error"
-            )
-            return None
-
-        working_account_name = self.profile.accounts.working.name
-        operations_to_perform = self.screen.query_exactly_one(WitnessesActions).actions_to_perform
-
-        return [
-            AccountWitnessVoteOperation(account=working_account_name, witness=witness, approve=approve)
-            for witness, approve in operations_to_perform.items()
-        ]
 
     @on(WitnessManualSearch.Search)
     async def search_witnesses(self, message: WitnessManualSearch.Search) -> None:
