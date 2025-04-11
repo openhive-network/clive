@@ -104,7 +104,7 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
     async def on_mount(self) -> None:
         await self.mount_operations_from_cart()
 
-    async def add_row(self, identifier: str, *, vote: bool = False) -> None:
+    async def add_row(self, identifier: str, *, vote: bool = False, hook_on_added: bool = True) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
@@ -118,7 +118,8 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
         else:
             self._actions_votes -= 1
 
-        self.hook_on_row_added()
+        if hook_on_added:
+            self.hook_on_row_added()
 
     async def remove_row(self, identifier: str, *, vote: bool = False) -> None:
         try:

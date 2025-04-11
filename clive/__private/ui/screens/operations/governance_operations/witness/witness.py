@@ -198,7 +198,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
-                await self.add_row(identifier=operation.witness, vote=operation.approve)
+                await self.add_row(identifier=operation.witness, vote=operation.approve, hook_on_added=False)
 
     def should_be_added_to_actions(self, operation: object) -> TypeIs[AccountWitnessVoteOperation]:
         return (
@@ -210,8 +210,13 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
         return WitnessActionRow(identifier, vote=vote)
 
     def hook_on_row_added(self) -> None:
+        notification_message = f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}"
+
+        if self.app.is_notification_present(notification_message):
+            return
+
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
-            self.notify(f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}")
+            self.notify(notification_message, severity="warning")
 
 
 class WitnessesList(GovernanceListWidget[WitnessData]):
