@@ -43,8 +43,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     """Class to provide access to methods related with operations to not just screens."""
 
     BINDINGS = [
-        Binding(ADD_OPERATION_TO_CART_BINDING_KEY, "add_to_cart", "Add to cart"),
-        Binding(FINALIZE_TRANSACTION_BINDING_KEY, "finalize_transaction", "Finalize transaction"),
+        Binding(ADD_OPERATION_TO_CART_BINDING_KEY, "add_to_cart", "Add to cart", show=False),
+        Binding(FINALIZE_TRANSACTION_BINDING_KEY, "finalize_transaction", "Finalize transaction", show=False),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
     POP_SCREEN_AFTER_ADDING_TO_CART: ClassVar[bool] = False
