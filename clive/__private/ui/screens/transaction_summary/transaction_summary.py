@@ -152,10 +152,12 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
-        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
-        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
-        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
+        Binding(
+            LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file", show=False
+        ),
+        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast", show=False),
+        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file", show=False),
+        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata", show=False),
     ]
     BIG_TITLE = "transaction summary"
 
