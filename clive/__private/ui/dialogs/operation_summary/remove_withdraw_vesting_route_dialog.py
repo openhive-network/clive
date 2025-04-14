@@ -29,7 +29,7 @@ class RemoveWithdrawVestingRouteDialog(OperationSummaryBaseDialog):
     def create_dialog_content(self) -> ComposeResult:
         yield LabelizedInput("From account", self.working_account_name)
         yield LabelizedInput("To account", self._withdraw_route.to_account)
-        yield LabelizedInput("Percent", f"{self._withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %")
+        yield LabelizedInput("Percent", f"{self._withdraw_route.percent / HIVE_PERCENT_PRECISION:.2f} %")
         yield LabelizedInput("Auto vest", humanize_bool(self._withdraw_route.auto_vest))
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation:

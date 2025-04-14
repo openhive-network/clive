@@ -202,9 +202,9 @@ async def show_proposals(  # noqa: PLR0913
     assert isinstance(order_direction, Enum), f"Expected Enum type, but got: {type(order_by)}"
     assert isinstance(status, Enum), f"Expected Enum type, but got: {type(order_by)}"
 
-    order_by_ = cast(ProposalsDataRetrieval.Orders, order_by.value)
-    order_direction_ = cast(ProposalsDataRetrieval.OrderDirections, order_direction.value)
-    status_ = cast(ProposalsDataRetrieval.Statuses, status.value)
+    order_by_ = cast("ProposalsDataRetrieval.Orders", order_by.value)
+    order_direction_ = cast("ProposalsDataRetrieval.OrderDirections", order_direction.value)
+    status_ = cast("ProposalsDataRetrieval.Statuses", status.value)
 
     await ShowProposals(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),

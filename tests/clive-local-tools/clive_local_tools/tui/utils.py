@@ -16,7 +16,7 @@ def log_current_view(app: CliveApp, *, nodes: bool = False, source: str | None =
     source = f"{source}: " if source is not None else ""
     tt.logger.debug(f"{source}screen: {app.screen}, focused: {app.focused}")
     if nodes:
-        tt.logger.debug(f'nodes: {app.screen.query("*").nodes}')
+        tt.logger.debug(f"nodes: {app.screen.query('*').nodes}")
 
 
 def get_profile_name(app: CliveApp) -> str:

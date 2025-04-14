@@ -18,9 +18,9 @@ if TYPE_CHECKING:
 
 def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]]) -> None:
     """Assert that the expected screen is active."""
-    assert isinstance(
-        pilot.app.screen, expected_screen
-    ), f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
+    assert isinstance(pilot.app.screen, expected_screen), (
+        f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
+    )
 
 
 def assert_is_dashboard(pilot: ClivePilot) -> None:
@@ -38,13 +38,13 @@ def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context:
     """Assert that the expected widget is focused."""
     context_details = f"\nContext: {context}" if context else ""
     if isinstance(widget, type):
-        assert isinstance(
-            pilot.app.focused, widget
-        ), f"Required the focus to be on `{widget}`, but is on `{pilot.app.focused}`.{context_details}"
+        assert isinstance(pilot.app.focused, widget), (
+            f"Required the focus to be on `{widget}`, but is on `{pilot.app.focused}`.{context_details}"
+        )
     else:
-        assert (
-            widget.has_focus
-        ), f"Required the focus to be on `{widget}`, but is on `{pilot.app.focused}`.{context_details}"
+        assert widget.has_focus, (
+            f"Required the focus to be on `{widget}`, but is on `{pilot.app.focused}`.{context_details}"
+        )
 
 
 def assert_is_clive_composed_input_focused(

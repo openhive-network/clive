@@ -83,9 +83,9 @@ async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
     await focus_next(pilot)
     assert_is_focused(pilot, WorkingAccountCheckbox)
     await pilot.press("space")  # Uncheck 'Working account?'
-    assert (
-        pilot.app.screen.query_exactly_one(WorkingAccountCheckbox).value is False
-    ), "Expected 'Working account?' to be unchecked!"
+    assert pilot.app.screen.query_exactly_one(WorkingAccountCheckbox).value is False, (
+        "Expected 'Working account?' to be unchecked!"
+    )
 
 
 async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:

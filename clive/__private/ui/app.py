@@ -121,7 +121,7 @@ class Clive(App[int]):
 
     @staticmethod
     def app_instance() -> Clive:
-        return cast(Clive, active_app.get())
+        return cast("Clive", active_app.get())
 
     @classmethod
     def is_launched(cls) -> bool:
@@ -185,7 +185,7 @@ class Clive(App[int]):
             notifications=notifications,
             message_hook=message_hook,
         ) as pilot:
-            yield cast(ClivePilot, pilot)
+            yield cast("ClivePilot", pilot)
 
     async def on_load(self) -> None:
         self.console.set_window_title("Clive")

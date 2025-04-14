@@ -52,17 +52,17 @@ def get_authority_output(context: CLITester | Result, authority: AuthorityType) 
 def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
     output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
-    assert any(
-        str(entry) in line for line in table
-    ), f"no {entry} entry in show {authority}-authority output:\n{output}"
+    assert any(str(entry) in line for line in table), (
+        f"no {entry} entry in show {authority}-authority output:\n{output}"
+    )
 
 
 def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
     output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
-    assert not any(
-        str(entry) in line for line in table
-    ), f"there is {entry} entry in show {authority}-authority output:\n{output}"
+    assert not any(str(entry) in line for line in table), (
+        f"there is {entry} entry in show {authority}-authority output:\n{output}"
+    )
 
 
 def assert_authority_weight(
@@ -72,9 +72,9 @@ def assert_authority_weight(
     weight: int,
 ) -> None:
     output = get_authority_output(context, authority)
-    assert any(
-        str(entry) in line and f"{weight}" in line for line in output.split("\n")
-    ), f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
+    assert any(str(entry) in line and f"{weight}" in line for line in output.split("\n")), (
+        f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
+    )
 
 
 def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
@@ -140,9 +140,9 @@ def assert_pending_removed_delegations(context: CLITester | Result, asset: tt.As
     result = context.show_pending_removed_delegations() if isinstance(context, CLITester) else context
     output = result.output
     expected_output = asset.as_legacy()
-    assert any(
-        expected_output in line for line in output.split("\n")
-    ), f"no entry for `{expected_output}` in show pending removed-delegations output:\n{output}"
+    assert any(expected_output in line for line in output.split("\n")), (
+        f"no entry for `{expected_output}` in show pending removed-delegations output:\n{output}"
+    )
 
 
 def assert_no_removed_delegations(context: CLITester | Result) -> None:

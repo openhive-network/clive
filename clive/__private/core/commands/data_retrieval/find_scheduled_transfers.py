@@ -183,12 +183,12 @@ class AccountScheduledTransferData:
         for future_transfer in upcoming_future_transfers_data.future_scheduled_transfers:
             if Asset.is_hive(future_transfer.amount):
                 account_hive_balance = cast(
-                    Asset.Hive, self.calculate_possible_amount(account_hive_balance, future_transfer.amount)
+                    "Asset.Hive", self.calculate_possible_amount(account_hive_balance, future_transfer.amount)
                 )
                 future_transfer.possible_amount = account_hive_balance
             else:
                 account_hbd_balance = cast(
-                    Asset.Hbd, self.calculate_possible_amount(account_hbd_balance, future_transfer.amount)
+                    "Asset.Hbd", self.calculate_possible_amount(account_hbd_balance, future_transfer.amount)
                 )
                 future_transfer.possible_amount = account_hbd_balance
         return upcoming_future_transfers_data
