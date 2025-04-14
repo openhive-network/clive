@@ -34,6 +34,7 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
 )
+from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
@@ -267,6 +268,12 @@ class TransactionSummary(BaseScreen):
             f" {'(signed)' if transaction.is_signed else ''}"
         )
 
+    def _add_known_accounts(self) -> None:
+        visitor = PotentialKnownAccountCollector()
+        self.profile.transaction.accept(visitor)
+        unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
+        self.profile.accounts.add_known_account(*unknown_accounts)
+
     async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
         if result is None:
             return
@@ -285,6 +292,8 @@ class TransactionSummary(BaseScreen):
 
         self.profile.transaction_file_path = file_path
         self.profile.transaction = loaded_transaction
+        if self.profile.should_enable_known_accounts:
+            self._add_known_accounts()
         self.app.trigger_profile_watchers()
         await self._rebuild()
 
