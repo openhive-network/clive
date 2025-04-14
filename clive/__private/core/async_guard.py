@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from collections.abc import Generator
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 class AsyncGuardNotAvailableError(CliveError):

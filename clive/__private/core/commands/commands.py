@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
@@ -70,6 +69,7 @@ from clive.__private.logger import logger
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from datetime import timedelta
     from pathlib import Path
 

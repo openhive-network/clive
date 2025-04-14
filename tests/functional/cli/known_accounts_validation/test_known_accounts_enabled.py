@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -14,6 +13,8 @@ from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import KNOWN_ACCOUNTS, UNKNOWN_ACCOUNT, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from clive_local_tools.cli.cli_tester import CLITester
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from typing_extensions import override
@@ -17,6 +16,8 @@ from clive.__private.core.constants.node_special_assets import (
 from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.models import schemas
 

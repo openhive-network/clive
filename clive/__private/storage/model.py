@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Sequence  # noqa: TC003
 from hashlib import sha256
 from pathlib import Path  # noqa: TC003
 from typing import Any

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import shutil
-from collections.abc import Generator
 from contextlib import contextmanager
 from functools import wraps
 from typing import TYPE_CHECKING, Callable
@@ -36,7 +35,7 @@ from clive_local_tools.data.generates import generate_wallet_name, generate_wall
 from clive_local_tools.data.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterator
+    from collections.abc import AsyncIterator, Generator, Iterator
 
     from beekeepy import AsyncBeekeeper
 
