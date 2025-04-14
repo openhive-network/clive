@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partialmethod
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
@@ -27,7 +27,7 @@ from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEO
 from clive_local_tools.tui.textual_helpers import wait_for_screen
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Callable
 
     from clive_local_tools.tui.types import ClivePilot
 

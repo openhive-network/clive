@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, overload
 
 from textual.reactive import invoke_watcher
 from textual.widget import Widget

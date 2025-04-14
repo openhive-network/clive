@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal, TypeAliasType
 
 from beekeepy.exceptions import UnknownDecisionPathError
-from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,

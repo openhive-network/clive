@@ -90,7 +90,7 @@ async def extract_message_from_notification(
 
     try:
         return await asyncio.wait_for(wait_for_message_to_be_found(), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError(
             f"Toast notification containing the transaction ID couldn't be found. Waited {timeout:.2f}s"
         ) from None

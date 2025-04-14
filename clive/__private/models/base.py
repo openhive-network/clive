@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
 
@@ -9,6 +9,8 @@ from clive.__private.core.constants.date import TIME_FORMAT_WITH_SECONDS
 from clive.__private.models.schemas import Serializable
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
 
 

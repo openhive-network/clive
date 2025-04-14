@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 from click.testing import Result
@@ -10,6 +10,7 @@ from clive.__private.core.formatters.humanize import humanize_bool
 from .cli_tester import CLITester
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Literal
 
     import test_tools as tt

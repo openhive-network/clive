@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeGuard, TypeVar
 if TYPE_CHECKING:
     from collections.abc import Awaitable
     from types import TracebackType
-
-    from typing_extensions import Self
+    from typing import Self
 
 ExecuteResultT = TypeVar("ExecuteResultT")
 ExceptionT = TypeVar("ExceptionT", bound=Exception)

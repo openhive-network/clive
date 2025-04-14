@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Literal, get_args
+from typing import TYPE_CHECKING, ClassVar, Literal, TypeAliasType, get_args
 
 from beekeepy.exceptions import UnknownDecisionPathError
-from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix

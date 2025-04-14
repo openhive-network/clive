@@ -21,8 +21,7 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
-
-    from typing_extensions import Self
+    from typing import Self
 
     from clive.__private.core.accounts.accounts import Account
     from clive.__private.core.encryption import EncryptionService

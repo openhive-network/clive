@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, get_args
+from typing import TYPE_CHECKING, ParamSpec, TypeVar, get_args
 
 import typer
 
@@ -17,6 +17,7 @@ if not is_tab_completion_active():
     )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from datetime import timedelta
     from decimal import Decimal
 

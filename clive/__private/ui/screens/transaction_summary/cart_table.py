@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Self
 
 from textual import on
 from textual.binding import Binding
@@ -11,7 +11,6 @@ from textual.css.query import DOMQuery, NoMatches
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Static
-from typing_extensions import Self
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
