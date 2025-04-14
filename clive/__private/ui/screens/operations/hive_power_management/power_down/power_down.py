@@ -148,7 +148,7 @@ class PowerDown(TabPane, OperationActionBindings):
             with Section("Perform a power down (withdraw vesting)"):
                 with Horizontal():
                     yield self._shares_input
-                    yield GenerousButton(self._shares_input, self._get_shares_balance)  # type: ignore[arg-type]
+                    yield GenerousButton(self._shares_input, self._get_shares_balance)
                 yield TransactionButtons()
             yield self._one_withdrawal_display
             yield PendingPowerDown()

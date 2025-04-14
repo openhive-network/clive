@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from textual import on
 from textual.containers import Vertical
@@ -21,9 +21,6 @@ if TYPE_CHECKING:
     from textual.suggester import Suggester
     from textual.validation import ValidationResult, Validator
     from textual.widgets._input import InputType, InputValidationOn
-
-
-InputReturnT = TypeVar("InputReturnT")
 
 
 class CliveValidatedInputError(CliveError):
@@ -81,7 +78,7 @@ Input value error{additional}. Reason:
         super().__init__(message)
 
 
-class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessagePump):
+class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
     """A custom input that shows a title and failed validation reasons (if any). For more look into `CliveInput`."""
 
     DEFAULT_CSS = """

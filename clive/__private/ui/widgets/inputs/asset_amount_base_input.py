@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Horizontal, Vertical
@@ -20,10 +20,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._input import InputValidationOn
 
-AssetInputT = TypeVar("AssetInputT", Asset.VotingT, Asset.LiquidT, Asset.Hive)
 
-
-class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], AbstractClassMessagePump):
+class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
+    CliveValidatedInput[AssetInputT], AbstractClassMessagePump
+):
     """Base input for all asset types."""
 
     DEFAULT_CSS = """
