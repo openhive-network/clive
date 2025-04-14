@@ -11,10 +11,7 @@ HIGHLIGHT_STYLING: Final[str] = "$accent italic"
 SHORTCUT_STYLING: Final[str] = HIGHLIGHT_STYLING
 SYSTEM_STYLING: Final[str] = "$success"
 WITNESS_NAME_STYLING: Final[str] = HIGHLIGHT_STYLING
-
-PATH_STYLING: Final[str] = "green italic"
-"""TODO: Change to HIGHLIGHT_STYLING after https://github.com/Textualize/textual/issues/5716"""
-
+PATH_STYLING: Final[str] = HIGHLIGHT_STYLING
 SOON_STYLING: Final[str] = HIGHLIGHT_STYLING
 SOON_TEXT: Final[str] = "soon"
 
