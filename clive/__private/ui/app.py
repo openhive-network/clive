@@ -134,11 +134,12 @@ class Clive(App[int]):
         title: str = "",
         severity: SeverityLevel = "information",
         timeout: float | None = None,
+        markup: bool = True,
     ) -> None:
         title = title if title else severity.capitalize()
         timeout = math.inf if timeout is None and severity == "error" else timeout
         logger.info(f"Sending notification: {severity=}, {title=}, {message=}")
-        return super().notify(message, title=title, severity=severity, timeout=timeout)
+        return super().notify(message, title=title, severity=severity, timeout=timeout, markup=markup)
 
     def is_notification_present(self, message: str) -> bool:
         current_notifications = self._notifications
