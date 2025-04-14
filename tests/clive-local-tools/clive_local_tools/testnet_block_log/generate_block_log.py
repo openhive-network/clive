@@ -95,7 +95,7 @@ def create_proposals(wallet: tt.Wallet) -> None:
             permlink = proposal
             start_month = i - 1
             end_month = i
-            daily_pay = round(uniform(1, 10), 3)  # noqa: S311; no cryptographic usage
+            daily_pay = round(uniform(1, 10), 3)  # noqa: S311 # no cryptographic usage
             wallet.api.create_proposal(
                 witness.name,
                 witness.name,
