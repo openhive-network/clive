@@ -4,7 +4,7 @@ import inspect
 import sys
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any, ClassVar, NewType, TypeVar
+from typing import Any, ClassVar
 
 import typer
 from click import ClickException
@@ -14,9 +14,8 @@ from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
 from clive.__private.core._async import asyncio_run
 
-ExceptionT = TypeVar("ExceptionT", bound=Exception)
-ExitCode = NewType("ExitCode", int)
-ErrorHandlingCallback = Callable[[ExceptionT], ExitCode | None]
+type ExitCode = int
+type ErrorHandlingCallback[T: Exception] = Callable[[T], ExitCode | None]
 
 
 class CliveTyper(typer.Typer):
@@ -70,10 +69,10 @@ class CliveTyper(typer.Typer):
         except Exception as error:  # noqa: BLE001
             self.__handle_error(error)
 
-    def error_handler(
-        self, error: type[ExceptionT]
-    ) -> Callable[[ErrorHandlingCallback[ExceptionT]], ErrorHandlingCallback[ExceptionT]]:
-        def decorator(f: ErrorHandlingCallback[ExceptionT]) -> ErrorHandlingCallback[ExceptionT]:
+    def error_handler[T: Exception](
+        self, error: type[T]
+    ) -> Callable[[ErrorHandlingCallback[T]], ErrorHandlingCallback[T]]:
+        def decorator(f: ErrorHandlingCallback[T]) -> ErrorHandlingCallback[T]:
             self.__clive_error_handlers__[error] = f
             return f
 
@@ -95,7 +94,7 @@ class CliveTyper(typer.Typer):
             return decorator(wrapper)
         return decorator(func)
 
-    def __handle_error(self, error: ExceptionT) -> None:
+    def __handle_error(self, error: Exception) -> None:
         handler = self.__get_error_handler(error)
 
         try:
@@ -124,7 +123,7 @@ class CliveTyper(typer.Typer):
             )
             raise exception from None
 
-    def __get_error_handler(self, error: ExceptionT) -> ErrorHandlingCallback[ExceptionT]:
+    def __get_error_handler[T: Exception](self, error: T) -> ErrorHandlingCallback[T]:
         for type_ in type(error).mro():
             if type_ in self.__clive_error_handlers__:
                 return self.__clive_error_handlers__.pop(type_)
