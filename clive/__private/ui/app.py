@@ -23,7 +23,6 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
@@ -42,6 +41,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
+    from clive.__private.ui.clive_pilot import ClivePilot
     from clive.__private.ui.clive_screen import CliveScreen
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
