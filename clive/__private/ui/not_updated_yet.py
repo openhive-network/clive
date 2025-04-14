@@ -1,19 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing_extensions import TypeIs
 
-ValueT = TypeVar("ValueT")
 
-
-def is_not_updated_yet(value: ValueT | NotUpdatedYet) -> TypeIs[NotUpdatedYet]:
+def is_not_updated_yet[T](value: T | NotUpdatedYet) -> TypeIs[NotUpdatedYet]:
     """Check whether the value is an instance of NotUpdatedYet."""
     return isinstance(value, NotUpdatedYet)
 
 
-def is_updated(value: ValueT | NotUpdatedYet) -> TypeIs[ValueT]:
+def is_updated[T](value: T | NotUpdatedYet) -> TypeIs[T]:
     """Check whether the value is not an instance of NotUpdatedYet."""
     return not is_not_updated_yet(value)
 
