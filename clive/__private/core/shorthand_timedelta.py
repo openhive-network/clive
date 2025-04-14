@@ -97,7 +97,7 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
 
     amount_and_units_together = match.group().split()
 
-    time_args = {unit: 0 for unit in time_units.values()}
+    time_args = dict.fromkeys(time_units.values(), 0)
     for concatenated in amount_and_units_together:
         value = concatenated[:-1]
         unit = concatenated[-1]

@@ -38,8 +38,7 @@ def test_storage_revision_doesnt_changed() -> None:
 
     # ASSERT
     message = (
-        "Storage model revision has changed. If you are sure that it is expected,"
-        " please update the expected revision."
+        "Storage model revision has changed. If you are sure that it is expected, please update the expected revision."
     )
     assert actual_revision == EXPECTED_REVISION, message
 
@@ -60,9 +59,9 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
     assert current_revision_symlink.is_symlink(), "Current revision path is not a symlink or is missing."
     assert revision_dir.is_dir(), "Revision dir is not a directory or is missing."
-    assert (
-        current_revision_symlink.resolve() == revision_dir
-    ), "Current revision symlink does not point to the expected revision dir."
+    assert current_revision_symlink.resolve() == revision_dir, (
+        "Current revision symlink does not point to the expected revision dir."
+    )
     assert profile_json_file.is_file(), "Profile JSON file is not a file or is missing."
     assert profile_json_file.read_text(), "Profile JSON file is empty."
 

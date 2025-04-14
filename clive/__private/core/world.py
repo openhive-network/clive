@@ -248,7 +248,7 @@ class TUIWorld(World, CliveDOMNode):
 
     @property
     def commands(self) -> TUICommands:
-        return cast(TUICommands, super().commands)
+        return cast("TUICommands", super().commands)
 
     @property
     def _should_save_profile_on_close(self) -> bool:
@@ -295,7 +295,7 @@ class TUIWorld(World, CliveDOMNode):
 class CLIWorld(World):
     @property
     def commands(self) -> CLICommands:
-        return cast(CLICommands, super().commands)
+        return cast("CLICommands", super().commands)
 
     @override
     async def _setup(self) -> None:

@@ -127,19 +127,19 @@ class SafeSettings:
             setting_name = LOG_LEVELS
             value = self._parent._get_list(setting_name, ["INFO"])
             self._assert_log_levels(setting_name, value=value)
-            return cast(_AvailableLogLevelsContainer, value)
+            return cast("_AvailableLogLevelsContainer", value)
 
         def _get_log_level_1st_party(self) -> _AvailableLogLevels:
             setting_name = LOG_LEVEL_1ST_PARTY
             value = self._parent._get_value_from_settings(setting_name, "INFO")
             self._assert_log_level(setting_name, value=value)
-            return cast(_AvailableLogLevels, value)
+            return cast("_AvailableLogLevels", value)
 
         def _get_log_level_3rd_party(self) -> _AvailableLogLevels:
             setting_name = LOG_LEVEL_3RD_PARTY
             value = self._parent._get_value_from_settings(setting_name, "WARNING")
             self._assert_log_level(setting_name, value=value)
-            return cast(_AvailableLogLevels, value)
+            return cast("_AvailableLogLevels", value)
 
         def _get_log_path(self) -> Path:
             value = self._parent._get_value_from_settings(LOG_PATH)
@@ -179,7 +179,7 @@ class SafeSettings:
                 return None
 
             self._parent._assert_is_string(setting_name, value=value)
-            value_ = cast(str, value)
+            value_ = cast("str", value)
             if not PrivateKey.is_valid(value_):
                 details = "Private key should be a valid private key."
                 raise SettingsValueError(setting_name=setting_name, value=value_, details=details)
@@ -330,7 +330,7 @@ class SafeSettings:
                 return None
 
             self._parent._assert_is_string(setting_name, value=value)
-            value_ = cast(str, value)
+            value_ = cast("str", value)
 
             if not is_schema_field_valid(ChainId, value_):
                 details = f"Chain ID should be {ChainId.max_length} characters long."
@@ -436,7 +436,7 @@ class SafeSettings:
         else:
             value_ = value
         self._assert_is_list(setting_name, value=value_)
-        return cast(list[object], value_)
+        return cast("list[object]", value_)
 
     @overload
     def _get_url(self, setting_name: str, *, optionally: Literal[False]) -> HttpUrl: ...
@@ -452,7 +452,7 @@ class SafeSettings:
             raise SettingsValueError(setting_name=setting_name, value=value, details="URL is required.")
 
         self._assert_is_string(setting_name, value=value)
-        value_ = cast(str, value)
+        value_ = cast("str", value)
         try:
             return HttpUrl(value_)
         except Exception as error:

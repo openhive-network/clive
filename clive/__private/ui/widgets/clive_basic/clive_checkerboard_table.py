@@ -237,18 +237,18 @@ class CliveCheckerboardTable(CliveWidget):
             return []
 
         if self.should_be_dynamic:
-            assert (
-                content is not None
-            ), "Content must be provided when creating dynamic rows. Maybe you should use static table?"
+            assert content is not None, (
+                "Content must be provided when creating dynamic rows. Maybe you should use static table?"
+            )
 
             if is_not_updated_yet(content):
                 return []
 
             rows = self.create_dynamic_rows(content)
         else:
-            assert (
-                content is None
-            ), "Content must not be provided when creating static rows. Maybe you should use dynamic table?"
+            assert content is None, (
+                "Content must not be provided when creating static rows. Maybe you should use dynamic table?"
+            )
             rows = self.create_static_rows()
 
         self._set_evenness_styles(rows)

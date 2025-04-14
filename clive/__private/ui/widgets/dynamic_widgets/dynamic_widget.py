@@ -134,8 +134,8 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
         param_count = count_parameters(callback)
 
         if param_count == 2:  # noqa: PLR2004
-            return cast(WatchLikeCallbackBothValuesType[Any], callback)(old_value, value)
+            return cast("WatchLikeCallbackBothValuesType[Any]", callback)(old_value, value)
         if param_count == 1:
-            return cast(WatchLikeCallbackNewValueType[Any], callback)(value)
+            return cast("WatchLikeCallbackNewValueType[Any]", callback)(value)
 
-        return cast(WatchLikeCallbackNoArgsType[Any], callback)()
+        return cast("WatchLikeCallbackNoArgsType[Any]", callback)()

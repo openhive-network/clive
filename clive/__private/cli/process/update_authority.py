@@ -39,9 +39,9 @@ def send_update(ctx: Context, /, *args: Any, **kwds: Any) -> None:  # noqa: ARG0
     """Create and send account update operation updating authority asynchronously."""
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
-    assert isinstance(
-        ctx.obj, ProcessAccountUpdate
-    ), f"{ctx.command_path} context object is not instance of ProcessAccountUpdate"
+    assert isinstance(ctx.obj, ProcessAccountUpdate), (
+        f"{ctx.command_path} context object is not instance of ProcessAccountUpdate"
+    )
 
     async def send_update_async() -> None:
         update_command = ctx.obj
@@ -56,9 +56,9 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
 
     assert ctx.parent, f"{ctx.command_path} context parent does not exist"
     update_command = ctx.parent.obj
-    assert isinstance(
-        update_command, ProcessAccountUpdate
-    ), f"{ctx.parent.command_path} context object is not instance of ProcessAccountUpdate"
+    assert isinstance(update_command, ProcessAccountUpdate), (
+        f"{ctx.parent.command_path} context object is not instance of ProcessAccountUpdate"
+    )
     update_command.add_callback(callback)
 
 

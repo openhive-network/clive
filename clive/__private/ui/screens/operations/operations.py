@@ -45,7 +45,7 @@ class GovernanceOperationButton(OperationButton):
         self._governance_initial_tab = governance_initial_tab
 
     def create_operation_screen(self) -> Governance:
-        return cast(Governance, self._operation_screen(self._governance_initial_tab))
+        return cast("Governance", self._operation_screen(self._governance_initial_tab))
 
 
 class Operations(CartBasedScreen, TransactionSummaryBinding):

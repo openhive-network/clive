@@ -30,8 +30,7 @@ class CommandRequiresUnlockedEncryptionWalletError(CommandExecutionNotPossibleEr
 class EncryptionKeyAmountError(CommandError):
     def __init__(self, command: Command, number_of_keys: int) -> None:
         message = (
-            f"Error retrieving encryption key. Number of keys: {number_of_keys}."
-            " There should be one and only one key."
+            f"Error retrieving encryption key. Number of keys: {number_of_keys}. There should be one and only one key."
         )
         super().__init__(command, message)
 

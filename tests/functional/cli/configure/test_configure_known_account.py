@@ -70,9 +70,9 @@ async def test_if_known_account_enable_is_set_by_default(cli_tester_locked: CLIT
     )
 
     # ASSERT
-    assert (
-        await profile_checker.profile
-    ).should_enable_known_accounts, "Known account attribute should be enabled by default."
+    assert (await profile_checker.profile).should_enable_known_accounts, (
+        "Known account attribute should be enabled by default."
+    )
 
 
 async def test_configure_enable_known_accounts(cli_tester: CLITester) -> None:
@@ -94,6 +94,6 @@ async def test_configure_disable_known_account_add(cli_tester: CLITester) -> Non
     cli_tester.configure_known_account_disable()
 
     # ASSERT
-    assert not (
-        await profile_checker.profile
-    ).should_enable_known_accounts, "Known account attribute should be disabled."
+    assert not (await profile_checker.profile).should_enable_known_accounts, (
+        "Known account attribute should be disabled."
+    )

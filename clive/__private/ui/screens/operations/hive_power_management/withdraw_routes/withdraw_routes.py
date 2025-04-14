@@ -76,7 +76,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:
         percents_to_align = [
-            f"{withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %" for withdraw_route in content.withdraw_routes
+            f"{withdraw_route.percent / HIVE_PERCENT_PRECISION:.2f} %" for withdraw_route in content.withdraw_routes
         ]
         aligned_percents = align_to_dot(*percents_to_align)
 

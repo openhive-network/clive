@@ -31,9 +31,9 @@ async def test_withdrawal_cancel_valid(cli_tester: CLITester) -> None:
 
     # ASSERT
     result = cli_tester.show_pending_withdrawals()
-    assert (
-        str(AMOUNT_TO_DEPOSIT.amount) not in result.stdout
-    ), f"Withdrawal {request_id} of {AMOUNT_TO_DEPOSIT.as_legacy()} should be canceled."
+    assert str(AMOUNT_TO_DEPOSIT.amount) not in result.stdout, (
+        f"Withdrawal {request_id} of {AMOUNT_TO_DEPOSIT.as_legacy()} should be canceled."
+    )
 
 
 async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
