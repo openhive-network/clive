@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
@@ -15,6 +14,8 @@ from clive.__private.ui.widgets.clive_basic import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount
     from clive.__private.core.profile import Profile
     from clive.__private.core.world import TUIWorld

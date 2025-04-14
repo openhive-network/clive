@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.commands.load_profile import LoadProfile
@@ -8,6 +7,9 @@ from clive.__private.core.commands.load_profile import LoadProfile
 if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
     from clive.__private.core.wallet_container import WalletContainer
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class IsNotSet:

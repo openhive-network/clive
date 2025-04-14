@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final, Literal, TypeVar, cast
@@ -12,6 +11,8 @@ from clive.__private.core.commands.abc.command_data_retrieval import CommandData
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from clive.__private.models.schemas import Account, FindAccounts, RecurrentTransfer
     from clive.__private.models.schemas import FindRecurrentTransfers as SchemasFindRecurrentTransfers
 from clive.__private.models.asset import Asset

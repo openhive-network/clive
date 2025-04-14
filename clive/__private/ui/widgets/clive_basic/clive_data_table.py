@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from textual.containers import Horizontal
@@ -12,6 +11,8 @@ from clive.__private.ui.not_updated_yet import is_not_updated_yet
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from textual.app import ComposeResult
     from textual.widget import Widget
 

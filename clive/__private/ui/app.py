@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import math
 import traceback
-from collections.abc import Awaitable
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, Final, TypeVar, cast, get_args
 
@@ -36,7 +35,7 @@ from clive.__private.ui.types import CliveModes
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Callable, Iterator
+    from collections.abc import AsyncGenerator, Awaitable, Callable, Iterator
 
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType

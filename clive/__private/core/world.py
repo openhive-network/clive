@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, cast
 
@@ -20,7 +19,7 @@ from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.exceptions import ProfileNotLoadedError
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import AsyncGenerator, Iterable
     from datetime import timedelta
     from types import TracebackType
 
