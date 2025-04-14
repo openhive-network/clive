@@ -44,7 +44,7 @@ class PowerUp(TabPane, OperationActionBindings):
                 yield self._receiver_input
                 with Horizontal(id="input-with-button"):
                     yield self._asset_input
-                    yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
+                    yield GenerousButton(self._asset_input, self._get_hive_balance)
                 yield TransactionButtons()
 
     def _additional_actions_after_clearing_inputs(self) -> None:
