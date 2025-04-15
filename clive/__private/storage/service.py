@@ -8,7 +8,7 @@ from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
+from clive.__private.storage.model import ProfileStorageModel
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -149,7 +149,7 @@ class PersistentStorageService:
     @classmethod
     def _get_storage_versioned_directory(cls) -> Path:
         """Get the directory where the storage file is stored in a versioned way."""
-        revision = calculate_storage_model_revision()
+        revision = ProfileStorageModel.calculate_storage_model_revision()
         return cls._get_storage_directory() / revision
 
     @classmethod
