@@ -1,27 +1,26 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass, field
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 
-AsyncContextManagerType = TypeVar("AsyncContextManagerType", bound=Any)
-
 
 @dataclass(kw_only=True)
-class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand, ABC):
+class ContextualCLICommand[AsyncContextManagerT: AbstractAsyncContextManager[Any]](ExternalCLICommand, ABC):
     """A command that has to be run inside some context manager (so has some preparation)."""
 
-    __context_manager_instance: AsyncContextManagerType | None = field(default=None, init=False)
+    __context_manager_instance: AsyncContextManagerT | None = field(default=None, init=False)
 
     @property
-    def _context_manager_instance(self) -> AsyncContextManagerType:
+    def _context_manager_instance(self) -> AsyncContextManagerT:
         assert self.__context_manager_instance is not None, "Context manager should be set before running the command."
         return self.__context_manager_instance
 
     @abstractmethod
-    async def _create_context_manager_instance(self) -> AsyncContextManagerType:
+    async def _create_context_manager_instance(self) -> AsyncContextManagerT:
         """Create the context manager that will be used to run the command."""
 
     async def validate_inside_context_manager(self) -> None:
