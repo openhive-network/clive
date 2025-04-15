@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
@@ -97,13 +97,11 @@ if TYPE_CHECKING:
         Witness,
     )
 
-WorldT_co = TypeVar("WorldT_co", bound="World", covariant=True)
 
-
-class Commands(Generic[WorldT_co]):
+class Commands[WorldT: World]:
     def __init__(
         self,
-        world: WorldT_co,
+        world: WorldT,
         exception_handlers: list[type[AnyErrorHandlerContextManager]] | None = None,
         *args: Any,
         **kwargs: Any,
