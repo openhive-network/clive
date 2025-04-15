@@ -5,7 +5,7 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal, TypeVar, cast, get_args, overload
+from typing import Literal, cast, get_args, overload
 
 from beekeepy import RemoteHandleSettings
 from beekeepy import Settings as BeekeepySettings
@@ -81,8 +81,6 @@ class SafeSettings:
     @dataclass
     class _Namespace(ABC):
         _parent: SafeSettings
-
-    _NamespaceT = TypeVar("_NamespaceT", bound=_Namespace)
 
     @dataclass
     class _Dev(_Namespace):
@@ -384,7 +382,7 @@ class SafeSettings:
             # call property to run setting validation
             getattr(self, my_prop_name)
 
-    def _create_namespace(self, namespace: type[_NamespaceT]) -> _NamespaceT:
+    def _create_namespace[T: SafeSettings._Namespace](self, namespace: type[T]) -> T:
         self._namespaces.add(namespace)
         return namespace(self)
 
