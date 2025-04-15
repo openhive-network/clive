@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Final, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 from beekeepy.exceptions import UnknownDecisionPathError
 
@@ -34,8 +34,6 @@ AllowedFutureSorts = Literal[
     AllowedBaseSorts,
     "possible_amount",
 ]
-
-AllowedSorts = TypeVar("AllowedSorts", AllowedBaseSorts, AllowedFutureSorts)
 
 ZERO_HBD_ASSET: Final[Asset.Hbd] = Asset.hbd(0)
 ZERO_HIVE_ASSET: Final[Asset.Hive] = Asset.hive(0)
