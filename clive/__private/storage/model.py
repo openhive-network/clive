@@ -1,93 +1,45 @@
 from __future__ import annotations
 
-from collections.abc import Sequence  # noqa: TC003
-from hashlib import sha256
-from pathlib import Path  # noqa: TC003
-from typing import Any
+from itertools import pairwise
+from typing import get_type_hints
 
-from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TC001
-from clive.__private.core.date_utils import utc_epoch
-from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import (
-    HiveDateTime,
-    HiveInt,
-    OperationRepresentationUnion,
-    Signature,
-)
+from clive.__private.storage.migrations.base import ProfileStorageBase
+from clive.__private.storage.migrations.v0 import ProfileStorageModel
+
+__all__ = ["ProfileStorageBase", "ProfileStorageModel"]
 
 
-class AlarmStorageModel(CliveBaseModel):
-    name: str
-    is_harmless: bool = False
-    identifier: AllAlarmIdentifiers
-    """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
+def apply_all_migrations(old_instance: ProfileStorageBase) -> ProfileStorageModel:
+    new_instance = old_instance
+    for model_cls in ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP.values():
+        if new_instance.get_this_version_number() < model_cls.get_this_version_number():
+            new_instance = model_cls.upgrade(new_instance)  # type: ignore[attr-defined]  # attribute existence validated at import time
+    message = (
+        f"After applying all migrations there should be last model of storage, actual model is {type(new_instance)}."
+    )
+    assert type(new_instance) is ProfileStorageModel, message
+    return new_instance
 
 
-class TrackedAccountStorageModel(CliveBaseModel):
-    name: str
-    alarms: Sequence[AlarmStorageModel] = []
+def _validate_model_upgrades() -> None:
+    for prev_hash, this_hash in pairwise(ProfileStorageBase.REVISIONS):
+        prev_cls = ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP[prev_hash]
+        this_cls = ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP[this_hash]
+        assert hasattr(this_cls, "upgrade"), f"Upgrade function should be defined for {this_cls}, but it is not."
+        hints = get_type_hints(this_cls.upgrade)
+        assert hints["old"] is prev_cls, (
+            f"Upgrade function should accept {prev_cls} as first argument, but it takes {hints['old']} instead."
+        )
+        assert hints["return"] is this_cls, (
+            f"Upgrade function should return {this_cls}, but it returns {hints['return']} instead."
+        )
 
 
-class KeyAliasStorageModel(CliveBaseModel):
-    alias: str
-    public_key: str
+def _validate_model_alias() -> None:
+    assert ProfileStorageModel is ProfileStorageBase.get_current_model_cls(), (
+        f"ProfileStorageModel should be alias to newest model, but it is {ProfileStorageModel} instead."
+    )
 
 
-class TransactionCoreStorageModel(CliveBaseModel):
-    operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
-    ref_block_num: HiveInt = HiveInt(-1)
-    ref_block_prefix: HiveInt = HiveInt(-1)
-    expiration: HiveDateTime = utc_epoch()  # type: ignore[assignment]
-    extensions: list[Any] = []  # noqa: RUF012
-    signatures: list[Signature] = []  # noqa: RUF012
-
-
-class TransactionCoreStorageModelSchema(TransactionCoreStorageModel):
-    operations: list[Any]
-    """Do not include really complex structure of operation union type in the schema."""
-
-
-class TransactionStorageModel(CliveBaseModel):
-    transaction_core: TransactionCoreStorageModel
-    transaction_file_path: Path | None = None
-
-
-class TransactionStorageModelSchema(TransactionStorageModel):
-    transaction_core: TransactionCoreStorageModelSchema
-
-
-class ProfileStorageModel(CliveBaseModel):
-    name: str
-    working_account: str | None = None
-    tracked_accounts: Sequence[TrackedAccountStorageModel] = []
-    known_accounts: list[str] = []  # noqa: RUF012
-    key_aliases: list[KeyAliasStorageModel] = []  # noqa: RUF012
-    transaction: TransactionStorageModel | None = None
-    chain_id: str | None = None
-    node_address: str
-    should_enable_known_accounts: bool = True
-
-    def __hash__(self) -> int:
-        return hash(self.json(indent=4))
-
-
-class AlarmStorageModelSchema(AlarmStorageModel):
-    identifier: Any
-    """Do not include alarm identifiers union in the schema so new alarms can be added without revision change."""
-
-
-class TrackedAccountStorageModelSchema(TrackedAccountStorageModel):
-    alarms: list[AlarmStorageModelSchema] = []  # noqa: RUF012
-
-
-class ProfileStorageModelSchema(ProfileStorageModel):
-    transaction: TransactionStorageModelSchema
-    tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
-
-
-def get_storage_model_schema_json() -> str:
-    return ProfileStorageModelSchema.schema_json(indent=4)
-
-
-def calculate_storage_model_revision() -> str:
-    return sha256(get_storage_model_schema_json().encode()).hexdigest()[:8]
+_validate_model_upgrades()
+_validate_model_alias()
