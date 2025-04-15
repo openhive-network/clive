@@ -2,16 +2,14 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeGuard, TypeVar
+from typing import TYPE_CHECKING, Any, TypeGuard
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
     from types import TracebackType
     from typing import Self
 
-ExecuteResultT = TypeVar("ExecuteResultT")
-ExceptionT = TypeVar("ExceptionT", bound=Exception)
-AnyErrorHandlerContextManager: TypeAlias = "ErrorHandlerContextManager[Any]"
+type AnyErrorHandlerContextManager = ErrorHandlerContextManager[Any]
 
 
 @dataclass
@@ -19,7 +17,7 @@ class ResultNotAvailable:
     exception: Exception
 
 
-class ErrorHandlerContextManager(Generic[ExceptionT], ABC):
+class ErrorHandlerContextManager[ExceptionT: Exception](ABC):
     def __init__(self) -> None:
         self._error: Exception | None = None
 
@@ -71,7 +69,7 @@ class ErrorHandlerContextManager(Generic[ExceptionT], ABC):
     def error_occurred(self) -> bool:
         return self.error is not None
 
-    async def execute(self, async_func: Awaitable[ExecuteResultT]) -> ExecuteResultT | ResultNotAvailable:
+    async def execute[T](self, async_func: Awaitable[T]) -> T | ResultNotAvailable:
         try:
             return await async_func
         except Exception as error:  # noqa: BLE001

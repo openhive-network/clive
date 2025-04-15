@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ErrorHandlerContextManager,
-    ExceptionT,
     ResultNotAvailable,
 )
 
@@ -26,7 +25,7 @@ class CannotNotifyError(ErrorNotificatorError):
         super().__init__(self.message)
 
 
-class ErrorNotificator(ErrorHandlerContextManager[ExceptionT], ABC):
+class ErrorNotificator[ExceptionT: Exception](ErrorHandlerContextManager[ExceptionT], ABC):
     """A context manager that notifies about errors."""
 
     async def __aexit__(
