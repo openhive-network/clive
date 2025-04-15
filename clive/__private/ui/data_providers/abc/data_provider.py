@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Final, Generic, TypeVar
+from typing import Final
 
 from inflection import underscore
 from textual import on
@@ -15,8 +15,6 @@ from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_not_updated_yet
 from clive.exceptions import CliveError
-
-ProviderContentT = TypeVar("ProviderContentT")
 
 
 class ProviderError(CliveError):
@@ -34,7 +32,7 @@ If you are sure, you can use the `updated` property to check if content is ready
         super().__init__(self._MESSAGE)
 
 
-class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractClassMessagePump):
+class DataProvider[ProviderContentT](Container, CliveWidget, AbstractClassMessagePump):
     """
     Retrieve data in a periodic manner. Data is stored in the reactive attributes.
 
