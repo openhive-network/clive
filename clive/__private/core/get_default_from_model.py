@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
-
-ExpectT = TypeVar("ExpectT")
 
 
 class WrongTypeError(CliveError):
@@ -23,14 +21,12 @@ def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) 
 
 
 @overload
-def get_default_from_model(
-    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT]
-) -> ExpectT: ...
+def get_default_from_model[T](model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[T]) -> T: ...
 
 
-def get_default_from_model(
-    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT] | None = None
-) -> ExpectT | Any:
+def get_default_from_model[T](
+    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[T] | None = None
+) -> T | Any:
     """Get default value from pydantic model."""
     field = model.__fields__.get(field_name, None)
 
