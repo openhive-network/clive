@@ -10,7 +10,6 @@ from clive.__private.models.schemas import AccountName, AccountUpdate2Operation,
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import (
-        AccountOrKeyT,
         AccountUpdateFunction,
         AuthorityType,
         AuthorityUpdateFunction,
@@ -65,7 +64,7 @@ class ProcessAccountUpdate(OperationCommand):
         )
 
 
-def is_on_auths_list(elem: AccountOrKeyT, auths: list[tuple[AccountOrKeyT, HiveInt]]) -> bool:
+def is_on_auths_list[T: (AccountName, PublicKey)](elem: T, auths: list[tuple[T, HiveInt]]) -> bool:
     """Check if element is on list of tuples."""
     return any(elem == first for first, _ in auths)
 
