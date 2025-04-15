@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, ParamSpec, TypeVar, get_args
+from typing import TYPE_CHECKING, get_args
 
 import typer
 
@@ -23,12 +23,8 @@ if TYPE_CHECKING:
 
     from clive.__private.models import Asset
 
-ParsedAssetT = TypeVar("ParsedAssetT", bound="Asset.AnyT")
-P = ParamSpec("P")
-R = TypeVar("R")
 
-
-def rename(new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
+def rename[R, **P](new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -40,7 +36,7 @@ def rename(new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     return decorator
 
 
-def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
+def _parse_asset[ParsedAssetT: "Asset.AnyT"](raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
     """
     Parse the liquid asset amount.
 
