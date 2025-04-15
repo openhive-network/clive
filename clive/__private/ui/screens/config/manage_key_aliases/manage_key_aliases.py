@@ -9,7 +9,6 @@ from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -45,6 +44,8 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
     def remove_key_alias(self) -> None:
+        from clive.__private.ui.dialogs import RemoveKeyAliasDialog
+
         self.app.push_screen(RemoveKeyAliasDialog(self._public_key))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
