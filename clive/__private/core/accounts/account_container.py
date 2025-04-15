@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount
 from clive.__private.core.accounts.exceptions import AccountAlreadyExistsError, AccountNotFoundError
@@ -11,10 +11,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
 
-AccountT = TypeVar("AccountT", KnownAccount, WatchedAccount)
-
-
-class AccountContainerBase(ABC, Generic[AccountT]):
+class AccountContainerBase[AccountT: Account](ABC):
     """A container-like object, that controls set of accounts."""
 
     def __init__(self, accounts: Iterable[AccountT] | None = None) -> None:
