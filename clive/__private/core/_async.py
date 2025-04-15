@@ -2,17 +2,15 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core._thread import thread_pool
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
 
-T = TypeVar("T")
 
-
-def asyncio_run(awaitable: Awaitable[T]) -> T:
+def asyncio_run[T](awaitable: Awaitable[T]) -> T:
     """
     Make the coroutine run, even if there is an event loop running (like by using nest_asyncio).
 
