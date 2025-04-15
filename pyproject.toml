@@ -53,7 +53,7 @@ pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.15.0"
-pre-commit = "2.21.0"
+pre-commit = "4.2.0"
 pytest = "8.3.5"
 pytest-asyncio = "0.26.0"
 pytest-xdist = "3.6.1"
