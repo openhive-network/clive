@@ -43,10 +43,8 @@ def test_storage_revision_doesnt_changed() -> None:
 async def test_storage_dir_contains_expected_files() -> None:
     # ARRANGE
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
-    current_revision_symlink = storage_data_dir / "current"
-    revision_dir = storage_data_dir / EXPECTED_REVISION
-    filename = PersistentStorageService.get_profile_filename(FIRST_PROFILE_NAME)
-    profile_json_file = storage_data_dir / revision_dir / filename
+    profile_dir = storage_data_dir / FIRST_PROFILE_NAME
+    profile_file_path = profile_dir / PersistentStorageService.get_current_version_profile_filename()
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
@@ -54,10 +52,6 @@ async def test_storage_dir_contains_expected_files() -> None:
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
-    assert current_revision_symlink.is_symlink(), "Current revision path is not a symlink or is missing."
-    assert revision_dir.is_dir(), "Revision dir is not a directory or is missing."
-    assert current_revision_symlink.resolve() == revision_dir, (
-        "Current revision symlink does not point to the expected revision dir."
-    )
-    assert profile_json_file.is_file(), "Profile JSON file is not a file or is missing."
-    assert profile_json_file.read_text(), "Profile JSON file is empty."
+    assert profile_dir.is_dir(), f"Expected profile directory {profile_dir} is not a directory or is missing."
+    assert profile_file_path.is_file(), "Profile file is not a file or is missing."
+    assert profile_file_path.read_text(), "Profile file is empty."
