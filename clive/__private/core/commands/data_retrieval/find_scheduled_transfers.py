@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final, Literal, Sequence, TypeVar, cast
@@ -159,7 +160,9 @@ class AccountScheduledTransferData:
                     from_=st.from_,
                     memo=st.memo,
                     pair_id=st.pair_id,
-                    possible_amount=ZERO_HIVE_ASSET.copy() if Asset.is_hive(st.amount) else ZERO_HBD_ASSET.copy(),
+                    possible_amount=copy.deepcopy(ZERO_HIVE_ASSET)
+                    if Asset.is_hive(st.amount)
+                    else copy.deepcopy(ZERO_HIVE_ASSET),
                     recurrence=st.recurrence,
                     remaining_executions=remains,
                     to=st.to,

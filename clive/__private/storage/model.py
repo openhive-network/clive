@@ -69,7 +69,7 @@ class ProfileStorageModel(CliveBaseModel, kw_only=True):
     should_enable_known_accounts: bool = True
 
     def __hash__(self) -> int:
-        return hash(self.json(indent=4))
+        return hash(self.json())
 
 
 class AlarmStorageModelSchema(AlarmStorageModel, kw_only=True):

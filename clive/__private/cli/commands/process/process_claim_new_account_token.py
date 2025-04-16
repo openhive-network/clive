@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import errno
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -22,7 +23,11 @@ class ProcessClaimNewAccountToken(OperationCommand):
     async def _create_operation(self) -> ClaimAccountOperation:
         if self.fee == HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION_ASSET:
             raise CLIClaimAccountTokenZeroFeeError
-        fee = self.fee if self.fee is not None else HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION_ASSET.copy()
+        fee = (
+            self.fee
+            if self.fee is not None
+            else copy.deepcopy(HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION_ASSET)
+        )
 
         return ClaimAccountOperation(creator=self.creator, fee=fee)
 

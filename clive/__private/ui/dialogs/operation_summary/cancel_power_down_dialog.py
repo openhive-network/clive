@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
@@ -31,5 +32,5 @@ class CancelPowerDownDialog(OperationSummaryBaseDialog):
     def _create_operation(self) -> WithdrawVestingOperation:
         return WithdrawVestingOperation(
             account=self.profile.accounts.working.name,
-            vesting_shares=POWER_DOWN_REMOVE_ASSET.copy(),
+            vesting_shares=copy.deepcopy(POWER_DOWN_REMOVE_ASSET),
         )

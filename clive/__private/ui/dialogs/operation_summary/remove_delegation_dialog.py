@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node_special_assets import DELEGATION_REMOVE_ASSETS
@@ -42,5 +43,5 @@ class RemoveDelegationDialog(OperationSummaryBaseDialog):
         return DelegateVestingSharesOperation(
             delegator=self.working_account_name,
             delegatee=self._delegation.delegatee,
-            vesting_shares=DELEGATION_REMOVE_ASSETS[1].copy(),
+            vesting_shares=copy.deepcopy(DELEGATION_REMOVE_ASSETS[1]),
         )
