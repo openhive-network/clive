@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
+from clive.__private.models.schemas import Transaction
 from clive.__private.storage.model import ProfileStorageModel
 
 if TYPE_CHECKING:
@@ -43,7 +44,7 @@ class RuntimeToStorageConverter:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
     def _transaction_to_model(self) -> ProfileStorageModel.TransactionStorageModel:
-        transaction_core = ProfileStorageModel.TransactionCoreStorageModel(
+        transaction_core = Transaction(
             operations=deepcopy(self._profile.operation_representations),
             ref_block_num=self._profile.transaction.ref_block_num,
             ref_block_prefix=self._profile.transaction.ref_block_prefix,

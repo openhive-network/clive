@@ -4,7 +4,7 @@ from itertools import pairwise
 from typing import get_type_hints
 
 from clive.__private.storage.migrations.base import ProfileStorageBase
-from clive.__private.storage.migrations.v0 import ProfileStorageModel
+from clive.__private.storage.migrations.v1 import ProfileStorageModel
 
 __all__ = ["ProfileStorageBase", "ProfileStorageModel"]
 
