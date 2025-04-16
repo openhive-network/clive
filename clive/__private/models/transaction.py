@@ -19,6 +19,7 @@ from schemas.operations import convert_to_representation
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
     from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 
 
