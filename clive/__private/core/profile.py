@@ -271,19 +271,21 @@ class Profile:
         return await PersistentStorageService(encryption_service).load_profile(name)
 
     @classmethod
-    def delete_by_name(cls, profile_name: str) -> None:
+    def delete_by_name(cls, profile_name: str, *, force: bool = False) -> None:
         """
         Remove profile with the given name from the storage.
 
         Args:
         ----
             profile_name: Name of the profile to be removed.
+            force: If True, remove all profile versions, also not migrated/backed-up.
+                If False and multiple versions or back-ups exist, raise error.
 
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        PersistentStorageService.delete_profile(profile_name)
+        PersistentStorageService.delete_profile(profile_name, force=force)
 
     @classmethod
     def _create_instance(  # noqa: PLR0913

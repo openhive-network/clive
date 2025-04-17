@@ -122,13 +122,15 @@ class PersistentStorageService:
         return profile
 
     @classmethod
-    def delete_profile(cls, profile_name: str) -> None:
+    def delete_profile(cls, profile_name: str, *, force: bool = False) -> None:
         """
         Remove profile with the given name from the storage.
 
         Args:
         ----
-            profile_name: Name of the profile to be removed.
+            profile_name: Name of the profile to be removed, removes all storage versions.
+            force: If True, remove all profile versions, also not migrated/backed-up.
+                If False and multiple versions exist, raise error.
 
         Raises:
         ------
@@ -140,7 +142,7 @@ class PersistentStorageService:
 
         to_remove = [path for (name, _model), path in filepaths.items() if name == profile_name]
         to_remove.extend([path for (name, _model), path in backup_filepaths.items() if name == profile_name])
-        if len(to_remove) > 1:
+        if not force and len(to_remove) > 1:
             raise MultipleProfileVersionsError(profile_name)
         for path in to_remove:
             path.unlink()
