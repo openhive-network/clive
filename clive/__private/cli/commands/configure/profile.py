@@ -18,9 +18,19 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
+from clive.__private.storage.service import MultipleProfileVersionsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
 from clive.dev import is_in_dev_mode
+
+
+class CLIMultipleProfileVersionsError(CLIPrettyError):
+    def __init__(self, profile_name: str) -> None:
+        message = (
+            f"Multiple versions or backups of profile `{profile_name}` exist."
+            " If you want to remove all, please use the '--force' option."
+        )
+        super().__init__(message, errno.EEXIST)
 
 
 @dataclass(kw_only=True)
@@ -86,6 +96,10 @@ class CreateProfile(BeekeeperBasedCommand):
 @dataclass(kw_only=True)
 class DeleteProfile(ExternalCLICommand):
     profile_name: str
+    force: bool
 
     async def _run(self) -> None:
-        Profile.delete_by_name(self.profile_name)
+        try:
+            Profile.delete_by_name(self.profile_name, force=self.force)
+        except MultipleProfileVersionsError as error:
+            raise CLIMultipleProfileVersionsError(self.profile_name) from error

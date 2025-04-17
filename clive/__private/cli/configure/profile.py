@@ -44,10 +44,17 @@ _profile_name_delete_argument = modified_param(
 async def delete_profile(
     profile_name: str = _profile_name_delete_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
+    force: bool = typer.Option(  # noqa: FBT001
+        default=False,
+        help=(
+            "Remove all profile versions. Will remove also backups and versions compatible with future Clive releases."
+        ),
+    ),
 ) -> None:
     """Delete a profile."""
     from clive.__private.cli.commands.configure.profile import DeleteProfile
 
     await DeleteProfile(
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option),
+        force=force,
     ).run()
