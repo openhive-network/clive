@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, ParamSpec
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 from textual import on
 from textual.events import ScreenResume, ScreenSuspend
 from textual.message import Message
 from textual.screen import Screen
-from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.logger import logger

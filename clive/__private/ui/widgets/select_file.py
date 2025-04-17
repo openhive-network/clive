@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import DirectoryTree, Label
-from typing_extensions import TypeVar
 
 from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.get_css import get_css_from_relative_path
