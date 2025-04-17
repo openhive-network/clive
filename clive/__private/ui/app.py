@@ -19,6 +19,7 @@ from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
+from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
@@ -204,6 +205,7 @@ class Clive(App[int]):
             pause=True,
         )
         self.watch(self.world, "profile_reactive", self.save_profile_in_worker)
+        self.watch(self, "theme", self._update_theme_in_profile)
 
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
@@ -494,6 +496,7 @@ class Clive(App[int]):
             self.notify("Switched to the LOCKED mode due to timeout.", timeout=10)
 
         await self.pause_periodic_intervals()
+        self.theme = DEFAULT_THEME
 
         # There might be ongoing workers that should be cancelled (e.g. DynamicWidget update)
         self._cancel_workers_except_current()
@@ -508,6 +511,7 @@ class Clive(App[int]):
         await self.switch_mode_with_reset("dashboard")
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_periodic_intervals()
+        self.theme = self.world.profile.tui_theme
 
     def _get_current_worker(self) -> Worker[Any] | None:
         try:
@@ -526,3 +530,7 @@ class Clive(App[int]):
         for worker in self.workers:
             if worker.group == group_name and self._get_current_worker() != worker:
                 await worker.wait()
+
+    def _update_theme_in_profile(self, theme: str) -> None:
+        if self.world.is_profile_available:
+            self.world.profile.tui_theme = theme

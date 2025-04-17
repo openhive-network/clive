@@ -37,6 +37,7 @@ class RuntimeToStorageConverter:
             transaction=self._transaction_to_model(),
             chain_id=self._profile.chain_id,
             node_address=str(self._profile.node_address),
+            tui_theme=self._profile.tui_theme,
             should_enable_known_accounts=self._profile.should_enable_known_accounts,
         )
 
