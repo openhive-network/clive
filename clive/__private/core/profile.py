@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final
 from beekeepy.interfaces import HttpUrl
 
 from clive.__private.core.accounts.account_manager import AccountManager
+from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.validate_schema_field import is_schema_field_valid
@@ -63,6 +64,7 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
     ) -> None:
@@ -82,6 +84,7 @@ class Profile:
 
         self._chain_id: str | None = None
         self.set_chain_id(chain_id or self._default_chain_id())
+        self.tui_theme: str = tui_theme
 
         self._skip_save = False
         self._hash_of_stored_profile: int | None = None
@@ -225,6 +228,7 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
     ) -> Profile:
@@ -239,6 +243,7 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
+            tui_theme,
             should_enable_known_accounts=should_enable_known_accounts,
         )
 
@@ -292,6 +297,7 @@ class Profile:
         transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
+        tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
     ) -> Self:
@@ -307,6 +313,7 @@ class Profile:
             transaction_file_path,
             chain_id,
             node_address,
+            tui_theme,
             should_enable_known_accounts=should_enable_known_accounts,
         )
 
