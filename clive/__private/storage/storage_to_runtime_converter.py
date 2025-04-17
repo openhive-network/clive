@@ -34,6 +34,7 @@ class StorageToRuntimeConverter:
             transaction_file_path=self._transaction_file_path_from_storage_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
+            tui_theme=self._model.tui_theme,
             should_enable_known_accounts=self._model.should_enable_known_accounts,
         )
 
