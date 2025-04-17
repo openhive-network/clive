@@ -12,7 +12,7 @@ from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel
 from clive.__private.storage.service import PersistentStorageService
 
-EXPECTED_REVISION: Final[str] = "4e460ebb"
+EXPECTED_REVISION: Final[str] = "76cd0378"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
