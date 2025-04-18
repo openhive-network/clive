@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from contextlib import AbstractContextManager
-from typing import TYPE_CHECKING, Any, Callable, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from clive_local_tools.data.models import WalletInfo
 

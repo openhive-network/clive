@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.accounts.accounts import TrackedAccount
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 def _get_utc_epoch() -> datetime:
-    return datetime.fromtimestamp(0, timezone.utc)
+    return datetime.fromtimestamp(0, UTC)
 
 
 @dataclass

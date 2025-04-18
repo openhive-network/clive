@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, get_args
 
 from beekeepy.exceptions import UnknownDecisionPathError
-from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
@@ -67,9 +66,9 @@ _Statuses = Literal["all", "active", "inactive", "votable", "expired"]
 
 @dataclass(kw_only=True)
 class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ProposalsData]):
-    Orders = TypeAliasType("Orders", _Orders)
-    OrderDirections = TypeAliasType("OrderDirections", _OrderDirections)
-    Statuses = TypeAliasType("Statuses", _Statuses)
+    type Orders = _Orders
+    type OrderDirections = _OrderDirections
+    type Statuses = _Statuses
 
     ORDERS: ClassVar[tuple[Orders, ...]] = get_args(_Orders)
     ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = get_args(_OrderDirections)

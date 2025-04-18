@@ -30,6 +30,6 @@ async def wait_for(
 
     try:
         await asyncio.wait_for(__wait_for(), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         message_ = message if isinstance(message, str) else message()
         raise AssertionError(f"{message_}, wait_for timeout is {timeout:.2f}") from None

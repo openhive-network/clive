@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import partialmethod
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt

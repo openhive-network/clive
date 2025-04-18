@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from textual.reactive import reactive
 from textual.widgets import Static
-from typing_extensions import Literal
 
 SectionTitleVariant = Literal["default", "light", "red"]
 """The names of the valid section title variants."""

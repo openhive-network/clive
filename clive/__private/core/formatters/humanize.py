@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
@@ -125,7 +125,7 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     format_ = TIME_FORMAT_WITH_SECONDS if with_time else TIME_FORMAT_DAYS
     formatted = value.strftime(format_)
     if with_relative_time:
-        return f"{formatted} ({humanize_natural_time(utc_now() - value.astimezone(timezone.utc))})"
+        return f"{formatted} ({humanize_natural_time(utc_now() - value.astimezone(UTC))})"
     return formatted
 
 

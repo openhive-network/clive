@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any, Callable, ClassVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual.widgets import Static
 

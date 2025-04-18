@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast, override
 
 from textual.reactive import var
-from typing_extensions import override
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.app_state import AppState, LockSource
@@ -22,8 +21,7 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable
     from datetime import timedelta
     from types import TracebackType
-
-    from typing_extensions import Self
+    from typing import Self
 
     from clive.__private.core.accounts.accounts import Account
 

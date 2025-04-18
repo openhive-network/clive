@@ -98,7 +98,7 @@ class Unlock(BeekeeperBasedCommand):
         for i in range(PROFILE_SELECTION_ATTEMPTS):
             try:
                 return self._get_selected_profile(options)
-            except CLIInvalidSelectionError:  # noqa: PERF203
+            except CLIInvalidSelectionError:
                 attempts_left = PROFILE_SELECTION_ATTEMPTS - i - 1
                 if attempts_left < 1:
                     raise

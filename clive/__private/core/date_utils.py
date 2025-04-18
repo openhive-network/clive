@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from clive.__private.core.constants.date import SECONDS_IN_HOUR
 
@@ -13,11 +13,11 @@ def is_null_date(value: datetime) -> bool:
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def utc_from_timestamp(timestamp: float) -> datetime:
-    return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    return datetime.fromtimestamp(timestamp, tz=UTC)
 
 
 def utc_epoch() -> datetime:

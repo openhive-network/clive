@@ -11,8 +11,9 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
 
 if TYPE_CHECKING:
+    from typing import Self
+
     from textual.app import ComposeResult
-    from typing_extensions import Self
 
 
 class CheckBoxWithoutFocus(Checkbox):

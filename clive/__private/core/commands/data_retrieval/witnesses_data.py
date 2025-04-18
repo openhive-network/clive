@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from beekeepy.exceptions import UnknownDecisionPathError
-from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
@@ -71,7 +70,7 @@ class WitnessesData:
 
 @dataclass(kw_only=True)
 class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, WitnessesData]):
-    Modes = TypeAliasType("Modes", Literal["search_by_pattern", "search_top_with_voted_first"])
+    type Modes = Literal["search_by_pattern", "search_top_with_voted_first"]
     """
     Available modes for retrieving witnesses data.
 

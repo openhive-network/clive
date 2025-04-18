@@ -4,9 +4,7 @@ import errno
 import inspect
 from abc import ABC, abstractmethod
 from dataclasses import Field, dataclass, field, fields
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError

@@ -79,7 +79,7 @@ async def _wait_for_accounts_data(pilot: ClivePilot) -> None:
 async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
     try:
         await asyncio.wait_for(_wait_for_accounts_data(pilot), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         wait_for_node_data_info = (
             f"Waited too long for the accounts node or alarms data. Hasn't arrived in {timeout:.2f}s."
         )
@@ -111,7 +111,7 @@ async def wait_for_screen(
 
     try:
         await asyncio.wait_for(wait_for_everything(), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         wait_for_focused_info = " or nothing was focused " if wait_for_focused else " "
         raise AssertionError(
             f"Screen didn't changed to '{expected_screen}'{wait_for_focused_info}in {timeout=}s.\n"
@@ -130,7 +130,7 @@ async def wait_for_focus(
     try:
         task = _wait_for_focus(pilot, different_than=different_than)
         await asyncio.wait_for(task, timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         wait_for_focused_info = "or focus not changed " if different_than else " "
         raise AssertionError(
             f"Nothing was focused {wait_for_focused_info}in {timeout=}s.\n"

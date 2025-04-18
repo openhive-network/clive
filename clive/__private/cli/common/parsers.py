@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, get_args
+from typing import TYPE_CHECKING, ParamSpec, TypeVar, get_args
 
 import typer
 

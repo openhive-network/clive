@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import os
 import shutil
+from collections.abc import Callable
 from contextlib import contextmanager
 from functools import wraps
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt

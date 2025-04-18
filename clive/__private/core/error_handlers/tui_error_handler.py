@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, TypeGuard
+from collections.abc import Callable
+from typing import Any, TypeGuard
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
