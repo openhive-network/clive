@@ -39,7 +39,7 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
     *,
     key_description: str | None = None,
     wait_for_focused: bool = True,
-    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
     if isinstance(pilot.app.screen, Dashboard):
@@ -53,7 +53,7 @@ async def press_and_wait_for_focus(
     key: str,
     *,
     key_description: str | None = None,
-    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
     """Press some binding and ensure focus changed after some action."""
     current_focus = pilot.app.focused
@@ -76,7 +76,7 @@ async def _wait_for_accounts_data(pilot: ClivePilot) -> None:
         await pilot.pause(POLL_TIME_SECS)
 
 
-async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
+async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
     try:
         await asyncio.wait_for(_wait_for_accounts_data(pilot), timeout=timeout)
     except TimeoutError:
@@ -98,7 +98,7 @@ async def wait_for_screen(
     expected_screen: type[Screen[Any]],
     *,
     wait_for_focused: bool = True,
-    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
     """Wait for the expected screen to be active."""
 
@@ -124,7 +124,7 @@ async def wait_for_focus(
     pilot: ClivePilot,
     *,
     different_than: Widget | None = None,
-    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
     """See _wait_for_focus."""
     try:
@@ -139,6 +139,6 @@ async def wait_for_focus(
         ) from None
 
 
-async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
+async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
     """Change focus to the next Widget (waits until something new is focused)."""
     await press_and_wait_for_focus(pilot, "tab", timeout=timeout)

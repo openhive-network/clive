@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from contextlib import ExitStack
 from typing import TYPE_CHECKING
 
@@ -27,7 +26,7 @@ from clive_local_tools.testnet_block_log import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator
+    from collections.abc import AsyncGenerator, Callable
 
     import test_tools as tt
 

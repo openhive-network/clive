@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeGuard, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeGuard, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 ExecuteResultT = TypeVar("ExecuteResultT")
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
-AnyErrorHandlerContextManager: TypeAlias = "ErrorHandlerContextManager[Any]"
+type AnyErrorHandlerContextManager = "ErrorHandlerContextManager[Any]"
 
 
 @dataclass

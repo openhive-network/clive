@@ -69,12 +69,12 @@ class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
 
 
 class Asset:
-    Hive: TypeAlias = AssetHiveHF26
-    Hbd: TypeAlias = AssetHbdHF26
-    Vests: TypeAlias = AssetVestsHF26
-    LiquidT: TypeAlias = Hive | Hbd
-    VotingT: TypeAlias = Hive | Vests
-    AnyT: TypeAlias = Hive | Hbd | Vests
+    Hive: TypeAlias = AssetHiveHF26  # noqa: UP040  # used in isinstance check
+    Hbd: TypeAlias = AssetHbdHF26  # noqa: UP040  # used in isinstance check
+    Vests: TypeAlias = AssetVestsHF26  # noqa: UP040  # used in isinstance check
+    LiquidT: TypeAlias = Hive | Hbd  # noqa: UP040  # used in isinstance check
+    VotingT: TypeAlias = Hive | Vests  # noqa: UP040  # used in isinstance check
+    AnyT: TypeAlias = Hive | Hbd | Vests  # noqa: UP040  # used in isinstance check
 
     @classmethod
     def hive(cls, amount: AssetAmount) -> Asset.Hive:

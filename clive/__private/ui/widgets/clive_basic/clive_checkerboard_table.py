@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from textual.containers import Container
 from textual.widget import Widget
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 ContentT = TypeVar("ContentT", bound=Any)
 
-CellContent: TypeAlias = "VisualType | Widget"
+type CellContent = "VisualType | Widget"
 
 
 class CliveCheckerboardTableError(CliveDeveloperError):

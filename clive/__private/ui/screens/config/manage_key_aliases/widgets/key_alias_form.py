@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual.widgets import Static
@@ -16,6 +15,8 @@ from clive.__private.ui.widgets.section import SectionScrollable
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from textual.app import ComposeResult
 
 

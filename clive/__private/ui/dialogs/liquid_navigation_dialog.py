@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
@@ -16,6 +15,8 @@ from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from textual.app import ComposeResult
 
     from clive.__private.ui.clive_widget import CliveWidget

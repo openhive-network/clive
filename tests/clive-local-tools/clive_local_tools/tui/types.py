@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
     from clive.__private.ui.app import Clive as CliveApp  # noqa: TC004
@@ -10,5 +10,5 @@ if TYPE_CHECKING:
 else:
     __all__ = ["LiquidAssetToken", "OperationProcessing"]
 
-LiquidAssetToken: TypeAlias = Literal["HBD", "HIVE"]
-OperationProcessing: TypeAlias = Literal["ADD_TO_CART", "FINALIZE_TRANSACTION"]
+type LiquidAssetToken = Literal["HBD", "HIVE"]
+type OperationProcessing = Literal["ADD_TO_CART", "FINALIZE_TRANSACTION"]

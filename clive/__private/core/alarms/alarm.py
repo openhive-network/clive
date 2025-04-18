@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
 from clive.__private.core.formatters.case import underscore
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 AlarmIdentifierT = TypeVar("AlarmIdentifierT", bound=AlarmIdentifier)
 AlarmDataT = TypeVar("AlarmDataT")
-AnyAlarm: TypeAlias = "Alarm[Any, Any]"
+type AnyAlarm = "Alarm[Any, Any]"
 
 
 class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):

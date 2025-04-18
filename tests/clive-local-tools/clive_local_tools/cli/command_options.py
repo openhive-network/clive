@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from copy import copy, deepcopy
 from pathlib import Path
-from typing import TypeAlias
 
 import test_tools as tt
 
@@ -10,8 +9,8 @@ from clive.__private.models.schemas import PublicKey
 
 from .exceptions import UnsupportedOptionError
 
-StringConvertibleOptionTypes: TypeAlias = str | int | tt.Asset.AnyT | PublicKey | Path
-CliOptionT: TypeAlias = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
+type StringConvertibleOptionTypes = str | int | tt.Asset.AnyT | PublicKey | Path
+type CliOptionT = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
 
 
 def option_to_string(value: StringConvertibleOptionTypes) -> str:

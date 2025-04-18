@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from beekeepy import AsyncSession
 
 
-WalletStatus: TypeAlias = Literal["all", "locked", "unlocked"]
+type WalletStatus = Literal["all", "locked", "unlocked"]
 
 
 @dataclass(kw_only=True)

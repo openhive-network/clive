@@ -37,7 +37,7 @@ async def extract_message_from_notification(
     find_message_cb: Callable[[str], str],
     *,
     search_in_history: bool = True,
-    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> str:
     """
     Will look for a notification containing the expected message and returns it.

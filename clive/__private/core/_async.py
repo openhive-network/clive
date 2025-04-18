@@ -25,7 +25,7 @@ def asyncio_run(awaitable: Awaitable[T]) -> T:
     return thread_pool.submit(asyncio.run, await_for_given_awaitable()).result()
 
 
-async def event_wait(event: asyncio.Event, timeout: float | None = None) -> bool:
+async def event_wait(event: asyncio.Event, timeout: float | None = None) -> bool:  # noqa: ASYNC109
     # suppress TimeoutError because we'll return False in case of timeout
     with contextlib.suppress(asyncio.TimeoutError):
         await asyncio.wait_for(event.wait(), timeout)

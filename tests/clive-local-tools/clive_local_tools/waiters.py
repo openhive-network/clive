@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 async def wait_for(
     condition: Callable[[], bool | Coroutine[Any, Any, bool]],
     message: str | Callable[[], str],
-    timeout: float = 10.0,
+    timeout: float = 10.0,  # noqa: ASYNC109
 ) -> None:
     """
     Wait for a condition to be true.

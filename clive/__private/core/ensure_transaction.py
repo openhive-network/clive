@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, TypeAlias
+from typing import Any
 
 from clive.__private.models import Transaction
 from clive.__private.models.schemas import OperationBase, OperationUnion
 
-TransactionConvertibleType: TypeAlias = OperationBase | Iterable[OperationBase] | Transaction
+type TransactionConvertibleType = OperationBase | Iterable[OperationBase] | Transaction
 
 
 def ensure_transaction(content: TransactionConvertibleType) -> Transaction:

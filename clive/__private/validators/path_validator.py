@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Literal, TypeAlias
+from typing import TYPE_CHECKING, Final, Literal
 
 from textual.validation import Function, ValidationResult, Validator
 
@@ -23,7 +23,7 @@ class PathValidator(Validator):
     NOT_A_FILE_OR_CANT_BE_FILE_FAILURE_DESC: Final[str] = "Path is not a file or can't be a file."
     NOT_A_DIRECTORY_OR_CANT_BE_DIRECTORY_FAILURE_DESC: Final[str] = "Path is not a directory or can't be a directory."
 
-    Modes: TypeAlias = Literal[
+    type Modes = Literal[
         "is_valid",
         "exists",
         "is_file",

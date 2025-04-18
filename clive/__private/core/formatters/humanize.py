@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal
 
 import humanize
 import inflection
@@ -48,7 +48,7 @@ def _round_to_precision(data: Decimal, precision: int) -> Decimal:
     return DecimalConverter.round_to_precision(data, precision=precision)
 
 
-SignPrefixT: TypeAlias = Literal["", "+", "-"]
+type SignPrefixT = Literal["", "+", "-"]
 
 
 def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:

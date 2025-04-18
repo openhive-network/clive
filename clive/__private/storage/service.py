@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, TypeAlias
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
 from clive.__private.core.commands.decrypt import CommandDecryptError
@@ -54,7 +54,7 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 class PersistentStorageService:
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
 
-    ProfileNameToPath: TypeAlias = dict[str, Path]
+    type ProfileNameToPath = dict[str, Path]
 
     def __init__(self, encryption_service: EncryptionService) -> None:
         self._encryption_service = encryption_service
