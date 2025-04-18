@@ -70,7 +70,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         Validate operations from callback result. If any of them is invalid, notifies the user and returns None.
 
-        First it checks for any unhandled ValidationError (which may lead to app crash) from pydantic
+        First it checks for any unhandled ValidationError (which may lead to app crash) from msgspec
         and then performs a wax validation.
 
         Args:
