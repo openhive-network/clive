@@ -69,10 +69,8 @@ class Account:
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """
-        try:
-            is_matching_model(name, AccountName)
-        except Exception as error:
-            raise InvalidAccountNameError(name) from error
+        if not is_matching_model(name, AccountName):
+            raise InvalidAccountNameError(name)
 
     @classmethod
     def is_valid(cls, name: str) -> bool:
