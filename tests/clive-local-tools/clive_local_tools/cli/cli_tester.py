@@ -514,3 +514,9 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "remove"], **extract_params(locals())
         )
+
+    def show_profiles(self) -> Result:
+        return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
+
+    def configure_profile_remove(self, *, profile_name: str, force: bool | None = None) -> Result:
+        return self.__invoke_command_with_options(["configure", "profile", "remove"], **extract_params(locals()))
