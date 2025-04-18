@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Final
 
+import pytest
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
 
@@ -10,9 +11,11 @@ from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service import ModelDoesNotExistsError, PersistentStorageService
 
-EXPECTED_REVISION: Final[str] = "76cd0378"
+PROFILE_FILE_LIST: Final[tuple[str, ...]] = ("alice/v0.profile", "alice/v1.profile", "alice/v2.profile")
+EXPECTED_REVISION_LIST: Final[tuple[str, ...]] = ("ffc97b51", "a721f943", "9c46df0c")
+EXPECTED_REVISION: Final[str] = EXPECTED_REVISION_LIST[-1]
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -55,3 +58,31 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert profile_dir.is_dir(), f"Expected profile directory {profile_dir} is not a directory or is missing."
     assert profile_file_path.is_file(), "Profile file is not a file or is missing."
     assert profile_file_path.read_text(), "Profile file is empty."
+
+
+@pytest.mark.parametrize(("file_name", "expected_hash"), zip(PROFILE_FILE_LIST, EXPECTED_REVISION_LIST, strict=True))
+async def test_storage_revision_doesnt_changed_in_knwon_versions(file_name: str, expected_hash: str) -> None:
+    # ARRANGE
+    info_message = (
+        "Revision hash in older storage versions shouldn't change, it means older storage"
+        " versions may not be loaded properly, if you are sure this is expected check tests with"
+        " loading of first profile revision including profile with transaction or alarms"
+    )
+    storage_data_dir = tt.context.get_current_directory() / "clive/data"
+    profile_path = storage_data_dir / file_name
+
+    # ACT & ASSERT
+    model_cls = PersistentStorageService._model_cls_from_path(profile_path)
+    actual_hash = model_cls.calculate_storage_model_revision()
+    assert actual_hash == expected_hash, f"{actual_hash=} {expected_hash=}\n{info_message}"
+
+
+@pytest.mark.parametrize("file_name", ["vv1.profile", "v1.backup", "v2.2profile", "v2.2.profile"])
+async def test_profile_name_invalid(file_name: str) -> None:
+    # ARRANGE
+    storage_data_dir = tt.context.get_current_directory() / "clive/data"
+    profile_path = storage_data_dir / "alice" / file_name
+
+    # ACT & ASSERT
+    with pytest.raises(ModelDoesNotExistsError, match="Model not found"):
+        PersistentStorageService._model_cls_from_path(profile_path)
