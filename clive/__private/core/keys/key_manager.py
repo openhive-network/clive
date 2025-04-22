@@ -27,6 +27,13 @@ class KeyNotFoundError(KeyManagerError):
         super().__init__(self.message)
 
 
+class ValueNotFoundError(KeyManagerError):
+    def __init__(self, value: str) -> None:
+        self.value = value
+        self.message = f"Key with value '{value}' not found."
+        super().__init__(self.message)
+
+
 class KeyManager:
     """A container-like object, that manages a number of keys, which you iterate over to see all the public keys."""
 
@@ -65,6 +72,12 @@ class KeyManager:
             if key.alias == alias:
                 return key
         raise KeyNotFoundError(alias)
+
+    def get_alias_from_value(self, value: str) -> str:
+        for key in self.__keys:
+            if key.value == value:
+                return key.alias
+        raise ValueNotFoundError(value)
 
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
