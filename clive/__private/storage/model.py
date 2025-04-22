@@ -108,4 +108,4 @@ def get_storage_model_schema_json() -> str:
 
 
 def calculate_storage_model_revision() -> str:
-    return sha256(get_storage_model_schema_json().encode("utf-8")).hexdigest()[:8]
+    return sha256(get_storage_model_schema_json().encode()).hexdigest()[:8]
