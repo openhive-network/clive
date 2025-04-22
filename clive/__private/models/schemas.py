@@ -14,7 +14,6 @@ E.g. VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVe
 has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 """
 
-# ruff: noqa
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
@@ -104,6 +103,8 @@ from schemas.operations import (
     EscrowReleaseOperation,
     EscrowTransferOperation,
     FeedPublishOperation,
+    Hf26OperationRepresentation,
+    Hf26Operations,
     LimitOrderCancelOperation,
     LimitOrderCreate2Operation,
     LimitOrderCreateOperation,
@@ -126,13 +127,11 @@ from schemas.operations import (
     WitnessBlockApproveOperation,
     WitnessSetPropertiesOperation,
     WitnessUpdateOperation,
-    Hf26OperationRepresentation,
-    Hf26Operations,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
+from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperation
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
 from schemas.operations.representation_types import HF26Representation
-from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
 from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
 from schemas.transaction import Transaction
@@ -280,7 +279,6 @@ __all__ = [
     "JSONRPCRequest",
     "Witness",
     # other
-    "convert_to_representation",
     "RepresentationBase",
     "Serializable",
 ]
