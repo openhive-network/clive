@@ -8,7 +8,6 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models.schemas import OperationRepresentationBase, OperationUnion
 from clive.exceptions import CliveError
 from schemas.decoders import get_hf26_decoder
 from schemas.encoders import get_hf26_encoder
@@ -21,7 +20,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models import Asset, Transaction
-    from clive.__private.models.schemas import PriceFeed
+    from clive.__private.models.schemas import OperationRepresentationBase, OperationUnion, PriceFeed
 
 T = TypeVar("T")
 F = TypeVar("F", bound=Callable[..., Any])
@@ -98,13 +97,6 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
         item_repr: OperationRepresentationBase = convert_to_representation(item)
 
     if isinstance(item, Transaction):
-        operations_representations = []
-        for operation in item.operations:
-            if isinstance(operation, OperationUnion):  # weryfikacja
-                operations_representations.append(convert_to_representation(operation))
-            else:
-                operations_representations.append(operation)
-        item.operations = operations_representations
         return get_hf26_encoder().encode(item)
 
     return item_repr.json().encode()
