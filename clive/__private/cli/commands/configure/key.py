@@ -83,7 +83,7 @@ class RemoveKey(WorldBasedCommand):
 
     async def _run(self) -> None:
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
-        public_key = self.profile.keys.get(self.alias)
+        public_key = self.profile.keys.get_from_alias(self.alias)
         self.__remove_key_association_from_the_profile(public_key)
         if self.from_beekeeper:
             await self.__remove_key_from_the_beekeeper(public_key)

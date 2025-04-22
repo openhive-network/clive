@@ -60,11 +60,21 @@ class KeyManager:
     def is_alias_available(self, alias: str) -> bool:
         return self._is_public_alias_available(alias) and self._is_key_to_import_alias_available(alias)
 
-    def get(self, alias: str) -> PublicKeyAliased:
+    def get_all_aliases(self) -> list[str]:
+        return [aliased_key.alias for aliased_key in self.__keys]
+
+    def get_from_alias(self, alias: str) -> PublicKeyAliased:
         for key in self.__keys:
             if key.alias == alias:
                 return key
         raise KeyNotFoundError(alias)
+
+    def get_from_public_key(self, value: str | PublicKey) -> PublicKeyAliased:
+        value = value if isinstance(value, str) else value.value
+        for key in self.__keys:
+            if key.value == value:
+                return key
+        raise KeyNotFoundError
 
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
