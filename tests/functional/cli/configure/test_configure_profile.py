@@ -31,7 +31,7 @@ async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -
     profile_name = "three"
 
     # ACT
-    cli_tester_locked.configure_profile_remove(profile_name=profile_name)
+    cli_tester_locked.configure_profile_delete(profile_name=profile_name)
 
     # ASSERT
     result = cli_tester_locked.show_profiles()
@@ -43,7 +43,7 @@ async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
     profile_name = "one"
 
     # ACT
-    cli_tester_locked.configure_profile_remove(profile_name=profile_name, force=True)
+    cli_tester_locked.configure_profile_delete(profile_name=profile_name, force=True)
 
     # ASSERT
     result = cli_tester_locked.show_profiles()
@@ -60,4 +60,4 @@ async def test_try_remove_profile_without_force(cli_tester_locked: CLITester) ->
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_locked.configure_profile_remove(profile_name=profile_name)
+        cli_tester_locked.configure_profile_delete(profile_name=profile_name)

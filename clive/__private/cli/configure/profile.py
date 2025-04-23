@@ -16,7 +16,7 @@ _profile_name_create_argument = typer.Argument(
 )
 
 
-@profile.command(name="add")
+@profile.command(name="create")
 async def create_profile(
     profile_name: str | None = _profile_name_create_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
@@ -40,7 +40,7 @@ _profile_name_delete_argument = modified_param(
 )
 
 
-@profile.command(name="remove")
+@profile.command(name="delete")
 async def delete_profile(
     profile_name: str = _profile_name_delete_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
