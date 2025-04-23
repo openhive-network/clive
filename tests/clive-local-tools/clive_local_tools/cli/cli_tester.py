@@ -432,7 +432,7 @@ class CLITester:
     def configure_known_account_disable(self) -> Result:
         return self.__invoke_command_with_options(["configure", "known-account", "disable"], **extract_params(locals()))
 
-    def configure_profile_add(
+    def configure_profile_create(
         self,
         *,
         profile_name: str | None = None,
@@ -441,7 +441,7 @@ class CLITester:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(
-            ["configure", "profile", "add"], password_stdin, **extract_params(named_params)
+            ["configure", "profile", "create"], password_stdin, **extract_params(named_params)
         )
 
     def process_proxy_set(
@@ -518,5 +518,5 @@ class CLITester:
     def show_profiles(self) -> Result:
         return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
 
-    def configure_profile_remove(self, *, profile_name: str, force: bool | None = None) -> Result:
-        return self.__invoke_command_with_options(["configure", "profile", "remove"], **extract_params(locals()))
+    def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
+        return self.__invoke_command_with_options(["configure", "profile", "delete"], **extract_params(locals()))

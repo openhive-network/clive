@@ -63,7 +63,7 @@ async def test_configure_known_account_remove_not_known_account(cli_tester: CLIT
 async def test_if_known_account_enable_is_set_by_default(cli_tester_locked: CLITester) -> None:
     # ARRANGE
     profile_name = "KnownAccountEnabled"
-    cli_tester_locked.configure_profile_add(profile_name=profile_name, password_stdin=profile_name)
+    cli_tester_locked.configure_profile_create(profile_name=profile_name, password_stdin=profile_name)
     await cli_tester_locked.world.load_profile_based_on_beekepeer()
     profile_checker = ProfileAccountsChecker(
         cli_tester_locked.world.profile.name, cli_tester_locked.world.beekeeper_manager._content

@@ -129,8 +129,8 @@ flowchart LR
 
     subgraph Configuration[Configuration related commands]
         Configure(configure) --> ConfigureProfile(profile)
-        ConfigureProfile --> CreateProfile[add]
-        ConfigureProfile --> DeleteProfile[remove]
+        ConfigureProfile --> CreateProfile[create]
+        ConfigureProfile --> DeleteProfile[delete]
 
         Configure --> ConfigureTrackedAccount(tracked-account)
         ConfigureTrackedAccount --> AddTrackedAccount[add]
