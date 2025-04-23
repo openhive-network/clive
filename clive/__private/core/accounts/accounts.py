@@ -41,7 +41,7 @@ To check if your account data is available, use the `is_node_data_available` pro
 class AccountAlarmsTooEarlyAccessError(AccountError):
     _MESSAGE = """
 You are trying to access account alarms too early.
-To check if your account alarms are available, use the `is_account_alarms_available` property.
+To check if your account alarms are available, use the `is_alarms_data_available` property.
 """
 
     def __init__(self) -> None:
