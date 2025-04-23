@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -40,7 +39,7 @@ class ProcessDelegations(OperationCommand):
 
 @dataclass(kw_only=True)
 class ProcessDelegationsRemove(ProcessDelegations):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: copy.deepcopy(DELEGATION_REMOVE_ASSETS[1]))
+    amount: Asset.VotingT = field(init=False, default_factory=lambda: DELEGATION_REMOVE_ASSETS[1].copy())
 
     async def _validate_amount(self) -> None:
         """Skip the amount validation as it is already set."""

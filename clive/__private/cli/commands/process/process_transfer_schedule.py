@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 from abc import ABC
 from dataclasses import dataclass, field
 from datetime import timedelta
@@ -187,7 +186,7 @@ class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
-            amount=copy.deepcopy(SCHEDULED_TRANSFER_REMOVE_ASSETS[0]),
+            amount=SCHEDULED_TRANSFER_REMOVE_ASSETS[0].copy(),
             memo=self.scheduled_transfer_ensure.memo,
             recurrence=self.scheduled_transfer_ensure.recurrence,
             # We can't rewrite the executions value.

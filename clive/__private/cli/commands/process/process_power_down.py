@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass, field
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
@@ -40,4 +39,4 @@ class ProcessPowerDownStart(ProcessPowerDown):
 
 @dataclass(kw_only=True)
 class ProcessPowerDownCancel(ProcessPowerDown):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: copy.deepcopy(POWER_DOWN_REMOVE_ASSET))
+    amount: Asset.VotingT = field(init=False, default_factory=lambda: POWER_DOWN_REMOVE_ASSET.copy())
