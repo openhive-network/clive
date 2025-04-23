@@ -29,7 +29,7 @@ async def create_and_save_profile(profile_name: str) -> None:
         ).execute()
 
 
-def test_storage_revision_doesnt_changed() -> None:
+def test_storage_revision_doesnt_changed_for_latest_version() -> None:
     # ACT
     actual_revision = ProfileStorageModel.calculate_storage_model_revision()
 
