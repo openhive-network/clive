@@ -26,7 +26,6 @@ class ShowPendingPowerUps(WorldBasedCommand):
         console = Console()
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
-        assert delayed_votes is not None, "Delayed votes are None"
 
         if len(delayed_votes) == 0:
             message = (
