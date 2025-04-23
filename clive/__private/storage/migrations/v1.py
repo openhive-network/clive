@@ -1,6 +1,5 @@
-from __future__ import annotations
-
-from pathlib import Path  # noqa: TC003
+# noqa: I002
+from pathlib import Path
 from typing import ClassVar, TypeAlias
 
 from clive.__private.models.base import CliveBaseModel
@@ -19,7 +18,7 @@ class ProfileStorageModel(v0.ProfileStorageModel):
     TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
 
     @staticmethod
-    def upgrade(old: v0.ProfileStorageModel) -> ProfileStorageModel:
+    def upgrade(old: v0.ProfileStorageModel) -> "ProfileStorageModel":
         transaction = (
             TransactionStorageModel(
                 transaction_core=Transaction(

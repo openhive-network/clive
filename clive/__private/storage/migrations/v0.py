@@ -1,11 +1,10 @@
-from __future__ import annotations
-
-from collections.abc import Sequence  # noqa: TC003
+# noqa: I002
+from collections.abc import Sequence
 from datetime import UTC, datetime
-from pathlib import Path  # noqa: TC003
+from pathlib import Path
 from typing import Any, ClassVar, TypeAlias
 
-from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TC001
+from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -28,11 +27,6 @@ class TrackedAccountStorageModel(CliveBaseModel):
     alarms: Sequence[AlarmStorageModel] = []
 
 
-class KeyAliasStorageModel(CliveBaseModel):
-    alias: str
-    public_key: str
-
-
 class TransactionCoreStorageModel(CliveBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = HiveInt(-1)
@@ -48,6 +42,10 @@ class TransactionStorageModel(CliveBaseModel):
 
 
 class ProfileStorageModel(ProfileStorageBase):
+    class KeyAliasStorageModel(CliveBaseModel):
+        alias: str
+        public_key: str
+
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
@@ -60,6 +58,5 @@ class ProfileStorageModel(ProfileStorageBase):
 
     AlarmStorageModel: ClassVar[TypeAlias] = AlarmStorageModel
     TrackedAccountStorageModel: ClassVar[TypeAlias] = TrackedAccountStorageModel
-    KeyAliasStorageModel: ClassVar[TypeAlias] = KeyAliasStorageModel
     TransactionCoreStorageModel: ClassVar[TypeAlias] = TransactionCoreStorageModel
     TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
