@@ -340,3 +340,7 @@ class AccountManager:
             AccountNotFoundError: If given account wasn't found.
         """
         return self.known.get(account_to_get)
+
+    def get_bad_accounts(self) -> list[str]:
+        """Get list of all bad accounts names."""
+        return self.BAD_ACCOUNT_NAMES
