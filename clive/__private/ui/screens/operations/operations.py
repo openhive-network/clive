@@ -24,10 +24,11 @@ if TYPE_CHECKING:
 
 
 class OperationButton(OneLineButton):
-    def __init__(
-        self, label: TextType, operation_screen: type[OperationBaseScreen], classes: str | None = None
-    ) -> None:
-        super().__init__(label, classes=f"operation-button {classes}")
+    class Pressed(OneLineButton.Pressed):
+        """Used to identify exactly that OperationButton was pressed."""
+
+    def __init__(self, label: TextType, operation_screen: type[OperationBaseScreen]) -> None:
+        super().__init__(label)
         self._operation_screen = operation_screen
 
     def create_operation_screen(self) -> OperationBaseScreen:
@@ -39,9 +40,8 @@ class GovernanceOperationButton(OperationButton):
         self,
         label: TextType,
         governance_initial_tab: GovernanceTabType,
-        classes: str | None = None,
     ) -> None:
-        super().__init__(label, Governance, classes=classes)
+        super().__init__(label, Governance)
         self._governance_initial_tab = governance_initial_tab
 
     def create_operation_screen(self) -> Governance:
@@ -65,16 +65,16 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
         yield BigTitle("operations")
         with ScrollablePart():
             with Section(title="Financial"):
-                yield OperationButton("Transfer", TransferToAccount, "first-in-section")
+                yield OperationButton("Transfer", TransferToAccount)
                 yield OperationButton("Savings", Savings)
                 yield OperationButton("Hive power management", HivePowerManagement)
                 yield NotImplementedYetButton("Convert")
             with Section(title="Governance"):
-                yield GovernanceOperationButton("Set/Remove proxy", "proxy", "first-in-section")
+                yield GovernanceOperationButton("Set/Remove proxy", "proxy")
                 yield GovernanceOperationButton("Vote/Unvote witnesses", "witnesses")
                 yield GovernanceOperationButton("Vote/Unvote proposals", "proposals")
 
-    @on(OperationButton.Pressed, ".operation-button")
+    @on(OperationButton.Pressed)
     def push_operation_screen(self, event: OperationButton.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
         self.app.push_screen(button.create_operation_screen())

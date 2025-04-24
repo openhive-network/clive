@@ -1,19 +1,19 @@
 Operations {
-  OperationButton,
-  NotImplementedYetButton {
-    margin: 1 2 0 2;
-    width: 40%;
-  }
-
   Section {
     margin: 1 2 0 2;
 
     SectionBody {
       align-horizontal: center;
-    }
 
-    .first-in-section {
-      margin: 0 2;
+      OperationButton,
+      NotImplementedYetButton {
+        margin-top: 1;
+        width: 40%;
+      }
+
+      OperationButton:first-of-type {
+        margin-top: 0;
+      }
     }
   }
 }
