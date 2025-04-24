@@ -16,6 +16,9 @@ if TYPE_CHECKING:
 class GenerousButton(CliveButton):
     """Button that fill the related input with the entire selected asset balance."""
 
+    class Pressed(CliveButton.Pressed):
+        """Used to identify exactly that GenerousButton was pressed."""
+
     DEFAULT_CSS = """
     GenerousButton {
         min-width: 14;
@@ -31,11 +34,11 @@ class GenerousButton(CliveButton):
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
-        super().__init__(label="All!", variant="success", id_=id_, classes=f"generous-button {classes}")
+        super().__init__(label="All!", variant="success", id_=id_, classes=classes)
         self._related_input = related_input
         self._amount_callback = amount_callback
 
-    @on(CliveButton.Pressed, ".generous-button")
+    @on(Pressed)
     def fill_input_by_all(self) -> None:
         """If the balance is not 0, fill the related input with the entire selected asset balance."""
         if int(self._amount_callback().amount) == 0:
