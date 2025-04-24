@@ -20,6 +20,7 @@ from clive.__private.models.schemas import Transaction as SchemasTransaction
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 
 
@@ -101,6 +102,22 @@ class Transaction(SchemasTransaction):
         """Accept a visitor and apply it to all operations in the transaction."""
         for operation in self.operations_models:
             visitor.visit(operation)
+
+    def get_bad_accounts(self, bad_accounts: Iterable[str]) -> list[str]:
+        """Return all accounts names from transaction that are considered as bad account."""
+        from clive.__private.visitors.operation.potential_bad_account_collector import PotentialBadAccountCollector
+
+        visitor = PotentialBadAccountCollector()
+        self.accept(visitor)
+        return visitor.get_bad_accounts(bad_accounts)
+
+    def get_unknown_accounts(self, already_known_accounts: Iterable[KnownAccount]) -> list[str]:
+        """Return all unknown accounts names from transaction."""
+        from clive.__private.visitors.operation.potential_known_account_collector import PotentialKnownAccountCollector
+
+        visitor = PotentialKnownAccountCollector()
+        self.accept(visitor)
+        return visitor.get_unknown_accounts(already_known_accounts)
 
 
 class TransactionWithHash(Transaction):
