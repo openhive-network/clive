@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
@@ -37,7 +37,7 @@ def _load_bad_accounts_from_file() -> list[str]:
 class AccountManager:
     """Class for storing and managing accounts."""
 
-    BAD_ACCOUNT_NAMES: Final[list[str]] = _load_bad_accounts_from_file()
+    _BAD_ACCOUNT_NAMES: ClassVar[list[str] | None] = None
 
     def __init__(
         self,
@@ -150,9 +150,16 @@ class AccountManager:
         return account_name in [tracked_account.name for tracked_account in self.tracked]
 
     @classmethod
+    def get_bad_accounts(cls) -> list[str]:
+        """Get list of all bad accounts names."""
+        if cls._BAD_ACCOUNT_NAMES is None:
+            cls._BAD_ACCOUNT_NAMES = _load_bad_accounts_from_file()
+        return cls._BAD_ACCOUNT_NAMES
+
+    @classmethod
     def is_account_bad(cls, account: str | Account) -> bool:
         account_name = Account.ensure_account_name(account)
-        return account_name in cls.BAD_ACCOUNT_NAMES
+        return account_name in cls.get_bad_accounts()
 
     def set_working_account(self, value: str | Account) -> None:
         """

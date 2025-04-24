@@ -78,7 +78,7 @@ class BadAccountsTable(CliveCheckerboardTable):
             ),
         )
         self._current_page_index = self.FIRST_PAGE_INDEX
-        self._bad_account_names = AccountManager.BAD_ACCOUNT_NAMES
+        self._bad_account_names = AccountManager.get_bad_accounts()
         """Stored in the attribute as it changes in search mode."""
         self._last_page_index = self._get_last_page_index()
         """It is not stored as a final value because it can be dynamically changed with the `_accounts_list`."""
@@ -121,13 +121,13 @@ class BadAccountsTable(CliveCheckerboardTable):
     async def set_search_mode(self, pattern: str) -> None:
         pattern = rf"^{pattern}"
         self._bad_account_names = [
-            account for account in AccountManager.BAD_ACCOUNT_NAMES if re.match(pattern, account)
+            account for account in AccountManager.get_bad_accounts() if re.match(pattern, account)
         ]
 
         await self._reset_table()
 
     async def set_full_list_mode(self) -> None:
-        self._bad_account_names = AccountManager.BAD_ACCOUNT_NAMES
+        self._bad_account_names = AccountManager.get_bad_accounts()
 
         await self._reset_table()
 
