@@ -13,6 +13,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
+    CLITransactionBadAccountError,
     CLITransactionNotSignedError,
     CLITransactionUnknownAccountError,
 )
@@ -21,7 +22,6 @@ from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.validators.path_validator import PathValidator
-from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 
 if TYPE_CHECKING:
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -53,6 +53,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
+        await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
         await super().validate_inside_context_manager()
@@ -106,12 +107,16 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
-        visitor = PotentialKnownAccountCollector()
         transaction_ensured = await self.get_transaction()
-        transaction_ensured.accept(visitor)
-        unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
+        unknown_accounts = transaction_ensured.get_unknown_accounts(self.profile.accounts.known)
         if unknown_accounts:
             raise CLITransactionUnknownAccountError(*unknown_accounts)
+
+    async def _validate_bad_accounts(self) -> None:
+        transaction_ensured = await self.get_transaction()
+        bad_accounts = transaction_ensured.get_bad_accounts(self.profile.accounts.get_bad_accounts())
+        if bad_accounts:
+            raise CLITransactionBadAccountError(*bad_accounts)
 
     def _get_transaction_created_message(self) -> str:
         return "created"
