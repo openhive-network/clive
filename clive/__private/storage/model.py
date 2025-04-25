@@ -11,8 +11,8 @@ __all__ = ["ProfileStorageBase", "ProfileStorageModel"]
 
 def apply_all_migrations(old_instance: ProfileStorageBase) -> ProfileStorageModel:
     new_instance = old_instance
-    for model_cls in ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP.values():
-        if new_instance.get_this_version_number() < model_cls.get_this_version_number():
+    for model_cls in ProfileStorageBase._REVISION_TO_MODEL_TYPE_MAP.values():
+        if new_instance.get_this_version() < model_cls.get_this_version():
             new_instance = model_cls.upgrade(new_instance)  # type: ignore[attr-defined]  # attribute existence validated at import time
     message = (
         f"After applying all migrations there should be last model of storage, actual model is {type(new_instance)}."
@@ -22,9 +22,9 @@ def apply_all_migrations(old_instance: ProfileStorageBase) -> ProfileStorageMode
 
 
 def _validate_model_upgrades() -> None:
-    for prev_hash, this_hash in pairwise(ProfileStorageBase.REVISIONS):
-        prev_cls = ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP[prev_hash]
-        this_cls = ProfileStorageBase.REVISION_TO_MODEL_TYPE_MAP[this_hash]
+    for prev_hash, this_hash in pairwise(ProfileStorageBase.get_revisions()):
+        prev_cls = ProfileStorageBase.get_model_cls_for_revision(prev_hash)
+        this_cls = ProfileStorageBase.get_model_cls_for_revision(this_hash)
         assert hasattr(this_cls, "upgrade"), f"Upgrade function should be defined for {this_cls}, but it is not."
         hints = get_type_hints(this_cls.upgrade)
         assert hints["old"] is prev_cls, (
@@ -36,9 +36,9 @@ def _validate_model_upgrades() -> None:
 
 
 def _validate_model_alias() -> None:
-    assert ProfileStorageModel is ProfileStorageBase.get_current_model_cls(), (
-        f"ProfileStorageModel should be alias to newest model, but it is {ProfileStorageModel} instead."
-    )
+    assert ProfileStorageModel is ProfileStorageBase.get_model_cls_for_revision(
+        ProfileStorageBase.get_latest_revision()
+    ), f"ProfileStorageModel should be alias to newest model, but it is {ProfileStorageModel} instead."
 
 
 _validate_model_upgrades()
