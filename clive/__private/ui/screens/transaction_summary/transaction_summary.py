@@ -273,6 +273,9 @@ class TransactionSummary(BaseScreen):
         self.profile.transaction.accept(visitor)
         unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
         self.profile.accounts.add_known_account(*unknown_accounts)
+        if unknown_accounts:
+            accounts = ", ".join(unknown_accounts)
+            self.notify(f"New accounts have been added to the list of known accounts: {accounts}.")
 
     async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
         if result is None:
