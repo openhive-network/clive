@@ -11,7 +11,7 @@ from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel
-from clive.__private.storage.service import ModelDoesNotExistsError, PersistentStorageService
+from clive.__private.storage.service import PersistentStorageService
 
 PROFILE_FILE_LIST: Final[tuple[str, ...]] = ("alice/v0.profile", "alice/v1.profile", "alice/v2.profile")
 EXPECTED_REVISION_LIST: Final[tuple[str, ...]] = ("ffc97b51", "a721f943", "9c46df0c")
@@ -70,6 +70,8 @@ async def test_storage_revision_doesnt_changed_in_knwon_versions(file_name: str,
     )
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     profile_path = storage_data_dir / file_name
+    profile_path.parent.mkdir(parents=True)
+    profile_path.touch()
 
     # ACT & ASSERT
     model_cls = PersistentStorageService._model_cls_from_path(profile_path)
@@ -82,7 +84,6 @@ async def test_profile_name_invalid(file_name: str) -> None:
     # ARRANGE
     storage_data_dir = tt.context.get_current_directory() / "clive/data"
     profile_path = storage_data_dir / file_name
-
     # ACT & ASSERT
-    with pytest.raises(ModelDoesNotExistsError, match="Model not found"):
+    with pytest.raises(AssertionError, match=f"Looks like {profile_path} is not a profile file."):
         PersistentStorageService._model_cls_from_path(profile_path)
