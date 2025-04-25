@@ -4,8 +4,12 @@ from pathlib import Path  # noqa: TC003
 from typing import ClassVar, Self, TypeAlias
 
 from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import Transaction
+from clive.__private.models.schemas import Transaction as SchemasTransaction
 from clive.__private.storage.migrations import v0
+
+
+class Transaction(SchemasTransaction):
+    __modify_schema__ = v0.TransactionCoreStorageModel.__modify_schema__
 
 
 class TransactionStorageModel(CliveBaseModel):

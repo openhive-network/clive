@@ -52,6 +52,10 @@ class TransactionCoreStorageModel(CliveBaseModel):
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
 
+    @classmethod
+    def __modify_schema__(cls, field_schema: dict[str, Any]) -> None:
+        field_schema.update({"type": "object", "description": "This should not be included in revision calculation"})
+
 
 class TransactionStorageModel(CliveBaseModel):
     transaction_core: TransactionCoreStorageModel
