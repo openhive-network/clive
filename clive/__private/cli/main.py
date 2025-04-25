@@ -38,12 +38,11 @@ def main(
 ) -> None:
     if version:
         from clive import __version__
-        from clive.__private.storage.model import ProfileStorageBase
+        from clive.__private.storage.model import ProfileStorageModel
 
         typer.echo(f"Clive version: {__version__}")
-        storage_model_cls = ProfileStorageBase.get_current_model_cls()
-        typer.echo(f"Storage model revision: {storage_model_cls.calculate_storage_model_revision()}")
-        typer.echo(f"Storage model version: {storage_model_cls.get_current_version_number()}")
+        typer.echo(f"Storage model revision: {ProfileStorageModel.get_this_revision()}")
+        typer.echo(f"Storage model version: {ProfileStorageModel.get_this_version()}")
 
 
 _profile_name_unlock_argument = typer.Argument(

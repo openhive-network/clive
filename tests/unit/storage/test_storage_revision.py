@@ -34,7 +34,7 @@ async def create_and_save_profile(profile_name: str) -> None:
 
 def test_storage_revision_doesnt_changed_for_latest_version() -> None:
     # ACT
-    actual_revision = ProfileStorageModel.calculate_storage_model_revision()
+    actual_revision = ProfileStorageModel.get_this_revision()
 
     # ASSERT
     message = (
@@ -73,7 +73,7 @@ async def test_storage_revision_doesnt_changed_in_knwon_versions(file_name: str,
 
     # ACT & ASSERT
     model_cls = PersistentStorageService._model_cls_from_path(profile_path)
-    actual_hash = model_cls.calculate_storage_model_revision()
+    actual_hash = model_cls.get_this_revision()
     assert actual_hash == expected_hash, f"{actual_hash=} {expected_hash=}\n{info_message}"
 
 

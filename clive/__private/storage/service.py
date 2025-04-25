@@ -78,7 +78,7 @@ class PersistentStorageService:
         model_cls: type[ProfileStorageBase]
 
         def version(self) -> int:
-            return self.model_cls.get_this_version_number()
+            return self.model_cls.get_this_version()
 
     type ProfileNameModelToPath = dict[ProfileNameModel, Path]
 
@@ -180,7 +180,7 @@ class PersistentStorageService:
 
     @classmethod
     def get_current_version_profile_filename(cls) -> str:
-        version_number = ProfileStorageBase.get_current_model_cls().get_this_version_number()
+        version_number = ProfileStorageBase.get_latest_version()
         return f"v{version_number}{cls.PROFILE_FILENAME_SUFFIX}"
 
     @classmethod
@@ -274,7 +274,7 @@ class PersistentStorageService:
             model_cls = self._model_cls_from_path(model_path)
             model_instance = model_cls.parse_raw(decrypted_profile)
             model_migrated = apply_all_migrations(model_instance)
-            if model_cls.get_this_version_number() != ProfileStorageBase.get_current_version_number():
+            if model_cls.get_this_version() != ProfileStorageBase.get_latest_version():
                 await self._save_profile_model(model_migrated)
                 self._move_profile_to_backup(model_path)
             return model_migrated
@@ -316,7 +316,7 @@ class PersistentStorageService:
         if not match_:
             raise ModelDoesNotExistsError(path)
         version_number = int(match_.group(1))
-        if version_number >= len(ProfileStorageBase.REVISIONS):
+        if version_number >= len(ProfileStorageBase._REVISIONS):
             raise ModelDoesNotExistsError(path)
         return ProfileStorageBase.get_model_cls_for_version(version_number)
 
