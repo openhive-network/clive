@@ -315,14 +315,12 @@ class PersistentStorageService:
         if path.parent.name == cls.FIRST_REVISION:
             return ProfileStorageBase.get_model_cls_for_version(0)
 
-        pattern = r"^v(\d+)\.profile$"
-        match_ = re.search(pattern, path.name)
-        if not match_:
+        match = re.match(r"^v(\d+)\.profile$", path.name)
+        version = int(match.group(1)) if match else None
+
+        if version not in ProfileStorageBase.get_versions():
             raise ModelDoesNotExistsError(path)
-        version_number = int(match_.group(1))
-        if version_number >= len(ProfileStorageBase._REVISIONS):
-            raise ModelDoesNotExistsError(path)
-        return ProfileStorageBase.get_model_cls_for_version(version_number)
+        return ProfileStorageBase.get_model_cls_for_version(version)
 
     @classmethod
     def _is_model_cls_for_versioned_profile_file_available(cls, path: Path) -> bool:
