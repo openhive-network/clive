@@ -27,9 +27,12 @@ class ProfileStorageBase(CliveBaseModel, ABC):
     _REVISIONS: ClassVar[list[Revision]] = []
     _REVISION_TO_MODEL_TYPE_MAP: ClassVar[dict[Revision, type[ProfileStorageBase]]] = {}
 
+    _REVISION_NONCE: ClassVar[int] = 0
+
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(*args, **kwargs)
         revision = cls.get_this_revision()
+        assert revision not in cls.get_revisions(), f"Revision: {revision} already exists."
         cls._REVISIONS.append(revision)
         cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
 
@@ -55,7 +58,7 @@ class ProfileStorageBase(CliveBaseModel, ABC):
     @classmethod
     def get_this_revision(cls) -> Revision:
         assert cls is not ProfileStorageBase, "This method should be called on subclass."
-        return sha256(cls.schema_json(indent=4).encode()).hexdigest()[:8]
+        return sha256(cls._get_revision_seed().encode()).hexdigest()[:8]
 
     @classmethod
     def get_this_version(cls) -> Version:
@@ -78,3 +81,7 @@ class ProfileStorageBase(CliveBaseModel, ABC):
             return cls.get_revisions()[num]
         except IndexError as error:
             raise StorageVersionNotFoundError(num) from error
+
+    @classmethod
+    def _get_revision_seed(cls) -> str:
+        return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)

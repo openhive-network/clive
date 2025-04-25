@@ -18,7 +18,9 @@ class TransactionStorageModel(CliveBaseModel):
 
 
 class ProfileStorageModel(v0.ProfileStorageModel):
-    transaction: TransactionStorageModel | None  # type: ignore[assignment]  # changed storage model
+    _REVISION_NONCE = 1
+
+    transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
     TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
 
