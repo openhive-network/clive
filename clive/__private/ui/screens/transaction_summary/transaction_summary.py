@@ -34,7 +34,7 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
 )
-from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
+from clive.__private.visitors.operation.potential_known_account_collector import PotentialKnownAccountCollector
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
