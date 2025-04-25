@@ -159,8 +159,7 @@ class PersistentStorageService:
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
         """List all stored profile names sorted alphabetically including older storage versions."""
-        filepaths = cls._get_storage_filepaths()
-        profile_names = {key.name for key in filepaths}
+        profile_names = {key.name for key in cls._get_filepaths()}
         return sorted(profile_names)
 
     @classmethod
@@ -185,26 +184,38 @@ class PersistentStorageService:
         return safe_settings.data_path / "data"
 
     @classmethod
-    def _get_filepaths(cls, path_extension: str) -> ProfileNameModelToPath:
+    def _get_profile_filepath_to_read(cls, profile_name: str) -> Path | None:
+        filepaths = cls._get_filepaths()
+
+        candidates = [item for item in filepaths if item.name == profile_name]
+
+        if not candidates:
+            return None
+
+        # Pick the path with the highest version
+        key = max(candidates, key=lambda item: item.version())
+        return filepaths[key]
+
+    @classmethod
+    def _get_filepaths(cls) -> ProfileNameModelToPath:
+        """
+        Retrieve file paths of profiles stored on the disk.
+
+        It will retrieve only profiles that we have a corresponding version of model for.
+        It means any newer versions won't be picked up. (Like we're on v2, but there is v3.profile)
+        """
+        path_extension = cls.PROFILE_FILENAME_SUFFIX
         storage_dir = cls._get_storage_directory()
         paths: PersistentStorageService.ProfileNameModelToPath = {}
 
         for path in storage_dir.glob(f"*/*{path_extension}"):
-            if cls._is_valid_profile_filepath(path):
+            if cls._is_model_cls_for_versioned_profile_file_available(path):
                 name_model = cls.ProfileNameModel(
                     name=cls._profile_name_from_path(path),
                     model_cls=cls._model_cls_from_path(path),
                 )
                 paths[name_model] = path
         return paths
-
-    @classmethod
-    def _get_storage_filepaths(cls) -> ProfileNameModelToPath:
-        return cls._get_filepaths(cls.PROFILE_FILENAME_SUFFIX)
-
-    @classmethod
-    def _get_backup_filepaths(cls) -> ProfileNameModelToPath:
-        return cls._get_filepaths(cls.BACKUP_FILENAME_SUFFIX)
 
     async def _save_profile_model(self, profile_model: ProfileStorageModel) -> None:
         """
@@ -252,33 +263,23 @@ class PersistentStorageService:
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
-        model_path = self._find_most_recent_profile_path(profile_name)
+        profile_filepath = self._get_profile_filepath_to_read(profile_name)
+        if profile_filepath is None:
+            raise ProfileDoesNotExistsError(profile_name)
 
-        if model_path is not None:
-            encrypted_profile = model_path.read_text()
+        encrypted_profile = profile_filepath.read_text()
+        try:
+            decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
+        except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
+            raise ProfileEncryptionError from error
 
-            try:
-                decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
-            except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
-                raise ProfileEncryptionError from error
-
-            model_cls = self._model_cls_from_path(model_path)
-            model_instance = model_cls.parse_raw(decrypted_profile)
-            model_migrated = apply_all_migrations(model_instance)
-            if model_cls.get_this_version() != ProfileStorageBase.get_latest_version():
-                await self._save_profile_model(model_migrated)
-                self._move_profile_to_backup(model_path)
-            return model_migrated
-        raise ProfileDoesNotExistsError(profile_name)
-
-    @classmethod
-    def _find_most_recent_profile_path(cls, profile_name: str) -> Path | None:
-        filepaths = cls._get_storage_filepaths()
-        keys = filter(lambda x: x.name == profile_name, filepaths.keys())
-        if len(list(keys)) == 0:
-            return None
-        selected_key = max(keys, key=lambda x: x.version())
-        return filepaths[selected_key]
+        model_cls = self._model_cls_from_path(profile_filepath)
+        model_instance = model_cls.parse_raw(decrypted_profile)
+        model_migrated = apply_all_migrations(model_instance)
+        if model_cls.get_this_version() != ProfileStorageBase.get_latest_version():
+            await self._save_profile_model(model_migrated)
+            self._move_profile_to_backup(profile_filepath)
+        return model_migrated
 
     @classmethod
     def _move_profile_to_backup(cls, path: Path) -> None:
@@ -312,7 +313,8 @@ class PersistentStorageService:
         return ProfileStorageBase.get_model_cls_for_version(version_number)
 
     @classmethod
-    def _is_valid_profile_filepath(cls, path: Path) -> bool:
+    def _is_model_cls_for_versioned_profile_file_available(cls, path: Path) -> bool:
+        """Determine if we have a corresponding version of model for the given path."""
         try:
             cls._model_cls_from_path(path)
         except ModelDoesNotExistsError:
