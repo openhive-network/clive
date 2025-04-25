@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
@@ -148,16 +149,11 @@ class PersistentStorageService:
         """
         if not force:
             cls._raise_if_profile_not_stored(profile_name)
-        filepaths = cls._get_storage_filepaths()
-        backup_filepaths = cls._get_backup_filepaths()
-
-        to_remove = [path for key, path in filepaths.items() if key.name == profile_name]
-        to_remove.extend([path for key, path in backup_filepaths.items() if key.name == profile_name])
-        if not force and len(to_remove) > 1:
+        profile_dir = cls.get_profile_directory(profile_name)
+        num_of_files_in_profile_dir = len(list(profile_dir.glob("*")))
+        if num_of_files_in_profile_dir > 1 and not force:
             raise MultipleProfileVersionsError(profile_name)
-        for path in to_remove:
-            path.unlink()
-        cls._remove_profile_directory(profile_name)
+        shutil.rmtree(profile_dir)
 
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
@@ -208,12 +204,6 @@ class PersistentStorageService:
     @classmethod
     def _get_backup_filepaths(cls) -> ProfileNameModelToPath:
         return cls._get_filepaths(cls.BACKUP_FILENAME_SUFFIX)
-
-    @classmethod
-    def _remove_profile_directory(cls, profile_name: str) -> None:
-        profile_dir = cls.get_profile_directory(profile_name)
-        if profile_dir.exists():
-            profile_dir.rmdir()
 
     async def _save_profile_model(self, profile_model: ProfileStorageModel) -> None:
         """
