@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import pairwise
-from typing import get_type_hints
+from typing import Self, get_type_hints
 
 from clive.__private.storage.migrations.base import ProfileStorageBase
 from clive.__private.storage.migrations.v2 import ProfileStorageModel
@@ -25,13 +25,18 @@ def _validate_model_upgrades() -> None:
     for prev_hash, this_hash in pairwise(ProfileStorageBase.get_revisions()):
         prev_cls = ProfileStorageBase.get_model_cls_for_revision(prev_hash)
         this_cls = ProfileStorageBase.get_model_cls_for_revision(this_hash)
+
         assert hasattr(this_cls, "upgrade"), f"Upgrade function should be defined for {this_cls}, but it is not."
+
         hints = get_type_hints(this_cls.upgrade)
-        assert hints["old"] is prev_cls, (
-            f"Upgrade function should accept {prev_cls} as first argument, but it takes {hints['old']} instead."
+        old_param = hints.get("old")
+        return_param = hints.get("return")
+
+        assert old_param is prev_cls, (
+            f"Upgrade function of {this_cls} should accept {prev_cls}, but it takes {old_param} instead."
         )
-        assert hints["return"] is this_cls, (
-            f"Upgrade function should return {this_cls}, but it returns {hints['return']} instead."
+        assert return_param is Self, (
+            f"Upgrade function of {this_cls} should return {Self}, but it returns {return_param} instead."
         )
 
 
