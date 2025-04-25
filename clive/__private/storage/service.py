@@ -125,7 +125,7 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
-        profile_storage_model = await self._find_or_migrate_profile_storage_model_by_name(profile_name)
+        profile_storage_model = await self._get_latest_stored_profile_model(profile_name)
 
         profile = StorageToRuntimeConverter(profile_storage_model).create_profile()
         profile._update_hash_of_stored_profile()
@@ -243,7 +243,7 @@ class PersistentStorageService:
         filepath = profile_directory / self.get_current_version_profile_filename()
         filepath.write_text(encrypted_profile)
 
-    async def _find_or_migrate_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
+    async def _get_latest_stored_profile_model(self, profile_name: str) -> ProfileStorageModel:
         """
         Find current version of profile storage model by name in the clive data directory or migrate older version.
 
@@ -267,16 +267,28 @@ class PersistentStorageService:
         if profile_filepath is None:
             raise ProfileDoesNotExistsError(profile_name)
 
+        profile_model = await self._parse_profile_model_from_file(profile_filepath)
+        return await self._migrate_profile_model(profile_model, profile_filepath)
+
+    async def _parse_profile_model_from_file(self, profile_filepath: Path) -> ProfileStorageBase:
+        raw = await self._read_profile_file_raw(profile_filepath)
+        model_cls = self._model_cls_from_path(profile_filepath)
+        return model_cls.parse_raw(raw)
+
+    async def _read_profile_file_raw(self, profile_filepath: Path) -> str:
         encrypted_profile = profile_filepath.read_text()
         try:
             decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
         except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
+        return decrypted_profile
 
-        model_cls = self._model_cls_from_path(profile_filepath)
-        model_instance = model_cls.parse_raw(decrypted_profile)
-        model_migrated = apply_all_migrations(model_instance)
-        if model_cls.get_this_version() != ProfileStorageBase.get_latest_version():
+    async def _migrate_profile_model(
+        self, profile_model: ProfileStorageBase, profile_filepath: Path
+    ) -> ProfileStorageModel:
+        """Migrate profile model to the latest version."""
+        model_migrated = apply_all_migrations(profile_model)
+        if profile_model.get_this_version() != ProfileStorageBase.get_latest_version():
             await self._save_profile_model(model_migrated)
             self._move_profile_to_backup(profile_filepath)
         return model_migrated
