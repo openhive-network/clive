@@ -167,8 +167,8 @@ class PersistentStorageService:
         return profile_name in cls.list_stored_profile_names()
 
     @classmethod
-    def is_profile_filename(cls, file_name: str) -> bool:
-        return file_name.endswith(cls.PROFILE_FILENAME_SUFFIX)
+    def is_profile_file(cls, path: Path) -> bool:
+        return path.is_file() and path.suffix == cls.PROFILE_FILENAME_SUFFIX
 
     @classmethod
     def get_profile_directory(cls, profile_name: str) -> Path:
@@ -295,6 +295,8 @@ class PersistentStorageService:
 
     @classmethod
     def _move_profile_to_backup(cls, path: Path) -> None:
+        cls._assert_path_is_profile_file(path)
+
         backup_path = path.with_suffix(cls.BACKUP_FILENAME_SUFFIX)
         path.replace(backup_path)
 
@@ -312,6 +314,8 @@ class PersistentStorageService:
 
     @classmethod
     def _model_cls_from_path(cls, path: Path) -> type[ProfileStorageBase]:
+        cls._assert_path_is_profile_file(path)
+
         if path.parent.name == cls.FIRST_REVISION:
             return ProfileStorageBase.get_model_cls_for_version(0)
 
@@ -334,7 +338,15 @@ class PersistentStorageService:
 
     @classmethod
     def _profile_name_from_path(cls, path: Path) -> str:
+        cls._assert_path_is_profile_file(path)
+
         profile_name_or_dir = path.parent.name
         if profile_name_or_dir == cls.FIRST_REVISION:
+            # previously profile name was in the file name
             return path.stem
+        # now directory name is the profile name
         return profile_name_or_dir
+
+    @classmethod
+    def _assert_path_is_profile_file(cls, path: Path) -> None:
+        assert cls.is_profile_file(path), f"Looks like {path} is not a profile file."
