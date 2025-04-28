@@ -277,3 +277,24 @@ class CLITransactionBadAccountError(CLIPrettyError):
             f"target accounts: {self.account_names} are on the list of bad accounts."
         )
         super().__init__(message, errno.EINVAL)
+
+
+class CLIMemolessTransferToExchangeError(CLIPrettyError):
+    """Raise when trying to perform memoless transfer to exchange."""
+
+    def __init__(self, exchange_name: str) -> None:
+        message = f"Cannot perform transaction.\nThe transfer to the exchange {exchange_name} must include a memo."
+        super().__init__(message, errno.EINVAL)
+
+
+class CLIForceableOperationToExchangeError(CLIPrettyError):
+    """Raise when trying to perform forceable operation to exchange."""
+
+    def __init__(self) -> None:
+        message = (
+            "Cannot perform transaction.\n"
+            "The recipient of your operation is a known exchange, and exchanges usually do not support this "
+            "type of operation.\n"
+            "You can force the process by using the --force flag"
+        )
+        super().__init__(message, errno.EINVAL)
