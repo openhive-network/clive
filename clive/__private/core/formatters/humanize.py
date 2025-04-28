@@ -167,7 +167,8 @@ def humanize_operation_details(operation: OperationBase) -> str:
     """
     out = ""
 
-    operation_dict = operation.shallow_dict()
+    operation_dict = operation.dict()
+
     for key, value in operation_dict.items():
         value_ = value
 
