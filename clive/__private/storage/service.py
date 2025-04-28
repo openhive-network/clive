@@ -71,6 +71,7 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 class PersistentStorageService:
     BACKUP_FILENAME_SUFFIX: Final[str] = ".backup"
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
+    PROFILE_VERSION_FILE_REGEX: Final[str] = r"^v(\d+)\.profile$"
     FIRST_REVISION: Final[str] = "c600278a"
 
     @dataclass(frozen=True)
@@ -168,7 +169,15 @@ class PersistentStorageService:
 
     @classmethod
     def is_profile_file(cls, path: Path) -> bool:
-        return path.is_file() and path.suffix == cls.PROFILE_FILENAME_SUFFIX
+        conditions = [
+            lambda: path.is_file(),
+            lambda: path.suffix == cls.PROFILE_FILENAME_SUFFIX,
+            lambda: cls.get_version_from_profile_file(path) is not None,
+        ]
+        if path.parent.name == cls.FIRST_REVISION:
+            # in the legacy structure, there was no version in the filename
+            return all(conditions[:2])
+        return all(conditions)
 
     @classmethod
     def get_profile_directory(cls, profile_name: str) -> Path:
@@ -181,6 +190,11 @@ class PersistentStorageService:
     @classmethod
     def get_current_version_profile_filename(cls) -> str:
         return cls.get_version_profile_filename(StorageHistory.get_latest_version())
+
+    @classmethod
+    def get_version_from_profile_file(cls, filepath: Path) -> int | None:
+        match = re.match(cls.PROFILE_VERSION_FILE_REGEX, filepath.name)
+        return int(match.group(1)) if match else None
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
@@ -322,8 +336,7 @@ class PersistentStorageService:
         if path.parent.name == cls.FIRST_REVISION:
             return StorageHistory.get_model_cls_for_version(0)
 
-        match = re.match(r"^v(\d+)\.profile$", path.name)
-        version = int(match.group(1)) if match else None
+        version = cls.get_version_from_profile_file(path)
 
         if version not in StorageHistory.get_versions():
             raise ModelDoesNotExistsError(path)

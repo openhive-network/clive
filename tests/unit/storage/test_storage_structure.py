@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service import ModelDoesNotExistsError, PersistentStorageService
 from tests.unit.storage.test_storage_revision import FIRST_PROFILE_NAME, create_and_save_profile
 
 
@@ -26,9 +26,11 @@ async def test_storage_dir_contains_expected_files() -> None:
 @pytest.mark.parametrize("file_name", ["vv1.profile", "v1.backup", "v2.2profile", "v2.2.profile"])
 async def test_invalid_profile_file_name(file_name: str) -> None:
     # ARRANGE
-    storage_data_dir = PersistentStorageService.get_profile_directory("invalid_profile_file_name_test")
-    profile_file_path = storage_data_dir / file_name
+    profile_dir = PersistentStorageService.get_profile_directory("invalid_profile_file_name_test")
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    profile_file_path = profile_dir / file_name
+    profile_file_path.touch()
 
     # ACT & ASSERT
-    with pytest.raises(AssertionError, match=f"Looks like {profile_file_path} is not a profile file."):
+    with pytest.raises(ModelDoesNotExistsError, match=f"Model not found for profile stored at `{file_name}`."):
         PersistentStorageService._model_cls_from_path(profile_file_path)
