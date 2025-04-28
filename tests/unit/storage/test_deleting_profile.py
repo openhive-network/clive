@@ -19,13 +19,8 @@ PROFILE_NAME2: Final[str] = "four"
 def backup_files_exists(profile_name: str) -> bool:
     """Check if the backup file for the given profile exists."""
     profile_directory = PersistentStorageService.get_profile_directory(profile_name)
-    gen = profile_directory.glob(f"*{PersistentStorageService.BACKUP_FILENAME_SUFFIX}")
-    try:
-        next(gen)
-    except StopIteration:
-        return False
-    else:
-        return True
+    profile_backup_files = profile_directory.glob(f"*{PersistentStorageService.BACKUP_FILENAME_SUFFIX}")
+    return any(profile_backup_files)
 
 
 def test_delete_profile_fail_when_backups_exists() -> None:
