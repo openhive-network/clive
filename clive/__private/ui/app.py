@@ -389,6 +389,8 @@ class Clive(App[int]):
         await self.world.commands.lock()
 
     async def go_to_config(self) -> None:
+        if not self.world.app_state.is_unlocked:
+            return
         if self.current_mode == "config":
             self.get_screen_from_current_stack(Config).pop_until_active()
         elif self.current_mode == "dashboard":
@@ -397,6 +399,8 @@ class Clive(App[int]):
             raise AssertionError(f"Unexpected mode: {self.current_mode}")
 
     async def go_to_dashboard(self) -> None:
+        if not self.world.app_state.is_unlocked:
+            return
         if self.current_mode == "dashboard":
             self.get_screen_from_current_stack(Dashboard).pop_until_active()
         elif self.current_mode == "config":
@@ -406,6 +410,9 @@ class Clive(App[int]):
 
     async def go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if not self.world.app_state.is_unlocked:
+            return
 
         if isinstance(self.screen, TransactionSummary):
             return
