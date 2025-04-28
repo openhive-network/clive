@@ -420,6 +420,9 @@ class CLITester:
     def show_profile(self) -> Result:
         return self.__invoke_command_with_options(["show", "profile"], **extract_params(locals()))
 
+    def show_profiles(self) -> Result:
+        return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
+
     def configure_known_account_add(self, *, account_name: str) -> Result:
         return self.__invoke_command_with_options(["configure", "known-account", "add"], **extract_params(locals()))
 
@@ -443,6 +446,9 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["configure", "profile", "create"], password_stdin, **extract_params(named_params)
         )
+
+    def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
+        return self.__invoke_command_with_options(["configure", "profile", "delete"], **extract_params(locals()))
 
     def process_proxy_set(
         self,
@@ -514,9 +520,3 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "remove"], **extract_params(locals())
         )
-
-    def show_profiles(self) -> Result:
-        return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
-
-    def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
-        return self.__invoke_command_with_options(["configure", "profile", "delete"], **extract_params(locals()))
