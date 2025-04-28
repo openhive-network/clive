@@ -12,10 +12,11 @@ from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.storage import ProfileStorageModel
 from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.storage_history import StorageHistory
 
-PROFILE_FILE_LIST: Final[tuple[str, ...]] = ("alice/v0.profile", "alice/v1.profile", "alice/v2.profile")
-EXPECTED_REVISION_LIST: Final[tuple[str, ...]] = ("ffc97b51", "a721f943", "9c46df0c")
-EXPECTED_REVISION: Final[str] = EXPECTED_REVISION_LIST[-1]
+REVISIONS: Final[list[str]] = ["ffc97b51", "a721f943", "9c46df0c"]
+LATEST_REVISION: Final[str] = REVISIONS[-1]
+
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
@@ -40,7 +41,7 @@ def test_storage_revision_doesnt_changed_for_latest_version() -> None:
     message = (
         "Storage model revision has changed. If you are sure that it is expected, please update the expected revision."
     )
-    assert actual_revision == EXPECTED_REVISION, message
+    assert actual_revision == LATEST_REVISION, message
 
 
 async def test_storage_dir_contains_expected_files() -> None:
@@ -60,23 +61,15 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert profile_file_path.read_text(), "Profile file is empty."
 
 
-@pytest.mark.parametrize(("file_name", "expected_hash"), zip(PROFILE_FILE_LIST, EXPECTED_REVISION_LIST, strict=True))
-async def test_storage_revision_doesnt_changed_in_knwon_versions(file_name: str, expected_hash: str) -> None:
+async def test_storage_revision_doesnt_changed_in_known_versions() -> None:
     # ARRANGE
     info_message = (
         "Revision hash in older storage versions shouldn't change, it means older storage"
         " versions may not be loaded properly, if you are sure this is expected check tests with"
         " loading of first profile revision including profile with transaction or alarms"
     )
-    storage_data_dir = tt.context.get_current_directory() / "clive/data"
-    profile_path = storage_data_dir / file_name
-    profile_path.parent.mkdir(parents=True)
-    profile_path.touch()
 
-    # ACT & ASSERT
-    model_cls = PersistentStorageService._model_cls_from_path(profile_path)
-    actual_hash = model_cls.get_this_revision()
-    assert actual_hash == expected_hash, f"{actual_hash=} {expected_hash=}\n{info_message}"
+    assert StorageHistory.get_revisions() == REVISIONS, info_message
 
 
 @pytest.mark.parametrize("file_name", ["vv1.profile", "v1.backup", "v2.2profile", "v2.2.profile"])
