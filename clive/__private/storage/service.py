@@ -175,9 +175,12 @@ class PersistentStorageService:
         return cls._get_storage_directory() / profile_name
 
     @classmethod
+    def get_version_profile_filename(cls, version: int) -> str:
+        return f"v{version}{cls.PROFILE_FILENAME_SUFFIX}"
+
+    @classmethod
     def get_current_version_profile_filename(cls) -> str:
-        version_number = StorageHistory.get_latest_version()
-        return f"v{version_number}{cls.PROFILE_FILENAME_SUFFIX}"
+        return cls.get_version_profile_filename(StorageHistory.get_latest_version())
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
