@@ -282,3 +282,12 @@ class CLITransactionBadAccountError(CLIPrettyError):
             f"target accounts: {self.account_names} are on the list of bad accounts."
         )
         super().__init__(message, errno.EINVAL)
+
+
+class CLITransactionToExchangeError(CLIPrettyError):
+    """Raise when trying to perform transaction to exchange with operation(s) that cannot be performed."""
+
+    def __init__(self, reason: str) -> None:
+        message = f"Cannot perform transaction.\n{reason}"
+        super().__init__(message, errno.EINVAL)
+        self.message = message
