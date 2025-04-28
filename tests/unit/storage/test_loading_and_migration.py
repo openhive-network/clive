@@ -60,7 +60,7 @@ async def test_migrate_profile_with_alarms() -> None:
         assert profile.name == profile_name, f"Profile with name {profile_name} should be loaded"
 
         alarms = profile.accounts.working._alarms
-        assert alarms.all_alarms != [], "Alarms should be loaded from older profile version"
+        assert alarms.all_alarms, "Alarms should be loaded from older profile version"
 
 
 async def test_migrate_profile_with_operations() -> None:
@@ -74,4 +74,4 @@ async def test_migrate_profile_with_operations() -> None:
         # ASSERT
         assert profile.name == profile_name, f"Profile with name {profile_name} should be loaded"
 
-        assert profile.operations != [], "Operations should be loaded from older profile version"
+        assert profile.operations, "Operations should be loaded from older profile version"
