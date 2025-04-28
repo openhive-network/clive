@@ -4,9 +4,9 @@ from itertools import pairwise
 from typing import Self, get_type_hints
 
 from clive.__private.storage.migrations.base import ProfileStorageBase
-from clive.__private.storage.migrations.v2 import ProfileStorageModel
+from clive.__private.storage.migrations.v2 import ProfileStorageModel, StorageDefinitions
 
-__all__ = ["ProfileStorageBase", "ProfileStorageModel"]
+__all__ = ["ProfileStorageBase", "ProfileStorageModel", "StorageDefinitions"]
 
 
 def apply_all_migrations(old_instance: ProfileStorageBase) -> ProfileStorageModel:

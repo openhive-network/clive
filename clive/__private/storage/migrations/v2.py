@@ -6,6 +6,10 @@ from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.storage.migrations import v1
 
 
+class StorageDefinitions(v1.StorageDefinitions):
+    pass
+
+
 class ProfileStorageModel(v1.ProfileStorageModel):
     tui_theme: str = DEFAULT_THEME
 

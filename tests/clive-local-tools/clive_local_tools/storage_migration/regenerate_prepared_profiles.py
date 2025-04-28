@@ -78,10 +78,10 @@ def create_model_from_scratch() -> v0.ProfileStorageModel:
     return v0.ProfileStorageModel(
         name=account_name,
         working_account=account_name,
-        tracked_accounts=[v0.TrackedAccountStorageModel(name=account_name, alarms=[])],
+        tracked_accounts=[v0.StorageDefinitions.TrackedAccountStorageModel(name=account_name, alarms=[])],
         known_accounts=[account_name, ALT_WORKING_ACCOUNT2_DATA.account.name],
         key_aliases=[
-            v0.KeyAliasStorageModel(
+            v0.StorageDefinitions.KeyAliasStorageModel(
                 alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
                 public_key=ALT_WORKING_ACCOUNT1_DATA.account.public_key,
             )
@@ -112,7 +112,7 @@ async def _main() -> None:
     async with prepare_encryption_service() as encryption_service:
         profile_model = create_model_from_scratch()
         profile_model.tracked_accounts[0].alarms = [
-            v0.AlarmStorageModel(
+            v0.StorageDefinitions.AlarmStorageModel(
                 name=underscore("RecoveryAccountWarningListed"),
                 is_harmless=False,
                 identifier=RecoveryAccountWarningListedAlarmIdentifier(
@@ -132,8 +132,10 @@ async def _main() -> None:
             amount=tt.Asset.Hive(1),
             memo="",
         )
-        profile_model.transaction = v0.TransactionStorageModel(
-            transaction_core=v0.TransactionCoreStorageModel(operations=[convert_to_representation(operation)]),
+        profile_model.transaction = v0.StorageDefinitions.TransactionStorageModel(
+            transaction_core=v0.StorageDefinitions.TransactionCoreStorageModel(
+                operations=[convert_to_representation(operation)]
+            ),
             transaction_file_path=Path("example/path"),
         )
         encrypted = await encryption_service.encrypt(profile_model.json(indent=4))

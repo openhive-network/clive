@@ -12,7 +12,7 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
 )
 from clive.__private.core.keys import PublicKeyAliased
 from clive.__private.models import Transaction
-from clive.__private.storage.model import ProfileStorageModel
+from clive.__private.storage.model import ProfileStorageModel, StorageDefinitions
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -98,34 +98,34 @@ class StorageToRuntimeConverter:
             return transaction_storage_model.transaction_file_path
         return None
 
-    def _working_account_from_model(self, model: ProfileStorageModel.TrackedAccountStorageModel) -> WorkingAccount:
+    def _working_account_from_model(self, model: StorageDefinitions.TrackedAccountStorageModel) -> WorkingAccount:
         return WorkingAccount(model.name, self._alarms_storage_from_model(model))
 
-    def _watched_account_from_model(self, model: ProfileStorageModel.TrackedAccountStorageModel) -> WatchedAccount:
+    def _watched_account_from_model(self, model: StorageDefinitions.TrackedAccountStorageModel) -> WatchedAccount:
         return WatchedAccount(model.name, self._alarms_storage_from_model(model))
 
-    def _alarms_storage_from_model(self, model: ProfileStorageModel.TrackedAccountStorageModel) -> AlarmsStorage:
+    def _alarms_storage_from_model(self, model: StorageDefinitions.TrackedAccountStorageModel) -> AlarmsStorage:
         alarms = [self._alarm_from_model(alarm) for alarm in model.alarms]
         return AlarmsStorage(alarms)
 
     def _known_account_from_model_representation(self, name: str) -> KnownAccount:
         return KnownAccount(name)
 
-    def _alarm_from_model(self, model: ProfileStorageModel.AlarmStorageModel) -> AnyAlarm:
-        alarm_cls = Alarm.get_alarm_class_by_name(model.identifier)
+    def _alarm_from_model(self, model: StorageDefinitions.AlarmStorageModel) -> AnyAlarm:
+        alarm_cls = Alarm.get_alarm_class_by_name(model.name)
         identifier = self._alarm_identifier_from_model(model.identifier)
         return alarm_cls(identifier=identifier, is_harmless=model.is_harmless)
 
     def _alarm_identifier_from_model(
-        self, model: ProfileStorageModel.AllAlarmIdentifiersStorageModel
+        self, model: StorageDefinitions.AllAlarmIdentifiersStorageModel
     ) -> AllAlarmIdentifiers:
-        if isinstance(model, ProfileStorageModel.DateTimeAlarmIdentifierStorageModel):
+        if isinstance(model, StorageDefinitions.DateTimeAlarmIdentifierStorageModel):
             return DateTimeAlarmIdentifier(value=model.value)
-        if isinstance(model, ProfileStorageModel.RecoveryAccountWarningListedAlarmIdentifierStorageModel):
+        if isinstance(model, StorageDefinitions.RecoveryAccountWarningListedAlarmIdentifierStorageModel):
             return RecoveryAccountWarningListedAlarmIdentifier(recovery_account=model.recovery_account)
         raise AlarmIdentifierStorageToRuntimeConversionError(
             f"Unknown alarm identifier storage model type: {type(model)}"
         )
 
-    def _key_alias_from_model(self, model: ProfileStorageModel.KeyAliasStorageModel) -> PublicKeyAliased:
+    def _key_alias_from_model(self, model: StorageDefinitions.KeyAliasStorageModel) -> PublicKeyAliased:
         return PublicKeyAliased(value=model.public_key, alias=model.alias)
