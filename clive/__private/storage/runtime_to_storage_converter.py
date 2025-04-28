@@ -3,13 +3,23 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
+from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
+from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
+    RecoveryAccountWarningListedAlarmIdentifier,
+)
 from clive.__private.storage.model import ProfileStorageModel
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
+    from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
+
+
+class AlarmIdentifierRuntimeToStorageConversionError(CliveError):
+    """Exception raised when an alarm identifier cannot be converted to storage."""
 
 
 class RuntimeToStorageConverter:
@@ -61,8 +71,21 @@ class RuntimeToStorageConverter:
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AlarmStorageModel:
         return ProfileStorageModel._AlarmStorageModel(
-            name=alarm.get_name(), is_harmless=alarm.is_harmless, identifier=alarm.identifier_ensure
+            name=alarm.get_name(),
+            is_harmless=alarm.is_harmless,
+            identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
         )
+
+    def _alarm_identifier_to_model(
+        self, identifier: AlarmIdentifier
+    ) -> ProfileStorageModel._AllAlarmIdentifiersStorageModel:
+        if isinstance(identifier, DateTimeAlarmIdentifier):
+            return ProfileStorageModel._DateTimeAlarmIdentifierStorageModel(value=identifier.value)
+        if isinstance(identifier, RecoveryAccountWarningListedAlarmIdentifier):
+            return ProfileStorageModel._RecoveryAccountWarningListedAlarmIdentifierStorageModel(
+                recovery_account=identifier.recovery_account
+            )
+        raise AlarmIdentifierRuntimeToStorageConversionError(f"Unknown alarm identifier type: {type(identifier)}")
 
     def _key_alias_to_model(self, key: PublicKeyAliased) -> ProfileStorageModel._KeyAliasStorageModel:
         return ProfileStorageModel._KeyAliasStorageModel(alias=key.alias, public_key=key.value)
