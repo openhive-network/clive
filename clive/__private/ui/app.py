@@ -394,7 +394,7 @@ class Clive(App[int]):
         elif self.current_mode == "dashboard":
             await self.switch_mode_with_reset("config")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            return
 
     async def go_to_dashboard(self) -> None:
         if self.current_mode == "dashboard":
@@ -402,10 +402,13 @@ class Clive(App[int]):
         elif self.current_mode == "config":
             await self.switch_mode_with_reset("dashboard")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            return
 
     async def go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if self.current_mode in ["unlock", "create_profile"]:
+            return
 
         if isinstance(self.screen, TransactionSummary):
             return
