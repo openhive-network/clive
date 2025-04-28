@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from hashlib import sha256
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 
 from clive.__private.models.base import CliveBaseModel
 from clive.exceptions import CliveError
@@ -13,13 +13,13 @@ type Version = int
 
 class StorageRevisionNotFoundError(CliveError):
     def __init__(self, revision: Revision) -> None:
-        self.message = f"Revision: {revision} not found. Available ones are: {ProfileStorageBase.get_revisions()}"
+        self.message = f"Revision: {revision} not found. Available ones are: {ProfileStorageBase._get_revisions()}"
         super().__init__(self.message)
 
 
 class StorageVersionNotFoundError(CliveError):
     def __init__(self, version: Version) -> None:
-        self.message = f"Version: {version} not found. Available ones are: {ProfileStorageBase.get_versions()}"
+        self.message = f"Version: {version} not found. Available ones are: {ProfileStorageBase._get_versions()}"
         super().__init__(self.message)
 
 
@@ -32,7 +32,7 @@ class ProfileStorageBase(CliveBaseModel, ABC):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(*args, **kwargs)
         revision = cls.get_this_revision()
-        assert revision not in cls.get_revisions(), f"Revision: {revision} already exists."
+        assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
         cls._REVISIONS.append(revision)
         cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
 
@@ -40,20 +40,8 @@ class ProfileStorageBase(CliveBaseModel, ABC):
         return hash(self.json(indent=4))
 
     @classmethod
-    def get_revisions(cls) -> list[Revision]:
-        return cls._REVISIONS
-
-    @classmethod
-    def get_latest_revision(cls) -> Revision:
-        return cls.get_revisions()[-1]
-
-    @classmethod
-    def get_versions(cls) -> list[Version]:
-        return list(range(len(cls.get_revisions())))
-
-    @classmethod
-    def get_latest_version(cls) -> Version:
-        return cls.get_versions()[-1]
+    def upgrade(cls, old: ProfileStorageBase) -> Self:
+        raise NotImplementedError
 
     @classmethod
     def get_this_revision(cls) -> Revision:
@@ -62,23 +50,43 @@ class ProfileStorageBase(CliveBaseModel, ABC):
 
     @classmethod
     def get_this_version(cls) -> Version:
-        return cls.get_revisions().index(cls.get_this_revision())
+        return cls._get_revisions().index(cls.get_this_revision())
 
     @classmethod
-    def get_model_cls_for_revision(cls, revision: Revision) -> type[ProfileStorageBase]:
+    def _get_revisions(cls) -> list[Revision]:
+        return cls._REVISIONS
+
+    @classmethod
+    def _get_latest_revision(cls) -> Revision:
+        return cls._get_revisions()[-1]
+
+    @classmethod
+    def _get_versions(cls) -> list[Version]:
+        return list(range(len(cls._get_revisions())))
+
+    @classmethod
+    def _get_latest_version(cls) -> Version:
+        return cls._get_versions()[-1]
+
+    @classmethod
+    def _get_model_cls_for_revision(cls, revision: Revision) -> type[ProfileStorageBase]:
         try:
             return cls._REVISION_TO_MODEL_TYPE_MAP[revision]
         except KeyError as error:
             raise StorageRevisionNotFoundError(revision) from error
 
     @classmethod
-    def get_model_cls_for_version(cls, num: Version) -> type[ProfileStorageBase]:
-        return cls.get_model_cls_for_revision(cls._get_revision_for_version(num))
+    def _get_model_cls_for_version(cls, num: Version) -> type[ProfileStorageBase]:
+        return cls._get_model_cls_for_revision(cls._get_revision_for_version(num))
+
+    @classmethod
+    def _get_all_model_cls(cls) -> list[type[ProfileStorageBase]]:
+        return list(cls._REVISION_TO_MODEL_TYPE_MAP.values())
 
     @classmethod
     def _get_revision_for_version(cls, num: Version) -> Revision:
         try:
-            return cls.get_revisions()[num]
+            return cls._get_revisions()[num]
         except IndexError as error:
             raise StorageVersionNotFoundError(num) from error
 

@@ -12,7 +12,7 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
 )
 from clive.__private.core.keys import PublicKeyAliased
 from clive.__private.models import Transaction
-from clive.__private.storage.model import ProfileStorageModel
+from clive.__private.storage import ProfileStorageModel
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

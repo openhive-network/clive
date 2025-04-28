@@ -10,7 +10,7 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageModel
+from clive.__private.storage import ProfileStorageModel
 from clive.__private.storage.service import PersistentStorageService
 
 PROFILE_FILE_LIST: Final[tuple[str, ...]] = ("alice/v0.profile", "alice/v1.profile", "alice/v2.profile")

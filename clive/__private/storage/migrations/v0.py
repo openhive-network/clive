@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence  # noqa: TC003
 from pathlib import Path  # noqa: TC003
-from typing import Any, TypeAlias
+from typing import Any, Self, TypeAlias
 
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.base import CliveBaseModel
@@ -84,3 +84,7 @@ class ProfileStorageModel(ProfileStorageBase):
         RecoveryAccountWarningListedAlarmIdentifierStorageModel
     )
     _AllAlarmIdentifiersStorageModel: TypeAlias = AllAlarmIdentifiersStorageModel  # noqa: UP040
+
+    @classmethod
+    def upgrade(cls, old: ProfileStorageBase) -> Self:
+        raise NotImplementedError("Upgrade is not not possible for first revision.")

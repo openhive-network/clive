@@ -25,7 +25,7 @@ class ProfileStorageModel(v0.ProfileStorageModel):
     _TransactionStorageModel: TypeAlias = TransactionStorageModel  # noqa: UP040
 
     @classmethod
-    def upgrade(cls, old: v0.ProfileStorageModel) -> Self:
+    def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model
         old_transaction = old.transaction
         new_transaction = (
             TransactionStorageModel(

@@ -11,8 +11,8 @@ from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import ProfileStorageBase, apply_all_migrations
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
+from clive.__private.storage.storage_history import StorageHistory
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
-    from clive.__private.storage.model import ProfileStorageModel
+    from clive.__private.storage import ProfileStorageBase, ProfileStorageModel
 
 
 class PersistentStorageServiceError(CliveError):
@@ -176,7 +176,7 @@ class PersistentStorageService:
 
     @classmethod
     def get_current_version_profile_filename(cls) -> str:
-        version_number = ProfileStorageBase.get_latest_version()
+        version_number = StorageHistory.get_latest_version()
         return f"v{version_number}{cls.PROFILE_FILENAME_SUFFIX}"
 
     @classmethod
@@ -287,8 +287,8 @@ class PersistentStorageService:
         self, profile_model: ProfileStorageBase, profile_filepath: Path
     ) -> ProfileStorageModel:
         """Migrate profile model to the latest version."""
-        model_migrated = apply_all_migrations(profile_model)
-        if profile_model.get_this_version() != ProfileStorageBase.get_latest_version():
+        model_migrated = StorageHistory.apply_all_migrations(profile_model)
+        if profile_model.get_this_version() != StorageHistory.get_latest_version():
             await self._save_profile_model(model_migrated)
             self._move_profile_to_backup(profile_filepath)
         return model_migrated
@@ -317,14 +317,14 @@ class PersistentStorageService:
         cls._assert_path_is_profile_file(path)
 
         if path.parent.name == cls.FIRST_REVISION:
-            return ProfileStorageBase.get_model_cls_for_version(0)
+            return StorageHistory.get_model_cls_for_version(0)
 
         match = re.match(r"^v(\d+)\.profile$", path.name)
         version = int(match.group(1)) if match else None
 
-        if version not in ProfileStorageBase.get_versions():
+        if version not in StorageHistory.get_versions():
             raise ModelDoesNotExistsError(path)
-        return ProfileStorageBase.get_model_cls_for_version(version)
+        return StorageHistory.get_model_cls_for_version(version)
 
     @classmethod
     def _is_model_cls_for_versioned_profile_file_available(cls, path: Path) -> bool:
