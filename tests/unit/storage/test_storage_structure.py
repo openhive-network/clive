@@ -1,9 +1,22 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from clive.__private.storage.service import ModelDoesNotExistsError, PersistentStorageService
+from clive.__private.storage.service import PersistentStorageService
 from tests.unit.storage.test_storage_revision import FIRST_PROFILE_NAME, create_and_save_profile
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+def _create_stub_profile_file(file_name: str) -> Path:
+    profile_dir = PersistentStorageService.get_profile_directory("stub_profile")
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    profile_file_path = profile_dir / file_name
+    profile_file_path.touch()
+    return profile_file_path
 
 
 async def test_storage_dir_contains_expected_files() -> None:
@@ -23,6 +36,18 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert profile_file_path.read_text(), "Profile file is empty."
 
 
+@pytest.mark.parametrize("file_name", ["v1.profile", "v2.profile"])
+async def test_valid_profile_file_name(file_name: str) -> None:
+    # ARRANGE
+    profile_file_path = _create_stub_profile_file(file_name)
+
+    # ACT
+    version = PersistentStorageService.get_version_from_profile_file(profile_file_path)
+
+    # ASSERT
+    assert version, "If the file name is valid, the version should be extracted from it."
+
+
 @pytest.mark.parametrize(
     "file_name",
     [
@@ -38,11 +63,10 @@ async def test_storage_dir_contains_expected_files() -> None:
 )
 async def test_invalid_profile_file_name(file_name: str) -> None:
     # ARRANGE
-    profile_dir = PersistentStorageService.get_profile_directory("invalid_profile_file_name_test")
-    profile_dir.mkdir(parents=True, exist_ok=True)
-    profile_file_path = profile_dir / file_name
-    profile_file_path.touch()
+    profile_file_path = _create_stub_profile_file(file_name)
 
-    # ACT & ASSERT
-    with pytest.raises(ModelDoesNotExistsError, match=f"Model not found for profile stored at `{file_name}`."):
-        PersistentStorageService._model_cls_from_path(profile_file_path)
+    # ACT
+    version = PersistentStorageService.get_version_from_profile_file(profile_file_path)
+
+    # ASSERT
+    assert version is None, "If the file name is invalid, we should get None"
