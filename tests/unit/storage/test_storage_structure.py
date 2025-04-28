@@ -23,7 +23,19 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert profile_file_path.read_text(), "Profile file is empty."
 
 
-@pytest.mark.parametrize("file_name", ["vv1.profile", "v1.backup", "v2.2profile", "v2.2.profile"])
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "vv1.profile",
+        "v1.backup",
+        "v2.2profile",
+        "v2.2.profile",
+        "2.profile",
+        "2.2.profile",
+        ".profile",
+        "v2.backup.profile",
+    ],
+)
 async def test_invalid_profile_file_name(file_name: str) -> None:
     # ARRANGE
     profile_dir = PersistentStorageService.get_profile_directory("invalid_profile_file_name_test")
