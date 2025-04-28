@@ -3,9 +3,8 @@ from __future__ import annotations
 from collections.abc import Sequence  # noqa: TC003
 from datetime import UTC, datetime
 from pathlib import Path  # noqa: TC003
-from typing import Any, ClassVar, TypeAlias
+from typing import Any, ClassVar, Literal, TypeAlias
 
-from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TC001
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -16,10 +15,22 @@ from clive.__private.models.schemas import (
 from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
+class DateTimeAlarmIdentifierStorageModel(CliveBaseModel):
+    value: HiveDateTime
+
+class RecoveryAccountWarningListedAlarmIdentifierStorageModel(CliveBaseModel):
+    recovery_account: str
+
+
+AllAlarmIdentifiersStorageModel = (
+    DateTimeAlarmIdentifierStorageModel | RecoveryAccountWarningListedAlarmIdentifierStorageModel
+)
+
+
 class AlarmStorageModel(CliveBaseModel):
     name: str
     is_harmless: bool = False
-    identifier: AllAlarmIdentifiers
+    identifier: AllAlarmIdentifiersStorageModel
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
@@ -63,3 +74,8 @@ class ProfileStorageModel(ProfileStorageBase):
     KeyAliasStorageModel: ClassVar[TypeAlias] = KeyAliasStorageModel
     TransactionCoreStorageModel: ClassVar[TypeAlias] = TransactionCoreStorageModel
     TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
+    DateTimeAlarmIdentifierStorageModel: ClassVar[TypeAlias] = DateTimeAlarmIdentifierStorageModel
+    RecoveryAccountWarningListedAlarmIdentifierStorageModel: ClassVar[TypeAlias] = (
+        RecoveryAccountWarningListedAlarmIdentifierStorageModel
+    )
+    AllAlarmIdentifiersStorageModel: ClassVar[TypeAlias] = AllAlarmIdentifiersStorageModel

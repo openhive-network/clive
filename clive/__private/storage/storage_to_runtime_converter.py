@@ -5,16 +5,26 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
+from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
+    RecoveryAccountWarningListedAlarmIdentifier,
+)
 from clive.__private.core.keys import PublicKeyAliased
 from clive.__private.models import Transaction
+from clive.__private.storage.model import ProfileStorageModel
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.alarms.alarm import AnyAlarm
+    from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers
     from clive.__private.core.profile import Profile
-    from clive.__private.storage.model import ProfileStorageModel
+
+
+class AlarmIdentifierStorageToRuntimeConversionError(CliveError):
+    """Exception raised when an alarm identifier cannot be converted to runtime."""
 
 
 class StorageToRuntimeConverter:
@@ -101,8 +111,20 @@ class StorageToRuntimeConverter:
         return KnownAccount(name)
 
     def _alarm_from_model(self, model: ProfileStorageModel.AlarmStorageModel) -> AnyAlarm:
-        alarm_cls = Alarm.get_alarm_class_by_name(model.name)
-        return alarm_cls(identifier=model.identifier, is_harmless=model.is_harmless)
+        alarm_cls = Alarm.get_alarm_class_by_name(model.identifier)
+        identifier = self._alarm_identifier_from_model(model.identifier)
+        return alarm_cls(identifier=identifier, is_harmless=model.is_harmless)
+
+    def _alarm_identifier_from_model(
+        self, model: ProfileStorageModel.AllAlarmIdentifiersStorageModel
+    ) -> AllAlarmIdentifiers:
+        if isinstance(model, ProfileStorageModel.DateTimeAlarmIdentifierStorageModel):
+            return DateTimeAlarmIdentifier(value=model.value)
+        if isinstance(model, ProfileStorageModel.RecoveryAccountWarningListedAlarmIdentifierStorageModel):
+            return RecoveryAccountWarningListedAlarmIdentifier(recovery_account=model.recovery_account)
+        raise AlarmIdentifierStorageToRuntimeConversionError(
+            f"Unknown alarm identifier storage model type: {type(model)}"
+        )
 
     def _key_alias_from_model(self, model: ProfileStorageModel.KeyAliasStorageModel) -> PublicKeyAliased:
         return PublicKeyAliased(value=model.public_key, alias=model.alias)
