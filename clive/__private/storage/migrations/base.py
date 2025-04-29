@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from hashlib import sha256
-from typing import Any, ClassVar, Self
+from typing import Any, ClassVar, Self, get_type_hints
 
 from clive.__private.models.base import CliveBaseModel
 from clive.exceptions import CliveError
@@ -35,6 +35,7 @@ class ProfileStorageBase(CliveBaseModel, ABC):
         assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
         cls._REVISIONS.append(revision)
         cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
+        cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
         return hash(self.json(indent=4))
@@ -93,3 +94,23 @@ class ProfileStorageBase(CliveBaseModel, ABC):
     @classmethod
     def _get_revision_seed(cls) -> str:
         return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)
+
+    @classmethod
+    def _validate_upgrade_definition(cls) -> None:
+        hints = get_type_hints(cls.upgrade)
+
+        this_version = cls.get_this_version()
+        prev_version = cls.get_this_version() - 1
+        if this_version > 0:
+            assert "old" in hints, f"Upgrade function of {cls} should accept 'old' parameter, but it doesn't."
+
+            old_param = hints.get("old")
+            prev_cls = cls._get_model_cls_for_version(prev_version)
+            assert old_param is prev_cls, (
+                f"Upgrade function of {cls} should accept {prev_cls}, but it takes {old_param} instead."
+            )
+
+            return_param = hints.get("return")
+            assert return_param is Self, (
+                f"Upgrade function of {cls} should return {Self}, but it returns {return_param} instead."
+            )
