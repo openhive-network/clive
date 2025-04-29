@@ -7,8 +7,7 @@ from rich.panel import Panel
 from typer import rich_utils
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.models.schemas import TransactionId
-from schemas.decoders import validate_schema_field
+from clive.__private.models.schemas import TransactionId, validate_schema_field
 
 if TYPE_CHECKING:
     from click import ClickException

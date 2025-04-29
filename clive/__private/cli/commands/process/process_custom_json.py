@@ -7,9 +7,8 @@ from pathlib import Path
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
-from clive.__private.models.schemas import CustomJsonOperation
+from clive.__private.models.schemas import CustomJsonOperation, JsonString
 from clive.__private.validators.json_validator import JsonValidator
-from schemas.fields.resolvables import JsonString
 
 
 @dataclass(kw_only=True)

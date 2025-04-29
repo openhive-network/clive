@@ -7,12 +7,12 @@ from clive.__private.core.commands.abc.command_encryption import CommandRequires
 from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
+from clive.__private.models.schemas import get_hf26_decoder
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
-from schemas.decoders import get_hf26_decoder
 
 if TYPE_CHECKING:
     from clive.__private.core.encryption import EncryptionService

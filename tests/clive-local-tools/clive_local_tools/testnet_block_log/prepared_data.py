@@ -6,7 +6,7 @@ import test_tools as tt
 from test_tools import BlockLog
 from test_tools.__private.node_config import NodeConfig
 
-from schemas.decoders import get_hf26_decoder
+from clive.__private.models.schemas import get_hf26_decoder
 
 
 def get_alternate_chain_spec_path() -> Path:

@@ -12,7 +12,7 @@ from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import WaxOperationFailedError
 from clive.__private.models import Transaction
-from schemas.decoders import get_hf26_decoder
+from clive.__private.models.schemas import get_hf26_decoder
 
 if TYPE_CHECKING:
     from pathlib import Path

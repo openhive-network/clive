@@ -8,12 +8,14 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
+from clive.__private.models.schemas import (
+    AssetNaiAmount,
+    HiveInt,
+    convert_to_representation,
+    get_hf26_decoder,
+    get_hf26_encoder,
+)
 from clive.exceptions import CliveError
-from schemas.decoders import get_hf26_decoder
-from schemas.encoders import get_hf26_encoder
-from schemas.fields.assets._base import AssetNaiAmount
-from schemas.fields.hive_int import HiveInt
-from schemas.operations import convert_to_representation
 
 if TYPE_CHECKING:
     from decimal import Decimal

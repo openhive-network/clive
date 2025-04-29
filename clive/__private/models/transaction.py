@@ -13,9 +13,9 @@ from clive.__private.models.schemas import (
     OperationUnion,
     Signature,
     TransactionId,
+    convert_to_representation,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
-from schemas.operations import convert_to_representation
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

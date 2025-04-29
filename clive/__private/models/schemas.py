@@ -59,8 +59,11 @@ from schemas.apis.rc_api import ListRcAccounts as SchemasListRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
+from schemas.clive.base import CliveBaseModel
+from schemas.decoders import get_hf26_decoder, is_matching_model, validate_schema_field
+from schemas.encoders import get_hf26_encoder
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
-from schemas.fields.assets._base import AssetBase
+from schemas.fields.assets._base import AssetBase, AssetNaiAmount
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
@@ -68,6 +71,8 @@ from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
+from schemas.fields.integers import Int64t, Uint16t
+from schemas.fields.resolvables import JsonString
 from schemas.fields.serializable import Serializable
 from schemas.jsonrpc import ExpectResultT as JSONRPCExpectResultT
 from schemas.jsonrpc import JSONRPCRequest as SchemasJSONRPCRequest
@@ -127,13 +132,14 @@ from schemas.operations import (
     WitnessBlockApproveOperation,
     WitnessSetPropertiesOperation,
     WitnessUpdateOperation,
+    convert_to_representation,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperation
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.representation_types import HF26Representation
+from schemas.operations.representation_types import HF26Representation, HF26RepresentationTransferOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
-from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
+from schemas.policies import Extra, ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
 from schemas.transaction import Transaction
 from schemas.virtual_operation import VirtualOperation
 
@@ -231,6 +237,9 @@ __all__ = [
     "WitnessBlockApproveOperation",
     "WitnessSetPropertiesOperation",
     "WitnessUpdateOperation",
+    # representation
+    "HF26RepresentationTransferOperation",
+    "convert_to_representation",
     # extensions
     "RecurrentTransferPairIdExtension",
     "RecurrentTransferPairIdRepresentation",
@@ -239,6 +248,7 @@ __all__ = [
     "AssetHbd",
     "AssetHive",
     "AssetVests",
+    "AssetNaiAmount",
     # basic fields
     "AccountName",
     "ChainId",
@@ -267,6 +277,11 @@ __all__ = [
     "VestingDelegation",
     "VestingDelegationExpiration",
     "WithdrawRoute",
+    # integers
+    "Int64t",
+    "Uint16t",
+    # resolvables
+    "JsonString",
     # policies
     "ExtraFieldsPolicy",
     "JSONRPCExpectResultT",
@@ -274,6 +289,7 @@ __all__ = [
     "MissingFieldsInGetConfigPolicy",
     "Policy",
     "set_policies",
+    "Extra",
     # jsonrpc
     "get_response_model",
     "JSONRPCRequest",
@@ -281,6 +297,13 @@ __all__ = [
     # other
     "RepresentationBase",
     "Serializable",
+    # decoders
+    "get_hf26_decoder",
+    "get_hf26_encoder",
+    "is_matching_model",
+    "validate_schema_field",
+    # clive
+    "CliveBaseModel",
 ]
 
 # operation BASIC aliases
@@ -352,6 +375,7 @@ Witness = WitnessesFundament
 # policies
 
 ExtraFieldsPolicy = ExtraFields
+ExtraPolicy = Extra
 MissingFieldsInGetConfigPolicy = MissingFieldsInGetConfig
 
 # jsonrpc

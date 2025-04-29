@@ -11,7 +11,7 @@ from clive.__private.core.constants.alarm_descriptions import (
     GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION,
 )
 from clive.__private.core.date_utils import is_null_date
-from schemas.fields.hive_datetime import HiveDateTime
+from clive.__private.models.schemas import HiveDateTime
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData

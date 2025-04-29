@@ -321,8 +321,7 @@ class SafeSettings:
             return remote_handle_settings
 
         def _get_node_chain_id(self) -> str | None:
-            from clive.__private.models.schemas import ChainId
-            from schemas.decoders import is_matching_model
+            from clive.__private.models.schemas import ChainId, is_matching_model
 
             setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")

@@ -4,8 +4,7 @@ from collections.abc import Iterable
 from typing import Any, TypeAlias
 
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import OperationBase, OperationRepresentationUnion
-from schemas.operations import convert_to_representation
+from clive.__private.models.schemas import OperationBase, OperationRepresentationUnion, convert_to_representation
 
 TransactionConvertibleType: TypeAlias = OperationBase | Iterable[OperationBase] | Transaction
 

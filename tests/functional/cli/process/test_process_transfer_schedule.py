@@ -10,10 +10,10 @@ import test_tools as tt
 from clive.__private.cli.common.parsers import scheduled_transfer_frequency_parser
 from clive.__private.core.constants.node_special_assets import SCHEDULED_TRANSFER_REMOVE_ASSETS
 from clive.__private.core.date_utils import timedelta_to_int_hours
+from clive.__private.models.schemas import RecurrentTransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
-from schemas.operations import RecurrentTransferOperation
 
 ACCOUNT_NAME: Final[str] = WORKING_ACCOUNT_NAME
 RECEIVER: Final[str] = WATCHED_ACCOUNTS_NAMES[0]

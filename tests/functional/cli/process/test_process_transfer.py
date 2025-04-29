@@ -9,6 +9,7 @@ from clive.__private.cli.exceptions import (
     CLINoProfileUnlockedError,
     CLITransactionNotSignedError,
 )
+from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
@@ -16,7 +17,6 @@ from clive_local_tools.checkers.blockchain_checkers import (
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_NAME
-from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester

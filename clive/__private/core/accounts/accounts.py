@@ -4,9 +4,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from clive.__private.models.schemas import AccountName
+from clive.__private.models.schemas import AccountName, is_matching_model
 from clive.exceptions import CliveError
-from schemas.decoders import is_matching_model
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_node_data import NodeData

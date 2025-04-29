@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from clive.__private.models.schemas import HiveDateTime  # noqa: TCH001
-from schemas.clive.base import CliveBaseModel
+from clive.__private.models.schemas import CliveBaseModel, HiveDateTime
 
 
 class AlarmIdentifier(CliveBaseModel):

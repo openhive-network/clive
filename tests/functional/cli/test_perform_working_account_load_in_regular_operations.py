@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
+from clive.__private.models.schemas import CustomJsonOperation, JsonString, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT2_KEY_ALIAS,
@@ -19,7 +19,6 @@ from clive_local_tools.testnet_block_log import (
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_NAME,
 )
-from schemas.fields.resolvables import JsonString
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World

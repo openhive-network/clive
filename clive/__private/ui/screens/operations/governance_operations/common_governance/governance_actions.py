@@ -9,10 +9,10 @@ from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.models.schemas import AccountWitnessVoteOperation, UpdateProposalVotesOperation
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.section_title import SectionTitle
-from schemas.operations import AccountWitnessVoteOperation, UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

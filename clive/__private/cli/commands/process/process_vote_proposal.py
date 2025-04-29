@@ -6,8 +6,7 @@ from dataclasses import dataclass
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
-from clive.__private.models.schemas import UpdateProposalVotesOperation
-from schemas.fields.integers import Int64t
+from clive.__private.models.schemas import Int64t, UpdateProposalVotesOperation
 
 
 @dataclass(kw_only=True)
