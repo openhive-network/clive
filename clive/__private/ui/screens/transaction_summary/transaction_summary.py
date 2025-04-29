@@ -18,7 +18,6 @@ from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
     ConfirmInvalidateSignaturesDialog,
-    LoadTransactionFromFileDialog,
     SaveTransactionToFileDialog,
 )
 from clive.__private.ui.get_css import get_relative_css_path
@@ -150,7 +149,7 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
+        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "app.load_transaction_from_file", "Open transaction file"),
         Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
         Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
         Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
@@ -182,14 +181,6 @@ class TransactionSummary(BaseScreen):
             yield ButtonContainer()
         with ScrollablePart():
             yield CartTable()
-
-    @on(ButtonOpenTransactionFromFile.Pressed)
-    def action_load_transaction_from_file(self) -> None:
-        async def load_transaction_from_file_cb(result: bool | None) -> None:
-            if result:
-                await self._rebuild()
-
-        self.app.push_screen(LoadTransactionFromFileDialog(), load_transaction_from_file_cb)
 
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
@@ -223,6 +214,10 @@ class TransactionSummary(BaseScreen):
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
         else:
             await refresh()
+
+    @on(ButtonOpenTransactionFromFile.Pressed)
+    def load_transaction_from_file_by_button(self) -> None:
+        self.app.action_load_transaction_from_file()
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
