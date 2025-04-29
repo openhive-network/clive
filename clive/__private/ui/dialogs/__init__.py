@@ -6,6 +6,7 @@ from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import Conf
 from clive.__private.ui.dialogs.load_transaction_from_file_dialog import LoadTransactionFromFileDialog
 from clive.__private.ui.dialogs.mark_alarm_as_harmless_dialog import MarkAlarmAsHarmlessDialog
 from clive.__private.ui.dialogs.remove_key_alias_dialog import RemoveKeyAliasDialog
+from clive.__private.ui.dialogs.save_transaction_to_file_dialog import SaveTransactionToFileDialog
 from clive.__private.ui.dialogs.switch_working_account_dialog import SwitchWorkingAccountDialog
 from clive.__private.ui.dialogs.witness_details_dialog import WitnessDetailsDialog
 
@@ -16,6 +17,7 @@ __all__ = [
     "LoadTransactionFromFileDialog",
     "MarkAlarmAsHarmlessDialog",
     "RemoveKeyAliasDialog",
+    "SaveTransactionToFileDialog",
     "SwitchWorkingAccountDialog",
     "WitnessDetailsDialog",
 ]

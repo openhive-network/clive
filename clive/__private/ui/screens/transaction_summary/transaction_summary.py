@@ -17,7 +17,7 @@ from clive.__private.core.constants.tui.bindings import (
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
+from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog, SaveTransactionToFileDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
@@ -29,10 +29,6 @@ from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file_to_save_transaction import (
-    SaveTransactionResult,
-    SelectFileToSaveTransaction,
-)
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
@@ -40,6 +36,9 @@ if TYPE_CHECKING:
     from textual.widgets._select import NoSelection
 
     from clive.__private.core.profile import Profile
+    from clive.__private.ui.widgets.select_file_to_save_transaction import (
+        SaveTransactionResult,
+    )
 
 
 class AlreadySignedHint(Label):
@@ -192,7 +191,12 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
+        try:
+            sign_key = self._get_key_to_sign()
+        except NoItemSelectedError:
+            sign_key = None
+
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -227,6 +231,10 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
+
+    @on(SaveTransactionToFileDialog.Confirmed)
+    async def rebuild_on_save_transaction_to_file(self) -> None:
+        await self._rebuild()
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
