@@ -119,6 +119,26 @@ class Transaction(SchemasTransaction):
         self.accept(visitor)
         return visitor.get_unknown_accounts(already_known_accounts)
 
+    def has_memoless_transfers_to_account(self, account: str) -> bool:
+        """Check for memoless transfer to given account."""
+        from clive.__private.visitors.operation.memoless_transfer_and_forceable_operations_visitor import (
+            MemolessTransferAndForceableOperationsCollector,
+        )
+
+        visitor = MemolessTransferAndForceableOperationsCollector()
+        self.accept(visitor)
+        return visitor.has_memoless_transfers_to_account(account)
+
+    def has_forceable_operation_to_account(self, account: str) -> bool:
+        """Check for forceable operation to given account."""
+        from clive.__private.visitors.operation.memoless_transfer_and_forceable_operations_visitor import (
+            MemolessTransferAndForceableOperationsCollector,
+        )
+
+        visitor = MemolessTransferAndForceableOperationsCollector()
+        self.accept(visitor)
+        return visitor.has_forceable_operations_to_account(account)
+
 
 class TransactionWithHash(Transaction):
     transaction_id: TransactionId
