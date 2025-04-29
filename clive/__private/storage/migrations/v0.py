@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence  # noqa: TC003
 from datetime import UTC, datetime
 from pathlib import Path  # noqa: TC003
-from typing import Any, ClassVar, TypeAlias
+from typing import Any, TypeAlias
 
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (
@@ -15,27 +15,21 @@ from clive.__private.models.schemas import (
 from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
-class _StorageDefinitions0(CliveBaseModel):
+class StorageDefinitions:
     class DateTimeAlarmIdentifierStorageModel(CliveBaseModel):
         value: HiveDateTime
 
     class RecoveryAccountWarningListedAlarmIdentifierStorageModel(CliveBaseModel):
         recovery_account: str
 
+    AllAlarmIdentifiersStorageModel: TypeAlias = (  # noqa: UP040
+        DateTimeAlarmIdentifierStorageModel | RecoveryAccountWarningListedAlarmIdentifierStorageModel
+    )
 
-class _StorageDefinitions1(_StorageDefinitions0):
     class AlarmStorageModel(CliveBaseModel):
         name: str
         is_harmless: bool = False
-        identifier: (  # in Pydantic v1 we must explicitly specify here all classes from union
-            _StorageDefinitions0.DateTimeAlarmIdentifierStorageModel
-            | _StorageDefinitions0.RecoveryAccountWarningListedAlarmIdentifierStorageModel
-        )
-
-    AllAlarmIdentifiersStorageModel: ClassVar[TypeAlias] = (
-        _StorageDefinitions0.DateTimeAlarmIdentifierStorageModel
-        | _StorageDefinitions0.RecoveryAccountWarningListedAlarmIdentifierStorageModel
-    )
+        identifier: StorageDefinitions.AllAlarmIdentifiersStorageModel
 
     class TransactionCoreStorageModel(CliveBaseModel):
         operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
@@ -51,19 +45,22 @@ class _StorageDefinitions1(_StorageDefinitions0):
                 {"type": "object", "description": "This should not be included in revision calculation"}
             )
 
-
-class StorageDefinitions(_StorageDefinitions1):
     class TrackedAccountStorageModel(CliveBaseModel):
         name: str
-        alarms: Sequence[_StorageDefinitions1.AlarmStorageModel] = []
+        alarms: Sequence[StorageDefinitions.AlarmStorageModel] = []
 
     class KeyAliasStorageModel(CliveBaseModel):
         alias: str
         public_key: str
 
     class TransactionStorageModel(CliveBaseModel):
-        transaction_core: _StorageDefinitions1.TransactionCoreStorageModel
+        transaction_core: StorageDefinitions.TransactionCoreStorageModel
         transaction_file_path: Path | None = None
+
+
+StorageDefinitions.AlarmStorageModel.update_forward_refs()
+StorageDefinitions.TransactionStorageModel.update_forward_refs()
+StorageDefinitions.TrackedAccountStorageModel.update_forward_refs()
 
 
 class ProfileStorageModel(ProfileStorageBase):

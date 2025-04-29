@@ -8,15 +8,16 @@ from clive.__private.models.schemas import Transaction as SchemasTransaction
 from clive.__private.storage.migrations import v0
 
 
-class _StorageDefinitions0(v0.StorageDefinitions):
+class StorageDefinitions(v0.StorageDefinitions):
     class Transaction(SchemasTransaction):
         __modify_schema__ = v0.StorageDefinitions.TransactionCoreStorageModel.__modify_schema__
 
-
-class StorageDefinitions(_StorageDefinitions0):
     class TransactionStorageModel(CliveBaseModel):
-        transaction_core: _StorageDefinitions0.Transaction
+        transaction_core: StorageDefinitions.Transaction
         transaction_file_path: Path | None = None
+
+
+StorageDefinitions.TransactionStorageModel.update_forward_refs()
 
 
 class ProfileStorageModel(v0.ProfileStorageModel):
