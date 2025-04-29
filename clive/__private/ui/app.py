@@ -24,6 +24,8 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive.__private.ui.clive_pilot import ClivePilot
+from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
@@ -68,6 +70,7 @@ class Clive(App[int]):
         Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
         Binding("f8", "go_to_dashboard", "Dashboard", show=False),
         Binding("f9", "go_to_config", "Config", show=False),
+        Binding("ctrl+f12", "load_transaction_from_file", "Load transaction from file", show=False),
     ]
 
     SCREENS = {
@@ -244,6 +247,11 @@ class Clive(App[int]):
     async def action_go_to_dashboard(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_dashboard()
+
+    def action_load_transaction_from_file(self) -> None:
+        if not self.world.app_state.is_unlocked:
+            return
+        self.push_screen(LoadTransactionFromFileDialog())
 
     async def action_go_to_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
