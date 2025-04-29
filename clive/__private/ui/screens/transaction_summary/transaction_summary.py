@@ -7,7 +7,6 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.constants.tui.bindings import (
     BROADCAST_TRANSACTION_BINDING_KEY,
     LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
@@ -29,12 +28,10 @@ from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
 from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
 )
-from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
@@ -153,7 +150,7 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
+        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "app.load_transaction_from_file", "Open transaction file"),
         Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
         Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
         Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
@@ -186,15 +183,6 @@ class TransactionSummary(BaseScreen):
         with ScrollablePart():
             yield CartTable()
 
-    @on(ButtonOpenTransactionFromFile.Pressed)
-    def action_load_transaction_from_file(self) -> None:
-        notify_text = (
-            "Loading the transaction from the file will clear the current content of the cart."
-            if self.profile.transaction
-            else None
-        )
-        self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
-
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
         await self._broadcast()
@@ -218,6 +206,10 @@ class TransactionSummary(BaseScreen):
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
         else:
             await refresh()
+
+    @on(ButtonOpenTransactionFromFile.Pressed)
+    def load_transaction_from_file_by_button(self) -> None:
+        self.app.action_load_transaction_from_file()
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
@@ -267,38 +259,6 @@ class TransactionSummary(BaseScreen):
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to {colorize_path(file_path)}"
             f" {'(signed)' if transaction.is_signed else ''}"
         )
-
-    def _add_known_accounts(self) -> None:
-        visitor = PotentialKnownAccountCollector()
-        self.profile.transaction.accept(visitor)
-        unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
-        self.profile.accounts.add_known_account(*unknown_accounts)
-        if unknown_accounts:
-            accounts = ", ".join(unknown_accounts)
-            self.notify(f"New accounts have been added to the list of known accounts: {accounts}.")
-
-    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
-        if result is None:
-            return
-
-        file_path = result.file_path
-
-        try:
-            loaded_transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise
-        except LoadTransactionError as error:
-            self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
-            return
-
-        if not loaded_transaction.is_tapos_set:
-            self.notify("TaPoS metadata was not set, updating automatically...")
-            await self._update_transaction_metadata()
-
-        self.profile.transaction_file_path = file_path
-        self.profile.transaction = loaded_transaction
-        if self.profile.should_enable_known_accounts:
-            self._add_known_accounts()
-        self.app.trigger_profile_watchers()
-        await self._rebuild()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
