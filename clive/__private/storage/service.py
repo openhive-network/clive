@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import re
 import shutil
 from dataclasses import dataclass
@@ -150,6 +151,9 @@ class PersistentStorageService:
         """
         if not force:
             cls._raise_if_profile_not_stored(profile_name)
+
+        cls._delete_legacy_profile_data(profile_name)
+
         profile_dir = cls.get_profile_directory(profile_name)
         num_of_files_in_profile_dir = len(list(profile_dir.glob("*")))
         if num_of_files_in_profile_dir > 1 and not force:
@@ -195,6 +199,26 @@ class PersistentStorageService:
     def get_version_from_profile_file(cls, filepath: Path) -> int | None:
         match = re.match(cls.PROFILE_VERSION_FILE_REGEX, filepath.name)
         return int(match.group(1)) if match else None
+
+    @classmethod
+    def _delete_legacy_profile_data(cls, profile_name: str) -> None:
+        cls._get_legacy_profile_filepath(profile_name).unlink(missing_ok=True)
+        cls._get_legacy_backup_filepath(profile_name).unlink(missing_ok=True)
+        with contextlib.suppress(OSError):
+            # remove the directory only if empty
+            cls._get_legacy_profile_directory().rmdir()
+
+    @classmethod
+    def _get_legacy_profile_directory(cls) -> Path:
+        return cls._get_storage_directory() / cls.FIRST_REVISION
+
+    @classmethod
+    def _get_legacy_profile_filepath(cls, profile_name: str) -> Path:
+        return cls._get_legacy_profile_directory() / f"{profile_name}{cls.PROFILE_FILENAME_SUFFIX}"
+
+    @classmethod
+    def _get_legacy_backup_filepath(cls, profile_name: str) -> Path:
+        return cls._get_legacy_profile_directory() / f"{profile_name}{cls.BACKUP_FILENAME_SUFFIX}"
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
