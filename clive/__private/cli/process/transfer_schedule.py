@@ -66,6 +66,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
@@ -81,6 +82,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
+        force=force,
     ).run()
 
 
@@ -96,6 +98,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """
     Modify an existing recurrent transfer.
@@ -115,6 +118,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
+        force=force,
     ).run()
 
 

@@ -23,6 +23,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes
@@ -35,6 +36,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
+        force=force,
     )
     await operation.run()
 

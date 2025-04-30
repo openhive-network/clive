@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import rich
 import typer
 
+from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
+class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False

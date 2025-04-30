@@ -28,6 +28,7 @@ async def process_delegations_set(  # noqa: PLR0913
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegations
@@ -40,6 +41,7 @@ async def process_delegations_set(  # noqa: PLR0913
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
+        force=force,
     )
     await operation.run()
 

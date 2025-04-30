@@ -8,6 +8,7 @@ from getpass import getpass
 from beekeepy.exceptions import CommunicationError
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLICreatingProfileCommunicationError,
@@ -97,9 +98,8 @@ class CreateProfile(WorldBasedCommand):
 
 
 @dataclass(kw_only=True)
-class DeleteProfile(ExternalCLICommand):
+class DeleteProfile(ExternalCLICommand, ForceableCLICommand):
     profile_name: str
-    force: bool
 
     async def _run(self) -> None:
         try:
