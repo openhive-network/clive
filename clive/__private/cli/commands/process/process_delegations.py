@@ -19,6 +19,10 @@ class ProcessDelegations(OperationCommand):
     delegatee: str
     amount: Asset.VotingT
 
+    async def validate(self) -> None:
+        await self._validate_amount()
+        await super().validate()
+
     async def _create_operation(self) -> DelegateVestingSharesOperation:
         vesting_shares = await ensure_vests_async(self.amount, self.world)
 
@@ -27,10 +31,6 @@ class ProcessDelegations(OperationCommand):
             delegatee=self.delegatee,
             vesting_shares=vesting_shares,
         )
-
-    async def validate(self) -> None:
-        await self._validate_amount()
-        await super().validate()
 
     async def _validate_amount(self) -> None:
         if self.amount in DELEGATION_REMOVE_ASSETS:

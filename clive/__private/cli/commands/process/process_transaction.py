@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ProcessTransaction(PerformActionsOnTransactionCommand):
     from_file: str | Path
-
     _loaded_transaction: Transaction | None = None
 
     @property
@@ -30,15 +29,6 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         if self._loaded_transaction is None:
             self._loaded_transaction = await self.__load_transaction()
         return self._loaded_transaction
-
-    async def __load_transaction(self) -> Transaction:
-        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
-
-    async def _get_transaction_content(self) -> Transaction:
-        return await self.__loaded_transaction
-
-    def _get_transaction_created_message(self) -> str:
-        return "loaded"
 
     async def validate(self) -> None:
         """
@@ -76,3 +66,12 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
     async def _is_transaction_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
+
+    async def _get_transaction_content(self) -> Transaction:
+        return await self.__loaded_transaction
+
+    def _get_transaction_created_message(self) -> str:
+        return "loaded"
+
+    async def __load_transaction(self) -> Transaction:
+        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()

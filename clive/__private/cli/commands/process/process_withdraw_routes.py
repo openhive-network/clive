@@ -17,6 +17,10 @@ class ProcessWithdrawRoutes(OperationCommand):
     percent: Decimal
     auto_vest: bool
 
+    async def validate(self) -> None:
+        await self._validate_percent()
+        await super().validate()
+
     async def _create_operation(self) -> SetWithdrawVestingRouteOperation:
         return SetWithdrawVestingRouteOperation(
             from_account=self.from_account,
@@ -24,10 +28,6 @@ class ProcessWithdrawRoutes(OperationCommand):
             percent=percent_to_hive_percent(self.percent),
             auto_vest=self.auto_vest,
         )
-
-    async def validate(self) -> None:
-        await self._validate_percent()
-        await super().validate()
 
     async def _validate_percent(self) -> None:
         if self.percent == PERCENT_TO_REMOVE_WITHDRAW_ROUTE:
