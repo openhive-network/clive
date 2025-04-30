@@ -109,6 +109,16 @@ page_no = typer.Option(
     help="Page number to display, considering the given page size.",
 )
 
+force_value = typer.Option(
+    default=False,
+    help=(
+        "This flag is required when performing operations to exchange accounts.\n"
+        "Some operations are not handled by exchanges.\n"
+        "Use --force to explicitly confirm and proceed with the operation despite this limitation."
+    ),
+    show_default=False,
+)
+
 # OPERATION COMMON OPTIONS >>
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
