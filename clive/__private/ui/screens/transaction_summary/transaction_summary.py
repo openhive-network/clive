@@ -18,10 +18,12 @@ from clive.__private.core.constants.tui.messages import (
     BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
     ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
 )
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
+from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
@@ -38,6 +40,7 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
 )
+from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidator
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
@@ -198,7 +201,11 @@ class TransactionSummary(BaseScreen):
             if self.profile.transaction
             else None
         )
-        self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
+
+        def delegate_work(result: SaveFileResult | None) -> None:
+            self.run_worker(self._load_transaction_from_file(result))
+
+        self.app.push_screen(SelectFile(notice=notify_text), delegate_work)
 
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
@@ -293,6 +300,9 @@ class TransactionSummary(BaseScreen):
             return
 
         if self._check_for_unknown_bad_accounts(loaded_transaction):
+            return
+
+        if not (await self._validate_operations_to_exchange(loaded_transaction)):
             return
 
         if not loaded_transaction.is_tapos_set:
@@ -391,3 +401,26 @@ class TransactionSummary(BaseScreen):
 
         self.notify(BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="warning")
         return False
+
+    async def _validate_operations_to_exchange(self, loaded_transaction: Transaction) -> bool:
+        """Validate operations from transaction to the exchange."""
+        operation_validator = ExchangeOperationsValidator(transaction=loaded_transaction)
+
+        force_required_operation = False
+        for exchange in self.world.known_exchanges:
+            result = operation_validator.validate(exchange.name)
+            if not result.is_valid:
+                if ExchangeOperationsValidator.is_invalid_transfer(result):
+                    self.notify(
+                        f"Cannot load transaction.\n{humanize_validation_result(result)}",
+                        severity="error",
+                        markup=False,
+                    )
+                    return False
+                if ExchangeOperationsValidator.is_force_required(result):
+                    force_required_operation = True
+
+        if force_required_operation:
+            return await self.app.push_screen_wait(ConfirmActionDialogWithKnownExchange())
+
+        return True
