@@ -156,8 +156,9 @@ class PersistentStorageService:
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """
         filepaths = cls._get_filepaths(profile_name, file_type="all", include_impossible_to_load=True)
+        valid_profile_filepaths = {filepath for filepath in filepaths if not filepath.is_backup}
         num_of_files_to_remove = len(filepaths)
-        if num_of_files_to_remove == 0:
+        if num_of_files_to_remove == 0 or (len(valid_profile_filepaths) == 0 and not force):
             raise ProfileDoesNotExistsError(profile_name)
         if num_of_files_to_remove > 1 and not force:
             raise MultipleProfileVersionsError(profile_name)
