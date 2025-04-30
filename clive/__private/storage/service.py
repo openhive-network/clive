@@ -274,8 +274,7 @@ class PersistentStorageService:
         paths: set[PersistentStorageService.ProfileFileInfo] = set()
 
         for path in storage_dir.glob("*/*"):
-            path_suffix = path.suffix
-            if path_suffix not in cls._get_suffixes_for_file_type(file_type):
+            if not cls.is_profile_file(path, file_type=file_type):
                 continue
 
             is_model_cls_available = cls._is_model_cls_for_versioned_profile_file_available(path)
