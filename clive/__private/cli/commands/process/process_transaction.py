@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.load_transaction import LoadTransaction
+from clive.__private.core.forceable_operations import is_forceable_operation
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.validators.path_validator import PathValidator
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ProcessTransaction(PerformActionsOnTransactionCommand):
     from_file: str | Path
-
+    force: bool
     _loaded_transaction: Transaction | None = None
 
     @property
@@ -31,14 +32,11 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             self._loaded_transaction = await self.__load_transaction()
         return self._loaded_transaction
 
-    async def __load_transaction(self) -> Transaction:
-        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
+    async def is_forceable(self) -> bool:
+        return await self._has_forceable_operations()
 
-    async def _get_transaction_content(self) -> Transaction:
-        return await self.__loaded_transaction
-
-    def _get_transaction_created_message(self) -> str:
-        return "loaded"
+    def is_force_enabled(self) -> bool:
+        return self.force
 
     async def validate(self) -> None:
         """
@@ -76,3 +74,19 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
     async def _is_transaction_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
+
+    async def _get_transaction_content(self) -> Transaction:
+        return await self.__loaded_transaction
+
+    def _get_transaction_created_message(self) -> str:
+        return "loaded"
+
+    async def __load_transaction(self) -> Transaction:
+        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
+
+    async def _has_forceable_operations(self) -> bool:
+        """Check if any operations in transaction are forceable."""
+        return any(
+            is_forceable_operation(operation.get_name())
+            for operation in (await self.__loaded_transaction).operations_models
+        )

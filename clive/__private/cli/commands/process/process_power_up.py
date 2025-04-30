@@ -15,6 +15,13 @@ class ProcessPowerUp(OperationCommand):
     from_account: str
     to_account: str
     amount: Asset.Hive
+    force: bool
+
+    async def is_forceable(self) -> bool:
+        return True
+
+    def is_force_enabled(self) -> bool:
+        return self.force
 
     async def _create_operation(self) -> TransferToVestingOperation:
         return TransferToVestingOperation(

@@ -101,22 +101,18 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
     memo: str | None
     frequency: timedelta | None
     repeat: int | None
+    force: bool
 
     @property
     def frequency_ensure(self) -> timedelta:
         assert self.frequency is not None, "Value of frequency is known at this point."
         return self.frequency
 
-    async def _create_operation(self) -> RecurrentTransferOperation:
-        return RecurrentTransferOperation(
-            from_=self.from_account,
-            to=self.to,
-            amount=self.amount,
-            memo=self.memo,
-            recurrence=timedelta_to_int_hours(self.frequency_ensure),
-            executions=self.repeat,
-            extensions=self._create_recurrent_transfer_pair_id_extension(),
-        )
+    async def is_forceable(self) -> bool:
+        return True
+
+    def is_force_enabled(self) -> bool:
+        return self.force
 
     def validate_amount_not_a_removal_value(self) -> None:
         """
@@ -133,6 +129,17 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
         scheduled_transfer_lifetime = self.repeat * self.frequency
         if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_MAX_LIFETIME:
             raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
+
+    async def _create_operation(self) -> RecurrentTransferOperation:
+        return RecurrentTransferOperation(
+            from_=self.from_account,
+            to=self.to,
+            amount=self.amount,
+            memo=self.memo,
+            recurrence=timedelta_to_int_hours(self.frequency_ensure),
+            executions=self.repeat,
+            extensions=self._create_recurrent_transfer_pair_id_extension(),
+        )
 
 
 @dataclass(kw_only=True)

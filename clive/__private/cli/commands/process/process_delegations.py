@@ -18,6 +18,17 @@ class ProcessDelegations(OperationCommand):
     delegator: str
     delegatee: str
     amount: Asset.VotingT
+    force: bool
+
+    async def is_forceable(self) -> bool:
+        return True
+
+    def is_force_enabled(self) -> bool:
+        return self.force
+
+    async def validate(self) -> None:
+        await self._validate_amount()
+        await super().validate()
 
     async def _create_operation(self) -> DelegateVestingSharesOperation:
         vesting_shares = await ensure_vests_async(self.amount, self.world)
@@ -28,10 +39,6 @@ class ProcessDelegations(OperationCommand):
             vesting_shares=vesting_shares,
         )
 
-    async def validate(self) -> None:
-        await self._validate_amount()
-        await super().validate()
-
     async def _validate_amount(self) -> None:
         if self.amount in DELEGATION_REMOVE_ASSETS:
             raise DelegationsZeroAmountError
@@ -40,6 +47,10 @@ class ProcessDelegations(OperationCommand):
 @dataclass(kw_only=True)
 class ProcessDelegationsRemove(ProcessDelegations):
     amount: Asset.VotingT = field(init=False, default_factory=lambda: DELEGATION_REMOVE_ASSETS[1].copy())
+    force: bool = field(init=False, default=False)
+
+    async def is_forceable(self) -> bool:
+        return False
 
     async def _validate_amount(self) -> None:
         """Skip the amount validation as it is already set."""

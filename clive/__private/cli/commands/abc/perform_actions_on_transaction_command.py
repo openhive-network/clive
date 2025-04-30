@@ -45,6 +45,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
 
+    async def is_forceable(self) -> bool:
+        return False
+
+    def is_force_enabled(self) -> bool:
+        return False
+
     async def get_transaction(self) -> Transaction:
         return ensure_transaction(await self._get_transaction_content())
 

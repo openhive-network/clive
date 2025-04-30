@@ -18,6 +18,13 @@ class ProcessWithdrawal(OperationCommand):
     to_account: str
     amount: Asset.LiquidT
     memo: str
+    force: bool
+
+    async def is_forceable(self) -> bool:
+        return True
+
+    def is_force_enabled(self) -> bool:
+        return self.force
 
     async def _create_operation(self) -> TransferFromSavingsOperation:
         if self.request_id is None:

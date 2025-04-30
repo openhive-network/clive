@@ -90,6 +90,7 @@ async def process_transaction(  # noqa: PLR0913
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
@@ -104,6 +105,7 @@ async def process_transaction(  # noqa: PLR0913
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
+        force=force,
     ).run()
 
 
