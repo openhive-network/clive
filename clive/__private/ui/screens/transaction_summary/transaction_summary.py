@@ -17,11 +17,13 @@ from clive.__private.core.constants.tui.bindings import (
 from clive.__private.core.constants.tui.messages import (
     BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
     ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
+    MEMOLESS_TRANSFER_TO_EXCHANGE_MESSAGE,
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
+from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
@@ -280,7 +282,23 @@ class TransactionSummary(BaseScreen):
             accounts = ", ".join(unknown_accounts)
             self.notify(f"New accounts have been added to the list of known accounts: {accounts}.")
 
-    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
+    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:  # noqa: C901
+        async def perform_post_load_actions() -> None:
+            if not loaded_transaction.is_tapos_set:
+                self.notify("TaPoS metadata was not set, updating automatically...")
+                await self._update_transaction_metadata()
+
+            self.profile.transaction_file_path = file_path
+            self.profile.transaction = loaded_transaction
+            if self.profile.should_enable_known_accounts:
+                self._add_known_accounts()
+            self.app.trigger_profile_watchers()
+            await self._rebuild()
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                await perform_post_load_actions()
+
         if result is None:
             return
 
@@ -295,16 +313,13 @@ class TransactionSummary(BaseScreen):
         if self._check_for_unknown_bad_accounts(loaded_transaction):
             return
 
-        if not loaded_transaction.is_tapos_set:
-            self.notify("TaPoS metadata was not set, updating automatically...")
-            await self._update_transaction_metadata()
+        if self._validate_memoless_operations_to_exchange(loaded_transaction):
+            return
 
-        self.profile.transaction_file_path = file_path
-        self.profile.transaction = loaded_transaction
-        if self.profile.should_enable_known_accounts:
-            self._add_known_accounts()
-        self.app.trigger_profile_watchers()
-        await self._rebuild()
+        if await self._validate_forceable_operations_to_exchange(loaded_transaction):
+            await self.app.push_screen(ConfirmActionDialogWithKnownExchange(), cb)
+        else:
+            await perform_post_load_actions()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
@@ -390,4 +405,19 @@ class TransactionSummary(BaseScreen):
             return True
 
         self.notify(BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="warning")
+        return False
+
+    def _validate_memoless_operations_to_exchange(self, loaded_transaction: Transaction) -> bool:
+        """Check if the loaded transaction contains any memoless transfer to exchange."""
+        for exchange in self.world.known_exchanges:
+            if loaded_transaction.has_memoless_transfers_to_account(exchange.name):
+                self.notify(MEMOLESS_TRANSFER_TO_EXCHANGE_MESSAGE.format(exchange.name), severity="error")
+                return True
+        return False
+
+    async def _validate_forceable_operations_to_exchange(self, loaded_transaction: Transaction) -> bool:
+        """Validate if the loaded transaction contains any forceable operation to exchange."""
+        for exchange in self.world.known_exchanges:
+            if loaded_transaction.has_forceable_operation_to_account(exchange.name):
+                return True
         return False

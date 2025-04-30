@@ -15,3 +15,7 @@ BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE: Final[str] = (
 ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE: Final[str] = (
     f"You cannot load the transaction from a file.\n{BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE}"
 )
+
+MEMOLESS_TRANSFER_TO_EXCHANGE_MESSAGE: Final[str] = (
+    "Cannot load transaction.\nThe transfer to the exchange {0} must include a memo."
+)
