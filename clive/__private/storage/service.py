@@ -4,8 +4,7 @@ import contextlib
 import re
 import shutil
 from dataclasses import dataclass
-from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command_encryption import CommandRequiresUnlockedEncryptionWalletError
 from clive.__private.core.commands.decrypt import CommandDecryptError
@@ -18,7 +17,8 @@ from clive.__private.storage.storage_to_runtime_converter import StorageToRuntim
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
+    from pathlib import Path
 
     from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
@@ -72,18 +72,24 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 class PersistentStorageService:
     BACKUP_FILENAME_SUFFIX: Final[str] = ".backup"
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
-    PROFILE_VERSION_FILE_REGEX: Final[str] = r"^v(\d+)\.profile$"
+    PROFILE_VERSION_FILE_REGEX: Final[str] = r"^v(\d+)\.(profile|backup)$"
     FIRST_REVISION: Final[str] = "c600278a"
 
+    ProfileFileTypes = Literal["profile", "backup", "all"]
+
     @dataclass(frozen=True)
-    class ProfileNameModel:
-        name: str
-        model_cls: type[ProfileStorageBase]
+    class ProfileFileInfo:
+        profile_name: str
+        path: Path
+        model_cls: type[ProfileStorageBase] | None = None
+
+        @property
+        def is_backup(self) -> bool:
+            return self.path.suffix == PersistentStorageService.BACKUP_FILENAME_SUFFIX
 
         def version(self) -> int:
+            assert self.model_cls is not None, "Could not determine version because model is not available."
             return self.model_cls.get_this_version()
-
-    type ProfileNameModelToPath = dict[ProfileNameModel, Path]
 
     def __init__(self, encryption_service: EncryptionService) -> None:
         self._encryption_service = encryption_service
@@ -149,22 +155,22 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """
-        if not force:
-            cls._raise_if_profile_not_stored(profile_name)
+        filepaths = cls._get_filepaths(profile_name, file_type="all", include_impossible_to_load=True)
+        num_of_files_to_remove = len(filepaths)
+        if num_of_files_to_remove == 0:
+            raise ProfileDoesNotExistsError(profile_name)
+        if num_of_files_to_remove > 1 and not force:
+            raise MultipleProfileVersionsError(profile_name)
 
         cls._delete_legacy_profile_data(profile_name)
-
         profile_dir = cls.get_profile_directory(profile_name)
-        num_of_files_in_profile_dir = len(list(profile_dir.glob("*")))
-        if num_of_files_in_profile_dir > 1 and not force:
-            raise MultipleProfileVersionsError(profile_name)
-        if profile_dir.exists():  # we might store only legacy version of the profile
+        if profile_dir.exists():  # we can store only a legacy version of the profile
             shutil.rmtree(profile_dir)
 
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
         """List all stored profile names sorted alphabetically including older storage versions."""
-        profile_names = {key.name for key in cls._get_filepaths()}
+        profile_names = {filepath.profile_name for filepath in cls._get_filepaths()}
         return sorted(profile_names)
 
     @classmethod
@@ -172,16 +178,16 @@ class PersistentStorageService:
         return profile_name in cls.list_stored_profile_names()
 
     @classmethod
-    def is_profile_file(cls, path: Path) -> bool:
-        conditions = [
+    def is_profile_file(cls, path: Path, *, file_type: ProfileFileTypes = "profile") -> bool:
+        conditions: list[Callable[[], bool]] = [
             lambda: path.is_file(),
-            lambda: path.suffix == cls.PROFILE_FILENAME_SUFFIX,
+            lambda: path.suffix in cls._get_suffixes_for_file_type(file_type),
             lambda: cls.get_version_from_profile_file(path) is not None,
         ]
         if path.parent.name == cls.FIRST_REVISION:
             # in the legacy structure, there was no version in the filename
-            return all(conditions[:2])
-        return all(conditions)
+            return all(condition() for condition in conditions[:2])
+        return all(condition() for condition in conditions)
 
     @classmethod
     def get_profile_directory(cls, profile_name: str) -> Path:
@@ -199,6 +205,14 @@ class PersistentStorageService:
     def get_version_from_profile_file(cls, filepath: Path) -> int | None:
         match = re.match(cls.PROFILE_VERSION_FILE_REGEX, filepath.name)
         return int(match.group(1)) if match else None
+
+    @classmethod
+    def _get_suffixes_for_file_type(cls, file_type: ProfileFileTypes) -> list[str]:
+        if file_type == "profile":
+            return [cls.PROFILE_FILENAME_SUFFIX]
+        if file_type == "backup":
+            return [cls.BACKUP_FILENAME_SUFFIX]
+        return [cls.PROFILE_FILENAME_SUFFIX, cls.BACKUP_FILENAME_SUFFIX]
 
     @classmethod
     def _delete_legacy_profile_data(cls, profile_name: str) -> None:
@@ -226,36 +240,57 @@ class PersistentStorageService:
 
     @classmethod
     def _get_profile_filepath_to_read(cls, profile_name: str) -> Path | None:
-        filepaths = cls._get_filepaths()
-
-        candidates = [item for item in filepaths if item.name == profile_name]
-
-        if not candidates:
+        filepaths = cls._get_filepaths(profile_name)
+        if not filepaths:
             return None
 
         # Pick the path with the highest version
-        key = max(candidates, key=lambda item: item.version())
-        return filepaths[key]
+        highest_version = max(filepaths, key=lambda item: item.version())
+        return highest_version.path
 
     @classmethod
-    def _get_filepaths(cls) -> ProfileNameModelToPath:
+    def _get_filepaths(
+        cls,
+        profile_name: str | None = None,
+        file_type: ProfileFileTypes = "profile",
+        *,
+        include_impossible_to_load: bool = False,
+    ) -> set[PersistentStorageService.ProfileFileInfo]:
         """
         Retrieve file paths of profiles stored on the disk.
 
-        It will retrieve only profiles that we have a corresponding version of model for.
+        If include_impossible_to_load=False, it will retrieve only profiles that
+        we have a corresponding version of model for.
         It means any newer versions won't be picked up. (Like we're on v2, but there is v3.profile)
-        """
-        path_extension = cls.PROFILE_FILENAME_SUFFIX
-        storage_dir = cls._get_storage_directory()
-        paths: PersistentStorageService.ProfileNameModelToPath = {}
 
-        for path in storage_dir.glob(f"*/*{path_extension}"):
-            if cls._is_model_cls_for_versioned_profile_file_available(path):
-                name_model = cls.ProfileNameModel(
-                    name=cls._profile_name_from_path(path),
-                    model_cls=cls._model_cls_from_path(path),
-                )
-                paths[name_model] = path
+        Args:
+        ----
+            profile_name: If given, only profiles with this name will be returned. If None, return all profiles.
+            file_type: Determine which type of files to look for.
+            include_impossible_to_load: If True, it will return profiles even we could not load them.
+        """
+        storage_dir = cls._get_storage_directory()
+        paths: set[PersistentStorageService.ProfileFileInfo] = set()
+
+        for path in storage_dir.glob("*/*"):
+            path_suffix = path.suffix
+            if path_suffix not in cls._get_suffixes_for_file_type(file_type):
+                continue
+
+            is_model_cls_available = cls._is_model_cls_for_versioned_profile_file_available(path)
+            if not include_impossible_to_load and not is_model_cls_available:
+                continue
+
+            profile_name_from_path = cls._profile_name_from_path(path)
+            if profile_name is not None and profile_name != profile_name_from_path:
+                continue
+
+            name_model = cls.ProfileFileInfo(
+                profile_name=profile_name_from_path,
+                model_cls=cls._model_cls_from_path(path) if is_model_cls_available else None,
+                path=path,
+            )
+            paths.add(name_model)
         return paths
 
     async def _save_profile_model(self, profile_model: ProfileStorageModel) -> None:
@@ -355,7 +390,7 @@ class PersistentStorageService:
 
     @classmethod
     def _model_cls_from_path(cls, path: Path) -> type[ProfileStorageBase]:
-        cls._assert_path_is_profile_file(path)
+        cls._assert_path_is_profile_file(path, file_type="all")
 
         if path.parent.name == cls.FIRST_REVISION:
             return StorageHistory.get_model_cls_for_version(0)
@@ -378,7 +413,7 @@ class PersistentStorageService:
 
     @classmethod
     def _profile_name_from_path(cls, path: Path) -> str:
-        cls._assert_path_is_profile_file(path)
+        cls._assert_path_is_profile_file(path, file_type="all")
 
         profile_name_or_dir = path.parent.name
         if profile_name_or_dir == cls.FIRST_REVISION:
@@ -388,5 +423,5 @@ class PersistentStorageService:
         return profile_name_or_dir
 
     @classmethod
-    def _assert_path_is_profile_file(cls, path: Path) -> None:
-        assert cls.is_profile_file(path), f"Looks like {path} is not a profile file."
+    def _assert_path_is_profile_file(cls, path: Path, *, file_type: ProfileFileTypes = "profile") -> None:
+        assert cls.is_profile_file(path, file_type=file_type), f"Looks like {path} is not a profile file."

@@ -36,7 +36,7 @@ async def test_storage_dir_contains_expected_files() -> None:
     assert profile_file_path.read_text(), "Profile file is empty."
 
 
-@pytest.mark.parametrize("file_name", ["v1.profile", "v2.profile"])
+@pytest.mark.parametrize("file_name", ["v1.profile", "v2.profile", "v2.backup"])
 async def test_valid_profile_file_name(file_name: str) -> None:
     # ARRANGE
     profile_file_path = _create_stub_profile_file(file_name)
@@ -52,7 +52,6 @@ async def test_valid_profile_file_name(file_name: str) -> None:
     "file_name",
     [
         "vv1.profile",
-        "v1.backup",
         "v2.2profile",
         "v2.2.profile",
         "2.profile",
