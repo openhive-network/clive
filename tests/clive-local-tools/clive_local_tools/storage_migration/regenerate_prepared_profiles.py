@@ -9,9 +9,8 @@ If migration at some point is broken, we can regenerate storage files and keep t
 from __future__ import annotations
 
 import asyncio
-import random
 import shutil
-import string
+import tempfile
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
@@ -19,7 +18,6 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 from beekeepy import AsyncBeekeeper
 
-from clive.__private.before_launch import _initialize_user_settings
 from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
     RecoveryAccountWarningListedAlarmIdentifier,
 )
@@ -37,7 +35,11 @@ from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
 )
-from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA
+from clive_local_tools.testnet_block_log import (
+    ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT1_NAME,
+    ALT_WORKING_ACCOUNT2_DATA,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Generator
@@ -46,31 +48,15 @@ if TYPE_CHECKING:
 
 
 ACCOUNT_DATA: Final[AccountData] = ALT_WORKING_ACCOUNT1_DATA
-ACCOUNT_PASSWORD: Final[str] = ALT_WORKING_ACCOUNT1_PASSWORD
+PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME
+PROFILE_PASSWORD: Final[str] = ALT_WORKING_ACCOUNT1_PASSWORD
 VERSION: Final[int] = ProfileStorageModel.get_this_version()
-
-
-def _clear_previously_generated_profiles(path: Path) -> None:
-    extensions = {".profile", ".wallet"}
-    for item in path.rglob("*"):
-        if item.suffix in extensions:
-            item.unlink()
-
-
-def _prepare_data_path(path: Path) -> None:
-    settings.set(DATA_PATH, path)
-    _initialize_user_settings()
-
-
-def prepare_env(path: Path) -> None:
-    _clear_previously_generated_profiles(path)
-    _prepare_data_path(path)
 
 
 @asynccontextmanager
 async def prepare_encryption_service() -> AsyncGenerator[EncryptionService]:
-    account_name = ACCOUNT_DATA.account.name
-    password = ACCOUNT_PASSWORD
+    account_name = PROFILE_NAME
+    password = PROFILE_PASSWORD
     async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
         session = await beekeeper_cm.session
         user_wallet = await CreateUserWallet(
@@ -84,7 +70,7 @@ async def prepare_encryption_service() -> AsyncGenerator[EncryptionService]:
 
 
 def create_model_from_scratch() -> ProfileStorageModel:
-    account_name = ACCOUNT_DATA.account.name
+    account_name = PROFILE_NAME
     return ProfileStorageModel(
         name=account_name,
         working_account=account_name,
@@ -104,7 +90,7 @@ def create_model_from_scratch() -> ProfileStorageModel:
 
 
 def save_encrypted_profile(encrypted: str) -> None:
-    profile_directory = PersistentStorageService.get_profile_directory(ACCOUNT_DATA.account.name)
+    profile_directory = PersistentStorageService.get_profile_directory(PROFILE_NAME)
     profile_directory.mkdir(parents=True)
     filepath = profile_directory / PersistentStorageService.get_version_profile_filename(VERSION)
     filepath.write_text(encrypted)
@@ -112,23 +98,16 @@ def save_encrypted_profile(encrypted: str) -> None:
 
 @contextmanager
 def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None, None]:
-    tmp_dir_name = "".join(random.choices(string.ascii_letters, k=8))  # noqa: S311
-    tmp_dir = tt.context.get_current_directory() / tmp_dir_name
-    tmp_dir.mkdir(parents=True)
-    settings.set(DATA_PATH, tmp_dir)
-    yield
-
     dst_dir = Path(__file__).parent.absolute() / dst_dir_name
 
-    def copy_file(relative_path: Path) -> None:
-        shutil.copy(tmp_dir / relative_path, dst_dir / relative_path)
+    with tempfile.TemporaryDirectory() as tmp_dir_name:
+        settings.set(DATA_PATH, tmp_dir_name)
+        yield
 
-    copy_file(Path("beekeeper") / f"{ACCOUNT_DATA.account.name}.wallet")
-    copy_file(Path("beekeeper") / f"{EncryptionService.get_encryption_wallet_name(ACCOUNT_DATA.account.name)}.wallet")
-    absolute_profile_path = PersistentStorageService.get_profile_directory(
-        ACCOUNT_DATA.account.name
-    ) / PersistentStorageService.get_version_profile_filename(VERSION)
-    copy_file(absolute_profile_path.relative_to(tmp_dir))
+        for path in Path(tmp_dir_name).rglob("*"):
+            if path.suffix in {".wallet", ".profile"}:
+                dst_path = dst_dir / path.relative_to(tmp_dir_name)
+                shutil.copy(path, dst_path)
 
 
 async def _main() -> None:
