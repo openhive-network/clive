@@ -9,7 +9,6 @@ from textual.containers import Horizontal
 from textual.content import Content
 from textual.css.query import DOMQuery, NoMatches
 from textual.message import Message
-from textual.reactive import reactive
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
@@ -81,8 +80,6 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         Binding("ctrl+down", "select_next", "Next"),
     ]
 
-    operation_index: int = reactive(0, init=False)  # type: ignore[assignment]
-
     @dataclass
     class Delete(Message):
         widget: CartItem
@@ -99,13 +96,21 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         target_index: int
 
     def __init__(self, operation_index: int, action_manager: CartItemsActionManager) -> None:
-        assert self._is_operation_index_valid(operation_index), "During construction, operation index has to be valid"
-        self._operation_index = operation_index
+        self.operation_index = operation_index
         super().__init__(*self._create_cells())
         self._action_manager = action_manager
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(operation_index={self._operation_index})"
+
+    @property
+    def operation_index(self) -> int:
+        return self._operation_index
+
+    @operation_index.setter
+    def operation_index(self, value: int) -> None:
+        assert self._is_operation_index_valid(value), "Operation index was invalid when trying to update."
+        self._operation_index = value
 
     @property
     def operation_number_cell(self) -> CliveCheckerBoardTableCell:
@@ -141,17 +146,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self._operation_index == self.operations_amount - 1
 
     def on_mount(self) -> None:
-        self.operation_index = self._operation_index
-
         if self.is_first:
             self.unbind("ctrl+up")
         elif self.is_last:
             self.unbind("ctrl+down")
-
-    async def watch_operation_index(self, value: int) -> None:
-        assert self._is_operation_index_valid(value), "Operation index is invalid when trying to update."
-        self._operation_index = value
-        await self.operation_number_cell.update_content(self.humanize_operation_number())
 
     def humanize_operation_number(self, *, before_removal: bool = False) -> str:
         cart_items = self.operations_amount - 1 if before_removal else self.operations_amount
@@ -250,7 +248,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return Horizontal(button_show_json, button_move_up, button_move_down, button_delete)
 
     def _is_operation_index_valid(self, value: int) -> bool:
-        return value < self.operations_amount
+        return 0 <= value < self.operations_amount
 
     def _move(self, direction: Literal["up", "down"]) -> None:
         def post_message_and_disable_action() -> None:
@@ -352,6 +350,7 @@ class CartTable(CliveCheckerboardTable):
                 cart_item.operation_index = cart_item.operation_index - 1
 
         async def update_operation_number() -> None:
+            """Manually update displayed operation number of all items."""
             for cart_item in all_cart_items:
                 await cart_item.operation_number_cell.update_content(
                     cart_item.humanize_operation_number(before_removal=True)
