@@ -1,25 +1,61 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING, Final, Literal, Self
 
+from clive.__private.core.beekeeper_manager import BeekeeperManager
+from clive.__private.core.commands.get_unlocked_encryption_wallet import GetUnlockedEncryptionWallet
+from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.load_profile import LoadProfile
+from clive.__private.core.commands.unlock import Unlock
+from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Iterable
+
     from clive.__private.core.profile import Profile
-    from clive.__private.core.wallet_container import WalletContainer
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 
 class IsNotSet:
     """A class to represent a value that is not set."""
 
 
-class ProfileAccountsChecker:
-    def __init__(self, profile_name: str, wallets: WalletContainer) -> None:
+class ProfileChecker:
+    _INIT_KEY: Final[object] = object()
+    """Used to prevent direct initialization of the class. Instead factory methods should be used."""
+
+    def __init__(self, init_key: object, profile_name: str, wallets: WalletContainer) -> None:
+        self._assert_no_direct_initialization(init_key)
+
         self._profile_name = profile_name
         self._wallets = wallets
+        self._beekeeper_manager: BeekeeperManager | None = None
+
+    @classmethod
+    def from_wallets(cls, profile_name: str, wallets: WalletContainer) -> Self:
+        return cls(cls._INIT_KEY, profile_name, wallets)
+
+    @classmethod
+    @asynccontextmanager
+    async def from_password(cls, profile_name: str, password: str) -> AsyncGenerator[Self]:
+        beekeeper_manager = BeekeeperManager()
+        await beekeeper_manager.setup()
+        await (
+            Unlock(
+                password=password,
+                session=beekeeper_manager.session,
+                profile_name=profile_name,
+            )
+        ).execute()
+        unlocked_user_wallet = await (GetUnlockedUserWallet(session=beekeeper_manager.session)).execute_with_result()
+        unlocked_encryption_wallet = await (
+            GetUnlockedEncryptionWallet(session=beekeeper_manager.session)
+        ).execute_with_result()
+        await beekeeper_manager.set_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
+        checker = cls(cls._INIT_KEY, profile_name, beekeeper_manager._content)
+        checker._beekeeper_manager = beekeeper_manager
+        yield checker
+        beekeeper_manager.teardown()
 
     @property
     async def profile(self) -> Profile:
@@ -106,3 +142,10 @@ class ProfileAccountsChecker:
                 f"{account_type} account '{account}' is present while should not be.\n"
                 f"Expected: {absence_accounts_} not to be present in: {actual_accounts_}"
             )
+
+    def _assert_no_direct_initialization(self, init_key: object) -> None:
+        message = (
+            f"Please use factory methods {self.from_wallets} to or {self.from_password} "
+            "as context manager to create instance."
+        )
+        assert init_key is self._INIT_KEY, message

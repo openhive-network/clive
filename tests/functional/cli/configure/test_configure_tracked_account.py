@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive_local_tools.checkers.profile_accounts_checker import ProfileAccountsChecker
+from clive_local_tools.checkers.profile_checker import ProfileChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_NAME,
@@ -24,7 +24,7 @@ async def test_configure_tracked_account_add(cli_tester: CLITester) -> None:
     # ARRANGE
     account_to_add = ALT_WORKING_ACCOUNT1_NAME
     profile_name = cli_tester.world.profile.name
-    profile_checker = ProfileAccountsChecker(profile_name, cli_tester.world.beekeeper_manager._content)
+    profile_checker = ProfileChecker.from_wallets(profile_name, cli_tester.world.beekeeper_manager._content)
 
     # ACT
     cli_tester.configure_tracked_account_add(account_name=account_to_add)
@@ -52,7 +52,7 @@ async def test_configure_tracked_account_remove(cli_tester: CLITester) -> None:
     """Check clive configure tracked-account remove command."""
     # ARRANGE
     profile_name = cli_tester.world.profile.name
-    profile_checker = ProfileAccountsChecker(profile_name, cli_tester.world.beekeeper_manager._content)
+    profile_checker = ProfileChecker.from_wallets(profile_name, cli_tester.world.beekeeper_manager._content)
 
     # ACT
     await profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
@@ -67,7 +67,7 @@ async def test_configure_tracked_account_remove_with_already_removed_account(cli
     # ARRANGE
     message = f"Account {ACCOUNT_TO_REMOVE} not found."
     profile_name = cli_tester.world.profile.name
-    profile_checker = ProfileAccountsChecker(profile_name, cli_tester.world.beekeeper_manager._content)
+    profile_checker = ProfileChecker.from_wallets(profile_name, cli_tester.world.beekeeper_manager._content)
 
     # ACT
     await profile_checker.assert_in_tracked_accounts(account_names=[ACCOUNT_TO_REMOVE])
