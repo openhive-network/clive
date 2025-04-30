@@ -61,3 +61,14 @@ async def test_try_remove_profile_without_force(cli_tester_locked: CLITester) ->
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
         cli_tester_locked.configure_profile_delete(profile_name=profile_name)
+
+
+@pytest.mark.parametrize("force", [True, False])
+async def test_remove_non_existing_profile(cli_tester_locked: CLITester, *, force: bool) -> None:
+    # ARRANGE
+    profile_name = "non-existing"
+    message = f"Profile `{profile_name}` does not exist."
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=message):
+        cli_tester_locked.configure_profile_delete(profile_name=profile_name, force=force)
