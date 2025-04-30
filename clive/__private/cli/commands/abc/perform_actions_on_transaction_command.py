@@ -16,12 +16,14 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
+    CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
 from clive.__private.validators.path_validator import PathValidator
 
 if TYPE_CHECKING:
@@ -57,6 +59,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
+        await self._validate_operations_to_exchange()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -118,6 +121,17 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         bad_accounts = transaction_ensured.get_bad_accounts(self.profile.accounts.get_bad_accounts())
         if bad_accounts:
             raise CLITransactionBadAccountError(*bad_accounts)
+
+    async def _validate_operations_to_exchange(self) -> None:
+        transaction_ensured = await self.get_transaction()
+        exchange_operation_validator = ExchangeOperationsValidatorCli(
+            transaction=transaction_ensured,
+            suppress_force_validation=self.force,
+        )
+        for exchange in self.world.known_exchanges:
+            result = exchange_operation_validator.validate(exchange.name)
+            if not result.is_valid:
+                raise CLITransactionToExchangeError(humanize_validation_result(result))
 
     def _get_transaction_created_message(self) -> str:
         return "created"
