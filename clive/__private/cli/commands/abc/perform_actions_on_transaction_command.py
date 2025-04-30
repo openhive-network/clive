@@ -12,6 +12,8 @@ import typer
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
+    CLIForceableOperationToExchangeError,
+    CLIMemolessTransferToExchangeError,
     CLIPrettyError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
@@ -62,6 +64,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
+        await self._validate_memoless_transfer_to_exchange()
+        await self._validate_forceable_operation_to_exchange()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -123,6 +127,22 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         bad_accounts = transaction_ensured.get_bad_accounts(self.profile.accounts.get_bad_accounts())
         if bad_accounts:
             raise CLITransactionBadAccountError(*bad_accounts)
+
+    async def _validate_memoless_transfer_to_exchange(self) -> None:
+        transaction_ensured = await self.get_transaction()
+        for exchange in self.world.known_exchanges:
+            if transaction_ensured.has_memoless_transfers_to_account(exchange.name):
+                raise CLIMemolessTransferToExchangeError(exchange.name)
+
+    async def _validate_forceable_operation_to_exchange(self) -> None:
+        if await self.is_forceable():
+            transaction_ensured = await self.get_transaction()
+            for exchange in self.world.known_exchanges:
+                if (
+                    transaction_ensured.has_forceable_operation_to_account(exchange.name)
+                    and not self.is_force_enabled()
+                ):
+                    raise CLIForceableOperationToExchangeError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
