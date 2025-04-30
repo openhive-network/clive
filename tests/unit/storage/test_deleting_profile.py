@@ -15,6 +15,12 @@ from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
 PROFILE_AND_BACKUP_EXIST: Final[str] = "mary"
 ONLY_BACKUP_EXIST: Final[str] = "four"
 ONLY_LEGACY_BACKUP_EXIST: Final[str] = "six"
+PROFILE_WITHOUT_MODEL: Final[str] = "seven"
+
+
+@pytest.fixture(autouse=True)
+def _copy_blank_profile_files() -> None:
+    copy_blank_profile_files(safe_settings.data_path)
 
 
 def backup_files_exists(profile_name: str) -> bool:
@@ -30,7 +36,6 @@ def backup_files_exists(profile_name: str) -> bool:
 
 def test_delete_profile_fail_when_backups_exists() -> None:
     # ARRANGE
-    copy_blank_profile_files(safe_settings.data_path)
     message: Final[str] = f"Multiple versions or backups of profile `{PROFILE_AND_BACKUP_EXIST}` exist."
 
     # ACT
@@ -49,7 +54,6 @@ def test_delete_profile_fail_when_backups_exists() -> None:
 @pytest.mark.parametrize("profile_name", [ONLY_BACKUP_EXIST, ONLY_LEGACY_BACKUP_EXIST])
 def test_delete_profile_fail_when_only_backup_exists(profile_name: str) -> None:
     # ARRANGE
-    copy_blank_profile_files(safe_settings.data_path)
     message: Final[str] = f"Profile `{profile_name}` does not exist."
 
     # ACT
@@ -62,9 +66,6 @@ def test_delete_profile_fail_when_only_backup_exists(profile_name: str) -> None:
 
 @pytest.mark.parametrize("profile_name", [PROFILE_AND_BACKUP_EXIST, ONLY_BACKUP_EXIST, ONLY_LEGACY_BACKUP_EXIST])
 def test_force_delete_profile_deletes_backup_files(profile_name: str) -> None:
-    # ARRANGE
-    copy_blank_profile_files(safe_settings.data_path)
-
     # ACT
     PersistentStorageService.delete_profile(profile_name, force=True)
 
@@ -73,3 +74,14 @@ def test_force_delete_profile_deletes_backup_files(profile_name: str) -> None:
     assert profile_name not in actual_profiles, f"Profile `{profile_name}` deletion should be successful"
 
     assert not backup_files_exists(profile_name), f"Backup files for profile `{profile_name}` should be also deleted"
+
+
+def test_delete_future_version() -> None:
+    # ACT
+    PersistentStorageService.delete_profile(PROFILE_WITHOUT_MODEL)
+
+    # ASSERT
+    actual_profiles = PersistentStorageService.list_stored_profile_names()
+    assert PROFILE_WITHOUT_MODEL not in actual_profiles, (
+        f"Profile `{PROFILE_WITHOUT_MODEL}` deletion should be successful"
+    )
