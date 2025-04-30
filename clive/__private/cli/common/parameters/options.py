@@ -109,6 +109,25 @@ page_no = typer.Option(
     help="Page number to display, considering the given page size.",
 )
 
+# FORCEABLE OPERATIONS >>
+
+# process transaction
+# process savings deposit
+# process savings withdrawal
+# process transfer-schedule create
+# process transfer-schedule modify
+# process delegation set
+# process power-up
+# process withdraw-routes set
+
+force_value = typer.Option(
+    default=False,
+    help="Force the operation.",
+    show_default=False,
+)
+
+# << FORCEABLE OPERATIONS
+
 # OPERATION COMMON OPTIONS >>
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
