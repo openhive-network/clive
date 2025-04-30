@@ -41,9 +41,9 @@ humanize = "4.6.0"
 pydantic = "1.10.18"
 
 # remember to keep these versions adequate to one specified in test-tools
-schemas = "0.0.1.dev344+68b5f5a"
-beekeepy = "0.0.1.dev359+8f1356c"
-wax = "0.3.10.dev651+1d455bf"
+schemas = "0.0.1.dev347+80469c3"
+beekeepy = "0.0.1.dev366+568f23f"
+wax = "0.3.10.dev653+6349176"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
