@@ -14,6 +14,10 @@ from clive.__private.core.constants.tui.bindings import (
     REFRESH_TRANSACTION_METADATA_BINDING_KEY,
     SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
 )
+from clive.__private.core.constants.tui.messages import (
+    BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
+    ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
+)
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
@@ -34,12 +38,13 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import (
     SaveTransactionResult,
     SelectFileToSaveTransaction,
 )
-from clive.__private.visitors.operation.potential_known_account_visitor import PotentialKnownAccountCollector
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
+
+    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):
@@ -269,9 +274,7 @@ class TransactionSummary(BaseScreen):
         )
 
     def _add_known_accounts(self) -> None:
-        visitor = PotentialKnownAccountCollector()
-        self.profile.transaction.accept(visitor)
-        unknown_accounts = visitor.get_unknown_accounts(self.profile.accounts.known)
+        unknown_accounts = self.profile.transaction.get_unknown_accounts(self.profile.accounts.known)
         self.profile.accounts.add_known_account(*unknown_accounts)
         if unknown_accounts:
             accounts = ", ".join(unknown_accounts)
@@ -287,6 +290,9 @@ class TransactionSummary(BaseScreen):
             loaded_transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise
         except LoadTransactionError as error:
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
+            return
+
+        if self._validate_for_unknown_bad_accounts(loaded_transaction):
             return
 
         if not loaded_transaction.is_tapos_set:
@@ -362,3 +368,24 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
+
+    def _validate_for_unknown_bad_accounts(self, loaded_transaction: Transaction) -> bool:
+        """
+        Check if the loaded transaction contains any bad accounts.
+
+        If it does, and the bad accounts are unknown, notify the user with an error message, and abort.
+        If the bad accounts are known, notify the user with a warning message, and proceed.
+        """
+
+        def has_any_unknown_bad_account() -> bool:
+            return any(bad_account in unknown_accounts for bad_account in bad_accounts)
+
+        bad_accounts = loaded_transaction.get_bad_accounts(self.profile.accounts.get_bad_accounts())
+
+        if bad_accounts:
+            unknown_accounts = loaded_transaction.get_unknown_accounts(self.profile.accounts.known)
+            if has_any_unknown_bad_account():
+                self.notify(ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="error")
+                return True
+            self.notify(BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="warning")
+        return False
