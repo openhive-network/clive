@@ -19,17 +19,18 @@ def _prepare_profiles_for_loading_in_old_version() -> None:
 
 
 PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME
+PROFILE_PASSWORD: Final[str] = ALT_WORKING_ACCOUNT1_PASSWORD
 OTHER_ACCOUNT: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
 
 
 async def test_unlock_old_profile(cli_tester_locked: CLITester) -> None:
     # ACT & ASSERT
-    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=PROFILE_PASSWORD)
 
 
 async def test_load_migrated_profile(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=PROFILE_PASSWORD)
     cli_tester = cli_tester_locked
 
     # ACT & ASSERT
@@ -39,7 +40,7 @@ async def test_load_migrated_profile(cli_tester_locked: CLITester) -> None:
 
 async def test_save_changes_in_migrated_profile(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=ALT_WORKING_ACCOUNT1_PASSWORD)
+    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=PROFILE_PASSWORD)
     cli_tester = cli_tester_locked
 
     # ACT & ASSERT
