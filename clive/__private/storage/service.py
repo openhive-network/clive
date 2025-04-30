@@ -17,7 +17,7 @@ from clive.__private.storage.storage_to_runtime_converter import StorageToRuntim
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
     from pathlib import Path
 
     from clive.__private.core.encryption import EncryptionService
@@ -72,18 +72,20 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 class PersistentStorageService:
     BACKUP_FILENAME_SUFFIX: Final[str] = ".backup"
     PROFILE_FILENAME_SUFFIX: Final[str] = ".profile"
-    PROFILE_VERSION_FILE_REGEX: Final[str] = r"^v(\d+)\.profile$"
+    PROFILE_VERSION_FILE_REGEX: Final[str] = r"^v(\d+)\.(profile|backup)$"
     FIRST_REVISION: Final[str] = "c600278a"
+
+    ProfileFileTypes = Literal["profile", "backup", "all"]
 
     @dataclass(frozen=True)
     class ProfileFileInfo:
         profile_name: str
         path: Path
-        model_cls: type[ProfileStorageBase] | None = None
+        model_cls: type[ProfileStorageBase]
 
         @property
         def is_backup(self) -> bool:
-            return self.model_cls is None
+            return self.path.suffix == PersistentStorageService.BACKUP_FILENAME_SUFFIX
 
         def version(self) -> int:
             assert self.model_cls is not None, "Can't get version for backup file."
@@ -177,16 +179,16 @@ class PersistentStorageService:
         return profile_name in cls.list_stored_profile_names()
 
     @classmethod
-    def is_profile_file(cls, path: Path) -> bool:
-        conditions = [
+    def is_profile_file(cls, path: Path, *, file_type: ProfileFileTypes = "profile") -> bool:
+        conditions: list[Callable[[], bool]] = [
             lambda: path.is_file(),
-            lambda: path.suffix == cls.PROFILE_FILENAME_SUFFIX,
+            lambda: path.suffix in cls._get_suffixes_for_file_type(file_type),
             lambda: cls.get_version_from_profile_file(path) is not None,
         ]
         if path.parent.name == cls.FIRST_REVISION:
             # in the legacy structure, there was no version in the filename
-            return all(conditions[:2])
-        return all(conditions)
+            return all(condition() for condition in conditions[:2])
+        return all(condition() for condition in conditions)
 
     @classmethod
     def get_profile_directory(cls, profile_name: str) -> Path:
@@ -204,6 +206,14 @@ class PersistentStorageService:
     def get_version_from_profile_file(cls, filepath: Path) -> int | None:
         match = re.match(cls.PROFILE_VERSION_FILE_REGEX, filepath.name)
         return int(match.group(1)) if match else None
+
+    @classmethod
+    def _get_suffixes_for_file_type(cls, file_type: ProfileFileTypes) -> list[str]:
+        if file_type == "profile":
+            return [cls.PROFILE_FILENAME_SUFFIX]
+        if file_type == "backup":
+            return [cls.BACKUP_FILENAME_SUFFIX]
+        return [cls.PROFILE_FILENAME_SUFFIX, cls.BACKUP_FILENAME_SUFFIX]
 
     @classmethod
     def _delete_legacy_profile_data(cls, profile_name: str) -> None:
@@ -243,7 +253,7 @@ class PersistentStorageService:
     def _get_filepaths(
         cls,
         profile_name: str | None = None,
-        file_type: Literal["profile", "backup", "all"] = "profile",
+        file_type: ProfileFileTypes = "profile",
         *,
         include_impossible_to_load: bool = False,
     ) -> set[PersistentStorageService.ProfileFileInfo]:
@@ -260,22 +270,15 @@ class PersistentStorageService:
             file_type: Determine which type of files to look for.
             include_impossible_to_load: If True, it will return profiles even we could not load them.
         """
-        file_type_extension_mapping: dict[Literal["profile", "backup", "all"], str] = {
-            "profile": cls.PROFILE_FILENAME_SUFFIX,
-            "backup": cls.BACKUP_FILENAME_SUFFIX,
-            "all": ".*",
-        }
-        path_suffix_to_search = file_type_extension_mapping[file_type]
         storage_dir = cls._get_storage_directory()
         paths: set[PersistentStorageService.ProfileFileInfo] = set()
 
-        for path in storage_dir.glob(f"*/*{path_suffix_to_search}"):
+        for path in storage_dir.glob("*/*"):
             path_suffix = path.suffix
-            if (
-                not include_impossible_to_load
-                and path_suffix == cls.PROFILE_FILENAME_SUFFIX
-                and not cls._is_model_cls_for_versioned_profile_file_available(path)
-            ):
+            if path_suffix not in cls._get_suffixes_for_file_type(file_type):
+                continue
+
+            if not include_impossible_to_load and not cls._is_model_cls_for_versioned_profile_file_available(path):
                 continue
 
             profile_name_from_path = cls._profile_name_from_path(path)
@@ -284,7 +287,7 @@ class PersistentStorageService:
 
             name_model = cls.ProfileFileInfo(
                 profile_name=profile_name_from_path,
-                model_cls=cls._model_cls_from_path(path) if path_suffix == cls.PROFILE_FILENAME_SUFFIX else None,
+                model_cls=cls._model_cls_from_path(path),
                 path=path,
             )
             paths.add(name_model)
@@ -387,7 +390,7 @@ class PersistentStorageService:
 
     @classmethod
     def _model_cls_from_path(cls, path: Path) -> type[ProfileStorageBase]:
-        cls._assert_path_is_profile_file(path)
+        cls._assert_path_is_profile_file(path, file_type="all")
 
         if path.parent.name == cls.FIRST_REVISION:
             return StorageHistory.get_model_cls_for_version(0)
@@ -410,7 +413,7 @@ class PersistentStorageService:
 
     @classmethod
     def _profile_name_from_path(cls, path: Path) -> str:
-        cls._assert_path_is_profile_file(path)
+        cls._assert_path_is_profile_file(path, file_type="all")
 
         profile_name_or_dir = path.parent.name
         if profile_name_or_dir == cls.FIRST_REVISION:
@@ -420,5 +423,5 @@ class PersistentStorageService:
         return profile_name_or_dir
 
     @classmethod
-    def _assert_path_is_profile_file(cls, path: Path) -> None:
-        assert cls.is_profile_file(path), f"Looks like {path} is not a profile file."
+    def _assert_path_is_profile_file(cls, path: Path, *, file_type: ProfileFileTypes = "profile") -> None:
+        assert cls.is_profile_file(path, file_type=file_type), f"Looks like {path} is not a profile file."
