@@ -10,14 +10,16 @@ LATEST_REVISION: Final[str] = REVISIONS[-1]
 
 
 def test_storage_revision_doesnt_changed_for_latest_version() -> None:
+    # ARRANGE
+    info_message = (
+        "Storage model revision has changed. If you are sure that it is expected, please update the expected revision."
+    )
+
     # ACT
     actual_revision = ProfileStorageModel.get_this_revision()
 
     # ASSERT
-    message = (
-        "Storage model revision has changed. If you are sure that it is expected, please update the expected revision."
-    )
-    assert actual_revision == LATEST_REVISION, message
+    assert actual_revision == LATEST_REVISION, info_message
 
 
 async def test_storage_revision_doesnt_changed_in_known_versions() -> None:
@@ -29,4 +31,7 @@ async def test_storage_revision_doesnt_changed_in_known_versions() -> None:
     )
 
     # ACT
-    assert StorageHistory.get_revisions() == REVISIONS, info_message
+    revisions = StorageHistory.get_revisions()
+
+    # ASSERT
+    assert revisions == REVISIONS, info_message
