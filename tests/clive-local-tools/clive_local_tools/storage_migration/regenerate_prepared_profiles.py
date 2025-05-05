@@ -51,6 +51,12 @@ ACCOUNT_DATA: Final[AccountData] = ALT_WORKING_ACCOUNT1_DATA
 PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME
 PROFILE_PASSWORD: Final[str] = ALT_WORKING_ACCOUNT1_PASSWORD
 VERSION: Final[int] = ProfileStorageModel.get_this_version()
+OPERATION: Final[TransferOperation] = TransferOperation(
+    from_=ACCOUNT_DATA.account.name,
+    to=ALT_WORKING_ACCOUNT2_DATA.account.name,
+    amount=tt.Asset.Hive(1),
+    memo="",
+)
 
 
 @asynccontextmanager
@@ -135,15 +141,9 @@ async def _main() -> None:
     with copy_profile_files_from_tmp_dir("with_operations"):
         async with prepare_encryption_service() as encryption_service:
             profile_model = create_model_from_scratch()
-            operation = TransferOperation(
-                from_=ACCOUNT_DATA.account.name,
-                to=ALT_WORKING_ACCOUNT2_DATA.account.name,
-                amount=tt.Asset.Hive(1),
-                memo="",
-            )
             profile_model.transaction = ProfileStorageModel._TransactionStorageModel(
                 transaction_core=ProfileStorageModel._TransactionCoreStorageModel(
-                    operations=[convert_to_representation(operation)]
+                    operations=[convert_to_representation(OPERATION)]
                 ),
                 transaction_file_path=Path("example/path"),
             )
