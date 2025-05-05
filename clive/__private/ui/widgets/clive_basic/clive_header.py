@@ -13,6 +13,7 @@ from textual.widgets import Header, Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
+from clive.__private.core.constants.tui.tooltips import GO_TO_TRANSACTION_SUMMARY_TOOLTIP
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
@@ -89,7 +90,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
     def __init__(self) -> None:
         super().__init__(obj_to_watch=self.world, attribute_name="profile_reactive", callback=self.cart_status_callback)
-        self.tooltip = "Proceed to transaction summary"
+        self.tooltip = GO_TO_TRANSACTION_SUMMARY_TOOLTIP
 
     @staticmethod
     def cart_status_callback(profile: Profile) -> str:
