@@ -10,6 +10,7 @@ from textual.validation import Integer
 from textual.widgets import Button, Checkbox, Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
@@ -126,6 +127,13 @@ class Unlock(BaseScreen):
                     "because entered password is invalid, skipping switching modes"
                 )
                 return
+
+            # avoid showing notification with wrong password (from previous tries) after unlocking
+            invalid_password_error_notification_text = GeneralErrorNotificator.SEARCHED_AND_PRINTED_MESSAGES[
+                InvalidPasswordError
+            ]
+            if self.app.is_notification_present(invalid_password_error_notification_text):
+                self.app.clear_notifications()
 
             await self.app._switch_mode_into_unlocked()
 
