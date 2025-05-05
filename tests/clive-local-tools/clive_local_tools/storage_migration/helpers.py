@@ -11,7 +11,7 @@ from clive_local_tools.storage_migration import (
     without_alarms_and_operations,
 )
 
-BLANK_PROFILES: Final[tuple[str, ...]] = tuple(sorted(["one", "two", "three", "five", "mary"]))
+BLANK_PROFILES: Final[tuple[str, ...]] = ("one", "two", "three", "five", "mary")
 
 
 def _copy_recursively(src: Path, dst: Path) -> None:
