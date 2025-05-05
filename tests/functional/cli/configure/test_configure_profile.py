@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.cli.exceptions import CLITestCommandError
@@ -34,8 +35,10 @@ async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -
     cli_tester_locked.configure_profile_delete(profile_name=profile_name)
 
     # ASSERT
-    result = cli_tester_locked.show_profiles()
-    assert profile_name not in result.output, f"Profile {profile_name} should be deleted"
+    profiles = Profile.list_profiles()
+    assert profile_name not in profiles, (
+        f"Profile {profile_name} should be deleted but it is still detected in `Profile.list_profiles`: {profiles}"
+    )
 
 
 async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
@@ -46,8 +49,10 @@ async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
     cli_tester_locked.configure_profile_delete(profile_name=profile_name, force=True)
 
     # ASSERT
-    result = cli_tester_locked.show_profiles()
-    assert profile_name not in result.output, f"Profile {profile_name} should be deleted"
+    profiles = Profile.list_profiles()
+    assert profile_name not in profiles, (
+        f"Profile {profile_name} should be deleted but it is still detected in `Profile.list_profiles`: {profiles}"
+    )
 
 
 async def test_try_remove_profile_without_force(cli_tester_locked: CLITester) -> None:
