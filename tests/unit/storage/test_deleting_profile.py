@@ -12,11 +12,6 @@ from clive.__private.storage.service import (
 )
 from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
 
-PROFILE_AND_BACKUP_EXIST: Final[str] = "mary"
-ONLY_BACKUP_EXIST: Final[str] = "four"
-ONLY_LEGACY_BACKUP_EXIST: Final[str] = "six"
-PROFILE_WITHOUT_MODEL: Final[str] = "seven"
-
 
 @pytest.fixture(autouse=True)
 def _copy_blank_profile_files() -> None:
@@ -36,22 +31,21 @@ def backup_files_exists(profile_name: str) -> bool:
 
 def test_delete_profile_fail_when_backups_exists() -> None:
     # ARRANGE
-    message: Final[str] = f"Multiple versions or backups of profile `{PROFILE_AND_BACKUP_EXIST}` exist."
+    profile_name = "versioned_profile_and_older_backup"
+    message: Final[str] = f"Multiple versions or backups of profile `{profile_name}` exist."
 
     # ACT
     with pytest.raises(MultipleProfileVersionsError, match=message):
-        PersistentStorageService.delete_profile(PROFILE_AND_BACKUP_EXIST)
+        PersistentStorageService.delete_profile(profile_name)
 
     # ASSERT
     actual_profiles = PersistentStorageService.list_stored_profile_names()
-    assert PROFILE_AND_BACKUP_EXIST in actual_profiles, f"Profile `{PROFILE_AND_BACKUP_EXIST}` deletion should fail"
+    assert profile_name in actual_profiles, f"Profile `{profile_name}` deletion should fail"
 
-    assert backup_files_exists(PROFILE_AND_BACKUP_EXIST), (
-        f"Backup files for profile `{PROFILE_AND_BACKUP_EXIST}` should be not deleted"
-    )
+    assert backup_files_exists(profile_name), f"Backup files for profile `{profile_name}` should be not deleted"
 
 
-@pytest.mark.parametrize("profile_name", [ONLY_BACKUP_EXIST, ONLY_LEGACY_BACKUP_EXIST])
+@pytest.mark.parametrize("profile_name", ["versioned_backup", "legacy_backup"])
 def test_delete_profile_fail_when_only_backup_exists(profile_name: str) -> None:
     # ARRANGE
     message: Final[str] = f"Profile `{profile_name}` does not exist."
@@ -64,7 +58,7 @@ def test_delete_profile_fail_when_only_backup_exists(profile_name: str) -> None:
     assert backup_files_exists(profile_name), f"Backup files for profile `{profile_name}` should be not deleted"
 
 
-@pytest.mark.parametrize("profile_name", [PROFILE_AND_BACKUP_EXIST, ONLY_BACKUP_EXIST, ONLY_LEGACY_BACKUP_EXIST])
+@pytest.mark.parametrize("profile_name", ["versioned_profile_and_older_backup", "versioned_backup", "legacy_backup"])
 def test_force_delete_profile_deletes_backup_files(profile_name: str) -> None:
     # ACT
     PersistentStorageService.delete_profile(profile_name, force=True)
@@ -77,11 +71,12 @@ def test_force_delete_profile_deletes_backup_files(profile_name: str) -> None:
 
 
 def test_delete_future_version() -> None:
+    # ARRANGE
+    profile_name = "future_not_supported_yet_version"
+
     # ACT
-    PersistentStorageService.delete_profile(PROFILE_WITHOUT_MODEL)
+    PersistentStorageService.delete_profile(profile_name)
 
     # ASSERT
     actual_profiles = PersistentStorageService.list_stored_profile_names()
-    assert PROFILE_WITHOUT_MODEL not in actual_profiles, (
-        f"Profile `{PROFILE_WITHOUT_MODEL}` deletion should be successful"
-    )
+    assert profile_name not in actual_profiles, f"Profile `{profile_name}` deletion should be successful"

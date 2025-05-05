@@ -11,7 +11,12 @@ from clive_local_tools.storage_migration import (
     without_alarms_and_operations,
 )
 
-BLANK_PROFILES: Final[tuple[str, ...]] = ("one", "two", "three", "five", "mary")
+BLANK_PROFILES: Final[tuple[str, ...]] = (
+    "versioned_older_and_newer_profile",
+    "versioned_profile",
+    "versioned_profile_and_older_backup",
+    "legacy_profile",
+)
 
 
 def _copy_recursively(src: Path, dst: Path) -> None:

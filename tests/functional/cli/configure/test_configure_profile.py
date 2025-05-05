@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive.__private.cli.commands.configure.profile import CLIMultipleProfileVersionsError
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.cli.exceptions import CLITestCommandError
+from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.storage_migration.helpers import BLANK_PROFILES, copy_blank_profile_files
 
 if TYPE_CHECKING:
@@ -29,7 +31,7 @@ async def test_show_profiles_includes_all_valid_versions(cli_tester_locked: CLIT
 
 async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "three"
+    profile_name = "versioned_profile"
 
     # ACT
     cli_tester_locked.configure_profile_delete(profile_name=profile_name)
@@ -43,7 +45,7 @@ async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -
 
 async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "one"
+    profile_name = "versioned_profile_and_older_backup"
 
     # ACT
     cli_tester_locked.configure_profile_delete(profile_name=profile_name, force=True)
@@ -57,11 +59,8 @@ async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
 
 async def test_try_remove_profile_without_force(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "one"
-    message = (
-        f"Multiple versions or backups of profile `{profile_name}` exist."
-        " If you want to remove all, please use the '--force' option."
-    )
+    profile_name = "versioned_older_and_newer_profile"
+    message = get_formatted_error_message(CLIMultipleProfileVersionsError(profile_name))
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
