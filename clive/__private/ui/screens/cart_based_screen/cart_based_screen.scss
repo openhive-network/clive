@@ -26,14 +26,8 @@ CartBasedScreen {
       }
     }
 
-    CartItemsAmount {
-      align: center middle;
-      text-style: bold;
-      background: $secondary-lighten-1;
-      padding: 1;
+    CartItemsAmountButton {
       width: 1fr;
-      height: 3;
-      color: $text;
     }
 
     CartInfoContainer {

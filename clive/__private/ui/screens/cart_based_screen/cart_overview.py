@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.containers import Container, Grid, Horizontal
+from textual.events import Mount
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.tooltips import GO_TO_TRANSACTION_SUMMARY_TOOLTIP
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
 from clive.__private.models import Asset
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 
@@ -36,17 +40,28 @@ class CartItem(Static):
         super().__init__(f"{index}. {humanize_operation_name(operation)}")
 
 
-class CartItemsAmount(DynamicLabel):
+class CartItemsAmountButton(CliveButton, can_focus=False):
     """Holds the cart items amount info."""
 
-    def __init__(self) -> None:
-        super().__init__(self.world, "profile_reactive", self._get_cart_item_count)
+    class Pressed(CliveButton.Pressed):
+        """Used to identify exactly that CartItemsAmountButton was pressed."""
 
-    def _get_cart_item_count(self, profile: Profile) -> str:
+    def __init__(self) -> None:
+        super().__init__(variant="darken-primary")
+        self.tooltip = GO_TO_TRANSACTION_SUMMARY_TOOLTIP
+
+    @on(Mount)
+    def _schedule_dynamic_update(self) -> None:
+        self.watch(self.world, "profile_reactive", self._update_items_amount)
+
+    def _update_items_amount(self, profile: Profile) -> None:
         amount = len(profile.transaction)
-        if amount > 0:
-            return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
-        return "CART IS EMPTY"
+        text = f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART" if amount > 0 else "CART IS EMPTY"
+        self.update(text)
+
+    @on(Pressed)
+    async def _go_to_transaction_summary(self) -> None:
+        await self.app.action_go_to_transaction_summary()
 
 
 class CartItemsContainer(ScrollablePartFocusable):
@@ -74,7 +89,7 @@ class CartOverview(CliveWidget):
             yield Static("HBD balance:")
             yield DynamicLabel(self.world, "profile_reactive", self._get_hbd_balance)
         with CartInfoContainer():
-            yield CartItemsAmount()
+            yield CartItemsAmountButton()
             with self._cart_items_container:
                 yield from self._create_cart_items(self.profile)
 
