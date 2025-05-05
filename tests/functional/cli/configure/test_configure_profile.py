@@ -18,7 +18,7 @@ def _prepare_profile_files() -> None:
     copy_blank_profile_files(safe_settings.data_path)
 
 
-async def test_show_profiles_includes_all_versions(cli_tester_locked: CLITester) -> None:
+async def test_show_profiles_includes_all_valid_versions(cli_tester_locked: CLITester) -> None:
     # ACT & ASSERT
     result = cli_tester_locked.show_profiles()
     assert_no_exit_code_error(result)
