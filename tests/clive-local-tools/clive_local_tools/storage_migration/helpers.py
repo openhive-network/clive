@@ -2,20 +2,12 @@ from __future__ import annotations
 
 import shutil
 from pathlib import Path
-from typing import Final
 
 from clive_local_tools.storage_migration import (
     blank_profile_files,
     with_alarms,
     with_operations,
     without_alarms_and_operations,
-)
-
-BLANK_PROFILES: Final[tuple[str, ...]] = (
-    "versioned_older_and_newer_profile",
-    "versioned_profile",
-    "versioned_profile_and_older_backup",
-    "legacy_profile",
 )
 
 

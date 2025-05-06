@@ -10,7 +10,13 @@ from clive.__private.settings import safe_settings
 from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.helpers import get_formatted_error_message
-from clive_local_tools.storage_migration.helpers import BLANK_PROFILES, copy_blank_profile_files
+from clive_local_tools.storage_migration.blank_profile_files import (
+    BLANK_PROFILES,
+    VERSIONED_OLDER_AND_NEWER_PROFILE,
+    VERSIONED_PROFILE,
+    VERSIONED_PROFILE_AND_OLDER_BACKUP,
+)
+from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -31,7 +37,7 @@ async def test_show_profiles_includes_all_valid_versions(cli_tester_locked: CLIT
 
 async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "versioned_profile"
+    profile_name = VERSIONED_PROFILE
 
     # ACT
     cli_tester_locked.configure_profile_delete(profile_name=profile_name)
@@ -45,7 +51,7 @@ async def test_remove_profile_force_not_required(cli_tester_locked: CLITester) -
 
 async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "versioned_profile_and_older_backup"
+    profile_name = VERSIONED_PROFILE_AND_OLDER_BACKUP
 
     # ACT
     cli_tester_locked.configure_profile_delete(profile_name=profile_name, force=True)
@@ -59,7 +65,7 @@ async def test_remove_profile_with_force(cli_tester_locked: CLITester) -> None:
 
 async def test_try_remove_profile_without_force(cli_tester_locked: CLITester) -> None:
     # ARRANGE
-    profile_name = "versioned_older_and_newer_profile"
+    profile_name = VERSIONED_OLDER_AND_NEWER_PROFILE
     message = get_formatted_error_message(CLIMultipleProfileVersionsError(profile_name))
 
     # ACT & ASSERT
