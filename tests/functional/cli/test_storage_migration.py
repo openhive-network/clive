@@ -33,12 +33,7 @@ def _get_profile_file_version(profile_name: str) -> int:
     return info.version()
 
 
-async def test_unlock_old_profile(cli_tester_locked: CLITester) -> None:
-    # ACT & ASSERT
-    cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=PROFILE_PASSWORD)
-
-
-async def test_load_migrated_profile(cli_tester_locked: CLITester) -> None:
+async def test_unlock_and_migrate(cli_tester_locked: CLITester) -> None:
     # ARRANGE
     cli_tester_locked.unlock(profile_name=PROFILE_NAME, password_stdin=PROFILE_PASSWORD)
     cli_tester = cli_tester_locked
@@ -47,7 +42,7 @@ async def test_load_migrated_profile(cli_tester_locked: CLITester) -> None:
     )
 
     # ACT & ASSERT
-    result = cli_tester.show_profile()
+    result = cli_tester.show_profile()  # remove after resolving issue https://gitlab.syncad.com/hive/clive/-/issues/413
     assert f"Profile name: {PROFILE_NAME}" in result.output, "profile is not loaded"
     assert _get_profile_file_version(PROFILE_NAME) == ProfileStorageModel.get_this_version(), (
         f"after migration profile should be stored in version {ProfileStorageModel.get_this_version()}"
