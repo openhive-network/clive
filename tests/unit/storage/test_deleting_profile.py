@@ -29,6 +29,16 @@ def backup_files_exists(profile_name: str) -> bool:
     return legacy_backup_file.exists() or any(profile_backup_files)
 
 
+@pytest.mark.parametrize("profile_name", ["versioned_profile", "future_not_supported_yet_version", "legacy_profile"])
+def test_delete_profile(profile_name: str) -> None:
+    # ARRANGE & ACT
+    PersistentStorageService.delete_profile(profile_name)
+
+    # ASSERT
+    actual_profiles = PersistentStorageService.list_stored_profile_names()
+    assert profile_name not in actual_profiles, f"Profile `{profile_name}` deletion should be successful"
+
+
 def test_delete_profile_fail_when_backups_exists() -> None:
     # ARRANGE
     profile_name = "versioned_profile_and_older_backup"
@@ -68,15 +78,3 @@ def test_force_delete_profile_deletes_backup_files(profile_name: str) -> None:
     assert profile_name not in actual_profiles, f"Profile `{profile_name}` deletion should be successful"
 
     assert not backup_files_exists(profile_name), f"Backup files for profile `{profile_name}` should be also deleted"
-
-
-def test_delete_future_version() -> None:
-    # ARRANGE
-    profile_name = "future_not_supported_yet_version"
-
-    # ACT
-    PersistentStorageService.delete_profile(profile_name)
-
-    # ASSERT
-    actual_profiles = PersistentStorageService.list_stored_profile_names()
-    assert profile_name not in actual_profiles, f"Profile `{profile_name}` deletion should be successful"
