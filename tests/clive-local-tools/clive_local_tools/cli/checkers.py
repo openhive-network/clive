@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING
 import pytest
 from click.testing import Result
 
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
 
 from .cli_tester import CLITester
+from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -17,8 +19,6 @@ if TYPE_CHECKING:
 
     from clive.__private.cli.types import AuthorityType
     from clive.__private.models.schemas import PublicKey
-
-    from .exceptions import CLITestCommandError
 
 
 def assert_balances(
@@ -197,3 +197,8 @@ def assert_unlocked_profile(context: CLITester | Result, profile_name: str) -> N
     output = _get_output(context, CLITester.show_profile)
     expected_output = f"Profile name: {profile_name}"
     assert_output_contains(expected_output, output, "show profile")
+
+
+def assert_locked_profile(cli_tester: CLITester) -> None:
+    with pytest.raises(CLITestCommandError, match=CLINoProfileUnlockedError.MESSAGE):
+        cli_tester.show_profile()

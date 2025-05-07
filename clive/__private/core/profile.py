@@ -218,6 +218,10 @@ class Profile:
         return len(cls.list_profiles()) == 1
 
     @classmethod
+    def is_profile_stored(cls, profile_name: str) -> bool:
+        return PersistentStorageService.is_profile_stored(profile_name)
+
+    @classmethod
     def create(  # noqa: PLR0913
         cls,
         name: str,
