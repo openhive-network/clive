@@ -43,6 +43,7 @@ from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 from clive.__private.core.commands.load_profile import LoadProfile
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.lock import Lock
+from clive.__private.core.commands.migrate_profile import MigrateProfile
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_profile import SaveProfile
@@ -51,7 +52,7 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.sync_state_with_beekeeper import SyncStateWithBeekeeper
-from clive.__private.core.commands.unlock import Unlock
+from clive.__private.core.commands.unlock import Unlock, UnlockWalletStatus
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
     UpdateTransactionMetadata,
@@ -80,14 +81,13 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
     from clive.__private.core.commands.abc.command import Command
-    from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.profile import Profile
-    from clive.__private.core.types import NotifyLevel
+    from clive.__private.core.types import MigrationStatus, NotifyLevel
     from clive.__private.core.world import CLIWorld, TUIWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
@@ -172,7 +172,7 @@ class Commands[WorldT: World]:
 
     async def unlock(
         self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = True
-    ) -> CommandWithResultWrapper[RecoverWalletsStatus]:
+    ) -> CommandWithResultWrapper[UnlockWalletStatus]:
         """
         Return a CommandWrapper instance to unlock the profile-related wallets (user keys and encryption key).
 
@@ -184,12 +184,13 @@ class Commands[WorldT: World]:
             permanently.
         permanent: Whether to unlock the wallet permanently. Will take precedence when `time` is also set.
         """
+        profile_to_unlock = profile_name or self._world.profile.name
         wrapper = await self.__surround_with_exception_handlers(
             Unlock(
                 password=password,
                 app_state=self._world.app_state,
                 session=self._world.beekeeper_manager.session,
-                profile_name=profile_name or self._world.profile.name,
+                profile_name=profile_to_unlock,
                 time=time,
                 permanent=permanent,
             )
@@ -197,8 +198,10 @@ class Commands[WorldT: World]:
 
         if wrapper.success:
             result = wrapper.result_or_raise
-            if result == "user_wallet_recovered":
+            if result.recovery_status == "user_wallet_recovered":
                 self._notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
+            if result.migration_status == "migrated":
+                self._notify(f"Migration of profile `{profile_to_unlock}` was performed")
         return wrapper
 
     async def lock(self) -> CommandWrapper:
@@ -519,6 +522,15 @@ class Commands[WorldT: World]:
         return await self.__surround_with_exception_handlers(
             LoadProfile(
                 profile_name=profile_name,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
+            )
+        )
+
+    async def migrate_profile(self, *, profile_name: str | None = None) -> CommandWithResultWrapper[MigrationStatus]:
+        return await self.__surround_with_exception_handlers(
+            MigrateProfile(
+                profile_name=profile_name or self._world.profile.name,
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
             )
