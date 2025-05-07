@@ -7,7 +7,6 @@ from getpass import getpass
 
 from beekeepy.exceptions import CommunicationError
 
-from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
@@ -98,11 +97,23 @@ class CreateProfile(WorldBasedCommand):
 
 
 @dataclass(kw_only=True)
-class DeleteProfile(ExternalCLICommand, ForceableCLICommand):
+class DeleteProfile(WorldBasedCommand, ForceableCLICommand):
     profile_name: str
+
+    @property
+    def should_validate_if_remote_address_required(self) -> bool:
+        return False
+
+    @property
+    def should_validate_if_session_token_required(self) -> bool:
+        return False
+
+    @property
+    def should_require_unlocked_wallet(self) -> bool:
+        return False
 
     async def _run(self) -> None:
         try:
-            Profile.delete_by_name(self.profile_name, force=self.force)
+            await self.world.commands.delete_profile(profile_name_to_delete=self.profile_name, force=self.force)
         except MultipleProfileVersionsError as error:
             raise CLIMultipleProfileVersionsError(self.profile_name) from error

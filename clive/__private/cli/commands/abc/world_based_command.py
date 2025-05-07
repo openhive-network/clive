@@ -48,6 +48,10 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         return safe_settings.beekeeper.is_session_token_set
 
     @property
+    def should_validate_if_remote_address_required(self) -> bool:
+        return True
+
+    @property
     def should_validate_if_session_token_required(self) -> bool:
         return True
 
@@ -56,7 +60,8 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         return True
 
     async def validate(self) -> None:
-        self._validate_beekeeper_remote_address_set()
+        if self.should_validate_if_remote_address_required:
+            self._validate_beekeeper_remote_address_set()
         if self.should_validate_if_session_token_required:
             self._validate_beekeeper_session_token_set()
         await self._validate_remote_beekeeper_running()
