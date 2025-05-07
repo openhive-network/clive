@@ -34,6 +34,7 @@ from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_encryption_service import GetEncryptionService
 from clive.__private.core.commands.get_unlocked_encryption_wallet import GetUnlockedEncryptionWallet
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.get_wallet_names import GetWalletNames, WalletStatus
@@ -81,6 +82,7 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import LockSource
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
+    from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         AnyErrorHandlerContextManager,
@@ -208,6 +210,11 @@ class Commands[WorldT: World]:
                 app_state=self._world.app_state,
                 session=self._world.beekeeper_manager.session,
             )
+        )
+
+    async def get_encryption_service(self) -> CommandWithResultWrapper[EncryptionService]:
+        return await self.__surround_with_exception_handlers(
+            GetEncryptionService(session=self._world.beekeeper_manager.session)
         )
 
     async def get_unlocked_encryption_wallet(self) -> CommandWithResultWrapper[AsyncUnlockedWallet]:

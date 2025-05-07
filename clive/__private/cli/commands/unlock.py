@@ -23,6 +23,7 @@ from clive.__private.core.constants.wallet_recovery import (
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
 from clive.__private.core.profile import Profile
+from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
@@ -75,6 +76,12 @@ class Unlock(WorldBasedCommand):
         else:
             await self._unlock_in_non_tty_mode(profile_name)
         typer.echo(f"Profile `{profile_name}` is unlocked.")
+        encryption_service = (await self.world.commands.get_encryption_service()).result_or_raise
+        version_before = PersistentStorageService.get_version_to_read(profile_name)
+        await Profile.load(profile_name, encryption_service)
+        version_after = PersistentStorageService.get_version_to_read(profile_name)
+        if version_before != version_after:
+            typer.echo(self._format_migration_performed_message(profile_name, version_before, version_after))
 
     def _get_profile_name(self) -> str | None:
         return self.profile_name or self._prompt_for_profile_name()
@@ -170,3 +177,12 @@ class Unlock(WorldBasedCommand):
     def _display_wallet_recovery_status(self, status: RecoverWalletsStatus) -> None:
         if status == "user_wallet_recovered":
             notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
+
+    @classmethod
+    def _format_migration_performed_message(
+        cls, profile_name: str, version_before: int | None, version_after: int | None
+    ) -> str:
+        return (
+            f"Profile `{profile_name}` was migrated from version {version_before} to {version_after}. "
+            "Back-up of old version was created."
+        )
