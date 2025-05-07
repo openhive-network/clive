@@ -14,10 +14,14 @@ from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
+    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT1_PASSWORD,
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.testnet_block_log import (
+    ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT1_NAME,
     KNOWN_ACCOUNTS,
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
@@ -122,6 +126,31 @@ async def cli_tester_locked(cli_tester: CLITester) -> CLITester:
     await cli_tester.world.commands.lock()
     cli_tester.world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
     return cli_tester
+
+
+@pytest.fixture
+async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
+    async with World() as world_cm:
+        await world_cm.create_new_profile_with_wallets(ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD)
+        world_cm.profile.keys.add_to_import(
+            PrivateKeyAliased(
+                value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
+            )
+        )
+        await world_cm.commands.sync_data_with_beekeeper()
+        await world_cm.commands.save_profile()  # required for saving imported keys aliases
+        await world_cm.commands.lock()
+        world_cm.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
+    return cli_tester_locked
+
+
+@pytest.fixture
+async def cli_tester_without_remote_address(
+    beekeeper_remote_address_env_context_factory: EnvContextFactory,
+    cli_tester: CLITester,
+) -> AsyncGenerator[CLITester]:
+    with beekeeper_remote_address_env_context_factory(None):
+        yield cli_tester
 
 
 @pytest.fixture

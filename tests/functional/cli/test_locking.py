@@ -5,52 +5,20 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clive.__private.cli.exceptions import CLIBeekeeperRemoteAddressIsNotSetError, CLIBeekeeperSessionTokenNotSetError
-from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.world import World
 from clive_local_tools.checkers.wallet_checkers import assert_wallet_unlocked, assert_wallets_locked
 from clive_local_tools.cli.checkers import assert_unlocked_profile
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import (
-    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
     WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.testnet_block_log import (
-    ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
     WORKING_ACCOUNT_NAME,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator
-
     from clive_local_tools.cli.cli_tester import CLITester
-    from clive_local_tools.types import EnvContextFactory
-
-
-@pytest.fixture
-async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
-    async with World() as world_cm:
-        await world_cm.create_new_profile_with_wallets(ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD)
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(
-                value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
-            )
-        )
-        await world_cm.commands.sync_data_with_beekeeper()
-        await world_cm.commands.save_profile()  # required for saving imported keys aliases
-        await world_cm.commands.lock()
-        world_cm.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
-    return cli_tester_locked
-
-
-@pytest.fixture
-async def cli_tester_without_remote_address(
-    beekeeper_remote_address_env_context_factory: EnvContextFactory,
-    cli_tester: CLITester,
-) -> AsyncGenerator[CLITester]:
-    with beekeeper_remote_address_env_context_factory(None):
-        yield cli_tester
 
 
 async def test_negative_lock_without_remote_address(cli_tester_without_remote_address: CLITester) -> None:
