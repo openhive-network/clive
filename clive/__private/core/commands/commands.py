@@ -28,6 +28,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesDataRetrieval,
 )
 from clive.__private.core.commands.decrypt import Decrypt
+from clive.__private.core.commands.delete_profile import DeleteProfile
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
 from clive.__private.core.commands.encrypt import Encrypt
 from clive.__private.core.commands.find_accounts import FindAccounts
@@ -153,6 +154,16 @@ class Commands[WorldT: World]:
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 unlocked_encryption_wallet=self._world.beekeeper_manager.encryption_wallet,
                 encrypted_content=encrypted_content,
+            )
+        )
+
+    async def delete_profile(self, *, profile_name_to_delete: str, force: bool = False) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            DeleteProfile(
+                profile_name_to_delete=profile_name_to_delete,
+                profile_name_currently_unlocked=self._world.profile.name if self._world.is_profile_available else None,
+                session=self._world.beekeeper_manager.session if self._world.is_profile_available else None,
+                force=force,
             )
         )
 
