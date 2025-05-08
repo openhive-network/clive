@@ -5,6 +5,7 @@ from typing import Final
 
 import test_tools as tt
 
+from clive.__private.core.known_exchanges import KnownExchanges
 from clive_local_tools.data.generates import generate_proposal_name, generate_witness_name
 from clive_local_tools.data.models import AccountData
 
@@ -51,10 +52,13 @@ ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
 
 UNKNOWN_ACCOUNT: Final[str] = "null"
 
+KNOWN_EXCHANGES_NAMES: Final[list[str]] = [exchange.name for exchange in KnownExchanges()]
+
 KNOWN_ACCOUNTS: Final[list[str]] = [
     EMPTY_ACCOUNT.name,
     *WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_NAME,
     ALT_WORKING_ACCOUNT1_NAME,
     ALT_WORKING_ACCOUNT2_NAME,
+    *KNOWN_EXCHANGES_NAMES,
 ]

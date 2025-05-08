@@ -7,10 +7,13 @@ from rich.panel import Panel
 from typer import rich_utils
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
+from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import TransactionId
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from click import ClickException
 
 
@@ -40,3 +43,11 @@ def get_formatted_error_message(error: ClickException) -> str:
     with console.capture() as capture:
         console.print(panel)
     return capture.get()
+
+
+def create_transaction_file(path: Path, operations: TransactionConvertibleType) -> Path:
+    transaction_path = path / "trx.json"
+    transaction = ensure_transaction(operations)
+    transaction_serialized = transaction.json(by_alias=True)
+    transaction_path.write_text(transaction_serialized)
+    return transaction_path
