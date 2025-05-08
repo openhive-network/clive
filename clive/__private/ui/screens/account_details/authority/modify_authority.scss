@@ -68,13 +68,14 @@ ModifyAuthority {
   }
 
     ModifyTotalThreshold {
-        Container {
+        height: auto;
+        
+        Middle {
             align-vertical: middle;
             align-horizontal: right;
-            background: tomato;
-            height: auto;
+            height: 3;
+            width: 50%;
             Static {
-                background: navy;
                 width: auto;
                 height: auto;
             }

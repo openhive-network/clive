@@ -4,7 +4,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.account_details.authority.authority import AuthorityTable, FilterAuthority
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, Middle
 from textual.widgets import Collapsible, Static
 from textual.binding import Binding
 from clive.__private.ui.widgets.inputs.text_input import TextInput
@@ -35,7 +35,7 @@ class ModifyTotalThreshold(Horizontal):
         self._total_threshold = total_threshold
 
     def compose(self) -> ComposeResult:
-        yield Container(Static("authority threshold:"))
+        yield Middle(Static("authority threshold:"))
         yield TextInput(title="threshold")
 
 # class ModifyAuthorityTable(AuthorityTable):
@@ -70,7 +70,7 @@ class ModifyAuthority(BaseScreen):
 
     async def on_mount(self) -> None:
         operation = await AccountAuthorityUpdateOperation.create_for(self.world.wax_interface, "gtg")
-        logger.debug(f"ROLES: {operation.roles.owner}")
+        logger.debug(f"ROLES: {operation.categories.hive.account}")
 
     def create_main_panel(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -79,7 +79,7 @@ class ModifyAuthority(BaseScreen):
                 CliveButton(label="Restore", variant="error", id_="restore-button"),
                 id="button-container",
             )
-        # yield ModifyTotalThreshold(1)
+        yield ModifyTotalThreshold(1)
         yield DockedButtonPanel()
         # yield self._authority_roles
 
