@@ -4,8 +4,7 @@ import pytest
 
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService
-from clive_local_tools.storage_migration.blank_profile_files import BLANK_PROFILES
-from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
+from clive_local_tools.storage_migration import BLANK_PROFILES, copy_blank_profile_files
 
 
 @pytest.fixture(autouse=True)

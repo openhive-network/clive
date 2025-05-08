@@ -8,12 +8,12 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
 from clive.__private.settings import safe_settings
 from clive_local_tools.checkers.profile_checker import ProfileChecker
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_PASSWORD
-from clive_local_tools.storage_migration.helpers import (
+from clive_local_tools.storage_migration import (
+    OPERATION,
     copy_profile_with_alarms,
     copy_profile_with_operations,
     copy_profile_without_alarms_and_operations,
 )
-from clive_local_tools.storage_migration.regenerate_prepared_profiles import OPERATION
 from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT2_NAME
 
 PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME

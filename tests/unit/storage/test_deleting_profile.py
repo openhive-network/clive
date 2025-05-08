@@ -10,15 +10,15 @@ from clive.__private.storage.service import (
     PersistentStorageService,
     ProfileDoesNotExistsError,
 )
-from clive_local_tools.storage_migration.blank_profile_files import (
+from clive_local_tools.storage_migration import (
     FUTURE_NOT_SUPPORTED_YET_VERSION,
     LEGACY_BACKUP,
     LEGACY_PROFILE,
     VERSIONED_BACKUP,
     VERSIONED_PROFILE,
     VERSIONED_PROFILE_AND_OLDER_BACKUP,
+    copy_blank_profile_files,
 )
-from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
 
 
 @pytest.fixture(autouse=True)

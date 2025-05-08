@@ -10,13 +10,13 @@ from clive.__private.settings import safe_settings
 from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.helpers import get_formatted_error_message
-from clive_local_tools.storage_migration.blank_profile_files import (
+from clive_local_tools.storage_migration import (
     BLANK_PROFILES,
     VERSIONED_OLDER_AND_NEWER_PROFILE,
     VERSIONED_PROFILE,
     VERSIONED_PROFILE_AND_OLDER_BACKUP,
+    copy_blank_profile_files,
 )
-from clive_local_tools.storage_migration.helpers import copy_blank_profile_files
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
