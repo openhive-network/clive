@@ -174,6 +174,7 @@ class CLITester:
         amount: tt.Asset.AnyT,
         memo: str | None = None,
         from_: str | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "deposit"],
@@ -191,6 +192,7 @@ class CLITester:
         amount: tt.Asset.AnyT,
         memo: str | None = None,
         from_: str | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal"],
@@ -236,6 +238,7 @@ class CLITester:
         sign: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transaction"],
@@ -265,6 +268,7 @@ class CLITester:
         sign: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
@@ -308,6 +312,7 @@ class CLITester:
         sign: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
@@ -332,6 +337,7 @@ class CLITester:
         sign: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
@@ -484,6 +490,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         memo: str | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "create"], **extract_params(locals())
@@ -502,6 +509,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         memo: str | None = None,
+        force: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "modify"], **extract_params(locals())
