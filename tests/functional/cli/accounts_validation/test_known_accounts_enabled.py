@@ -165,7 +165,7 @@ async def test_no_validation_of_canceling_savings_withdrawal_to_account_that_was
 ) -> None:
     """It should be possible to cancel savings withdrawal, even if account is not on known account list."""
     # ARRANGE
-    request_id: int = 0
+    request_id: int = 23
     cli_tester.process_savings_withdrawal(
         to=KNOWN_ACCOUNT, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
     )
