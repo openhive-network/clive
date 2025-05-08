@@ -1,8 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.screens.account_details.authority.authority import AuthorityTable, FilterAuthority
+from clive.__private.ui.screens.account_details.authority.authority import AuthorityTable
 from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from textual.containers import Container, Horizontal, Middle
 from textual.widgets import Collapsible, Static
@@ -33,10 +34,15 @@ class ModifyTotalThreshold(Horizontal):
     def __init__(self, total_threshold: int) -> None:
         super().__init__()
         self._total_threshold = total_threshold
+        # self.threshold_input.input.value = str(total_threshold)
 
     def compose(self) -> ComposeResult:
         yield Middle(Static("authority threshold:"))
         yield TextInput(title="threshold")
+
+    @property
+    def threshold_input(self) -> TextInput:
+        return self.query_one(TextInput)
 
 # class ModifyAuthorityTable(AuthorityTable):
 #     ...
@@ -68,9 +74,10 @@ class ModifyAuthority(BaseScreen):
         self._selected_filter_options = selected_filter_options
         self._filter_input_entry = filter_input_entry
 
+
     async def on_mount(self) -> None:
         operation = await AccountAuthorityUpdateOperation.create_for(self.world.wax_interface, "gtg")
-        logger.debug(f"ROLES: {operation.categories.hive.account}")
+        logger.debug(f"ROLES: {operation.roles.active.replace}")
 
     def create_main_panel(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -79,8 +86,8 @@ class ModifyAuthority(BaseScreen):
                 CliveButton(label="Restore", variant="error", id_="restore-button"),
                 id="button-container",
             )
-        yield ModifyTotalThreshold(1)
+        with Collapsible():
+            yield ModifyTotalThreshold(1)
         yield DockedButtonPanel()
-        # yield self._authority_roles
 
     
