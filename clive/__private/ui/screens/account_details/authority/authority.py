@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on
 from textual.containers import Container, Horizontal
-from textual.widgets import Collapsible, SelectionList, Static, TabPane
+from textual.widgets import Collapsible, Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
-from textual.widgets._selection_list import Selection
 
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
@@ -15,6 +14,7 @@ from clive.__private.core.iwax import calculate_public_key
 from clive.__private.core.keys import PrivateKey
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.screens.account_details.authority.filter_authority import AccountSelectionList, FilterAuthority
 from clive.__private.ui.widgets.buttons import (
     ClearButton,
     CliveButton,
@@ -32,7 +32,6 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.models.authority import WaxAuthority
 from wax.models.basic import PublicKey
-from clive.__private.core.accounts.accounts import TrackedAccount
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -307,100 +306,6 @@ class AuthorityTable(CliveCheckerboardTable):
         ]
 
         return key_rows + account_rows
-
-
-class AccountSelectionList(SelectionList[str], CliveWidget):
-    """Selection list with account names for filtering authorities."""
-
-    def __init__(self, *, accounts: list[TrackedAccount] | list[str]) -> None:
-        if isinstance(next(iter(accounts)), TrackedAccount):
-            self._initial_checked_accounts = [account.name for account in accounts]
-        else:
-            self._initial_checked_accounts = accounts
-        working_account_name = self.profile.accounts.working.name
-        self._filter_entries = [Selection("all", "all")] + [
-            Selection(
-                f"{tracked_account.name}{
-                    ' (working)' if working_account_name and tracked_account.name is working_account_name else ''
-                }",
-                tracked_account.name,
-                initial_state=tracked_account.name in self._initial_checked_accounts,
-            )
-            for tracked_account in self.profile.accounts.tracked
-        ]
-        super().__init__(*self._filter_entries)
-
-    def restore_default(self) -> None:
-        self.deselect_all()
-        all_selections = [self.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)]
-        for selection in all_selections:
-            if selection.value in self._initial_checked_accounts:
-                self.select(selection)
-
-
-class AccountFilterCollapsible(Collapsible):
-    BORDER_TITLE = "Authority for accounts:"
-
-    def __init__(self, accounts: list[TrackedAccount] | list[str]) -> None:
-        if isinstance(next(iter(accounts)), TrackedAccount):
-            self._initial_checked_accounts = [account.name for account in accounts]
-        else:
-            self._initial_checked_accounts = accounts
-
-        super().__init__(title="temporary title")  # title can't be set before calling super().__init__()
-        self._initial_title = self.update_title(self._initial_checked_accounts)
-
-    def restore_title(self) -> None:
-        self.title = self._initial_title
-
-    def update_title(self, selected_accounts: list[str]) -> str:
-        if len(selected_accounts) == 1:
-            title = next(iter(selected_accounts))
-        elif len(selected_accounts) == 0:
-            title = "no selected accounts"
-        else:
-            title = "multiple"
-        self.title = title
-        return title
-
-class FilterAuthority(Horizontal, CliveWidget):
-    BORDER_TITLE = "Filter authority"
-
-    def __init__(self, *, accounts: list[TrackedAccount] | list[str]) -> None:
-        super().__init__()
-        self._accounts = accounts
-
-    def compose(self) -> ComposeResult:
-        yield AuthorityInput()
-        with AccountFilterCollapsible(accounts=self._accounts):
-            yield AccountSelectionList(accounts=self._accounts)
-        yield SearchButton()
-        yield ClearButton()
-
-    @property
-    def account_filter_collapsible(self) -> AccountFilterCollapsible:
-        return self.query_exactly_one(AccountFilterCollapsible)
-
-    @property
-    def account_selection_list(self) -> AccountSelectionList:
-        return self.query_exactly_one(AccountSelectionList)
-
-    @property
-    def selected_options(self) -> list[str]:
-        return self.account_selection_list.selected
-
-    @property
-    def authority_input(self) -> AuthorityInput:
-        return self.query_exactly_one(AuthorityInput)
-
-    def collapse_account_filter_collapsible(self) -> None:
-        self.account_filter_collapsible.collapsed = True
-
-    def apply_default_filter(self) -> None:
-        self.authority_input.clear_validation()
-        self.account_selection_list.restore_default()
-        self.account_filter_collapsible.restore_title()
-        self.collapse_account_filter_collapsible()
 
 
 class Authority(TabPane, CliveWidget):
