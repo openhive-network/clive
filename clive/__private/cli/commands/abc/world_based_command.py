@@ -63,8 +63,6 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
-        if self.should_require_unlocked_wallet:
-            self._validate_if_wallet_is_unlocked()
         await super().validate_inside_context_manager()
 
     def _validate_beekeeper_remote_address_set(self) -> None:
@@ -110,6 +108,7 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
 
     async def _hook_after_entering_context_manager(self) -> None:
         if self.should_require_unlocked_wallet:
+            self._validate_if_wallet_is_unlocked()
             self._supply_with_correct_default_for_working_account(self.profile)
 
     def _print_launching_beekeeper(self) -> None:

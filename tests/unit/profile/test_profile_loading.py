@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 import pytest
 from beekeepy import AsyncBeekeeper
 
-from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.save_profile import SaveProfile
@@ -84,6 +83,12 @@ async def test_loading_profile_without_beekeeper_session() -> None:
 
 
 async def test_loading_profile_without_beekeeper_session_cli() -> None:
-    # ACT & ASSERT
-    with pytest.raises(CLINoProfileUnlockedError):
-        await CLIWorld().setup()
+    # ACT
+    world = CLIWorld()
+    await CLIWorld().setup()
+
+    # ASSERT
+    assert world._profile is None, "CLIWorld should be loaded and profile should be set to None"
+    assert world.beekeeper_manager._wallets is None, "CLIWorld should be loaded and wallets should be not available"
+    assert world._wax_interface is None, "CLIWorld should be loaded but wax interface should be not loaded yet"
+    assert world._node is None, "CLIWorld should be loaded and node should be set to None"

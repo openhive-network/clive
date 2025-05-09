@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import errno
 import sys
 from dataclasses import dataclass
 from datetime import timedelta
@@ -8,13 +7,11 @@ from getpass import getpass
 from typing import TYPE_CHECKING, Final
 
 import typer
-from beekeepy.exceptions import InvalidPasswordError, NoWalletWithSuchNameError
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIInvalidPasswordError,
     CLIInvalidSelectionError,
-    CLIPrettyError,
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.cli.notify import notify
@@ -23,6 +20,8 @@ from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
 )
+from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
+from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
 from clive.__private.core.profile import Profile
 
 if TYPE_CHECKING:
@@ -90,10 +89,10 @@ class Unlock(WorldBasedCommand):
                     permanent=self._is_unlock_permanent,
                 )
             ).result_or_raise
-        except InvalidPasswordError as error:
-            raise CLIInvalidPasswordError(profile_name) from error
-        except NoWalletWithSuchNameError as error:
-            raise CLIPrettyError("Wallet with this name no longer exist on the beekeeper.", errno.ENOENT) from error
+        except CannotNotifyError as error:
+            if INVALID_PASSWORD_MESSAGE in error.reason:
+                raise CLIInvalidPasswordError(profile_name) from error
+            raise
         self._display_wallet_recovery_status(result)
 
     def _prompt_for_profile_name(self) -> str | None:

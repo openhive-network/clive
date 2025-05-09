@@ -9,12 +9,14 @@ from clive.__private.core.commands.save_profile import ProfileSavingFailedError
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 from clive.__private.storage.service import ProfileEncryptionError
 
+INVALID_PASSWORD_MESSAGE: Final[str] = "The password you entered is incorrect. Please try again."  # noqa: S105
+
 
 class GeneralErrorNotificator(ErrorNotificator[Exception]):
     """A context manager that notifies about any catchable errors that are not handled by other notificators."""
 
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
-        InvalidPasswordError: "The password you entered is incorrect. Please try again.",
+        InvalidPasswordError: INVALID_PASSWORD_MESSAGE,
         NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
         NotExistingKeyError: "Key does not exist in the wallet.",
         ProfileEncryptionError: "Profile encryption failed which means profile cannot be saved or loaded.",
