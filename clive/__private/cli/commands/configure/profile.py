@@ -37,6 +37,10 @@ class CreateProfile(WorldBasedCommand):
     profile_name: str
     working_account_name: str | None = None
 
+    @property
+    def should_require_unlocked_wallet(self) -> bool:
+        return False
+
     async def validate(self) -> None:
         profile_name_result = ProfileNameValidator().validate(self.profile_name)
         if not profile_name_result.is_valid:

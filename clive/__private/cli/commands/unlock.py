@@ -18,6 +18,7 @@ from clive.__private.cli.exceptions import (
     CLIProfileDoesNotExistsError,
 )
 from clive.__private.cli.notify import notify
+from clive.__private.core.commands.unlock import Unlock as CoreUnlockCommand
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
@@ -82,14 +83,13 @@ class Unlock(WorldBasedCommand):
 
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
         try:
-            result = (
-                await self.world.commands.unlock(
-                    profile_name=profile_name,
-                    password=password,
-                    time=self._duration,
-                    permanent=self._is_unlock_permanent,
-                )
-            ).result_or_raise
+            result = await CoreUnlockCommand(
+                profile_name=profile_name,
+                password=password,
+                session=self.world.beekeeper_manager.session,
+                time=self._duration,
+                permanent=self._is_unlock_permanent,
+            ).execute_with_result()
         except InvalidPasswordError as error:
             raise CLIInvalidPasswordError(profile_name) from error
         except NoWalletWithSuchNameError as error:
