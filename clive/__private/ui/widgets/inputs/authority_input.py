@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from textual.binding import Binding
 from textual.suggester import SuggestFromList
@@ -15,65 +15,44 @@ if TYPE_CHECKING:
 
 
 class KeyOrAccountSuggester(SuggestFromList):
-    def __init__(self, suggestions: list[str]) -> None:
-        super().__init__(suggestions=suggestions)
-        self._initial_suggestions = suggestions
-        self._suggestion_start_index = -1
+    def __init__(self, suggestions: Iterable[str]) -> None:
+        super().__init__(suggestions)
+        self.cache = None
+        self._matched: list[str] = []
+        self._index: int = 0
 
-    def reduce_suggestions(
-        self, *, input_value: str, current_suggestion: str, mode: Literal["next", "previous"]
-    ) -> None:
-        self._reset_suggestions()
-        self._suggestion_start_index = (
-            self._get_index_of_next_suggestion(input_value=input_value, current_suggestion=current_suggestion)
-            if mode == "next"
-            else self._get_index_of_previous_suggestion(input_value=input_value, current_suggestion=current_suggestion)
-        )
-        self._suggestions = self._suggestions[self._suggestion_start_index :]
-        self._for_comparison = self._suggestions
+    @property
+    def current_suggestion(self) -> str | None:
+        if self._matched:
+            return self._matched[self._index]
+        return None
 
-    def _get_index_of_suggestion(self, suggestion: str) -> int:
-        if suggestion in self._initial_suggestions:
-            return self._initial_suggestions.index(suggestion)
-        raise ValueError(f"Suggestion '{suggestion}' not found in the list of initial suggestions.")
+    async def get_suggestion(self, value: str) -> str | None:
+        new_matches = self._match(value)
 
-    def _get_all_matching_suggestions(self, input_value: str) -> list[str]:
-        """Get all suggestions that match the given value."""
-        return [suggestion for suggestion in self._for_comparison if suggestion.startswith(input_value)]
+        if not new_matches:
+            self._matched = []
+            self.reset_selection()
+            return None
 
-    def _get_index_of_next_suggestion(self, *, input_value: str, current_suggestion: str) -> int:
-        all_matched_suggestions = self._get_all_matching_suggestions(input_value)
-        if all_matched_suggestions and current_suggestion in all_matched_suggestions:
-            current_index = all_matched_suggestions.index(current_suggestion)
-            if len(all_matched_suggestions) > 1:
-                if current_index == len(all_matched_suggestions) - 1:
-                    # if the current suggestion is the last one, return index of the first one
-                    return self._get_index_of_suggestion(next(iter(all_matched_suggestions)))
-                # if there are more suggestions, return the next one
-                return self._get_index_of_suggestion(all_matched_suggestions[current_index + 1])
+        if new_matches != self._matched:
+            self._matched = new_matches
+            self.reset_selection()
+        return self.current_suggestion
 
-            # if there is only one suggestion, return its index from the original list
-            return self._get_index_of_suggestion(all_matched_suggestions[current_index])
-        raise ValueError(f"Suggestion '{current_suggestion}' not found in the list of matched suggestions.")
+    def next_selection(self) -> None:
+        self._index = (self._index + 1) % len(self._matched)
 
-    def _get_index_of_previous_suggestion(self, *, input_value: str, current_suggestion: str) -> int:
-        all_matched_suggestions = self._get_all_matching_suggestions(input_value)
-        if all_matched_suggestions and current_suggestion in all_matched_suggestions:
-            current_index = all_matched_suggestions.index(current_suggestion)
-            if len(all_matched_suggestions) > 1:
-                if current_index == 0:
-                    # if the current suggestion is the first one, return index of the last one
-                    return self._get_index_of_suggestion(all_matched_suggestions[-1])
-                # if there are more suggestions, return the previous one
-                return self._get_index_of_suggestion(all_matched_suggestions[current_index - 1])
+    def previous_selection(self) -> None:
+        self._index = (self._index - 1 + len(self._matched)) % len(self._matched)
 
-            # if there is only one suggestion, return its index from the original list
-            return self._get_index_of_suggestion(all_matched_suggestions[current_index])
-        raise ValueError(f"Suggestion '{current_suggestion}' not found in the list of matched suggestions.")
+    def reset_selection(self) -> None:
+        self._index = 0
 
-    def _reset_suggestions(self) -> None:
-        self._suggestions = self._initial_suggestions
-        self._for_comparison = self._initial_suggestions
+    def _match(self, value: str) -> list[str]:
+        return [
+            self._suggestions[i] for i, suggestion in enumerate(self._for_comparison) if suggestion.startswith(value)
+        ]
 
 
 class AuthorityInput(TextInput):
@@ -128,18 +107,9 @@ class AuthorityInput(TextInput):
         self.input.suggester = KeyOrAccountSuggester(suggestions)
 
     async def _suggest(self, mode: Literal["next", "previous"]) -> None:
-        current_suggestion = self.input._suggestion
-        if current_suggestion == "":
+        if not self.input.suggester or self.is_empty:
             return
-        assert self.input.suggester is not None, "Suggester is not assigned to input."
-        current_suggestion = self.input._suggestion
-        input_value = self.input.value
-        self.input.suggester.reduce_suggestions(  # type: ignore[attr-defined]
-            input_value=input_value,
-            current_suggestion=current_suggestion,
-            mode=mode,
-        )
-        # get new suggestion after reduction
-        suggestion = await self.input.suggester.get_suggestion(self.input.value)
-        if suggestion:
-            self.input._suggestion = suggestion
+
+        suggester = cast("KeyOrAccountSuggester", self.input.suggester)
+        suggester.next_selection() if mode == "next" else suggester.previous_selection()
+        self.run_worker(suggester._get_suggestion(self.input, self.value_raw))
