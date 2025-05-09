@@ -9,6 +9,7 @@ from clive.__private.validators.private_key_validator import PrivateKeyValidator
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
 
@@ -26,12 +27,16 @@ class PrivateKeyInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         password: bool = True,
+        validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
+        if validators is None:
+            self.validators = PrivateKeyValidator()
+
         super().__init__(
             title=title,
             value=value,
@@ -41,7 +46,7 @@ class PrivateKeyInput(TextInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             password=password,
-            validators=[PrivateKeyValidator()],
+            validators=validators,
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
