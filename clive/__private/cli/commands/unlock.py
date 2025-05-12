@@ -180,7 +180,7 @@ class Unlock(WorldBasedCommand):
 
     @classmethod
     def _format_migration_performed_message(
-        cls, profile_name: str, version_before: int | None, version_after: int | None
+        cls, profile_name: str, version_before: int | str | None, version_after: int | str | None
     ) -> str:
         return (
             f"Profile `{profile_name}` was migrated from version {version_before} to {version_after}. "
