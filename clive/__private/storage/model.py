@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from hashlib import sha256
-from pathlib import Path
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 import msgspec
 
@@ -15,6 +14,9 @@ from clive.__private.models.schemas import (
     OperationRepresentationUnion,
     Signature,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class AlarmStorageModel(CliveBaseModel, kw_only=True):
@@ -84,23 +86,6 @@ class TrackedAccountStorageModelSchema(TrackedAccountStorageModel, kw_only=True)
 class ProfileStorageModelSchema(ProfileStorageModel, kw_only=True):
     transaction: TransactionStorageModelSchema
     tracked_accounts: list[TrackedAccountStorageModelSchema] = []  # noqa: RUF012
-
-    @classmethod
-    def schema_json(cls) -> str:
-        schema = msgspec.json.schema(cls, schema_hook=schema_hook)
-        return msgspec.json.encode(schema).decode()
-
-
-def schema_hook(obj: Any) -> dict[str, str]:  # noqa: ANN401
-    if obj is Path:
-        return {"type": "string", "format": "path"}
-    if obj is HiveInt:
-        return {"type": "integer"}
-    if obj is HiveDateTime:
-        return {"type": "string", "format": "date-time"}
-    if obj is Signature:
-        return {"type": "string"}
-    raise NotImplementedError(f"Objects of type {obj} are not supported")
 
 
 def get_storage_model_schema_json() -> str:
