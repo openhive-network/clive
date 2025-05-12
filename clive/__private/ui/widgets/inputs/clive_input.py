@@ -4,11 +4,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on, validation
+from textual.binding import Binding
 from textual.events import Blur, Focus
 from textual.message import Message
 from textual.reactive import var
 from textual.validation import ValidationResult, Validator
 from textual.widgets import Input
+
+from clive.__private.ui.clive_suggester import CliveSuggester
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -46,6 +49,10 @@ class CliveInput(Input):
         }
     }
     """
+    BINDINGS = [
+        Binding("up", "suggest_next", "Suggest next", show=False),
+        Binding("down", "suggest_previous", "Suggest previous", show=False),
+    ]
 
     DEFAULT_REQUIRED_FAILURE_DESCRIPTION: Final[str] = "This field is required"
 
@@ -158,6 +165,16 @@ class CliveInput(Input):
 
         self.add_class(valid_class if valid else invalid_class)
         self.remove_class(invalid_class if valid else valid_class)
+
+    def load_new_suggestions(self, suggestions: list[str]) -> None:
+        if self.suggester is None:
+            self.suggester = CliveSuggester(suggestions)
+        else:
+            assert isinstance(self.suggester, CliveSuggester), (
+                "In order to load new suggestions you have to use CliveSuggester."
+            )
+            self.suggester.clear_suggestions()
+            self.suggester.add_suggestion(*suggestions)
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
         """Validate the value of the input."""
@@ -290,3 +307,11 @@ class CliveInput(Input):
     def _get_title_with_required(self) -> str:
         prefix = self._get_required_symbol()
         return f"{prefix} {self.title}".strip()
+
+    async def _suggest(self, mode: Literal["next", "previous"]) -> None:
+        suggester = self.suggester
+        if not isinstance(suggester, CliveSuggester) or self.is_empty:
+            return
+
+        suggester.next_selection() if mode == "next" else suggester.previous_selection()
+        self.run_worker(suggester._get_suggestion(self, self.value))
