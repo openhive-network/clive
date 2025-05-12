@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from hashlib import sha256
-from typing import TYPE_CHECKING, Any, Sequence
+from pathlib import Path  # noqa: TCH003
+from typing import Any, Sequence
 
 import msgspec
 
@@ -14,9 +15,6 @@ from clive.__private.models.schemas import (
     OperationRepresentationUnion,
     Signature,
 )
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class AlarmStorageModel(CliveBaseModel, kw_only=True):
