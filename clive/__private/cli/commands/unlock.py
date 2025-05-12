@@ -78,7 +78,7 @@ class Unlock(WorldBasedCommand):
         typer.echo(f"Profile `{profile_name}` is unlocked.")
         encryption_service = (await self.world.commands.get_encryption_service()).result_or_raise
         version_before = PersistentStorageService.get_version_to_read(profile_name)
-        await Profile.load(profile_name, encryption_service)
+        await PersistentStorageService(encryption_service).migrate(profile_name)
         version_after = PersistentStorageService.get_version_to_read(profile_name)
         if version_before != version_after:
             typer.echo(self._format_migration_performed_message(profile_name, version_before, version_after))

@@ -133,11 +133,14 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
-        profile_storage_model = await self._get_latest_stored_profile_model(profile_name)
+        profile_storage_model = await self._load_and_migrate_latest_profile_model(profile_name)
 
         profile = StorageToRuntimeConverter(profile_storage_model).create_profile()
         profile._update_hash_of_stored_profile()
         return profile
+
+    async def migrate(self, profile_name: str) -> None:
+        await self._load_and_migrate_latest_profile_model(profile_name)
 
     @classmethod
     def delete_profile(cls, profile_name: str, *, force: bool = False) -> None:
@@ -323,7 +326,7 @@ class PersistentStorageService:
         filepath = profile_directory / self.get_current_version_profile_filename()
         filepath.write_text(encrypted_profile)
 
-    async def _get_latest_stored_profile_model(self, profile_name: str) -> ProfileStorageModel:
+    async def _load_and_migrate_latest_profile_model(self, profile_name: str) -> ProfileStorageModel:
         """
         Find current version of profile storage model by name in the clive data directory or migrate older version.
 
