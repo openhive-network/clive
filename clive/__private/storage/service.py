@@ -215,10 +215,12 @@ class PersistentStorageService:
         return int(match.group(1)) if match else None
 
     @classmethod
-    def get_version_to_read(cls, profile_name: str) -> int | None:
+    def get_version_to_read(cls, profile_name: str) -> int | str | None:
         cls._raise_if_profile_not_stored(profile_name)
         path = cls._get_profile_filepath_to_read(profile_name)
         assert path is not None, f"Storage path for profile `{profile_name}` should be guaranteed to exist now."
+        if path.parent.name == cls.FIRST_REVISION:
+            return cls.FIRST_REVISION
         return cls.get_version_from_profile_file(path)
 
     @classmethod
