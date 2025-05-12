@@ -77,7 +77,7 @@ class Unlock(BeekeeperBasedCommand):
         typer.echo(f"Profile `{profile_name}` is unlocked.")
         encryption_service = await GetEncryptionService(session=await self.beekeeper.session).execute_with_result()
         version_before = PersistentStorageService.get_version_to_read(profile_name)
-        await Profile.load(profile_name, encryption_service)
+        await PersistentStorageService(encryption_service).migrate(profile_name)
         version_after = PersistentStorageService.get_version_to_read(profile_name)
         if version_before != version_after:
             typer.echo(self._format_migration_performed_message(profile_name, version_before, version_after))
