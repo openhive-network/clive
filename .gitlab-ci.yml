@@ -31,8 +31,8 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1
-  CI_BASE_IMAGE_TAG: "@sha256:813f18c42929193036fc4e0017981c16913766442ef8d146313c64785df29c2e"
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-2
+  CI_BASE_IMAGE_TAG: "@sha256:81f56a1820497ff3cb1342327b7242dc50270db04cbfdd8d6198af1bb0e910b3"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04@sha256:40515c4bb3233ec5cc21fb9e32fd9ff6dc5a6de44b0903bcc5697a501c13ed5b
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:40515c4bb3233ec5cc21fb9e32fd9ff6dc5a6de44b0903bcc5697a501c13ed5b"
