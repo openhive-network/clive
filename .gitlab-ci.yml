@@ -112,6 +112,16 @@ prepare_testnet_hived_image:
 build_wheel:
   extends: .build_wheel_template
   stage: build
+  script:
+    - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
+    - ls -al
+    - poetry version
+    - poetry self add "poetry-plugin-freeze==1.2.0"
+    - poetry build --format wheel
+    - poetry freeze-wheel
+    - if [ ! -d "${DIST_DIR}" ] && [ -d "dist" ]; then cp -r "dist" "${DIST_DIR}"; fi
+    - ls -al ${DIST_DIR}
+
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
