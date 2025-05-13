@@ -255,13 +255,18 @@ class CLITransactionUnknownAccountError(CLIPrettyError):
     """Raise when trying to perform transaction with operation(s) to unknown account."""
 
     def __init__(self, *account_names: str) -> None:
+        assert account_names, (
+            "At least one account name must be provided for CLITransactionUnknownAccountError exception."
+        )
         self.account_names = list(account_names)
 
         message = (
             "Clive cannot perform the transaction because the "
             f"target accounts: {self.account_names} are not on the list of known accounts.\n"
             "To perform the transaction, add the target accounts to the list of known accounts.\n"
-            "See `clive configure known-account -h`"
+            f"You can do this using the command: `clive configure known-account add {self.account_names[0]}`.\n"
+            "You have to repeat this command for each account that is not on the list of known accounts.\n"
+            "For more information about the known-account feature, see `clive configure known-account -h`."
         )
         super().__init__(message, errno.EINVAL)
 
