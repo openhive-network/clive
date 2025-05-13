@@ -8,6 +8,7 @@ from clive.__private.ui.widgets.inputs.text_input import TextInput
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
@@ -25,6 +26,7 @@ class MemoInput(TextInput):
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = False,
+        suggester: Suggester | None = None,
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -40,6 +42,7 @@ class MemoInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
+            suggester=suggester,
             validators=validators,  # TODO: Add memo validator e.g. checking for any private keys pasted
             validate_on=validate_on,
             valid_empty=valid_empty,

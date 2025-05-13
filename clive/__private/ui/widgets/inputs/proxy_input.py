@@ -9,6 +9,7 @@ from clive.__private.validators.proxy_validator import ProxyValidator
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.widgets._input import InputValidationOn
 
 
@@ -27,6 +28,7 @@ class ProxyInput(AccountNameInput):
         required: bool = True,
         show_known_account: bool = True,
         setting_proxy: bool = False,
+        suggester: Suggester | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
@@ -49,6 +51,7 @@ class ProxyInput(AccountNameInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             show_known_account=show_known_account,
+            suggester=suggester,
             validators=ProxyValidator(self.profile.accounts, check_is_not_working_account=setting_proxy),
             validate_on=validate_on,
             valid_empty=valid_empty,

@@ -12,6 +12,7 @@ from clive.__private.validators.path_validator import PathValidator
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.widgets._input import InputValidationOn
 
 
@@ -28,6 +29,7 @@ class PathInput(CliveValidatedInput[Path]):
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = True,
+        suggester: Suggester | None = None,
         validator_mode: PathValidator.Modes = "is_valid",
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -50,6 +52,7 @@ class PathInput(CliveValidatedInput[Path]):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
+            suggester=suggester,
             type="text",
             validators=[PathValidator(mode=validator_mode)],
             validate_on=validate_on,

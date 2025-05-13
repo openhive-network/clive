@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.inputs.text_input import TextInput
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.widgets._input import InputValidationOn
 
 
@@ -27,6 +28,7 @@ class AccountNamePatternInput(TextInput):
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = True,
+        suggester: Suggester | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
@@ -41,6 +43,7 @@ class AccountNamePatternInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
+            suggester=suggester,
             validators=[
                 Length(minimum=1, maximum=AccountName.max_length),
             ],

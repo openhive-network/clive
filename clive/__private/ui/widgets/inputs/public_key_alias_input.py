@@ -9,6 +9,7 @@ from clive.__private.validators.public_key_alias_validator import PublicKeyAlias
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.widgets._input import InputValidationOn
 
     from clive.__private.core.keys import KeyManager
@@ -28,6 +29,7 @@ class PublicKeyAliasInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         setting_key_alias: bool = False,
+        suggester: Suggester | None = None,
         key_manager: KeyManager | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -58,6 +60,7 @@ class PublicKeyAliasInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
+            suggester=suggester,
             validators=[PublicKeyAliasValidator(key_manager, validate_like_adding_new=setting_key_alias)],
             validate_on=validate_on,
             valid_empty=valid_empty,

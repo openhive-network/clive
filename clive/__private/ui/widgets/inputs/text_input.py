@@ -7,6 +7,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.suggester import Suggester
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
@@ -25,6 +26,7 @@ class TextInput(CliveValidatedInput[str]):
         show_invalid_reasons: bool = True,
         required: bool = True,
         password: bool = False,
+        suggester: Suggester | None = None,
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -42,6 +44,7 @@ class TextInput(CliveValidatedInput[str]):
             required=required,
             password=password,
             type="text",
+            suggester=suggester,
             validators=validators,
             validate_on=validate_on,
             valid_empty=valid_empty,
