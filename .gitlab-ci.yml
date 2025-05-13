@@ -45,13 +45,9 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: db8c64b081d6f2415402250ed7e6f0a6f8001e67
+    ref: 5ffcd53f854127c2a06831078c12515fce3b3a19
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
     # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
-    # REMOVE WHEN HIVE SUBMODULE IS UPDATED
-  - project: 'hive/common-ci-configuration'
-    ref: b87d23ff08491d5006db9eddbec1520190266c0d
-    file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
 
