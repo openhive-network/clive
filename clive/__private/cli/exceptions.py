@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from click import ClickException
 
+from clive.__private.core.constants.cli import NBSP
 from clive.__private.core.constants.node import (
     PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
     SCHEDULED_TRANSFER_MAX_LIFETIME,
@@ -260,11 +261,12 @@ class CLITransactionUnknownAccountError(CLIPrettyError):
         )
         self.account_names = list(account_names)
 
+        command = ["clive", "configure", "known-account", "add", f"{self.account_names[0]}"]
         message = (
             "Clive cannot perform the transaction because the "
             f"target accounts: {self.account_names} are not on the list of known accounts.\n"
             "To perform the transaction, add the target accounts to the list of known accounts.\n"
-            f"You can do this using the command: `clive configure known-account add {self.account_names[0]}`.\n"
+            f"You can do this using the command: `{NBSP.join(command)}`.\n"
             "You have to repeat this command for each account that is not on the list of known accounts.\n"
             "For more information about the known-account feature, see `clive configure known-account -h`."
         )

@@ -21,3 +21,5 @@ UNLOCK_CREATE_PROFILE_SELECT: Final[str] = "create a new profile"
 
 PAGE_SIZE_OPTION_MINIMAL_VALUE: Final[int] = 1
 PAGE_NUMBER_OPTION_MINIMAL_VALUE: Final[int] = 0
+
+NBSP = "\u00a0"
