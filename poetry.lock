@@ -180,12 +180,12 @@ tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "beekeepy"
-version = "0.0.1.dev367+1fb113c"
+version = "0.0.1.dev356+87294ad"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
 files = [
-    {file = "beekeepy-0.0.1.dev367+1fb113c-py3-none-any.whl", hash = "sha256:148b06b6894813ee4f9e9079fd9fca54fa52f787dc2921ea81d672fb4cf8ed0e"},
+    {file = "beekeepy-0.0.1.dev356+87294ad-py3-none-any.whl", hash = "sha256:32f7ff4c4a6bebd225e9a73495d779233514dd38695adb9c571bbb62ab611c65"},
 ]
 
 [package.dependencies]
@@ -195,7 +195,7 @@ loguru = "0.7.2"
 pydantic = "1.10.18"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
-schemas = "0.0.1.dev348+0883108"
+schemas = "0.0.1.dev337+9d73af8"
 setuptools = "77.0.3"
 types-setuptools = "76.0.0.20250313"
 
@@ -1580,12 +1580,12 @@ files = [
 
 [[package]]
 name = "schemas"
-version = "0.0.1.dev348+0883108"
+version = "0.0.1.dev337+9d73af8"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.12,<4.0"
 files = [
-    {file = "schemas-0.0.1.dev348+0883108-py3-none-any.whl", hash = "sha256:20972cb38dc607d2526eec0bc79a7331c06505acfc6c83664bead52297e49ee5"},
+    {file = "schemas-0.0.1.dev337+9d73af8-py3-none-any.whl", hash = "sha256:fd7c822b43e6a93b0200b418d5f1a82569cb86bb0c3b1ed946c0131b7c06161c"},
 ]
 
 [package.dependencies]
@@ -1661,12 +1661,12 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-beekeepy = "0.0.1.dev367+1fb113c"
+beekeepy = "0.0.1.dev356+87294ad"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
 typing-extensions = "4.12.2"
-wax = "0.3.10.dev654+c7d49b8"
+wax = "0.3.10.dev647+6a78dc31"
 
 [package.source]
 type = "directory"
@@ -1816,17 +1816,17 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "wax"
-version = "0.3.10.dev654+c7d49b8"
+version = "0.3.10.dev647+6a78dc31"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 files = [
-    {file = "wax-0.3.10.dev654+c7d49b8-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:5a1561ff8eead4312da14e64374a6dd2ea86f597e3ab378fe52b4a6ac85255fa"},
+    {file = "wax-0.3.10.dev647+6a78dc31-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:cc8eae64fec1a14bb31d9e409a660314560a057daef81c2ba4467150557c7570"},
 ]
 
 [package.dependencies]
 aiohttp = "3.11.14"
-beekeepy = "0.0.1.dev367+1fb113c"
+beekeepy = "0.0.1.dev356+87294ad"
 httpx = {version = "0.23.3", extras = ["http2"]}
 loguru = "0.7.2"
 protobuf = "4.24.4"
@@ -1956,4 +1956,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "a0ae16fd9d2d250d1d84c7d7cc9f8296c4bac0e3409e338def72c7c371aaccf1"
+content-hash = "5f7892ae6fe16562090755ea647f489b53d0ededfed302167aa6b0c93bc77550"
