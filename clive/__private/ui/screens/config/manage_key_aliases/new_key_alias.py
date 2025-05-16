@@ -147,20 +147,24 @@ class NewKeyAlias(NewKeyAliasBase):
 
     @on(CliveInput.Submitted)
     async def action_save(self) -> None:
-        try:
-            self._validate()
-        except FailedManyValidationError:
-            return
-
-        def set_key_alias_to_import() -> None:
-            self.profile.keys.set_to_import([self._private_key_aliased])
-
-        if not self._handle_key_alias_change(set_key_alias_to_import):
-            return
-        await self._import_new_key()
-        self.dismiss(result=True)
+        if await self._save():
+            self.dismiss(result=True)
 
     async def _import_new_key(self) -> None:
         await self.commands.sync_data_with_beekeeper()
         self.notify("New key alias was created.")
         self.app.trigger_profile_watchers()
+
+    async def _save(self) -> bool:
+        def set_key_alias_to_import() -> None:
+            self.profile.keys.set_to_import([self._private_key_aliased])
+
+        try:
+            self._validate()
+        except FailedManyValidationError:
+            return False
+
+        if not self._handle_key_alias_change(set_key_alias_to_import):
+            return False
+        await self._import_new_key()
+        return True
