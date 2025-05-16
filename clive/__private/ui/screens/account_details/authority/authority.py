@@ -409,7 +409,7 @@ class AccountFilterCollapsible(Collapsible):
         self.title = self._initial_title
 
     def update_title(self, selected_accounts: list[str]) -> None:
-        if len(selected_accounts) == 1:
+        if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and "all" in selected_accounts):  # noqa: PLR2004
             self.title = next(iter(selected_accounts))
         elif len(selected_accounts) == 0:
             self.title = "no selected accounts"
