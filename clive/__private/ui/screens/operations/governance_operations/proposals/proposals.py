@@ -171,7 +171,20 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
         return ProposalActionRow(identifier, vote=vote)
 
     def add_operation_to_cart(self, identifier: str, *, vote: bool = False) -> None:
+        """
+        Add / update proposal votes operation to / in the cart.
+
+        If the proposal ID is already in the cart, nothing will be done.
+        If an operation with a free slot is in the cart, it will be added to the operation.
+        If an operation with such a proposal ID is NOT in the cart, a new operation will be created and added.
+        """
+
+        def append_operation(operation: UpdateProposalVotesOperation) -> None:
+            operation.proposal_ids.append(proposal_id)  # type: ignore[arg-type]
+            operation.proposal_ids.sort()  # proposal id's must be sorted
+
         proposal_id = int(identifier)
+        op_to_append: UpdateProposalVotesOperation | None = None  # If None -> new operation will be created
 
         for op in self.profile.transaction:
             if not isinstance(op, UpdateProposalVotesOperation):
@@ -181,9 +194,12 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
                 return
 
             if op.approve == vote and len(op.proposal_ids) < MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION:
-                op.proposal_ids.append(proposal_id)  # type: ignore[arg-type]
-                op.proposal_ids.sort()  # proposal id's must be sorted
-                return
+                op_to_append = op  # Do not attach immediately, because we have to check whether there is an
+                # another operation with such a proposal id. If so, the function will be stopped by if above.
+
+        if op_to_append is not None:
+            append_operation(op_to_append)
+            return
 
         self.profile.transaction.add_operation(
             UpdateProposalVotesOperation(
