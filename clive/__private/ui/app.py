@@ -61,13 +61,18 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "f12"
 
     BINDINGS = [
-        Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding(APP_QUIT_KEY_BINDING, "quit", "Quit", show=False),
-        Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
-        Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
-        Binding("f8", "go_to_dashboard", "Dashboard", show=False),
-        Binding("f9", "go_to_config", "Config", show=False),
+        Binding("?", "help", "Help", show=False),
+        Binding("ctrl+l", "switch_mode_into_locked", "Lock", show=False),
+        Binding("ctrl+d", "go_to_dashboard", "Dashboard", show=False),
+        Binding("ctrl+t", "go_to_transaction_summary", "Cart", show=False),
+        Binding("ctrl+n", "go_to_switch_node", "Switch node", show=False),
+        Binding("ctrl+s", "go_to_config", "Configuration", show=False),
+        Binding("ctrl+x", "clear_notifications", "Clear notifications", show=False),
+        Binding("ctrl+o", "go_to_load_transaction_from_file", "Open transaction from file", show=False),
+        Binding(APP_QUIT_KEY_BINDING, "quit", "Close clive", show=False),
+        Binding("ctrl+c", "quit_immediately", "Quit immediately", show=False),
+        Binding("ctrl+p", "app.screenshot()", "Screenshot", show=False),
     ]
 
     SCREENS = {
@@ -226,8 +231,15 @@ class Clive(App[int]):
                 return current_screen
         raise ScreenNotFoundError(f"Screen {screen} not found in stack")
 
+    async def action_switch_mode_into_locked(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.switch_mode_into_locked()
+
     async def action_quit(self) -> None:
         self.push_screen(Quit())
+
+    async def action_quit_immediately(self) -> None:
+        self.exit()
 
     def action_help(self) -> None:
         if isinstance(self.screen, Help):
@@ -248,6 +260,14 @@ class Clive(App[int]):
     async def action_go_to_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_transaction_summary()
+
+    async def action_go_to_switch_node(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_switch_node()
+
+    async def action_go_to_load_transaction_from_file(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_load_transaction_from_file()
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
@@ -372,6 +392,10 @@ class Clive(App[int]):
         return AwaitComplete(impl()).call_next(self)
 
     async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
+        if self.current_mode not in {"config", "dashboard"}:
+            self.notify("Locking is possible only if you are unlocked.", severity="warning")
+            return
+
         if save_profile:
             await self.world.commands.save_profile()
 
@@ -386,7 +410,7 @@ class Clive(App[int]):
         elif self.current_mode == "dashboard":
             await self.switch_mode_with_reset("config")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            self.notify("You must be unlocked go to config.", severity="warning")
 
     async def go_to_dashboard(self) -> None:
         if self.current_mode == "dashboard":
@@ -394,7 +418,7 @@ class Clive(App[int]):
         elif self.current_mode == "config":
             await self.switch_mode_with_reset("dashboard")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            self.notify("You must be unlocked go to dashboard.", severity="warning")
 
     async def go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -405,9 +429,53 @@ class Clive(App[int]):
         if self.current_mode == "config":
             await self.switch_mode_with_reset("dashboard")
 
+        if self.current_mode != "dashboard":
+            self.notify("You must be unlocked to go to cart.", severity="warning")
+            return
+
         if not self.world.profile.transaction.is_signed:
             await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
         await self.push_screen(TransactionSummary())
+
+    async def go_to_switch_node(self) -> None:
+        from clive.__private.ui.screens.config.switch_node_address import SwitchNodeAddress
+
+        if isinstance(self.screen, SwitchNodeAddress):
+            return
+
+        if self.current_mode == "dashboard":
+            await self.switch_mode_with_reset("config")
+
+        if self.current_mode != "config":
+            self.notify("You must be unlocked to switch node.", severity="warning")
+            return
+
+        await self.push_screen(SwitchNodeAddress())
+
+    async def go_to_load_transaction_from_file(self) -> None:
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+        from clive.__private.ui.widgets.select_file import SelectFile
+
+        if self.current_mode == "config":
+            await self.switch_mode_with_reset("dashboard")
+
+        if self.current_mode != "dashboard":
+            self.notify("You must be unlocked to load transaction from file.", severity="warning")
+            return
+
+        cart_screen: TransactionSummary
+        if isinstance(self.screen, TransactionSummary):
+            cart_screen = self.screen
+        else:
+            cart_screen = TransactionSummary()
+            await self.push_screen(cart_screen)
+
+        notify_text = (
+            "Loading the transaction from the file will clear the current content of the cart."
+            if self.world.profile.transaction
+            else None
+        )
+        self.app.push_screen(SelectFile(notice=notify_text), cart_screen._load_transaction_from_file)
 
     def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
         """Run work in a worker with a guard. It means that the work will be executed only if the guard is available."""

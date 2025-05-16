@@ -56,6 +56,14 @@ TransactionSummary {
     ButtonRawJson {
       margin-left: 0;
     }
+
+    ButtonMoveUp {
+      min-width: 4;
+    }
+
+    ButtonMoveDown {
+      min-width: 4;
+    }
   }
 
   #actions-container {
