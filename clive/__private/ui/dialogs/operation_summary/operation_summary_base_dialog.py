@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
-from clive.__private.ui.clive_screen import ScreenResultT
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class OperationSummaryBaseDialog(CliveActionDialog[ScreenResultT], OperationActionBindings, ABC):
+class OperationSummaryBaseDialog(CliveActionDialog, OperationActionBindings, ABC):
     """Base class for operation summary dialogs. Confirmation means that operation was added to cart or finalized."""
 
     CSS_PATH = [get_relative_css_path(__file__)]

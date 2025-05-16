@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class ConfirmActionDialog(CliveActionDialog[bool]):
+class ConfirmActionDialog(CliveActionDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import Account
 
 
-class AccountWitnessProxyDialog(OperationSummaryBaseDialog[bool]):
+class AccountWitnessProxyDialog(OperationSummaryBaseDialog):
     def __init__(self, *, new_proxy: str | None) -> None:
         super().__init__("Account witness proxy")
         self._new_proxy = new_proxy
