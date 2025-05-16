@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class ConfirmActionDialog(CliveActionDialog[bool]):
+class ConfirmActionDialog(CliveActionDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(
@@ -36,9 +36,3 @@ class ConfirmActionDialog(CliveActionDialog[bool]):
     def create_dialog_content(self) -> ComposeResult:
         with Section():
             yield Static(self._confirm_question, id="confirm-question")
-
-    def _close_when_confirmed(self) -> None:
-        self.dismiss(result=True)
-
-    def _close_when_cancelled(self) -> None:
-        self.dismiss(result=False)

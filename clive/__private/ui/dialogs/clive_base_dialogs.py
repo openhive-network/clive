@@ -101,7 +101,7 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
         """Yield all the content with buttons."""
 
 
-class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
+class CliveActionDialog(CliveBaseDialog[bool], ABC):
     BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     class Confirmed(Message):
@@ -138,10 +138,10 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
         return True
 
     def _close_when_confirmed(self) -> None:
-        self.dismiss()
+        self.dismiss(result=True)
 
     def _close_when_cancelled(self) -> None:
-        self.dismiss()
+        self.dismiss(result=False)
 
     @on(CliveInput.Submitted)
     @on(ConfirmOneLineButton.Pressed)
