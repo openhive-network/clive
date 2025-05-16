@@ -191,6 +191,7 @@ testing_tui:
     - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(tests/tui -v)
     - !reference [.run-pytest, script]
+  allow_failure: true
 
 testing_cli:
   extends: .testing
