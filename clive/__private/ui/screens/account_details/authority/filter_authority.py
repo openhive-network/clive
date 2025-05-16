@@ -101,9 +101,6 @@ class FilterAuthority(Horizontal, CliveWidget):
     class Cleared(Message):
         """Message sent when authority filter was restored to default."""
 
-    class InputPatternReapplied(Message):
-        """Message sent when filter pattern from input was overridden."""
-
     class SelectedAccountsChanged(Message):
         """Message sent when selected accounts in AccountSelectionList were changed."""
 
@@ -112,7 +109,6 @@ class FilterAuthority(Horizontal, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__()
         self._account = account
-        self._pattern_filter_applied: bool = False
 
     def compose(self) -> ComposeResult:
         yield AuthorityInput()
@@ -153,9 +149,7 @@ class FilterAuthority(Horizontal, CliveWidget):
     @on(ClearButton.Pressed)
     async def clear_filters(self) -> None:
         self.apply_default_filter()
-        self.post_message(self.SelectedAccountsChanged())
         self.post_message(self.Cleared())
-        self._pattern_filter_applied = False
 
     def apply_default_filter(self) -> None:
         self.authority_input.clear_validation()
@@ -167,7 +161,4 @@ class FilterAuthority(Horizontal, CliveWidget):
         self.account_filter_collapsible.collapsed = True
 
     def _request_authority_filter(self) -> None:
-        if self._pattern_filter_applied:
-            self.post_message(self.InputPatternReapplied())
         self.post_message(self.AuthorityFilterReady())
-        self._pattern_filter_applied = True
