@@ -355,6 +355,7 @@ class Authority(TabPane, CliveWidget):
         self._authorities: list[WaxAccountAuthorityInfo] = []
         self._filtered_authorities: list[WaxAccountAuthorityInfo] = []
         self._authority_roles = AuthorityRoles()
+        self._filter_pattern_already_applied: bool = False
 
     async def on_mount(self) -> None:
         tracked_accounts = self.profile.accounts.tracked
@@ -389,6 +390,8 @@ class Authority(TabPane, CliveWidget):
         authority_input = self.query_exactly_one(AuthorityInput)
         filter_pattern = authority_input.value_or_none()
         if filter_pattern:
+            if self._filter_pattern_already_applied:
+                self._update_filtered_authorities_and_input_suggestions()
             valid_private = PrivateKey.is_valid(filter_pattern)
             if valid_private:
                 filter_pattern = calculate_public_key(filter_pattern).value
@@ -406,6 +409,7 @@ class Authority(TabPane, CliveWidget):
             ]
             self._filtered_authorities = authorities_that_match_pattern
 
+        self._filter_pattern_already_applied = bool(filter_pattern)
         self.filter_authority.collapse_account_filter_collapsible()
         await self._rebuild_authority_roles(multiple_patterns if "multiple_patterns" in locals() else filter_pattern)
 
@@ -415,11 +419,8 @@ class Authority(TabPane, CliveWidget):
 
     @on(FilterAuthority.Cleared)
     async def rebuild_after_clearing_authority_filter(self) -> None:
-        await self._rebuild_authority_roles()
-
-    @on(FilterAuthority.InputPatternReapplied)
-    def update_authorities_and_suggestions_after_input_pattern_from_filter_was_reapplied(self) -> None:
         self._update_filtered_authorities_and_input_suggestions()
+        await self._rebuild_authority_roles()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _update_authorities_and_suggestions_after_account_in_filter_changed(self) -> None:
