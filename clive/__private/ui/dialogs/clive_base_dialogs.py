@@ -10,6 +10,7 @@ from textual.events import Click
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import ModalScreen
+from typing_extensions import TypeVar
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import ScreenResultT
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 CliveDialogVariant = Literal["default", "error"]
+CliveActionDialogResultT = TypeVar("CliveActionDialogResultT", default=bool)
 
 
 class CliveDialogContent(Vertical):
@@ -101,7 +103,7 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
         """Yield all the content with buttons."""
 
 
-class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
+class CliveActionDialog(CliveBaseDialog[CliveActionDialogResultT], ABC):
     BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     class Confirmed(Message):
@@ -138,10 +140,10 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT], ABC):
         return True
 
     def _close_when_confirmed(self) -> None:
-        self.dismiss()
+        self.dismiss(result=True)  # type: ignore[arg-type]
 
     def _close_when_cancelled(self) -> None:
-        self.dismiss()
+        self.dismiss(result=False)  # type: ignore[arg-type]
 
     @on(CliveInput.Submitted)
     @on(ConfirmOneLineButton.Pressed)

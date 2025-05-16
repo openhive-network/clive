@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import Account
 
 
-class AccountWitnessProxyDialog(OperationSummaryBaseDialog[bool]):
+class AccountWitnessProxyDialog(OperationSummaryBaseDialog):
     def __init__(self, *, new_proxy: str | None) -> None:
         super().__init__("Account witness proxy")
         self._new_proxy = new_proxy
@@ -33,12 +33,6 @@ class AccountWitnessProxyDialog(OperationSummaryBaseDialog[bool]):
 
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
         return self._new_proxy
-
-    def _close_when_cancelled(self) -> None:
-        self.dismiss(result=False)
-
-    def _close_when_confirmed(self) -> None:
-        self.dismiss(result=True)
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(account=self.working_account_name, proxy=self.proxy_to_be_set)
