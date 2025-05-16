@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label
 
-from clive.__private.core.constants.tui.bindings import REFRESH_TRANSACTION_METADATA_BINDING_KEY
+from clive.__private.core.constants.tui.transaction_summary_bindings import UPDATE_TRANSACTION_METADATA
 from clive.__private.core.formatters import humanize
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.buttons import RefreshOneLineButton
@@ -40,7 +40,7 @@ class TransactionIdLabel(Label):
 
 class RefreshMetadataButton(RefreshOneLineButton):
     def __init__(self) -> None:
-        super().__init__(f"Refresh ({REFRESH_TRANSACTION_METADATA_BINDING_KEY.upper()})")
+        super().__init__(f"Update metadata ({self.app.bound_key_short(UPDATE_TRANSACTION_METADATA.id)})")
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:

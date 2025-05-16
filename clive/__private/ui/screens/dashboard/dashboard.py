@@ -1,13 +1,24 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+import contextlib
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
+from textual.message import Message
 from textual.widgets import Label, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
+from clive.__private.core.constants.tui.dashboard_bindings import (
+    ADD_ACCOUNT,
+    DETAILS,
+    OPERATIONS,
+    REMOVE,
+    SWITCH_WORKING_ACCOUNT,
+)
+from clive.__private.core.constants.tui.global_bindings import SHOW_HELP
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
@@ -210,6 +221,17 @@ class BalanceStats(TrackedAccountReferencingWidget):
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
+    @dataclass
+    class Focus(Message):
+        """Message sent when tracked account should be focused."""
+
+        target_index: int
+
+    BINDINGS = [
+        Binding(DETAILS.key, "details", "Details", id=DETAILS.id),
+        Binding(REMOVE.key, "remove", "Remove", id=REMOVE.id),
+    ]
+
     def compose(self) -> ComposeResult:
         with Vertical(id="account-alarms-and-details"):
             button = OneLineButton(f"{self._account.name}", id_="account-details-button")
@@ -230,6 +252,14 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
     @on(OneLineButton.Pressed, "#account-details-button")
     def push_account_details_screen(self) -> None:
         self.app.push_screen(AccountDetails(self._account))
+
+    @CliveScreen.prevent_action_when_no_accounts_node_data()
+    def action_details(self) -> None:
+        self.app.push_screen(AccountDetails(self._account))
+
+    def action_remove(self) -> None:
+        self.profile.accounts.remove_tracked_account(self._account)
+        self.app.trigger_profile_watchers()
 
 
 class TrackedAccountRow(TrackedAccountReferencingWidget):
@@ -261,16 +291,17 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "f4"
-    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {_ADD_ACCOUNT_BINDING_KEY} to add some)"
+    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {ADD_ACCOUNT.key} to add some)"
 
     BINDINGS = [
-        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-        Binding("f2", "operations", "Operations"),
-        Binding("f3", "switch_working_account", "Switch working account"),
-        Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
-        Binding("f5", "switch_mode_into_locked", "Lock wallet"),
-        Binding("f6", "app.go_to_config", "Config"),
+        Binding(
+            SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id
+        ),  # help is a hidden global binding, but we want to show it here
+        Binding(OPERATIONS.key, "operations", "Operations", id=OPERATIONS.id),
+        Binding(
+            SWITCH_WORKING_ACCOUNT.key, "switch_working_account", "Switch working account", id=SWITCH_WORKING_ACCOUNT.id
+        ),
+        Binding(ADD_ACCOUNT.key, "add_account", "Add account", id=ADD_ACCOUNT.id),
     ]
 
     def __init__(self) -> None:
@@ -324,9 +355,8 @@ class Dashboard(BaseScreen):
     def action_add_account(self) -> None:
         self.app.push_screen(AddTrackedAccountDialog())
 
-    async def action_switch_mode_into_locked(self) -> None:
-        with self.app._screen_remove_guard.suppress(), self.app._screen_remove_guard.guard():
-            await self.app.switch_mode_into_locked()
+    def action_select_tracked_account(self, i: int) -> None:
+        self.post_message(TrackedAccountInfo.Focus(i - 1))
 
     @property
     def has_working_account(self) -> bool:
@@ -343,3 +373,10 @@ class Dashboard(BaseScreen):
     @property
     def has_tracked_accounts(self) -> bool:
         return self.has_working_account or self.has_watched_accounts
+
+    @on(TrackedAccountInfo.Focus)
+    def focus_account(self, event: TrackedAccountInfo.Focus) -> None:
+        index = event.target_index
+        account_details_buttons = self.query("#account-details-button")
+        with contextlib.suppress(IndexError):
+            account_details_buttons[index].focus()

@@ -8,7 +8,7 @@ from textual import on
 from textual.binding import Binding
 from textual.reactive import var
 
-from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
+from clive.__private.core.constants.tui.navigation_bindings import NEXT_SCREEN, PREVIOUS_SCREEN
 from clive.__private.core.contextual import Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.form_context import FormContextT
@@ -21,13 +21,8 @@ if TYPE_CHECKING:
 
 class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
     BINDINGS = [
-        Binding(
-            f"{PREVIOUS_SCREEN_BINDING_KEY},escape",
-            "previous_screen",
-            "Previous screen",
-            key_display="^p",
-        ),
-        Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
+        Binding(f"{PREVIOUS_SCREEN.key},escape", "previous_screen", "Previous screen", id=PREVIOUS_SCREEN.id),
+        Binding(NEXT_SCREEN.key, "next_screen", "Next screen", id=NEXT_SCREEN.id),
     ]
 
     _should_finish: bool = var(default=False, init=False)  # type: ignore[assignment]

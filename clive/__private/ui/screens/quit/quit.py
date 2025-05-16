@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
+from clive.__private.core.constants.tui.global_bindings import APP_QUIT
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
@@ -21,7 +21,7 @@ class Quit(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
-        Binding(APP_QUIT_KEY_BINDING, "exit_cleanly", "Quit"),
+        Binding(APP_QUIT.key, "exit_cleanly", "Quit", id=APP_QUIT.id),
         Binding("escape", "cancel", "Back"),
     ]
 
@@ -30,7 +30,7 @@ class Quit(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Are you sure you want to quit?", id="question")
-            yield Static(f"(You can also confirm by pressing {APP_QUIT_KEY_BINDING} again)", id="hint")
+            yield Static(f"(You can also confirm by pressing {APP_QUIT.key} again)", id="hint")
             with Horizontal(id="buttons"):
                 yield CliveButton("Quit", variant="error", id_="quit")
                 yield CliveButton("Cancel", id_="cancel")

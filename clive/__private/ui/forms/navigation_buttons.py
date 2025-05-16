@@ -6,7 +6,7 @@ from textual.containers import Horizontal
 from textual.reactive import var
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
+from clive.__private.core.constants.tui.navigation_bindings import NEXT_SCREEN, PREVIOUS_SCREEN
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 
 if TYPE_CHECKING:
@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 class NextScreenButton(CliveButton):
     """Button for going to next screen in forms (also used as finish button)."""
 
-    DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN_BINDING_KEY}) →"
-    FINISH_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
+    DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN.key}) →"
+    FINISH_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN.key})"
 
     is_finish = var(default=False, init=False)
 
@@ -53,7 +53,7 @@ class NextScreenButton(CliveButton):
 class PreviousScreenButton(OneLineButton):
     """Button for going to previous screen in forms."""
 
-    DEFAULT_PREVIOUS_BUTTON_LABEL: Final[str] = f"← Previous ({PREVIOUS_SCREEN_BINDING_KEY})"
+    DEFAULT_PREVIOUS_BUTTON_LABEL: Final[str] = f"← Previous ({PREVIOUS_SCREEN.key})"
 
     class Pressed(OneLineButton.Pressed):
         """Message sent when the PreviousScreenButton is pressed."""

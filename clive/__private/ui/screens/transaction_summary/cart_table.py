@@ -12,7 +12,9 @@ from textual.message import Message
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.core.constants.tui.transaction_summary_bindings import JSON, REMOVE
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
+from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.dialogs.raw_json_dialog import RawJsonDialog
@@ -76,8 +78,12 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     """Row of CartTable."""
 
     BINDINGS = [
-        Binding("ctrl+up", "select_previous", "Prev"),
-        Binding("ctrl+down", "select_next", "Next"),
+        Binding(REMOVE.key, "remove", "Remove", id=REMOVE.id),
+        Binding(JSON.key, "show_raw_json", "JSON", id=JSON.id),
+        Binding("up", "select_previous", "Prev"),
+        Binding("down", "select_next", "Next"),
+        Binding("ctrl+up", "move_up", "Move operation up"),
+        Binding("ctrl+down", "move_down", "Move operation down"),
     ]
 
     @dataclass
@@ -99,6 +105,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         self.operation_index = operation_index
         super().__init__(*self._create_cells())
         self._action_manager = action_manager
+        self._bindings.apply_keymap(self.app.normalized_keymap)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(operation_index={self._operation_index})"
@@ -161,11 +168,23 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def humanize_operation_details(self) -> str:
         return humanize_operation_details(self.operation)
 
+    def action_remove(self) -> None:
+        self.delete()
+
+    async def action_show_raw_json(self) -> None:
+        await self.show_raw_json()
+
     def action_select_previous(self) -> None:
         self.post_message(self.Focus(target_index=self._operation_index - 1))
 
     def action_select_next(self) -> None:
         self.post_message(self.Focus(target_index=self._operation_index + 1))
+
+    def action_move_up(self) -> None:
+        self._move("up")
+
+    def action_move_down(self) -> None:
+        self._move("down")
 
     def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002, C901
         def focus_first_focusable_button() -> None:
@@ -326,8 +345,9 @@ class CartTable(CliveCheckerboardTable):
         from_index = event.from_index
         to_index = event.to_index
 
-        assert to_index >= 0, "Item cannot be moved to id lower than 0."
-        assert to_index < len(self.profile.transaction), "Item cannot be moved to id greater than cart length."
+        if to_index < 0 or len(self.profile.transaction) <= to_index:
+            logger.warning(f"Trying to move in cart operation with invalid index: {to_index}.")
+            return
 
         with self.app.batch_update():
             await self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)

@@ -211,3 +211,4 @@ beekeeper
 # Do not display dirty state of the repository during CI
 *.env
 hived-binaries/
+bindings.toml

@@ -12,6 +12,7 @@ from clive.__private.core.world import World
 from clive.__private.logger import logger
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
+from clive.__private.ui.bindings import initialize_bindings_file
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
@@ -85,6 +86,7 @@ async def prepared_env(
     node_with_wallet: NodeWithWallet,
     _prepare_profile_with_wallet_tui: None,
 ) -> AsyncIterator[PreparedTuiEnv]:
+    initialize_bindings_file()
     node, wallet = node_with_wallet
     async with Clive().run_test() as pilot:
         await wait_for_screen(pilot, Unlock)

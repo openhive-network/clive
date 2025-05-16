@@ -4,15 +4,9 @@
 
 ## Global bindings:
 
-| Binding  | Action                    |
-|:--------:|---------------------------|
-|   `F1`   | Show help                 |
-|   `F7`   | Go to transaction summary |
-|   `F8`   | Go to dashboard           |
-|   `F9`   | Go to config              |
-| `Ctrl+Q` | Quit                      |
-| `Ctrl+S` | Screenshot                |
-|   `C`    | Clear notifications       |
+| Binding   | Action                     |
+|:---------:|----------------------------|
+@GLOBAL_BINDING_TABLE_PLACEHOLDER@
 
 
 ## How to select, copy and paste text inside TUI app like Clive?

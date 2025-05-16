@@ -7,11 +7,11 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.constants.tui.bindings import (
-    BROADCAST_TRANSACTION_BINDING_KEY,
-    LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
-    REFRESH_TRANSACTION_METADATA_BINDING_KEY,
-    SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
+from clive.__private.core.constants.tui.global_bindings import GO_TO_LOAD_TRANSACTION_FROM_FILE
+from clive.__private.core.constants.tui.transaction_summary_bindings import (
+    BROADCAST_TRANSACTION,
+    SAVE_TRANSACTION_TO_FILE,
+    UPDATE_TRANSACTION_METADATA,
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -23,7 +23,7 @@ from clive.__private.ui.dialogs import (
 )
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
+from clive.__private.ui.screens.transaction_summary.cart_table import CartItem, CartTable
 from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
     RefreshMetadataButton,
     TransactionMetadataContainer,
@@ -60,7 +60,7 @@ class ButtonBroadcast(CliveButton):
         """Used to identify exactly that broadcast button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Broadcast ({BROADCAST_TRANSACTION_BINDING_KEY.upper()})", variant="success")
+        super().__init__(f"Broadcast ({self.app.bound_key_short(BROADCAST_TRANSACTION.id)})", variant="success")
 
 
 class ButtonSave(CliveButton):
@@ -70,7 +70,7 @@ class ButtonSave(CliveButton):
         """Used to identify exactly that save button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Save to file ({SAVE_TRANSACTION_TO_FILE_BINDING_KEY.upper()})")
+        super().__init__(f"Save to file ({self.app.bound_key_short(SAVE_TRANSACTION_TO_FILE.id)})")
 
 
 class ButtonOpenTransactionFromFile(CliveButton):
@@ -80,7 +80,9 @@ class ButtonOpenTransactionFromFile(CliveButton):
         """Used to identify exactly that open from file button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Open from file ({LOAD_TRANSACTION_FROM_FILE_BINDING_KEY.upper()})")
+        super().__init__(
+            f"Open from file ({self.app.bound_key_short(GO_TO_LOAD_TRANSACTION_FROM_FILE.id)})"
+        )  # open from file is a hidden global binding, but we want to show it here
 
 
 class ButtonContainer(Horizontal, CliveWidget):
@@ -150,10 +152,17 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
-        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
-        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
-        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
+        Binding(BROADCAST_TRANSACTION.key, "broadcast", "Broadcast", id=BROADCAST_TRANSACTION.id, show=False),
+        Binding(
+            SAVE_TRANSACTION_TO_FILE.key, "save_to_file", "Save to file", id=SAVE_TRANSACTION_TO_FILE.id, show=False
+        ),
+        Binding(
+            UPDATE_TRANSACTION_METADATA.key,
+            "refresh_metadata",
+            "Update metadata",
+            id=UPDATE_TRANSACTION_METADATA.id,
+            show=False,
+        ),
     ]
     BIG_TITLE = "transaction summary"
 
@@ -207,6 +216,10 @@ class TransactionSummary(BaseScreen):
             sign_key = None
 
         self.app.push_screen(SaveTransactionToFileDialog(sign_key), save_transaction_to_file_cb)
+
+    def action_select_cart_item(self, i: int) -> None:
+        cart_table = self.query_exactly_one(CartTable)
+        cart_table.post_message(CartItem.Focus(i - 1))
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -279,14 +292,35 @@ class TransactionSummary(BaseScreen):
         return self.key_container.selected_key
 
     def _update_bindings(self) -> None:
+        keymap = self.app.user_bindings.keymap
         if not self.profile.transaction:
-            self.unbind(BROADCAST_TRANSACTION_BINDING_KEY)
-            self.unbind(SAVE_TRANSACTION_TO_FILE_BINDING_KEY)
-            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
+            self.unbind(keymap[BROADCAST_TRANSACTION.id])
+            self.unbind(keymap[SAVE_TRANSACTION_TO_FILE.id])
+            self.unbind(keymap[UPDATE_TRANSACTION_METADATA.id])
         else:
-            self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
-            self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
-            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+            self.bind(
+                Binding(
+                    keymap[BROADCAST_TRANSACTION.id], "broadcast", "Broadcast", id=BROADCAST_TRANSACTION.id, show=False
+                )
+            )
+            self.bind(
+                Binding(
+                    keymap[SAVE_TRANSACTION_TO_FILE.id],
+                    "save_to_file",
+                    "Save to file",
+                    id=SAVE_TRANSACTION_TO_FILE.id,
+                    show=False,
+                )
+            )
+            self.bind(
+                Binding(
+                    keymap[UPDATE_TRANSACTION_METADATA.id],
+                    "refresh_metadata",
+                    "Update metadata",
+                    id=UPDATE_TRANSACTION_METADATA.id,
+                    show=False,
+                )
+            )
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)

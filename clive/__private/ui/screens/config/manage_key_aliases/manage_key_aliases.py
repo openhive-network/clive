@@ -32,17 +32,34 @@ if TYPE_CHECKING:
 class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
     """Row of ManageKeyAliasesTable."""
 
+    BINDINGS = [
+        Binding("e", "push_edit_key_alias_screen", "Edit", show=False, priority=True),
+        Binding("r", "remove_key_alias", "Remove", show=False, priority=True),
+    ]
+
     def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
         self._index = index
         self._public_key = public_key
         super().__init__(*self._create_cells())
 
+    def action_push_edit_key_alias_screen(self) -> None:
+        self._handle_push_edit_key_alias_dialog_request()
+
+    def action_remove_key_alias(self) -> None:
+        self._handle_remove_key_alias_request()
+
     @on(CliveButton.Pressed, "#edit-key-alias-button")
-    def push_edit_key_alias_dialog(self) -> None:
-        self.app.push_screen(EditKeyAliasDialog(self._public_key))
+    def push_edit_key_alias_dialog_by_button(self) -> None:
+        self._handle_push_edit_key_alias_dialog_request()
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
-    def remove_key_alias(self) -> None:
+    def remove_key_alias_by_button(self) -> None:
+        self._handle_remove_key_alias_request()
+
+    def _handle_push_edit_key_alias_dialog_request(self) -> None:
+        self.app.push_screen(EditKeyAliasDialog(self._public_key))
+
+    def _handle_remove_key_alias_request(self) -> None:
         self.app.push_screen(RemoveKeyAliasDialog(self._public_key))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
@@ -100,7 +117,7 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f2", "new_key_alias", "New alias"),
+        Binding("a", "new_key_alias", "New alias"),
     ]
 
     BIG_TITLE = "configuration"
