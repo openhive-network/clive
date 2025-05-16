@@ -24,7 +24,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
+from clive.__private.ui.screens.transaction_summary.cart_table import CartItem, CartTable
 from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
     RefreshMetadataButton,
     TransactionMetadataContainer,
@@ -158,16 +158,17 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
-        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
-        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
-        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
+        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast", show=False),
+        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Load from file", show=False),
+        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file", show=False),
+        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata", show=False),
     ]
     BIG_TITLE = "transaction summary"
 
     def __init__(self) -> None:
         super().__init__()
         self._update_bindings()
+        self._update_numeric_selection_bindings()
 
     @property
     def key_container(self) -> KeyContainer:
@@ -207,6 +208,10 @@ class TransactionSummary(BaseScreen):
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
+
+    def action_select_cart_item(self, i: int) -> None:
+        cart_table = self.query_exactly_one(CartTable)
+        cart_table.post_message(CartItem.Focus(i - 1))
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -356,6 +361,10 @@ class TransactionSummary(BaseScreen):
             self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
             self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
             self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+
+    def _update_numeric_selection_bindings(self) -> None:
+        for i in range(1, 10):
+            self.bind(Binding(str(i), f"select_cart_item({i})", show=False))
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)

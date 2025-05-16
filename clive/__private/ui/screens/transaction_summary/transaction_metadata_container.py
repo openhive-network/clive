@@ -40,7 +40,7 @@ class TransactionIdLabel(Label):
 
 class RefreshMetadataButton(RefreshOneLineButton):
     def __init__(self) -> None:
-        super().__init__(f"Refresh ({REFRESH_TRANSACTION_METADATA_BINDING_KEY.upper()})")
+        super().__init__(f"Refresh metadata ({REFRESH_TRANSACTION_METADATA_BINDING_KEY.upper()})")
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:
