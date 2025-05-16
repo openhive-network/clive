@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from abc import ABC
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 import typer
 
-from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
+from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperRemoteAddressIsNotRespondingError,
     CLIBeekeeperRemoteAddressIsNotSetError,
@@ -28,12 +28,15 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class WorldBasedCommand(ContextualCLICommand[World], ABC):
-    """A command that requires a world and session token."""
+class WorldBasedCommand(ExternalCLICommand, ABC):
+    """A command that requires a world and beekeeper remote address."""
+
+    _world: World | None = field(default=None, init=False)
 
     @property
     def world(self) -> World:
-        return self._context_manager_instance
+        assert self._world is not None, "World should be set before running the command."
+        return self._world
 
     @property
     def profile(self) -> Profile:
@@ -63,7 +66,24 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
-        await super().validate_inside_context_manager()
+        """
+        Validate the command inside the context manager.
+
+        If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
+
+        Raises
+        ------
+        CLIPrettyError: If the command is invalid.
+        """
+        return
+
+    async def _configure_inside_context_manager(self) -> None:
+        """Configure the command before running."""
+        return
+
+    async def fetch_data(self) -> None:
+        """Fetch data."""
+        return
 
     def _validate_beekeeper_remote_address_set(self) -> None:
         if self.beekeeper_remote_url is None:
@@ -108,7 +128,6 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
 
     async def _hook_after_entering_context_manager(self) -> None:
         if self.should_require_unlocked_wallet:
-            self._validate_if_wallet_is_unlocked()
             self._supply_with_correct_default_for_working_account(self.profile)
 
     def _print_launching_beekeeper(self) -> None:
@@ -119,3 +138,23 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         )
 
         typer.echo(message)
+
+    async def run(self) -> None:
+        if not self._skip_validation:
+            await self.validate()
+        await self._configure()
+        await self._run_in_context_manager()
+
+    async def _run_in_context_manager(self) -> None:
+        self._world = await self._create_context_manager_instance()
+
+        await self._hook_before_entering_context_manager()
+        async with self._world:
+            if self.should_require_unlocked_wallet:
+                self._validate_if_wallet_is_unlocked()
+            await self._hook_after_entering_context_manager()
+            await self.fetch_data()
+            if not self._skip_validation:
+                await self.validate_inside_context_manager()
+            await self._configure_inside_context_manager()
+            await self._run()
