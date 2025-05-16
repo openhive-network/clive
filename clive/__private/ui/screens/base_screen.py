@@ -27,6 +27,7 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.subtitle = self.SUBTITLE
+        self._bindings.apply_keymap(self.app.normalized_keymap)
 
     def compose(self) -> ComposeResult:
         yield CliveHeader() if not self.SHOW_RAW_HEADER else CliveRawHeader()

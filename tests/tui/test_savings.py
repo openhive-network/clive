@@ -6,7 +6,8 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
-from clive.__private.core.constants.tui.bindings import ADD_OPERATION_TO_CART_BINDING_KEY
+from clive.__private.core.constants.tui.global_bindings import GO_TO_TRANSACTION_SUMMARY
+from clive.__private.core.constants.tui.operations_common_bindings import ADD_OPERATION_TO_CART
 from clive.__private.models.schemas import (
     CancelTransferFromSavingsOperation,
     TransferFromSavingsOperation,
@@ -121,7 +122,7 @@ def prepare_expected_operation(
 
 async def go_to_savings(pilot: ClivePilot) -> None:
     assert_is_dashboard(pilot)
-    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await press_and_wait_for_screen(pilot, GO_TO_TRANSACTION_SUMMARY.key, Operations)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
@@ -248,13 +249,15 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
         await focus_next(pilot)  # focus add to cart button
-        await press_binding(pilot, ADD_OPERATION_TO_CART_BINDING_KEY, "Add to cart")
+        await press_binding(pilot, ADD_OPERATION_TO_CART.key, "Add to cart")
         await focus_next(pilot)  # focus finalize transaction button
         await focus_next(pilot)  # focus transfer tab pane
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)
-    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
+    await press_and_wait_for_screen(
+        pilot, GO_TO_TRANSACTION_SUMMARY.key, TransactionSummary
+    )  # Go to transaction summary
     await broadcast_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -307,7 +310,9 @@ async def test_canceling_transfer_from_savings(
         await pilot.press("right")  # switch tab to pending transfers
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavingsDialog)  # Cancel transfer
-        await press_and_wait_for_screen(pilot, "f6", TransactionSummary)  # Finalize transaction
+        await press_and_wait_for_screen(
+            pilot, GO_TO_TRANSACTION_SUMMARY.key, TransactionSummary
+        )  # Finalize transaction
         await broadcast_transaction(pilot)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)

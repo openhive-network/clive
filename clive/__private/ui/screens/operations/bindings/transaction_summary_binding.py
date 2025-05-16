@@ -8,7 +8,9 @@ from clive.__private.ui.screens.transaction_summary import TransactionSummary
 
 class TransactionSummaryBinding(CliveWidget):
     BINDINGS = [
-        Binding("f2", "transaction_summary", "Transaction summary"),
+        Binding(
+            "^t", "transaction_summary", "Transaction summary"
+        ),  # transaction summary is a hidden global binding, but we want to show it here
     ]
 
     async def action_transaction_summary(self) -> None:

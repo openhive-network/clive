@@ -24,6 +24,8 @@ dependencies = [
     'schemas (==0.0.1.dev331+7181389)',
     'beekeepy (==0.0.1.dev352+ef6b8c6)',
     'wax (==0.3.10.dev606+7d17dff)',
+    "toml (>=0.10.2,<0.11.0)",
+    "types-toml (>=0.10.8.20240310,<0.11.0.0)",
 ]
 
 [project.urls]

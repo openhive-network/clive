@@ -18,12 +18,24 @@ from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
+from clive.__private.core.constants.tui.global_bindings import (
+    APP_QUIT,
+    CLEAR_NOTIFICATIONS,
+    GO_TO_DASHBOARD,
+    GO_TO_LOAD_TRANSACTION_FROM_FILE,
+    GO_TO_SETTINGS,
+    GO_TO_SWITCH_NODE,
+    GO_TO_TRANSACTION_SUMMARY,
+    SCREENSHOT,
+    SHOW_HELP,
+    SWITCH_MODE_INTO_LOCKED,
+)
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive.__private.ui.bindings import DEFAULT_BINDINGS, load_bindings
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
@@ -32,16 +44,18 @@ from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
-from clive.exceptions import ScreenNotFoundError
+from clive.exceptions import BindingFileInvalidError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Awaitable, Callable, Iterator
 
+    from textual.binding import Keymap
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
+    from clive.__private.ui.bindings import Bindings
     from clive.__private.ui.clive_pilot import ClivePilot
     from clive.__private.ui.clive_screen import CliveScreen
 
@@ -61,13 +75,29 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "f12"
 
     BINDINGS = [
-        Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding(APP_QUIT_KEY_BINDING, "quit", "Quit", show=False),
-        Binding("c", "clear_notifications", "Clear notifications", show=False),
-        Binding("f1", "help", "Help", show=False),
-        Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
-        Binding("f8", "go_to_dashboard", "Dashboard", show=False),
-        Binding("f9", "go_to_config", "Config", show=False),
+        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id, show=False),
+        Binding(SWITCH_MODE_INTO_LOCKED.key, "switch_mode_into_locked", "Lock", id=SWITCH_MODE_INTO_LOCKED.id),
+        Binding(GO_TO_DASHBOARD.key, "go_to_dashboard", "Dashboard", id=GO_TO_DASHBOARD.id),
+        Binding(
+            GO_TO_TRANSACTION_SUMMARY.key,
+            "go_to_transaction_summary",
+            "Cart",
+            id=GO_TO_TRANSACTION_SUMMARY.id,
+        ),
+        Binding(GO_TO_SWITCH_NODE.key, "go_to_switch_node", "Switch node", id=GO_TO_SWITCH_NODE.id, show=False),
+        Binding(GO_TO_SETTINGS.key, "go_to_config", "Configuration", id=GO_TO_SETTINGS.id),
+        Binding(
+            CLEAR_NOTIFICATIONS.key, "clear_notifications", "Clear notifications", id=CLEAR_NOTIFICATIONS.id, show=False
+        ),
+        Binding(
+            GO_TO_LOAD_TRANSACTION_FROM_FILE.key,
+            "go_to_load_transaction_from_file",
+            "Open transaction from file",
+            id=GO_TO_LOAD_TRANSACTION_FROM_FILE.id,
+            show=False,
+        ),
+        Binding(APP_QUIT.key, "quit", "Close clive", id=APP_QUIT.id, show=False),
+        Binding(SCREENSHOT.key, "app.screenshot()", "Screenshot", id=SCREENSHOT.id, show=False),
     ]
 
     SCREENS = {
@@ -105,6 +135,8 @@ class Clive(App[int]):
         Workaround is to not await mentioned action or run it in a separate task if something later needs to await it.
         This workaround can create race conditions, so we need to guard against it.
         """
+        self.user_bindings = self._load_bindings_from_file()
+        self._bindings.apply_keymap(self.normalized_keymap)
 
     @property
     def world(self) -> TUIWorld:
@@ -118,9 +150,16 @@ class Clive(App[int]):
         assert mode in modes, f"Mode {mode} is not in the list of modes: {modes}"
         return cast("CliveModes", mode)
 
+    @property
+    def normalized_keymap(self) -> Keymap:
+        return self._normalize_keymap(self.user_bindings.keymap)
+
     @staticmethod
     def app_instance() -> Clive:
         return cast("Clive", active_app.get())
+
+    def bound_key_short(self, id_: str) -> str:
+        return self.user_bindings.short_key(id_)
 
     @classmethod
     def is_launched(cls) -> bool:
@@ -226,6 +265,10 @@ class Clive(App[int]):
                 return current_screen
         raise ScreenNotFoundError(f"Screen {screen} not found in stack")
 
+    async def action_switch_mode_into_locked(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.switch_mode_into_locked()
+
     async def action_quit(self) -> None:
         self.push_screen(Quit())
 
@@ -248,6 +291,14 @@ class Clive(App[int]):
     async def action_go_to_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_transaction_summary()
+
+    async def action_go_to_switch_node(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_switch_node()
+
+    async def action_go_to_load_transaction_from_file(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.go_to_load_transaction_from_file()
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
@@ -372,6 +423,10 @@ class Clive(App[int]):
         return AwaitComplete(impl()).call_next(self)
 
     async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
+        if self.current_mode not in {"config", "dashboard"}:
+            self.notify("Locking is possible only if you are unlocked.", severity="warning")
+            return
+
         if save_profile:
             await self.world.commands.save_profile()
 
@@ -386,7 +441,7 @@ class Clive(App[int]):
         elif self.current_mode == "dashboard":
             await self.switch_mode_with_reset("config")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            self.notify("You must be unlocked go to config.", severity="warning")
 
     async def go_to_dashboard(self) -> None:
         if self.current_mode == "dashboard":
@@ -394,7 +449,7 @@ class Clive(App[int]):
         elif self.current_mode == "config":
             await self.switch_mode_with_reset("dashboard")
         else:
-            raise AssertionError(f"Unexpected mode: {self.current_mode}")
+            self.notify("You must be unlocked go to dashboard.", severity="warning")
 
     async def go_to_transaction_summary(self) -> None:
         from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -405,9 +460,45 @@ class Clive(App[int]):
         if self.current_mode == "config":
             await self.switch_mode_with_reset("dashboard")
 
+        if self.current_mode != "dashboard":
+            self.notify("You must be unlocked to go to cart.", severity="warning")
+            return
+
         if not self.world.profile.transaction.is_signed:
             await self.world.commands.update_transaction_metadata(transaction=self.world.profile.transaction)
         await self.push_screen(TransactionSummary())
+
+    async def go_to_switch_node(self) -> None:
+        from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
+
+        if self.current_mode == "unlock":
+            self.notify("You must be unlocked to switch node.", severity="warning")
+            return
+
+        self.app.push_screen(SwitchNodeAddressDialog())
+
+    async def go_to_load_transaction_from_file(self) -> None:
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+
+        if self.current_mode == "config":
+            await self.switch_mode_with_reset("dashboard")
+
+        if self.current_mode != "dashboard":
+            self.notify("You must be unlocked to load transaction from file.", severity="warning")
+            return
+
+        cart_screen: TransactionSummary
+        if isinstance(self.screen, TransactionSummary):
+            cart_screen = self.screen
+        else:
+            cart_screen = TransactionSummary()
+            await self.push_screen(cart_screen)
+
+        if self.world.profile.transaction:
+            self.notify(
+                "Loading the transaction from the file will clear the current content of the cart.", severity="warning"
+            )
+        cart_screen.action_load_transaction_from_file()
 
     def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
         """Run work in a worker with a guard. It means that the work will be executed only if the guard is available."""
@@ -512,6 +603,17 @@ class Clive(App[int]):
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_periodic_intervals()
         self.theme = self.world.profile.tui_theme
+
+    def _load_bindings_from_file(self) -> Bindings:
+        """If there is exception and bindings cannot be loaded, notification is pushed."""
+        try:
+            user_bindings = load_bindings()
+        except BindingFileInvalidError as error:
+            message = f"Failed to load bindings: {error}. Using default bindings instead."
+            logger.error(message)
+            self.notify(message, severity="error")
+            user_bindings = DEFAULT_BINDINGS
+        return user_bindings
 
     def _get_current_worker(self) -> Worker[Any] | None:
         try:

@@ -22,6 +22,7 @@ class TrackedAccountReferencingWidget(CliveWidget):
     ) -> None:
         self._account = account
         super().__init__(name=name, classes=classes)
+        self._bindings.apply_keymap(self.app.normalized_keymap)
 
     def create_dynamic_label(
         self,
