@@ -7,7 +7,6 @@ from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
-from clive.__private.models.schemas import HiveInt
 from clive.exceptions import RequestIdError
 
 if TYPE_CHECKING:
