@@ -22,19 +22,11 @@ Authority {
     }
 
     AccountCollapsible {
-      margin-bottom: 1;
-      border-top: none;
-      padding-bottom: 0;
-    }
-
-    AccountCollapsible.-collapsed {
       padding-bottom: 0;
     }
 
     AuthorityType {
       background-tint: $foreground 10%;
-      margin-bottom: 1;
-      border-top: none;
       padding: 0 0 0 1;
 
       Horizontal {
@@ -59,7 +51,6 @@ Authority {
     }
 
     AuthorityType.-collapsed {
-      padding-bottom: 0;
       height: 1;
     }
 

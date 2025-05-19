@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Horizontal
@@ -41,6 +41,10 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
         ]
         super().__init__(*self._filter_entries)
 
+    @property
+    def is_all_selected(self) -> bool:
+        return "all" in self.selected
+
     def restore_default(self) -> None:
         self.deselect_all()
         all_selections = [self.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)]
@@ -49,28 +53,21 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
                 self.select(selection)
 
     @on(SelectionList.SelectionToggled)
-    def _handle_options_in_filter(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
-        def change_every_option_except_all_option(*, action: Literal["select", "deselect"]) -> None:
-            for selection in all_selections:
-                if selection.value != "all":
-                    selection_list.select(selection) if action == "select" else selection_list.deselect(selection)
+    def _handle_selection(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
+        """
+        Handle selection toggling -  manage the "all" option behavior and its interaction with other options.
 
-        index = event.selection_index
-        selection_list = event.selection_list
-        option_toggled = selection_list.get_option_at_index(index)
-        all_selections = [
-            selection_list.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)
-        ]
-
-        if option_toggled.value == "all":
-            if "all" in selection_list.selected:
-                change_every_option_except_all_option(action="select")
+        When "all" is selected, all other options are selected.
+        When "all" is deselected, all other options are deselected.
+        When any other option is selected while "all" is selected, "all" gets deselected.
+        """
+        if event.selection.value == "all":
+            if self.is_all_selected:
+                self.select_all()
             else:
-                change_every_option_except_all_option(action="deselect")
-        else:
-            selection_for_all_accounts = selection_list.get_option_at_index(0)
-            if "all" in selection_list.selected:
-                selection_list.deselect(selection_for_all_accounts)
+                self.deselect_all()
+        elif self.is_all_selected:
+            self.deselect("all")
 
 
 class AccountFilterCollapsible(Collapsible):
@@ -83,8 +80,10 @@ class AccountFilterCollapsible(Collapsible):
     def restore_title(self) -> None:
         self.title = self._initial_title
 
-    def update_title(self, selected_accounts: list[str]) -> None:
-        if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and "all" in selected_accounts):  # noqa: PLR2004
+    def update_title(self, selection_list: AccountSelectionList) -> None:
+        self.query_exactly_one(AccountSelectionList)
+        selected_accounts = selection_list.selected
+        if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and selection_list.is_all_selected):  # noqa: PLR2004
             self.title = next(iter(selected_accounts))
         elif len(selected_accounts) == 0:
             self.title = "no selected accounts"
@@ -135,7 +134,8 @@ class FilterAuthority(Horizontal, CliveWidget):
 
     @on(AccountSelectionList.SelectionToggled)
     def account_toggled(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
-        self.account_filter_collapsible.update_title(event.selection_list.selected)
+        assert isinstance(event.selection_list, AccountSelectionList), "SelectionList have to be AccountSelectionList."
+        self.account_filter_collapsible.update_title(event.selection_list)
         self.post_message(self.SelectedAccountsChanged())
 
     @on(SearchButton.Pressed)
