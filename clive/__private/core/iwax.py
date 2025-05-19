@@ -12,7 +12,6 @@ from clive.__private.models.schemas import (
     AssetNaiAmount,
     HiveInt,
     convert_to_representation,
-    get_hf26_decoder,
     get_hf26_encoder,
 )
 from clive.exceptions import CliveError
@@ -135,7 +134,7 @@ def deserialize_transaction(transaction: bytes) -> Transaction:
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
-    trx = Transaction.parse_raw(result.result.decode(), decoder_factory=get_hf26_decoder)
+    trx = Transaction.parse_raw(result.result.decode())
     assert isinstance(trx, Transaction), "Transaction have incompatible type"
     return trx
 

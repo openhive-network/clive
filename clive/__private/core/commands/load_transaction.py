@@ -12,7 +12,6 @@ from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import WaxOperationFailedError
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import get_hf26_decoder
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,7 +27,7 @@ class LoadTransaction(CommandWithResult[Transaction]):
 
     async def _execute(self) -> None:
         with contextlib.suppress(JSONDecodeError, DecodeError):
-            self._result = Transaction.parse_file(path=self.file_path, decoder_factory=get_hf26_decoder)
+            self._result = Transaction.parse_file(path=self.file_path)
             return
 
         with contextlib.suppress(WaxOperationFailedError, JSONDecodeError, DecodeError):
