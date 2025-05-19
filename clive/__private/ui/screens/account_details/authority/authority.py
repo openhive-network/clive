@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Final
 from textual import on
 from textual.containers import Container, Horizontal
 from textual.message import Message
-from textual.widgets import Collapsible, Static, TabPane
+from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
@@ -24,6 +24,7 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
+    CliveCollapsible,
 )
 from clive.__private.ui.widgets.inputs.authority_input import AuthorityInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
@@ -165,7 +166,7 @@ class AuthorityRoles(SectionScrollable):
         await body.mount_all(widgets)
 
 
-class AccountCollapsible(Collapsible):
+class AccountCollapsible(CliveCollapsible):
     def __init__(
         self,
         authority: WaxAccountAuthorityInfo,
@@ -196,7 +197,7 @@ class AccountCollapsible(Collapsible):
         super().__init__(*widgets_to_mount, title=authority.account, collapsed=collapsed)
 
 
-class AuthorityType(Collapsible, CliveWidget):
+class AuthorityType(CliveCollapsible):
     def __init__(
         self,
         account_authorities: WaxAuthority | str | None,
@@ -205,27 +206,21 @@ class AuthorityType(Collapsible, CliveWidget):
         filter_pattern: str | list[str] | None = None,
         collapsed: bool = False,
     ) -> None:
-        super().__init__(
-            AuthorityTable(account_authorities, filter_pattern=filter_pattern), title=title, collapsed=collapsed
-        )
         self._weight_threshold = None
+        right_hand_side_text = None
         if account_authorities and isinstance(account_authorities, WaxAuthority):
             self._weight_threshold = account_authorities.weight_threshold
             self._collected_weights = collect_weights_from_wax_authority_object(account_authorities, self.profile.keys)
+            right_hand_side_text = (
+                f"imported weights: {sum(self._collected_weights)}, threshold: {self._weight_threshold}"
+            )
 
-    def compose(self) -> ComposeResult:
-        yield Horizontal(
-            self._title,
-            Container(
-                Static(
-                    f"imported weights: {sum(self._collected_weights)}, threshold: {self._weight_threshold}"
-                    if self._weight_threshold
-                    else "",
-                    id="threshold-and-weights",
-                )
-            ),
+        super().__init__(
+            AuthorityTable(account_authorities, filter_pattern=filter_pattern),
+            title=title,
+            collapsed=collapsed,
+            right_hand_side_text=right_hand_side_text,
         )
-        yield self.Contents(*self._contents_list)
 
 
 class AuthorityHeader(Horizontal):

@@ -23,44 +23,16 @@ Authority {
 
     AccountCollapsible {
       margin-bottom: 1;
-      border-top: none;
-      padding-bottom: 0;
-    }
-
-    AccountCollapsible.-collapsed {
-      padding-bottom: 0;
     }
 
     AuthorityType {
       background-tint: $foreground 10%;
       margin-bottom: 1;
-      border-top: none;
       padding: 0 0 0 1;
-
-      Horizontal {
-        width: 1fr;
-        height: auto;
-
-        Container {
-          align-horizontal: right;
-          height: auto;
-
-          #threshold-and-weights {
-            align: right middle;
-            margin-right: 1;
-            width: auto;
-          }
-        }
-      }
 
       &:focus-within {
         background-tint: $foreground 20%;
       }
-    }
-
-    AuthorityType.-collapsed {
-      padding-bottom: 0;
-      height: 1;
     }
 
     AuthorityTable {
