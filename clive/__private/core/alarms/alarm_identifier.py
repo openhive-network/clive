@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from clive.__private.models.schemas import CliveBaseModel, HiveDateTime
+from clive.__private.models.schemas import HiveDateTime, PreconfiguredBaseModel
 
 
-class AlarmIdentifier(CliveBaseModel):
+class AlarmIdentifier(PreconfiguredBaseModel):
     """Base class for alarm identifiers."""
 
 

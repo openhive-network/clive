@@ -9,32 +9,32 @@ import msgspec
 from clive.__private.core.alarms.all_identifiers import AllAlarmIdentifiers  # noqa: TCH001
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
-    CliveBaseModel,
     HiveDateTime,
     HiveInt,
     OperationRepresentationUnion,
+    PreconfiguredBaseModel,
     Signature,
 )
 
 
-class AlarmStorageModel(CliveBaseModel, kw_only=True):
+class AlarmStorageModel(PreconfiguredBaseModel, kw_only=True):
     name: str
     is_harmless: bool = False
     identifier: AllAlarmIdentifiers
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
-class TrackedAccountStorageModel(CliveBaseModel):
+class TrackedAccountStorageModel(PreconfiguredBaseModel):
     name: str
     alarms: Sequence[AlarmStorageModel] = []
 
 
-class KeyAliasStorageModel(CliveBaseModel, kw_only=True):
+class KeyAliasStorageModel(PreconfiguredBaseModel, kw_only=True):
     alias: str
     public_key: str
 
 
-class TransactionCoreStorageModel(CliveBaseModel):
+class TransactionCoreStorageModel(PreconfiguredBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = msgspec.field(default=-1)
     ref_block_prefix: HiveInt = msgspec.field(default=-1)
@@ -48,7 +48,7 @@ class TransactionCoreStorageModelSchema(TransactionCoreStorageModel):
     """Do not include really complex structure of operation union type in the schema."""
 
 
-class TransactionStorageModel(CliveBaseModel):
+class TransactionStorageModel(PreconfiguredBaseModel):
     transaction_core: TransactionCoreStorageModel
     transaction_file_path: Path | None = None
 
@@ -57,7 +57,7 @@ class TransactionStorageModelSchema(TransactionStorageModel):
     transaction_core: TransactionCoreStorageModelSchema
 
 
-class ProfileStorageModel(CliveBaseModel, kw_only=True):
+class ProfileStorageModel(PreconfiguredBaseModel, kw_only=True):
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []

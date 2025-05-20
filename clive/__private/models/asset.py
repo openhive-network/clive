@@ -8,7 +8,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetNaiAmount, AssetVests, CliveBaseModel
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetNaiAmount, AssetVests, PreconfiguredBaseModel
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -221,21 +221,21 @@ class Asset:
         return isinstance(asset, Asset.Vests)
 
 
-class AssetFactoryHolderHive(CliveBaseModel):
+class AssetFactoryHolderHive(PreconfiguredBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetHive
     asset_factory: Callable[[int | str | Decimal], AssetHive] = Asset.hive
 
 
-class AssetFactoryHolderHbd(CliveBaseModel):
+class AssetFactoryHolderHbd(PreconfiguredBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetHbd
     asset_factory: Callable[[int | str | Decimal], AssetHbd] = Asset.hbd
 
 
-class AssetFactoryHolderVests(CliveBaseModel):
+class AssetFactoryHolderVests(PreconfiguredBaseModel):
     """Holds factory for asset."""
 
     asset_cls: type = AssetVests

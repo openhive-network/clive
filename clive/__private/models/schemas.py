@@ -17,6 +17,7 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
+from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.apis.account_history_api import EnumVirtualOps, GetAccountHistory, GetOpsInBlock
 from schemas.apis.account_history_api.response_schemas import GetTransaction
 from schemas.apis.database_api import (
@@ -59,7 +60,6 @@ from schemas.apis.rc_api import ListRcAccounts as SchemasListRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
-from schemas.clive.base import CliveBaseModel
 from schemas.decoders import get_hf26_decoder, is_matching_model, validate_schema_field
 from schemas.encoders import get_hf26_encoder
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
@@ -295,6 +295,7 @@ __all__ = [
     "JSONRPCRequest",
     "Witness",
     # other
+    "PreconfiguredBaseModel",
     "RepresentationBase",
     "Serializable",
     # decoders
@@ -302,8 +303,6 @@ __all__ = [
     "get_hf26_encoder",
     "is_matching_model",
     "validate_schema_field",
-    # clive
-    "CliveBaseModel",
 ]
 
 # operation BASIC aliases
