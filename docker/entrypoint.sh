@@ -47,7 +47,7 @@ check_and_switch_user() {
 wait_for_testnet() {
   local limit=120 #seconds
   local target_substring="Serving forever"
-  local command="(tail -f -n0 ${TESTNET_NODE_LOG_FILE} &) | grep -q '${target_substring}'"
+  local command="while [ ! -f ${TESTNET_NODE_LOG_FILE} ]; do sleep 1; done; (tail -f -n0 ${TESTNET_NODE_LOG_FILE} &) | grep -q '${target_substring}'"
 
   echo "Waiting for testnet node to be ready..."
   timeout "$limit" bash -c "${command}"
