@@ -19,7 +19,7 @@ packages = [
     { include = "clive" },
 ]
 include = [
-    "settings.toml",
+    "clive/settings.toml",
 ]
 source = [
     { name = "PyPI", priority = "primary" },

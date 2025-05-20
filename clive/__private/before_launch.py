@@ -23,7 +23,7 @@ def _create_clive_data_directory() -> None:
 def _initialize_user_settings() -> None:
     user_settings_path = Path(safe_settings.data_path) / "settings.toml"
     if not user_settings_path.is_file():
-        shutil.copy(ROOT_DIRECTORY.parent / "settings.toml", user_settings_path)
+        shutil.copy(ROOT_DIRECTORY / "settings.toml", user_settings_path)
 
 
 def _log_in_dev_mode() -> None:
