@@ -190,8 +190,11 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
     def is_empty(self) -> bool:
         return self.input.is_empty
 
-    def load_new_suggestions(self, suggestions: list[str]) -> None:
-        self.input.load_new_suggestions(suggestions)
+    def add_suggestion(self, *suggestions: str) -> None:
+        self.input.add_suggestion(*suggestions)
+
+    def clear_suggestions(self) -> None:
+        self.input.clear_suggestions()
 
     def value_or_none(
         self,
