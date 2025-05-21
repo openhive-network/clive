@@ -437,7 +437,8 @@ class Authority(TabPane, CliveWidget):
                         input_suggestions.append(collected_entry)
 
         input_suggestions.extend(self.profile.keys.get_all_aliases())
-        filter_authority.authority_input.load_new_suggestions(input_suggestions)
+        filter_authority.authority_input.clear_suggestions()
+        filter_authority.authority_input.add_suggestion(*input_suggestions)
 
     async def _rebuild_authority_roles(self, filter_pattern: str | list[str] | None = None) -> None:
         with self.app.batch_update():

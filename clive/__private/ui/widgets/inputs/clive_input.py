@@ -111,7 +111,7 @@ class CliveInput(Input):
             type=type,
             max_length=max_length,
             highlighter=highlighter,
-            suggester=suggester,
+            suggester=suggester if suggester else CliveSuggester(),
             validators=validators,
             validate_on=validate_on if validate_on is not None else self._DEFAULT_VALIDATE_ON,
             valid_empty=valid_empty,
@@ -146,6 +146,19 @@ class CliveInput(Input):
     async def action_suggest_previous(self) -> None:
         await self._suggest(mode="previous")
 
+    def add_suggestion(self, *suggestions: str) -> None:
+        assert isinstance(self.suggester, CliveSuggester), (
+            "In order to add new suggestions you have to use CliveSuggester."
+        )
+        self.suggester.add_suggestion(*suggestions)
+
+    def clear_suggestions(self) -> None:
+        if self.suggester:
+            assert isinstance(self.suggester, CliveSuggester), (
+                "In order to clear suggestions you have to use CliveSuggester."
+            )
+            self.suggester.clear_suggestions()
+
     def make_required(self, message: str = DEFAULT_REQUIRED_FAILURE_DESCRIPTION) -> None:
         self.set_reactive(self.__class__.required_failure_description, message)  # type: ignore[arg-type]
         self.required = True
@@ -165,16 +178,6 @@ class CliveInput(Input):
 
         self.add_class(valid_class if valid else invalid_class)
         self.remove_class(invalid_class if valid else valid_class)
-
-    def load_new_suggestions(self, suggestions: list[str]) -> None:
-        if self.suggester is None:
-            self.suggester = CliveSuggester(suggestions)
-        else:
-            assert isinstance(self.suggester, CliveSuggester), (
-                "In order to load new suggestions you have to use CliveSuggester."
-            )
-            self.suggester.clear_suggestions()
-            self.suggester.add_suggestion(*suggestions)
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
         """Validate the value of the input."""
