@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
+from textual.widgets import Input
+
+from clive.__private.core.iwax import calculate_public_key
+from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
@@ -49,3 +54,10 @@ class AuthorityInput(TextInput):
             classes=classes,
             disabled=disabled,
         )
+
+    @on(Input.Changed)
+    def _replace_private_with_public_key(self, event: Input.Changed) -> None:
+        value = event.value
+        if PrivateKey.is_valid(value):
+            self.input.value = calculate_public_key(value).value
+            self.notify("Private key was converted to public key.")
