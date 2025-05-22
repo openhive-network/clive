@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.iwax import calculate_public_key
+from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
@@ -49,3 +51,13 @@ class AuthorityInput(TextInput):
             classes=classes,
             disabled=disabled,
         )
+
+    def to_public_key_if_private_is_present(self) -> str:
+        """Check if the value in input is a private key, if so - return converted public key from it."""
+        value = self.value_raw
+        if value:
+            valid_private = PrivateKey.is_valid(value)
+            if valid_private:
+                self.notify("Private key converted to public while searching.")
+                return calculate_public_key(value).value
+        return value
