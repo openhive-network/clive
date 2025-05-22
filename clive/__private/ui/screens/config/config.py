@@ -8,6 +8,7 @@ from textual.binding import Binding
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.account_management.account_management import AccountManagement
+from clive.__private.ui.screens.config.change_bindings import ChangeBindings
 from clive.__private.ui.screens.config.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.screens.config.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -31,6 +32,7 @@ class Config(BaseScreen):
             yield OneLineButton("Select node", id_="select-node")
             yield OneLineButton("Manage key aliases", id_="manage-key-aliases")
             yield OneLineButton("Accounts management", id_="account-list-management")
+            yield OneLineButton("Change bindings", id_="change-bindings")
 
     @on(OneLineButton.Pressed, "#select-node")
     def push_set_node_address_screen(self) -> None:
@@ -43,3 +45,7 @@ class Config(BaseScreen):
     @on(OneLineButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
         await self.app.push_screen(ManageKeyAliases())
+
+    @on(OneLineButton.Pressed, "#change-bindings")
+    async def push_change_bindings_aliases_screen(self) -> None:
+        await self.app.push_screen(ChangeBindings())
