@@ -61,18 +61,18 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "f12"
 
     BINDINGS = [
-        Binding("f1", "help", "Help", show=False),
-        Binding("?", "help", "Help", show=False),
-        Binding("ctrl+l", "switch_mode_into_locked", "Lock", show=False),
-        Binding("ctrl+d", "go_to_dashboard", "Dashboard", show=False),
-        Binding("ctrl+t", "go_to_transaction_summary", "Cart", show=False),
-        Binding("ctrl+n", "go_to_switch_node", "Switch node", show=False),
-        Binding("ctrl+s", "go_to_config", "Configuration", show=False),
-        Binding("ctrl+x", "clear_notifications", "Clear notifications", show=False),
-        Binding("ctrl+o", "go_to_load_transaction_from_file", "Open transaction from file", show=False),
-        Binding(APP_QUIT_KEY_BINDING, "quit", "Close clive", show=False),
-        Binding("ctrl+c", "quit_immediately", "Quit immediately", show=False),
-        Binding("ctrl+p", "app.screenshot()", "Screenshot", show=False),
+        Binding("f1", "help", "Help", show=False, priority=True),
+        Binding("?", "help", "Help", show=False, priority=True),
+        Binding("ctrl+l", "switch_mode_into_locked", "Lock", show=False, priority=True),
+        Binding("ctrl+d", "go_to_dashboard", "Dashboard", show=False, priority=True),
+        Binding("ctrl+t", "go_to_transaction_summary", "Cart", show=False, priority=True),
+        Binding("ctrl+n", "go_to_switch_node", "Switch node", show=False, priority=True),
+        Binding("ctrl+s", "go_to_config", "Configuration", show=False, priority=True),
+        Binding("ctrl+x", "clear_notifications", "Clear notifications", show=False, priority=True),
+        Binding("ctrl+o", "go_to_load_transaction_from_file", "Open transaction from file", show=False, priority=True),
+        Binding(APP_QUIT_KEY_BINDING, "quit", "Close clive", show=False, priority=True),
+        Binding("ctrl+c", "quit_immediately", "Quit immediately", show=False, priority=True),
+        Binding("ctrl+p", "app.screenshot()", "Screenshot", show=False, priority=True),
     ]
 
     SCREENS = {

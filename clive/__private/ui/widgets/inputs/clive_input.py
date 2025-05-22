@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, override
 
-from textual import on, validation
+from textual import events, on, validation
 from textual.binding import Binding
 from textual.events import Blur, Focus
 from textual.message import Message
@@ -19,6 +20,12 @@ if TYPE_CHECKING:
     from rich.highlighter import Highlighter
     from textual.suggester import Suggester
     from textual.widgets._input import InputType, InputValidationOn
+
+_RESTRICT_TYPES = {
+    "integer": r"[-+]?(?:\d*|\d+_)*",
+    "number": r"[-+]?(?:\d*|\d+_)*\.?(?:\d*|\d+_)*(?:\d[eE]?[-+]?(?:\d*|\d+_)*)?",
+    "text": None,
+}
 
 
 class CliveInput(Input):
@@ -127,6 +134,7 @@ class CliveInput(Input):
         self._unmodified_placeholder = placeholder
 
         self._configure()
+        self._last_key: events.Key | None = None
 
     @property
     def unmodified_placeholder(self) -> str:
@@ -195,6 +203,39 @@ class CliveInput(Input):
         self.set_style("initial")
         self.post_message(self.Validated("", None))
 
+    @override
+    def check_consume_key(self, key: str, character: str | None) -> bool:
+        """
+        Check if the widget may consume the given key.
+
+        As an input we are expecting to capture printable keys.
+
+        Args:
+            key: A key identifier.
+            character: A character associated with the key, or `None` if there isn't one.
+
+        Returns:
+            `True` if the widget may capture the key in it's `Key` message, or `False` if it won't.
+        """
+
+        def check_allowed_value(value: str) -> bool:
+            """Check if new value is restricted."""
+            # Check max length
+            if self.max_length and len(value) > self.max_length:
+                return False
+            # Check explicit restrict
+            if self.restrict and re.fullmatch(self.restrict, value) is None:
+                return False
+            # Check type restrict
+            if self.type:
+                type_restrict = _RESTRICT_TYPES.get(self.type, None)
+                if type_restrict is not None and re.fullmatch(type_restrict, value) is None:
+                    return False
+            # Character is allowed
+            return True
+
+        return character is not None and character.isprintable() and check_allowed_value(character)
+
     @property
     def _should_include_title_in_placeholder(self) -> bool:
         return (
@@ -203,6 +244,10 @@ class CliveInput(Input):
             and not self.always_show_title
             and not self.has_focus
         )
+
+    async def _on_key(self, event: events.Key) -> None:
+        self._last_key = event
+        await super()._on_key(event)
 
     def _configure(self) -> None:
         if self.required:
