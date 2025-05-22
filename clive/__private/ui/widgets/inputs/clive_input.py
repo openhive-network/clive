@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, override
 
-from textual import on, validation
+from textual import events, on, validation
 from textual.binding import Binding
 from textual.events import Blur, Focus
 from textual.message import Message
@@ -11,6 +11,7 @@ from textual.reactive import var
 from textual.validation import ValidationResult, Validator
 from textual.widgets import Input
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.ui.clive_suggester import CliveSuggester
 
 if TYPE_CHECKING:
@@ -127,6 +128,7 @@ class CliveInput(Input):
         self._unmodified_placeholder = placeholder
 
         self._configure()
+        self._last_key: events.Key | None = None
 
     @property
     def unmodified_placeholder(self) -> str:
@@ -195,6 +197,19 @@ class CliveInput(Input):
         self.set_style("initial")
         self.post_message(self.Validated("", None))
 
+    @override
+    def restricted(self) -> None:
+        default_restricted = super().restricted
+
+        async def restricted_async() -> None:
+            is_handled = False
+            if self._last_key is not None:
+                is_handled = await self.handle_key(self._last_key)
+            if not is_handled:
+                default_restricted()
+
+        asyncio_run(restricted_async())
+
     @property
     def _should_include_title_in_placeholder(self) -> bool:
         return (
@@ -203,6 +218,10 @@ class CliveInput(Input):
             and not self.always_show_title
             and not self.has_focus
         )
+
+    async def _on_key(self, event: events.Key) -> None:
+        self._last_key = event
+        await super()._on_key(event)
 
     def _configure(self) -> None:
         if self.required:
