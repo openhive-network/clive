@@ -10,8 +10,7 @@ from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
-from clive.__private.core.iwax import calculate_public_key
-from clive.__private.core.keys import PrivateKey, PublicKey
+from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -387,10 +386,6 @@ class Authority(TabPane, CliveWidget):
         if filter_pattern:
             if self._filter_pattern_already_applied:
                 self._update_filtered_authorities_and_input_suggestions()
-            valid_private = PrivateKey.is_valid(filter_pattern)
-            if valid_private:
-                filter_pattern = calculate_public_key(filter_pattern).value
-                self.notify("Private key converted to public while searching.")
 
             alias_patterns = [
                 aliased_key.value for aliased_key in self.profile.keys if is_match(aliased_key.alias, filter_pattern)
