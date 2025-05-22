@@ -230,13 +230,13 @@ class World:
         finally:
             self._is_during_closure = False
 
-    async def _create_wax_interface(self) -> None:
+    async def _setup(self) -> None:
+        await self._beekeeper_manager.setup()
+
+    async def _setup_wax_interface(self) -> None:
         chain_id = await self.node.chain_id
         wax_chain_options = WaxChainOptions(chain_id=chain_id, endpoint_url=self.profile.node_address)
         self._wax_interface = create_hive_chain(wax_chain_options)
-
-    async def _setup(self) -> None:
-        await self._beekeeper_manager.setup()
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
@@ -260,7 +260,7 @@ class World:
         if self._wax_interface:
             self._wax_interface.endpoint_url = self.profile.node_address
         else:
-            await self._create_wax_interface()
+            await self._setup_wax_interface()
 
 
 class TUIWorld(World, CliveDOMNode):
