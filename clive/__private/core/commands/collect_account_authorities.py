@@ -8,11 +8,12 @@ from wax.models.authority import WaxAccountAuthorityInfo
 
 if TYPE_CHECKING:
     from wax import IHiveChainInterface
+    from wax.api.collection import WaxApiCollection
 
 
 @dataclass(kw_only=True)
 class CollectAccountAuthorities(CommandWithResult[WaxAccountAuthorityInfo]):
-    wax_interface: IHiveChainInterface
+    wax_interface: IHiveChainInterface[WaxApiCollection]
     account: str
 
     async def _execute(self) -> None:

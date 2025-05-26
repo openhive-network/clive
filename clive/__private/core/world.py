@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import Account
     from wax import IHiveChainInterface
+    from wax.api.collection import WaxApiCollection
 
 
 class World:
@@ -50,7 +51,7 @@ class World:
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
         self._beekeeper_manager = BeekeeperManager()
-        self._wax_interface: IHiveChainInterface | None = None
+        self._wax_interface: IHiveChainInterface[WaxApiCollection] | None = None
 
         self._node: Node | None = None
         self._is_during_setup = False
@@ -104,7 +105,7 @@ class World:
         return self._beekeeper_manager
 
     @property
-    def wax_interface(self) -> IHiveChainInterface:
+    def wax_interface(self) -> IHiveChainInterface[WaxApiCollection]:
         if self._wax_interface is None:
             raise ProfileNotLoadedError(
                 "Wax interface cannot be accessed before profile is loaded as it is profile dependent."
