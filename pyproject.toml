@@ -5,16 +5,37 @@ requires = [
 ]
 build-backend = "poetry_dynamic_versioning.backend"
 
-[tool.poetry]
+[project]
 name = "clive"
-version = "0.0.0"
 description = "CLI application for interacting with the Hive blockchain."
+dynamic = ["version"]
 readme = "README.md"
-repository = "https://gitlab.syncad.com/hive/clive"
-authors = [
-    "Mateusz Żebrak <mzebrak@syncad.com>",
-    "Krzysztof Mochocki <kmochocki@syncad.com>"
+authors = [{ name = "Krzysztof Mochocki", email = "kmochocki@syncad.com" }, { name = "Mateusz Żebrak", email = "mzebrak@syncad.com" }]
+requires-python = '>=3.12,<4.0'
+dependencies = [
+    'dynaconf (==3.2.10)',
+    'loguru (==0.7.2)',
+    'textual (==3.1.0)',
+    'aiohttp (==3.11.14)',
+    'typer (==0.15.2)',
+    'inflection (==0.5.1)',
+    'humanize (==4.12.2)',
+    'pydantic (==1.10.18)',
+    'schemas (==0.0.1.dev331+7181389)',
+    'beekeepy (==0.0.1.dev352+ef6b8c6)',
+    'wax (==0.3.10.dev606+7d17dff)',
 ]
+
+[project.urls]
+repository = "https://gitlab.syncad.com/hive/clive"
+
+[project.scripts]
+clive = "clive.main:main"
+clive-dev = "clive.dev:main"
+
+
+[tool.poetry]
+requires-poetry = '>=2.0.0,<3.0.0'
 packages = [
     { include = "clive" },
 ]
@@ -22,34 +43,25 @@ include = [
     "clive/settings.toml",
 ]
 source = [
-    { name = "PyPI", priority = "primary" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
 ]
+version = "0.0.0"
 
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
+poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.dependencies]
-python = "^3.12"
-dynaconf = "3.2.10"
-loguru = "0.7.2"
-textual = "3.1.0"
-aiohttp = "3.11.14"
-typer = "0.15.2"
-inflection = "0.5.1"
-humanize = "4.12.2"
-pydantic = "1.10.18"
-
-# remember to keep these versions adequate to one specified in test-tools
-schemas = "0.0.1.dev331+7181389"
-beekeepy = "0.0.1.dev352+ef6b8c6"
-wax = "0.3.10.dev606+7d17dff"
+schemas = { source = "gitlab-schemas" }
+wax = { source = "gitlab-wax" }
+beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
 pytest = "8.3.5"  # required by test-tools, otherwise they will fail
-
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.15.0"
@@ -62,11 +74,6 @@ ruff = "0.11.5"
 textual-dev = "1.5.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
-
-
-[tool.poetry.scripts]
-clive = "clive.main:main"
-clive-dev = "clive.dev:main"
 
 
 [tool.poetry-dynamic-versioning]
@@ -96,6 +103,7 @@ plugins = "pydantic.mypy"
 [[tool.mypy.overrides]]
 module = ["test_tools.*"]
 ignore_missing_imports = true
+
 
 [tool.ruff]
 line-length = 120
