@@ -35,7 +35,7 @@ dynaconf = "3.2.10"
 loguru = "0.7.2"
 textual = "3.1.0"
 aiohttp = "3.11.14"
-typer =  "0.15.2"
+typer = "0.15.2"
 inflection = "0.5.1"
 humanize = "4.12.2"
 pydantic = "1.10.18"
@@ -111,12 +111,12 @@ ignore = [
     "D413", # Missing blank line after last section
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
     "TD002", # Missing author in to-do; no need for that
-    "TD003",  # Missing issue link on the line following this to-do; no need for that
-    "SLF001",  # Private member accessed: {access}; too restrictive
+    "TD003", # Missing issue link on the line following this to-do; no need for that
+    "SLF001", # Private member accessed: {access}; too restrictive
     "COM812", # Trailing comma missing; handled by ruff formatter
-    "EM",  # agreed not to use it in our convention
+    "EM", # agreed not to use it in our convention
     "FIX", # can't have that enabled, as we treat ruff result as an error on CI
-    "S101",  # Use of assert detected; too restrictive
+    "S101", # Use of assert detected; too restrictive
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
 ]
@@ -147,6 +147,6 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope="function"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 addopts = "--strict-markers"
