@@ -47,19 +47,32 @@ how_to_create_profile() {
 
 # Execute a script passed as an argument
 execute_passed_script() {
-  if [[ -n "${FILE_TO_EXECUTE:-}" ]]; then
-    if [[ -f "${FILE_TO_EXECUTE}" ]]; then
-      echo "Executing file: ${FILE_TO_EXECUTE}"
-      # shellcheck disable=SC1090
-      source "${FILE_TO_EXECUTE}"
-      exit 0
-    else
-      echo "Error: ${FILE_TO_EXECUTE} does not exist or is not a file."
-      exit 1
-    fi
+  if [[ -f "${FILE_TO_EXECUTE}" ]]; then
+    echo "Executing file: ${FILE_TO_EXECUTE}"
+    # shellcheck disable=SC1090
+    source "${FILE_TO_EXECUTE}"
+    exit 0
+  else
+    echo "Error: ${FILE_TO_EXECUTE} does not exist or is not a file."
+    exit 1
   fi
 }
 
+# Execute before entering interactive mode
+setup() {
+  start_beekeeper_with_prepared_session_token
+  if [[ -n "${FILE_TO_EXECUTE:-}" ]]; then
+    execute_passed_script
+  else
+    if ! unlock_wallet; then
+      echo "Error: Failed to unlock wallet. Aborting..."
+      exit 1
+    fi
+  fi
+
+  # shellcheck disable=SC1090
+  source ~/.bashrc
+}
 
 close_beekeeper() {
   if [[ ${BEEKEEPER_ALREADY_CLOSED} -eq 0 ]]; then
@@ -68,18 +81,6 @@ close_beekeeper() {
   fi
 }
 
-
-# Execute before entering interactive mode
-setup() {
-  start_beekeeper_with_prepared_session_token
-  if ! unlock_wallet; then
-    echo "Error: Failed to unlock wallet. Aborting..."
-    exit 1
-  fi
-  execute_passed_script
-  # shellcheck disable=SC1090
-  source ~/.bashrc
-}
 
 # Clean after termination of shell
 clean_up() {
