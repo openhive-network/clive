@@ -141,6 +141,8 @@ build_wheel:
       artifacts: true
     - job: prepare_testnet_hived_image
       artifacts: true
+    - job: build_wheel
+      artifacts: true
   variables:
     CLIVE_BEEKEEPER__COMMUNICATION_TOTAL_TIMEOUT_SECS: 60
     CLIVE_NODE__COMMUNICATION_TOTAL_TIMEOUT_SECS: 60
@@ -150,6 +152,15 @@ build_wheel:
     CLI_WALLET_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/cli_wallet"
     GET_DEV_KEY_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/get_dev_key"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
+  before_script:
+    - !reference [.project_develop_configuration_template, before_script]
+    - pip list --editable
+    - python3 -m pip uninstall clive -y
+    - echo -e "${TXT_BLUE}We want to perform tests on Clive after installing it from a wheel...${TXT_CLEAR}"
+    - stat dist/*.whl
+    - python3 -m pip install dist/*.whl
+    - pip list --editable
+    - clive --version  # assertion that Clive can be run as application
   artifacts:
     reports:
       junit: $PATH_TO_REPORT
