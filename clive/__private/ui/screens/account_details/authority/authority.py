@@ -14,6 +14,7 @@ from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLA
 from clive.__private.core.iwax import calculate_public_key
 from clive.__private.core.keys import PrivateKey, PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.new_key_alias_dialog import NewKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.buttons import (
     ClearButton,
@@ -119,11 +120,9 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
 
     @on(Pressed)
     def add_private_key(self, event: ImportPrivateKeyButton.Pressed) -> None:
-        from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAlias
-
         assert isinstance(event.button, ImportPrivateKeyButton), "Incompatible type of button."
         public_key = event.button.public_key
-        self.app.push_screen(NewKeyAlias(public_key_to_validate=public_key), self._key_aliases_changed_callback)
+        self.app.push_screen(NewKeyAliasDialog(public_key_to_validate=public_key), self._key_aliases_changed_callback)
 
 
 class RemovePrivateKeyButton(PrivateKeyActionButton):
