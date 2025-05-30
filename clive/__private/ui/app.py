@@ -18,7 +18,19 @@ from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
+from clive.__private.core.constants.tui.bindings import (
+    APP_QUIT_KEY_BINDING,
+    CLEAR_NOTIFICATIONS_BINDING_KEY,
+    GO_TO_DASHBOARD_KEY_BINDING,
+    GO_TO_LOAD_TRANSACTION_FROM_FILE_KEY_BINDING,
+    GO_TO_SETTINGS_KEY_BINDING,
+    GO_TO_SWITCH_NODE_BINDING,
+    GO_TO_TRANSACTION_SUMMARY_KEY_BINDING,
+    HELP_KEY_BINDING,
+    QUIT_IMMEDIATELY_KEY_BINDING,
+    SCREENSHOT_KEY_BINDING,
+    SWITCH_MODE_INTO_LOCKED_BINDING_KEY,
+)
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
@@ -61,18 +73,26 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "f12"
 
     BINDINGS = [
-        Binding("f1", "help", "Help", show=False, priority=True),
-        Binding("?", "help", "Help", show=False, priority=True),
-        Binding("ctrl+l", "switch_mode_into_locked", "Lock", show=False, priority=True),
-        Binding("ctrl+d", "go_to_dashboard", "Dashboard", show=False, priority=True),
-        Binding("ctrl+t", "go_to_transaction_summary", "Cart", show=False, priority=True),
-        Binding("ctrl+n", "go_to_switch_node", "Switch node", show=False, priority=True),
-        Binding("ctrl+s", "go_to_config", "Configuration", show=False, priority=True),
-        Binding("ctrl+x", "clear_notifications", "Clear notifications", show=False, priority=True),
-        Binding("ctrl+o", "go_to_load_transaction_from_file", "Open transaction from file", show=False, priority=True),
+        Binding(HELP_KEY_BINDING[0], "help", "Help", show=False, priority=True),
+        Binding(HELP_KEY_BINDING[1], "help", "Help", show=False, priority=True),
+        Binding(SWITCH_MODE_INTO_LOCKED_BINDING_KEY, "switch_mode_into_locked", "Lock", show=False, priority=True),
+        Binding(GO_TO_DASHBOARD_KEY_BINDING, "go_to_dashboard", "Dashboard", show=False, priority=True),
+        Binding(GO_TO_TRANSACTION_SUMMARY_KEY_BINDING, "go_to_transaction_summary", "Cart", show=False, priority=True),
+        Binding(GO_TO_SWITCH_NODE_BINDING, "go_to_switch_node", "Switch node", show=False, priority=True),
+        Binding(GO_TO_SETTINGS_KEY_BINDING, "go_to_config", "Settings", show=False, priority=True),
+        Binding(
+            CLEAR_NOTIFICATIONS_BINDING_KEY, "clear_notifications", "Clear notifications", show=False, priority=True
+        ),
+        Binding(
+            GO_TO_LOAD_TRANSACTION_FROM_FILE_KEY_BINDING,
+            "go_to_load_transaction_from_file",
+            "Open transaction from file",
+            show=False,
+            priority=True,
+        ),
         Binding(APP_QUIT_KEY_BINDING, "quit", "Close clive", show=False, priority=True),
-        Binding("ctrl+c", "quit_immediately", "Quit immediately", show=False, priority=True),
-        Binding("ctrl+p", "app.screenshot()", "Screenshot", show=False, priority=True),
+        Binding(QUIT_IMMEDIATELY_KEY_BINDING, "quit_immediately", "Quit immediately", show=False, priority=True),
+        Binding(SCREENSHOT_KEY_BINDING, "app.screenshot()", "Screenshot", show=False, priority=True),
     ]
 
     SCREENS = {
