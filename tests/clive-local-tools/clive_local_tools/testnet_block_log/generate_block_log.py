@@ -14,6 +14,7 @@ from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT2_DATA,
     CREATOR_ACCOUNT,
     EMPTY_ACCOUNT,
+    KNOWN_EXCHANGES_NAMES,
     PROPOSALS,
     WATCHED_ACCOUNTS_DATA,
     WITNESSES,
@@ -181,6 +182,14 @@ def create_empty_account(wallet: tt.Wallet) -> None:
     wallet.create_account(EMPTY_ACCOUNT.name)
 
 
+def create_known_exchange_accounts(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating known exchange accounts...")
+    for exchange_name in KNOWN_EXCHANGES_NAMES:
+        wallet.create_account(
+            exchange_name,
+        )
+
+
 def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
@@ -213,6 +222,7 @@ def main() -> None:
     prepare_savings(wallet)
     prepare_votes_for_witnesses(wallet)
     create_empty_account(wallet)
+    create_known_exchange_accounts(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)
