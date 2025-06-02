@@ -7,6 +7,7 @@ from beekeepy.exceptions import NoWalletWithSuchNameError
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.migrate_profile import MigrateProfile
 from clive.__private.core.commands.recover_wallets import RecoverWallets, RecoverWalletsStatus
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.encryption import EncryptionService
@@ -59,6 +60,12 @@ class Unlock(CommandPasswordSecured, CommandWithResult[RecoverWalletsStatus]):
 
         if self.app_state is not None:
             await self.app_state.unlock(WalletContainer(user_wallet, encryption_wallet))
+
+        await MigrateProfile(
+            profile_name=self.profile_name,
+            unlocked_wallet=user_wallet,
+            unlocked_encryption_wallet=encryption_wallet,
+        ).execute()
 
     async def _unlock_wallet(self, name: str) -> AsyncUnlockedWallet | None:
         try:

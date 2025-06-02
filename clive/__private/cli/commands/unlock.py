@@ -71,14 +71,12 @@ class Unlock(WorldBasedCommand):
         if profile_name is None:
             self._display_create_profile_help_info()
             return
+        version_before = PersistentStorageService.get_version_to_read(profile_name)
         if sys.stdin.isatty():
             await self._unlock_in_tty_mode(profile_name)
         else:
             await self._unlock_in_non_tty_mode(profile_name)
         typer.echo(f"Profile `{profile_name}` is unlocked.")
-        encryption_service = (await self.world.commands.get_encryption_service()).result_or_raise
-        version_before = PersistentStorageService.get_version_to_read(profile_name)
-        await PersistentStorageService(encryption_service).migrate(profile_name)
         version_after = PersistentStorageService.get_version_to_read(profile_name)
         if version_before != version_after:
             typer.echo(self._format_migration_performed_message(profile_name, version_before, version_after))
