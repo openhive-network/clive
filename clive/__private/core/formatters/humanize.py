@@ -85,12 +85,14 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
     return aligned_strings
 
 
-def humanize_validation_result(result: ValidationResult) -> str:
+def humanize_validation_result(result: ValidationResult, *, as_markup: bool = False) -> str:
     """Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message."""
     if result.is_valid:
         return "No failures"
 
     if len(result.failure_descriptions) > 1:
+        if as_markup:
+            return "\n".join(f"{desc}" for desc in result.failure_descriptions)
         return str(result.failure_descriptions)
     return result.failure_descriptions[0]
 
