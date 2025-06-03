@@ -40,7 +40,7 @@ def transaction_with_forceable_operation_path(tmp_path: Path) -> Path:
             to=KNOWN_EXCHANGE_NAME,
             amount=tt.Asset.Hive(1),
             memo="transfer_from_savings_operation forceable test",
-            request_id=1234,
+            request_id=1,  # there is already one withdrawal pending in the block log
         ),
     ]
     return create_transaction_file(tmp_path, operations)
@@ -94,8 +94,9 @@ async def test_validate_of_performing_recurrent_transfer_to_exchange(cli_tester:
 @pytest.mark.parametrize("force", [True, False])
 async def test_validate_of_performing_withdrawing_to_exchange(cli_tester: CLITester, *, force: bool) -> None:
     # ARRANGE
+    request_id = 1  # there is already one withdrawal pending in the block log
+
     def send_operation() -> None:
-        request_id: int = 4123
         cli_tester.process_savings_withdrawal(
             to=KNOWN_EXCHANGE_NAME, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, force=force, request_id=request_id
         )
