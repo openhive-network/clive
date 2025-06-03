@@ -8,6 +8,12 @@ SELECTED_PROFILE=""
 UNLOCK_TIME_MINS=""
 TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
+PIPELINE=""
+
+if ! [ -t 0 ]; then
+    read -r PIPELINE
+    export PIPELINE
+fi
 
 # Print usage/help
 print_help() {
@@ -37,7 +43,11 @@ check_and_switch_user() {
         usermod -o -u "${CLIVE_UID}" clive
       fi
       #echo "Respawning entrypoint as user clive"
-      exec sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
+      if [[ -n "${PIPELINE:-}" ]]; then
+        echo "$PIPELINE" | sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
+      else
+        exec sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
+      fi
       exit 0
     fi
   fi
@@ -58,7 +68,11 @@ wait_for_testnet() {
 launch_cli() {
   echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
   clive --install-completion >/dev/null 2>&1
-  exec bash --init-file /clive/scripts/activate_beekeeper.sh
+  if [[ -n "${PIPELINE:-}" ]]; then
+    /clive/scripts/activate_beekeeper.sh
+  else
+    exec bash --init-file /clive/scripts/activate_beekeeper.sh
+  fi
 }
 
 # Parse command-line arguments

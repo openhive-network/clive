@@ -50,7 +50,11 @@ execute_passed_script() {
   if [[ -f "${FILE_TO_EXECUTE}" ]]; then
     echo "Executing file: ${FILE_TO_EXECUTE}"
     # shellcheck disable=SC1090
-    source "${FILE_TO_EXECUTE}"
+    if [[ -n "${PIPELINE:-}" ]]; then
+      echo "${PIPELINE}" | source "${FILE_TO_EXECUTE}"
+    else
+      source "${FILE_TO_EXECUTE}"
+    fi
     exit 0
   else
     echo "Error: ${FILE_TO_EXECUTE} does not exist or is not a file."

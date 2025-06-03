@@ -6,6 +6,7 @@
 CONTAINER_NAME="clive-cli-$(date +%s)"
 export CONTAINER_NAME
 
+
 # Print usage information for the script
 print_help() {
     echo "Usage: $0 [<docker_img>] [OPTION[=VALUE]]... [<clive_option>]..."

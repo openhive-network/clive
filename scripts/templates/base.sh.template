@@ -9,6 +9,13 @@ DOCKER_ARGS=()
 CLIVE_ARGS=()
 CLIVE_DATA_DIR="${HOME}/.clive"
 IMAGE_NAME="<IMG_PLACEHOLDER>"
+TTY_ARGS="-it"
+PIPELINE=""
+
+if ! [ -t 0 ]; then
+    read -r PIPELINE
+    TTY_ARGS="-i"
+fi
 
 # Add Docker argument to the Docker args array
 add_docker_arg() {
@@ -120,15 +127,22 @@ trap cleanup HUP INT QUIT TERM
 
 # Run the Docker container
 run_docker_container() {
-    docker run \
-        --name="${CONTAINER_NAME}" \
-        --detach-keys='ctrl-@,ctrl-q' \
-        --rm -it \
-        -e CLIVE_UID="$(id -u)" \
-        --stop-timeout=180 \
-        "${DOCKER_ARGS[@]}" \
-        "${IMAGE_NAME}" \
+    DOCKER_RUN_ARGS=(
+        --name="${CONTAINER_NAME}"
+        --detach-keys='ctrl-@,ctrl-q'
+        --rm ${TTY_ARGS}
+        -e CLIVE_UID="$(id -u)"
+        --stop-timeout=180
+        "${DOCKER_ARGS[@]}"
+        "${IMAGE_NAME}"
         "${CMD_ARGS[@]}"
+    )
+
+    if [[ -n "${PIPELINE:-}" ]]; then
+        echo "${PIPELINE}" | docker run "${DOCKER_RUN_ARGS[@]}"
+    else
+        docker run "${DOCKER_RUN_ARGS[@]}"
+    fi
 }
 
 # Main script execution
