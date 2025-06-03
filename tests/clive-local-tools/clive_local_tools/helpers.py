@@ -45,9 +45,9 @@ def get_formatted_error_message(error: ClickException) -> str:
     return capture.get()
 
 
-def create_transaction_file(path: Path, operations: TransactionConvertibleType) -> Path:
+def create_transaction_file(path: Path, content: TransactionConvertibleType) -> Path:
     transaction_path = path / "trx.json"
-    transaction = ensure_transaction(operations)
+    transaction = ensure_transaction(content)
     transaction_serialized = transaction.json(by_alias=True)
     transaction_path.write_text(transaction_serialized)
     return transaction_path
