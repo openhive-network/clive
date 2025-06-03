@@ -34,16 +34,15 @@ python = "^3.12"
 dynaconf = "3.2.10"
 loguru = "0.7.2"
 textual = "3.1.0"
-aiohttp = "3.11.14"
 typer =  "0.15.2"
 inflection = "0.5.1"
 humanize = "4.12.2"
 pydantic = "1.10.18"
 
 # remember to keep these versions adequate to one specified in test-tools
-schemas = "0.0.1.dev349+077a195"
-beekeepy = "0.0.1.dev361+79aa065"
-wax = "0.3.10.dev650+bdbee9ff"
+schemas = "0.0.1.dev350+0260643"
+beekeepy = "0.0.1.dev394+a4b5caa"
+wax = "0.3.10.dev693+6bf31f5c"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
