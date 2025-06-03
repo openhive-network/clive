@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.containers import Horizontal
 from textual.widgets import DirectoryTree, Label
+from typing_extensions import TypeVar
 
 from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
@@ -17,6 +18,8 @@ from clive.__private.ui.widgets.notice import Notice
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+SelectFileBaseDialogResultT = TypeVar("SelectFileBaseDialogResultT")
+
 
 class FilePathInputContainer(Horizontal):
     """Container for file path input and label."""
@@ -26,7 +29,7 @@ class DirectoryTreeHint(Label):
     """Hint for DirectoryTree widget."""
 
 
-class SelectFileBaseDialog(CliveActionDialog, ABC):
+class SelectFileBaseDialog(CliveActionDialog[SelectFileBaseDialogResultT], ABC):
     DEFAULT_CSS = """
     SelectFileBaseDialog {
         CliveDialogContent {

@@ -1,44 +1,56 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
-from textual import on
-from textual.binding import Binding
-
-from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
-from clive.__private.ui.widgets.inputs.clive_input import CliveInput
+from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
+from clive.__private.ui.screens.config.manage_key_aliases.key_alias_base import KeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     FailedValidationError,
     InputValueError,
 )
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
     from clive.__private.core.keys import PublicKeyAliased
 
 
-class EditKeyAlias(KeyAliasForm[None]):
-    BINDINGS = [
-        Binding("escape", "app.pop_screen", "Back"),
-        Binding("f6", "save", "Save"),
-    ]
-
-    BIG_TITLE: ClassVar[str] = "Configuration"
-    SUBTITLE: ClassVar[str] = "Manage key aliases"
-    SECTION_TITLE: ClassVar[str] = "Edit key alias"
+class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
+    DEFAULT_CSS = """
+    EditKeyAliasDialog {
+        CliveDialogContent {
+        width: 85%;
+        #public-key, PublicKeyAliasInput {
+            margin-top: 1;
+            }
+        }
+        SelectCopyPasteHint {
+            margin: 1 1 0 1;
+        }
+    }
+    """
 
     def __init__(self, public_key: PublicKeyAliased) -> None:
         self._public_key = public_key
-        super().__init__()
+        super().__init__("Edit key alias")
 
-    @on(CliveInput.Submitted)
-    def action_save(self) -> None:
+    def create_dialog_content(self) -> ComposeResult:
+        yield self._public_key_input
+        yield self._key_alias_input
+        yield SelectCopyPasteHint()
+
+    async def _perform_confirmation(self) -> bool:
+        return self._save()
+
+    def _save(self) -> bool:
         try:
             self._validate()
         except FailedValidationError:
-            return  # Validation errors are already displayed.
+            return False  # Validation errors are already displayed.
         except InputValueError as error:
             self.notify(str(error), severity="error")
-            return
+            return False
 
         old_alias = self._public_key.alias
         new_alias = self._get_key_alias()
@@ -49,10 +61,10 @@ class EditKeyAlias(KeyAliasForm[None]):
             self.profile.keys.rename(old_alias, new_alias)
 
         if not self._handle_key_alias_change(rename_key_alias, success_message):
-            return
+            return False
 
         self.app.trigger_profile_watchers()
-        self.dismiss()
+        return True
 
     def _validate(self) -> None:
         """
