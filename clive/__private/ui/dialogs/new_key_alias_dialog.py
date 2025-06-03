@@ -37,8 +37,7 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
     """
 
     def __init__(self, public_key_to_validate: str | PublicKey | None = None) -> None:
-        CliveActionDialog.__init__(self, border_title="Add new alias")
-        NewKeyAliasBase.__init__(self, public_key_to_validate)
+        super().__init__(border_title="Add new alias", public_key_to_validate=public_key_to_validate)
 
     def create_dialog_content(self) -> ComposeResult:
         yield self._key_input

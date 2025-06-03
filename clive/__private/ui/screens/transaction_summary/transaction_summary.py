@@ -13,10 +13,6 @@ from clive.__private.core.constants.tui.bindings import (
     REFRESH_TRANSACTION_METADATA_BINDING_KEY,
     SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
 )
-from clive.__private.core.constants.tui.messages import (
-    BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
-    ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
-)
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
@@ -41,8 +37,6 @@ from clive.exceptions import NoItemSelectedError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
-
-    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):
@@ -191,7 +185,11 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonOpenTransactionFromFile.Pressed)
     def action_load_transaction_from_file(self) -> None:
-        self.app.push_screen(LoadTransactionFromFileDialog())
+        async def load_transaction_from_file_cb(result: bool | None) -> None:
+            if result:
+                await self._rebuild()
+
+        self.app.push_screen(LoadTransactionFromFileDialog(), load_transaction_from_file_cb)
 
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
@@ -199,12 +197,16 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
+        async def save_transaction_to_file_cb(result: bool | None) -> None:
+            if result:
+                await self._rebuild()
+
         try:
             sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key), save_transaction_to_file_cb)
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -229,14 +231,6 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
-
-    @on(LoadTransactionFromFileDialog.Confirmed)
-    async def rebuild_on_load_transaction_from_file(self) -> None:
-        await self._rebuild()
-
-    @on(SaveTransactionToFileDialog.Confirmed)
-    async def rebuild_on_save_transaction_to_file(self) -> None:
-        await self._rebuild()
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
@@ -305,26 +299,3 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
-
-    def _check_for_unknown_bad_accounts(self, loaded_transaction: Transaction) -> bool:
-        """
-        Check if the loaded transaction contains any bad accounts.
-
-        Returns:
-            True: If the transaction has bad accounts that are unknown, and notifies the user with an error message.
-            False: If the transaction does not have any bad accounts or if the bad accounts are known,
-                   and notifies the user with a warning message.
-        """
-        bad_accounts = loaded_transaction.get_bad_accounts(self.profile.accounts.get_bad_accounts())
-        if not bad_accounts:
-            return False
-
-        unknown_accounts = loaded_transaction.get_unknown_accounts(self.profile.accounts.known)
-        has_unknown_bad_account = any(bad_account in unknown_accounts for bad_account in bad_accounts)
-
-        if has_unknown_bad_account:
-            self.notify(ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="error")
-            return True
-
-        self.notify(BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="warning")
-        return False

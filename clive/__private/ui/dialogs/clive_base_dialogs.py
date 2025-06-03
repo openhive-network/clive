@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -116,6 +116,8 @@ class CliveActionDialog(CliveBaseDialog[CliveActionDialogResultT], ABC):
         variant: CliveDialogVariant = "default",
         id_: str | None = None,
         classes: str | None = None,
+        *args: Any,  # noqa: ARG002
+        **kwargs: Any,  # noqa: ARG002
     ) -> None:
         super().__init__(border_title=border_title, variant=variant, id_=id_, classes=classes)
         self._confirm_button_text = confirm_button_label
@@ -140,10 +142,10 @@ class CliveActionDialog(CliveBaseDialog[CliveActionDialogResultT], ABC):
         return True
 
     def _close_when_confirmed(self) -> None:
-        self.dismiss()
+        self.dismiss(result=True)  # type: ignore[arg-type]
 
     def _close_when_cancelled(self) -> None:
-        self.dismiss()
+        self.dismiss(result=False)  # type: ignore[arg-type]
 
     @on(CliveInput.Submitted)
     @on(ConfirmOneLineButton.Pressed)
