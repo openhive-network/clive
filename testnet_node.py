@@ -57,8 +57,6 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
 
 
 def prepare_node() -> tt.RawNode:
-    # TODO: time_offset/use_faketime option should be used there but faketime is not available in the embedded_testnet
-    #  docker image yet
     return run_node(webserver_http_endpoint="0.0.0.0:8090")
 
 

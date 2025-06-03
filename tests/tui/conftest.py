@@ -67,7 +67,7 @@ async def _prepare_profile_with_wallet_tui() -> None:
 
 @pytest.fixture
 def node_with_wallet() -> NodeWithWallet:
-    node = run_node(use_faketime=True)
+    node = run_node()
 
     wallet = tt.Wallet(attach_to=node)
     wallet.api.import_key(node.config.private_key[0])

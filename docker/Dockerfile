@@ -128,6 +128,16 @@ COPY --chown=clive --from=hived_image "${HIVED_BINARIES_DIR_SOURCE}/hived" "${HI
 
 RUN strip -s "${HIVED_BINARIES_DIR_DEST}"/*
 
+# Installing faketime lib, because it is needed in embedded testnet.
+# The Faketime library is used in embedded testnet images to start blockchain nodes
+# with the correct historical timestamp matching the generated block_log.
+# Based on https://gitlab.syncad.com/hive/hive/blob/2a04c2be5d4b47c38ab498e588465bf041d294d6/scripts/setup_ubuntu.sh#L70
+RUN git clone --depth 1 --branch bw_timer_settime_fix https://gitlab.syncad.com/bwrona/faketime.git && \
+    pushd faketime && CFLAGS="-O2 -DFAKE_STATELESS=1" make && \
+    sudo make install && \
+    popd && \
+    rm -rf faketime
+
 ARG CLIVE_SECRETS__DEFAULT_PRIVATE_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_PRIVATE_KEY=${CLIVE_SECRETS__DEFAULT_PRIVATE_KEY}
 
