@@ -139,7 +139,7 @@ class NewKeyAlias(NewKeyAliasBase):
     SUBTITLE = "Manage key aliases"
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f6", "save", "Save"),
+        Binding("s", "save", "Save"),
     ]
 
     def __init__(self, public_key_to_validate: str | PublicKey | None = None, *args: Any, **kwargs: Any) -> None:

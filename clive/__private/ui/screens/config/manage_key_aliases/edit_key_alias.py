@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class EditKeyAlias(KeyAliasForm[None]):
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f6", "save", "Save"),
+        Binding("s", "save", "Save"),
     ]
 
     BIG_TITLE: ClassVar[str] = "Configuration"
