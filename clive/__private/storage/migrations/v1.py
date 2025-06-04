@@ -17,12 +17,13 @@ class TransactionStorageModel(PreconfiguredBaseModel):
     transaction_file_path: Path | None = None
 
 
+TransactionStorageModelTypeAliasV1: TypeAlias = TransactionStorageModel  # noqa: UP040
+
+
 class ProfileStorageModel(v0.ProfileStorageModel):
     _REVISION_NONCE = 1
 
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
-
-    TransactionStorageModelTypeAlias: TypeAlias = TransactionStorageModel  # noqa: UP040
 
     @classmethod
     def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model

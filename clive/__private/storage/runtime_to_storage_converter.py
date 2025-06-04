@@ -16,8 +16,8 @@ from clive.__private.storage.migrations.v0 import (
     KeyAliasStorageModelTypeAlias,
     RecoveryAccountWarningListedAlarmIdentifierStorageModelTypeAlias,
     TrackedAccountStorageModelTypeAlias,
-    TransactionStorageModelTypeAlias,
 )
+from clive.__private.storage.migrations.v1 import TransactionStorageModelTypeAliasV1
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -63,7 +63,7 @@ class RuntimeToStorageConverter:
     def _key_aliases_to_model_container(self) -> list[KeyAliasStorageModelTypeAlias]:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
-    def _transaction_to_model(self) -> TransactionStorageModelTypeAlias:
+    def _transaction_to_model(self) -> TransactionStorageModelTypeAliasV1:
         transaction_core = Transaction(
             operations=deepcopy(self._profile.operation_representations),
             ref_block_num=self._profile.transaction.ref_block_num,
@@ -72,7 +72,7 @@ class RuntimeToStorageConverter:
             extensions=deepcopy(self._profile.transaction.extensions),
             signatures=deepcopy(self._profile.transaction.signatures),
         )
-        return TransactionStorageModelTypeAlias(
+        return TransactionStorageModelTypeAliasV1(
             transaction_core=transaction_core, transaction_file_path=self._profile.transaction_file_path
         )
 
