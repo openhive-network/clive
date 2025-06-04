@@ -29,7 +29,14 @@ from clive.__private.core.formatters.case import underscore
 from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
 from clive.__private.settings import safe_settings, settings
-from clive.__private.storage.migrations.v0 import ProfileStorageModel
+from clive.__private.storage.migrations.v0 import (
+    AlarmStorageModelTypeAlias,
+    KeyAliasStorageModelTypeAlias,
+    ProfileStorageModel,
+    TrackedAccountStorageModelTypeAlias,
+    TransactionCoreStorageModelTypeAlias,
+    TransactionStorageModelTypeAlias,
+)
 from clive.__private.storage.service import PersistentStorageService
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
@@ -80,10 +87,10 @@ def create_model_from_scratch() -> ProfileStorageModel:
     return ProfileStorageModel(
         name=account_name,
         working_account=account_name,
-        tracked_accounts=[ProfileStorageModel._TrackedAccountStorageModel(name=account_name, alarms=[])],
+        tracked_accounts=[TrackedAccountStorageModelTypeAlias(name=account_name, alarms=[])],
         known_accounts=[account_name, ALT_WORKING_ACCOUNT2_DATA.account.name],
         key_aliases=[
-            ProfileStorageModel._KeyAliasStorageModel(
+            KeyAliasStorageModelTypeAlias(
                 alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
                 public_key=ACCOUNT_DATA.account.public_key,
             )
@@ -127,7 +134,7 @@ async def _main() -> None:
         async with prepare_encryption_service() as encryption_service:
             profile_model = create_model_from_scratch()
             profile_model.tracked_accounts[0].alarms = [
-                ProfileStorageModel._AlarmStorageModel(
+                AlarmStorageModelTypeAlias(
                     name=underscore("RecoveryAccountWarningListed"),
                     is_harmless=False,
                     identifier=RecoveryAccountWarningListedAlarmIdentifier(
@@ -141,8 +148,8 @@ async def _main() -> None:
     with copy_profile_files_from_tmp_dir("with_operations"):
         async with prepare_encryption_service() as encryption_service:
             profile_model = create_model_from_scratch()
-            profile_model.transaction = ProfileStorageModel._TransactionStorageModel(
-                transaction_core=ProfileStorageModel._TransactionCoreStorageModel(
+            profile_model.transaction = TransactionStorageModelTypeAlias(
+                transaction_core=TransactionCoreStorageModelTypeAlias(
                     operations=[convert_to_representation(OPERATION)]
                 ),
                 transaction_file_path=Path("example/path"),

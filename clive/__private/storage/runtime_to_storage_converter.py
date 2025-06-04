@@ -9,6 +9,15 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
 )
 from clive.__private.models.schemas import Transaction
 from clive.__private.storage import ProfileStorageModel
+from clive.__private.storage.migrations.v0 import (
+    AlarmStorageModelTypeAlias,
+    AllAlarmIdentifiersStorageModelTypeAlias,
+    DateTimeAlarmIdentifierStorageModelTypeAlias,
+    KeyAliasStorageModelTypeAlias,
+    RecoveryAccountWarningListedAlarmIdentifierStorageModelTypeAlias,
+    TrackedAccountStorageModelTypeAlias,
+    TransactionStorageModelTypeAlias,
+)
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -45,16 +54,16 @@ class RuntimeToStorageConverter:
         profile = self._profile
         return profile.accounts.working.name if profile.accounts.has_working_account else None
 
-    def _tracked_accounts_to_model_container(self) -> list[ProfileStorageModel._TrackedAccountStorageModel]:
+    def _tracked_accounts_to_model_container(self) -> list[TrackedAccountStorageModelTypeAlias]:
         return [self._tracked_account_to_model(account) for account in self._profile.accounts.tracked]
 
     def _known_accounts_to_model_container(self) -> list[str]:
         return [account.name for account in self._profile.accounts.known]
 
-    def _key_aliases_to_model_container(self) -> list[ProfileStorageModel._KeyAliasStorageModel]:
+    def _key_aliases_to_model_container(self) -> list[KeyAliasStorageModelTypeAlias]:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
-    def _transaction_to_model(self) -> ProfileStorageModel._TransactionStorageModel:
+    def _transaction_to_model(self) -> TransactionStorageModelTypeAlias:
         transaction_core = Transaction(
             operations=deepcopy(self._profile.operation_representations),
             ref_block_num=self._profile.transaction.ref_block_num,
@@ -63,31 +72,29 @@ class RuntimeToStorageConverter:
             extensions=deepcopy(self._profile.transaction.extensions),
             signatures=deepcopy(self._profile.transaction.signatures),
         )
-        return ProfileStorageModel._TransactionStorageModel(
+        return TransactionStorageModelTypeAlias(
             transaction_core=transaction_core, transaction_file_path=self._profile.transaction_file_path
         )
 
-    def _tracked_account_to_model(self, account: TrackedAccount) -> ProfileStorageModel._TrackedAccountStorageModel:
+    def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModelTypeAlias:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
-        return ProfileStorageModel._TrackedAccountStorageModel(name=account.name, alarms=alarms)
+        return TrackedAccountStorageModelTypeAlias(name=account.name, alarms=alarms)
 
-    def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AlarmStorageModel:
-        return ProfileStorageModel._AlarmStorageModel(
+    def _alarm_to_model(self, alarm: AnyAlarm) -> AlarmStorageModelTypeAlias:
+        return AlarmStorageModelTypeAlias(
             name=alarm.get_name(),
             is_harmless=alarm.is_harmless,
             identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
         )
 
-    def _alarm_identifier_to_model(
-        self, identifier: AlarmIdentifier
-    ) -> ProfileStorageModel._AllAlarmIdentifiersStorageModel:
+    def _alarm_identifier_to_model(self, identifier: AlarmIdentifier) -> AllAlarmIdentifiersStorageModelTypeAlias:
         if isinstance(identifier, DateTimeAlarmIdentifier):
-            return ProfileStorageModel._DateTimeAlarmIdentifierStorageModel(value=identifier.value)
+            return DateTimeAlarmIdentifierStorageModelTypeAlias(value=identifier.value)
         if isinstance(identifier, RecoveryAccountWarningListedAlarmIdentifier):
-            return ProfileStorageModel._RecoveryAccountWarningListedAlarmIdentifierStorageModel(
+            return RecoveryAccountWarningListedAlarmIdentifierStorageModelTypeAlias(
                 recovery_account=identifier.recovery_account
             )
         raise AlarmIdentifierRuntimeToStorageConversionError(f"Unknown alarm identifier type: {type(identifier)}")
 
-    def _key_alias_to_model(self, key: PublicKeyAliased) -> ProfileStorageModel._KeyAliasStorageModel:
-        return ProfileStorageModel._KeyAliasStorageModel(alias=key.alias, public_key=key.value)
+    def _key_alias_to_model(self, key: PublicKeyAliased) -> KeyAliasStorageModelTypeAlias:
+        return KeyAliasStorageModelTypeAlias(alias=key.alias, public_key=key.value)

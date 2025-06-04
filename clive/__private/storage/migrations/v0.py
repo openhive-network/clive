@@ -63,6 +63,18 @@ class TransactionStorageModel(PreconfiguredBaseModel):
     transaction_file_path: Path | None = None
 
 
+AlarmStorageModelTypeAlias: TypeAlias = AlarmStorageModel  # noqa: UP040
+TrackedAccountStorageModelTypeAlias: TypeAlias = TrackedAccountStorageModel  # noqa: UP040
+KeyAliasStorageModelTypeAlias: TypeAlias = KeyAliasStorageModel  # noqa: UP040
+TransactionCoreStorageModelTypeAlias: TypeAlias = TransactionCoreStorageModel  # noqa: UP040
+TransactionStorageModelTypeAlias: TypeAlias = TransactionStorageModel  # noqa: UP040
+DateTimeAlarmIdentifierStorageModelTypeAlias: TypeAlias = DateTimeAlarmIdentifierStorageModel  # noqa: UP040
+RecoveryAccountWarningListedAlarmIdentifierStorageModelTypeAlias: TypeAlias = (  # noqa: UP040
+    RecoveryAccountWarningListedAlarmIdentifierStorageModel
+)
+AllAlarmIdentifiersStorageModelTypeAlias: TypeAlias = AllAlarmIdentifiersStorageModel  # noqa: UP040
+
+
 class ProfileStorageModel(ProfileStorageBase):
     name: str
     node_address: str
@@ -73,17 +85,6 @@ class ProfileStorageModel(ProfileStorageBase):
     transaction: TransactionStorageModel | None = None
     chain_id: str | None = None
     should_enable_known_accounts: bool = True
-
-    _AlarmStorageModel: TypeAlias = AlarmStorageModel  # noqa: UP040
-    _TrackedAccountStorageModel: TypeAlias = TrackedAccountStorageModel  # noqa: UP040
-    _KeyAliasStorageModel: TypeAlias = KeyAliasStorageModel  # noqa: UP040
-    _TransactionCoreStorageModel: TypeAlias = TransactionCoreStorageModel  # noqa: UP040
-    _TransactionStorageModel: TypeAlias = TransactionStorageModel  # noqa: UP040
-    _DateTimeAlarmIdentifierStorageModel: TypeAlias = DateTimeAlarmIdentifierStorageModel  # noqa: UP040
-    _RecoveryAccountWarningListedAlarmIdentifierStorageModel: TypeAlias = (  # noqa: UP040
-        RecoveryAccountWarningListedAlarmIdentifierStorageModel
-    )
-    _AllAlarmIdentifiersStorageModel: TypeAlias = AllAlarmIdentifiersStorageModel  # noqa: UP040
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
