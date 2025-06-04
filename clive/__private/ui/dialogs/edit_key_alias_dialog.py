@@ -32,12 +32,12 @@ class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
     """
 
     def __init__(self, public_key: PublicKeyAliased) -> None:
-        self._public_key = public_key
         super().__init__("Edit key alias")
+        self._public_key = public_key
 
     def create_dialog_content(self) -> ComposeResult:
-        yield self._public_key_input
-        yield self._key_alias_input
+        yield self._create_public_key_input()
+        yield self._create_key_alias_input()
         yield SelectCopyPasteHint()
 
     async def _perform_confirmation(self) -> bool:
@@ -74,13 +74,15 @@ class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
         ------
         FailedValidationError: when key alias is not valid.
         """
-        if not self._key_alias_input.is_empty:
-            self._key_alias_input.validate_with_error()
+        key_alias_input = self.key_alias_input
+        if not key_alias_input.is_empty:
+            key_alias_input.validate_with_error()
 
     def _get_key_alias(self) -> str:
-        if self._key_alias_input.is_empty:
+        key_alias_input = self.key_alias_input
+        if key_alias_input.is_empty:
             return self._public_key.value
-        return self._key_alias_input.value_or_error
+        return key_alias_input.value_or_error
 
     def _default_key_alias_name(self) -> str:
         return self._public_key.alias

@@ -122,7 +122,7 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
     def add_private_key(self, event: ImportPrivateKeyButton.Pressed) -> None:
         assert isinstance(event.button, ImportPrivateKeyButton), "Incompatible type of button."
         public_key = event.button.public_key
-        self.app.push_screen(NewKeyAliasDialog(public_key_to_validate=public_key), self._key_aliases_changed_callback)
+        self.app.push_screen(NewKeyAliasDialog(public_key), self._key_aliases_changed_callback)
 
 
 class RemovePrivateKeyButton(PrivateKeyActionButton):

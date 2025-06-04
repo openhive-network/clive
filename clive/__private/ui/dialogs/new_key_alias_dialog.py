@@ -36,13 +36,17 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
     }
     """
 
-    def __init__(self, public_key_to_validate: str | PublicKey | None = None) -> None:
-        super().__init__(border_title="Add new alias", public_key_to_validate=public_key_to_validate)
+    def __init__(self, public_key_to_match: str | PublicKey | None = None) -> None:
+        super().__init__(border_title="Add new alias")
+        self._public_key_to_match = public_key_to_match
+
+    def _default_public_key_to_match(self) -> str | PublicKey | None:
+        return self._public_key_to_match
 
     def create_dialog_content(self) -> ComposeResult:
-        yield self._key_input
-        yield self._public_key_input
-        yield self._key_alias_input
+        yield self._create_private_key_input()
+        yield self._create_public_key_input()
+        yield self._create_key_alias_input()
 
     def create_buttons_content(self) -> ComposeResult:
         yield LoadFromFileButton("Load from file", "success")
@@ -62,18 +66,20 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
         if loaded_private_key is None:
             return
 
-        self._key_input.input.value = loaded_private_key
+        self.private_key_input.input.value = loaded_private_key
 
     async def _save(self) -> bool:
-        def set_key_alias_to_import() -> None:
-            self.profile.keys.set_to_import([self._private_key_aliased])
-
         try:
             self._validate()
         except FailedManyValidationError:
             return False
 
-        if not self._handle_key_alias_change(set_key_alias_to_import):
+        if not self._handle_key_alias_change(self._set_key_alias_to_import):
             return False
         await self._import_new_key()
         return True
+
+    async def _import_new_key(self) -> None:
+        await self.app.world.commands.sync_data_with_beekeeper()
+        self.app.notify("New key alias was created.")
+        self.app.trigger_profile_watchers()

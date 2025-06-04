@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.widgets import Input
@@ -20,30 +20,33 @@ from clive.__private.validators.private_key_validator import PrivateKeyValidator
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from textual.app import ComposeResult
-
     from clive.__private.core.keys import PublicKey
 
 
 class KeyAliasBase(CliveDOMNode):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._key_alias_input = PublicKeyAliasInput(
+    @property
+    def key_alias_input(self) -> PublicKeyAliasInput:
+        return self.query_exactly_one(PublicKeyAliasInput)
+
+    @property
+    def public_key_input(self) -> LabelizedInput:
+        return self.query_exactly_one(LabelizedInput)
+
+    def _create_key_alias_input(self) -> PublicKeyAliasInput:
+        key_alias_input = PublicKeyAliasInput(
             value=self._default_key_alias_name(),
             setting_key_alias=True,
             key_manager=self.app.world.profile.keys,
             required=False,
         )
-        self._key_alias_input.clear_validation(clear_value=False)
-        self._public_key_input = LabelizedInput(
-            "Public key", self._default_public_key() or "will be calculated here", id="public-key"
-        )
+        key_alias_input.clear_validation(clear_value=False)
+        return key_alias_input
+
+    def _create_public_key_input(self) -> LabelizedInput:
+        return LabelizedInput("Public key", self._default_public_key() or "will be calculated here", id="public-key")
 
     def _default_key_alias_name(self) -> str:
         return ""
-
-    def _default_private_key(self) -> str:
-        return safe_settings.secrets.default_private_key or ""
 
     def _default_public_key(self) -> str:
         return ""
@@ -64,15 +67,9 @@ class KeyAliasBase(CliveDOMNode):
 
 
 class NewKeyAliasBase(KeyAliasBase):
-    def __init__(self, public_key_to_match: str | PublicKey | None = None, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._key_input = PrivateKeyInput(
-            value=self._default_private_key(),
-            password=True,
-            required=True,
-            id="key-input",
-            validators=PrivateKeyValidator(public_key_to_match=public_key_to_match),
-        )
+    @property
+    def private_key_input(self) -> PrivateKeyInput:
+        return self.query_exactly_one(PrivateKeyInput)
 
     @property
     def _private_key(self) -> PrivateKey:
@@ -83,8 +80,9 @@ class NewKeyAliasBase(KeyAliasBase):
         ------
         FailedValidationError: When given input is not a valid private key.
         """
-        self._key_input.validate_with_error()
-        return PrivateKey(value=self._key_input.value_or_error, file_path=None)
+        private_key_input = self.private_key_input
+        private_key_input.validate_with_error()
+        return PrivateKey(value=private_key_input.value_or_error, file_path=None)
 
     @property
     def _private_key_aliased(self) -> PrivateKeyAliased:
@@ -97,11 +95,26 @@ class NewKeyAliasBase(KeyAliasBase):
         """
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
-        private_key = self._key_input.value_or_error
+        private_key = self.private_key_input.value_or_error
         return PrivateKeyAliased(value=private_key, file_path=None, alias=self._get_key_alias())
 
+    def _create_private_key_input(self) -> PrivateKeyInput:
+        return PrivateKeyInput(
+            value=self._default_private_key(),
+            password=True,
+            required=True,
+            id="key-input",
+            validators=PrivateKeyValidator(public_key_to_match=self._default_public_key_to_match()),
+        )
+
+    def _default_private_key(self) -> str:
+        return safe_settings.secrets.default_private_key or ""
+
+    def _default_public_key_to_match(self) -> str | PublicKey | None:
+        return None
+
     @on(Input.Changed, "#key-input Input")
-    def recalculate_public_key(self) -> None:
+    def _recalculate_public_key(self) -> None:
         try:
             private_key = self._private_key
         except CliveValidatedInputError:
@@ -111,21 +124,18 @@ class NewKeyAliasBase(KeyAliasBase):
             text = private_key.calculate_public_key().value
             calculated = True
 
-        self._public_key_input.input.value = text
-        self._public_key_input.input.set_style("valid" if calculated else "invalid")
-
-    def _content_after_alias_input(self) -> ComposeResult:
-        yield self._key_input
+        public_key_input = self.public_key_input
+        public_key_input.input.value = text
+        public_key_input.input.set_style("valid" if calculated else "invalid")
 
     def _get_key_alias(self) -> str:
-        if self._key_alias_input.is_empty:
+        key_alias_input = self.key_alias_input
+        if key_alias_input.is_empty:
             return self._private_key.calculate_public_key().value
-        return self._key_alias_input.value_or_error
+        return key_alias_input.value_or_error
 
-    async def _import_new_key(self) -> None:
-        await self.app.world.commands.sync_data_with_beekeeper()
-        self.app.notify("New key alias was created.")
-        self.app.trigger_profile_watchers()
+    def _set_key_alias_to_import(self) -> None:
+        self.app.world.profile.keys.set_to_import([self._private_key_aliased])
 
     def _validate(self) -> None:
         """
@@ -139,9 +149,10 @@ class NewKeyAliasBase(KeyAliasBase):
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
     def _get_inputs_to_validate(self) -> list[PrivateKeyInput | PublicKeyAliasInput]:
-        inputs_to_validate: list[PrivateKeyInput | PublicKeyAliasInput] = [self._key_input]
+        inputs_to_validate: list[PrivateKeyInput | PublicKeyAliasInput] = [self.private_key_input]
 
-        if not self._key_alias_input.is_empty:
-            inputs_to_validate.append(self._key_alias_input)
+        key_alias_input = self.key_alias_input
+        if not key_alias_input.is_empty:
+            inputs_to_validate.append(key_alias_input)
 
         return inputs_to_validate

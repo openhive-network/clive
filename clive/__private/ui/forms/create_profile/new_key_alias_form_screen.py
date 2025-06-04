@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
@@ -21,8 +21,10 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
+    from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 
-class NewKeyAliasFormScreen(NewKeyAliasBase, BaseScreen[bool], CreateProfileFormScreen):
+
+class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase):
     DEFAULT_CSS = """
     NewKeyAliasFormScreen {
         Section {
@@ -47,16 +49,15 @@ class NewKeyAliasFormScreen(NewKeyAliasBase, BaseScreen[bool], CreateProfileForm
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        # Multiple inheritance friendly, passes arguments to next object in MRO.
-        super().__init__(*args, **kwargs)
+    def __init__(self, owner: CreateProfileForm) -> None:
+        super().__init__(owner=owner)
         self._key_file_path: Path | None = None
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Add key alias"):
-            yield from self._content_after_alias_input()
-            yield self._public_key_input
-            yield self._key_alias_input
+            yield self._create_private_key_input()
+            yield self._create_public_key_input()
+            yield self._create_key_alias_input()
             if not self.app_state.is_unlocked:
                 yield NavigationButtons(is_finish=True)
         yield SelectCopyPasteHint()
@@ -80,7 +81,7 @@ class NewKeyAliasFormScreen(NewKeyAliasBase, BaseScreen[bool], CreateProfileForm
         if loaded_private_key is None:
             return
 
-        self._key_input.input.value = loaded_private_key
+        self.private_key_input.input.value = loaded_private_key
 
     async def validate(self) -> NewKeyAliasFormScreen.ValidationFail | None:
         try:
@@ -90,8 +91,8 @@ class NewKeyAliasFormScreen(NewKeyAliasBase, BaseScreen[bool], CreateProfileForm
         return None
 
     async def apply(self) -> None:
-        self.profile.keys.set_to_import([self._private_key_aliased])
+        self._set_key_alias_to_import()
         logger.debug("New private key is waiting to be imported...")
 
     def is_step_optional(self) -> bool:
-        return self._key_input.is_empty
+        return self.private_key_input.is_empty

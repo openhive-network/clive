@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.forms.form import Form
 
 
-class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
+class FormScreen(CliveScreen, Contextual[FormContextT]):
     BINDINGS = [
         Binding(
             f"{PREVIOUS_SCREEN_BINDING_KEY},escape",

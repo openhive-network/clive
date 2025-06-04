@@ -7,7 +7,6 @@ from textual import on
 from textual.reactive import reactive
 from textual.widgets import Footer
 
-from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
 from clive.__private.ui.widgets.clive_basic import CliveHeader, CliveRawHeader
 from clive.__private.ui.widgets.clive_basic.clive_header import NodeStatus
@@ -17,7 +16,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
+class BaseScreen(CliveScreen[ScreenResultT]):
     BIG_TITLE: ClassVar[str] = ""
     SUBTITLE: ClassVar[str] = ""
     """Subtitle won't be shown when BIG_TITLE is not set also"""
