@@ -6,6 +6,7 @@ from textual import on
 from textual.binding import Binding
 
 from clive.__private.logger import logger
+from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
@@ -27,6 +28,15 @@ class NewKeyAliasFormScreen(NewKeyAliasBase, CreateProfileFormScreen):
         # We allow just for adding one key during create_profile. Clear old ones because validation could fail.
         self.profile.keys.clear_to_import()
         await super().action_previous_screen()
+
+    def action_load_from_file(self) -> None:
+        self.app.push_screen(LoadKeyFromFileDialog(), self._load_private_key_from_file)
+
+    def _load_private_key_from_file(self, loaded_private_key: PrivateKey | None) -> None:
+        if loaded_private_key is None:
+            return
+
+        self.private_key_input.input.value = loaded_private_key.value
 
     async def validate(self) -> NewKeyAliasFormScreen.ValidationFail | None:
         try:
