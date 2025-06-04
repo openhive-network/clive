@@ -5,7 +5,6 @@ from pathlib import Path  # noqa: TC003
 from typing import Any, Self, TypeAlias
 
 from clive.__private.core.date_utils import utc_epoch
-from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
@@ -13,13 +12,14 @@ from clive.__private.models.schemas import (
     Signature,
 )
 from clive.__private.storage.migrations.base import ProfileStorageBase
+from schemas import PreconfiguredBaseModel
 
 
-class DateTimeAlarmIdentifierStorageModel(CliveBaseModel):
+class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
     value: HiveDateTime
 
 
-class RecoveryAccountWarningListedAlarmIdentifierStorageModel(CliveBaseModel):
+class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel):
     recovery_account: str
 
 
@@ -28,24 +28,24 @@ AllAlarmIdentifiersStorageModel = (
 )
 
 
-class AlarmStorageModel(CliveBaseModel):
+class AlarmStorageModel(PreconfiguredBaseModel):
     name: str
     is_harmless: bool = False
     identifier: AllAlarmIdentifiersStorageModel
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
-class TrackedAccountStorageModel(CliveBaseModel):
+class TrackedAccountStorageModel(PreconfiguredBaseModel):
     name: str
     alarms: Sequence[AlarmStorageModel] = []
 
 
-class KeyAliasStorageModel(CliveBaseModel):
+class KeyAliasStorageModel(PreconfiguredBaseModel):
     alias: str
     public_key: str
 
 
-class TransactionCoreStorageModel(CliveBaseModel):
+class TransactionCoreStorageModel(PreconfiguredBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = HiveInt(-1)
     ref_block_prefix: HiveInt = HiveInt(-1)
@@ -58,7 +58,7 @@ class TransactionCoreStorageModel(CliveBaseModel):
         field_schema.update({"type": "object", "description": "This should not be included in revision calculation"})
 
 
-class TransactionStorageModel(CliveBaseModel):
+class TransactionStorageModel(PreconfiguredBaseModel):
     transaction_core: TransactionCoreStorageModel
     transaction_file_path: Path | None = None
 
