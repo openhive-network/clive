@@ -12,7 +12,7 @@ from clive.__private.models.schemas import (
     Signature,
 )
 from clive.__private.storage.migrations.base import ProfileStorageBase
-from schemas import PreconfiguredBaseModel
+from clive.__private.models.schemas import PreconfiguredBaseModel
 
 
 class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):

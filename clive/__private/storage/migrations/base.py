@@ -5,7 +5,7 @@ from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
 from clive.exceptions import CliveError
-from schemas import PreconfiguredBaseModel
+from clive.__private.models.schemas import PreconfiguredBaseModel
 
 type Revision = str
 type Version = int
