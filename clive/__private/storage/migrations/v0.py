@@ -9,10 +9,10 @@ from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
     OperationRepresentationUnion,
+    PreconfiguredBaseModel,
     Signature,
 )
 from clive.__private.storage.migrations.base import ProfileStorageBase
-from clive.__private.models.schemas import PreconfiguredBaseModel
 
 
 class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
@@ -29,9 +29,9 @@ AllAlarmIdentifiersStorageModel = (
 
 
 class AlarmStorageModel(PreconfiguredBaseModel):
+    identifier: AllAlarmIdentifiersStorageModel
     name: str
     is_harmless: bool = False
-    identifier: AllAlarmIdentifiersStorageModel
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
@@ -65,13 +65,13 @@ class TransactionStorageModel(PreconfiguredBaseModel):
 
 class ProfileStorageModel(ProfileStorageBase):
     name: str
+    node_address: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
     known_accounts: list[str] = []  # noqa: RUF012
     key_aliases: list[KeyAliasStorageModel] = []  # noqa: RUF012
     transaction: TransactionStorageModel | None = None
     chain_id: str | None = None
-    node_address: str
     should_enable_known_accounts: bool = True
 
     _AlarmStorageModel: TypeAlias = AlarmStorageModel  # noqa: UP040

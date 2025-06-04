@@ -4,8 +4,8 @@ from abc import ABC
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
-from clive.exceptions import CliveError
 from clive.__private.models.schemas import PreconfiguredBaseModel
+from clive.exceptions import CliveError
 
 type Revision = str
 type Version = int
@@ -38,7 +38,7 @@ class ProfileStorageBase(PreconfiguredBaseModel, ABC):
         cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
-        return hash(self.json(indent=4))
+        return hash(self.json())
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
@@ -93,7 +93,7 @@ class ProfileStorageBase(PreconfiguredBaseModel, ABC):
 
     @classmethod
     def _get_revision_seed(cls) -> str:
-        return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)
+        return cls.schema_json() + str(cls._REVISION_NONCE)
 
     @classmethod
     def _validate_upgrade_definition(cls) -> None:

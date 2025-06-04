@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path  # noqa: TC003
 from typing import Self, TypeAlias
 
+from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 from clive.__private.storage.migrations import v0
-from clive.__private.models.schemas import PreconfiguredBaseModel
 
 
 class Transaction(SchemasTransaction):
