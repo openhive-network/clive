@@ -255,8 +255,6 @@ def main() -> None:
     blockchain_directory.mkdir(parents=True, exist_ok=True)
     node.block_log.copy_to(blockchain_directory)
 
-    # notifications port should be picked randomly when starting node to avoid port collision
-    node.config.notifications_endpoint = None
     config_file = directory / "config.ini"
     node.config.write_to_file(config_file)
 
