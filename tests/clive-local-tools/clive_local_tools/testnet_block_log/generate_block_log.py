@@ -256,7 +256,7 @@ def main() -> None:
     node.block_log.copy_to(blockchain_directory)
 
     config_file = directory / "config.ini"
-    node.config.write_to_file(config_file)
+    node.config.save(config_file)
 
 
 if __name__ == "__main__":

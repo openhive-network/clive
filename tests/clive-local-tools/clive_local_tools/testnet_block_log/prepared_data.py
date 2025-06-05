@@ -21,9 +21,7 @@ def get_block_log() -> BlockLog:
 
 def get_config() -> tt.NodeConfig:
     path = Path(__file__).parent.absolute() / "config.ini"
-    config = tt.NodeConfig()
-    config.load_from_file(path)
-    return config
+    return tt.NodeConfig.from_path(path)
 
 
 def get_time_offset() -> str:
@@ -33,13 +31,13 @@ def get_time_offset() -> str:
 
 
 def run_node(webserver_http_endpoint: HttpUrl | None = None) -> tt.RawNode:
-    config_lines = get_config().write_to_lines()
+    config = get_config()
     block_log = get_block_log()
     alternate_chain_spec = tt.AlternateChainSpecs.parse_file(get_alternate_chain_spec_path())
     time_offset = get_time_offset()
 
     node = tt.RawNode()
-    node.config.load_from_lines(config_lines)
+    node.config.load(config)
     if webserver_http_endpoint is not None:
         node.config.webserver_http_endpoint = webserver_http_endpoint
     node.run(replay_from=block_log, time_control=time_offset, alternate_chain_specs=alternate_chain_spec)
