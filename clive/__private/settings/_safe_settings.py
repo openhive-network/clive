@@ -214,6 +214,10 @@ class SafeSettings:
             return self._get_beekeeper_refresh_timeout_secs()
 
         @property
+        def working_directory(self) -> Path:
+            return self._get_beekeeper_working_directory()
+
+        @property
         def session_token(self) -> str | None:
             return self._get_beekeeper_session_token()
 
@@ -232,7 +236,7 @@ class SafeSettings:
         def settings_remote_factory(self) -> BeekeepySettings:
             beekeepy_settings = BeekeepySettings()
 
-            beekeepy_settings.working_directory = self._get_beekeeper_wallet_directory()
+            beekeepy_settings.working_directory = self.working_directory
             beekeepy_settings.http_endpoint = self.remote_address
             beekeepy_settings.use_existing_session = self.session_token
             beekeepy_settings.timeout = timedelta(seconds=self.communication_total_timeout_secs)
@@ -268,7 +272,7 @@ class SafeSettings:
         def _get_beekeeper_refresh_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_REFRESH_TIMEOUT_SECS, default=0.5, minimum=0.1)
 
-        def _get_beekeeper_wallet_directory(self) -> Path:
+        def _get_beekeeper_working_directory(self) -> Path:
             return self._parent._get_data_path() / "beekeeper"
 
         def _get_beekeeper_session_token(self) -> str | None:
