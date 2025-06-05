@@ -17,7 +17,7 @@ from .constants import (
     WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_NAME,
 )
-from .prepared_data import get_alternate_chain_spec_path, get_block_log, get_config, get_time_offset, run_node
+from .prepared_data import get_alternate_chain_spec_path, get_block_log, get_config, get_time_control, run_node
 
 __all__ = [
     "ALT_WORKING_ACCOUNT1_DATA",
@@ -38,6 +38,6 @@ __all__ = [
     "get_alternate_chain_spec_path",
     "get_block_log",
     "get_config",
-    "get_time_offset",
+    "get_time_control",
     "run_node",
 ]
