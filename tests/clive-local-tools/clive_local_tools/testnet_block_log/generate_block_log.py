@@ -23,7 +23,7 @@ from clive_local_tools.testnet_block_log.constants import (
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
     tt.logger.info("Creating alternate chain spec file...")
     current_time = utc_now()
-    hardfork_num = int(node.get_version()["version"]["blockchain_version"].split(".")[1])
+    hardfork_num = int(node.get_version().version.blockchain_version.split(".")[1])
     alternate_chain_spec_content = {
         "genesis_time": int(current_time.timestamp()),
         "hardfork_schedule": [{"hardfork": hardfork_num, "block_num": 1}],
@@ -222,19 +222,20 @@ def main() -> None:
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)
 
-    future_witnesses = node.api.database.get_active_witnesses(include_future=True)["future_witnesses"]  # type: ignore[call-arg]
+    future_witnesses = node.api.database.get_active_witnesses(include_future=True).future_witnesses
     tt.logger.info(f"Future witnesses after voting: {future_witnesses}")
 
     tt.logger.info("Wait 21 blocks for future state to become active state")
     node.wait_number_of_blocks(21)
-    active_witnesses = node.api.database.get_active_witnesses()["witnesses"]
+    active_witnesses = node.api.database.get_active_witnesses().witnesses
     tt.logger.info(f"Witness state after voting: {active_witnesses}")
 
     tt.logger.info("Wait to be sure all generated blocks are in block_log.")
     node.wait_for_irreversible_block()
 
     last_block_number = node.get_last_block_number()
-    timestamp = node.api.block.get_block(block_num=last_block_number)["block"]["timestamp"]
+    get_block_response = node.api.block.get_block(block_num=last_block_number).ensure
+    timestamp = get_block_response.block.timestamp
     tt.logger.info(f"Final block_log head block number: {last_block_number}")
     tt.logger.info(f"Final block_log head block timestamp: {timestamp}")
 
