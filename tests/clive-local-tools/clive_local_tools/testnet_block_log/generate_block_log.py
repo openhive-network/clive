@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import json
-from datetime import timedelta
 from pathlib import Path
 from random import uniform
-from typing import Final
 
 import test_tools as tt
 
@@ -20,8 +18,6 @@ from clive_local_tools.testnet_block_log.constants import (
     WITNESSES,
     WORKING_ACCOUNT_DATA,
 )
-
-EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = timedelta(days=1)
 
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
@@ -241,13 +237,6 @@ def main() -> None:
     timestamp = node.api.block.get_block(block_num=last_block_number)["block"]["timestamp"]
     tt.logger.info(f"Final block_log head block number: {last_block_number}")
     tt.logger.info(f"Final block_log head block timestamp: {timestamp}")
-
-    timestamp += EXTRA_TIME_SHIFT_FOR_GOVERNANCE
-
-    tt.logger.info(f"Final block_log shifted timestamp: {timestamp}")
-
-    with (directory / "timestamp").open("w", encoding="utf-8") as file:
-        file.write(f"@{timestamp}")
 
     node.close()
 
