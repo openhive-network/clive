@@ -4,6 +4,7 @@ import os
 import shutil
 from contextlib import contextmanager
 from functools import wraps
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -136,7 +137,7 @@ async def init_node(
     world: World,
 ) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
-    init_node.config.log_json_rpc = "jsonrpc"
+    init_node.config.log_json_rpc = Path("jsonrpc")
     init_node.run()
     await world.set_address(init_node.http_endpoint)
     address = str(init_node.http_endpoint)
