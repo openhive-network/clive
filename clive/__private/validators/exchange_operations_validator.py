@@ -17,7 +17,7 @@ class ExchangeOperationsValidator(Validator):
 
     HBD_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must be in HIVE, not HBD."
     MEMOLESS_HIVE_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must include a memo."
-    FORCE_REQUIRED_OPERATION_MSG_ERROR: str = (
+    UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: str = (
         "Exchanges usually support only the transfer operation, while other operation to a known exchange was detected."
     )
 
@@ -32,17 +32,17 @@ class ExchangeOperationsValidator(Validator):
         self._transaction = transaction
 
     @classmethod
-    def is_invalid_transfer(cls, result: ValidationResult) -> bool:
-        """Check if the transfer operation is invalid."""
+    def has_unsafe_transfer_to_exchange(cls, result: ValidationResult) -> bool:
+        """Check if unsafe exchange transfer was detected in the result ."""
         return (
             cls.HBD_TRANSFER_MSG_ERROR in result.failure_descriptions
             or cls.MEMOLESS_HIVE_TRANSFER_MSG_ERROR in result.failure_descriptions
         )
 
     @classmethod
-    def is_force_required(cls, result: ValidationResult) -> bool:
-        """Check if the force required validation is needed."""
-        return cls.FORCE_REQUIRED_OPERATION_MSG_ERROR in result.failure_descriptions
+    def has_unsafe_operation_to_exchange(cls, result: ValidationResult) -> bool:
+        """Check if unsafe exchange operations was detected in the result ."""
+        return cls.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR in result.failure_descriptions
 
     def validate(self, value: str) -> ValidationResult:
         """Validate the given value - exchange name."""
@@ -53,8 +53,8 @@ class ExchangeOperationsValidator(Validator):
         if not self._suppress_force_required_validation:
             validators.append(
                 Function(
-                    self._validate_force_required_operation,
-                    self.FORCE_REQUIRED_OPERATION_MSG_ERROR,
+                    self._validate_unsafe_exchange_operation,
+                    self.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR,
                 )
             )
         return ValidationResult.merge([validator.validate(value) for validator in validators])
@@ -63,25 +63,25 @@ class ExchangeOperationsValidator(Validator):
         """Validate if the transaction has a HBD transfer operations."""
         visitor = PotentialExchangeOperationsAccountCollector()
         self._transaction.accept(visitor)
-        return not visitor.has_hbd_transfer_operations_to_account(value)
+        return not visitor.has_hbd_transfer_operations_to_exchange(value)
 
     def _validate_memoless_transfer_operation(self, value: str) -> bool:
         """Validate if the transaction has a memoless transfer operations."""
         visitor = PotentialExchangeOperationsAccountCollector()
         self._transaction.accept(visitor)
-        return not visitor.has_memoless_transfer_operations_to_account(value)
+        return not visitor.has_memoless_transfer_operations_to_exchange(value)
 
-    def _validate_force_required_operation(self, value: str) -> bool:
-        """Validate if the transaction has a force required operations."""
+    def _validate_unsafe_exchange_operation(self, value: str) -> bool:
+        """Validate if the transaction has unsafe exchange operations."""
         visitor = PotentialExchangeOperationsAccountCollector()
         self._transaction.accept(visitor)
-        return not visitor.has_force_required_operations_to_account(value)
+        return not visitor.has_unsafe_operation_to_exchange(value)
 
 
 class ExchangeOperationsValidatorCli(ExchangeOperationsValidator):
     """CLI-specific validator for exchange operations."""
 
-    FORCE_REQUIRED_OPERATION_MSG_ERROR: str = (
-        f"{ExchangeOperationsValidator.FORCE_REQUIRED_OPERATION_MSG_ERROR}"
+    UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: str = (
+        f"{ExchangeOperationsValidator.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR}"
         "You can force the process by using the `--force` flag"
     )

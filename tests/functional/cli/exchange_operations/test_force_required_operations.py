@@ -51,7 +51,7 @@ def _assert_operation_to_exchange(send_operation_cb: Callable[[], None], *, forc
         send_operation_cb()
     else:
         expected_error_msg = get_formatted_error_message(
-            CLITransactionToExchangeError(ExchangeOperationsValidatorCli.FORCE_REQUIRED_OPERATION_MSG_ERROR)
+            CLITransactionToExchangeError(ExchangeOperationsValidatorCli.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR)
         )
         with pytest.raises(CLITestCommandError) as error:
             send_operation_cb()

@@ -406,21 +406,24 @@ class TransactionSummary(BaseScreen):
         """Validate operations from transaction to the exchange."""
         operation_validator = ExchangeOperationsValidator(transaction=loaded_transaction)
 
-        force_required_operation = False
+        is_confirmation_required = False
         for exchange in self.world.known_exchanges:
             result = operation_validator.validate(exchange.name)
-            if not result.is_valid:
-                if ExchangeOperationsValidator.is_invalid_transfer(result):
-                    self.notify(
-                        f"Cannot load transaction.\n{humanize_validation_result(result)}",
-                        severity="error",
-                        markup=False,
-                    )
-                    return False
-                if ExchangeOperationsValidator.is_force_required(result):
-                    force_required_operation = True
+            if result.is_valid:
+                continue
 
-        if force_required_operation:
+            if ExchangeOperationsValidator.has_unsafe_transfer_to_exchange(result):
+                self.notify(
+                    f"Cannot load transaction.\n{humanize_validation_result(result)}",
+                    severity="error",
+                    markup=False,
+                )
+                return False
+
+            if ExchangeOperationsValidator.has_unsafe_operation_to_exchange(result):
+                is_confirmation_required = True
+
+        if is_confirmation_required:
             return await self.app.push_screen_wait(ConfirmActionDialogWithKnownExchange())
 
         return True

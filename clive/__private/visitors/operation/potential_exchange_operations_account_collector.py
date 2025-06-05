@@ -11,7 +11,12 @@ from clive.__private.visitors.operation.financial_operations_account_collector i
 
 
 class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountCollector):
-    """Collects accounts with operations potentially problematic for exchanges (memoless, HBD, force-required)."""
+    """
+    Collects exchange accounts with potentially problematic operations to them.
+
+    Can be used to check if memoless/HBD transfer was detected and
+    if there is any other unsafe operations (other than transfer).
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -20,19 +25,19 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         self.hbd_transfers_accounts: set[str] = set()
         """Names of accounts with hbd transfers."""
 
-    def has_hbd_transfer_operations_to_account(self, account: str) -> bool:
-        """Check if there are HBD transfer operations to the given account."""
+    def has_hbd_transfer_operations_to_exchange(self, account: str) -> bool:
+        """Check if there are HBD transfer operations to the given exchange account."""
         return account in self.hbd_transfers_accounts
 
-    def has_memoless_transfer_operations_to_account(self, account: str) -> bool:
-        """Check if there are memoless transfer operations to the given account."""
+    def has_memoless_transfer_operations_to_exchange(self, account: str) -> bool:
+        """Check if there are memoless transfer operations to the given exchange account."""
         return account in self.memoless_transfers_accounts
 
-    def has_force_required_operations_to_account(self, account: str) -> bool:
+    def has_unsafe_operation_to_exchange(self, account: str) -> bool:
         """
-        Check if there are force required operations to the given account.
+        Check if there are unsafe operations to the given exchange account.
 
-        Transfer is the only operation that is not considered a force-required operation for exchange.
+        Transfer is the only operation considered a safe operation to the exchange account.
         """
         return account in self.accounts
 

@@ -33,7 +33,7 @@ HBD_TRANSFER_OPERATION_MSG_ERROR: Final[str] = get_formatted_error_message(
 )
 
 FORCE_REQUIRED_OPERATION_MSG_ERROR: Final[str] = get_formatted_error_message(
-    CLITransactionToExchangeError(ExchangeOperationsValidatorCli.FORCE_REQUIRED_OPERATION_MSG_ERROR)
+    CLITransactionToExchangeError(ExchangeOperationsValidatorCli.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR)
 )
 
 MEMO_MSG: Final[str] = "test memo to exchange"
