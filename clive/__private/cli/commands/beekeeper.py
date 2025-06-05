@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 import typer
 from beekeepy import AsyncBeekeeper, close_already_running_beekeeper
+from beekeepy.exceptions import FailedToDetectRunningBeekeeperError
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
@@ -12,7 +13,7 @@ from clive.__private.cli.exceptions import (
     CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
     CLIBeekeeperLocallyAlreadyRunningError,
 )
-from clive.__private.core.commands.beekeeper import BeekeeperLoadDetachedPID, IsBeekeeperRunning
+from clive.__private.core.commands.beekeeper import IsBeekeeperRunning
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar, safe_settings
 
@@ -120,7 +121,11 @@ class BeekeeperSpawn(ExternalCLICommand):
 @dataclass(kw_only=True)
 class BeekeeperClose(ExternalCLICommand):
     async def _run(self) -> None:
-        pid = await BeekeeperLoadDetachedPID().execute_with_result()
-        typer.echo(f"Closing beekeeper with pid {pid}...")
-        close_already_running_beekeeper(pid=pid)
-        typer.echo("Beekeeper was closed with.")
+        typer.echo("Closing beekeeper...")
+        beekeeper_working_directory = safe_settings.beekeeper.working_directory
+        try:
+            close_already_running_beekeeper(cwd=beekeeper_working_directory)
+        except FailedToDetectRunningBeekeeperError:
+            typer.echo("There was no running beekeeper.")
+        else:
+            typer.echo("Beekeeper was closed.")
