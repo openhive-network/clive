@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 from test_tools import BlockLog
 from test_tools.__private.node_config import NodeConfig
+
+if TYPE_CHECKING:
+    from beekeepy.interfaces import HttpUrl
 
 
 def get_alternate_chain_spec_path() -> Path:
@@ -29,7 +33,7 @@ def get_time_offset() -> str:
         return file.read()
 
 
-def run_node(webserver_http_endpoint: str | None = None) -> tt.RawNode:
+def run_node(webserver_http_endpoint: HttpUrl | None = None) -> tt.RawNode:
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
     alternate_chain_spec = tt.AlternateChainSpecs.parse_file(get_alternate_chain_spec_path())
