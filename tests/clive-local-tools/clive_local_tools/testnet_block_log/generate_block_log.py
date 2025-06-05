@@ -207,11 +207,10 @@ def main() -> None:
     set_vest_price_by_alternate_chain_spec(node, directory / "alternate-chain-spec.json")
 
     node.run(
-        arguments=[
-            "--alternate-chain-spec",
-            str(directory / "alternate-chain-spec.json"),
-        ],
-        time_control="+0h x5",
+        arguments=tt.NodeArguments(
+            alternate_chain_spec=directory / "alternate-chain-spec.json",
+        ),
+        time_control=tt.SpeedUpRateTimeControl(5),
     )
     wallet = tt.Wallet(attach_to=node)
 
