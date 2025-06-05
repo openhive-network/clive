@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 from test_tools import BlockLog
-from test_tools.__private.node_config import NodeConfig
 
 if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
@@ -20,9 +19,9 @@ def get_block_log() -> BlockLog:
     return BlockLog(path)
 
 
-def get_config() -> NodeConfig:
+def get_config() -> tt.NodeConfig:
     path = Path(__file__).parent.absolute() / "config.ini"
-    config = NodeConfig()
+    config = tt.NodeConfig()
     config.load_from_file(path)
     return config
 
