@@ -1,15 +1,1 @@
-{
-  "genesis_time": 1748956337,
-  "hardfork_schedule": [
-    {
-      "hardfork": 28,
-      "block_num": 1
-    }
-  ],
-  "init_supply": 20000000000,
-  "hbd_init_supply": 10000000000,
-  "initial_vesting": {
-    "vests_per_hive": 1800,
-    "hive_amount": 10000000000
-  }
-}
+{"genesis_time": 1749451951, "hardfork_schedule": [{"hardfork": 28, "block_num": 1}], "init_supply": 20000000000, "hbd_init_supply": 10000000000, "initial_vesting": {"vests_per_hive": 1800, "hive_amount": 10000000000}}
