@@ -7,23 +7,20 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.constants.tui.bindings import (
     BROADCAST_TRANSACTION_BINDING_KEY,
     LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
     REFRESH_TRANSACTION_METADATA_BINDING_KEY,
     SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
 )
-from clive.__private.core.constants.tui.messages import (
-    BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
-    ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE,
-)
-from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
-from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
+from clive.__private.ui.dialogs import (
+    ConfirmInvalidateSignaturesDialog,
+    LoadTransactionFromFileDialog,
+    SaveTransactionToFileDialog,
+)
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
@@ -35,19 +32,11 @@ from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
-from clive.__private.ui.widgets.select_file_to_save_transaction import (
-    SaveTransactionResult,
-    SelectFileToSaveTransaction,
-)
-from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidator
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
-
-    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):
@@ -196,19 +185,11 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonOpenTransactionFromFile.Pressed)
     def action_load_transaction_from_file(self) -> None:
-        notify_text = (
-            "Loading the transaction from the file will clear the current content of the cart."
-            if self.profile.transaction
-            else None
-        )
+        async def load_transaction_from_file_cb(result: bool | None) -> None:
+            if result:
+                await self._rebuild()
 
-        # It is required to call push_screen_wait from worker.
-        # Otherwise there was `push_screen must be run from a worker when `wait_for_dismiss` is True ` error observed.
-        # See: https://textual.textualize.io/guide/screens/#waiting-for-screens
-        def delegate_work(result: SaveFileResult | None) -> None:
-            self.run_worker(self._load_transaction_from_file(result))
-
-        self.app.push_screen(SelectFile(notice=notify_text), delegate_work)
+        self.app.push_screen(LoadTransactionFromFileDialog(), load_transaction_from_file_cb)
 
     @on(ButtonBroadcast.Pressed)
     async def action_broadcast(self) -> None:
@@ -216,7 +197,16 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
+        async def save_transaction_to_file_cb(result: bool | None) -> None:
+            if result:
+                await self._rebuild()
+
+        try:
+            sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
+        except NoItemSelectedError:
+            sign_key = None
+
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key), save_transaction_to_file_cb)
 
     @on(RefreshMetadataButton.Pressed)
     async def action_refresh_metadata(self) -> None:
@@ -246,78 +236,6 @@ class TransactionSummary(BaseScreen):
         if self.profile.transaction_file_path:
             return f"Loaded from {colorize_path(self.profile.transaction_file_path)}"
         return ""
-
-    async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
-        if result is None:
-            return
-
-        file_path = result.file_path
-        save_as_binary = result.save_as_binary
-        should_be_signed = result.should_be_signed
-        transaction = self.profile.transaction.copy()
-
-        try:
-            sign_key = self._get_key_to_sign() if should_be_signed and not transaction.is_signed else None
-        except NoItemSelectedError:
-            self.notify("Transaction can't be saved because no key was selected.", severity="error")
-            return
-
-        wrapper = await self.commands.perform_actions_on_transaction(
-            content=transaction,
-            sign_key=sign_key,
-            force_unsign=not should_be_signed,
-            save_file_path=file_path,
-            force_save_format="bin" if save_as_binary else "json",
-        )
-
-        if wrapper.error_occurred:
-            self.notify("Transaction save failed. Please try again.", severity="error")
-            return
-
-        self.profile.transaction.reset()
-        self.profile.transaction_file_path = None
-        self.app.trigger_profile_watchers()
-        await self._rebuild()
-        self.notify(
-            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to {colorize_path(file_path)}"
-            f" {'(signed)' if transaction.is_signed else ''}"
-        )
-
-    def _add_known_accounts(self) -> None:
-        unknown_accounts = self.profile.transaction.get_unknown_accounts(self.profile.accounts.known)
-        self.profile.accounts.add_known_account(*unknown_accounts)
-        if unknown_accounts:
-            accounts = ", ".join(unknown_accounts)
-            self.notify(f"New accounts have been added to the list of known accounts: {accounts}.")
-
-    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
-        if result is None:
-            return
-
-        file_path = result.file_path
-
-        try:
-            loaded_transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise
-        except LoadTransactionError as error:
-            self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
-            return
-
-        if self._check_for_unknown_bad_accounts(loaded_transaction):
-            return
-
-        if not (await self._validate_operations_to_exchange(loaded_transaction)):
-            return
-
-        if not loaded_transaction.is_tapos_set:
-            self.notify("TaPoS metadata was not set, updating automatically...")
-            await self._update_transaction_metadata()
-
-        self.profile.transaction_file_path = file_path
-        self.profile.transaction = loaded_transaction
-        if self.profile.should_enable_known_accounts:
-            self._add_known_accounts()
-        self.app.trigger_profile_watchers()
-        await self._rebuild()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
@@ -381,52 +299,3 @@ class TransactionSummary(BaseScreen):
         await self.button_container.recompose()
         self._update_subtitle()
         self._update_bindings()
-
-    def _check_for_unknown_bad_accounts(self, loaded_transaction: Transaction) -> bool:
-        """
-        Check if the loaded transaction contains any bad accounts.
-
-        Returns:
-            True: If the transaction has bad accounts that are unknown, and notifies the user with an error message.
-            False: If the transaction does not have any bad accounts or if the bad accounts are known,
-                   and notifies the user with a warning message.
-        """
-        bad_accounts = loaded_transaction.get_bad_accounts(self.profile.accounts.get_bad_accounts())
-        if not bad_accounts:
-            return False
-
-        unknown_accounts = loaded_transaction.get_unknown_accounts(self.profile.accounts.known)
-        has_unknown_bad_account = any(bad_account in unknown_accounts for bad_account in bad_accounts)
-
-        if has_unknown_bad_account:
-            self.notify(ERROR_BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="error")
-            return True
-
-        self.notify(BAD_ACCOUNT_IN_LOADED_TRANSACTION_MESSAGE, severity="warning")
-        return False
-
-    async def _validate_operations_to_exchange(self, loaded_transaction: Transaction) -> bool:
-        """Validate operations from transaction to the exchange."""
-        operation_validator = ExchangeOperationsValidator(transaction=loaded_transaction)
-
-        is_confirmation_required = False
-        for exchange in self.world.known_exchanges:
-            result = operation_validator.validate(exchange.name)
-            if result.is_valid:
-                continue
-
-            if ExchangeOperationsValidator.has_unsafe_transfer_to_exchange(result):
-                self.notify(
-                    f"Cannot load transaction.\n{humanize_validation_result(result)}",
-                    severity="error",
-                    markup=False,
-                )
-                return False
-
-            if ExchangeOperationsValidator.has_unsafe_operation_to_exchange(result):
-                is_confirmation_required = True
-
-        if is_confirmation_required:
-            return await self.app.push_screen_wait(ConfirmActionDialogWithKnownExchange())
-
-        return True
