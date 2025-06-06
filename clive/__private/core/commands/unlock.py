@@ -19,10 +19,17 @@ if TYPE_CHECKING:
     from beekeepy import AsyncSession, AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.types import MigrationStatus
+
+
+@dataclass
+class UnlockWalletStatus:
+    recovery_status: RecoverWalletsStatus
+    migration_status: MigrationStatus
 
 
 @dataclass(kw_only=True)
-class Unlock(CommandPasswordSecured, CommandWithResult[RecoverWalletsStatus]):
+class Unlock(CommandPasswordSecured, CommandWithResult[UnlockWalletStatus]):
     """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
 
     profile_name: str
@@ -48,11 +55,11 @@ class Unlock(CommandPasswordSecured, CommandWithResult[RecoverWalletsStatus]):
             should_recover_user_wallet=is_user_wallet_missing,
         ).execute_with_result()
 
-        self._result = recover_wallets_result.status
+        recovery_status = recover_wallets_result.status
 
-        if self._result == "encryption_wallet_recovered":
+        if recovery_status == "encryption_wallet_recovered":
             encryption_wallet = recover_wallets_result.recovered_wallet
-        elif self._result == "user_wallet_recovered":
+        elif recovery_status == "user_wallet_recovered":
             user_wallet = recover_wallets_result.recovered_wallet
 
         assert user_wallet is not None, "User wallet should be created at this point"
@@ -61,11 +68,13 @@ class Unlock(CommandPasswordSecured, CommandWithResult[RecoverWalletsStatus]):
         if self.app_state is not None:
             await self.app_state.unlock(WalletContainer(user_wallet, encryption_wallet))
 
-        await MigrateProfile(
+        migration_result = await MigrateProfile(
             profile_name=self.profile_name,
             unlocked_wallet=user_wallet,
             unlocked_encryption_wallet=encryption_wallet,
-        ).execute()
+        ).execute_with_result()
+
+        self._result = UnlockWalletStatus(recovery_status=recovery_status, migration_status=migration_result)
 
     async def _unlock_wallet(self, name: str) -> AsyncUnlockedWallet | None:
         try:
