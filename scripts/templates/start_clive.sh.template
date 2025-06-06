@@ -17,5 +17,13 @@ print_help() {
     echo
 }
 
+validate_no_pipeline() {
+    # validate no pipeline input for TUI mode
+    if [[ -n "${PIPELINE:-}" ]]; then
+        echo "Error: Pipeline cannot be passed to start_clive.sh script."
+        exit 3
+    fi
+}
+
 # Run the main function defined in the base script
 main "$@"
