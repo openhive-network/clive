@@ -147,6 +147,7 @@ build_wheel:
     HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
     CLI_WALLET_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/cli_wallet"
     GET_DEV_KEY_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/get_dev_key"
+    BLOCK_LOG_UTIL_PATH:  "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/block_log_util"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   before_script:
     - !reference [.project_develop_configuration_template, before_script]
