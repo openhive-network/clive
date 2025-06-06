@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.containers import Center, Vertical
 
-from clive.__private.ui.screens.config.account_management import AccountManagement
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.notice import Notice
 
@@ -27,4 +26,6 @@ class AccountManagementReference(Vertical):
 
     @on(OneLineButton.Pressed, "#account-management-button")
     def push_account_list_management_screen(self) -> None:
+        from clive.__private.ui.screens.config.account_management import AccountManagement
+
         self.app.push_screen(AccountManagement())
