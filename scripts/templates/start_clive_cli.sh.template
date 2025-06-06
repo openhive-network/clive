@@ -118,6 +118,12 @@ validate_profile_name_with_exec() {
     fi
 }
 
+validate() {
+    validate_pipeline_with_exec
+    validate_profile_name_with_exec
+    common_validation
+}
+
 # Add the --cli flag to Clive arguments
 add_clive_arg "--cli"
 

@@ -88,6 +88,10 @@ common_parse_args() {
     CMD_ARGS+=("${CLIVE_ARGS[@]}")
 }
 
+common_validation(){
+    validate_data_dir
+}
+
 # Validate and create the Clive data directory
 validate_data_dir() {
     if [ -z "${CLIVE_DATA_DIR}" ]; then
@@ -149,7 +153,7 @@ run_docker_container() {
 main() {
     check_docker_installed
     parse_args "$@"
-    validate_data_dir
+    validate
     configure_docker_volumes
     run_docker_container
 }

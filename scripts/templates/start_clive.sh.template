@@ -25,5 +25,10 @@ validate_no_pipeline() {
     fi
 }
 
+validate() {
+    validate_no_pipeline
+    common_validation
+}
+
 # Run the main function defined in the base script
 main "$@"
