@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, override
 
 from clive.__private.core.constants.node import (
-    CANCEL_PROXY_VALUE,
     PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
     TRANSFER_TO_VESTING_RECEIVER_IS_FROM_VALUE,
 )
@@ -23,11 +22,6 @@ class FinancialOperationsAccountCollector(OperationVisitor):
     def __init__(self) -> None:
         self.accounts: set[str] = set()
         """Names of accounts that are target of financial operation."""
-
-    @override
-    def visit_account_witness_proxy_operation(self, operation: schemas.AccountWitnessProxyOperation) -> None:
-        if operation.proxy != CANCEL_PROXY_VALUE:
-            self.accounts.add(operation.proxy)
 
     @override
     def visit_delegate_vesting_shares_operation(self, operation: schemas.DelegateVestingSharesOperation) -> None:
