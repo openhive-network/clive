@@ -6,6 +6,10 @@
 CONTAINER_NAME="clive-cli-$(date +%s)"
 export CONTAINER_NAME
 
+# Set HAS_EXEC variable when passing --exec flag, this variable is used for validation purpose
+HAS_EXEC=0
+# Set HAS_PROFILE_NAME variable when passing --profile-name flag, this variable is used for validation purpose
+HAS_PROFILE_NAME=0
 
 # Print usage information for the script
 print_help() {
@@ -67,16 +71,20 @@ parse_args() {
             --exec)
                 shift
                 handle_exec_option "${1}"
+                HAS_EXEC=1
                 ;;
             --exec=*)
                 handle_exec_option "${1#*=}"
+                HAS_EXEC=1
                 ;;
             --profile-name)
                 shift
                 handle_profile_name_option "${1}"
+                HAS_PROFILE_NAME=1
                 ;;
             --profile-name=*)
                 handle_profile_name_option "${1#*=}"
+                HAS_PROFILE_NAME=1
                 ;;
             --unlock-time)
                 shift
@@ -92,6 +100,22 @@ parse_args() {
         shift
     done
     common_parse_args "${new_args[@]}"
+}
+
+validate_pipeline_with_exec() {
+    # pipeline input is only allowed with --exec
+    if [[ -n "${PIPELINE:-}" && "$HAS_EXEC" -eq 0 ]]; then
+        echo "Error: Pipeline input is only allowed when --exec is passed."
+        exit 3
+    fi
+}
+
+validate_profile_name_with_exec() {
+    # combining flag --profile-name with --exec is forbidden
+    if [[ "$HAS_PROFILE_NAME" -eq 1 && "$HAS_EXEC" -eq 1 ]]; then
+        echo "Error: Cannot set both --profile-name and --exec."
+        exit 3
+    fi
 }
 
 # Add the --cli flag to Clive arguments
