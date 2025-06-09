@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
     from clive_local_tools.cli.cli_tester import CLITester
 
+    from .conftest import ActionSelector
+
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
 KNOWN_ACCOUNT: Final[str] = KNOWN_ACCOUNTS[0]
 EXPECTED_ERROR_MSG: Final[str] = get_formatted_error_message(CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT))
@@ -40,87 +42,117 @@ def _assert_validation_of_known_accounts(send_operation_cb: Callable[[], None], 
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_delegate_vesting_shares(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_delegate_vesting_shares(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_delegations_set(delegatee=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_delegations_set(
+            delegatee=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_setting_withdrawal_routes(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_setting_withdrawal_routes(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
         percent: int = 30
-        cli_tester.process_withdraw_routes_set(to=receiver, percent=percent, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_withdraw_routes_set(
+            to=receiver, percent=percent, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_savings_withdrawal(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_savings_withdrawal(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_savings_withdrawal(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_savings_withdrawal(
+            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_deposing_savings(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_deposing_savings(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_savings_deposit(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_savings_deposit(
+            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_powering_up(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_powering_up(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_power_up(amount=AMOUNT, to=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_power_up(
+            amount=AMOUNT, to=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
-async def test_validation_of_powering_up_to_self(cli_tester: CLITester) -> None:
+async def test_validation_of_powering_up_to_self(
+    cli_tester: CLITester, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_power_up(amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_power_up(amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, WORKING_ACCOUNT_NAME)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_transfer(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_transfer(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_transfer(to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_transfer(
+            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_setting_proxy(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_setting_proxy(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_proxy_set(proxy=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_proxy_set(proxy=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(send_operation, receiver)
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_validation_of_creating_scheduled_transfer(cli_tester: CLITester, receiver: str) -> None:
+async def test_validation_of_creating_scheduled_transfer(
+    cli_tester: CLITester, receiver: str, process_action_selector: ActionSelector
+) -> None:
     # ARRANGE
     def send_operation() -> None:
         cli_tester.process_transfer_schedule_create(
@@ -129,6 +161,7 @@ async def test_validation_of_creating_scheduled_transfer(cli_tester: CLITester, 
             sign=WORKING_ACCOUNT_KEY_ALIAS,
             repeat=2,
             frequency="24h",
+            **process_action_selector,
         )
 
     # ACT & ASSERT
