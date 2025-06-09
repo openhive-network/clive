@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
 KNOWN_ACCOUNT: Final[str] = KNOWN_ACCOUNTS[0]
-EXPECTED_ERROR_MSG: Final[str] = get_formatted_error_message(CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT))
+EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG: Final[str] = get_formatted_error_message(
+    CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT)
+)
 
 
 VALIDATION_RECEIVERS: Final[list[str]] = [UNKNOWN_ACCOUNT, KNOWN_ACCOUNT]
@@ -33,7 +35,7 @@ VALIDATION_IDS: Final[list[str]] = ["unknown_account", "known_account"]
 def _assert_operation_to_unknown_account_fails(perform_operation_cb: Callable[[], None]) -> None:
     with pytest.raises(CLITestCommandError) as error:
         perform_operation_cb()
-    assert_output_contains(EXPECTED_ERROR_MSG, error.value.stdout)
+    assert_output_contains(EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG, error.value.stdout)
 
 
 def _assert_validation_of_known_accounts(perform_operation_cb: Callable[[], None], receiver: str) -> None:
