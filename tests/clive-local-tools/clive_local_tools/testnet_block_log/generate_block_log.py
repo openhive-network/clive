@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from random import uniform
 
@@ -20,20 +19,19 @@ from clive_local_tools.testnet_block_log.constants import (
 )
 
 
-def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
+def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> None:
     tt.logger.info("Creating alternate chain spec file...")
     current_time = utc_now()
     hardfork_num = int(node.get_version().version.blockchain_version.split(".")[1])
-    alternate_chain_spec_content = {
-        "genesis_time": int(current_time.timestamp()),
-        "hardfork_schedule": [{"hardfork": hardfork_num, "block_num": 1}],
-        "init_supply": 20_000_000_000,
-        "hbd_init_supply": 10_000_000_000,
-        "initial_vesting": {"vests_per_hive": 1800, "hive_amount": 10_000_000_000},
-    }
+    alternate_chain_specs = tt.AlternateChainSpecs(
+        genesis_time=int(current_time.timestamp()),
+        hardfork_schedule=[tt.HardforkSchedule(hardfork=hardfork_num, block_num=1)],
+        init_supply=20_000_000_000,
+        hbd_init_supply=10_000_000_000,
+        initial_vesting=tt.InitialVesting(vests_per_hive=1800, hive_amount=10_000_000_000),
+    )
 
-    with file_path.open("w") as json_file:
-        json.dump(alternate_chain_spec_content, json_file, indent=2)
+    alternate_chain_specs.export_to_file(directory)
 
 
 def configure(node: tt.InitNode) -> None:
@@ -200,11 +198,11 @@ def main() -> None:
     directory = Path(__file__).parent.absolute()
     node = tt.InitNode()
     configure(node)
-    set_vest_price_by_alternate_chain_spec(node, directory / "alternate-chain-spec.json")
+    prepare_alternate_chain_specs(node, directory)
 
     node.run(
         arguments=tt.NodeArguments(
-            alternate_chain_spec=directory / "alternate-chain-spec.json",
+            alternate_chain_spec=directory / tt.AlternateChainSpecs.FILENAME,
         ),
         time_control=tt.SpeedUpRateTimeControl(5),
     )
