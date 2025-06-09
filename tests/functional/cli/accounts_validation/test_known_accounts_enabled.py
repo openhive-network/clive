@@ -6,14 +6,16 @@ import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import CLITransactionUnknownAccountError
+from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.cli.checkers import assert_output_contains
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message
+from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import KNOWN_ACCOUNTS, UNKNOWN_ACCOUNT, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
     from clive_local_tools.cli.cli_tester import CLITester
 
@@ -163,6 +165,29 @@ async def test_validation_of_creating_scheduled_transfer(
             frequency="24h",
             **process_action_selector,
         )
+
+    # ACT & ASSERT
+    _assert_validation_of_known_accounts(perform_operation, receiver)
+
+
+@pytest.fixture
+def transaction_path(tmp_path: Path, receiver: str) -> Path:
+    operations = [
+        TransferOperation(
+            from_=WORKING_ACCOUNT_NAME,
+            to=receiver,
+            amount=tt.Asset.Hive(10),
+            memo="known account test",
+        )
+    ]
+    return create_transaction_file(tmp_path, operations)
+
+
+@pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
+async def test_loading_transaction(cli_tester: CLITester, receiver: str, transaction_path: Path) -> None:
+    # ARRANGE
+    def perform_operation() -> None:
+        cli_tester.process_transaction(from_file=transaction_path, sign=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, receiver)
