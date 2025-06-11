@@ -14,12 +14,7 @@ from clive.__private.cli.exceptions import (
     CLIInvalidSelectionError,
     CLIProfileDoesNotExistsError,
 )
-from clive.__private.cli.notify import notify
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
-from clive.__private.core.constants.wallet_recovery import (
-    USER_WALLET_RECOVERED_MESSAGE,
-    USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
-)
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
 from clive.__private.core.profile import Profile
@@ -161,7 +156,3 @@ class Unlock(WorldBasedCommand):
 
     def _display_create_profile_help_info(self) -> None:
         typer.echo(UNLOCK_CREATE_PROFILE_HELP)
-
-    def _display_wallet_recovery_status(self, status: RecoverWalletsStatus) -> None:
-        if status == "user_wallet_recovered":
-            notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
