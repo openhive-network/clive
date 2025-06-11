@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass
 from datetime import timedelta
 from getpass import getpass
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 import typer
 
@@ -14,18 +14,10 @@ from clive.__private.cli.exceptions import (
     CLIInvalidSelectionError,
     CLIProfileDoesNotExistsError,
 )
-from clive.__private.cli.notify import notify
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
-from clive.__private.core.constants.wallet_recovery import (
-    USER_WALLET_RECOVERED_MESSAGE,
-    USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
-)
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
 from clive.__private.core.profile import Profile
-
-if TYPE_CHECKING:
-    from clive.__private.core.commands.recover_wallets import RecoverWalletsStatus
 
 PASSWORD_SELECTION_ATTEMPTS: Final[int] = 3
 PROFILE_SELECTION_ATTEMPTS: Final[int] = 3
@@ -81,19 +73,16 @@ class Unlock(WorldBasedCommand):
 
     async def _unlock_profile(self, profile_name: str, password: str) -> None:
         try:
-            result = (
-                await self.world.commands.unlock(
-                    profile_name=profile_name,
-                    password=password,
-                    time=self._duration,
-                    permanent=self._is_unlock_permanent,
-                )
-            ).result_or_raise
+            await self.world.commands.unlock(
+                profile_name=profile_name,
+                password=password,
+                time=self._duration,
+                permanent=self._is_unlock_permanent,
+            )
         except CannotNotifyError as error:
             if INVALID_PASSWORD_MESSAGE in error.reason:
                 raise CLIInvalidPasswordError(profile_name) from error
             raise
-        self._display_wallet_recovery_status(result)
 
     def _prompt_for_profile_name(self) -> str | None:
         options = self._generate_profile_options()
@@ -166,7 +155,3 @@ class Unlock(WorldBasedCommand):
 
     def _display_create_profile_help_info(self) -> None:
         typer.echo(UNLOCK_CREATE_PROFILE_HELP)
-
-    def _display_wallet_recovery_status(self, status: RecoverWalletsStatus) -> None:
-        if status == "user_wallet_recovered":
-            notify(USER_WALLET_RECOVERED_MESSAGE, level=USER_WALLET_RECOVERED_NOTIFICATION_LEVEL)
