@@ -1,35 +1,33 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
+
+from clive_local_tools.testnet_block_log.constants import BLOCK_LOG_WITH_CONFIG_DIRECTORY
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
     from beekeepy.interfaces import HttpUrl
 
-CONFIG_FILE_DIR: Final[Path] = Path(__file__).parent
-ALTERNATE_CHAIN_SPECS_DIR: Final[Path] = CONFIG_FILE_DIR
-BLOCK_LOG_DIR: Final[Path] = CONFIG_FILE_DIR / "blockchain"
 
 EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = tt.Time.days(1)
 
 
 def get_config(webserver_http_endpoint: HttpUrl | None = None) -> tt.NodeConfig:
-    config = tt.NodeConfig.from_path(CONFIG_FILE_DIR)
+    config = tt.NodeConfig.from_path(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
     if webserver_http_endpoint is not None:
         config.webserver_http_endpoint = webserver_http_endpoint
     return config
 
 
 def get_alternate_chain_spec() -> tt.AlternateChainSpecs:
-    return tt.AlternateChainSpecs.parse_file(ALTERNATE_CHAIN_SPECS_DIR)
+    return tt.AlternateChainSpecs.parse_file(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
 
 
 def get_block_log() -> tt.BlockLog:
-    return tt.BlockLog(BLOCK_LOG_DIR)
+    return tt.BlockLog(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
 
 
 def get_time_control(block_log: tt.BlockLog) -> tt.StartTimeControl:

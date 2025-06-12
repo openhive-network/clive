@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 from random import uniform
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 
@@ -9,6 +9,7 @@ from clive.__private.core.date_utils import utc_now
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT2_DATA,
+    BLOCK_LOG_WITH_CONFIG_DIRECTORY,
     CREATOR_ACCOUNT,
     EMPTY_ACCOUNT,
     KNOWN_EXCHANGES_NAMES,
@@ -18,8 +19,11 @@ from clive_local_tools.testnet_block_log.constants import (
     WORKING_ACCOUNT_DATA,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> Path:
+
+def prepare_alternate_chain_specs(node: tt.InitNode) -> Path:
     tt.logger.info("Creating alternate chain spec file...")
     current_time = utc_now()
     hardfork_num = int(node.get_version().version.blockchain_version.split(".")[1])
@@ -31,7 +35,7 @@ def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> Path:
         initial_vesting=tt.InitialVesting(vests_per_hive=1800, hive_amount=10_000_000_000),
     )
 
-    return alternate_chain_specs.export_to_file(directory)
+    return alternate_chain_specs.export_to_file(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
 
 
 def configure(node: tt.InitNode) -> None:
@@ -195,10 +199,9 @@ def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
 
 
 def main() -> None:
-    directory = Path(__file__).parent.absolute()
     node = tt.InitNode()
     configure(node)
-    alternate_chain_specs_path = prepare_alternate_chain_specs(node, directory)
+    alternate_chain_specs_path = prepare_alternate_chain_specs(node)
 
     node.run(
         arguments=tt.NodeArguments(alternate_chain_spec=alternate_chain_specs_path),
@@ -237,12 +240,8 @@ def main() -> None:
 
     node.close()
 
-    blockchain_directory = directory / "blockchain"
-    blockchain_directory.mkdir(parents=True, exist_ok=True)
-    node.block_log.copy_to(blockchain_directory)
-
-    config_file = directory / "config.ini"
-    node.config.save(config_file)
+    node.block_log.copy_to(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
+    node.config.save(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
 
 
 if __name__ == "__main__":
