@@ -77,6 +77,9 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
     def action_load_from_file(self) -> None:
         self.app.push_screen(LoadKeyFromFileDialog(), self._load_private_key_from_file)
 
+    def _default_private_key_input_required(self) -> bool:
+        return False
+
     def _load_private_key_from_file(self, loaded_private_key: PrivateKey | None) -> None:
         if loaded_private_key is None:
             return

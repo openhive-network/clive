@@ -103,13 +103,16 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         return PrivateKeyInput(
             value=self._default_private_key(),
             password=True,
-            required=True,
+            required=self._default_private_key_input_required(),
             id="key-input",
             validators=PrivateKeyValidator(public_key_to_match=self._default_public_key_to_match()),
         )
 
     def _default_private_key(self) -> str:
         return safe_settings.secrets.default_private_key or ""
+
+    def _default_private_key_input_required(self) -> bool:
+        return True
 
     def _default_public_key_to_match(self) -> str | PublicKey | None:
         return None
