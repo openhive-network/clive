@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from string import ascii_lowercase
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
 
@@ -10,7 +10,12 @@ from clive.__private.core.known_exchanges import KnownExchanges
 from clive_local_tools.data.generates import generate_proposal_name, generate_witness_name
 from clive_local_tools.data.models import AccountData
 
+if TYPE_CHECKING:
+    from datetime import timedelta
+
 BLOCK_LOG_WITH_CONFIG_DIRECTORY: Final[Path] = Path(__file__).parent / "block_log_with_config"
+EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = tt.Time.days(1)
+
 
 WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [generate_witness_name(i) for i in range(60)]]
 PROPOSALS: Final[list[str]] = [generate_proposal_name(c) for c in ascii_lowercase]

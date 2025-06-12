@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 
-from clive_local_tools.testnet_block_log.constants import BLOCK_LOG_WITH_CONFIG_DIRECTORY
+from clive_local_tools.testnet_block_log.constants import (
+    BLOCK_LOG_WITH_CONFIG_DIRECTORY,
+    EXTRA_TIME_SHIFT_FOR_GOVERNANCE,
+)
 
 if TYPE_CHECKING:
-    from datetime import timedelta
-
     from beekeepy.interfaces import HttpUrl
-
-
-EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = tt.Time.days(1)
 
 
 def get_config(webserver_http_endpoint: HttpUrl | None = None) -> tt.NodeConfig:
