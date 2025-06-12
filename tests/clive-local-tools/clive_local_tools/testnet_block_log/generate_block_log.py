@@ -19,7 +19,7 @@ from clive_local_tools.testnet_block_log.constants import (
 )
 
 
-def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> None:
+def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> Path:
     tt.logger.info("Creating alternate chain spec file...")
     current_time = utc_now()
     hardfork_num = int(node.get_version().version.blockchain_version.split(".")[1])
@@ -31,7 +31,7 @@ def prepare_alternate_chain_specs(node: tt.InitNode, directory: Path) -> None:
         initial_vesting=tt.InitialVesting(vests_per_hive=1800, hive_amount=10_000_000_000),
     )
 
-    alternate_chain_specs.export_to_file(directory)
+    return alternate_chain_specs.export_to_file(directory)
 
 
 def configure(node: tt.InitNode) -> None:
@@ -198,12 +198,10 @@ def main() -> None:
     directory = Path(__file__).parent.absolute()
     node = tt.InitNode()
     configure(node)
-    prepare_alternate_chain_specs(node, directory)
+    alternate_chain_specs_path = prepare_alternate_chain_specs(node, directory)
 
     node.run(
-        arguments=tt.NodeArguments(
-            alternate_chain_spec=directory / tt.AlternateChainSpecs.FILENAME,
-        ),
+        arguments=tt.NodeArguments(alternate_chain_spec=alternate_chain_specs_path),
         time_control=tt.SpeedUpRateTimeControl(5),
     )
     wallet = tt.Wallet(attach_to=node)
