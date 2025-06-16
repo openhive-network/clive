@@ -18,7 +18,9 @@ class ExchangeOperationsValidator(Validator):
     """Validating operations in a transaction to exchange."""
 
     HBD_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must be in HIVE, not HBD."
-    MEMOLESS_HIVE_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must include a memo."
+    MEMOLESS_HIVE_TRANSFER_MSG_ERROR: Final[str] = (
+        "The transfer to the exchange must include a memo. Please check the memo of your exchange account."
+    )
 
     UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: ClassVar[str] = (
         "Exchanges usually support only the transfer operation, while other operation to a known exchange was detected."
