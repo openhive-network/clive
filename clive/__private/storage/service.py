@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
+    from clive.__private.core.types import MigrationStatus
     from clive.__private.storage import ProfileStorageBase, ProfileStorageModel
 
 
@@ -67,6 +68,12 @@ class ProfileEncryptionError(PersistentStorageServiceError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+@dataclass
+class _MigrationResult:
+    model: ProfileStorageModel
+    status: MigrationStatus
 
 
 class PersistentStorageService:
@@ -133,14 +140,16 @@ class PersistentStorageService:
                 or communication with beekeeper failed.
         """
         self._raise_if_profile_not_stored(profile_name)
-        profile_storage_model = await self._load_and_migrate_latest_profile_model(profile_name)
+        result = await self._load_and_migrate_latest_profile_model(profile_name)
+        profile_storage_model = result.model
 
         profile = StorageToRuntimeConverter(profile_storage_model).create_profile()
         profile._update_hash_of_stored_profile()
         return profile
 
-    async def migrate(self, profile_name: str) -> None:
-        await self._load_and_migrate_latest_profile_model(profile_name)
+    async def migrate(self, profile_name: str) -> MigrationStatus:
+        result = await self._load_and_migrate_latest_profile_model(profile_name)
+        return result.status
 
     @classmethod
     def delete_profile(cls, profile_name: str, *, force: bool = False) -> None:
@@ -326,7 +335,7 @@ class PersistentStorageService:
         filepath = profile_directory / self.get_current_version_profile_filename()
         filepath.write_text(encrypted_profile)
 
-    async def _load_and_migrate_latest_profile_model(self, profile_name: str) -> ProfileStorageModel:
+    async def _load_and_migrate_latest_profile_model(self, profile_name: str) -> _MigrationResult:
         """
         Find current version of profile storage model by name in the clive data directory or migrate older version.
 
@@ -368,13 +377,15 @@ class PersistentStorageService:
 
     async def _migrate_profile_model(
         self, profile_model: ProfileStorageBase, profile_filepath: Path
-    ) -> ProfileStorageModel:
-        """Migrate profile model to the latest version."""
+    ) -> _MigrationResult:
+        """Migrate profile model and return current version of model even it there was no migration needed."""
+        was_migrated = False
         model_migrated = StorageHistory.apply_all_migrations(profile_model)
         if profile_model.get_this_version() != StorageHistory.get_latest_version():
             await self._save_profile_model(model_migrated)
             self._move_profile_to_backup(profile_filepath)
-        return model_migrated
+            was_migrated = True
+        return _MigrationResult(model_migrated, status="migrated" if was_migrated else "already_newest")
 
     @classmethod
     def _move_profile_to_backup(cls, path: Path) -> None:
