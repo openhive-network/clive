@@ -8,12 +8,11 @@ from clive.__private.core.commands.get_unlocked_encryption_wallet import GetUnlo
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.load_profile import LoadProfile
 from clive.__private.core.commands.unlock import Unlock
+from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable
-
-    from clive.__private.core.profile import Profile
 
 
 class IsNotSet:
@@ -64,6 +63,16 @@ class ProfileChecker:
             unlocked_wallet=self._wallets.user_wallet,
             unlocked_encryption_wallet=self._wallets.encryption_wallet,
         ).execute_with_result()
+
+    @classmethod
+    def assert_profile_is_stored(cls, profile_name: str, *, should_be_stored: bool = True, context: str = "") -> None:
+        is_stored = Profile.is_profile_stored(profile_name)
+        message = (
+            "Profile is not stored while should be." if should_be_stored else "Profile is stored while should not be."
+        )
+        if context:
+            message += f" Context: {context}"
+        assert is_stored == should_be_stored, message
 
     async def assert_working_account(self, working_account: str | IsNotSet | None = None) -> None:
         """

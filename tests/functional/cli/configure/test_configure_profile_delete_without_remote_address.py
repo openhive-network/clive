@@ -6,8 +6,8 @@ import pytest
 from beekeepy import AsyncBeekeeper
 from beekeepy.exceptions.common import InvalidatedStateByClosingBeekeeperError
 
-from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
+from clive_local_tools.checkers.profile_checker import ProfileChecker
 from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
@@ -41,4 +41,4 @@ async def test_remove_profile_remote_address_not_set(
     cli_tester_without_remote_address.configure_profile_delete(profile_name=WORKING_ACCOUNT_NAME)
 
     # ASSERT
-    assert not Profile.is_profile_stored(WORKING_ACCOUNT_NAME), f"Profile {WORKING_ACCOUNT_NAME} should be deleted"
+    ProfileChecker.assert_profile_is_stored(WORKING_ACCOUNT_NAME, should_be_stored=False)
