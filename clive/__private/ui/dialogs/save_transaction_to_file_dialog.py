@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import work
 from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
+from clive.__private.ui.dialogs.confirm_save_file_dialog import ConfirmSaveFileDialog
 from clive.__private.ui.dialogs.select_file_base_dialog import SelectFileBaseDialog
 from clive.__private.ui.styling import colorize_path
 
@@ -51,6 +53,8 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
         file_path = self._file_path_input.value_or_none()
         if file_path is None:
             return False
+        if not (await self._confirm_overwrite_a_file().wait()):
+            return False
 
         save_as_binary = self._is_binary_checked
         should_be_signed = self._is_signed_checked
@@ -83,3 +87,8 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
 
     def _default_validator_mode(self) -> PathValidator.Modes:
         return "is_file_or_can_be_file"
+
+    @work
+    async def _confirm_overwrite_a_file(self) -> bool:
+        """Confirm overwrite of the file if it already exists."""
+        return await self.app.push_screen_wait(ConfirmSaveFileDialog())
