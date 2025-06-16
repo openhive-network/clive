@@ -123,7 +123,7 @@ ENV HIVED_BINARIES_DIR_SOURCE="/home/hived/bin"
 ENV HIVED_BINARIES_DIR_DEST="${HIVED_BINARIES_DIR_SOURCE}/"
 
 # Copy all the required executables from hived image
-COPY --chown=clive --from=hived_image "${HIVED_BINARIES_DIR_SOURCE}/hived" "${HIVED_BINARIES_DIR_SOURCE}/get_dev_key" \
+COPY --chown=clive --from=hived_image "${HIVED_BINARIES_DIR_SOURCE}/hived" "${HIVED_BINARIES_DIR_SOURCE}/get_dev_key" "${HIVED_BINARIES_DIR_SOURCE}/block_log_util" \
   "${HIVED_BINARIES_DIR_DEST}"
 
 RUN strip -s "${HIVED_BINARIES_DIR_DEST}"/*
@@ -152,6 +152,7 @@ ENV HIVED_PATH="${HIVED_BINARIES_DIR_DEST}/hived"
 ENV CLI_WALLET_PATH="${HIVED_BINARIES_DIR_DEST}/cli_wallet"
 ENV GET_DEV_KEY_PATH="${HIVED_BINARIES_DIR_DEST}/get_dev_key"
 ENV COMPRESS_BLOCK_LOG_PATH="${HIVED_BINARIES_DIR_DEST}/compress_block_log"
+ENV BLOCK_LOG_UTIL_PATH="${HIVED_BINARIES_DIR_DEST}/block_log_util"
 
 # Get all the files required for embedded testnet
 COPY --chown=clive ./testnet_node.py /clive
