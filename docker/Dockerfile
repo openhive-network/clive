@@ -149,9 +149,7 @@ ENV CLIVE_NODE__CHAIN_ID=${CLIVE_NODE__CHAIN_ID}
 
 # Paths to executables required for test-tools
 ENV HIVED_PATH="${HIVED_BINARIES_DIR_DEST}/hived"
-ENV CLI_WALLET_PATH="${HIVED_BINARIES_DIR_DEST}/cli_wallet"
 ENV GET_DEV_KEY_PATH="${HIVED_BINARIES_DIR_DEST}/get_dev_key"
-ENV COMPRESS_BLOCK_LOG_PATH="${HIVED_BINARIES_DIR_DEST}/compress_block_log"
 ENV BLOCK_LOG_UTIL_PATH="${HIVED_BINARIES_DIR_DEST}/block_log_util"
 
 # Get all the files required for embedded testnet
