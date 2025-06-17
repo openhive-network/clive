@@ -15,8 +15,8 @@ class CliveSuggester(SuggestFromList):
     Can be used mainly for CliveInput - to switch between suggestions by user action.
     """
 
-    def __init__(self, suggestions: Iterable[str]) -> None:
-        super().__init__(suggestions)
+    def __init__(self, suggestions: Iterable[str] | None = None) -> None:
+        super().__init__(suggestions or [])
         self.cache = None
         self._matched: list[str] = []
         self._index: int = 0
