@@ -43,11 +43,11 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
     }
     """
 
-    def __init__(self, public_key_to_match: str | PublicKey | None = None) -> None:
+    def __init__(self, public_key_to_match: PublicKey | None = None) -> None:
         super().__init__(border_title="Add new alias")
         self._public_key_to_match = public_key_to_match
 
-    def _default_public_key_to_match(self) -> str | PublicKey | None:
+    def _default_public_key_to_match(self) -> PublicKey | None:
         return self._public_key_to_match
 
     def create_dialog_content(self) -> ComposeResult:
