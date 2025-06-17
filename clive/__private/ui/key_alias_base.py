@@ -114,7 +114,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
     def _default_private_key_input_required(self) -> bool:
         return True
 
-    def _default_public_key_to_match(self) -> str | PublicKey | None:
+    def _default_public_key_to_match(self) -> PublicKey | None:
         return None
 
     @on(Input.Changed, "#key-input Input")
