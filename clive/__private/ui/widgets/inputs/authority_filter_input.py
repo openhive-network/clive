@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class AuthorityInput(TextInput):
+class AuthorityFilterInput(TextInput):
     """An input for authority entry - Hive account name, public / private key or alias."""
 
     def __init__(

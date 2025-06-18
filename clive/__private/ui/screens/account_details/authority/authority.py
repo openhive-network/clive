@@ -25,7 +25,7 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
     CliveCollapsible,
 )
-from clive.__private.ui.widgets.inputs.authority_input import AuthorityInput
+from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFilterInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.models.authority import WaxAuthority
@@ -381,7 +381,7 @@ class Authority(TabPane, CliveWidget):
 
     @on(FilterAuthority.AuthorityFilterReady)
     async def _apply_authority_filter(self) -> None:
-        authority_input = self.query_exactly_one(AuthorityInput)
+        authority_input = self.query_exactly_one(AuthorityFilterInput)
         filter_pattern = authority_input.value_or_none()
         if filter_pattern:
             if self._filter_pattern_already_applied:
@@ -432,8 +432,8 @@ class Authority(TabPane, CliveWidget):
                         input_suggestions.append(collected_entry)
 
         input_suggestions.extend(self.profile.keys.get_all_aliases())
-        filter_authority.authority_input.clear_suggestions()
-        filter_authority.authority_input.add_suggestion(*input_suggestions)
+        filter_authority.authority_filter_input.clear_suggestions()
+        filter_authority.authority_filter_input.add_suggestion(*input_suggestions)
 
     async def _rebuild_authority_roles(self, filter_pattern: str | list[str] | None = None) -> None:
         with self.app.batch_update():

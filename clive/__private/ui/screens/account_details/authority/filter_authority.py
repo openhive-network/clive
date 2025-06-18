@@ -14,7 +14,7 @@ from clive.__private.ui.widgets.buttons import (
     ClearButton,
     SearchButton,
 )
-from clive.__private.ui.widgets.inputs.authority_input import AuthorityInput
+from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFilterInput
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
@@ -111,7 +111,7 @@ class FilterAuthority(Horizontal, CliveWidget):
         self._account = account
 
     def compose(self) -> ComposeResult:
-        yield AuthorityInput()
+        yield AuthorityFilterInput()
         with AccountFilterCollapsible(initial_title=self._account.name):
             yield AccountSelectionList(self._account)
         yield SearchButton()
@@ -130,8 +130,8 @@ class FilterAuthority(Horizontal, CliveWidget):
         return self.account_selection_list.selected
 
     @property
-    def authority_input(self) -> AuthorityInput:
-        return self.query_exactly_one(AuthorityInput)
+    def authority_filter_input(self) -> AuthorityFilterInput:
+        return self.query_exactly_one(AuthorityFilterInput)
 
     @on(AccountSelectionList.SelectionToggled)
     def account_toggled(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
@@ -152,7 +152,7 @@ class FilterAuthority(Horizontal, CliveWidget):
         self.post_message(self.Cleared())
 
     def apply_default_filter(self) -> None:
-        self.authority_input.clear_validation()
+        self.authority_filter_input.clear_validation()
         self.account_selection_list.restore_default()
         self.account_filter_collapsible.restore_title()
         self.collapse_account_filter_collapsible()
