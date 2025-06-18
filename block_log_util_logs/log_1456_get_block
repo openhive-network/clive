@@ -1,0 +1,16 @@
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:141  lazy_init            ] Emplacing worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:153  lazy_init            ] Emplacing worker threads done
+2025-06-18T10:36:52  block_log_util.cpp:1234  main                 ] block_log_util will perform get_block operation on block_log: /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001, parameters - first_block: 73, last_block: 73, header_only: false, pretty: false, binary: false, output_dir:  
+2025-06-18T10:36:52  block_log.cpp:231  open                 ] Opening blocklog /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001 in read only mode ...
+2025-06-18T10:36:52  block_log.cpp:285  open                 ] my->block_log_size: 25867 
+2025-06-18T10:36:52  block_log_artifacts.cpp:251  set_block_num_to_fil ] Setting _block_num_to_file_pos_offset to 0
+2025-06-18T10:36:52  block_log_artifacts.cpp:344  open                 ] Opening artifacts file /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001.artifacts in read only mode ...
+2025-06-18T10:36:52  block_log_artifacts.cpp:541  load_header          ] Loaded header containing: git rev: 7695e55cbd9593b8df65b4e1969134f4e56fa5cb, format version: 1.1, head_block_num: 73, tail_block_num: 1, generating_interrupted_at_block: 0, dirty_closed: 0
+2025-06-18T10:36:52  block_log_artifacts.cpp:705  verify_if_blocks_fro ] Starting deep verification of already collected artifacts for the block range: 72 : 62. Any reported problem during this process means that the artifacts don't match the block_log.
+2025-06-18T10:36:52  block_log_artifacts.cpp:766  verify_if_blocks_fro ] Artifacts file matches block_log file.
+2025-06-18T10:36:52  block_log_artifacts.cpp:227  close                ] Closing a block log artifact file: /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001.artifacts file...
+2025-06-18T10:36:52  block_log_artifacts.cpp:237  close                ] Block log artifact file closed.
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:511  shutdown             ] shutting down worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:516  shutdown             ] worker threads successfully shut down
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:511  shutdown             ] shutting down worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:516  shutdown             ] worker threads successfully shut down

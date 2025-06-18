@@ -1,0 +1,10 @@
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:141  lazy_init            ] Emplacing worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:153  lazy_init            ] Emplacing worker threads done
+2025-06-18T10:36:52  block_log_util.cpp:1305  main                 ] block_log_util will perform get-head-block-number operation on block_log: /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001
+2025-06-18T10:36:52  block_log.cpp:231  open                 ] Opening blocklog /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001 in read only mode ...
+2025-06-18T10:36:52  block_log.cpp:285  open                 ] my->block_log_size: 25867 
+2025-06-18T10:36:52  block_log_util.cpp:616  get_head_block_numbe ] /workspace/clive/tests/clive-local-tools/clive_local_tools/testnet_block_log/block_log_with_config/block_log_part.0001 head block number: 73
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:511  shutdown             ] shutting down worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:516  shutdown             ] worker threads successfully shut down
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:511  shutdown             ] shutting down worker threads
+2025-06-18T10:36:52  blockchain_worker_thread_pool.cpp:516  shutdown             ] worker threads successfully shut down
