@@ -9,6 +9,7 @@ from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
+from clive.__private.logger import logger
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
@@ -29,6 +30,7 @@ from clive.__private.ui.widgets.inputs.authority_input import AuthorityInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthority
+from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -137,39 +139,39 @@ class AuthorityRoles(SectionScrollable):
     def body(self) -> SectionBody:
         return self.query_exactly_one(SectionBody)
 
-    async def build(self, authorities: list[WaxAccountAuthorityInfo]) -> None:
+    async def build(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
         await self.body.mount_all(
-            [AccountCollapsible(authority) for authority in authorities]
+            [AccountCollapsible(operation) for operation in authority_operations]
             + [NoContentAvailable("There are no authorities that match filter criteria.")]
         )
 
-    async def rebuild(self, authorities: list[WaxAccountAuthorityInfo]) -> None:
+    async def rebuild(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
         await self.body.query("*").remove()
-        await self.build(authorities)
+        await self.build(authority_operations)
 
 
 class AccountCollapsible(CliveCollapsible):
     def __init__(
         self,
-        authority: WaxAccountAuthorityInfo,
+        operation: AccountAuthorityUpdateOperation,
         *,
         collapsed: bool = False,
     ) -> None:
         widgets_to_mount = []
 
-        for authority_type in ["owner", "active", "posting"]:
-            wax_authority = getattr(authority.authorities, authority_type)
-            widgets_to_mount.append(AuthorityType(wax_authority, title=authority_type, collapsed=collapsed))
+        for role in operation.categories.hive:
+            if role.level != "memo":
+                    widgets_to_mount.append(AuthorityType(role.value, title=role.level, collapsed=collapsed))
 
-        memo_key = authority.memo_key
-        widgets_to_mount.append(AuthorityType(memo_key, title="memo key", collapsed=collapsed))
+            else:
+                widgets_to_mount.append(AuthorityType(role.value, title="memo key", collapsed=collapsed))
 
-        super().__init__(*widgets_to_mount, title=authority.account, collapsed=collapsed)
-        self._authority = authority
+        super().__init__(*widgets_to_mount, title=operation.categories.hive.account, collapsed=collapsed)
+        # self._authority = authority
 
-    @property
-    def wax_authority_info(self) -> WaxAccountAuthorityInfo:
-        return self._authority
+    # @property
+    # def wax_authority_info(self) -> WaxAccountAuthorityInfo:
+    #     return self._authority
 
 
 class AuthorityType(CliveCollapsible, CliveWidget):
@@ -342,13 +344,14 @@ class Authority(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._authorities: list[WaxAccountAuthorityInfo] = []
+        # self._authorities: list[WaxAccountAuthorityInfo] = []
+        self._authority_operations: list[AccountAuthorityUpdateOperation] = []
         self._filter_pattern_already_applied: bool = False
 
     async def on_mount(self) -> None:
         await self._collect_authorities()
         self._update_input_suggestions()
-        await self.authority_roles.build(self._authorities)
+        await self.authority_roles.build(self._authority_operations)
         self._update_display_inside_authority_roles()
 
     def compose(self) -> ComposeResult:
@@ -425,10 +428,25 @@ class Authority(TabPane, CliveWidget):
         tracked_accounts = self.profile.accounts.tracked
 
         for account in tracked_accounts:
-            account_authority = (
-                await self.world.commands.collect_account_authorities(account_name=account.name)
-            ).result_or_raise
-            self._authorities.append(account_authority)
+            authority_operation = await AccountAuthorityUpdateOperation.create_for(self.world.wax_interface, account.name)
+            self._authority_operations.append(authority_operation)
+            logger.debug(f"MEMO ROLE OVERALL: {authority_operation.roles.memo}")
+            logger.debug(f"MEMO ROLE VALUE: {authority_operation.roles.memo.value}")
+
+            # logger.debug(f"ACTIVE ROLE OVERALL: {authority_operation.roles.active.value.key_auths}")
+            # logger.debug(f"ACTIVE ROLE KEYS: {authority_operation.roles.active.value.key_auths.keys()}")
+            # logger.debug(f"ACTIVE ROLE ITEMS    : {authority_operation.roles.active.value.key_auths.items()}")
+            # logger.debug(f"ACTIVE ROLE: {authority_operation.roles.active.value.account_auths}")
+            # logger.debug(f"ACTIVE ROLE: {authority_operation.roles.active.has}")
+            
+            # logger.debug(f"ACTIVE ROLE: {authority_operation.roles.active.level}")
+            # logger.debug(f"ACTIVE ROLE: {authority_operation.categories.hive.account}")
+
+            # account_authority = (
+            #     await self.world.commands.collect_account_authorities(account_name=account.name)
+            # ).result_or_raise
+            # self._authorities.append(account_authority)
+            
 
     def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:  # noqa: C901
         """Iterate through widgets in AuthorityRoles and update their display properties."""
@@ -501,10 +519,17 @@ class Authority(TabPane, CliveWidget):
         filter_authority = self.filter_authority
 
         options_selected_in_filter = filter_authority.selected_options
-        for authority in self._authorities:
-            if authority.account in options_selected_in_filter:
-                for collected_entry in WaxAuthorityWrapper(authority).collect_all_entries():
-                    input_suggestions.add(collected_entry)
+        # TODO: CHECK IF IT WORKS
+        for operation in self._authority_operations:
+            if operation.categories.hive.account in options_selected_in_filter:
+                for role in operation.categories.hive:
+                    if role.level != "memo":
+                        for key in (role.value.key_auths, role.value.account_auths):
+                            suggestion_to_add = list(key.keys())
+                            if len(suggestion_to_add) >= 1:
+                                input_suggestions.add(*suggestion_to_add)
+                    else:
+                        input_suggestions.add(role.value)
 
         input_suggestions.update(self.profile.keys.get_all_aliases())
         filter_authority.authority_input.clear_suggestions()
@@ -512,7 +537,7 @@ class Authority(TabPane, CliveWidget):
 
     async def _rebuild_authority_roles(self) -> None:
         with self.app.batch_update():
-            await self.authority_roles.rebuild(self._authorities)
+            await self.authority_roles.rebuild(self._authority_operations)
 
             # somehow after mounting widgets inside authority roles body scroll is moved down, so focus first mounted
             # account collapsible title (and move the scroll by it) then refocus previously focused widget.
