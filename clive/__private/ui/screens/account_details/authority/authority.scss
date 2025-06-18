@@ -28,7 +28,6 @@ Authority {
     AuthorityType {
       background-tint: $foreground 10%;
       margin-bottom: 1;
-      padding: 0 0 0 1;
 
       &:focus-within {
         background-tint: $foreground 20%;
