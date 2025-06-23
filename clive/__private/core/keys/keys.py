@@ -31,6 +31,9 @@ class Key(ABC):
             return self.value == other.value
         return super().__eq__(other)
 
+    def __hash__(self) -> int:
+        return hash(self.value)
+
     @abstractmethod
     def with_alias(self, alias: str) -> KeyAliased:
         """
@@ -100,6 +103,9 @@ class PublicKey(Key):
             )
         return super().__eq__(other)
 
+    def __hash__(self) -> int:
+        return super().__hash__()
+
     def with_alias(self, alias: str) -> PublicKeyAliased:
         return PublicKeyAliased(alias=alias, value=self.value)
 
@@ -139,6 +145,9 @@ class PrivateKey(Key):
         if isinstance(other, str):
             return self.value == other or self.calculate_public_key() == other
         return super().__eq__(other)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     @staticmethod
     @overload
