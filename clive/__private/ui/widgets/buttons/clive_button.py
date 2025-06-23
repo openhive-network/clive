@@ -102,7 +102,7 @@ class CliveButton(Button, CliveWidget):
     }
     """
 
-    variant: reactive[CliveButtonVariant]  # type: ignore[assignment]
+    variant: reactive[CliveButtonVariant]
 
     def __init__(
         self,

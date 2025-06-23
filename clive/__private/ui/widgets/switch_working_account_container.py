@@ -34,10 +34,10 @@ class AccountRadioButton(CliveRadioButton):
         )
 
     def remove_working_account_label(self) -> None:
-        self.label = self.account.name  # type: ignore[assignment]
+        self.label = self.account.name
 
     def set_working_account_label(self) -> None:
-        self.label = self._create_button_label(is_working=True)  # type: ignore[assignment]
+        self.label = self._create_button_label(is_working=True)
 
     def _create_button_label(self, *, is_working: bool) -> str:
         return f"{self.account.name} {self.WORKING_ACCOUNT_IDENTIFIER if is_working else ''}"
