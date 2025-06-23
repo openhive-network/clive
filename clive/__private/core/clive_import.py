@@ -13,6 +13,6 @@ def get_clive() -> type[Clive]:
     Returns:
         The Clive class.
     """
-    from clive.__private.ui.app import Clive
+    from clive.__private.ui.app import Clive  # noqa: PLC0415
 
     return Clive

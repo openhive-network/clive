@@ -13,7 +13,7 @@ async def show_pending_withdrawals(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show pending withdrawals from savings initiated by transfer_from_savings operation."""
-    from clive.__private.cli.commands.show.show_pending_withdrawals import ShowPendingWithdrawals
+    from clive.__private.cli.commands.show.show_pending_withdrawals import ShowPendingWithdrawals  # noqa: PLC0415
 
     await ShowPendingWithdrawals(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
@@ -26,7 +26,7 @@ async def show_pending_power_ups(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Vesting account balance is changed immediately after power up but it takes 1 month to affect governance voting power."""  # noqa: E501
-    from clive.__private.cli.commands.show.show_pending_power_ups import ShowPendingPowerUps
+    from clive.__private.cli.commands.show.show_pending_power_ups import ShowPendingPowerUps  # noqa: PLC0415
 
     await ShowPendingPowerUps(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -37,7 +37,7 @@ async def show_pending_power_down(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Power down takes place every week for 13 weeks after power down operation."""
-    from clive.__private.cli.commands.show.show_pending_power_down import ShowPendingPowerDown
+    from clive.__private.cli.commands.show.show_pending_power_down import ShowPendingPowerDown  # noqa: PLC0415
 
     await ShowPendingPowerDown(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -48,7 +48,9 @@ async def show_pending_removed_delegations(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """When a vesting shares delegation is removed, the delegated vesting shares are frozen for five days."""
-    from clive.__private.cli.commands.show.show_pending_removed_delegations import ShowPendingRemovedDelegations
+    from clive.__private.cli.commands.show.show_pending_removed_delegations import (  # noqa: PLC0415
+        ShowPendingRemovedDelegations,
+    )
 
     await ShowPendingRemovedDelegations(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)

@@ -47,7 +47,7 @@ def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: AR
         *args: Additional positional arguments.
         **kwargs: Additional keyword arguments.
     """
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
+    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate  # noqa: PLC0415
 
     assert isinstance(ctx.obj, ProcessAccountUpdate), (
         f"{ctx.command_path} context object is not instance of ProcessAccountUpdate"
@@ -61,7 +61,7 @@ def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: AR
 
 
 def _get_update_command_from_context_parent(ctx: typer.Context) -> ProcessAccountUpdate:
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
+    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate  # noqa: PLC0415
 
     assert ctx.parent, f"{ctx.command_path} context parent does not exist"
     update_command = ctx.parent.obj
@@ -108,7 +108,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Add account authority with weight."""
-        from clive.__private.cli.commands.process.process_account_update import add_account, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            add_account,
+            update_authority,
+        )
 
         add_account_function = partial(add_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_account_function)
@@ -125,7 +128,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Add key authority with weight."""
-        from clive.__private.cli.commands.process.process_account_update import add_key, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            add_key,
+            update_authority,
+        )
 
         add_key_function = partial(add_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_key_function)
@@ -141,7 +147,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove account authority."""
-        from clive.__private.cli.commands.process.process_account_update import remove_account, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            remove_account,
+            update_authority,
+        )
 
         remove_account_function = partial(remove_account, account=account)
         update_function = partial(update_authority, attribute=authority, callback=remove_account_function)
@@ -157,7 +166,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove key authority."""
-        from clive.__private.cli.commands.process.process_account_update import remove_key, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            remove_key,
+            update_authority,
+        )
 
         remove_key_function = partial(remove_key, key=key)
         update_function = partial(update_authority, attribute=authority, callback=remove_key_function)
@@ -174,7 +186,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing account authority."""
-        from clive.__private.cli.commands.process.process_account_update import modify_account, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            modify_account,
+            update_authority,
+        )
 
         modify_account_function = partial(modify_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_account_function)
@@ -191,7 +206,10 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing key authority."""
-        from clive.__private.cli.commands.process.process_account_update import modify_key, update_authority
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+            modify_key,
+            update_authority,
+        )
 
         modify_key_function = partial(modify_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_key_function)
@@ -212,7 +230,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         save_file: str | None = options.save_file,
     ) -> None:
         """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
-        from clive.__private.cli.commands.process.process_account_update import (
+        from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
             ProcessAccountUpdate,
             set_threshold,
             update_authority,

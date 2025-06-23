@@ -54,7 +54,7 @@ async def transfer(  # noqa: PLR0913
     save_file: str | None = options.save_file,
 ) -> None:
     """Transfer some funds to another account."""
-    from clive.__private.cli.commands.process.transfer import Transfer
+    from clive.__private.cli.commands.process.transfer import Transfer  # noqa: PLC0415
 
     amount_ = cast("Asset.LiquidT", amount)
     await Transfer(
@@ -93,7 +93,7 @@ async def process_transaction(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Process a transaction from file."""
-    from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
+    from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
 
     if isinstance(already_signed_mode, Enum):
         already_signed_mode = already_signed_mode.value
@@ -123,7 +123,10 @@ async def process_update_memo_key(
     save_file: str | None = options.save_file,
 ) -> None:
     """Set memo key."""
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate, set_memo_key
+    from clive.__private.cli.commands.process.process_account_update import (  # noqa: PLC0415
+        ProcessAccountUpdate,
+        set_memo_key,
+    )
 
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
 

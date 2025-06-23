@@ -170,7 +170,7 @@ class SafeSettings:
             return self._parent._get_url(SECRETS_NODE_ADDRESS)
 
         def _get_secrets_default_private_key(self) -> str | None:
-            from clive.__private.core.keys import PrivateKey
+            from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
             setting_name = SECRETS_DEFAULT_PRIVATE_KEY
             value = self._parent._get_value_from_settings(setting_name, "")
@@ -324,7 +324,7 @@ class SafeSettings:
             return remote_handle_settings
 
         def _get_node_chain_id(self) -> str | None:
-            from clive.__private.models.schemas import ChainId, is_matching_model
+            from clive.__private.models.schemas import ChainId, is_matching_model  # noqa: PLC0415
 
             setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")
@@ -433,7 +433,7 @@ class SafeSettings:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
     def _get_number(self, setting_name: str, *, default: float | None = None, minimum: float | None = None) -> float:
-        from textual.validation import Number
+        from textual.validation import Number  # noqa: PLC0415
 
         value = self._get_value_from_settings(setting_name, default=default)
         value_ = str(value)

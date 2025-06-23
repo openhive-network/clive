@@ -109,7 +109,7 @@ async def cli_tester(
     Environment variable for beekeeper remote address is set.
     """
     # import cli after default values for options/arguments are set
-    from clive.__private.cli.main import cli
+    from clive.__private.cli.main import cli  # noqa: PLC0415
 
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)

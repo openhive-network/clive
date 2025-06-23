@@ -106,7 +106,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
     @on(LoadFromFileButton.Pressed)
     @on(LoadFromFileOneLineButton.Pressed)
     def action_load_from_file(self) -> None:
-        from clive.__private.ui.dialogs import LoadKeyFromFileDialog
+        from clive.__private.ui.dialogs import LoadKeyFromFileDialog  # noqa: PLC0415
 
         def load_key_into_input(loaded_private_key: PrivateKey | None) -> None:
             if loaded_private_key is None:

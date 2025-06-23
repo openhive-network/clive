@@ -24,7 +24,7 @@ async def process_vote_proposal_add(
     save_file: str | None = options.save_file,
 ) -> None:
     """Vote for a proposal."""
-    from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
+    from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal  # noqa: PLC0415
 
     await ProcessVoteProposal(
         account_name=account_name,
@@ -45,7 +45,7 @@ async def process_vote_proposal_remove(
     save_file: str | None = options.save_file,
 ) -> None:
     """Unvote proposal."""
-    from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
+    from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal  # noqa: PLC0415
 
     await ProcessVoteProposal(
         account_name=account_name,

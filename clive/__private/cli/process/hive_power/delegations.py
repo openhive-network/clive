@@ -31,7 +31,7 @@ async def process_delegations_set(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
-    from clive.__private.cli.commands.process.process_delegations import ProcessDelegations
+    from clive.__private.cli.commands.process.process_delegations import ProcessDelegations  # noqa: PLC0415
 
     amount_ = cast("Asset.VotingT", amount)
     operation = ProcessDelegations(
@@ -55,7 +55,7 @@ async def process_delegations_remove(
     save_file: str | None = options.save_file,
 ) -> None:
     """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
-    from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove
+    from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove  # noqa: PLC0415
 
     operation = ProcessDelegationsRemove(
         delegator=account_name,

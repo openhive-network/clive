@@ -21,6 +21,6 @@ async def set_node(
     node_address_option: str | None = argument_related_options.node_address,
 ) -> None:
     """Set the node address for the profile."""
-    from clive.__private.cli.commands.configure.node import SetNode
+    from clive.__private.cli.commands.configure.node import SetNode  # noqa: PLC0415
 
     await SetNode(node_address=EnsureSingleValue("node-address").of(node_address, node_address_option)).run()

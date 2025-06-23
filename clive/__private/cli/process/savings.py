@@ -25,7 +25,7 @@ async def process_deposit(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Immediately deposit funds to savings account."""
-    from clive.__private.cli.commands.process.process_deposit import ProcessDeposit
+    from clive.__private.cli.commands.process.process_deposit import ProcessDeposit  # noqa: PLC0415
 
     amount_ = cast("Asset.LiquidT", amount)
 
@@ -58,7 +58,7 @@ async def process_withdrawal(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
-    from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal
+    from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal  # noqa: PLC0415
 
     amount_ = cast("Asset.LiquidT", amount)
     await ProcessWithdrawal(
@@ -83,7 +83,7 @@ async def process_withdrawal_cancel(
     save_file: str | None = options.save_file,
 ) -> None:
     """Cancel previously initiated withdrawal from savings account."""
-    from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel
+    from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel  # noqa: PLC0415
 
     await ProcessWithdrawalCancel(
         from_account=from_account,

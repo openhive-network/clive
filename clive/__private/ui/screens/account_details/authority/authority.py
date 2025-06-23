@@ -129,7 +129,7 @@ class RemovePrivateKeyButton(PrivateKeyActionButton):
 
     @on(Pressed)
     def remove_private_key(self, event: RemovePrivateKeyButton.Pressed) -> None:
-        from clive.__private.ui.dialogs import RemoveKeyAliasDialog
+        from clive.__private.ui.dialogs import RemoveKeyAliasDialog  # noqa: PLC0415
 
         assert isinstance(event.button, RemovePrivateKeyButton), "Incompatible type of button."
         self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)

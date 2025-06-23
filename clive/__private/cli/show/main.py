@@ -24,7 +24,7 @@ show.add_typer(pending)
 @show.command("profiles")
 async def show_profiles() -> None:
     """Show all stored profiles."""
-    from clive.__private.cli.commands.show.show_profiles import ShowProfiles
+    from clive.__private.cli.commands.show.show_profiles import ShowProfiles  # noqa: PLC0415
 
     await ShowProfiles().run()
 
@@ -32,7 +32,7 @@ async def show_profiles() -> None:
 @show.command(name="profile")
 async def show_profile() -> None:
     """Show profile information."""
-    from clive.__private.cli.commands.show.show_profile import ShowProfile
+    from clive.__private.cli.commands.show.show_profile import ShowProfile  # noqa: PLC0415
 
     await ShowProfile().run()
 
@@ -40,7 +40,7 @@ async def show_profile() -> None:
 @show.command(name="accounts")
 async def show_accounts() -> None:
     """Show all accounts stored in the profile."""
-    from clive.__private.cli.commands.show.show_accounts import ShowAccounts
+    from clive.__private.cli.commands.show.show_accounts import ShowAccounts  # noqa: PLC0415
 
     await ShowAccounts().run()
 
@@ -48,7 +48,7 @@ async def show_accounts() -> None:
 @show.command(name="keys")
 async def show_keys() -> None:
     """Show all the public keys stored in Clive."""
-    from clive.__private.cli.commands.show.show_keys import ShowKeys
+    from clive.__private.cli.commands.show.show_keys import ShowKeys  # noqa: PLC0415
 
     await ShowKeys().run()
 
@@ -59,7 +59,7 @@ async def show_balances(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show balances of the selected account."""
-    from clive.__private.cli.commands.show.show_balances import ShowBalances
+    from clive.__private.cli.commands.show.show_balances import ShowBalances  # noqa: PLC0415
 
     await ShowBalances(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -67,7 +67,7 @@ async def show_balances(
 @show.command(name="node")
 async def show_node() -> None:
     """Show address of the currently selected node."""
-    from clive.__private.cli.commands.show.show_node import ShowNode
+    from clive.__private.cli.commands.show.show_node import ShowNode  # noqa: PLC0415
 
     await ShowNode().run()
 
@@ -83,7 +83,7 @@ async def show_transaction_status(
     transaction_id_option: str | None = argument_related_options.transaction_id,
 ) -> None:
     """Print status of a specific transaction."""
-    from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
+    from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus  # noqa: PLC0415
 
     await ShowTransactionStatus(
         transaction_id=EnsureSingleValue("transaction-id").of(transaction_id, transaction_id_option)
@@ -122,7 +122,7 @@ async def show_proxy(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show proxy of selected account."""
-    from clive.__private.cli.commands.show.show_proxy import ShowProxy
+    from clive.__private.cli.commands.show.show_proxy import ShowProxy  # noqa: PLC0415
 
     await ShowProxy(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
@@ -145,7 +145,7 @@ async def show_witnesses(
     page_no: int = witnesses_page_no,
 ) -> None:
     """List witnesses and votes of selected account."""
-    from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses
+    from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses  # noqa: PLC0415
 
     await ShowWitnesses(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
@@ -163,7 +163,7 @@ async def show_witness(
     name_option: str | None = argument_related_options.name,
 ) -> None:
     """Show details of a specified witness."""
-    from clive.__private.cli.commands.show.show_witness import ShowWitness
+    from clive.__private.cli.commands.show.show_witness import ShowWitness  # noqa: PLC0415
 
     await ShowWitness(
         name=EnsureSingleValue("name").of(name, name_option),
@@ -196,7 +196,7 @@ async def show_proposals(  # noqa: PLR0913
     page_no: int = proposals_page_no,
 ) -> None:
     """List proposals filtered by status."""
-    from clive.__private.cli.commands.show.show_proposals import ShowProposals
+    from clive.__private.cli.commands.show.show_proposals import ShowProposals  # noqa: PLC0415
 
     assert isinstance(order_by, Enum), f"Expected Enum type, but got: {type(order_by)}"
     assert isinstance(order_direction, Enum), f"Expected Enum type, but got: {type(order_by)}"
@@ -229,7 +229,7 @@ async def show_proposal(
     proposal_id_option: int | None = argument_related_options.proposal_id,
 ) -> None:
     """Show details of a specified proposal."""
-    from clive.__private.cli.commands.show.show_proposal import ShowProposal
+    from clive.__private.cli.commands.show.show_proposal import ShowProposal  # noqa: PLC0415
 
     await ShowProposal(
         proposal_id=EnsureSingleValue[int]("proposal-id").of(proposal_id, proposal_id_option),
@@ -242,7 +242,7 @@ async def show_owner_authority(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display owner authority of selected account."""
-    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority  # noqa: PLC0415
 
     await ShowAuthority(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
@@ -256,7 +256,7 @@ async def show_active_authority(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display active authority of selected account."""
-    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority  # noqa: PLC0415
 
     await ShowAuthority(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
@@ -270,7 +270,7 @@ async def show_posting_authority(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display posting authority of selected account."""
-    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority  # noqa: PLC0415
 
     await ShowAuthority(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
@@ -284,7 +284,7 @@ async def show_memo_key(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display memo key of selected account."""
-    from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
+    from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey  # noqa: PLC0415
 
     await ShowMemoKey(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -292,7 +292,7 @@ async def show_memo_key(
 @show.command(name="chain")
 async def show_chain() -> None:
     """Fetch from blockchain and display chain info."""
-    from clive.__private.cli.commands.show.show_chain import ShowChain
+    from clive.__private.cli.commands.show.show_chain import ShowChain  # noqa: PLC0415
 
     await ShowChain().run()
 
@@ -303,7 +303,7 @@ async def show_hive_power(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show info about hive power related to account including delegations and withdraw routes."""
-    from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
+    from clive.__private.cli.commands.show.show_hive_power import ShowHivePower  # noqa: PLC0415
 
     await ShowHivePower(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -318,7 +318,7 @@ async def show_new_account_token(
 
     To get account creation fee use command `clive show chain`.
     """
-    from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
+    from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken  # noqa: PLC0415
 
     await ShowNewAccountToken(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -329,7 +329,7 @@ async def show_transfer_schedule(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain information about recurrent transfers of selected account."""
-    from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
+    from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule  # noqa: PLC0415
 
     await ShowTransferSchedule(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -340,6 +340,6 @@ async def show_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Show information about given account."""
-    from clive.__private.cli.commands.show.show_account import ShowAccount
+    from clive.__private.cli.commands.show.show_account import ShowAccount  # noqa: PLC0415
 
     await ShowAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

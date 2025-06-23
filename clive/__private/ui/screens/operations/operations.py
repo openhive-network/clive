@@ -60,7 +60,11 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        from clive.__private.ui.screens.operations import HivePowerManagement, Savings, TransferToAccount
+        from clive.__private.ui.screens.operations import (  # noqa: PLC0415
+            HivePowerManagement,
+            Savings,
+            TransferToAccount,
+        )
 
         yield BigTitle("operations")
         with ScrollablePartWithArrowBinding():

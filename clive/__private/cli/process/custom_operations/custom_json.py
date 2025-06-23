@@ -38,7 +38,7 @@ async def process_custom_json(  # noqa: PLR0913
     save_file: str | None = options.save_file,
 ) -> None:
     """Send custom json operation, json can be provided as string or file."""
-    from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson
+    from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson  # noqa: PLC0415
 
     operation = ProcessCustomJson(
         id_=id_,

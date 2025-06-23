@@ -135,7 +135,7 @@ class AccountScheduledTransferData:
         return len(self.filter_by_receiver(receiver)) > 1
 
     def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
-        import operator
+        import operator  # noqa: PLC0415
 
         _assert_sort_by_members_in_class_members(sort_by, ScheduledTransfer)
 
@@ -206,7 +206,7 @@ class AccountFutureScheduledTransferData:
     def sorted_by(
         self, sort_by: list[AllowedFutureSorts], *, descending: bool = False
     ) -> AccountFutureScheduledTransferData:
-        import operator
+        import operator  # noqa: PLC0415
 
         _assert_sort_by_members_in_class_members(sort_by, FutureScheduledTransfer)
 

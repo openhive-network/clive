@@ -69,7 +69,9 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
-    from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
+    from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
+        ProcessTransferScheduleCreate,
+    )
 
     await ProcessTransferScheduleCreate(
         from_account=from_account,
@@ -105,7 +107,9 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
 
     If you change the frequency, the first execution after modification is update date + frequency.
     """
-    from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleModify
+    from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
+        ProcessTransferScheduleModify,
+    )
 
     await ProcessTransferScheduleModify(
         from_account=from_account,
@@ -132,7 +136,9 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     save_file: str | None = options.save_file,
 ) -> None:
     """Remove an existing recurrent transfer."""
-    from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove
+    from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
+        ProcessTransferScheduleRemove,
+    )
 
     await ProcessTransferScheduleRemove(
         from_account=from_account,

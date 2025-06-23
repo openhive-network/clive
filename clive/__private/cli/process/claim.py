@@ -29,7 +29,9 @@ async def process_claim_new_account_token(
     save_file: str | None = options.save_file,
 ) -> None:
     """Obtain account creation token, pay either with HIVE or RC."""
-    from clive.__private.cli.commands.process.process_claim_new_account_token import ProcessClaimNewAccountToken
+    from clive.__private.cli.commands.process.process_claim_new_account_token import (  # noqa: PLC0415
+        ProcessClaimNewAccountToken,
+    )
 
     fee_ = cast("Asset.Hive", fee) if fee else None
     await ProcessClaimNewAccountToken(

@@ -70,7 +70,7 @@ class FixAlarmInfoWidget(CliveWidget):
 
     @on(OneLineButton.Pressed, "#harmless-button")
     def mark_alarm_as_harmless(self) -> None:
-        from clive.__private.ui.dialogs import MarkAlarmAsHarmlessDialog
+        from clive.__private.ui.dialogs import MarkAlarmAsHarmlessDialog  # noqa: PLC0415
 
         self.app.push_screen(MarkAlarmAsHarmlessDialog(self._alarm))
 

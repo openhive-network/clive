@@ -37,8 +37,8 @@ def main(
     ),
 ) -> None:
     if version:
-        from clive import __version__
-        from clive.__private.storage.storage_history import StorageHistory
+        from clive import __version__  # noqa: PLC0415
+        from clive.__private.storage.storage_history import StorageHistory  # noqa: PLC0415
 
         typer.echo(f"Clive version: {__version__}")
         typer.echo(f"Storage model revision: {StorageHistory.get_latest_revision()}")
@@ -69,7 +69,7 @@ async def unlock(
 
     By default unlock is permanent and has no timeout.
     """
-    from clive.__private.cli.commands.unlock import Unlock
+    from clive.__private.cli.commands.unlock import Unlock  # noqa: PLC0415
 
     await Unlock(
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option, allow_none=True),
@@ -85,7 +85,7 @@ async def lock() -> None:
 
     Locks all wallets in beekeeper session.
     """
-    from clive.__private.cli.commands.lock import Lock
+    from clive.__private.cli.commands.lock import Lock  # noqa: PLC0415
 
     await Lock().run()
 
@@ -93,6 +93,6 @@ async def lock() -> None:
 @cli.command(name="init", hidden=True)
 async def init() -> None:
     """Initialize Clive environment and configuration."""
-    from clive.__private.cli.commands.init import Init
+    from clive.__private.cli.commands.init import Init  # noqa: PLC0415
 
     await Init().run()

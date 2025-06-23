@@ -667,7 +667,7 @@ class CLICommands(Commands["CLIWorld"]):
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
     def _notify(self, message: str, *, level: NotifyLevel = "info") -> None:
-        from clive.__private.cli.notify import notify
+        from clive.__private.cli.notify import notify  # noqa: PLC0415
 
         notify(message, level=level)
 

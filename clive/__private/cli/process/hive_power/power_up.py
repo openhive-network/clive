@@ -27,7 +27,7 @@ async def process_power_up(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Perform power-up by sending transfer_to_vesting_operation."""
-    from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp
+    from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp  # noqa: PLC0415
 
     amount_ = cast("Asset.Hive", amount)
     await ProcessPowerUp(

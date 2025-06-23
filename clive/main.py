@@ -20,12 +20,12 @@ def main() -> None:
             return
 
         if not _is_cli_requested():
-            from clive.__private.cli.exceptions import CLIPrettyError
+            from clive.__private.cli.exceptions import CLIPrettyError  # noqa: PLC0415
 
             try:
                 run_tui()
             except CLIPrettyError as error:
-                from typer import rich_utils
+                from typer import rich_utils  # noqa: PLC0415
 
                 rich_utils.rich_format_error(error)
                 sys.exit(error.exit_code)

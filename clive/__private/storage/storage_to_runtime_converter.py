@@ -32,7 +32,7 @@ class StorageToRuntimeConverter:
         self._model = model
 
     def create_profile(self) -> Profile:
-        from clive.__private.core.profile import Profile
+        from clive.__private.core.profile import Profile  # noqa: PLC0415
 
         return Profile._create_instance(
             name=self._model.name,

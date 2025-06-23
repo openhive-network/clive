@@ -26,6 +26,6 @@ class AccountManagementReference(Vertical):
 
     @on(OneLineButton.Pressed, "#account-management-button")
     def push_account_list_management_screen(self) -> None:
-        from clive.__private.ui.screens.settings.account_management import AccountManagement
+        from clive.__private.ui.screens.settings.account_management import AccountManagement  # noqa: PLC0415
 
         self.app.push_screen(AccountManagement())

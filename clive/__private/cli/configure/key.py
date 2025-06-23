@@ -31,7 +31,7 @@ async def add_key(
     alias_option: str | None = argument_related_options.alias,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
-    from clive.__private.cli.commands.configure.key import AddKey
+    from clive.__private.cli.commands.configure.key import AddKey  # noqa: PLC0415
 
     await AddKey(
         key_or_path=EnsureSingleValue("key").of(key, key_option),
@@ -54,7 +54,7 @@ async def remove_key(
     ),
 ) -> None:
     """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
-    from clive.__private.cli.commands.configure.key import RemoveKey
+    from clive.__private.cli.commands.configure.key import RemoveKey  # noqa: PLC0415
 
     await RemoveKey(
         alias=EnsureSingleValue("alias").of(alias, alias_option),

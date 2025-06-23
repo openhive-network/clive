@@ -20,7 +20,7 @@ async def add_tracked_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Add an account to the tracked accounts."""
-    from clive.__private.cli.commands.configure.tracked_account import AddTrackedAccount
+    from clive.__private.cli.commands.configure.tracked_account import AddTrackedAccount  # noqa: PLC0415
 
     await AddTrackedAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -36,6 +36,6 @@ async def remove_tracked_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Remove an account from the tracked accounts."""
-    from clive.__private.cli.commands.configure.tracked_account import RemoveTrackedAccount
+    from clive.__private.cli.commands.configure.tracked_account import RemoveTrackedAccount  # noqa: PLC0415
 
     await RemoveTrackedAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

@@ -70,7 +70,7 @@ class Clive(App[int]):
         **kwargs: Keyword arguments for the App class.
     """
 
-    from clive import __version__
+    from clive import __version__  # noqa: PLC0415
 
     SUB_TITLE = __version__
 
@@ -457,7 +457,7 @@ class Clive(App[int]):
             raise AssertionError(f"Unexpected mode: {self.current_mode}")
 
     async def go_to_transaction_summary(self) -> None:
-        from clive.__private.ui.screens.transaction_summary import TransactionSummary
+        from clive.__private.ui.screens.transaction_summary import TransactionSummary  # noqa: PLC0415
 
         if not self.world.app_state.is_unlocked:
             return
@@ -526,7 +526,7 @@ class Clive(App[int]):
         super()._handle_exception(error)
 
     def _register_quit_signals(self) -> None:
-        import signal
+        import signal  # noqa: PLC0415
 
         def callback() -> None:
             self.exit()

@@ -22,6 +22,6 @@ async def switch_working_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Switch the working account."""
-    from clive.__private.cli.commands.configure.working_account import SwitchWorkingAccount
+    from clive.__private.cli.commands.configure.working_account import SwitchWorkingAccount  # noqa: PLC0415
 
     await SwitchWorkingAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

@@ -173,8 +173,8 @@ class Asset:
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
-        from clive.__private.core.formatters.humanize import humanize_validation_result
-        from clive.__private.validators.asset_amount_validator import AssetAmountValidator
+        from clive.__private.core.formatters.humanize import humanize_validation_result  # noqa: PLC0415
+        from clive.__private.validators.asset_amount_validator import AssetAmountValidator  # noqa: PLC0415
 
         match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
         if not match:

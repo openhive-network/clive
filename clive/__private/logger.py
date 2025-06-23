@@ -73,7 +73,7 @@ class Logger:
 
     @property
     def safe_settings_delayed(self) -> SafeSettings:
-        from clive.__private.settings import safe_settings
+        from clive.__private.settings import safe_settings  # noqa: PLC0415
 
         return safe_settings
 

@@ -26,7 +26,7 @@ async def set_chain_id(
 
     If not set, the one from node get_config api will be retrieved and set.
     """
-    from clive.__private.cli.commands.configure.chain_id import SetChainId
+    from clive.__private.cli.commands.configure.chain_id import SetChainId  # noqa: PLC0415
 
     await SetChainId(chain_id=EnsureSingleValue("chain-id").of(chain_id, chain_id_option)).run()
 
@@ -38,6 +38,6 @@ async def unset_chain_id() -> None:
 
     Will be dynamically set to the one from node get_config api when needed first time.
     """
-    from clive.__private.cli.commands.configure.chain_id import UnsetChainId
+    from clive.__private.cli.commands.configure.chain_id import UnsetChainId  # noqa: PLC0415
 
     await UnsetChainId().run()

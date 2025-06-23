@@ -28,6 +28,6 @@ class ProfileNameValidator(Validator):
         return all(char.isalnum() or char in self.ALLOWED_SPECIAL_CHARS for char in value)
 
     def _validate_profile_already_exists(self, value: str) -> bool:
-        from clive.__private.core.profile import Profile
+        from clive.__private.core.profile import Profile  # noqa: PLC0415
 
         return value not in Profile.list_profiles()

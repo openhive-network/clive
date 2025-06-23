@@ -27,7 +27,7 @@ async def create_profile(
 
     If new password is entered in terminal it must be repeated.
     """
-    from clive.__private.cli.commands.configure.profile import CreateProfile
+    from clive.__private.cli.commands.configure.profile import CreateProfile  # noqa: PLC0415
 
     await CreateProfile(
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option),
@@ -50,7 +50,7 @@ async def delete_profile(
     ),
 ) -> None:
     """Delete a profile."""
-    from clive.__private.cli.commands.configure.profile import DeleteProfile
+    from clive.__private.cli.commands.configure.profile import DeleteProfile  # noqa: PLC0415
 
     await DeleteProfile(
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option),

@@ -76,7 +76,7 @@ class Transaction(SchemasTransaction):
                 return
 
     def calculate_transaction_id(self) -> TransactionId:
-        from clive.__private.core import iwax
+        from clive.__private.core import iwax  # noqa: PLC0415
 
         return TransactionId(iwax.calculate_transaction_id(self))
 
@@ -117,7 +117,9 @@ class Transaction(SchemasTransaction):
         Returns:
             Account names from the transaction that are present in the bad accounts collection.
         """
-        from clive.__private.visitors.operation.potential_bad_account_collector import PotentialBadAccountCollector
+        from clive.__private.visitors.operation.potential_bad_account_collector import (  # noqa: PLC0415
+            PotentialBadAccountCollector,
+        )
 
         visitor = PotentialBadAccountCollector()
         self.accept(visitor)
@@ -133,7 +135,9 @@ class Transaction(SchemasTransaction):
         Returns:
             Account names from the transaction that are not present in the already known accounts collection.
         """
-        from clive.__private.visitors.operation.potential_known_account_collector import PotentialKnownAccountCollector
+        from clive.__private.visitors.operation.potential_known_account_collector import (  # noqa: PLC0415
+            PotentialKnownAccountCollector,
+        )
 
         visitor = PotentialKnownAccountCollector()
         self.accept(visitor)

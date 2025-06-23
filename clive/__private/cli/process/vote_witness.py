@@ -17,7 +17,7 @@ async def process_vote_witness_add(
     save_file: str | None = options.save_file,
 ) -> None:
     """Vote for a witness."""
-    from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
+    from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness  # noqa: PLC0415
 
     await ProcessVoteWitness(
         account_name=account_name,
@@ -38,7 +38,7 @@ async def process_vote_witness_remove(
     save_file: str | None = options.save_file,
 ) -> None:
     """Unvote witness."""
-    from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
+    from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness  # noqa: PLC0415
 
     await ProcessVoteWitness(
         account_name=account_name,

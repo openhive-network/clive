@@ -236,7 +236,7 @@ class TransactionSummary(BaseScreen):
         return ""
 
     async def _broadcast(self) -> None:
-        from clive.__private.ui.screens.dashboard import Dashboard
+        from clive.__private.ui.screens.dashboard import Dashboard  # noqa: PLC0415
 
         transaction = self.profile.transaction
 

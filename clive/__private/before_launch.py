@@ -30,7 +30,7 @@ def _initialize_user_settings() -> None:
 
 def _log_in_dev_mode() -> None:
     if is_in_dev_mode():
-        from rich.pretty import pretty_repr
+        from rich.pretty import pretty_repr  # noqa: PLC0415
 
         logger.warning("Running in development mode.")
         logger.debug(f"settings:\n{pretty_repr(settings.as_dict())}")

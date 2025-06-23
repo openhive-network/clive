@@ -169,23 +169,23 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @property
     def _is_current_screen_dashboard(self) -> bool:
-        from clive.__private.ui.screens.dashboard import Dashboard
+        from clive.__private.ui.screens.dashboard import Dashboard  # noqa: PLC0415
 
         return isinstance(self.app.screen, Dashboard)
 
     @property
     def _is_current_screen_account_management(self) -> bool:
-        from clive.__private.ui.screens.settings.account_management import AccountManagement
+        from clive.__private.ui.screens.settings.account_management import AccountManagement  # noqa: PLC0415
 
         return isinstance(self.app.screen, AccountManagement)
 
     def _push_switch_working_account_screen(self) -> None:
-        from clive.__private.ui.dialogs import SwitchWorkingAccountDialog
+        from clive.__private.ui.dialogs import SwitchWorkingAccountDialog  # noqa: PLC0415
 
         self.app.push_screen(SwitchWorkingAccountDialog())
 
     def _push_add_tracked_account_screen(self) -> None:
-        from clive.__private.ui.dialogs import AddTrackedAccountDialog
+        from clive.__private.ui.dialogs import AddTrackedAccountDialog  # noqa: PLC0415
 
         self.app.push_screen(AddTrackedAccountDialog())
 

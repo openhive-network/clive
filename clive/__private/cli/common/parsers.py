@@ -52,7 +52,11 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
         "Invalid value for '--amount': Invalid asset amount format: '5.0000000'. Reason: ['Invalid precision for HIVE.
           Must be <=3.']"
     """
-    from clive.__private.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
+    from clive.__private.models.asset import (  # noqa: PLC0415
+        Asset,
+        AssetAmountInvalidFormatError,
+        UnknownAssetTypeError,
+    )
 
     _allowed_assets: tuple[type[Asset.AnyT], ...] = allowed_assets  # type: ignore[assignment]
     allowed_symbols_message = f"Only {[Asset.get_symbol(allowed) for allowed in _allowed_assets]} are allowed."
@@ -70,13 +74,13 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
 
 
 def liquid_asset(raw: str) -> Asset.LiquidT:
-    from clive.__private.models.asset import Asset
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
 
     return _parse_asset(raw, *get_args(Asset.LiquidT))  # type: ignore[no-any-return]
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
-    from clive.__private.models.asset import Asset
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
 
     raw = raw.upper().replace("HP", "HIVE")
 
@@ -84,7 +88,7 @@ def voting_asset(raw: str) -> Asset.VotingT:
 
 
 def hive_asset(raw: str) -> Asset.Hive:
-    from clive.__private.models.asset import Asset
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
 
     return _parse_asset(raw, Asset.Hive)
 
@@ -114,7 +118,7 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     Returns:
         The parsed frequency.
     """
-    from clive.__private.core.formatters.humanize import humanize_validation_result
+    from clive.__private.core.formatters.humanize import humanize_validation_result  # noqa: PLC0415
 
     status = ScheduledTransferFrequencyValidator().validate(raw)
     if status.is_valid:

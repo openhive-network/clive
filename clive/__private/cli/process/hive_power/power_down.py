@@ -24,7 +24,7 @@ async def process_power_down_start(
 
     If there is power down in progress displays error.
     """
-    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownStart
+    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownStart  # noqa: PLC0415
 
     amount_ = cast("Asset.Hive", amount)
     operation = ProcessPowerDownStart(
@@ -50,7 +50,7 @@ async def process_power_down_restart(
 
     If there is power down in progress overrides it. If there is no power down in progress creates new.
     """
-    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDown
+    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDown  # noqa: PLC0415
 
     amount_ = cast("Asset.Hive", amount)
     operation = ProcessPowerDown(
@@ -67,7 +67,7 @@ async def process_power_down_cancel(
     save_file: str | None = options.save_file,
 ) -> None:
     """Stop power down by setting amount to 0."""
-    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel
+    from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel  # noqa: PLC0415
 
     operation = ProcessPowerDownCancel(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file)
     await operation.run()

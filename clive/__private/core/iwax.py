@@ -76,14 +76,14 @@ class WaxOperationFailedError(CliveError):
 
 
 def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
-    from clive.__private.models.asset import Asset
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
 
     asset_cls = Asset.resolve_nai(result.nai.decode())
     return asset_cls(amount=int(result.amount.decode()))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
-    from clive.__private.models.asset import Asset, UnknownAssetTypeError
+    from clive.__private.models.asset import Asset, UnknownAssetTypeError  # noqa: PLC0415
 
     match Asset.get_symbol(asset):
         case "HIVE" | "TESTS":
@@ -102,7 +102,7 @@ def __validate_wax_response(response: wax.python_result) -> None:
 
 
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
-    from clive.__private.models import Transaction
+    from clive.__private.models import Transaction  # noqa: PLC0415
 
     to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
     return to_serialize.json().encode()
@@ -135,7 +135,7 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 
 
 def deserialize_transaction(transaction: bytes) -> Transaction:
-    from clive.__private.models import Transaction
+    from clive.__private.models import Transaction  # noqa: PLC0415
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
@@ -143,7 +143,7 @@ def deserialize_transaction(transaction: bytes) -> Transaction:
 
 
 def calculate_public_key(wif: str) -> PublicKey:
-    from clive.__private.core.keys import PublicKey
+    from clive.__private.core.keys import PublicKey  # noqa: PLC0415
 
     result = wax.calculate_public_key(wif.encode())
     __validate_wax_response(result)
@@ -151,7 +151,7 @@ def calculate_public_key(wif: str) -> PublicKey:
 
 
 def generate_private_key() -> PrivateKey:
-    from clive.__private.core.keys import PrivateKey
+    from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
     result = wax.generate_private_key()
     __validate_wax_response(result)
@@ -262,7 +262,7 @@ def calculate_witness_votes_hp(votes: int, data: TotalVestingProtocol) -> Asset.
 def generate_password_based_private_key(
     password: str, role: str = "memo", account_name: str = "anything"
 ) -> PrivateKey:
-    from clive.__private.core.keys import PrivateKey
+    from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
     result = wax.generate_password_based_private_key(account_name.encode(), role.encode(), password.encode())
     return PrivateKey(value=result.wif_private_key.decode())

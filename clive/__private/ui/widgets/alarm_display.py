@@ -82,7 +82,7 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     @on(OneLineButton.Pressed, "#alarm-display-button")
     def push_account_details_screen(self) -> None:
-        from clive.__private.ui.screens.account_details.account_details import AccountDetails
+        from clive.__private.ui.screens.account_details.account_details import AccountDetails  # noqa: PLC0415
 
         def is_current_screen_account_details() -> bool:
             return isinstance(self.app.screen, AccountDetails)

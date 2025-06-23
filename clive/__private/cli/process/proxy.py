@@ -17,7 +17,7 @@ async def process_proxy_set(
     save_file: str | None = options.save_file,
 ) -> None:
     """Set a proxy or change an existing proxy."""
-    from clive.__private.cli.commands.process.process_proxy_set import ProcessProxySet
+    from clive.__private.cli.commands.process.process_proxy_set import ProcessProxySet  # noqa: PLC0415
 
     await ProcessProxySet(
         account_name=account_name,
@@ -36,6 +36,6 @@ async def process_proxy_clear(
     save_file: str | None = options.save_file,
 ) -> None:
     """Remove a proxy."""
-    from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear
+    from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear  # noqa: PLC0415
 
     await ProcessProxyClear(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file).run()

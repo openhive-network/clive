@@ -20,7 +20,7 @@ async def add_known_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Add an account to the list of known accounts."""
-    from clive.__private.cli.commands.configure.known_account import AddKnownAccount
+    from clive.__private.cli.commands.configure.known_account import AddKnownAccount  # noqa: PLC0415
 
     await AddKnownAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -36,7 +36,7 @@ async def remove_known_account(
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
     """Remove an account from the list of known accounts."""
-    from clive.__private.cli.commands.configure.known_account import RemoveKnownAccount
+    from clive.__private.cli.commands.configure.known_account import RemoveKnownAccount  # noqa: PLC0415
 
     await RemoveKnownAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
@@ -49,7 +49,7 @@ async def enable_known_accounts(
     CLI - If you want to broadcast an operation, you must first add the target account to the list of known accounts.
     TUI - The target account is added to the list of known accounts automatically after adding an operation to the cart.
     """  # noqa: D205
-    from clive.__private.cli.commands.configure.known_account import EnableKnownAccounts
+    from clive.__private.cli.commands.configure.known_account import EnableKnownAccounts  # noqa: PLC0415
 
     await EnableKnownAccounts().run()
 
@@ -63,6 +63,6 @@ async def disable_know_accounts(
     TUI - The target account is not added to the list of known accounts automatically\
  after adding an operation to the cart.
     """  # noqa: D205
-    from clive.__private.cli.commands.configure.known_account import DisableKnownAccounts
+    from clive.__private.cli.commands.configure.known_account import DisableKnownAccounts  # noqa: PLC0415
 
     await DisableKnownAccounts().run()

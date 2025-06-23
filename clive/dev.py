@@ -5,18 +5,18 @@ from clive.__private.settings import clive_prefixed_envvar
 
 
 def is_in_dev_mode() -> bool:
-    from clive.__private.settings import safe_settings
+    from clive.__private.settings import safe_settings  # noqa: PLC0415
 
     return safe_settings.dev.is_set
 
 
 def main() -> None:
-    import os
+    import os  # noqa: PLC0415
 
-    from rich.console import Console
-    from rich.style import Style
+    from rich.console import Console  # noqa: PLC0415
+    from rich.style import Style  # noqa: PLC0415
 
-    from clive.main import _is_cli_requested
+    from clive.main import _is_cli_requested  # noqa: PLC0415
 
     Console().print(
         "-- Running in development mode (NOT FOR DIRECT USAGE!) --",
@@ -24,16 +24,16 @@ def main() -> None:
     )
 
     if _is_cli_requested():  # don't run via textual_dev.run_app when CLI is requested (saves around 1s)
-        from clive.__private.settings import settings
-        from clive.main import main as production_main
+        from clive.__private.settings import settings  # noqa: PLC0415
+        from clive.main import main as production_main  # noqa: PLC0415
 
         settings.setenv("dev")
 
         production_main()
         return
 
-    from textual.features import parse_features
-    from textual_dev.tools.run import run_app
+    from textual.features import parse_features  # noqa: PLC0415
+    from textual_dev.tools.run import run_app  # noqa: PLC0415
 
     environment = dict(os.environ)
 
