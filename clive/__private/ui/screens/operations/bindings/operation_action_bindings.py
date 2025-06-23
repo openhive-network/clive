@@ -255,7 +255,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self._add_to_cart(operations_to_add)
             self._actions_after_adding_to_cart()
 
-        def cb(confirm: bool | None) -> None:
+        def cb(confirm: bool | None) -> None:  # noqa: FBT001
             if confirm:
                 add_operation_to_cart_and_perform_post_actions()
 
@@ -280,7 +280,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
             await self.app.push_screen(TransactionSummary())
 
-        async def cb(confirm: bool | None) -> None:
+        async def cb(confirm: bool | None) -> None:  # noqa: FBT001
             if confirm:
                 await finalize_and_perform_post_actions()
 

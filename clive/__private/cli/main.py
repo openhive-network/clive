@@ -32,7 +32,7 @@ if not is_tab_completion_active():
 
 @cli.callback(invoke_without_command=True)
 def main(
-    version: bool | None = typer.Option(
+    version: bool | None = typer.Option(  # noqa: FBT001
         None, "--version", "-V", help="Show the current version and exit.", is_eager=True
     ),
 ) -> None:

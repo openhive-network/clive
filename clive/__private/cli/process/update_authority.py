@@ -83,7 +83,10 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
 
 
 def modify_command_common_options(
-    ctx: typer.Context, sign: str | None, broadcast: bool | None, save_file: str | None
+    ctx: typer.Context,
+    sign: str | None,
+    broadcast: bool | None,  # noqa: FBT001
+    save_file: str | None,
 ) -> None:
     _get_update_command_from_context_parent(ctx).modify_common_options(
         sign=sign, broadcast=broadcast, save_file=save_file
@@ -104,7 +107,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         account: str = _authority_account_name,
         weight: int = _authority_weight,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Add account authority with weight."""
@@ -124,7 +127,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         key: str = _authority_key,
         weight: int = _authority_weight,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Add key authority with weight."""
@@ -143,7 +146,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         ctx: typer.Context,
         account: str = _authority_account_name,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove account authority."""
@@ -162,7 +165,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         ctx: typer.Context,
         key: str = _authority_key,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove key authority."""
@@ -182,7 +185,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         account: str = _authority_account_name,
         weight: int = _authority_weight,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing account authority."""
@@ -202,7 +205,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         key: str = _authority_key,
         weight: int = _authority_weight,
         sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,
+        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing key authority."""

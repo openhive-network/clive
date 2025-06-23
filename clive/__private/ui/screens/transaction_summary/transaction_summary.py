@@ -203,7 +203,7 @@ class TransactionSummary(BaseScreen):
             await self._rebuild_signatures_changed()
             self._update_subtitle()
 
-        async def update_metadata_cb(confirm: bool | None) -> None:
+        async def update_metadata_cb(confirm: bool | None) -> None:  # noqa: FBT001
             if confirm:
                 await refresh()
 

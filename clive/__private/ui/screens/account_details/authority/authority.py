@@ -99,7 +99,7 @@ class PrivateKeyActionButton(OneLineButton):
     def __init__(self, label: TextType, variant: CliveButtonVariant) -> None:
         super().__init__(label, variant)
 
-    def _key_aliases_changed_callback(self, confirm: bool | None) -> None:
+    def _key_aliases_changed_callback(self, confirm: bool | None) -> None:  # noqa: FBT001
         if confirm:
             self.post_message(self.KeyAliasesChanged())
 

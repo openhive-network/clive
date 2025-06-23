@@ -120,6 +120,6 @@ class Proxy(TabPane, CliveWidget):
     def _clear_proxy_input(self) -> None:
         self.new_proxy_input.clear_validation()
 
-    def _proxy_dialog_cb(self, confirm: bool | None) -> None:
+    def _proxy_dialog_cb(self, confirm: bool | None) -> None:  # noqa: FBT001
         if confirm:
             self._clear_proxy_input()

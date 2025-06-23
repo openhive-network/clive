@@ -191,7 +191,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
             self._action_manager.disable_action()
             self.post_message(self.Delete(self))
 
-        async def cb(confirm: bool | None) -> None:
+        async def cb(confirm: bool | None) -> None:  # noqa: FBT001
             if confirm:
                 post_message_and_disable_action()
 
@@ -235,7 +235,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
             index_change = -1 if direction == "up" else 1
             self.post_message(self.Move(from_index=self.operation_index, to_index=self.operation_index + index_change))
 
-        async def cb(confirm: bool | None) -> None:
+        async def cb(confirm: bool | None) -> None:  # noqa: FBT001
             if confirm:
                 post_message_and_disable_action()
 
