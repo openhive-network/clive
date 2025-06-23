@@ -6,6 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Checkbox
 
+from clive.__private.core.constants.tui.global_bindings import SHOW_HELP
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
@@ -28,7 +29,10 @@ class WorkingAccountCheckbox(Checkbox):
 
 
 class SetAccountFormScreen(BaseScreen, CreateProfileFormScreen):
-    BINDINGS = [Binding("f1", "help", "Help")]
+    BINDINGS = [
+        # help is a hidden global binding, but we want to show it here
+        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id),
+    ]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
 

@@ -8,11 +8,11 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.constants.tui.bindings import (
-    BROADCAST_TRANSACTION_BINDING_KEY,
-    LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
-    REFRESH_TRANSACTION_METADATA_BINDING_KEY,
-    SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
+from clive.__private.core.constants.tui.global_bindings import LOAD_TRANSACTION_FROM_FILE
+from clive.__private.core.constants.tui.transaction_summary_bindings import (
+    BROADCAST_TRANSACTION,
+    SAVE_TRANSACTION_TO_FILE,
+    UPDATE_TRANSACTION_METADATA,
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -62,7 +62,7 @@ class ButtonBroadcast(CliveButton):
         """Used to identify exactly that broadcast button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Broadcast ({BROADCAST_TRANSACTION_BINDING_KEY.upper()})", variant="success")
+        super().__init__(f"Broadcast ({self.app.bound_key_short(BROADCAST_TRANSACTION.id)})", variant="success")
 
 
 class ButtonSave(CliveButton):
@@ -72,7 +72,7 @@ class ButtonSave(CliveButton):
         """Used to identify exactly that save button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Save to file ({SAVE_TRANSACTION_TO_FILE_BINDING_KEY.upper()})")
+        super().__init__(f"Save to file ({self.app.bound_key_short(SAVE_TRANSACTION_TO_FILE.id)})")
 
 
 class ButtonOpenTransactionFromFile(CliveButton):
@@ -82,7 +82,7 @@ class ButtonOpenTransactionFromFile(CliveButton):
         """Used to identify exactly that open from file button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Open from file ({LOAD_TRANSACTION_FROM_FILE_BINDING_KEY.upper()})")
+        super().__init__(f"Open from file ({self.app.bound_key_short(LOAD_TRANSACTION_FROM_FILE.id)})")
 
 
 class ButtonContainer(Horizontal, CliveWidget):
@@ -152,7 +152,12 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "app.load_transaction_from_file", "Open transaction file"),
+        Binding(
+            LOAD_TRANSACTION_FROM_FILE.key,
+            "app.load_transaction_from_file",
+            "Open transaction file",
+            id=LOAD_TRANSACTION_FROM_FILE.id,
+        ),
     ]
     BIG_TITLE = "transaction summary"
 
@@ -279,18 +284,28 @@ class TransactionSummary(BaseScreen):
         return self.key_container.selected_key
 
     def _update_bindings(self) -> None:
+        keymap = self.app.custom_bindings.keymap
         if not self.profile.transaction:
-            self.unbind(BROADCAST_TRANSACTION_BINDING_KEY)
-            self.unbind(SAVE_TRANSACTION_TO_FILE_BINDING_KEY)
-            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
+            self.unbind(keymap[BROADCAST_TRANSACTION.id])
+            self.unbind(keymap[SAVE_TRANSACTION_TO_FILE.id])
+            self.unbind(keymap[UPDATE_TRANSACTION_METADATA.id])
             return
 
-        self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
-        self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
+        self.bind(Binding(keymap[BROADCAST_TRANSACTION.id], "broadcast", "Broadcast", id=BROADCAST_TRANSACTION.id))
+        self.bind(
+            Binding(keymap[SAVE_TRANSACTION_TO_FILE.id], "save_to_file", "Save to file", id=SAVE_TRANSACTION_TO_FILE.id)
+        )
         if self.node.cached.online_or_none:
-            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+            self.bind(
+                Binding(
+                    keymap[UPDATE_TRANSACTION_METADATA.id],
+                    "refresh_metadata",
+                    "Update metadata",
+                    id=UPDATE_TRANSACTION_METADATA.id,
+                )
+            )
         else:
-            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
+            self.unbind(keymap[UPDATE_TRANSACTION_METADATA.id])
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)

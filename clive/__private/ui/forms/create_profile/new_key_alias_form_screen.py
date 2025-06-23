@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 
+from clive.__private.core.constants.tui.global_bindings import SHOW_HELP
+from clive.__private.core.constants.tui.manage_key_aliases_bindings import LOAD_FROM_FILE
 from clive.__private.logger import logger
 from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
@@ -44,8 +46,8 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
     }
     """
     BINDINGS = [
-        Binding("f1", "help", "Help"),
-        Binding("f2", "load_from_file", "Load from file"),
+        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id),
+        Binding(LOAD_FROM_FILE.key, "load_from_file", "Load from file", id=LOAD_FROM_FILE.id),
     ]
 
     BIG_TITLE = "create profile"

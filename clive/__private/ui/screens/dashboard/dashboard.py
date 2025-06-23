@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -8,6 +8,13 @@ from textual.containers import Container, Horizontal, ScrollableContainer, Verti
 from textual.widgets import Label, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
+from clive.__private.core.constants.tui.dashboard_bindings import (
+    ADD_ACCOUNT,
+    OPERATIONS,
+    SWITCH_MODE_INTO_LOCKED,
+    SWITCH_WORKING_ACCOUNT,
+)
+from clive.__private.core.constants.tui.global_bindings import GO_TO_SETTINGS, SHOW_HELP
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
@@ -261,16 +268,19 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "f4"
-    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {_ADD_ACCOUNT_BINDING_KEY} to add some)"
+    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {ADD_ACCOUNT.key} to add some)"
 
     BINDINGS = [
-        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-        Binding("f2", "operations", "Operations"),
-        Binding("f3", "switch_working_account", "Switch working account"),
-        Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
-        Binding("f5", "switch_mode_into_locked", "Lock wallet"),
-        Binding("f6", "app.go_to_config", "Config"),
+        Binding(
+            SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id
+        ),  # help is a hidden global binding, but we want to show it here
+        Binding(OPERATIONS.key, "operations", "Operations", id=OPERATIONS.id),
+        Binding(
+            SWITCH_WORKING_ACCOUNT.key, "switch_working_account", "Switch working account", id=SWITCH_WORKING_ACCOUNT.id
+        ),
+        Binding(ADD_ACCOUNT.key, "add_account", "Add account", id=ADD_ACCOUNT.id),
+        Binding(SWITCH_MODE_INTO_LOCKED.key, "switch_mode_into_locked", "Lock wallet", id=SWITCH_MODE_INTO_LOCKED.id),
+        Binding(GO_TO_SETTINGS.key, "app.go_to_config", "Config", id=GO_TO_SETTINGS.id),
     ]
 
     def __init__(self) -> None:

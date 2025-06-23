@@ -18,12 +18,22 @@ from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.constants.tui.bindings import APP_QUIT_KEY_BINDING
+from clive.__private.core.constants.tui.global_bindings import (
+    APP_QUIT,
+    CLEAR_NOTIFICATIONS,
+    COMMAND_PALETTE,
+    GO_TO_DASHBOARD,
+    GO_TO_SETTINGS,
+    GO_TO_TRANSACTION_SUMMARY,
+    LOAD_TRANSACTION_FROM_FILE,
+    SHOW_HELP,
+)
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive.__private.ui.bindings import DEFAULT_BINDINGS, load_custom_bindings
 from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -34,7 +44,7 @@ from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
-from clive.exceptions import ScreenNotFoundError
+from clive.exceptions import BindingFileInvalidError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Awaitable, Callable, Iterator
@@ -44,6 +54,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
+    from clive.__private.ui.bindings import Bindings
     from clive.__private.ui.clive_pilot import ClivePilot
     from clive.__private.ui.clive_screen import CliveScreen
 
@@ -60,17 +71,30 @@ class Clive(App[int]):
     AUTO_FOCUS = "*"
 
     ENABLE_COMMAND_PALETTE = True
-    COMMAND_PALETTE_BINDING = "f12"
+    COMMAND_PALETTE_BINDING = COMMAND_PALETTE.key
 
     BINDINGS = [
-        Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding(APP_QUIT_KEY_BINDING, "quit", "Quit", show=False),
-        Binding("c", "clear_notifications", "Clear notifications", show=False),
-        Binding("f1", "help", "Help", show=False),
-        Binding("f7", "go_to_transaction_summary", "Transaction summary", show=False),
-        Binding("f8", "go_to_dashboard", "Dashboard", show=False),
-        Binding("f9", "go_to_config", "Config", show=False),
-        Binding("ctrl+f12", "load_transaction_from_file", "Load transaction from file", show=False),
+        Binding(APP_QUIT.key, "quit", "Quit", id=APP_QUIT.id, show=False),
+        Binding(
+            CLEAR_NOTIFICATIONS.key, "clear_notifications", "Clear notifications", id=CLEAR_NOTIFICATIONS.id, show=False
+        ),
+        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id, show=False),
+        Binding(
+            GO_TO_TRANSACTION_SUMMARY.key,
+            "go_to_transaction_summary",
+            "Cart",
+            id=GO_TO_TRANSACTION_SUMMARY.id,
+            show=False,
+        ),
+        Binding(GO_TO_DASHBOARD.key, "go_to_dashboard", "Dashboard", id=GO_TO_DASHBOARD.id, show=False),
+        Binding(GO_TO_SETTINGS.key, "go_to_config", "Configuration", id=GO_TO_SETTINGS.id, show=False),
+        Binding(
+            LOAD_TRANSACTION_FROM_FILE.key,
+            "load_transaction_from_file",
+            "Load transaction from file",
+            id=LOAD_TRANSACTION_FROM_FILE.id,
+            show=False,
+        ),
     ]
 
     SCREENS = {
@@ -108,6 +132,7 @@ class Clive(App[int]):
         Workaround is to not await mentioned action or run it in a separate task if something later needs to await it.
         This workaround can create race conditions, so we need to guard against it.
         """
+        self.custom_bindings = self._load_bindings_from_file()
 
     @property
     def world(self) -> TUIWorld:
@@ -124,6 +149,9 @@ class Clive(App[int]):
     @staticmethod
     def app_instance() -> Clive:
         return cast("Clive", active_app.get())
+
+    def bound_key_short(self, id_: str) -> str:
+        return self.custom_bindings.short_key(id_)
 
     @classmethod
     def is_launched(cls) -> bool:
@@ -216,6 +244,7 @@ class Clive(App[int]):
             self.set_interval(debug_loop_period_secs, self._debug_log)
 
         await self._switch_to_initial_mode()
+        self.update_keymap(self.custom_bindings.keymap)
 
     async def on_unmount(self) -> None:
         if self._world is not None:
@@ -527,6 +556,17 @@ class Clive(App[int]):
         self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
         self.resume_periodic_intervals()
         self.theme = self.world.profile.tui_theme
+
+    def _load_bindings_from_file(self) -> Bindings:
+        """If there is exception and bindings cannot be loaded, notification is pushed."""
+        try:
+            custom_bindings = load_custom_bindings()
+        except BindingFileInvalidError as error:
+            message = f"Failed to load bindings: {error}. Using default bindings instead."
+            logger.error(message)
+            self.notify(message, severity="error")
+            custom_bindings = DEFAULT_BINDINGS
+        return custom_bindings
 
     def _get_current_worker(self) -> Worker[Any] | None:
         try:
