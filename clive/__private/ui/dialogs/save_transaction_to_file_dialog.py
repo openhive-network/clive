@@ -6,10 +6,12 @@ from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs.select_file_base_dialog import SelectFileBaseDialog
+from clive.__private.ui.dialogs.save_file_base_dialog import SaveFileBaseDialog
 from clive.__private.ui.styling import colorize_path
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from textual.app import ComposeResult
 
     from clive.__private.core.keys.keys import PublicKey
@@ -53,7 +55,7 @@ class SignedCheckbox(Checkbox, CliveWidget):
         return not has_profile_keys and not is_transaction_already_signed
 
 
-class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
+class SaveTransactionToFileDialog(SaveFileBaseDialog):
     def __init__(self, sign_key: PublicKey | None) -> None:
         super().__init__("Save transaction to file", "Save file")
         self._sign_key = sign_key
@@ -71,14 +73,7 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
             yield BinaryCheckbox()
             yield SignedCheckbox()
 
-    async def _perform_confirmation(self) -> bool:
-        return await self._save_transaction_to_file()
-
-    async def _save_transaction_to_file(self) -> bool:
-        file_path = self._file_path_input.value_or_none()
-        if file_path is None:
-            return False
-
+    async def _save_to_file(self, file_path: Path) -> bool:
         save_as_binary = self._is_binary_checked
         should_be_signed = self._is_signed_checked
         transaction = self.profile.transaction.copy()

@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 from textual import work
 
-from clive.__private.ui.dialogs.confirm_save_file_dialog import ConfirmSaveFileDialog
+from clive.__private.ui.dialogs.confirm_file_overwrite_dialog import ConfirmFileOverwriteDialog
 from clive.__private.ui.dialogs.select_file_base_dialog import SelectFileBaseDialog
 from clive.__private.ui.widgets.buttons.confirm_button import ConfirmOneLineButton
 
@@ -43,4 +43,4 @@ class SaveFileBaseDialog(SelectFileBaseDialog[bool]):
     @work
     async def _confirm_overwrite_a_file(self) -> bool:
         """Confirm overwrite of the file if it already exists."""
-        return await self.app.push_screen_wait(ConfirmSaveFileDialog())
+        return await self.app.push_screen_wait(ConfirmFileOverwriteDialog())
