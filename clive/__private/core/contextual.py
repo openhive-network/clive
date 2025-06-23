@@ -13,7 +13,7 @@ class Context:
 ContextT = TypeVar("ContextT", bound=Context)
 
 
-class Contextual(Generic[ContextT], AbstractClassMessagePump):
+class Contextual(Generic[ContextT], AbstractClassMessagePump):  # noqa: UP046
     """A class that could return its context."""
 
     @property

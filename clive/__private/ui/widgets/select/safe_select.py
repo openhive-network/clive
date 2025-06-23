@@ -28,7 +28,7 @@ class EmptySelect(Static):
         self.value = Select.BLANK
 
 
-class SingleSelect(Static, Generic[SelectType]):
+class SingleSelect(Static, Generic[SelectType]):  # noqa: UP046
     """Dummy select widget."""
 
     def __init__(self, option: SelectOption[SelectType]) -> None:
@@ -40,7 +40,7 @@ class SingleSelect(Static, Generic[SelectType]):
         return False
 
 
-class SafeSelect(CliveWidget, Generic[SelectType]):
+class SafeSelect(CliveWidget, Generic[SelectType]):  # noqa: UP046
     MIN_AMOUNT_OF_ITEMS: Final[int] = 2
 
     DEFAULT_CSS = """

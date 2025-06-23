@@ -59,7 +59,7 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
         return []
 
 
-class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
+class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):  # noqa: UP046
     """
     A widget containing a list of `GovernanceTableRow` widgets.
 
@@ -98,7 +98,7 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
                     yield self._create_row(element)
 
 
-class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):
+class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):  # noqa: UP046
     """
     Base class for rows in governance tables. The type of data used to create rows must be passed generically.
 
@@ -198,7 +198,11 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
 
 class GovernanceTable(
-    Vertical, CliveWidget, Generic[GovernanceDataT, GovernanceDataProviderT], AbstractClassMessagePump, can_focus=False
+    Vertical,
+    CliveWidget,
+    Generic[GovernanceDataT, GovernanceDataProviderT],  # noqa: UP046
+    AbstractClassMessagePump,
+    can_focus=False,
 ):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 10
 

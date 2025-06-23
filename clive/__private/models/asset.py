@@ -57,7 +57,7 @@ class UnknownAssetNaiError(AssetError):
 
 
 @dataclass(frozen=True)
-class AssetFactoryHolder(Generic[AssetT]):
+class AssetFactoryHolder(Generic[AssetT]):  # noqa: UP046
     """
     Holds factory for asset.
 

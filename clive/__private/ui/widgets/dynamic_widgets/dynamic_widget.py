@@ -37,7 +37,7 @@ DynamicWidgetFirstTryCallbackType = WatchLikeCallbackType[bool]
 WidgetT = TypeVar("WidgetT", bound=Widget)
 
 
-class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, CallbackReturnT]):
+class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, CallbackReturnT]):  # noqa: UP046
     """A widget that can be updated dynamically when a reactive variable changes."""
 
     DEFAULT_CSS = """
