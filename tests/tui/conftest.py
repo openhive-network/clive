@@ -12,6 +12,7 @@ from clive.__private.core.world import World
 from clive.__private.logger import logger
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
+from clive.__private.ui.bindings import initialize_bindings_files
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
@@ -38,6 +39,11 @@ if TYPE_CHECKING:
 @pytest.fixture(autouse=True)
 def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Clive, "notify", partialmethod(Clive.notify, timeout=TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT))
+
+
+@pytest.fixture(autouse=True)
+def _initialize_bindings_files() -> None:
+    initialize_bindings_files()
 
 
 @pytest.fixture

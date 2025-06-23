@@ -4,10 +4,10 @@ import inspect
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, GLOBAL_BINDING_TABLE_PLACEHOLDER
 from clive.__private.ui.screens.base_screen import BaseScreen
 
 if TYPE_CHECKING:
@@ -18,10 +18,14 @@ class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
     BINDINGS = [
-        Binding("f1,q,question_mark,escape", "app.pop_screen", "Back", key_display="esc"),
-        Binding("t", "toggle_table_of_contents", "Toggle TOC"),
-        Binding("ctrl+p", "back", "Back", show=False),
-        Binding("ctrl+n", "forward", "Forward", show=False),
+        CLIVE_PREDEFINED_BINDINGS.glob.hide_help.create(action="app.pop_screen", description="Back", key_display="esc"),
+        CLIVE_PREDEFINED_BINDINGS.glob.toggle_table_of_contents.create(
+            action="toggle_table_of_contents", description="Toggle TOC"
+        ),
+        CLIVE_PREDEFINED_BINDINGS.form_navigation.previous_screen.create(action="back", description="Back", show=False),
+        CLIVE_PREDEFINED_BINDINGS.form_navigation.next_screen.create(
+            action="forward", description="Forward", show=False
+        ),
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
@@ -43,10 +47,11 @@ class Help(BaseScreen):
         return self.query_exactly_one(MarkdownViewer)
 
     def create_main_panel(self) -> ComposeResult:
-        yield MarkdownViewer(show_table_of_contents=False)
-
-    async def on_mount(self) -> None:
-        await self.markdown_viewer.go(self.__help_file_path)
+        content = self.__help_file_path.read_text()
+        new_content = content.replace(
+            GLOBAL_BINDING_TABLE_PLACEHOLDER, self.app.custom_bindings.get_formatted_global_bindings()
+        )
+        yield MarkdownViewer(new_content, show_table_of_contents=False)
 
     def action_toggle_table_of_contents(self) -> None:
         self.markdown_viewer.show_table_of_contents = not self.markdown_viewer.show_table_of_contents

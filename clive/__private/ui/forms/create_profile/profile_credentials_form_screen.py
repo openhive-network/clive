@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.binding import Binding
-
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -22,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class ProfileCredentialsFormScreen(BaseScreen, CreateProfileFormScreen):
-    BINDINGS = [Binding("f1", "help", "Help")]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
