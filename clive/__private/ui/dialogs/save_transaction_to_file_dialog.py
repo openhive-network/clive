@@ -42,7 +42,10 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
     def additional_content_after_input(self) -> ComposeResult:
         with Switches():
             yield Checkbox("Binary?", id="binary-checkbox")
-            yield Checkbox("Signed?", disabled=not self.profile.keys, id="signed-checkbox")
+            yield self._create_signed_checkbox()
+
+    def _create_signed_checkbox(self) -> Checkbox:
+        return Checkbox("Signed?", disabled=not self.profile.keys, id="signed-checkbox")
 
     async def _perform_confirmation(self) -> bool:
         return await self._save_transaction_to_file()
