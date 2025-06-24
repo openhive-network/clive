@@ -45,7 +45,10 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
             yield self._create_signed_checkbox()
 
     def _create_signed_checkbox(self) -> Checkbox:
-        return Checkbox("Signed?", disabled=not self.profile.keys, id="signed-checkbox")
+        is_transaction_already_signed = self.profile.transaction.is_signed
+        has_profile_keys = bool(self.profile.keys)
+        disabled = not has_profile_keys and not is_transaction_already_signed
+        return Checkbox("Signed?", disabled=disabled, id="signed-checkbox")
 
     async def _perform_confirmation(self) -> bool:
         return await self._save_transaction_to_file()
