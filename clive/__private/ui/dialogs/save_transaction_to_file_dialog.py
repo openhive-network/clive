@@ -56,7 +56,7 @@ class SaveTransactionToFileDialog(SelectFileBaseDialog[bool]):
         should_be_signed = self._is_signed_checked
         transaction = self.profile.transaction.copy()
 
-        if should_be_signed and self._sign_key is None:
+        if should_be_signed and not transaction.is_signed and self._sign_key is None:
             self.notify("Transaction can't be saved because no key was selected.", severity="error")
             return False
 
