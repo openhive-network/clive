@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.keys.keys import PublicKey
-    from clive.__private.validators.path_validator import PathValidator
 
 
 class Switches(Horizontal):
@@ -102,6 +101,3 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
             f" {'(signed)' if transaction.is_signed else ''}"
         )
         return True
-
-    def _default_validator_mode(self) -> PathValidator.Modes:
-        return "is_file_or_can_be_file"

@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.validators.path_validator import PathValidator
+
 from textual import work
 
 from clive.__private.ui.dialogs.confirm_file_overwrite_dialog import ConfirmFileOverwriteDialog
@@ -44,3 +46,6 @@ class SaveFileBaseDialog(SelectFileBaseDialog[bool]):
     async def _confirm_overwrite_a_file(self) -> bool:
         """Confirm overwrite of the file if it already exists."""
         return await self.app.push_screen_wait(ConfirmFileOverwriteDialog())
+
+    def _default_validator_mode(self) -> PathValidator.Modes:
+        return "is_file_or_can_be_file"
