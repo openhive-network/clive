@@ -213,6 +213,19 @@ class AuthorityItem(CliveCheckerboardTableRow):
         else:
             action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
 
+        action_widget: Widget | None = None
+
+        if self._is_account_entry:
+            # we can't add corresponding key to the account, so we just display static widget without text
+            action_widget = Static()
+        else:
+            public_key = self.public_key
+            action_widget = (
+                RemovePrivateKeyButton(public_key)
+                if public_key in self.profile.keys
+                else ImportPrivateKeyButton(public_key)
+            )
+
         return [
             CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account"),
             CliveCheckerBoardTableCell(str(self._weight), classes="weight"),
@@ -228,6 +241,10 @@ class MemoItem(CliveCheckerboardTableRow):
     @property
     def entry(self) -> str:
         return self._memo_key
+
+    @property
+    def public_key(self) -> PublicKey:
+        return PublicKey(value=self._memo_key)
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         is_known_key = self._memo_key in self.profile.keys
