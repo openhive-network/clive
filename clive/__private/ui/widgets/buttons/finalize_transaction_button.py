@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from clive.__private.core.constants.tui.operations_common_bindings import FINALIZE_TRANSACTION
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 
@@ -16,7 +15,7 @@ class FinalizeTransactionButton(OneLineButton):
 
     def __init__(self) -> None:
         super().__init__(
-            f"Finalize transaction ({self.app.bound_key_short(FINALIZE_TRANSACTION.id)})",
+            f"Finalize transaction ({self.app.custom_bindings.operations.finalize_transaction})",
             variant="success",
             id_="finalize-button",
         )

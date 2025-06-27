@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.binding import Binding
-
-from clive.__private.core.constants.tui.global_bindings import SHOW_HELP
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -24,8 +22,9 @@ if TYPE_CHECKING:
 
 class ProfileCredentialsFormScreen(BaseScreen, CreateProfileFormScreen):
     BINDINGS = [
-        # help is a hidden global binding, but we want to show it here
-        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id),
+        CLIVE_PREDEFINED_BINDINGS.glob.show_help.create(
+            action="help", description="Help", show=False
+        ),  # help is a hidden global binding, but we want to show it here
     ]
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"

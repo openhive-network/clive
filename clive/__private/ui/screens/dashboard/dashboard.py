@@ -1,20 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
-from clive.__private.core.constants.tui.dashboard_bindings import (
-    ADD_ACCOUNT,
-    OPERATIONS,
-    SWITCH_MODE_INTO_LOCKED,
-    SWITCH_WORKING_ACCOUNT,
-)
-from clive.__private.core.constants.tui.global_bindings import GO_TO_SETTINGS, SHOW_HELP
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
@@ -23,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.models import Asset
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountDialog
@@ -268,19 +261,20 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {ADD_ACCOUNT.key} to add some)"
 
     BINDINGS = [
-        Binding(
-            SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id
+        CLIVE_PREDEFINED_BINDINGS.glob.show_help.create(
+            action="help", description="Help"
         ),  # help is a hidden global binding, but we want to show it here
-        Binding(OPERATIONS.key, "operations", "Operations", id=OPERATIONS.id),
-        Binding(
-            SWITCH_WORKING_ACCOUNT.key, "switch_working_account", "Switch working account", id=SWITCH_WORKING_ACCOUNT.id
+        CLIVE_PREDEFINED_BINDINGS.dashboard.operations.create(action="operations", description="Operations"),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.switch_working_account.create(
+            action="switch_working_account", description="Switch working account"
         ),
-        Binding(ADD_ACCOUNT.key, "add_account", "Add account", id=ADD_ACCOUNT.id),
-        Binding(SWITCH_MODE_INTO_LOCKED.key, "switch_mode_into_locked", "Lock wallet", id=SWITCH_MODE_INTO_LOCKED.id),
-        Binding(GO_TO_SETTINGS.key, "app.go_to_config", "Config", id=GO_TO_SETTINGS.id),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.add_account.create(action="add_account", description="Add account"),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.lock.create(action="switch_mode_into_locked", description="Lock wallet"),
+        CLIVE_PREDEFINED_BINDINGS.glob.settings.create(
+            action="app.go_to_config", description="Config"
+        ),  # config is a hidden global binding, but we want to show it here
     ]
 
     def __init__(self) -> None:
@@ -295,7 +289,7 @@ class Dashboard(BaseScreen):
             if self.has_watched_accounts:
                 yield WatchedAccountContainer()
             if not self.has_tracked_accounts:
-                yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
+                yield NoContentAvailable(self.no_accounts_info)
 
     def on_mount(self) -> None:
         self.watch(self.world, "profile_reactive", self._update_account_containers)
@@ -315,7 +309,7 @@ class Dashboard(BaseScreen):
             widgets_to_mount.append(WatchedAccountContainer())
 
         if not self.has_tracked_accounts:
-            widgets_to_mount.append(NoContentAvailable(self.NO_ACCOUNTS_INFO))
+            widgets_to_mount.append(NoContentAvailable(self.no_accounts_info))
 
         with self.app.batch_update():
             accounts_container = self.query_exactly_one(AccountsContainer)
@@ -345,6 +339,10 @@ class Dashboard(BaseScreen):
     @property
     def has_watched_accounts(self) -> bool:
         return bool(self.profile.accounts.watched)
+
+    @property
+    def no_accounts_info(self) -> str:
+        return f"No accounts found (press {self.app.custom_bindings.dashboard.add_account} to add some)"
 
     @property
     def tracked_accounts(self) -> list[TrackedAccount]:

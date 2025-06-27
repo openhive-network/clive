@@ -6,7 +6,6 @@ from textual.containers import Horizontal
 from textual.reactive import var
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.navigation_bindings import NEXT_SCREEN, PREVIOUS_SCREEN
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 
 if TYPE_CHECKING:
@@ -17,9 +16,6 @@ if TYPE_CHECKING:
 
 class NextScreenButton(CliveButton):
     """Button for going to next screen in forms (also used as finish button)."""
-
-    DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN.key}) →"
-    FINISH_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN.key})"
 
     is_finish = var(default=False, init=False)
 
@@ -47,9 +43,8 @@ class NextScreenButton(CliveButton):
         self.label = self._determine_label(is_finish=value)
 
     def _determine_label(self, *, is_finish: bool) -> str:
-        finish_button_label = f"Finish! ({self.app.bound_key_short(NEXT_SCREEN.id)})"
-        default_next_button_label = f"Next ({self.app.bound_key_short(NEXT_SCREEN.id)}) →"
-        return finish_button_label if is_finish else default_next_button_label
+        key = self.app.custom_bindings.navigation.next_screen
+        return f"Finish! ({key})" if is_finish else f"Next ({key}) →"
 
 
 class PreviousScreenButton(OneLineButton):
@@ -66,7 +61,9 @@ class PreviousScreenButton(OneLineButton):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        default_previous_button_label: Final[str] = f"← Previous ({self.app.bound_key_short(PREVIOUS_SCREEN.id)})"
+        default_previous_button_label: Final[str] = (
+            f"← Previous ({self.app.custom_bindings.navigation.previous_screen})"
+        )
         super().__init__(
             label=label if label else default_previous_button_label,
             variant="transparent",

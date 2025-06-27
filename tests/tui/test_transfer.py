@@ -5,10 +5,8 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.core.constants.tui.dashboard_bindings import OPERATIONS
-from clive.__private.core.constants.tui.global_bindings import GO_TO_TRANSACTION_SUMMARY
-from clive.__private.core.constants.tui.operations_common_bindings import ADD_OPERATION_TO_CART
 from clive.__private.models.schemas import TransferOperation
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.screens.operations import Operations, TransferToAccount
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -101,7 +99,7 @@ async def test_transfers(
 
     # ACT
     ### Create transfer
-    await press_and_wait_for_screen(pilot, OPERATIONS.key, Operations)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     # Fill transfer data
@@ -148,7 +146,7 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
     # ACT
     ### Create 2 transfers
     # Choose transfer operation
-    await press_and_wait_for_screen(pilot, OPERATIONS.key, Operations)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     for i in range(TRANSFERS_COUNT):
@@ -156,13 +154,13 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
         await fill_transfer_data(pilot, RECEIVER, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True)
         await focus_prev(pilot)  # Alphanumeric bindings do not work in generic inputs
-        await press_binding(pilot, ADD_OPERATION_TO_CART.key, "Add to cart")
+        await press_binding(pilot, CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart.key, "Add to cart")
         await focus_next(pilot)
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(
-        pilot, GO_TO_TRANSACTION_SUMMARY.key, TransactionSummary
+        pilot, CLIVE_PREDEFINED_BINDINGS.glob.transaction_summary.key, TransactionSummary
     )  # Go to transaction summary
     await broadcast_transaction(pilot)
 

@@ -8,8 +8,7 @@ from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
-from clive.__private.core.constants.tui.global_bindings import HIDE_HELP
-from clive.__private.core.constants.tui.navigation_bindings import NEXT_SCREEN, PREVIOUS_SCREEN
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.screens.base_screen import BaseScreen
 
 if TYPE_CHECKING:
@@ -20,10 +19,10 @@ class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
     BINDINGS = [
-        Binding(HIDE_HELP.key, "app.pop_screen", "Back", id=HIDE_HELP.id),
+        CLIVE_PREDEFINED_BINDINGS.glob.hide_help.create(action="quit", description="Quit", show=False),
         Binding("t", "toggle_table_of_contents", "Toggle TOC"),
-        Binding(PREVIOUS_SCREEN.key, "back", "Back", show=False, id=PREVIOUS_SCREEN.id),
-        Binding(NEXT_SCREEN.key, "forward", "Forward", show=False, id=NEXT_SCREEN.id),
+        CLIVE_PREDEFINED_BINDINGS.navigation.previous_screen.create(action="back", description="Back", show=False),
+        CLIVE_PREDEFINED_BINDINGS.navigation.next_screen.create(action="forward", description="Forward", show=False),
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"

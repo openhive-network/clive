@@ -5,12 +5,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
 from textual.reactive import var
 
-from clive.__private.core.constants.tui.global_bindings import SHOW_HELP
-from clive.__private.core.constants.tui.navigation_bindings import NEXT_SCREEN, PREVIOUS_SCREEN
 from clive.__private.core.contextual import Contextual
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.forms.form_context import FormContextT
 from clive.__private.ui.forms.navigation_buttons import NextScreenButton, PreviousScreenButton
@@ -22,10 +20,11 @@ if TYPE_CHECKING:
 
 class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
     BINDINGS = [
-        # help is a hidden global binding, but we want to show it here
-        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id),
-        Binding(PREVIOUS_SCREEN.key, "previous_screen", "Previous screen", id=PREVIOUS_SCREEN.id),
-        Binding(NEXT_SCREEN.key, "next_screen", "Next screen", id=NEXT_SCREEN.id),
+        CLIVE_PREDEFINED_BINDINGS.glob.quit.create(
+            action="help", description="Help"
+        ),  # help is a hidden global binding, but we want to show it here
+        CLIVE_PREDEFINED_BINDINGS.glob.quit.create(action="previous_screen", description="Previous screen"),
+        CLIVE_PREDEFINED_BINDINGS.glob.quit.create(action="next_screen", description="Next screen"),
     ]
 
     _should_finish: bool = var(default=False, init=False)  # type: ignore[assignment]

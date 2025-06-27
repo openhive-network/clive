@@ -6,7 +6,6 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import reactive, var
 from textual.widgets import Label
 
-from clive.__private.core.constants.tui.transaction_summary_bindings import UPDATE_TRANSACTION_METADATA
 from clive.__private.core.formatters import humanize
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.buttons import RefreshOneLineButton
@@ -77,7 +76,10 @@ class TransactionIdLabel(Label):
 
 class RefreshMetadataButton(RefreshOneLineButton):
     def __init__(self) -> None:
-        super().__init__(f"Update metadata ({self.app.bound_key_short(UPDATE_TRANSACTION_METADATA.id)})")
+        super().__init__(
+            f"Update metadata ({self.app.custom_bindings.transaction_summary.update_metadata})",
+            id_="refresh-metadata-button",
+        )
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:

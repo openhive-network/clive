@@ -11,29 +11,18 @@ from textual import on, work
 from textual._context import active_app
 from textual.app import App
 from textual.await_complete import AwaitComplete
-from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.constants.tui.global_bindings import (
-    APP_QUIT,
-    CLEAR_NOTIFICATIONS,
-    COMMAND_PALETTE,
-    GO_TO_DASHBOARD,
-    GO_TO_SETTINGS,
-    GO_TO_TRANSACTION_SUMMARY,
-    LOAD_TRANSACTION_FROM_FILE,
-    SHOW_HELP,
-)
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.ui.bindings import DEFAULT_BINDINGS, load_custom_bindings
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, load_custom_bindings
 from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -54,7 +43,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from clive.__private.core.app_state import LockSource
-    from clive.__private.ui.bindings import Bindings
+    from clive.__private.ui.bindings import CliveBindings
     from clive.__private.ui.clive_pilot import ClivePilot
     from clive.__private.ui.clive_screen import CliveScreen
 
@@ -71,29 +60,21 @@ class Clive(App[int]):
     AUTO_FOCUS = "*"
 
     ENABLE_COMMAND_PALETTE = True
-    COMMAND_PALETTE_BINDING = COMMAND_PALETTE.key
+    COMMAND_PALETTE_BINDING = CLIVE_PREDEFINED_BINDINGS.command_palette.key
 
     BINDINGS = [
-        Binding(APP_QUIT.key, "quit", "Quit", id=APP_QUIT.id, show=False),
-        Binding(
-            CLEAR_NOTIFICATIONS.key, "clear_notifications", "Clear notifications", id=CLEAR_NOTIFICATIONS.id, show=False
+        CLIVE_PREDEFINED_BINDINGS.glob.quit.create(action="quit", description="Quit", show=False),
+        CLIVE_PREDEFINED_BINDINGS.glob.clear_notifications.create(
+            action="clear_notifications", description="Clear notifications", show=False
         ),
-        Binding(SHOW_HELP.key, "help", "Help", id=SHOW_HELP.id, show=False),
-        Binding(
-            GO_TO_TRANSACTION_SUMMARY.key,
-            "go_to_transaction_summary",
-            "Cart",
-            id=GO_TO_TRANSACTION_SUMMARY.id,
-            show=False,
+        CLIVE_PREDEFINED_BINDINGS.glob.show_help.create(action="help", description="Help", show=False),
+        CLIVE_PREDEFINED_BINDINGS.glob.quit.create(action="go_to_transaction_summary", description="Cart", show=False),
+        CLIVE_PREDEFINED_BINDINGS.glob.clear_notifications.create(
+            action="go_to_dashboard", description="Dashboard", show=False
         ),
-        Binding(GO_TO_DASHBOARD.key, "go_to_dashboard", "Dashboard", id=GO_TO_DASHBOARD.id, show=False),
-        Binding(GO_TO_SETTINGS.key, "go_to_config", "Configuration", id=GO_TO_SETTINGS.id, show=False),
-        Binding(
-            LOAD_TRANSACTION_FROM_FILE.key,
-            "load_transaction_from_file",
-            "Load transaction from file",
-            id=LOAD_TRANSACTION_FROM_FILE.id,
-            show=False,
+        CLIVE_PREDEFINED_BINDINGS.glob.settings.create(action="go_to_config", description="Configuration", show=False),
+        CLIVE_PREDEFINED_BINDINGS.glob.open_transaction_from_file.create(
+            action="load_transaction_from_file", description="Load transaction from file", show=False
         ),
     ]
 
@@ -149,9 +130,6 @@ class Clive(App[int]):
     @staticmethod
     def app_instance() -> Clive:
         return cast("Clive", active_app.get())
-
-    def bound_key_short(self, id_: str) -> str:
-        return self.custom_bindings.short_key(id_)
 
     @classmethod
     def is_launched(cls) -> bool:
@@ -557,7 +535,7 @@ class Clive(App[int]):
         self.resume_periodic_intervals()
         self.theme = self.world.profile.tui_theme
 
-    def _load_bindings_from_file(self) -> Bindings:
+    def _load_bindings_from_file(self) -> CliveBindings:
         """If there is exception and bindings cannot be loaded, notification is pushed."""
         try:
             custom_bindings = load_custom_bindings()
@@ -565,7 +543,7 @@ class Clive(App[int]):
             message = f"Failed to load bindings: {error}. Using default bindings instead."
             logger.error(message)
             self.notify(message, severity="error")
-            custom_bindings = DEFAULT_BINDINGS
+            custom_bindings = CLIVE_PREDEFINED_BINDINGS
         return custom_bindings
 
     def _get_current_worker(self) -> Worker[Any] | None:

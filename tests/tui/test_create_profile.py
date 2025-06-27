@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.core.constants.tui.global_bindings import GO_TO_SETTINGS
 from clive.__private.ui.app import Clive
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import NewKeyAliasFormScreen
 from clive.__private.ui.forms.create_profile.profile_credentials_form_screen import ProfileCredentialsFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen, WorkingAccountCheckbox
@@ -107,7 +107,7 @@ async def create_profile_finish(pilot: ClivePilot) -> None:
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
     assert_is_dashboard(pilot)
-    await press_and_wait_for_screen(pilot, GO_TO_SETTINGS.key, Config)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.glob.settings.key, Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
     key_aliases = pilot.app.screen.query(KeyAliasRow)
