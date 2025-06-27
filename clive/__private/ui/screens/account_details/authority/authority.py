@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 
     from rich.text import TextType
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.keys.key_manager import KeyManager
@@ -217,19 +218,23 @@ class AuthorityItem(CliveCheckerboardTableRow):
             if alias != self._key_or_account:
                 key_or_account_text = f"{alias} ({self._key_or_account})"
 
+        action_widget: Widget | None = None
+
+        if self._is_account_entry:
+            # we can't add corresponding key to the account, so we just display static widget without text
+            action_widget = Static()
+        else:
+            public_key = self.public_key
+            action_widget = (
+                RemovePrivateKeyButton(public_key)
+                if public_key in self.profile.keys
+                else ImportPrivateKeyButton(public_key)
+            )
+
         return [
             CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account"),
             CliveCheckerBoardTableCell(str(self._weight), classes="weight"),
-            CliveCheckerBoardTableCell(
-                Static()
-                if self._is_account_entry
-                else (
-                    RemovePrivateKeyButton(self.public_key)
-                    if self._key_or_account in self.profile.keys
-                    else ImportPrivateKeyButton(self.public_key)
-                ),
-                classes="action",
-            ),
+            CliveCheckerBoardTableCell(action_widget, classes="action"),
         ]
 
 
@@ -242,6 +247,10 @@ class MemoItem(CliveCheckerboardTableRow):
     def entry(self) -> str:
         return self._memo_key
 
+    @property
+    def public_key(self) -> PublicKey:
+        return PublicKey(value=self._memo_key)
+
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         memo_key_text = self._memo_key
 
@@ -250,12 +259,14 @@ class MemoItem(CliveCheckerboardTableRow):
             if alias != self._memo_key:
                 memo_key_text = f"{alias} ({self._memo_key})"
 
+        public_key = self.public_key
+
         return [
             CliveCheckerBoardTableCell(memo_key_text, classes="memo-key"),
             CliveCheckerBoardTableCell(
-                RemovePrivateKeyButton(PublicKey(value=self._memo_key))
-                if self._memo_key in self.profile.keys
-                else ImportPrivateKeyButton(PublicKey(value=self._memo_key)),
+                RemovePrivateKeyButton(public_key)
+                if public_key in self.profile.keys
+                else ImportPrivateKeyButton(public_key),
                 classes="action",
             ),
         ]
