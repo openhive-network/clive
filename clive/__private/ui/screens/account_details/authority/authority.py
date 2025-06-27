@@ -109,14 +109,33 @@ class AuthorityRoles(SectionScrollable):
         return self.query_exactly_one(SectionBody)
 
     async def build(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
-        await self.body.mount_all(
-            [AccountCollapsible(operation) for operation in authority_operations]
-            + [NoContentAvailable("There are no authorities that match filter criteria.")]
-        )
+        await self.body.mount_all([AccountCollapsible(operation) for operation in authority_operations])
 
     async def rebuild(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
         await self.body.query("*").remove()
         await self.build(authority_operations)
+
+    async def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+        """
+        Update the display of AuthorityRoles based on filter patterns selected accounts in filter.
+
+        This method updates each AccountCollapsible inside the body of AuthorityRoles. Also handles NoContentAvailable
+        widget.
+        """
+        results = [
+            account_collapsible.update(selected_accounts_in_filter, *filter_patterns)
+            for account_collapsible in self.body.query(AccountCollapsible)
+        ]
+        if any(results):
+            await self._remove_no_content_available_widget()
+        else:
+            self._mount_no_content_available_widget()
+
+    def _mount_no_content_available_widget(self) -> None:
+        self.body.mount(NoContentAvailable("There are no authorities that match filter criteria."))
+
+    async def _remove_no_content_available_widget(self) -> None:
+        await self.body.query(NoContentAvailable).remove()
 
 
 class AccountCollapsible(CliveCollapsible):
@@ -138,6 +157,37 @@ class AccountCollapsible(CliveCollapsible):
     @property
     def operation(self) -> AccountAuthorityUpdateOperation:
         return self._operation
+
+    def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> bool:
+        """Update the display of AccountCollapsible based on accounts selected in filter and filter patterns."""
+
+        def update_display_of_authority_types() -> None:
+            """Update the display of AuthorityType widgets within this AccountCollapsible."""
+            for authority_type in self.query(AuthorityType):
+                authority_type.update(*filter_patterns)
+
+        if self.operation.categories.hive.account not in selected_accounts_in_filter:
+            self.display = False
+            return False
+
+        if not filter_patterns:
+            self.display = True
+            update_display_of_authority_types()
+            return True
+
+        for role in self.operation.categories.hive:
+            if role.level != "memo":
+                if WaxAuthorityWrapper(role.value).is_object_has_entry_that_matches_pattern(*filter_patterns):
+                    self.display = True
+                    update_display_of_authority_types()
+                    return True
+            elif is_match(role.value, *filter_patterns):
+                self.display = True
+                update_display_of_authority_types()
+                return True
+
+        self.display = False
+        return False
 
 
 class AuthorityType(CliveCollapsible):
@@ -166,6 +216,34 @@ class AuthorityType(CliveCollapsible):
     @property
     def authority(self) -> WaxAuthority | str | None:
         return self._account_authorities
+
+    def update(self, *filter_patterns: str) -> None:
+        """Update the display of AuthorityType based on filter patterns."""
+
+        def update_display_in_authority_table() -> None:
+            authority_table = self.query_exactly_one(AuthorityTable)
+            authority_table.update(*filter_patterns)
+
+        filter_pattern_present = bool(filter_patterns)
+        if not filter_pattern_present:
+            self.display = True
+            update_display_in_authority_table()
+            return
+
+        if not self._account_authorities:
+            self.display = False
+            return
+
+        if isinstance(self._account_authorities, WaxAuthority):
+            matched = WaxAuthorityWrapper(self._account_authorities).is_object_has_entry_that_matches_pattern(
+                *filter_patterns
+            )
+        else:
+            matched = is_match(self._account_authorities, *filter_patterns)
+        self.display = matched
+
+        if matched:
+            update_display_in_authority_table()
 
 
 class AuthorityHeader(Horizontal):
@@ -198,6 +276,10 @@ class AuthorityItem(CliveCheckerboardTableRow):
     def public_key(self) -> PublicKey:
         assert not self._is_account_entry, "This property is only available for key entries."
         return PublicKey(value=self._key_or_account)
+
+    def update(self, *filter_patterns: str) -> None:
+        filter_pattern_present = bool(filter_patterns)
+        self.display = is_match(self._key_or_account, *filter_patterns) if filter_pattern_present else True
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         is_known_key = self._key_or_account in self.profile.keys
@@ -245,6 +327,10 @@ class MemoItem(CliveCheckerboardTableRow):
     @property
     def public_key(self) -> PublicKey:
         return PublicKey(value=self._memo_key)
+
+    def update(self, *filter_patterns: str) -> None:
+        filter_pattern_present = bool(filter_patterns)
+        self.display = is_match(self._memo_key, *filter_patterns) if filter_pattern_present else True
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         is_known_key = self._memo_key in self.profile.keys
@@ -343,7 +429,7 @@ class Authority(TabPane, CliveWidget):
         await self._collect_authorities()
         self._update_input_suggestions()
         await self.authority_roles.build(self._authority_operations)
-        self._update_display_inside_authority_roles()
+        await self._update_display_inside_authority_roles()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -361,10 +447,6 @@ class Authority(TabPane, CliveWidget):
     @property
     def filter_authority(self) -> FilterAuthority:
         return self.query_exactly_one(FilterAuthority)
-
-    @property
-    def no_content_available(self) -> NoContentAvailable:
-        return self.query_exactly_one(NoContentAvailable)
 
     @on(FilterAuthority.AuthorityFilterReady)
     async def _apply_authority_filter(self) -> None:
@@ -399,7 +481,7 @@ class Authority(TabPane, CliveWidget):
 
         self._filter_pattern_already_applied = bool(filter_pattern)
         self.filter_authority.collapse_account_filter_collapsible()
-        self._update_display_inside_authority_roles(*multiple_patterns)
+        await self._update_display_inside_authority_roles(*multiple_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def rebuild_after_key_aliases_changed(self) -> None:
@@ -409,7 +491,7 @@ class Authority(TabPane, CliveWidget):
     @on(FilterAuthority.Cleared)
     async def rebuild_after_clearing_authority_filter(self) -> None:
         self._update_input_suggestions()
-        self._update_display_inside_authority_roles()
+        await self._update_display_inside_authority_roles()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _update_authorities_and_suggestions_after_account_in_filter_changed(self) -> None:
@@ -424,79 +506,9 @@ class Authority(TabPane, CliveWidget):
             )
             self._authority_operations.append(authority_operation)
 
-    def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:  # noqa: C901
-        """Iterate through widgets in AuthorityRoles and update their display properties."""
-
-        def update_account_collapsibles() -> bool:
-            """Update the display properties of AccountCollapsible widgets."""
-            is_any_account_collapsible_displayed = False
-
-            with self.app.batch_update():
-                for account_collapsible in self.authority_roles.body.query(AccountCollapsible):
-                    should_be_displayed = should_display_account_collapsible(account_collapsible)
-                    account_collapsible.display = should_be_displayed
-                    if should_be_displayed:
-                        is_any_account_collapsible_displayed = True
-
-                    update_authority_types_display(account_collapsible)
-
-            return is_any_account_collapsible_displayed
-
-        def should_display_account_collapsible(account_collapsible: AccountCollapsible) -> bool:
-            account_name = account_collapsible.operation.categories.hive.account
-            account_checked_in_filter = account_name in selected_accounts_in_filter
-
-            if not account_checked_in_filter:
-                return False
-
-            if filter_pattern_present:
-                for role in account_collapsible.operation.categories.hive:
-                    if role.level != "memo":
-                        if WaxAuthorityWrapper(role.value).is_object_has_entry_that_matches_pattern(*filter_patterns):
-                            return True
-                    elif is_match(role.value, *filter_patterns):
-                        return True
-                return False
-
-            return True
-
-        def update_authority_types_display(account_collapsible: AccountCollapsible) -> None:
-            """Update the display properties of AuthorityType widgets within an AccountCollapsible."""
-            for authority_type in account_collapsible.query(AuthorityType):
-                pattern_match = should_display_authority_type(authority_type)
-                authority_type.display = pattern_match
-
-                authority_table = authority_type.query_exactly_one(AuthorityTable)
-                authority_table.display = pattern_match
-
-                update_table_rows_display(authority_table)
-
-        def should_display_authority_type(authority_type: AuthorityType) -> bool:
-            if not filter_pattern_present:
-                return True
-
-            if isinstance(authority_type.authority, str):
-                return is_match(authority_type.authority, *filter_patterns)
-
-            if isinstance(authority_type.authority, WaxAuthority):
-                return WaxAuthorityWrapper(authority_type.authority).is_object_has_entry_that_matches_pattern(
-                    *filter_patterns
-                )
-            return False
-
-        def update_table_rows_display(authority_table: AuthorityTable) -> None:
-            """Update the display properties of rows in an AuthorityTable."""
-            for row in authority_table.query(CliveCheckerboardTableRow):
-                assert isinstance(row, (AuthorityItem, MemoItem)), "Invalid type of row."
-                row.display = is_match(row.entry, *filter_patterns) if filter_pattern_present else True
-            authority_table.update_cell_colors()
-
-        selected_accounts_in_filter = self.filter_authority.selected_options
-        filter_pattern_present = bool(filter_patterns)
-
-        is_any_account_collapsible_displayed = update_account_collapsibles()
-
-        self.no_content_available.display = not is_any_account_collapsible_displayed
+    async def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:
+        with self.app.batch_update():
+            await self.authority_roles.update(self.filter_authority.selected_options, *filter_patterns)
 
     def _update_input_suggestions(self) -> None:
         input_suggestions: set[str] = set()
