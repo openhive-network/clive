@@ -205,20 +205,13 @@ class AuthorityType(CliveCollapsible):
         title: str,
         collapsed: bool = False,
     ) -> None:
-        self._weight_threshold = None
-        right_hand_side_text = None
-        if account_authorities and isinstance(account_authorities, WaxAuthority):
-            self._weight_threshold = account_authorities.weight_threshold
-            collected_weights = WaxAuthorityWrapper(account_authorities).collect_weights(self.profile.keys)
-            right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {self._weight_threshold}"
-
+        self._account_authorities = account_authorities
         super().__init__(
             AuthorityTable(account_authorities),
             title=title,
             collapsed=collapsed,
-            right_hand_side_text=right_hand_side_text,
+            right_hand_side_text=self._get_right_hand_side_text(),
         )
-        self._account_authorities = account_authorities
 
     @property
     def authority(self) -> WaxAuthority | str | None:
@@ -251,6 +244,16 @@ class AuthorityType(CliveCollapsible):
 
         if matched:
             update_display_in_authority_table()
+
+    def _get_right_hand_side_text(self) -> str | None:
+        right_hand_side_text = None
+
+        if self._account_authorities and isinstance(self._account_authorities, WaxAuthority):
+            weight_threshold = self._account_authorities.weight_threshold
+            collected_weights = WaxAuthorityWrapper(self._account_authorities).collect_weights(self.profile.keys)
+            right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {weight_threshold}"
+
+        return right_hand_side_text
 
 
 class AuthorityHeader(Horizontal):
