@@ -145,14 +145,12 @@ class AccountCollapsible(CliveCollapsible):
         *,
         collapsed: bool = False,
     ) -> None:
-        widgets_to_mount = []
-
-        for role in operation.categories.hive:
-            title = role.level if role.level != "memo" else "memo key"
-            widgets_to_mount.append(AuthorityType(role.value, title=title, collapsed=collapsed))
-
-        super().__init__(*widgets_to_mount, title=operation.categories.hive.account, collapsed=collapsed)
         self._operation = operation
+        super().__init__(
+            *self._create_widgets_to_mount(collapsed=collapsed),
+            title=operation.categories.hive.account,
+            collapsed=collapsed,
+        )
 
     @property
     def operation(self) -> AccountAuthorityUpdateOperation:
@@ -188,6 +186,15 @@ class AccountCollapsible(CliveCollapsible):
 
         self.display = False
         return False
+
+    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityType]:
+        widgets_to_mount = []
+
+        for role in self._operation.categories.hive:
+            title = role.level if role.level != "memo" else "memo key"
+            widgets_to_mount.append(AuthorityType(role.value, title=title, collapsed=collapsed))
+
+        return widgets_to_mount
 
 
 class AuthorityType(CliveCollapsible):
