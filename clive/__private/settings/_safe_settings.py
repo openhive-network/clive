@@ -12,6 +12,7 @@ from beekeepy.handle.remote import RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from inflection import underscore
 
+from clive.__private.core.constants.env import MAPPED_HOST_DIRECTORY_NAME
 from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_CLOSE_TIMEOUT,
     BEEKEEPER_COMMUNICATION_ATTEMPTS_AMOUNT,
@@ -365,6 +366,10 @@ class SafeSettings:
     @property
     def data_path(self) -> Path:
         return self._get_data_path()
+
+    @property
+    def mapped_host_directory_path(self) -> Path:
+        return self._get_data_path() / MAPPED_HOST_DIRECTORY_NAME
 
     @property
     def max_number_of_tracked_accounts(self) -> int:
