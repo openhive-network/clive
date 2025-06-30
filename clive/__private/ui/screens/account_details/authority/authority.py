@@ -265,7 +265,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
     def __init__(self, key_or_account: str, weight: int) -> None:
         self._key_or_account = key_or_account
         self._weight = weight
-        self._is_account_entry = not self._key_or_account.startswith("STM")
+        self._is_account_entry = not PublicKey.is_valid(key_or_account)
         super().__init__(*self._create_cells())
 
     @property
