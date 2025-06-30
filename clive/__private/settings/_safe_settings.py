@@ -39,6 +39,7 @@ from clive.__private.core.constants.setting_identifiers import (
     NODE_REFRESH_RATE_SECS,
     SECRETS_DEFAULT_PRIVATE_KEY,
     SECRETS_NODE_ADDRESS,
+    SELECT_FILE_ROOT_PATH,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import settings
@@ -367,6 +368,10 @@ class SafeSettings:
         return self._get_data_path()
 
     @property
+    def select_file_root_path(self) -> Path:
+        return self._get_select_file_root_path()
+
+    @property
     def custom_bindings_path(self) -> Path:
         return self.data_path / "custom_bindings.toml"
 
@@ -398,8 +403,8 @@ class SafeSettings:
         self._namespaces.add(namespace)
         return namespace(self)
 
-    def _get_data_path(self) -> Path:
-        setting_name = DATA_PATH
+    def _get_path(self, path: str) -> Path:
+        setting_name = path
         value = settings.get(setting_name)
         if isinstance(value, Path):
             # case when value is set in runtime, by us
@@ -407,6 +412,12 @@ class SafeSettings:
         # case when value is overridden by environment variable
         self._assert_is_string(setting_name, value=value)
         return Path(value)
+
+    def _get_data_path(self) -> Path:
+        return self._get_path(DATA_PATH)
+
+    def _get_select_file_root_path(self) -> Path:
+        return self._get_path(SELECT_FILE_ROOT_PATH)
 
     def _get_max_number_of_tracked_accounts(self) -> int:
         return int(self._get_number(MAX_NUMBER_OF_TRACKED_ACCOUNTS, default=6, minimum=1))

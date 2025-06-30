@@ -5,6 +5,7 @@ LOG_LEVEL_1ST_PARTY = "INFO"  # LOG_LEVELS should include same or lower level th
 LOG_LEVEL_3RD_PARTY = "WARNING"  #  LOG_LEVELS should include same or lower level than LOG_LEVEL_3RD_PARTY
 LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only logs of latest run will be kept
 MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
+SELECT_FILE_ROOT_PATH = "" # if not given, it will point to user home directory
 
 [default.beekeeper]
 REMOTE_ADDRESS = "" # Address of the beekeeper, if not given, beekeeper will start locally.

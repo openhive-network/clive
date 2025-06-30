@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Final
 
 DATA_PATH: Final[str] = "DATA_PATH"
+SELECT_FILE_ROOT_PATH: Final[str] = "SELECT_FILE_ROOT_PATH"
 MAX_NUMBER_OF_TRACKED_ACCOUNTS: Final[str] = "MAX_NUMBER_OF_TRACKED_ACCOUNTS"
 
 IS_DEV: Final[str] = "IS_DEV"
