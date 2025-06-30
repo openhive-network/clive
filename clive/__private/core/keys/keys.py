@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, overload
 
 from clive.__private.core import iwax
+from clive.__private.core.validate_schema_field import is_schema_field_valid
+from clive.__private.models.schemas import PublicKey as SchemaPublicKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -15,7 +17,18 @@ class PrivateKeyError(CliveError):
     """A PrivateKey related error."""
 
 
+class PublicKeyError(CliveError):
+    """A PublicKey related error."""
+
+
 class PrivateKeyInvalidFormatError(PrivateKeyError):
+    def __init__(self, value: str) -> None:
+        self.value = value
+        message = f"Given key is in invalid form: `{value}`"
+        super().__init__(message)
+
+
+class PublicKeyInvalidFormatError(PublicKeyError):
     def __init__(self, value: str) -> None:
         self.value = value
         message = f"Given key is in invalid form: `{value}`"
@@ -80,6 +93,22 @@ class PublicKey(Key):
                 self.value == other if self.determine_key_type(other) is PublicKey else self == PrivateKey(value=other)
             )
         return super().__eq__(other)
+
+    @staticmethod
+    def validate(key: str) -> None:
+        """
+        Validate the given key.
+
+        Raises
+        ------
+        PublicKeyInvalidFormatError: if public key is not in valid format.
+        """
+        if not is_schema_field_valid(SchemaPublicKey, key):
+            raise PublicKeyInvalidFormatError(key)
+
+    @classmethod
+    def is_valid(cls, key: str) -> bool:
+        return is_schema_field_valid(SchemaPublicKey, key)
 
     def with_alias(self, alias: str) -> PublicKeyAliased:
         return PublicKeyAliased(alias=alias, value=self.value)
