@@ -30,18 +30,7 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
 
     def __init__(self, account: TrackedAccount) -> None:
         self._initial_checked_account_name = account.name
-        working_account_name = self.profile.accounts.working.name if self.profile.accounts.working_or_none else None
-        self._filter_entries = [Selection("all", "all")] + [
-            Selection(
-                f"{tracked_account.name}{
-                    ' (working)' if working_account_name and tracked_account.name is working_account_name else ''
-                }",
-                tracked_account.name,
-                initial_state=tracked_account.name is self._initial_checked_account_name,
-            )
-            for tracked_account in self.profile.accounts.tracked
-        ]
-        super().__init__(*self._filter_entries)
+        super().__init__(*self._create_selections())
 
     @property
     def is_all_selected(self) -> bool:
@@ -49,10 +38,7 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
 
     def restore_default(self) -> None:
         self.deselect_all()
-        all_selections = [self.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)]
-        for selection in all_selections:
-            if selection.value == self._initial_checked_account_name:
-                self.select(selection)
+        self.select(self.get_option(self._initial_checked_account_name))
 
     @on(SelectionList.SelectionToggled)
     def _handle_selection(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
