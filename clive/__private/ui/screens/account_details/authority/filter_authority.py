@@ -90,14 +90,18 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
 class AccountFilterCollapsible(Collapsible):
     BORDER_TITLE = " Authority for accounts "
 
-    def __init__(self, initial_title: str) -> None:
-        super().__init__(title=initial_title)
-        self._initial_title = initial_title
+    def __init__(self, account: TrackedAccount) -> None:
+        super().__init__(title=account.name)
+        self.compose_add_child(AccountSelectionList(account))
+        self._initial_title = account.name
 
     def restore_title(self) -> None:
         self.title = self._initial_title
 
-    def update_title(self, selection_list: AccountSelectionList) -> None:
+    @on(AccountSelectionList.SelectionToggled)
+    def update_title(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
+        selection_list = event.selection_list
+        assert isinstance(selection_list, AccountSelectionList), "SelectionList have to be AccountSelectionList."
         selected_accounts = selection_list.selected
         if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and selection_list.is_all_selected):  # noqa: PLR2004
             self.title = next(iter(selected_accounts))
@@ -126,8 +130,7 @@ class FilterAuthority(Horizontal, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield AuthorityFilterInput()
-        with AccountFilterCollapsible(initial_title=self._account.name):
-            yield AccountSelectionList(self._account)
+        yield AccountFilterCollapsible(account=self._account)
         yield SearchButton()
         yield ClearButton()
 
@@ -150,7 +153,6 @@ class FilterAuthority(Horizontal, CliveWidget):
     @on(AccountSelectionList.SelectionToggled)
     def account_toggled(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
         assert isinstance(event.selection_list, AccountSelectionList), "SelectionList have to be AccountSelectionList."
-        self.account_filter_collapsible.update_title(event.selection_list)
         self.post_message(self.SelectedAccountsChanged())
 
     @on(SearchButton.Pressed)
