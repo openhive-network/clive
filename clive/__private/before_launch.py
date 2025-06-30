@@ -20,6 +20,10 @@ def _create_clive_data_directory() -> None:
     Path(safe_settings.data_path).mkdir(parents=True, exist_ok=True)
 
 
+def _create_select_file_root_directory() -> None:
+    Path(safe_settings.select_file_root_path).mkdir(parents=True, exist_ok=True)
+
+
 def _initialize_user_settings() -> None:
     user_settings_path = Path(safe_settings.data_path) / "settings.toml"
     if not user_settings_path.is_file():
@@ -46,5 +50,6 @@ def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_h
     logger.setup(enable_textual=enable_textual_logger, enable_stream_handlers=enable_stream_handlers)
 
     _create_clive_data_directory()
+    _create_select_file_root_directory()
     _initialize_user_settings()
     _log_in_dev_mode()
