@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -9,6 +8,7 @@ from textual.containers import Horizontal
 from textual.widgets import DirectoryTree, Label
 
 from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
+from clive.__private.settings import safe_settings
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog, CliveActionDialogResultT
 from clive.__private.ui.widgets.buttons.confirm_button import ConfirmOneLineButton
 from clive.__private.ui.widgets.inputs.path_input import PathInput
@@ -74,7 +74,7 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
             yield PathInput(placeholder=PATH_PLACEHOLDER, validator_mode=self._default_validator_mode())
         yield from self.additional_content_after_input()
         yield DirectoryTreeHint("Or select from the directory tree:")
-        yield DirectoryTree(str(Path.home()))
+        yield DirectoryTree(str(safe_settings.select_file_root_path))
 
     def additional_content_after_input(self) -> ComposeResult:
         """Override this method to add additional content before the input."""
