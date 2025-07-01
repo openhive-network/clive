@@ -22,9 +22,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'pydantic (==1.10.18)',
     'toml (==0.10.2)',
-    'schemas (==0.0.1.dev345+0b349a2)',
-    'beekeepy (==0.0.1.dev388+171802c)',
-    'wax (==0.3.10.dev712+7e6218a0)',
+    'schemas (==0.0.1.dev380+0c1fb07)',
+    'beekeepy (==0.0.1.dev398+4c1f881)',
+    'wax (==0.3.10.dev767+73f86727)',
 ]
 
 [project.urls]
@@ -44,6 +44,8 @@ source = [
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-database_api", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-network_broadcast_api", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
 version = "0.0.0"
 
