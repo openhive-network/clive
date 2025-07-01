@@ -12,7 +12,7 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import NewKeyAliasDialog
+from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
 from clive.__private.ui.widgets.buttons import (
@@ -100,10 +100,8 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
         self._public_key = public_key
 
     @on(Pressed)
-    def add_private_key(self, event: ImportPrivateKeyButton.Pressed) -> None:
-        assert isinstance(event.button, ImportPrivateKeyButton), "Incompatible type of button."
-        public_key = event.button._public_key
-        self.app.push_screen(NewKeyAliasDialog(public_key), self._key_aliases_changed_callback)
+    def add_private_key(self) -> None:
+        self.app.push_screen(NewKeyAliasDialog(public_key_to_match=self._public_key), self._key_aliases_changed_callback)
 
 
 class RemovePrivateKeyButton(PrivateKeyActionButton):
@@ -115,10 +113,7 @@ class RemovePrivateKeyButton(PrivateKeyActionButton):
         self._key_alias = key_alias
 
     @on(Pressed)
-    def remove_private_key(self, event: RemovePrivateKeyButton.Pressed) -> None:
-        from clive.__private.ui.dialogs import RemoveKeyAliasDialog  # noqa: PLC0415
-
-        assert isinstance(event.button, RemovePrivateKeyButton), "Incompatible type of button."
+    def remove_private_key(self) -> None:
         self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)
 
 
