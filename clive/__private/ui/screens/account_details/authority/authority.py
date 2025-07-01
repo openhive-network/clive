@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Final
 
 from textual import on
@@ -9,6 +10,7 @@ from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
@@ -271,39 +273,57 @@ class AuthorityHeader(Horizontal):
             yield Static("Wallet keys", classes=f"{CLIVE_EVEN_COLUMN_CLASS_NAME} action")
 
 
-class AuthorityItem(CliveCheckerboardTableRow):
-    def __init__(self, key_or_account: str, weight: int) -> None:
-        self._key_or_account = key_or_account
-        self._weight = weight
-        self._is_account_entry = not PublicKey.is_valid(key_or_account)
+class BaseItem(CliveCheckerboardTableRow, AbstractClassMessagePump):
+    """Base class for items in the  authority table."""
+
+    def __init__(self, entry_value: str) -> None:
+        self._entry_value = entry_value
+        self._is_account_entry = not PublicKey.is_valid(entry_value)
         super().__init__(*self._create_cells())
 
     @property
+    def alias(self) -> str | None:
+        alias : str | None = None
+        if not self._is_account_entry and self._entry_value in self.profile.keys:
+            alias = self.profile.keys.get_first_from_public_key(self._entry_value).alias
+        return alias
+
+    @property
     def entry(self) -> str:
-        return self._key_or_account
+        return self._entry_value
 
     @property
     def public_key(self) -> PublicKey:
         assert not self._is_account_entry, "This property is only available for key entries."
-        return PublicKey(value=self._key_or_account)
+        return PublicKey(value=self._entry_value)
 
     def update(self, *filter_patterns: str) -> None:
         filter_pattern_present = bool(filter_patterns)
-        self.display = is_match(self._key_or_account, *filter_patterns) if filter_pattern_present else True
+        self.display = is_match(self._entry_value, *filter_patterns) if filter_pattern_present else True
+
+    @abstractmethod
+    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
+        pass
+
+    def _generate_key_or_account_text(self) -> str:
+        """Generate the text for the key or account cell."""
+        key_or_account_text = self._entry_value
+        alias = self.alias
+
+        if alias:
+            if alias != self._entry_value:
+                key_or_account_text = f"{alias} ({self._entry_value})"
+
+        return key_or_account_text
+
+
+class AuthorityItem(BaseItem):
+    def __init__(self, key_or_account: str, weight: int) -> None:
+        self._weight = weight
+        super().__init__(key_or_account)
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._key_or_account in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias if is_known_key else None
-        key_or_account_text = (
-            f"{alias} ({self._key_or_account})" if alias and alias != self._key_or_account else self._key_or_account
-        )
-
-        if self._is_account_entry:
-            action_widget: Widget = Static()
-        elif alias is not None:
-            action_widget = RemovePrivateKeyButton(key_alias=alias)
-        else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
+        key_or_account_text = self._generate_key_or_account_text()
 
         action_widget: Widget | None = None
 
@@ -325,32 +345,15 @@ class AuthorityItem(CliveCheckerboardTableRow):
         ]
 
 
-class MemoItem(CliveCheckerboardTableRow):
-    def __init__(self, memo_key: str) -> None:
-        self._memo_key = memo_key
-        super().__init__(*self._create_cells())
-
-    @property
-    def entry(self) -> str:
-        return self._memo_key
-
-    @property
-    def public_key(self) -> PublicKey:
-        return PublicKey(value=self._memo_key)
-
-    def update(self, *filter_patterns: str) -> None:
-        filter_pattern_present = bool(filter_patterns)
-        self.display = is_match(self._memo_key, *filter_patterns) if filter_pattern_present else True
-
+class MemoItem(BaseItem):
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._memo_key in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias if is_known_key else None
-        memo_key_text = f"{alias} ({self._memo_key})" if alias and alias != self._memo_key else self._memo_key
+        memo_key_text = self._generate_key_or_account_text()
+        alias = self.alias
 
-        if alias is not None:
+        if alias:
             action_widget: Widget = RemovePrivateKeyButton(key_alias=alias)
         else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._memo_key))
+            action_widget = ImportPrivateKeyButton(self.public_key)
         return [
             CliveCheckerBoardTableCell(memo_key_text, classes="memo-key"),
             CliveCheckerBoardTableCell(
