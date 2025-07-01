@@ -51,45 +51,44 @@ def is_match(text: str, pattern: str | list[str]) -> bool:
     if isinstance(pattern, list):
         return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in pattern)
     return bool(re.match(generate_regex_pattern(pattern), text))
+class WaxAuthorityWrapper:
+    """A wrapper to provide utility methods for WaxAccountAuthorityInfo and WaxAuthority objects."""
+
+    def __init__(self, authority: WaxAccountAuthorityInfo | WaxAuthority) -> None:
+        self._authority = authority
+
+    def collect_all_entries(self) -> list[str]:
+        if isinstance(self._authority, WaxAccountAuthorityInfo):
+            all_entries = [self._authority.memo_key]
+            for authority_type in ["owner", "active", "posting"]:
+                wax_authority = getattr(self._authority.authorities, authority_type)
+                all_entries = all_entries + self._get_account_and_key_auths(wax_authority)
+        else:
+            all_entries = self._get_account_and_key_auths(self._authority)
+        return all_entries
+
+    def collect_weights(self, keys: KeyManager) -> list[int]:
+        """Collect weights for keys that are present in the KeyManager."""
+        weights: list[int] = []
+        if isinstance(self._authority, WaxAccountAuthorityInfo):
+            for authority_type in ["owner", "active", "posting"]:
+                wax_authority = getattr(self._authority.authorities, authority_type)
+                weights = weights + [
+                    wax_authority.key_auths[key] for key in list(wax_authority.key_auths.keys()) if key in keys
+                ]
+        else:
+            weights = [self._authority.key_auths[key] for key in list(self._authority.key_auths.keys()) if key in keys]
+        return weights
+
+    def is_object_has_entry_that_matches_pattern(self, *patterns: str) -> bool:
+        return any(is_match(entry, *patterns) for entry in self.collect_all_entries())
+
+    @staticmethod
+    def _get_account_and_key_auths(authority: WaxAuthority) -> list[str]:
+        return list(authority.account_auths.keys()) + list(authority.key_auths.keys())
 
 
-def collect_all_entries_from_wax_account_authority_info_object(authority: WaxAccountAuthorityInfo) -> list[str]:
-    all_entries = [authority.memo_key]
-    for authority_type in ["owner", "active", "posting"]:
-        wax_authority = getattr(authority.authorities, authority_type)
-        all_entries = all_entries + collect_all_entries_from_wax_authority_object(wax_authority)
-    return all_entries
 
-
-def collect_all_entries_from_wax_authority_object(authority: WaxAuthority) -> list[str]:
-    return list(authority.account_auths.keys()) + list(authority.key_auths.keys())
-
-
-def collect_weights_from_wax_authority_object(authority: WaxAuthority, keys: KeyManager) -> list[int]:
-    """Collect weights from WaxAuthority object for keys that are present in the KeyManager."""
-    key_auths = authority.key_auths
-    return [key_auths[key] for key in list(key_auths.keys()) if key in keys]
-
-
-def is_wax_account_authority_info_object_has_entry_that_matches_pattern(
-    authority: WaxAccountAuthorityInfo, pattern: str | list[str]
-) -> bool:
-    """Check if given pattern or any of the patterns are present in WaxAccountAuthorityInfo object."""
-    if is_match(authority.memo_key, pattern):
-        return True
-    for authority_type in ["owner", "active", "posting"]:
-        wax_authority = getattr(authority.authorities, authority_type)
-        if is_wax_authority_object_has_entry_that_matches_pattern(wax_authority, pattern):
-            return True
-    return False
-
-
-def is_wax_authority_object_has_entry_that_matches_pattern(authority: WaxAuthority, pattern: str | list[str]) -> bool:
-    """Check if the given pattern or any of the patterns are present in the WaxAuthority object."""
-    for entry in list(authority.account_auths.keys()) + list(authority.key_auths.keys()):
-        if is_match(entry, pattern):
-            return True
-    return False
 
 
 class PrivateKeyActionButton(OneLineButton):
@@ -206,10 +205,8 @@ class AuthorityType(CliveCollapsible):
         right_hand_side_text = None
         if account_authorities and isinstance(account_authorities, WaxAuthority):
             self._weight_threshold = account_authorities.weight_threshold
-            self._collected_weights = collect_weights_from_wax_authority_object(account_authorities, self.profile.keys)
-            right_hand_side_text = (
-                f"imported weights: {sum(self._collected_weights)}, threshold: {self._weight_threshold}"
-            )
+            collected_weights = WaxAuthorityWrapper(account_authorities).collect_weights(self.profile.keys)
+            right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {self._weight_threshold}"
 
         super().__init__(
             AuthorityTable(account_authorities, filter_pattern=filter_pattern),
@@ -428,10 +425,8 @@ class Authority(TabPane, CliveWidget):
         options_selected_in_filter = filter_authority.selected_options
         for authority in self._authorities:
             if authority.account in options_selected_in_filter:
-                self._filtered_authorities.append(authority)
-                for collected_entry in collect_all_entries_from_wax_account_authority_info_object(authority):
-                    if collected_entry not in input_suggestions:
-                        input_suggestions.append(collected_entry)
+                for collected_entry in WaxAuthorityWrapper(authority).collect_all_entries():
+                    input_suggestions.add(collected_entry)
 
         input_suggestions.extend(self.profile.keys.get_all_aliases())
         filter_authority.authority_filter_input.clear_suggestions()
