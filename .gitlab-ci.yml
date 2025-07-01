@@ -52,7 +52,7 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: 9009edf6270db5a0f3bc1d77308bd5cbfb46c1f6
+    ref: 2c0021eef897d767014c4408bbec0fc8db65a700
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
     # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
 
