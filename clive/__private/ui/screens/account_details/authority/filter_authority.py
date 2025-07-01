@@ -75,6 +75,8 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
 
 class AccountFilterCollapsible(Collapsible):
     BORDER_TITLE = " Authority for accounts "
+    TITLE_NO_SELECTION: Final = "no selected accounts"
+    TITLE_MULTIPLE_SELECTION: Final = "multiple"
 
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(title=account.name)
@@ -92,9 +94,9 @@ class AccountFilterCollapsible(Collapsible):
         if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and selection_list.is_all_selected):  # noqa: PLR2004
             self.title = next(iter(selected_accounts))
         elif len(selected_accounts) == 0:
-            self.title = "no selected accounts"
+            self.title = self.TITLE_NO_SELECTION
         else:
-            self.title = "multiple"
+            self.title = self.TITLE_MULTIPLE_SELECTION
 
 
 class FilterAuthority(Horizontal, CliveWidget):
