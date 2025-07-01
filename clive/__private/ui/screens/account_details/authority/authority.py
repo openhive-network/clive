@@ -111,10 +111,8 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
         super().__init__("Import key", "success", public_key)
 
     @on(Pressed)
-    def add_private_key(self, event: ImportPrivateKeyButton.Pressed) -> None:
-        assert isinstance(event.button, ImportPrivateKeyButton), "Incompatible type of button."
-        public_key = event.button.public_key
-        self.app.push_screen(NewKeyAliasDialog(public_key), self._key_aliases_changed_callback)
+    def add_private_key(self) -> None:
+        self.app.push_screen(NewKeyAliasDialog(public_key_to_match=self.public_key), self._key_aliases_changed_callback)
 
 
 class RemovePrivateKeyButton(PrivateKeyActionButton):
@@ -125,12 +123,8 @@ class RemovePrivateKeyButton(PrivateKeyActionButton):
         super().__init__("Remove", "error", public_key)
 
     @on(Pressed)
-    def remove_private_key(self, event: RemovePrivateKeyButton.Pressed) -> None:
-        from clive.__private.ui.dialogs import RemoveKeyAliasDialog
-
-        assert isinstance(event.button, RemovePrivateKeyButton), "Incompatible type of button."
-        public_key = event.button.public_key
-        self.app.push_screen(RemoveKeyAliasDialog(public_key=public_key), self._key_aliases_changed_callback)
+    def remove_private_key(self) -> None:
+        self.app.push_screen(RemoveKeyAliasDialog(public_key=self.public_key), self._key_aliases_changed_callback)
 
 
 class AuthorityRoles(SectionScrollable):
@@ -253,9 +247,9 @@ class AuthorityItem(CliveCheckerboardTableRow):
                 Static()
                 if self._is_account_entry
                 else (
-                    RemovePrivateKeyButton(PublicKey(value=self._key_or_account))
+                    RemovePrivateKeyButton(self.public_key)
                     if self._key_or_account in self.profile.keys
-                    else ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
+                    else ImportPrivateKeyButton(self.public_key)
                 ),
                 classes="action",
             ),
