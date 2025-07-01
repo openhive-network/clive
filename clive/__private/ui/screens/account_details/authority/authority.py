@@ -502,7 +502,7 @@ class Authority(TabPane, CliveWidget):
         await self._apply_authority_filter()
 
     @on(FilterAuthority.Cleared)
-    async def rebuild_after_clearing_authority_filter(self) -> None:
+    async def handle_filter_cleared(self) -> None:
         self._update_input_suggestions()
         await self._update_display_inside_authority_roles()
 
