@@ -63,11 +63,7 @@ class WaxAuthorityWrapper:
 
 
 def is_match(text: str, *patterns: str) -> bool:
-    def generate_regex_pattern(pattern: str) -> str:
-        escaped_pattern = re.escape(pattern)
-        return rf".*{escaped_pattern}.*"
-
-    return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in patterns)
+    return any(re.search(re.escape(pattern), text) for pattern in patterns)
 
 
 class PrivateKeyActionButton(OneLineButton):
