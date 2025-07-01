@@ -12,7 +12,7 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import NewKeyAliasDialog
+from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
 from clive.__private.ui.widgets.buttons import (
@@ -39,17 +39,8 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.keys.key_manager import KeyManager
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
-    from wax.models.authority import WaxAccountAuthorityInfo
 
 
-def is_match(text: str, pattern: str | list[str]) -> bool:
-    def generate_regex_pattern(pattern: str) -> str:
-        escaped_pattern = re.escape(pattern)
-        return rf".*{escaped_pattern}.*"
-
-    if isinstance(pattern, list):
-        return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in pattern)
-    return bool(re.match(generate_regex_pattern(pattern), text))
 class WaxAuthorityWrapper:
     """A wrapper to provide utility methods for WaxAccountAuthorityInfo and WaxAuthority objects."""
 
@@ -87,7 +78,12 @@ class WaxAuthorityWrapper:
         return list(authority.account_auths.keys()) + list(authority.key_auths.keys())
 
 
+def is_match(text: str, *patterns: str) -> bool:
+    def generate_regex_pattern(pattern: str) -> str:
+        escaped_pattern = re.escape(pattern)
+        return rf".*{escaped_pattern}.*"
 
+    return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in patterns)
 
 
 class PrivateKeyActionButton(OneLineButton):
