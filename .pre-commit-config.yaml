@@ -40,6 +40,11 @@ repos:
           - stylelint@16.2.1
           - stylelint-config-standard-scss@13.0.0
         args: [ "--fix" ]
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.6.6
+    hooks:
+      - id: pydoclint
+        name: check docstrings with pydoclint
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.11.5'
     hooks:
