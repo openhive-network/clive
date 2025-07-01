@@ -27,7 +27,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
     CliveCollapsible,
 )
-from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFilterInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
@@ -464,37 +463,21 @@ class Authority(TabPane, CliveWidget):
     @on(FilterAuthority.AuthorityFilterReady)
     async def _apply_authority_filter(self) -> None:
         """Apply the authority filter based on the input and update the UI."""
+        authority_filter_input = self.filter_authority.authority_filter_input
+        filter_pattern = authority_filter_input.value_or_error
+        all_patterns = []
 
-        def get_filter_pattern() -> str | None:
-            """Retrieve and process the filter pattern from the authority input."""
-            filter_pattern = authority_filter_input.value_or_none()
-            if filter_pattern:
-                return filter_pattern
-            return None
+        if filter_pattern:
+            self._update_input_suggestions()
 
-        def handle_existing_filter_pattern() -> None:
-            if self._filter_pattern_already_applied:
-                self._update_input_suggestions()
-
-        def generate_filter_patterns() -> list[str]:
-            assert isinstance(filter_pattern, str), "Filter pattern should be a string."
             alias_patterns = [
                 aliased_key.value for aliased_key in self.profile.keys if is_match(aliased_key.alias, filter_pattern)
             ]
-            return [*alias_patterns, filter_pattern]
+            all_patterns.extend(alias_patterns)
+            all_patterns.append(filter_pattern)
 
-        authority_filter_input = self.query_exactly_one(AuthorityFilterInput)
-        filter_pattern = get_filter_pattern()
-
-        if filter_pattern:
-            handle_existing_filter_pattern()
-            multiple_patterns = generate_filter_patterns()
-        else:
-            multiple_patterns = []
-
-        self._filter_pattern_already_applied = bool(filter_pattern)
         self.filter_authority.collapse_account_filter_collapsible()
-        await self._update_display_inside_authority_roles(*multiple_patterns)
+        await self._update_display_inside_authority_roles(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def rebuild_after_key_aliases_changed(self) -> None:
