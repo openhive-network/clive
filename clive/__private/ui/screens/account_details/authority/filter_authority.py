@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Horizontal
@@ -27,78 +27,108 @@ class AccountSelectionList(SelectionList[str], CliveWidget):
     """
     Selection list with account names for filtering authorities.
 
+    Attributes:
+        ALL_OPTION: Constant for the "all" option in the selection list.
+
     Args:
         account: The account that will be initially selected.
     """
 
+    class SelectionToggled(SelectionList.SelectionToggled[str]):
+        selection_list: AccountSelectionList
+
+    class SelectionMessage(SelectionList.SelectionMessage[str]):
+        selection_list: AccountSelectionList
+
+    ALL_OPTION: Final[str] = "all"
+
     def __init__(self, account: TrackedAccount) -> None:
         self._initial_checked_account_name = account.name
-        working_account_name = self.profile.accounts.working.name if self.profile.accounts.working_or_none else None
-        self._filter_entries = [Selection("all", "all")] + [
-            Selection(
-                f"{tracked_account.name}{
-                    ' (working)' if working_account_name and tracked_account.name is working_account_name else ''
-                }",
-                tracked_account.name,
-                initial_state=tracked_account.name is self._initial_checked_account_name,
-            )
-            for tracked_account in self.profile.accounts.tracked
-        ]
-        super().__init__(*self._filter_entries)
+        super().__init__(*self._create_selections())
+
+    @property
+    def is_all_selected(self) -> bool:
+        return self.ALL_OPTION in self.selected
 
     def restore_default(self) -> None:
         self.deselect_all()
-        all_selections = [self.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)]
-        for selection in all_selections:
-            if selection.value == self._initial_checked_account_name:
-                self.select(selection)
+        self.select(self.get_option(self._initial_checked_account_name))
 
     @on(SelectionList.SelectionToggled)
-    def _handle_options_in_filter(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
-        def change_every_option_except_all_option(*, action: Literal["select", "deselect"]) -> None:
-            for selection in all_selections:
-                if selection.value != "all":
-                    selection_list.select(selection) if action == "select" else selection_list.deselect(selection)
+    def _handle_selection(self, event: AccountSelectionList.SelectionToggled) -> None:
+        """
+        Handle selection toggling -  manage the "all" option behavior and its interaction with other options.
 
-        index = event.selection_index
-        selection_list = event.selection_list
-        option_toggled = selection_list.get_option_at_index(index)
-        all_selections = [
-            selection_list.get_option_at_index(index) for index in range(len(self.profile.accounts.tracked) + 1)
+        When "all" is selected, all other options are selected.
+        When "all" is deselected, all other options are deselected.
+        When any other option is selected while "all" is selected, "all" gets deselected.
+
+        Args:
+            event: The event containing the selection list and the toggled selection.
+        """
+        if event.selection.value == self.ALL_OPTION:
+            if self.is_all_selected:
+                self.select_all()
+            else:
+                self.deselect_all()
+        elif self.is_all_selected:
+            self.deselect(self.ALL_OPTION)
+
+    def _create_selections(self) -> list[Selection[str]]:
+        all_option = Selection(self.ALL_OPTION, self.ALL_OPTION, id=self.ALL_OPTION)
+        tracked_account_options = [
+            Selection(
+                self._get_account_selection_prompt(tracked_account.name),
+                tracked_account.name,
+                initial_state=tracked_account.name == self._initial_checked_account_name,
+                id=tracked_account.name,
+            )
+            for tracked_account in self.profile.accounts.tracked
         ]
 
-        if option_toggled.value == "all":
-            if "all" in selection_list.selected:
-                change_every_option_except_all_option(action="select")
-            else:
-                change_every_option_except_all_option(action="deselect")
-        else:
-            selection_for_all_accounts = selection_list.get_option_at_index(0)
-            if "all" in selection_list.selected:
-                selection_list.deselect(selection_for_all_accounts)
+        return [all_option, *tracked_account_options]
+
+    def _get_account_selection_prompt(self, account_name: str) -> str:
+        postfix = " (working)" if self.profile.accounts.is_account_working(account_name) else ""
+        return f"{account_name}{postfix}"
 
 
 class AccountFilterCollapsible(Collapsible):
     BORDER_TITLE = " Authority for accounts "
+    TITLE_NO_SELECTION: Final[str] = "no selected accounts"
+    TITLE_MULTIPLE_SELECTION: Final[str] = "multiple"
 
-    def __init__(self, initial_title: str) -> None:
-        super().__init__(title=initial_title)
-        self._initial_title = initial_title
+    def __init__(self, account: TrackedAccount) -> None:
+        super().__init__(title=account.name)
+        self.compose_add_child(AccountSelectionList(account))
+        self._initial_title = account.name
 
     def restore_title(self) -> None:
         self.title = self._initial_title
 
-    def update_title(self, selected_accounts: list[str]) -> None:
-        if len(selected_accounts) == 1 or (len(selected_accounts) == 2 and "all" in selected_accounts):  # noqa: PLR2004
-            self.title = next(iter(selected_accounts))
-        elif len(selected_accounts) == 0:
-            self.title = "no selected accounts"
+    @on(AccountSelectionList.SelectionToggled)
+    def update_title(self, event: AccountSelectionList.SelectionToggled) -> None:
+        selection_list = event.selection_list
+        selected = selection_list.selected
+        count = len(selected)
+
+        is_no_selection = count == 0
+        is_single_selection = count == 1
+        is_all_with_single_account_selected = count == 2 and selection_list.is_all_selected  # noqa: PLR2004
+
+        if is_no_selection:
+            self.title = self.TITLE_NO_SELECTION
+        elif is_single_selection:
+            self.title = selected[0]
+        elif is_all_with_single_account_selected:
+            self.title = next(name for name in selected if name != selection_list.ALL_OPTION)
         else:
-            self.title = "multiple"
+            self.title = self.TITLE_MULTIPLE_SELECTION
 
 
 class FilterAuthority(Horizontal, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
+    BORDER_TITLE = "Filter authority"
 
     class AuthorityFilterReady(Message):
         """Message sent when authority filter is ready to be applied."""
@@ -109,16 +139,13 @@ class FilterAuthority(Horizontal, CliveWidget):
     class SelectedAccountsChanged(Message):
         """Message sent when selected accounts in AccountSelectionList were changed."""
 
-    BORDER_TITLE = "Filter authority"
-
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__()
         self._account = account
 
     def compose(self) -> ComposeResult:
         yield AuthorityFilterInput()
-        with AccountFilterCollapsible(initial_title=self._account.name):
-            yield AccountSelectionList(self._account)
+        yield AccountFilterCollapsible(account=self._account)
         yield SearchButton()
         yield ClearButton()
 
@@ -139,8 +166,7 @@ class FilterAuthority(Horizontal, CliveWidget):
         return self.query_exactly_one(AuthorityFilterInput)
 
     @on(AccountSelectionList.SelectionToggled)
-    def account_toggled(self, event: AccountSelectionList.SelectionToggled[str]) -> None:
-        self.account_filter_collapsible.update_title(event.selection_list.selected)
+    def account_toggled(self) -> None:
         self.post_message(self.SelectedAccountsChanged())
 
     @on(SearchButton.Pressed)
