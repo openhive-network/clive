@@ -301,7 +301,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Must be overridden by the child class when using dynamic table.
 
-        Examples
+        Examples:
         --------
         return self.provider.content.actual_value != self.previous_value
 

@@ -129,7 +129,7 @@ class KeyContainer(Horizontal, CliveWidget):
         """
         Return selected key.
 
-        Raises
+        Raises:
         ------
         NoItemSelectedError: When no key was selected.
         """

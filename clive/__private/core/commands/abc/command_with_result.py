@@ -26,11 +26,11 @@ class CommandWithResult(Command, Generic[CommandResultT], ABC):
         """
         Get the result of the command.
 
-        Returns
+        Returns:
         -------
             The result of the command.
 
-        Raises
+        Raises:
         ------
             ValueError: If the result has not been set before.
         """

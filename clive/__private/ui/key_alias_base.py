@@ -77,7 +77,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         """
         Returns a PrivateKey instance with the given private key value.
 
-        Raises
+        Raises:
         ------
         FailedValidationError: When given input is not a valid private key.
         """
@@ -90,7 +90,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         """
         Returns a PrivateKeyAliased instance with the given alias and private key value.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: when cannot create a private key from the given inputs.
         """
@@ -145,7 +145,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         """
         Validate the inputs.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: when key alias / private key inputs are invalid or private key does
         not match given public key.

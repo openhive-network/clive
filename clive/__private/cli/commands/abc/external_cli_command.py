@@ -34,7 +34,7 @@ class ExternalCLICommand(ABC):
 
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
 
-        Raises
+        Raises:
         ------
         CLIPrettyError: If the command is invalid.
         """

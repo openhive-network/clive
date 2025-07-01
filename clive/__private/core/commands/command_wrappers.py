@@ -53,7 +53,7 @@ class CommandWithResultWrapper(Generic[CommandResultT], ErrorHolder):
         """
         Returns the result of the command if it was successful, otherwise raises an exception.
 
-        Raises
+        Raises:
         ------
         ResultNotAvailableError: if the command failed.
         """

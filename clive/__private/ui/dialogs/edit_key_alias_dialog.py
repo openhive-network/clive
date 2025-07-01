@@ -66,7 +66,7 @@ class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
         """
         Validate the inputs.
 
-        Raises
+        Raises:
         ------
         FailedValidationError: when key alias is not valid.
         """
