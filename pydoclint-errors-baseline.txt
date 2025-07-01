@@ -1,0 +1,533 @@
+clive/__private/cli/clive_typer.py
+    DOC101: Method `CliveTyper.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveTyper.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [chain: bool, help: str | None, name: str | None].
+--------------------
+clive/__private/cli/commands/abc/contextual_cli_command.py
+    DOC001: Function/method `validate_inside_context_manager`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate_inside_context_manager`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+clive/__private/cli/commands/abc/external_cli_command.py
+    DOC001: Function/method `validate`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC001: Function/method `from_`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `from_`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `ExternalCLICommand.from_`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ExternalCLICommand.from_`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any].
+    DOC201: Method `ExternalCLICommand.from_` does not have a return section in docstring
+--------------------
+clive/__private/cli/common/parameters/argument_related_options.py
+    DOC001: Function/method `_make_argument_related_option`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_make_argument_related_option`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_make_argument_related_option`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_make_argument_related_option`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [source: str | OptionInfo].
+    DOC201: Function `_make_argument_related_option` does not have a return section in docstring
+--------------------
+clive/__private/cli/common/parameters/ensure_single_value.py
+    DOC001: Function/method `of`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `of`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `EnsureSingleValue.of`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `EnsureSingleValue.of`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [allow_none: bool, option: ExpectedT | None, positional: ExpectedT | None].
+    DOC201: Method `EnsureSingleValue.of` does not have a return section in docstring
+    DOC501: Method `EnsureSingleValue.of` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `EnsureSingleValue.of` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIPrettyError'].
+--------------------
+clive/__private/cli/common/parameters/modified_param.py
+    DOC001: Function/method `modified_param`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `modified_param`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `modified_param`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `modified_param`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any, source: OptionInfo | ArgumentInfo].
+    DOC201: Function `modified_param` does not have a return section in docstring
+    DOC501: Function `modified_param` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `modified_param` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+clive/__private/cli/exceptions.py
+    DOC101: Method `CLIPrettyError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CLIPrettyError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [exit_code: int, message: str].
+--------------------
+clive/__private/core/accounts/account_container.py
+    DOC001: Function/method `remove`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `remove`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountContainerBase.remove`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountContainerBase.remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_remove: str | Account].
+    DOC001: Function/method `add`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `add`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `WatchedAccountContainer.add`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `WatchedAccountContainer.add`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account].
+    DOC001: Function/method `add`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `add`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `KnownAccountContainer.add`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `KnownAccountContainer.add`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account].
+--------------------
+clive/__private/core/accounts/account_manager.py
+    DOC001: Function/method `set_working_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `set_working_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.set_working_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.set_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: str | Account].
+    DOC001: Function/method `switch_working_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `switch_working_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.switch_working_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [new_working_account: str | Account | None].
+    DOC501: Method `AccountManager.switch_working_account` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `AccountManager.switch_working_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AccountAlreadyExistsError'].
+    DOC001: Function/method `add_tracked_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `add_tracked_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.add_tracked_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.add_tracked_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account].
+    DOC501: Method `AccountManager.add_tracked_account` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `AccountManager.add_tracked_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AccountAlreadyExistsError', 'TryingToAddBadAccountError'].
+    DOC001: Function/method `remove_tracked_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `remove_tracked_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.remove_tracked_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.remove_tracked_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_remove: str | Account].
+    DOC001: Function/method `add_known_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `add_known_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.add_known_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.add_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*accounts_to_add: str | Account].
+    DOC001: Function/method `remove_known_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `remove_known_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.remove_known_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.remove_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*accounts_to_remove: str | Account].
+    DOC001: Function/method `get_known_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_known_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `AccountManager.get_known_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AccountManager.get_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_to_get: str | Account].
+    DOC201: Method `AccountManager.get_known_account` does not have a return section in docstring
+--------------------
+clive/__private/core/accounts/accounts.py
+    DOC001: Function/method `validate`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Account.validate`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Account.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [name: str].
+    DOC501: Method `Account.validate` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Account.validate` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidAccountNameError'].
+--------------------
+clive/__private/core/callback.py
+    DOC001: Function/method `invoke`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `invoke`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `invoke`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `invoke`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*params: Any, callback: Callable[..., Any]].
+    DOC201: Function `invoke` does not have a return section in docstring
+--------------------
+clive/__private/core/commands/abc/command_restricted.py
+    DOC001: Function/method `execute`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `execute`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC501: Method `CommandRestricted.execute` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CommandRestricted.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['self._execution_impossible_error'].
+--------------------
+clive/__private/core/commands/abc/command_with_result.py
+    DOC001: Function/method `result`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `result`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC501: Method `CommandWithResult.result` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CommandWithResult.result` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+clive/__private/core/commands/command_wrappers.py
+    DOC001: Function/method `result_or_raise`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `result_or_raise`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC501: Method `CommandWithResultWrapper.result_or_raise` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CommandWithResultWrapper.result_or_raise` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ResultNotAvailableError'].
+--------------------
+clive/__private/core/commands/commands.py
+    DOC001: Function/method `create_profile_wallets`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `create_profile_wallets`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Commands.create_profile_wallets`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Commands.create_profile_wallets`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, permanent_unlock: bool, profile_name: str | None, unlock_time: timedelta | None].
+    DOC201: Method `Commands.create_profile_wallets` does not have a return section in docstring
+    DOC001: Function/method `unlock`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `unlock`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Commands.unlock`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Commands.unlock`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, permanent: bool, profile_name: str | None, time: timedelta | None].
+    DOC201: Method `Commands.unlock` does not have a return section in docstring
+    DOC001: Function/method `is_wallet_unlocked`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `is_wallet_unlocked`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Commands.is_wallet_unlocked`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Commands.is_wallet_unlocked`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [wallet: AsyncWallet | None].
+    DOC201: Method `Commands.is_wallet_unlocked` does not have a return section in docstring
+    DOC001: Function/method `set_timeout`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `set_timeout`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Commands.set_timeout`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Commands.set_timeout`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [permanent: bool, time: timedelta | None].
+    DOC201: Method `Commands.set_timeout` does not have a return section in docstring
+    DOC001: Function/method `sync_data_with_beekeeper`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `sync_data_with_beekeeper`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Commands.sync_data_with_beekeeper`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Commands.sync_data_with_beekeeper`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile: Profile | None].
+    DOC201: Method `Commands.sync_data_with_beekeeper` does not have a return section in docstring
+--------------------
+clive/__private/core/commands/data_retrieval/savings_data.py
+    DOC001: Function/method `create_request_id`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `create_request_id`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `SavingsData.create_request_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `SavingsData.create_request_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [future_transfers: list[TransferFromSavingsOperation] | None].
+    DOC201: Method `SavingsData.create_request_id` does not have a return section in docstring
+    DOC501: Method `SavingsData.create_request_id` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `SavingsData.create_request_id` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['RequestIdError'].
+--------------------
+clive/__private/core/commands/perform_actions_on_transaction.py
+    DOC001: Class `PerformActionsOnTransaction`: Potential formatting errors in docstring. Error message: No specification for "Args": ""
+    DOC601: Class `PerformActionsOnTransaction`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PerformActionsOnTransaction`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [already_signed_mode: AlreadySignedMode, app_state: AppState, broadcast: bool, chain_id: str | None, content: TransactionConvertibleType, force_save_format: Literal['json', 'bin'] | None, force_unsign: bool, node: Node, save_file_path: Path | None, sign_key: PublicKey | None, unlocked_wallet: AsyncUnlockedWallet | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+clive/__private/core/date_utils.py
+    DOC101: Function `timedelta_to_int_hours`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `timedelta_to_int_hours`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [td: timedelta].
+    DOC201: Function `timedelta_to_int_hours` does not have a return section in docstring
+--------------------
+clive/__private/core/decimal_conventer.py
+    DOC001: Function/method `get_precision`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_precision`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DecimalConverter.get_precision`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecimalConverter.get_precision`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: DecimalConvertible].
+    DOC201: Method `DecimalConverter.get_precision` does not have a return section in docstring
+    DOC001: Function/method `convert`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `convert`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DecimalConverter.convert`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecimalConverter.convert`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: DecimalConvertible, precision: int | None].
+    DOC201: Method `DecimalConverter.convert` does not have a return section in docstring
+    DOC501: Method `DecimalConverter.convert` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `DecimalConverter.convert` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['DecimalConversionNotANumberError'].
+--------------------
+clive/__private/core/ensure_transaction.py
+    DOC001: Function/method `ensure_transaction`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `ensure_transaction`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `ensure_transaction`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `ensure_transaction`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: TransactionConvertibleType].
+    DOC201: Function `ensure_transaction` does not have a return section in docstring
+    DOC501: Function `ensure_transaction` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `ensure_transaction` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['TypeError'].
+--------------------
+clive/__private/core/error_handlers/failed_command_notificator.py
+    DOC001: Class `FailedCommandNotificator`: Potential formatting errors in docstring. Error message: No specification for "Args": ""
+    DOC001: Function/method `__init__`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `FailedCommandNotificator.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `FailedCommandNotificator.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [catch_only: type[CommandError] | None, message: str | None].
+--------------------
+clive/__private/core/formatters/humanize.py
+    DOC101: Function `humanize_natural_time`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_natural_time`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: datetime | timedelta].
+    DOC201: Function `humanize_natural_time` does not have a return section in docstring
+    DOC101: Function `humanize_datetime`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_datetime`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: datetime, with_relative_time: bool, with_time: bool].
+    DOC201: Function `humanize_datetime` does not have a return section in docstring
+    DOC001: Function/method `humanize_class_name`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `humanize_class_name`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `humanize_class_name`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_class_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [cls: str | type[Any]].
+    DOC201: Function `humanize_class_name` does not have a return section in docstring
+    DOC101: Function `humanize_operation_name`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_operation_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: OperationBase].
+    DOC201: Function `humanize_operation_name` does not have a return section in docstring
+    DOC101: Function `humanize_operation_details`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_operation_details`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: OperationBase].
+    DOC201: Function `humanize_operation_details` does not have a return section in docstring
+    DOC101: Function `humanize_timedelta`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `humanize_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: timedelta].
+    DOC201: Function `humanize_timedelta` does not have a return section in docstring
+--------------------
+clive/__private/core/keys/keys.py
+    DOC001: Class `PrivateKey`: Potential formatting errors in docstring. Error message: No specification for "Raises": ""
+    DOC601: Class `PrivateKey`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PrivateKey`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [file_path: Path | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC001: Function/method `validate`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PrivateKey.validate`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PrivateKey.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].
+    DOC501: Method `PrivateKey.validate` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `PrivateKey.validate` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['PrivateKeyInvalidFormatError'].
+--------------------
+clive/__private/core/known_exchanges.py
+    DOC001: Function/method `get_by_account_name`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_by_account_name`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `KnownExchanges.get_by_account_name`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `KnownExchanges.get_by_account_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str | Account].
+    DOC201: Method `KnownExchanges.get_by_account_name` does not have a return section in docstring
+    DOC501: Method `KnownExchanges.get_by_account_name` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `KnownExchanges.get_by_account_name` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['KnownExchangeNotFoundError'].
+    DOC001: Function/method `get_entity_by_account_name`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_entity_by_account_name`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `KnownExchanges.get_entity_by_account_name`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `KnownExchanges.get_entity_by_account_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str | Account].
+    DOC201: Method `KnownExchanges.get_entity_by_account_name` does not have a return section in docstring
+    DOC001: Function/method `get_account_name_by_entity`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_account_name_by_entity`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `KnownExchanges.get_account_name_by_entity`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `KnownExchanges.get_account_name_by_entity`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [entity: ExchangeEntity].
+    DOC201: Method `KnownExchanges.get_account_name_by_entity` does not have a return section in docstring
+    DOC501: Method `KnownExchanges.get_account_name_by_entity` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `KnownExchanges.get_account_name_by_entity` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['KnownExchangeNotFoundError'].
+--------------------
+clive/__private/core/percent_conversions.py
+    DOC101: Function `hive_percent_to_percent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `hive_percent_to_percent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hive_percent: int | str].
+    DOC201: Function `hive_percent_to_percent` does not have a return section in docstring
+    DOC101: Function `percent_to_hive_percent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `percent_to_hive_percent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [percent: Decimal].
+    DOC201: Function `percent_to_hive_percent` does not have a return section in docstring
+--------------------
+clive/__private/core/profile.py
+    DOC001: Function/method `set_chain_id`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `set_chain_id`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Profile.set_chain_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Profile.set_chain_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: str | None].
+    DOC501: Method `Profile.set_chain_id` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Profile.set_chain_id` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidChainIdError'].
+    DOC001: Function/method `save`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `save`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Profile.save`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Profile.save`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encryption_service: EncryptionService].
+    DOC001: Function/method `load`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `load`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Profile.load`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Profile.load`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encryption_service: EncryptionService, name: str].
+    DOC201: Method `Profile.load` does not have a return section in docstring
+    DOC001: Function/method `delete_by_name`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `delete_by_name`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Profile.delete_by_name`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Profile.delete_by_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [force: bool, profile_name: str].
+--------------------
+clive/__private/core/shorthand_timedelta.py
+    DOC101: Function `timedelta_to_shorthand_timedelta`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `timedelta_to_shorthand_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [td: timedelta].
+    DOC201: Function `timedelta_to_shorthand_timedelta` does not have a return section in docstring
+    DOC501: Function `timedelta_to_shorthand_timedelta` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `timedelta_to_shorthand_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidTimedeltaToShorthandError'].
+    DOC101: Function `shorthand_timedelta_to_timedelta`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `shorthand_timedelta_to_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [shorthand: str].
+    DOC201: Function `shorthand_timedelta_to_timedelta` does not have a return section in docstring
+    DOC501: Function `shorthand_timedelta_to_timedelta` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `shorthand_timedelta_to_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidShorthandToTimedeltaError'].
+--------------------
+clive/__private/core/validate_schema_field.py
+    DOC001: Function/method `validate_schema_field`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate_schema_field`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `validate_schema_field`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `validate_schema_field`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [schema_field: type[Any], value: Any].
+--------------------
+clive/__private/models/asset.py
+    DOC001: Function/method `hive`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `hive`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Asset.hive`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Asset.hive`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount].
+    DOC201: Method `Asset.hive` does not have a return section in docstring
+    DOC001: Function/method `hbd`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `hbd`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Asset.hbd`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Asset.hbd`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount].
+    DOC201: Method `Asset.hbd` does not have a return section in docstring
+    DOC001: Function/method `vests`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `vests`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Asset.vests`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Asset.vests`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount].
+    DOC201: Method `Asset.vests` does not have a return section in docstring
+    DOC001: Function/method `__create`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `__create`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Asset.__create`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Asset.__create`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount, asset: type[AssetExplicitT]].
+    DOC201: Method `Asset.__create` does not have a return section in docstring
+    DOC501: Method `Asset.__create` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Asset.__create` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AssetAmountInvalidFormatError'].
+    DOC001: Function/method `__convert_amount_to_internal_representation`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `__convert_amount_to_internal_representation`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Asset.__convert_amount_to_internal_representation`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Asset.__convert_amount_to_internal_representation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount, precision: int | type[Asset.AnyT]].
+    DOC201: Method `Asset.__convert_amount_to_internal_representation` does not have a return section in docstring
+--------------------
+clive/__private/storage/service.py
+    DOC001: Function/method `save_profile`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `save_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService.save_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService.save_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile: Profile].
+    DOC001: Function/method `load_profile`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `load_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService.load_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService.load_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile_name: str].
+    DOC201: Method `PersistentStorageService.load_profile` does not have a return section in docstring
+    DOC001: Function/method `delete_profile`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `delete_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService.delete_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService.delete_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [force: bool, profile_name: str].
+    DOC501: Method `PersistentStorageService.delete_profile` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `PersistentStorageService.delete_profile` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['MultipleProfileVersionsError', 'ProfileDoesNotExistsError'].
+    DOC001: Function/method `_get_filepaths`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_get_filepaths`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService._get_filepaths`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService._get_filepaths`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_type: ProfileFileTypes, include_impossible_to_load: bool, profile_name: str | None].
+    DOC201: Method `PersistentStorageService._get_filepaths` does not have a return section in docstring
+    DOC001: Function/method `_save_profile_model`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_save_profile_model`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService._save_profile_model`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService._save_profile_model`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile_model: ProfileStorageModel].
+    DOC501: Method `PersistentStorageService._save_profile_model` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `PersistentStorageService._save_profile_model` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProfileEncryptionError'].
+    DOC001: Function/method `_load_and_migrate_latest_profile_model`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_load_and_migrate_latest_profile_model`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PersistentStorageService._load_and_migrate_latest_profile_model`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PersistentStorageService._load_and_migrate_latest_profile_model`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile_name: str].
+    DOC201: Method `PersistentStorageService._load_and_migrate_latest_profile_model` does not have a return section in docstring
+    DOC501: Method `PersistentStorageService._load_and_migrate_latest_profile_model` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `PersistentStorageService._load_and_migrate_latest_profile_model` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProfileDoesNotExistsError'].
+--------------------
+clive/__private/ui/app.py
+    DOC001: Function/method `switch_mode_with_reset`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `switch_mode_with_reset`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Clive.switch_mode_with_reset`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Clive.switch_mode_with_reset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [new_mode: CliveModes].
+    DOC201: Method `Clive.switch_mode_with_reset` does not have a return section in docstring
+--------------------
+clive/__private/ui/clive_screen.py
+    DOC001: Function/method `_sort_bindings`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_sort_bindings`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CliveScreen._sort_bindings`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveScreen._sort_bindings`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: ActiveBindingsMap].
+    DOC201: Method `CliveScreen._sort_bindings` does not have a return section in docstring
+--------------------
+clive/__private/ui/clive_widget.py
+    DOC001: Function/method `bind`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `bind`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CliveWidget.bind`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveWidget.bind`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [binding: Binding].
+--------------------
+clive/__private/ui/dialogs/edit_key_alias_dialog.py
+    DOC001: Function/method `_validate`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
+    DOC101: Method `LoadTransactionFromFileDialog._check_for_unknown_bad_accounts`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `LoadTransactionFromFileDialog._check_for_unknown_bad_accounts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [loaded_transaction: Transaction].
+--------------------
+clive/__private/ui/forms/create_profile/set_account_form_screen.py
+    DOC502: Method `SetAccountFormScreen.account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+--------------------
+clive/__private/ui/get_css.py
+    DOC001: Function/method `get_relative_css_path`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `get_relative_css_path`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `get_relative_css_path`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_relative_css_path`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_path: str | Path, name: str].
+    DOC201: Function `get_relative_css_path` does not have a return section in docstring
+--------------------
+clive/__private/ui/key_alias_base.py
+    DOC001: Function/method `_private_key`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_private_key`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC001: Function/method `_private_key_aliased`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_private_key_aliased`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC001: Function/method `_validate`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
+    DOC001: Function/method `_validate_and_notify`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_validate_and_notify`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `OperationActionBindings._validate_and_notify`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationActionBindings._validate_and_notify`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [create_one_many_operations_cb: Callable[[], OperationUnion | list[OperationUnion] | None | _NotImplemented]].
+    DOC201: Method `OperationActionBindings._validate_and_notify` does not have a return section in docstring
+--------------------
+clive/__private/ui/screens/operations/governance_operations/common_governance/governance_actions.py
+    DOC301: Class `GovernanceActionRow`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/screens/operations/governance_operations/common_governance/governance_table.py
+    DOC301: Class `GovernanceListWidget`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC301: Class `GovernanceTableRow`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/screens/operations/governance_operations/proxy/proxy.py
+    DOC301: Class `ProxySet`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/screens/operations/hive_power_management/delegate_hive_power/delegate_hive_power.py
+    DOC301: Class `Delegation`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/screens/transaction_summary/transaction_summary.py
+    DOC001: Function/method `selected_key`: Potential formatting errors in docstring. Error message: No specification for "Raises": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `selected_key`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC501: Method `KeyContainer.selected_key` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `KeyContainer.selected_key` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NoItemSelectedError'].
+--------------------
+clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
+    DOC301: Class `CliveCheckerBoardTableCell`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC301: Class `CliveCheckerboardTable`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
+    DOC201: Method `CliveCheckerboardTable.check_if_should_be_updated` does not have a return section in docstring
+    DOC501: Method `CliveCheckerboardTable.check_if_should_be_updated` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CliveCheckerboardTable.check_if_should_be_updated` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidDynamicDefinedError'].
+--------------------
+clive/__private/ui/widgets/clive_basic/clive_data_table.py
+    DOC301: Class `CliveDataTableRow`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC301: Class `CliveDataTable`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/currency_selector/currency_selector_base.py
+    DOC001: Function/method `select_asset`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `select_asset`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CurrencySelectorBase.select_asset`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CurrencySelectorBase.select_asset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [asset_type: type[AssetT]].
+    DOC001: Function/method `create_asset`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `create_asset`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CurrencySelectorBase.create_asset`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CurrencySelectorBase.create_asset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: AssetAmount].
+    DOC201: Method `CurrencySelectorBase.create_asset` does not have a return section in docstring
+--------------------
+clive/__private/ui/widgets/inputs/account_name_input.py
+    DOC301: Class `AccountNameInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/asset_amount_base_input.py
+    DOC301: Class `AssetAmountInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/clive_input.py
+    DOC301: Class `CliveInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/clive_validated_input.py
+    DOC301: Class `CliveValidatedInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC001: Function/method `value_or_none`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `value_or_none`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CliveValidatedInput.value_or_none`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveValidatedInput.value_or_none`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [notify_on_validation_error: bool, notify_on_value_error: bool].
+    DOC201: Method `CliveValidatedInput.value_or_none` does not have a return section in docstring
+    DOC001: Function/method `validate_passed`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate_passed`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CliveValidatedInput.validate_passed`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveValidatedInput.validate_passed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [notify_on_validation_error: bool, notify_on_value_error: bool, treat_as_required: bool].
+    DOC201: Method `CliveValidatedInput.validate_passed` does not have a return section in docstring
+--------------------
+clive/__private/ui/widgets/inputs/numeric_input.py
+    DOC301: Class `NumericInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/path_input.py
+    DOC301: Class `PathInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/proxy_input.py
+    DOC301: Class `ProxyInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/ui/widgets/inputs/public_key_alias_input.py
+    DOC301: Class `PublicKeyAliasInput`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+clive/__private/validators/proxy_validator.py
+    DOC301: Class `ProxyValidator`: __init__() should not have a docstring; please combine it with the docstring of the class
+--------------------
+tests/clive-local-tools/clive_local_tools/checkers/profile_checker.py
+    DOC001: Function/method `assert_working_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `assert_working_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `ProfileChecker.assert_working_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProfileChecker.assert_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [working_account: str | IsNotSet | None].
+--------------------
+tests/clive-local-tools/clive_local_tools/tui/checkers.py
+    DOC001: Function/method `assert_is_dashboard`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `assert_is_dashboard`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `assert_is_dashboard`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `assert_is_dashboard`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [pilot: ClivePilot].
+--------------------
+tests/clive-local-tools/clive_local_tools/tui/notifications.py
+    DOC001: Function/method `extract_message_from_notification`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `extract_message_from_notification`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `extract_message_from_notification`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `extract_message_from_notification`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str], pilot: ClivePilot, search_in_history: bool, timeout: float].
+    DOC201: Function `extract_message_from_notification` does not have a return section in docstring
+    DOC501: Function `extract_message_from_notification` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `extract_message_from_notification` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AssertionError'].
+    DOC001: Function/method `_extract_message_from_toasts`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_extract_message_from_toasts`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_extract_message_from_toasts`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_extract_message_from_toasts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [app: CliveApp, find_message_cb: Callable[[str], str]].
+    DOC201: Function `_extract_message_from_toasts` does not have a return section in docstring
+    DOC001: Function/method `_extract_message_from_notifications_history`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_extract_message_from_notifications_history`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_extract_message_from_notifications_history`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_extract_message_from_notifications_history`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [app: CliveApp, find_message_cb: Callable[[str], str]].
+    DOC201: Function `_extract_message_from_notifications_history` does not have a return section in docstring
+--------------------
