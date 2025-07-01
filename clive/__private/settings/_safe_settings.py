@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Literal, cast, get_args, overload
 
 from beekeepy import Settings as BeekeepySettings
-from beekeepy.handle.remote import RemoteHandleSettings
+from beekeepy._remote_handle.settings import RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from inflection import underscore
 

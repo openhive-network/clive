@@ -36,7 +36,7 @@ class Transaction(SchemasTransaction):
         """Return True when there are any operations."""
         return bool(self.operations)
 
-    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:
+    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:  # type: ignore[override]
         if isinstance(operation, OperationUnion):
             return operation in self.operations_models
         return operation in self.operations

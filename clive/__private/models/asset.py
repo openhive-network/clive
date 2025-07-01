@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Callable, TypeAlias, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -176,7 +177,7 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10 ** asset.precision() :.{asset.precision()}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision():.{asset.precision()}f}"
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import datetime
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Protocol, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
@@ -38,7 +39,7 @@ def cast_hiveint_args(func: F) -> F:
 
         return func(*new_args, **new_kwargs)
 
-    return cast(F, wrapper)
+    return cast("F", wrapper)
 
 
 class HpAPRProtocol(Protocol):

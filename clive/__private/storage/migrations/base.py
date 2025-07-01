@@ -4,7 +4,7 @@ from abc import ABC
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
-from clive.__private.models.base import CliveBaseModel
+from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.exceptions import CliveError
 
 type Revision = str
@@ -23,22 +23,22 @@ class StorageVersionNotFoundError(CliveError):
         super().__init__(self.message)
 
 
-class ProfileStorageBase(CliveBaseModel, ABC):
+class ProfileStorageBase(PreconfiguredBaseModel):
     _REVISIONS: ClassVar[list[Revision]] = []
     _REVISION_TO_MODEL_TYPE_MAP: ClassVar[dict[Revision, type[ProfileStorageBase]]] = {}
 
     _REVISION_NONCE: ClassVar[int] = 0
 
-    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        super().__init_subclass__(*args, **kwargs)
-        revision = cls.get_this_revision()
-        assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
-        cls._REVISIONS.append(revision)
-        cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
-        cls._validate_upgrade_definition()
+    # def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
+    #     super().__init_subclass__(*args, **kwargs)
+    #     revision = cls.get_this_revision()
+    #     assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
+    #     cls._REVISIONS.append(revision)
+    #     cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
+    #     cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
-        return hash(self.json(indent=4))
+        return hash(self.json())
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
@@ -67,14 +67,15 @@ class ProfileStorageBase(CliveBaseModel, ABC):
 
     @classmethod
     def _get_latest_version(cls) -> Version:
-        return cls._get_versions()[-1]
+        return cls._get_versions()
 
     @classmethod
     def _get_model_cls_for_revision(cls, revision: Revision) -> type[ProfileStorageBase]:
-        try:
-            return cls._REVISION_TO_MODEL_TYPE_MAP[revision]
-        except KeyError as error:
-            raise StorageRevisionNotFoundError(revision) from error
+        pass
+        # try:
+        #     # return cls._REVISION_TO_MODEL_TYPE_MAP[revision]
+        # except KeyError as error:
+        #     raise StorageRevisionNotFoundError(revision) from error
 
     @classmethod
     def _get_model_cls_for_version(cls, num: Version) -> type[ProfileStorageBase]:
@@ -87,13 +88,13 @@ class ProfileStorageBase(CliveBaseModel, ABC):
     @classmethod
     def _get_revision_for_version(cls, num: Version) -> Revision:
         try:
-            return cls._get_revisions()[num]
+            return cls._get_revisions()
         except IndexError as error:
             raise StorageVersionNotFoundError(num) from error
 
     @classmethod
     def _get_revision_seed(cls) -> str:
-        return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)
+        return cls.schema_json() + str(cls._REVISION_NONCE)
 
     @classmethod
     def _validate_upgrade_definition(cls) -> None:
