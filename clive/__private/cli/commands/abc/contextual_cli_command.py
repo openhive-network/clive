@@ -16,12 +16,24 @@ class ContextualCLICommand[AsyncContextManagerT: AbstractAsyncContextManager[Any
 
     @property
     def _context_manager_instance(self) -> AsyncContextManagerT:
+        """
+        Get the context manager instance that will be used to run the command.
+
+        Returns:
+            AsyncContextManagerT: The context manager instance.
+        """
         assert self.__context_manager_instance is not None, "Context manager should be set before running the command."
         return self.__context_manager_instance
 
     @abstractmethod
     async def _create_context_manager_instance(self) -> AsyncContextManagerT:
-        """Create the context manager that will be used to run the command."""
+        """
+        Create the context manager that will be used to run the command.
+
+        Returns:
+            AsyncContextManagerT: The context manager instance that will be used to run the command.
+
+        """
 
     async def validate_inside_context_manager(self) -> None:
         """
@@ -30,34 +42,68 @@ class ContextualCLICommand[AsyncContextManagerT: AbstractAsyncContextManager[Any
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
 
         Raises:
-        ------
-        CLIPrettyError: If the command is invalid.
+            CLIPrettyError: If the command is invalid
+
+        Returns:
+            None
         """
         return
 
     async def _configure_inside_context_manager(self) -> None:
-        """Configure the command before running."""
+        """
+        Configure the command before running.
+
+        Returns:
+            None
+        """
         return
 
     async def fetch_data(self) -> None:
-        """Fetch data."""
+        """
+        Fetch data.
+
+        Returns:
+            None
+        """
         return
 
     async def _hook_before_entering_context_manager(self) -> None:
-        """Additional hook called before entering the context manager."""
+        """
+        Additional hook called before entering the context manager.
+
+        Returns:
+            None
+        """
         return
 
     async def _hook_after_entering_context_manager(self) -> None:
-        """Additional hook called after entering the context manager."""
+        """
+        Additional hook called after entering the context manager.
+
+        Returns:
+            None
+        """
         return
 
     async def run(self) -> None:
+        """
+        Run the command.
+
+        Returns:
+            None
+        """
         if not self._skip_validation:
             await self.validate()
         await self._configure()
         await self._run_in_context_manager()
 
     async def _run_in_context_manager(self) -> None:
+        """
+        Run the command inside the context manager, handling hooks and setup.
+
+        Returns:
+            None
+        """
         self.__context_manager_instance = await self._create_context_manager_instance()
 
         await self._hook_before_entering_context_manager()
