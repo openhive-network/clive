@@ -23,6 +23,12 @@ class ExternalCLICommand(ABC):
         """Actual implementation of the command."""
 
     async def run(self) -> None:
+        """
+        Run the command.
+
+        Returns:
+            None
+        """
         if not self._skip_validation:
             await self.validate()
         await self._configure()
@@ -36,12 +42,17 @@ class ExternalCLICommand(ABC):
 
         Raises:
         ------
-        CLIPrettyError: If the command is invalid.
+            CLIPrettyError: If the command is invalid.
         """
         return
 
     async def _configure(self) -> None:
-        """Configure the command before running."""
+        """
+        Configure the command before running.
+
+        Returns:
+            None
+        """
         return
 
     @classmethod
@@ -52,13 +63,18 @@ class ExternalCLICommand(ABC):
         Unused kwargs are ignored.
 
         Args:
-        ----
-        **kwargs: The kwargs to create the instance from.
+            **kwargs: The kwargs to create the instance from.
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)
 
     def __get_initialized_fields(self) -> list[Field[Any]]:
+        """
+        Get all fields of the dataclass that are initialized.
+
+        Returns:
+            list: A list of initialized fields of the dataclass.`
+        """
         return [field_instance for field_instance in fields(self) if field_instance.init]
 
     def _supply_with_correct_default_for_working_account(self, profile: Profile) -> None:
@@ -66,9 +82,21 @@ class ExternalCLICommand(ABC):
         We can load default working account value only during runtime.
 
         Profile name must be known when loading working account as working account is part of profile.
+
+        Returns:
+            None
         """
 
         def get_working_account_name() -> str:
+            """
+            Get the name of the working account from the profile.
+
+            Raises:
+                CLIPrettyError: If the working account is not set, and we are trying to use it as default.
+
+            Returns:
+                str: The name of the working account.
+            """
             try:
                 return profile.accounts.working.name
             except NoWorkingAccountError as err:
