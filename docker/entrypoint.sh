@@ -10,6 +10,7 @@ TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 PIPELINE=""
 CONTAINERS_WORKING_DIRECTORY="/clive"
+export CLIVE_SELECT_FILE_ROOT_PATH="${CONTAINERS_WORKING_DIRECTORY}/.clive/mapped_host_directory"
 
 if ! [ -t 0 ]; then
     read -r PIPELINE
@@ -65,11 +66,17 @@ wait_for_testnet() {
   echo "Testnet node is ready to use."
 }
 
+# Set mapped directory as the startup directory
+setup_mapped_directory_as_startup_dir() {
+  cd ${CLIVE_SELECT_FILE_ROOT_PATH}
+}
+
 # Launch Clive in CLI mode
 launch_cli() {
   local activate_beekeeper_script_path="${CONTAINERS_WORKING_DIRECTORY}/scripts/activate_beekeeper.sh"
 
   echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
+  setup_mapped_directory_as_startup_dir
   clive --install-completion >/dev/null 2>&1
   if [[ -n "${PIPELINE:-}" ]]; then
     ${activate_beekeeper_script_path}
@@ -87,7 +94,7 @@ parse_arguments() {
         ;;
       --exec)
         shift
-        FILE_TO_EXECUTE="$1"
+        FILE_TO_EXECUTE="${CONTAINERS_WORKING_DIRECTORY}/$1"
         export FILE_TO_EXECUTE
         ;;
       --profile-name)
