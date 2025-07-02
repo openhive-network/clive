@@ -120,9 +120,16 @@ parse_arguments() {
 
 # Activate Python virtual environment
 activate_virtualenv() {
-  cd /clive || exit 1
   # shellcheck source=/dev/null
   source "${PYTHON_VENV_PATH}/bin/activate"
+}
+
+# Check if the /clive directory exists
+check_if_clive_directory_exists() {
+  if [[ ! -d /clive ]]; then
+    echo "Error: /clive directory does not exist."
+    exit 1
+  fi
 }
 
 # Main execution logic for mainnet
@@ -152,6 +159,7 @@ run_testnet() {
 
 # Main function to drive the script
 main() {
+  check_if_clive_directory_exists
   check_and_switch_user "$@"
   parse_arguments "$@"
   activate_virtualenv
