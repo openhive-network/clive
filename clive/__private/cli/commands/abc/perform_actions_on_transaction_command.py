@@ -34,6 +34,17 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
+    """
+    Class for commands that perform actions on a transaction.
+
+    Args:
+        sign: The signature to use for the transaction.
+        already_signed_mode: The mode to use if the transaction is already signed.
+        force_unsign: If True, forces the transaction to be unsigned, default - False.
+        save_file: The file to save the transaction to.
+        broadcast: If True, broadcasts the transaction after creation.
+    """
+
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -42,20 +53,49 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     @property
     def save_file_path(self) -> Path | None:
+        """
+        Get the path to the file where the transaction will be saved.
+
+        Returns:
+            Path | None: The path to the save file, or None if not specified.
+        """
         return Path(self.save_file) if self.save_file is not None else None
 
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
-        """Get the transaction content to be processed."""
+        """
+        Get the transaction content to be processed.
+
+        Returns:
+            TransactionConvertibleType: The transaction convertible type.
+        """
 
     async def get_transaction(self) -> Transaction:
+        """
+        Get the transaction to be processed.
+
+        Returns:
+            Transaction: The transaction object.
+        """
         return ensure_transaction(await self._get_transaction_content())
 
     async def validate(self) -> None:
+        """
+        Validate the command.
+
+        Returns:
+            None
+        """
         self._validate_save_file_path()
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
+        """
+        Validate the command inside a context manager.
+
+        Returns:
+            None
+        """
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
@@ -63,6 +103,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
+        """
+        Run the command to perform actions on a transaction.
+
+        Returns:
+            None
+        """
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
 
@@ -86,6 +132,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             typer.echo(f"Transaction was saved to {self.save_file}")
 
     def __get_key_to_sign(self) -> PublicKey | None:
+        """
+        Get the key to sign the transaction.
+
+        Raises:
+            CLIPrettyError: If the key is not found in the working account keys.
+
+        Returns:
+            PublicKey | None: The public key to sign the transaction, or None if no sign is specified.
+        """
         if self.sign is None:
             return None
 
@@ -97,32 +152,86 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             ) from None
 
     def _validate_save_file_path(self) -> None:
+        """
+        Validate the save file path.
+
+        Raises:
+            CLIPrettyError: If the save file path is invalid.
+
+        Returns:
+            None
+        """
         if self.save_file:
             result = PathValidator(mode="can_be_file").validate(str(self.save_file))
             if not result.is_valid:
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
+        """
+        Validate if broadcast is used without force unsign.
+
+        Raises:
+            CLIBroadcastCannotBeUsedWithForceUnsignError: If broadcast is used with force unsign.
+
+        Returns:
+            None
+        """
         if self.broadcast and self.force_unsign:
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
+        """
+        Validate if broadcasting a signed transaction without a signature.
+
+        Raises:
+            CLITransactionNotSignedError: If broadcasting a signed transaction without a signature.
+
+        Returns:
+            None
+        """
         if self.broadcast and not self.sign:
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
+        """
+        Validate if there are unknown accounts in the transaction.
+
+        Raises:
+            CLITransactionUnknownAccountError: If there are unknown accounts in the transaction.
+
+        Returns:
+            None
+        """
         transaction_ensured = await self.get_transaction()
         unknown_accounts = transaction_ensured.get_unknown_accounts(self.profile.accounts.known)
         if unknown_accounts:
             raise CLITransactionUnknownAccountError(*unknown_accounts)
 
     async def _validate_bad_accounts(self) -> None:
+        """
+        Validate if there are bad accounts in the transaction.
+
+        Raises:
+            CLITransactionBadAccountError: If there are bad accounts in the transaction.
+
+        Returns:
+            None
+        """
         transaction_ensured = await self.get_transaction()
         bad_accounts = transaction_ensured.get_bad_accounts(self.profile.accounts.get_bad_accounts())
         if bad_accounts:
             raise CLITransactionBadAccountError(*bad_accounts)
 
     async def _validate_operations_to_exchange(self) -> None:
+        """
+        Validate operations in the transaction against known exchanges.
+
+        Raises:
+            CLITransactionToExchangeError: If any operation in the transaction is not valid for known exchanges.
+
+        Returns:
+            None
+        """
         transaction_ensured = await self.get_transaction()
         exchange_operation_validator = ExchangeOperationsValidatorCli(
             transaction=transaction_ensured,
@@ -134,9 +243,24 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 raise CLITransactionToExchangeError(humanize_validation_result(result))
 
     def _get_transaction_created_message(self) -> str:
+        """
+        Get the message indicating that the transaction was created.
+
+        Returns:
+            str: The message indicating that the transaction was created.
+        """
         return "created"
 
     def __print_transaction(self, transaction: Transaction) -> None:
+        """
+        Print the transaction in JSON format.
+
+        Args:
+            transaction (Transaction): The transaction to print.
+
+        Returns:
+            None
+        """
         transaction_json = transaction.json(by_alias=True)
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
