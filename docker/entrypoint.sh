@@ -9,6 +9,7 @@ UNLOCK_TIME_MINS=""
 TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 PIPELINE=""
+MAPPED_HOST_DIRECTORY="/clive/.clive/mapped_host_directory"
 
 if ! [ -t 0 ]; then
     read -r PIPELINE
@@ -64,9 +65,19 @@ wait_for_testnet() {
   echo "Testnet node is ready to use."
 }
 
+# Create a mapped directory if it does not exist, and setting it as the startup directory
+setup_mapped_directory() {
+  if [[ ! -d "${MAPPED_HOST_DIRECTORY}" ]]; then
+    echo "Creating directory: ${MAPPED_HOST_DIRECTORY}"
+    mkdir -p "${MAPPED_HOST_DIRECTORY}"
+  fi
+  echo "cd ${MAPPED_HOST_DIRECTORY}" >> ~/.bashrc
+}
+
 # Launch Clive in CLI mode
 launch_cli() {
   echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
+  setup_mapped_directory
   clive --install-completion >/dev/null 2>&1
   if [[ -n "${PIPELINE:-}" ]]; then
     /clive/scripts/activate_beekeeper.sh
