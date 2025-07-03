@@ -23,7 +23,19 @@ async def process_vote_proposal_add(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Vote for a proposal."""
+    """
+    Vote for a proposal.
+
+    Args:
+        account_name: The name of the account casting the vote.
+        proposal_id: List of proposal identifiers to vote for.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction data.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
 
     await ProcessVoteProposal(
@@ -44,7 +56,19 @@ async def process_vote_proposal_remove(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Unvote proposal."""
+    """
+    Unvote proposal.
+
+    Args:
+        account_name: The name of the account removing the vote.
+        proposal_id: List of proposal identifiers to unvote.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction data.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_vote_proposal import ProcessVoteProposal
 
     await ProcessVoteProposal(
