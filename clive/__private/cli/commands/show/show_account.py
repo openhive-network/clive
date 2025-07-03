@@ -27,11 +27,19 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowAccount(WorldBasedCommand):
+    """Show details of the account, including balances, voting info, and general information."""
+
     account_name: str
     _account_data: NodeData = field(init=False)
     _account_alarms: AlarmsStorage = field(init=False)
 
     async def fetch_data(self) -> None:
+        """
+        Fetch the account data and alarms for the specified account name.
+
+        Returns:
+            None
+        """
         account = TrackedAccount(name=self.account_name)
         await self.world.commands.update_node_data(accounts=[account])
         await self.world.commands.update_alarms_data(accounts=[account])
@@ -40,6 +48,12 @@ class ShowAccount(WorldBasedCommand):
         self._account_alarms = account.alarms
 
     async def _run(self) -> None:
+        """
+        Run the command to display account details.
+
+        Returns:
+            None
+        """
         console = Console()
 
         general_info_table = self._create_general_info_table()
@@ -50,6 +64,12 @@ class ShowAccount(WorldBasedCommand):
         console.print(columned_tables)
 
     def _get_account_type_name(self) -> str | None:
+        """
+        Return the type of the account.
+
+        Returns:
+            str | None: The type of the account if it is tracked or watched, otherwise None.
+        """
         if self.profile.accounts.is_account_working(self.account_name):
             return "Tracked account (working)"
         if self.profile.accounts.is_account_watched(self.account_name):
@@ -57,6 +77,15 @@ class ShowAccount(WorldBasedCommand):
         return None
 
     def _create_general_info_table(self) -> Table:
+        """
+        Create a table with general information about the account.
+
+        Table columns include account type, last history entry, last account update,
+        number of new account tokens, and number of alarms.
+
+        Returns:
+            Table: A table containing general information about the account.
+        """
         general_info_table = Table(title="General information", show_header=False)
         general_info_table.add_column("", justify="left", style="cyan", no_wrap=True)
         general_info_table.add_column("", justify="right", style="green", no_wrap=True)
@@ -72,6 +101,14 @@ class ShowAccount(WorldBasedCommand):
         return general_info_table
 
     def _create_balance_table(self) -> Table:
+        """
+        Create a table displaying the account's balances.
+
+        The table includes columns for liquid balances, savings balances, and Hive Power (HP) balances.
+
+        Returns:
+            Table: A table containing the account's balances.
+        """
         balances_table = Table(title="The balances")
         hive_symbol = Asset.get_symbol(Asset.Hive)
         hbd_symbol = Asset.get_symbol(Asset.Hbd)
@@ -98,6 +135,14 @@ class ShowAccount(WorldBasedCommand):
         return balances_table
 
     def _create_manabar_stats_table(self) -> Table:
+        """
+        Create a table displaying the mana bar statistics for the account.
+
+        The table includes columns for resource credits (RC), voting mana, and downvoting mana.
+
+        Returns:
+            Table: A table containing the mana bar statistics for the account.
+        """
         manabar_stats_table = Table(title="Voting info")
         manabar_stats_table.add_column("", justify="left", style="cyan", no_wrap=True)
         manabar_stats_table.add_column("RC", justify="right", style="green", no_wrap=True)
