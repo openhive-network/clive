@@ -18,7 +18,20 @@ from clive.__private.core.formatters.data_labels import (
 
 @dataclass(kw_only=True)
 class ShowChain(WorldBasedCommand):
+    """Show chain information command."""
+
     async def _run(self) -> None:
+        """
+        Run the command to show chain information.
+
+        This method retrieves chain data from the world commands and formats it into a
+        human-readable table using the Rich library. It displays various properties of the
+        blockchain, including network properties, financial data, and block information.
+
+        Returns:
+            None: This method does not return any value. It prints the chain information
+            directly to the console.
+        """
         wrapper = await self.world.commands.retrieve_chain_data()
         data = wrapper.result_or_raise
         table = Table(title="Chain info", show_header=False)
