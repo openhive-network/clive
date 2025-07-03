@@ -14,7 +14,18 @@ ExpectedT = TypeVar("ExpectedT", default=str)
 
 
 class EnsureSingleValue(Generic[ExpectedT]):
+    """Ensure that only one value is retrieved from positional and option arguments."""
+
     def __init__(self, option_name: str) -> None:
+        """
+        Initialize the EnsureSingleValue with the name of the option.
+
+        Args:
+            option_name: The name of the option to be used in error messages.
+
+        Returns:
+            None
+        """
         self._option_name = option_name
 
     @overload
@@ -48,7 +59,6 @@ class EnsureSingleValue(Generic[ExpectedT]):
         Option takes precedence over positional argument
 
         Args:
-        ----
             positional: The positional argument value.
             option: The option argument value.
             allow_none: When argument and option is not required.
@@ -65,10 +75,31 @@ class EnsureSingleValue(Generic[ExpectedT]):
 
 
 class EnsureSingleAccountNameValue(EnsureSingleValue[str]):
+    """
+    Ensure that only one account name value is retrieved from positional and option arguments.
+
+    Returns:
+        str: The account name value.
+    """
+
     def __init__(self) -> None:
+        """
+        Initialize the EnsureSingleAccountNameValue with the name of the option.
+
+        Returns:
+            None
+        """
         super().__init__("account-name")
 
 
 class EnsureSingleProfileNameValue(EnsureSingleValue[str]):
+    """Ensure that only one profile name value is retrieved from positional and option arguments."""
+
     def __init__(self) -> None:
+        """
+        Initialize the EnsureSingleProfileNameValue with the name of the option.
+
+        Returns:
+            None
+        """
         super().__init__("profile-name")
