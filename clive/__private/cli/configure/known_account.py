@@ -19,7 +19,16 @@ async def add_known_account(
     account_name: str | None = _account_name_add_argument,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Add an account to the list of known accounts."""
+    """
+    Add an account to the list of known accounts.
+
+    Args:
+        account_name: The name of the known account to add. If not provided, it will be prompted.
+        account_name_option: An alternative way to provide the account name, if available.
+
+    Returns:
+        None: This function does not return anything. It runs the command to add a known account.
+    """
     from clive.__private.cli.commands.configure.known_account import AddKnownAccount
 
     await AddKnownAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -35,7 +44,16 @@ async def remove_known_account(
     account_name: str | None = _account_name_remove_argument,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Remove an account from the list of known accounts."""
+    """
+    Remove an account from the list of known accounts.
+
+    Args:
+        account_name: The name of the known account to remove. If not provided, it will be prompted.
+        account_name_option: An alternative way to provide the account name, if available.
+
+    Returns:
+        None: This function does not return anything. It runs the command to remove a known account.
+    """
     from clive.__private.cli.commands.configure.known_account import RemoveKnownAccount
 
     await RemoveKnownAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -46,9 +64,15 @@ async def enable_known_accounts(
     ctx: typer.Context,  # noqa: ARG001
 ) -> None:
     """
+    Enable known accounts for broadcasting operations.
+
+    Returns:
+        None: This function does not return anything. It runs the command to enable known accounts.
+    """
+    """
     CLI - If you want to broadcast an operation, you must first add the target account to the list of known accounts.
     TUI - The target account is added to the list of known accounts automatically after adding an operation to the cart.
-    """  # noqa: D205
+    """
     from clive.__private.cli.commands.configure.known_account import EnableKnownAccounts
 
     await EnableKnownAccounts().run()
@@ -59,10 +83,16 @@ async def disable_know_accounts(
     ctx: typer.Context,  # noqa: ARG001
 ) -> None:
     """
+    Disable known accounts for broadcasting operations.
+
+    Returns:
+        None: This function does not return anything. It runs the command to disable known accounts.
+    """
+    """
     CLI - The target account is not checked if it is on the list of known accounts.
     TUI - The target account is not added to the list of known accounts automatically\
  after adding an operation to the cart.
-    """  # noqa: D205
+    """
     from clive.__private.cli.commands.configure.known_account import DisableKnownAccounts
 
     await DisableKnownAccounts().run()
