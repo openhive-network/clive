@@ -12,9 +12,25 @@ from clive.__private.models import Asset
 
 @dataclass(kw_only=True)
 class ShowBalances(WorldBasedCommand):
+    """
+    Show balances of the specified account.
+
+    Args:
+        account_name: The name of the account whose balances are to be shown.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Show the balances of the specified account.
+
+        Fetches the account data and displays it in a formatted table.
+        Data includes HBD and HIVE balances in liquid, savings, and unclaimed states.
+
+        Returns:
+            None
+        """
         account = TrackedAccount(name=self.account_name)
 
         await self.world.commands.update_node_data(accounts=[account])
