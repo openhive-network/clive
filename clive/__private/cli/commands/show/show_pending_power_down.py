@@ -23,9 +23,27 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowPendingPowerDown(WorldBasedCommand):
+    """
+    Show pending power down for the specified account.
+
+    Args:
+        account_name: The name of the account to show pending power down for.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Run the command to show pending power down for the specified account.
+
+        This method retrieves the pending power down data for the account and displays it in a formatted table.
+        The table includes the next withdrawal date, the next withdrawal amount, total to be withdrawn,
+        amount withdrawn, and the remaining amount to withdraw.
+        If there is no pending power down operation, a message is displayed indicating that.
+
+        Returns:
+            None: This method does not return any value. It prints the results table directly to the console.
+        """
         console = Console()
         wrapper = await self.world.commands.retrieve_hp_data(account_name=self.account_name)
         hp_data = wrapper.result_or_raise
@@ -36,6 +54,16 @@ class ShowPendingPowerDown(WorldBasedCommand):
             return
 
         def humanize_align_shares_balance(balance: HpVestsBalance, center_to: str) -> tuple[str, str]:
+            """
+            Humanizes and aligns the shares balance for display in the table.
+
+            Args:
+                balance: The balance to humanize and align.
+                center_to: The string to center the alignment to.
+
+            Returns:
+                tuple: A tuple containing the humanized and aligned Hive Power and Vests balances.
+            """
             hp = humanize_hive_power(balance.hp_balance)
             vests = humanize_asset(balance.vests_balance)
             hp_aligned, vests_aligned = align_to_dot(hp, vests, center_to=center_to)
