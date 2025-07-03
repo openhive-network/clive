@@ -18,9 +18,26 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowPendingWithdrawals(WorldBasedCommand):
+    """
+    Show pending withdrawals for a savings account.
+
+    Args:
+        account_name: The name of the savings account to retrieve pending withdrawals for.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Retrieve and display pending withdrawals for the specified savings account.
+
+        This method fetches the pending transfers from the savings account and displays them in a formatted table.
+        The table includes details such as the recipient, amount, completion time, memo, and request ID.
+        If there are no pending withdrawals, a message is printed indicating that there are none available.
+
+        Returns:
+            None: This method does not return any value. It prints the results table directly to the console.
+        """
         console = Console()
         wrapper = await self.world.commands.retrieve_savings_data(account_name=self.account_name)
         result: SavingsData = wrapper.result_or_raise
