@@ -20,6 +20,18 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowProposals(WorldBasedCommand):
+    """
+    Show the proposals and votes of an account.
+
+    Args:
+        account_name: The name of the account to show proposals for.
+        order_by: The field to order the proposals by.
+        order_direction: The direction to order the proposals (ascending or descending).
+        status: The status of the proposals to filter by.
+        page_size: The number of proposals to show per page.
+        page_no: The page number to display.
+    """
+
     account_name: str
     order_by: ProposalsDataRetrieval.Orders
     order_direction: ProposalsDataRetrieval.OrderDirections
@@ -28,6 +40,18 @@ class ShowProposals(WorldBasedCommand):
     page_no: int
 
     async def _run(self) -> None:
+        """
+        Show the proposals and votes of an account.
+
+        This method retrieves the proposals data for the specified account and formats it
+        into a table format using Rich. It includes information such as whether the account
+        has voted on the proposal, the title, ID, number of votes, daily pay, start date,
+        and end date of each proposal. The results are paginated based on the specified
+        page size and page number.
+
+        Returns:
+            None: The method prints the proposals table into the console.
+        """
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         proxy = accounts[0].proxy
 
