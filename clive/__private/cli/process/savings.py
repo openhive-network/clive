@@ -24,7 +24,22 @@ async def process_deposit(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Immediately deposit funds to savings account."""
+    """
+    Immediately deposit funds to savings account.
+
+    Args:
+        from_account: The account from which the funds are being deposited.
+        to_account: The savings account to which the funds are being deposited.
+        amount: The amount of funds to deposit, in liquid asset format.
+        memo: An optional memo for the transaction.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the transaction details.
+        force: Whether to force the operation, bypassing certain checks.
+
+    Returns:
+        None: This function does not return a value; it executes the deposit process.
+    """
     from clive.__private.cli.commands.process.process_deposit import ProcessDeposit
 
     amount_ = cast("Asset.LiquidT", amount)
@@ -57,7 +72,23 @@ async def process_withdrawal(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
+    """
+    Initiate withdrawal of funds from savings account, it takes 3 days to complete.
+
+    Args:
+        from_account: The account from which the funds are being withdrawn.
+        to_account: The account to which the funds are being sent.
+        amount: The amount of funds to withdraw, in liquid asset format.
+        memo: An optional memo for the transaction.
+        request_id: Optional ID for the withdrawal request; if not provided, it will be calculated automatically.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the transaction details.
+        force: Whether to force the operation, bypassing certain checks.
+
+    Returns:
+        None: This function does not return a value; it executes the withdrawal process.
+    """
     from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal
 
     amount_ = cast("Asset.LiquidT", amount)
@@ -82,7 +113,19 @@ async def process_withdrawal_cancel(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Cancel previously initiated withdrawal from savings account."""
+    """
+    Cancel previously initiated withdrawal from savings account.
+
+    Args:
+        from_account: The account from which the withdrawal is being canceled.
+        request_id: The ID of the previously initiated withdrawal to cancel.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the transaction details.
+
+    Returns:
+        None: This function does not return a value; it executes the withdrawal cancellation process.
+    """
     from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel
 
     await ProcessWithdrawalCancel(
