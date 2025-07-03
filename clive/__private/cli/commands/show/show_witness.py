@@ -18,9 +18,27 @@ from clive.__private.core.percent_conversions import hive_percent_to_percent
 
 @dataclass(kw_only=True)
 class ShowWitness(WorldBasedCommand):
+    """
+    Show witness command.
+
+    Args:
+        name: The name of the witness to show details for.
+    """
+
     name: str
 
     async def _run(self) -> None:
+        """
+        Run the command to show details of the specified witness.
+
+        This method retrieves the witness information from the blockchain and formats it into a table.
+        It includes details such as creation date, URL, total votes, hardfork votes, exchange rates,
+        last confirmed block number, props, running version, signing key, total missed blocks,
+        account creation fee, proposed HBD savings APR, and the status of the witness.
+
+        Returns:
+            None: This method does not return any value. It prints the witness details table into the console.
+        """
         wrapper = await self.world.commands.find_witness(witness_name=self.name)
         witness = wrapper.result_or_raise
 
