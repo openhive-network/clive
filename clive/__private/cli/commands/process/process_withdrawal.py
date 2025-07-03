@@ -13,6 +13,17 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ProcessWithdrawal(OperationCommand):
+    """
+    Class to handle the processing of a withdrawal from savings.
+
+    Args:
+        from_account: The account from which the funds are withdrawn.
+        request_id: The ID of the withdrawal request, if available.
+        to_account: The account to which the funds are transferred.
+        amount: The amount of funds to withdraw.
+        memo: A memo for the transaction.
+    """
+
     from_account: str
     request_id: int | None
     to_account: str
@@ -20,6 +31,14 @@ class ProcessWithdrawal(OperationCommand):
     memo: str
 
     async def _create_operation(self) -> TransferFromSavingsOperation:
+        """
+        Create an operation for processing the withdrawal.
+
+        If the request ID is not provided, it retrieves the savings data to create a new request ID.
+
+        Returns:
+            TransferFromSavingsOperation: The operation to be executed for the withdrawal.
+        """
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_savings_data(account_name=self.profile.accounts.working.name)
             savings_data: SavingsData = wrapper.result_or_raise
