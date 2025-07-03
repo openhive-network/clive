@@ -16,7 +16,19 @@ async def process_vote_witness_add(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Vote for a witness."""
+    """
+    Vote for a witness.
+
+    Args:
+        account_name: The name of the account casting the vote.
+        witness_name: The name of the witness to vote for.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction data.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
 
     await ProcessVoteWitness(
@@ -37,7 +49,19 @@ async def process_vote_witness_remove(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Unvote witness."""
+    """
+    Unvote witness.
+
+    Args:
+        account_name: The name of the account casting the unvote.
+        witness_name: The name of the witness to unvote.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction data.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
 
     await ProcessVoteWitness(
