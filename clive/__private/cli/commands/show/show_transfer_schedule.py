@@ -24,9 +24,27 @@ DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT: Final[int] = 10
 
 @dataclass(kw_only=True)
 class ShowTransferSchedule(WorldBasedCommand):
+    """
+    Show transfer schedule command.
+
+    Args:
+        account_name: The name of the account for which to show the transfer schedule.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Run the command to show the transfer schedule for the specified account.
+
+        This method retrieves the scheduled transfers for the account and displays them in a formatted table.
+        The table includes details such as the source and destination accounts, pair ID, amount, memo,
+        next execution time, frequency, remaining executions, and consecutive failures.
+        If there are no scheduled transfers, a message indicating that is displayed.
+
+        Returns:
+            None: This method does not return any value. It prints the transfer schedule table into the console.
+        """
         account_scheduled_transfers_data = (
             await self.world.commands.find_scheduled_transfers(account_name=self.account_name)
         ).result_or_raise
@@ -47,7 +65,15 @@ class ShowTransferSchedule(WorldBasedCommand):
         console.print(show_transfer_schedule)
 
     def __create_table_definition(self, account_scheduled_transfers_data: AccountScheduledTransferData) -> Table:
-        """Create table with definitions."""
+        """
+        Create table with definitions.
+
+        Args:
+            account_scheduled_transfers_data: The data containing scheduled transfers for the account.
+
+        Returns:
+            Table: A rich Table object containing the scheduled transfers data formatted for display.
+        """
         table_definitions = Table(title=f"Transfer schedule definitions for `{self.account_name}` account")
 
         amount_column_name = "Amount"
@@ -80,7 +106,15 @@ class ShowTransferSchedule(WorldBasedCommand):
         return table_definitions
 
     def __create_table_upcoming(self, account_scheduled_transfers_data: AccountScheduledTransferData) -> Table:
-        """Create table with upcoming scheduled transfers."""
+        """
+        Create table with upcoming scheduled transfers.
+
+        Args:
+            account_scheduled_transfers_data: The data containing scheduled transfers for the account.
+
+        Returns:
+            Table: A rich Table object containing the next upcoming scheduled transfers formatted for display.
+        """
         table_upcoming = Table(
             title=(
                 f"Next {DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT}"
