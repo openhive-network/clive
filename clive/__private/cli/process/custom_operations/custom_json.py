@@ -37,7 +37,21 @@ async def process_custom_json(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Send custom json operation, json can be provided as string or file."""
+    """
+    Send custom json operation, json can be provided as string or file.
+
+    Args:
+        authorize: List of accounts to use as posting authorities.
+        authorize_by_active: List of accounts to use as active authorities.
+        id_: Custom identifier for the operation.
+        json_: Custom json content, can be a file path or a string.
+        sign: Sign the operation with the working account.
+        broadcast: Whether to broadcast the operation to the network.
+        save_file: If provided, save the operation to this file instead of broadcasting it.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson
 
     operation = ProcessCustomJson(
