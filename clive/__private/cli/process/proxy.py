@@ -16,7 +16,19 @@ async def process_proxy_set(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Set a proxy or change an existing proxy."""
+    """
+    Set a proxy or change an existing proxy.
+
+    Args:
+        account_name: Name of the account to set the proxy for.
+        proxy: Name of the new proxy account.
+        sign: Optional signature for the operation.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction details.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_proxy_set import ProcessProxySet
 
     await ProcessProxySet(
@@ -35,7 +47,18 @@ async def process_proxy_clear(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Remove a proxy."""
+    """
+    Remove a proxy.
+
+    Args:
+        account_name: Name of the account to remove the proxy from.
+        sign: Optional signature for the operation.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction details.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear
 
     await ProcessProxyClear(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file).run()
