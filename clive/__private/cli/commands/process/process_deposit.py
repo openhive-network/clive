@@ -12,12 +12,28 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ProcessDeposit(OperationCommand):
+    """
+    Class to process a deposit operation.
+
+    Args:
+        from_account: The account from which the deposit is made.
+        to_account: The account to which the deposit is made.
+        amount: The amount of the deposit.
+        memo: A memo for the deposit operation.
+    """
+
     from_account: str
     to_account: str
     amount: Asset.LiquidT
     memo: str
 
     async def _create_operation(self) -> TransferToSavingsOperation:
+        """
+        Create an instance based on the provided parameters.
+
+        Returns:
+            TransferToSavingsOperation: An operation instance representing the deposit.
+        """
         return TransferToSavingsOperation(
             from_=self.from_account,
             to=self.to_account,
