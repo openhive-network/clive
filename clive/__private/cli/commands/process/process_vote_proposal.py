@@ -11,11 +11,26 @@ from clive.__private.models.schemas import UpdateProposalVotesOperation
 
 @dataclass(kw_only=True)
 class ProcessVoteProposal(OperationCommand):
+    """
+    Class to handle voting on proposals.
+
+    Args:
+        account_name: The name of the account voting on the proposals.
+        proposal_ids: A list of proposal IDs to vote on.
+        approve: Whether to approve or disapprove the proposals.
+    """
+
     account_name: str
     proposal_ids: list[int]
     approve: bool
 
     async def _create_operation(self) -> UpdateProposalVotesOperation:
+        """
+        Create an operation to update proposal votes.
+
+        Returns:
+            UpdateProposalVotesOperation: An operation object containing the voting details.
+        """
         self.proposal_ids.sort()
         return UpdateProposalVotesOperation(
             voter=self.account_name,
@@ -25,6 +40,15 @@ class ProcessVoteProposal(OperationCommand):
         )
 
     async def validate(self) -> None:
+        """
+        Validate the command parameters before execution.
+
+        Raises:
+            CLIPrettyError: If the number of proposal IDs exceeds the maximum allowed.
+
+        Returns:
+            None
+        """
         if len(self.proposal_ids) > MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION:
             raise CLIPrettyError(
                 (
