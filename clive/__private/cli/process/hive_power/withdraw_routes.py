@@ -25,7 +25,22 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
+    """
+    Add new withdraw route/modify existing route for pair of accounts "from" and "to".
+
+    Args:
+        from_account: The account to withdraw from.
+        to_account: The account to withdraw to.
+        percent: The percentage of vesting shares to withdraw, as a decimal (e.g., 0.1 for 10%).
+        auto_vest: If True, the amount is immediately converted into Hive Power on the balance.
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+        force: If True, force the operation even if it might not be optimal.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes
 
     operation = ProcessWithdrawRoutes(
@@ -49,7 +64,19 @@ async def process_withdraw_routes_remove(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Clear withdraw route for pair of accounts "from" and "to"."""
+    """
+    Clear withdraw route for pair of accounts "from" and "to".
+
+    Args:
+        from_account: The account to withdraw from.
+        to_account: The account to withdraw to.
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutesRemove
 
     operation = ProcessWithdrawRoutesRemove(
