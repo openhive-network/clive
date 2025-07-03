@@ -30,7 +30,18 @@ async def add_key(
     alias: str | None = _alias_argument,
     alias_option: str | None = argument_related_options.alias,
 ) -> None:
-    """Import a key into the Beekeeper, and make it ready to use for Clive."""
+    """
+    Import a key into the Beekeeper, and make it ready to use for Clive.
+
+    Args:
+        key: The key to import, which can be a path to a file or the key itself.
+        key_option: An alternative option for specifying the key.
+        alias: The alias to use for the key. If not provided, the public key will be used as the alias.
+        alias_option: An alternative option for specifying the alias.
+
+    Returns:
+        None: This function does not return anything. It runs the command to add the key.
+    """
     from clive.__private.cli.commands.configure.key import AddKey
 
     await AddKey(
@@ -53,7 +64,17 @@ async def remove_key(
         help="Remove the key from the Beekeeper as well.",
     ),
 ) -> None:
-    """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
+    """
+    Remove a key alias from the profile and optionally from the Beekeeper storage also.
+
+    Args:
+        alias: The alias of the key to remove. This is required.
+        alias_option: An alternative option for specifying the alias.
+        from_beekeeper: If True, the key will also be removed from the Beekeeper storage.
+
+    Returns:
+        None: This function does not return anything. It runs the command to remove the key.
+    """
     from clive.__private.cli.commands.configure.key import RemoveKey
 
     await RemoveKey(
