@@ -26,6 +26,14 @@ async def create_profile(
     Create a new profile. Password for new profile is provided by stdin.
 
     If new password is entered in terminal it must be repeated.
+
+    Args:
+        profile_name: The name of the new profile. If not provided, it will be prompted.
+        profile_name_option: An alternative way to provide the profile name.
+        working_account_name: The name of the working account to associate with this profile.
+
+    Returns:
+        None
     """
     from clive.__private.cli.commands.configure.profile import CreateProfile
 
@@ -49,7 +57,17 @@ async def delete_profile(
         help="Force delete all profile data (including different versions and backups)",
     ),
 ) -> None:
-    """Delete a profile."""
+    """
+    Delete a profile.
+
+    Args:
+        profile_name: The name of the profile to delete. If not provided, it will be prompted.
+        profile_name_option: An alternative way to provide the profile name.
+        force: If set, all profile data (including different versions and backups) will be deleted without confirmation.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.configure.profile import DeleteProfile
 
     await DeleteProfile(
