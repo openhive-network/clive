@@ -25,6 +25,14 @@ async def set_chain_id(
     Set/change the chain ID for the profile.
 
     If not set, the one from node get_config api will be retrieved and set.
+
+    Args:
+        chain_id: The chain ID to set for the profile. If not provided, it will be retrieved from the node's get_config
+            API.
+        chain_id_option: An alternative way to provide the chain ID, if not given as an argument.
+
+    Returns:
+        None
     """
     from clive.__private.cli.commands.configure.chain_id import SetChainId
 
@@ -37,6 +45,9 @@ async def unset_chain_id() -> None:
     Unset the actual chain ID for the profile.
 
     Will be dynamically set to the one from node get_config api when needed first time.
+
+    Returns:
+        None
     """
     from clive.__private.cli.commands.configure.chain_id import UnsetChainId
 
