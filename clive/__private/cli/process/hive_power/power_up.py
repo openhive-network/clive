@@ -26,7 +26,21 @@ async def process_power_up(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Perform power-up by sending transfer_to_vesting_operation."""
+    """
+    Perform power-up by sending transfer_to_vesting_operation.
+
+    Args:
+        from_account: The account to transfer from.
+        to_account: The account to transfer to (usually the same as from_account).
+        amount: The amount of Hive to transfer to vesting, in the format "X HIVE".
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+        force: If True, force the operation even if it might not be optimal.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp
 
     amount_ = cast("Asset.Hive", amount)
