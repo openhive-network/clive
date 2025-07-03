@@ -28,7 +28,19 @@ async def process_claim_new_account_token(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Obtain account creation token, pay either with HIVE or RC."""
+    """
+    Obtain account creation token, pay either with HIVE or RC.
+
+    Args:
+        creator: The account name of the creator.
+        fee: The fee for creating a new account, if applicable.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file to save the transaction details.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_claim_new_account_token import ProcessClaimNewAccountToken
 
     fee_ = cast("Asset.Hive", fee) if fee else None
