@@ -53,7 +53,21 @@ async def transfer(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Transfer some funds to another account."""
+    """
+    Transfer some funds to another account.
+
+    Args:
+        from_account: The account to transfer from.
+        to: The account to transfer to.
+        amount: The amount to transfer, in the format '1.000 HIVE' or '1.000 HBD'.
+        memo: An optional memo for the transfer.
+        sign: Optional signing method (e.g., 'active', 'posting').
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the transaction.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.transfer import Transfer
 
     amount_ = cast("Asset.LiquidT", amount)
@@ -92,7 +106,21 @@ async def process_transaction(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Process a transaction from file."""
+    """
+    Process a transaction from file.
+
+    Args:
+        from_file: The file containing the transaction to process.
+        force_unsign: Whether to force unsigning the transaction if it is already signed.
+        already_signed_mode: How to handle the situation when the transaction is already signed.
+        sign: Optional signing method (e.g., 'active', 'posting').
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the processed transaction.
+        force: Whether to force processing even if there are warnings or errors.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
 
     if isinstance(already_signed_mode, Enum):
@@ -122,7 +150,19 @@ async def process_update_memo_key(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Set memo key."""
+    """
+    Set memo key.
+
+    Args:
+        account_name: The name of the account to update.
+        memo_key: The new memo public key to set for the account.
+        sign: Optional signing method (e.g., 'active', 'posting').
+        broadcast: Whether to broadcast the transaction immediately.
+        save_file: Optional file path to save the transaction.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate, set_memo_key
 
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
