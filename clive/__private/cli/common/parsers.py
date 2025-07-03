@@ -25,6 +25,16 @@ if TYPE_CHECKING:
 
 
 def rename[R, **P](new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    """
+    Rename a function using a decorator.
+
+    Args:
+        new_name: The new name for the function.
+
+    Returns:
+        Callable: A decorator that renames the function.
+    """
+
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -41,16 +51,26 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
     Parse the liquid asset amount.
 
     Also provides a nice error message if something is wrong with the asset input.
-    E.g. when Asset.LiquidT is allowed:
-    --amount "5.0 notexisting"
-        "Invalid value for '--amount': Unknown asset type: 'NOTEXISTING'. Only ['HIVE', 'HBD'] are allowed."
 
-    --amount "5.0 vests"
-        "Invalid value for '--amount': Only ['HIVE', 'HBD'] are allowed."
+    Examples:
+        when Asset.LiquidT is allowed
+        >>> amount 5.0 notexisting
+        >>> Invalid value for '--amount': Unknown asset type: 'NOTEXISTING'. Only ['HIVE', 'HBD'] are allowed.
 
-    --amount "5.0000000 hive"
-        "Invalid value for '--amount': Invalid asset amount format: '5.0000000'. Reason: ['Invalid precision for HIVE.
-          Must be <=3.']"
+        >>> amount 5.0 vests
+        >>> Invalid value for '--amount': Only ['HIVE', 'HBD'] are allowed.
+
+        >>> amount 5.0000000 hive
+        >>> Invalid value for '--amount': Invalid asset amount format: '5.0000000'.
+        >>> Reason: ['Invalid precision for HIVE. Must be <=3.']
+
+    Args:
+        raw: The raw asset string to parse.
+        allowed_assets: The allowed asset types.
+
+    Returns:
+        ParsedAssetT: The parsed asset object.
+
     """
     from clive.__private.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
 
@@ -70,12 +90,30 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
 
 
 def liquid_asset(raw: str) -> Asset.LiquidT:
+    """
+    Parse the liquid asset amount.
+
+    Args:
+        raw: The raw asset string to parse.
+
+    Returns:
+        Asset.LiquidT: The parsed liquid asset object.
+    """
     from clive.__private.models.asset import Asset
 
     return _parse_asset(raw, *get_args(Asset.LiquidT))  # type: ignore[no-any-return]
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
+    """
+    Parse the voting asset amount.
+
+    Args:
+        raw: The raw asset string to parse.
+
+    Returns:
+        Asset.VotingT: The parsed voting asset object.
+    """
     from clive.__private.models.asset import Asset
 
     raw = raw.upper().replace("HP", "HIVE")
@@ -84,12 +122,33 @@ def voting_asset(raw: str) -> Asset.VotingT:
 
 
 def hive_asset(raw: str) -> Asset.Hive:
+    """
+    Parse the Hive asset amount.
+
+    Args:
+        raw: The raw asset string to parse.
+
+    Returns:
+        Asset.Hive: The parsed Hive asset object.
+    """
     from clive.__private.models.asset import Asset
 
     return _parse_asset(raw, Asset.Hive)
 
 
 def decimal_percent(raw: str) -> Decimal:
+    """
+    Parse the decimal percent value.
+
+    Args:
+        raw: The raw string to parse as a decimal percent.
+
+    Raises:
+        typer.BadParameter: If the input cannot be converted to a number or is out of range.
+
+    Returns:
+        Decimal: The parsed decimal percent value.
+    """
     try:
         with typer_echo_warnings():
             parsed = DecimalConverter.convert(raw, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
@@ -102,7 +161,18 @@ def decimal_percent(raw: str) -> Decimal:
 
 @rename("text")
 def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
-    """Frequency flag parser used in transfer-schedule."""
+    """
+    Frequency flag parser used in transfer-schedule.
+
+    Args:
+        raw: The raw string to parse as a scheduled transfer frequency.
+
+    Raises:
+        typer.BadParameter: If the input is not a valid scheduled transfer frequency.
+
+    Returns:
+        timedelta: The parsed scheduled transfer frequency as a timedelta object.
+    """
     from clive.__private.core.formatters.humanize import humanize_validation_result
 
     status = ScheduledTransferFrequencyValidator().validate(raw)
