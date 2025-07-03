@@ -34,10 +34,30 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowHivePower(WorldBasedCommand):
+    """
+    Show details of Hive Power for the specified account.
+
+    Args:
+        account_name (str): The name of the account to show Hive Power details for.
+
+    Returns:
+        None
+    """
+
     account_name: str
     _hp_data: HivePowerData = field(init=False)
 
     async def _run(self) -> None:
+        """
+        Run the command to display Hive Power details for the specified account.
+
+        This method retrieves the Hive Power data for the account and formats it into
+        a console output, including general information, APR, conversion factor,
+        next withdrawal details, withdrawal summary, withdraw routes, and delegations.
+
+        Returns:
+            None
+        """
         wrapper = await self.world.commands.retrieve_hp_data(account_name=self.account_name)
         self._hp_data = wrapper.result_or_raise
 
@@ -57,7 +77,30 @@ class ShowHivePower(WorldBasedCommand):
         console.print(columns)
 
     def __general_info(self) -> RenderableType:
+        """
+        Create a table with general information about Hive Power balance.
+
+        This table includes the voting power, amount in Hive Power (HP), and amount in VESTS.
+        It displays the owned, received, delegated, and next power down balances,
+        as well as the effective total balance.
+
+        Returns:
+            RenderableType: A table containing the general information about Hive Power balance.
+        """
+
         def add_row(table: Table, title: str, shares: HpVestsBalance, sign_prefix: SignPrefixT = "") -> None:
+            """
+            Add a row to the table with the specified title and shares.
+
+            Args:
+                table: The table to which the row will be added.
+                title: The title for the row.
+                shares: The shares containing HP and VESTS balances.
+                sign_prefix: Optional; a prefix for the sign of the balance, default is empty string.
+
+            Returns:
+                None
+            """
             table.add_row(
                 title,
                 f"{humanize_asset(shares.hp_balance, show_symbol=False, sign_prefix=sign_prefix)}",
@@ -77,13 +120,33 @@ class ShowHivePower(WorldBasedCommand):
         return table_general_info
 
     def __apr(self) -> RenderableType:
+        """
+        Create a string representation of the current Hive Power APR.
+
+        Returns:
+            RenderableType: A string formatted with the current HP APR, including a label.
+        """
         return f"{humanize_hp_vests_apr(self._hp_data.current_hp_apr, with_label=True)}"
 
     def __conversion_factor(self) -> RenderableType:
+        """
+        Create a string representation of the conversion factor from Hive Power to VESTS.
+
+        Returns:
+            RenderableType: A string formatted with the conversion factor, including a label.
+        """
         factor = humanize_vest_to_hive_ratio(self._hp_data.gdpo, show_symbol=True)
         return f"HP is calculated to VESTS with the factor: 1.000 HP -> {factor}"
 
     def __next_withdrawal(self) -> RenderableType:
+        """
+        Create a table showing the next withdrawal of Hive Power.
+
+        This table includes the date of the next withdrawal and the amount in Hive Power and VESTS.
+
+        Returns:
+            RenderableType: A table containing the next withdrawal details.
+        """
         hp = humanize_hive_power(self._hp_data.next_power_down.hp_balance)
         vests = humanize_asset(self._hp_data.next_power_down.vests_balance)
 
@@ -102,6 +165,14 @@ class ShowHivePower(WorldBasedCommand):
         return table_next_withdrawal
 
     def __to_withdraw(self) -> RenderableType:
+        """
+        Create a table summarizing the Hive Power withdrawals.
+
+        This table includes the total Hive Power and VESTS to withdraw, as well as the remaining balances.
+
+        Returns:
+            RenderableType: A table summarizing the Hive Power withdrawals.
+        """
         table_to_withdraw = Table(title="Hive Power withdrawals summary")
         total_title = "Total"
         remaining_title = "Remains"
@@ -123,6 +194,15 @@ class ShowHivePower(WorldBasedCommand):
         return table_to_withdraw
 
     def __withdraw_routes(self) -> RenderableType:
+        """
+        Create a table displaying the current withdraw routes for Hive Power.
+
+        This table includes the destination account, the percentage of Hive Power to withdraw,
+        and whether auto vesting is enabled.
+
+        Returns:
+            RenderableType: A table containing the current withdraw routes.
+        """
         if len(self._hp_data.withdraw_routes) == 0:
             return colorize_content_not_available("There are no withdraw routes set")
         withdraw_routes_table = Table(title="Current withdraw routes")
@@ -140,6 +220,14 @@ class ShowHivePower(WorldBasedCommand):
         return withdraw_routes_table
 
     def __delegations(self) -> RenderableType:
+        """
+        Create a table displaying the current delegations of Hive Power.
+
+        This table includes the delegatee's account name and the amount of Hive Power delegated to them.
+
+        Returns:
+            RenderableType: A table containing the current delegations of Hive Power.
+        """
         if len(self._hp_data.delegations) == 0:
             return colorize_content_not_available("There are no delegations set")
 
