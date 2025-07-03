@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import stat
 from dataclasses import dataclass, field, fields, is_dataclass
-from typing import TYPE_CHECKING, Final, Union, get_type_hints
+from typing import TYPE_CHECKING, ClassVar, Final, Union
 
 import inflection
 import toml
@@ -65,8 +65,27 @@ class CliveBinding:
         return self.key.replace("ctrl+", "^")
 
 
+class CliveBindingsSection:
+    ID: ClassVar[str]
+    _id_to_cls: ClassVar[dict[str, type]] = {}
+    _cls_to_id: ClassVar[dict[type, str]] = {}
+
+    def __init_subclass__(cls) -> None:
+        CliveBindingsSection._id_to_cls[cls.ID] = cls
+        CliveBindingsSection._cls_to_id[cls] = cls.ID
+
+    @staticmethod
+    def section_name_to_cls(name: str) -> type:
+        return CliveBindingsSection._id_to_cls[name]
+
+    @staticmethod
+    def ids() -> set[str]:
+        return set(CliveBindingsSection._id_to_cls.keys())
+
+
 @dataclass(frozen=True)
-class Global:
+class Global(CliveBindingsSection):
+    ID: ClassVar[str] = "global"
     command_palette: CliveBinding = field(default_factory=lambda: CliveBinding(id="command_palette", key="ctrl+p"))
     show_help: CliveBinding = field(default_factory=lambda: CliveBinding(id="show_help", key="f1,?"))
     hide_help: CliveBinding = field(default_factory=lambda: CliveBinding(id="hide_help", key="escape,q,f1,?"))
@@ -88,7 +107,8 @@ class Global:
 
 
 @dataclass(frozen=True)
-class Dashboard:
+class Dashboard(CliveBindingsSection):
+    ID: ClassVar[str] = "dashboard"
     operations: CliveBinding = field(default_factory=lambda: CliveBinding(id="operations", key="o"))
     switch_working_account: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="switch_working_account", key="w")
@@ -98,7 +118,8 @@ class Dashboard:
 
 
 @dataclass(frozen=True)
-class TransactionSummary:
+class TransactionSummary(CliveBindingsSection):
+    ID: ClassVar[str] = "transaction_summary"
     broadcast: CliveBinding = field(default_factory=lambda: CliveBinding(id="broadcast", key="b"))
     save_transaction_to_file: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="save_transaction_to_file", key="s")
@@ -107,13 +128,15 @@ class TransactionSummary:
 
 
 @dataclass(frozen=True)
-class Operations:
+class Operations(CliveBindingsSection):
+    ID: ClassVar[str] = "operations"
     add_to_cart: CliveBinding = field(default_factory=lambda: CliveBinding(id="add_to_cart", key="a"))
     finalize_transaction: CliveBinding = field(default_factory=lambda: CliveBinding(id="finalize_transaction", key="f"))
 
 
 @dataclass(frozen=True)
-class FormNavigation:
+class FormNavigation(CliveBindingsSection):
+    ID: ClassVar[str] = "form_navigation"
     next_screen: CliveBinding = field(default_factory=lambda: CliveBinding(id="next_screen", key="ctrl+n"))
     previous_screen: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="previous_screen", key="ctrl+p,escape")
@@ -121,7 +144,8 @@ class FormNavigation:
 
 
 @dataclass(frozen=True)
-class ManageKeyAliases:
+class ManageKeyAliases(CliveBindingsSection):
+    ID: ClassVar[str] = "manage_key_aliases"
     new_alias: CliveBinding = field(default_factory=lambda: CliveBinding(id="new_alias", key="a"))
     load_from_file: CliveBinding = field(default_factory=lambda: CliveBinding(id="load_from_file", key="l"))
 
@@ -145,24 +169,19 @@ class CliveBindings:
     @staticmethod
     def from_dict(data: NestedDictStr) -> CliveBindings:
         def custom_from_dict[T](target_type: type[T], data: NestedDictStr) -> T:
-            type_hints = get_type_hints(target_type)
-
             # Validate keys
-            extra_keys = set(data.keys()) - set(type_hints.keys())
+            extra_keys = set(data.keys()) - set(CliveBindingsSection._cls_to_id.values())
             if extra_keys:
                 plural = "is not valid bindings section" if len(extra_keys) == 1 else "are not valid bindings sections"
                 raise BindingsDeserializeError(f"{extra_keys} {plural}")
 
-            # Build field dictionary
             field_dict = {}
-            for field_name, field_cls in type_hints.items():
-                if field_name in data:
-                    dict_field_value = data[field_name]
-                    field_dict[field_name] = (
-                        CliveBinding(field_name, dict_field_value)
-                        if isinstance(dict_field_value, str)
-                        else custom_from_dict(field_cls, dict_field_value)
-                    )
+            for key, value in data.items():
+                if isinstance(value, str):
+                    field_dict[key] = CliveBinding(key, value)
+                else:
+                    cls = CliveBindingsSection.section_name_to_cls(key)
+                    field_dict[key] = custom_from_dict(cls, value)
 
             return target_type(**field_dict)
 
@@ -214,12 +233,12 @@ class CliveBindings:
             assert is_dataclass(obj), "CliveBindings must be a dataclass containing other dataclasses"
             custom: NestedDictStr = {}
             for field_ in fields(obj):
-                name = field_.name
-                value = getattr(obj, name)
-                if isinstance(value, CliveBinding):
-                    custom[name] = str(value)
+                field_name = field_.name
+                field_value = getattr(obj, field_name)
+                if isinstance(field_value, CliveBinding):
+                    custom[field_value.id] = str(field_value)
                 else:
-                    custom[name] = custom_asdict(value)
+                    custom[field_value.ID] = custom_asdict(field_value)
             return custom
 
         return custom_asdict(self)
