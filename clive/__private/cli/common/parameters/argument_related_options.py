@@ -24,8 +24,10 @@ def _make_argument_related_option(source: str | OptionInfo) -> Any:  # noqa: ANN
     Create an argument related option based on another option or create a new one.
 
     Args:
-    ----
-    source: The option to modify or param_decls of the new option.
+        source: OptionInfo: The option to modify or param_decls of the new option.
+
+    Returns:
+        Any: A modified option or a new option with the specified parameters.
     """
     if isinstance(source, str):
         return typer.Option(None, source, show_default=False, help=LOOK_INTO_ARGUMENT_OPTION_HELP)
