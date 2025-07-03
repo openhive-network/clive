@@ -9,10 +9,27 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 
 @dataclass(kw_only=True)
 class ShowAccounts(WorldBasedCommand):
+    """Show information about accounts in the current profile."""
+
     async def _run(self) -> None:
+        """
+        Show information about accounts in the current profile.
+
+        Returns:
+            None
+        """
         self._show_accounts_info()
 
     def _show_accounts_info(self) -> None:
+        """
+        Display account information.
+
+        If a working account is set, it displays its name.
+        Else it indicates that no working account is set, and lists all tracked and known accounts.
+
+        Returns:
+            None
+        """
         profile = self.profile
         if profile.accounts.has_working_account:
             typer.echo(f"Working account: {profile.accounts.working.name}")
