@@ -17,11 +17,31 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ShowWitnesses(WorldBasedCommand):
+    """
+    Show witnesses command.
+
+    Args:
+        account_name: The name of the account for which to show witnesses.
+        page_size: The number of witnesses to display per page.
+        page_no: The page number to display.
+    """
+
     account_name: str
     page_size: int
     page_no: int
 
     async def _run(self) -> None:
+        """
+        Run the command to show witnesses and their votes for the specified account.
+
+        This method retrieves the witnesses data for the account and formats it into a table.
+        It includes details such as whether the account voted for the witness, the witness rank,
+        witness name, total votes, creation date, missed blocks, last block, price feed, and version.
+        If the account has a proxy set, it retrieves the witnesses data for the proxy instead.
+
+        Returns:
+            None: This method does not return any value. It prints the witnesses table into the console.
+        """
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         proxy = accounts[0].proxy
 
