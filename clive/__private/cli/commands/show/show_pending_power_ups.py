@@ -20,9 +20,26 @@ from clive.__private.core.formatters.humanize import (
 
 @dataclass(kw_only=True)
 class ShowPendingPowerUps(WorldBasedCommand):
+    """
+    Show pending power ups for a given account.
+
+    Args:
+        account_name: The name of the account to show pending power ups for.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Show pending power ups for the specified account.
+
+        This method retrieves the delayed votes for the account and displays them in a table format.
+        The table includes the activation time and the amount of Hive Power (HP) that will be activated.
+        If there are no pending power ups, a message is displayed indicating that there are none.
+
+        Returns:
+            None: This method does not return any value. It prints the results table directly to the console.
+        """
         console = Console()
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
@@ -53,5 +70,11 @@ class ShowPendingPowerUps(WorldBasedCommand):
         console.print(delayed_votes_table)
 
     async def __get_delayed_voting_interval(self) -> timedelta:
+        """
+        Get the total interval for delayed voting from the node configuration.
+
+        Returns:
+            timedelta: The total interval for delayed voting.
+        """
         node_config = await self.world.node.cached.config
         return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS)
