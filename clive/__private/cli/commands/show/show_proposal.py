@@ -12,9 +12,27 @@ from clive.__private.models import Asset
 
 @dataclass(kw_only=True)
 class ShowProposal(WorldBasedCommand):
+    """
+    Show the details of a proposal by its ID.
+
+    Args:
+        proposal_id: The ID of the proposal to show.
+    """
+
     proposal_id: int
 
     async def _run(self) -> None:
+        """
+        Show the details of a proposal by its ID.
+
+        This method retrieves the proposal details from the world commands and formats
+        them into a readable table format using Rich. It includes information such as
+        proposal ID, creator, receiver, start date, end date, daily pay, subject,
+        permlink, total votes, and status.
+
+        Returns:
+            None: The method prints the proposal details table into the console.
+        """
         wrapper = await self.world.commands.find_proposal(proposal_id=self.proposal_id)
         proposal = wrapper.result_or_raise
 
