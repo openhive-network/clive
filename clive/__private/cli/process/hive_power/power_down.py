@@ -23,6 +23,16 @@ async def process_power_down_start(
     Start power down with given amount.
 
     If there is power down in progress displays error.
+
+    Args:
+        account_name: The name of the account to perform power down for.
+        amount: The amount of Hive to power down, in the format "X HIVE".
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+
+    Returns:
+        None
     """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownStart
 
@@ -49,6 +59,16 @@ async def process_power_down_restart(
     Restart power down with given amount.
 
     If there is power down in progress overrides it. If there is no power down in progress creates new.
+
+    Args:
+        account_name: The name of the account to perform power down for.
+        amount: The amount of Hive to power down, in the format "X HIVE".
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+
+    Returns:
+        None
     """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDown
 
@@ -66,7 +86,18 @@ async def process_power_down_cancel(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Stop power down by setting amount to 0."""
+    """
+    Stop power down by setting amount to 0.
+
+    Args:
+        account_name: The name of the account to cancel power down for.
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel
 
     operation = ProcessPowerDownCancel(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file)
