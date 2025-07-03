@@ -11,28 +11,75 @@ from clive.__private.validators.set_tracked_account_validator import SetTrackedA
 
 @dataclass(kw_only=True)
 class AddTrackedAccount(WorldBasedCommand):
+    """
+    Class to add a tracked account to the profile.
+
+    Args:
+        account_name: The name of the account to be tracked.
+    """
+
     account_name: str
 
     def _validate_tracked_account(self) -> None:
+        """
+        Validate if the account name can be used as a tracked account.
+
+        Raises:
+            CLIPrettyError: If the account name is invalid.
+
+        Returns:
+            None
+        """
         result = SetTrackedAccountValidator(self.profile).validate(self.account_name)
         if not result.is_valid:
             raise CLIPrettyError(f"Can't use this account name: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def validate_inside_context_manager(self) -> None:
+        """
+        Validate the tracked account before adding it.
+
+        Returns:
+            None
+        """
         self._validate_tracked_account()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
+        """
+        Run the command to add the tracked account.
+
+        Returns:
+            None
+        """
         self.profile.accounts.add_tracked_account(self.account_name)
 
 
 @dataclass(kw_only=True)
 class RemoveTrackedAccount(WorldBasedCommand):
+    """
+    Class to remove a tracked account from the profile.
+
+    Args:
+        account_name: The name of the account to be removed from tracking.
+    """
+
     account_name: str
 
     async def _run(self) -> None:
+        """
+        Run the command to remove the tracked account.
+
+        Returns:
+            None
+        """
         self.profile.accounts.remove_tracked_account(self.account_name)
 
     async def validate_inside_context_manager(self) -> None:
+        """
+        Validate the tracked account before removing it.
+
+        Returns:
+            None
+        """
         self._validate_account_exists(self.account_name)
         await super().validate_inside_context_manager()
