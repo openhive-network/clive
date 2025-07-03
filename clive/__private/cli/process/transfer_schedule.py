@@ -68,7 +68,25 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
+    """
+    Create a new recurrent transfer. First recurrent transfer will be sent immediately.
+
+    Args:
+        from_account: The account from which the transfer will be made.
+        to: The account to which the transfer will be made.
+        amount: The amount of liquid asset to transfer.
+        repeat: How many times the recurrent transfer should be executed.
+        frequency: How often the transfer should be executed.
+        memo: An optional memo for the transfer.
+        pair_id: Unique pair id used to differentiate between multiple transfers to the same account.
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately or not.
+        save_file: Optional file path to save the transaction data.
+        force: Whether to force execution even if conditions are not met.
+
+    Returns:
+        None: This function does not return anything. It executes the transfer schedule creation process.
+    """
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
 
     await ProcessTransferScheduleCreate(
@@ -104,6 +122,22 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     Modify an existing recurrent transfer.
 
     If you change the frequency, the first execution after modification is update date + frequency.
+
+    Args:
+        from_account: The account from which the transfer will be made.
+        to: The account to which the transfer will be made.
+        amount: The amount of liquid asset to transfer (optional).
+        repeat: How many times the recurrent transfer should be executed (optional).
+        frequency: How often the transfer should be executed (optional).
+        memo: An optional memo for the transfer (optional).
+        pair_id: Unique pair id used to differentiate between multiple transfers to the same account (optional).
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately or not.
+        save_file: Optional file path to save the transaction data.
+        force: Whether to force execution even if conditions are not met.
+
+    Returns:
+        None: This function does not return anything. It executes the transfer schedule modification process.
     """
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleModify
 
@@ -131,7 +165,20 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Remove an existing recurrent transfer."""
+    """
+    Remove an existing recurrent transfer.
+
+    Args:
+        from_account: The account from which the transfer will be made.
+        to: The account to which the transfer was made.
+        pair_id: Unique pair id used to differentiate between multiple transfers to the same account (optional).
+        sign: Optional signature for the transaction.
+        broadcast: Whether to broadcast the transaction immediately or not.
+        save_file: Optional file path to save the transaction data.
+
+    Returns:
+        None: This function does not return anything. It executes the transfer schedule removal process.
+    """
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove
 
     await ProcessTransferScheduleRemove(
