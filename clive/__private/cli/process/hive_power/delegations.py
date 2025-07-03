@@ -30,7 +30,21 @@ async def process_delegations_set(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
+    """
+    Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee".
+
+    Args:
+        account_name: The name of the delegator account.
+        delegatee: The name of the delegatee account.
+        amount: The amount of vesting shares to delegate, in the format "X HIVE" or "X HBD".
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+        force: If True, force the delegation even if it might not be optimal.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegations
 
     amount_ = cast("Asset.VotingT", amount)
@@ -54,7 +68,19 @@ async def process_delegations_remove(
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
+    """
+    Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee".
+
+    Args:
+        account_name: The name of the delegator account.
+        delegatee: The name of the delegatee account.
+        sign: Optional, if provided, the operation will be signed with the working account.
+        broadcast: If True, the operation will be broadcasted to the network.
+        save_file: If provided, the operation will be saved to this file instead of broadcasting it.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove
 
     operation = ProcessDelegationsRemove(
