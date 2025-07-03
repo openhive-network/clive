@@ -10,6 +10,16 @@ GovernanceCheckbox {
     }
   }
 
+  GovernanceCheckboxLabel {
+    &.-voted {
+      color: $success-darken-3;
+    }
+
+    &.-unvoted {
+      color: $error;
+    }
+  }
+
   CheckBoxWithoutFocus {
     border: none;
     background: transparent;
@@ -22,16 +32,8 @@ GovernanceCheckbox {
   }
 
   &:focus {
-    Label {
+    GovernanceCheckboxLabel {
       text-style: bold reverse;
     }
-  }
-
-  .-voted {
-    color: $success-darken-3;
-  }
-
-  .-unvoted {
-    color: $error;
   }
 }
