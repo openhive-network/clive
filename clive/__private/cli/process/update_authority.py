@@ -36,7 +36,20 @@ _authority_weight = typer.Option(
 
 @pass_context
 def send_update(ctx: Context, /, *args: Any, **kwds: Any) -> None:  # noqa: ARG001
-    """Create and send account update operation updating authority asynchronously."""
+    """
+    Create and send account update operation updating authority asynchronously.
+
+    Args:
+        ctx: The context of the command.
+        *args: Additional positional arguments (not used).
+        **kwds: Additional keyword arguments (not used).
+
+    Raises:
+        AssertionError: If the context object is not an instance of ProcessAccountUpdate.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
     assert isinstance(ctx.obj, ProcessAccountUpdate), (
@@ -51,7 +64,19 @@ def send_update(ctx: Context, /, *args: Any, **kwds: Any) -> None:  # noqa: ARG0
 
 
 def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFunction) -> None:
-    """Add callback modifying authority to command ProcessAccountUpdate stored in context."""
+    """
+    Add callback modifying authority to command ProcessAccountUpdate stored in context.
+
+    Args:
+        ctx: The context of the command.
+        callback: The callback function to add to the update command.
+
+    Raises:
+        AssertionError: If the context parent does not exist or is not an instance of ProcessAccountUpdate.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
     assert ctx.parent, f"{ctx.command_path} context parent does not exist"
@@ -63,6 +88,15 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
 
 
 def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
+    """
+    Get update authority command typer for a specific authority type.
+
+    Args:
+        authority: The type of authority to update (e.g., "owner", "active", "posting").
+
+    Returns:
+        CliveTyper: A CliveTyper instance for the update authority command.
+    """
     epilog = f"Look also at the help for command update-{authority}-authority for more options."
     update = CliveTyper(
         name=f"update-{authority}-authority",
@@ -76,7 +110,17 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         account: str = _authority_account_name,
         weight: int = _authority_weight,
     ) -> None:
-        """Add account authority with weight."""
+        """
+        Add account authority with weight.
+
+        Args:
+            ctx: The context of the command.
+            account: The account name to add as authority.
+            weight: The weight of the authority to be added.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import add_account, update_authority
 
         add_account_function = partial(add_account, account=account, weight=weight)
@@ -89,7 +133,17 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         key: str = _authority_key,
         weight: int = _authority_weight,
     ) -> None:
-        """Add key authority with weight."""
+        """
+        Add key authority with weight.
+
+        Args:
+            ctx: The context of the command.
+            key: The public key to add as authority.
+            weight: The weight of the authority to be added.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import add_key, update_authority
 
         add_key_function = partial(add_key, key=key, weight=weight)
@@ -101,7 +155,16 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         ctx: typer.Context,
         account: str = _authority_account_name,
     ) -> None:
-        """Remove account authority."""
+        """
+        Remove account authority.
+
+        Args:
+            ctx: The context of the command.
+            account: The account name to remove from authority.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import remove_account, update_authority
 
         remove_account_function = partial(remove_account, account=account)
@@ -113,7 +176,16 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         ctx: typer.Context,
         key: str = _authority_key,
     ) -> None:
-        """Remove key authority."""
+        """
+        Remove key authority.
+
+        Args:
+            ctx: The context of the command.
+            key: The public key to remove from authority.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import remove_key, update_authority
 
         remove_key_function = partial(remove_key, key=key)
@@ -126,7 +198,17 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         account: str = _authority_account_name,
         weight: int = _authority_weight,
     ) -> None:
-        """Modify weight of existing account authority."""
+        """
+        Modify weight of existing account authority.
+
+        Args:
+            ctx: The context of the command.
+            account: The account name to modify authority weight.
+            weight: The new weight of the authority.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import modify_account, update_authority
 
         modify_account_function = partial(modify_account, account=account, weight=weight)
@@ -139,7 +221,17 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         key: str = _authority_key,
         weight: int = _authority_weight,
     ) -> None:
-        """Modify weight of existing key authority."""
+        """
+        Modify weight of existing key authority.
+
+        Args:
+            ctx: The context of the command.
+            key: The public key to modify authority weight.
+            weight: The new weight of the authority.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import modify_key, update_authority
 
         modify_key_function = partial(modify_key, key=key, weight=weight)
@@ -159,7 +251,20 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         broadcast: bool = options.broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
-        """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
+        """
+        Collect common options for add/remove/modify authority, calls chain of commands at the end of command.
+
+        Args:
+            ctx: The context of the command.
+            account_name: The name of the account to update.
+            threshold: The new threshold to set for the authority.
+            sign: The signature option for the command.
+            broadcast: Whether to broadcast the transaction.
+            save_file: The file to save the transaction to.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import (
             ProcessAccountUpdate,
             set_threshold,
