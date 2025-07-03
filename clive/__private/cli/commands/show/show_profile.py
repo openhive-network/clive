@@ -10,11 +10,28 @@ from clive.__private.core.formatters.humanize import humanize_bool
 
 @dataclass(kw_only=True)
 class ShowProfile(ShowAccounts):
+    """Show the profile information and accounts."""
+
     async def _run(self) -> None:
+        """
+        Show the profile information and accounts.
+
+        Returns:
+            None
+        """
         self._show_profile_info()
         self._show_accounts_info()
 
     def _show_profile_info(self) -> None:
+        """
+        Show the profile information, and display it in a console.
+
+        Profile info includes the profile name, node address, backup node addresses,
+        chain ID, and whether known accounts are enabled.
+
+        Returns:
+            None
+        """
         profile = self.profile
         typer.echo(f"Profile name: {profile.name}")
         typer.echo(f"Node address: {profile.node_address}")
