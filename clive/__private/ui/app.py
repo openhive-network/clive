@@ -63,7 +63,6 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "f12"
 
     BINDINGS = [
-        Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding(APP_QUIT_KEY_BINDING, "quit", "Quit", show=False),
         Binding("c", "clear_notifications", "Clear notifications", show=False),
         Binding("f1", "help", "Help", show=False),
