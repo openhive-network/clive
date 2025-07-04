@@ -36,6 +36,20 @@ def main(
         None, "--version", "-V", help="Show the current version and exit.", is_eager=True
     ),
 ) -> None:
+    """
+    Serve as the main entry point for the Clive CLI application.
+
+    This function serves as the main command for the Clive CLI, providing a help message and version information.
+    If the `--version` option is provided, it displays the current version of Clive and exits.
+    If no subcommand is provided, it displays the help message for the Clive CLI.
+
+
+    Args:
+        version: If set to True, displays the current version of Clive and exits.
+
+    Returns:
+        None: This function does not return any value. It either displays the help message or the version information.
+    """
     if version:
         from clive import __version__
         from clive.__private.storage.storage_history import StorageHistory
@@ -67,7 +81,16 @@ async def unlock(
     """
     Unlocks the selected profile.
 
-    By default unlock is permanent and has no timeout.
+    By default, unlock is permanent and has no timeout.
+
+    Args:
+        profile_name: The name of the profile to unlock. If not provided, it will be selected interactively.
+        profile_name_option: An optional profile name option for additional context.
+        unlock_time_mins: The time in minutes to keep the profile unlocked. If not provided, it will remain unlocked.
+        include_create_new_profile: Hidden option to include the ability to create a new profile if none exists.
+
+    Returns:
+        None: This function does not return any value; it runs the command to unlock the profile.
     """
     from clive.__private.cli.commands.unlock import Unlock
 
@@ -84,6 +107,9 @@ async def lock() -> None:
     Locks the profile.
 
     Locks all wallets in beekeeper session.
+
+    Returns:
+        None: This function does not return any value; it runs the command to lock the profile.
     """
     from clive.__private.cli.commands.lock import Lock
 
