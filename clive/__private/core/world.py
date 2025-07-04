@@ -79,6 +79,10 @@ class World:
         return self._profile is not None
 
     @property
+    def is_wax_interface_available(self) -> bool:
+        return self._wax_interface is not None
+
+    @property
     def node(self) -> Node:
         """
         Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors.
@@ -136,6 +140,8 @@ class World:
             if self.is_node_available:
                 self.node.teardown()
             self._beekeeper_manager.teardown()
+            if self.is_wax_interface_available:
+                self.wax_interface.teardown()  # type: ignore[attr-defined]
 
             await self.app_state.lock()
 
