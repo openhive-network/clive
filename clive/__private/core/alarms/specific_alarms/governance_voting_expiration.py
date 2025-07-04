@@ -18,16 +18,39 @@ if TYPE_CHECKING:
 
 @dataclass
 class GovernanceVotingExpirationAlarmData(AlarmDataWithEndDate):
+    """
+    Data class for governance voting expiration alarm.
+
+    Args:
+        END_DATE_LABEL: Label for the end date of the alarm.
+    """
+
     END_DATE_LABEL: ClassVar[str] = "Expiration date"
 
 
 class GovernanceVotingExpiration(Alarm[DateTimeAlarmIdentifier, GovernanceVotingExpirationAlarmData]):
+    """
+    Class representing an alarm for governance voting expiration.
+
+    Args:
+        WARNING_PERIOD_IN_DAYS: Number of days before the expiration when the alarm should trigger.
+    """
+
     ALARM_DESCRIPTION = GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
     WARNING_PERIOD_IN_DAYS: Final[int] = 31
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
+        """
+        Update the status of the governance voting expiration alarm based on the provided data.
+
+        Args:
+            data: The data containing governance vote expiration timestamp.
+
+        Returns:
+            None
+        """
         expiration: datetime = data.governance_vote_expiration_ts
         if is_null_date(expiration):
             self.disable_alarm()
@@ -43,4 +66,10 @@ class GovernanceVotingExpiration(Alarm[DateTimeAlarmIdentifier, GovernanceVoting
         return
 
     def get_alarm_basic_info(self) -> str:
+        """
+        Get a basic description of the governance voting expiration alarm.
+
+        Returns:
+            A string describing the alarm.
+        """
         return f"Governance votes will expire in {self.alarm_data_ensure.pretty_time_left}"
