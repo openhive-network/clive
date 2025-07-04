@@ -25,23 +25,22 @@ class CliveTyper(typer.Typer):
     Such a handlers could be only registered for the main Typer instance, but not for sub-commands. That's because
     Typer.__call__ is not called for each sub-commands, but only for the main Typer instance.
 
-    Example:
-    -------
-    >>> raise TypeError("Some error")
+    Examples:
+        >>> raise TypeError("Some error")
 
-    @typer_instance.error_handler(SomeError)
-    def may_handle_some_error(error: SomeError) -> int | None:
-        if "Other error" in str(error):
-            typer.echo("Some error occurred")
-            return 1
-        return None
+        >>> @typer_instance.error_handler(SomeError)
+        >>> def may_handle_some_error(error: SomeError) -> int | None:
+            >>> if "Other error" in str(error):
+                >>> typer.echo("Some error occurred")
+                >>> return 1
+            >>> return None
 
-    @typer_instance.error_handler(Exception)
-    def handle_any_error(error: Exception) -> None:
-        raise CLIError(str(error), 1)
+        >>> @typer_instance.error_handler(Exception)
+        >>> def handle_any_error(error: Exception) -> None:
+            >>> raise CLIError(str(error), 1)
 
-    # `may_handle_some_error` will ignore the error, because of the `if` condition.
-    # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
+        >>> # `may_handle_some_error` will ignore the error, because of the `if` condition.
+        >>> # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
     """
 
     __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback[Any]]] = {}
@@ -54,6 +53,17 @@ class CliveTyper(typer.Typer):
         help: str | None = Default(None),  # noqa: A002
         chain: bool = Default(value=False),
     ) -> None:
+        """
+        Initialize the CliveTyper instance with the given name, help text, and chain option.
+
+        Args:
+            name: The name of the Typer application.
+            help: The help text for the Typer application.
+            chain: Whether to allow chaining commands (default is False).
+
+        Returns:
+            None
+        """
         super().__init__(
             name=name,
             help=help,
@@ -64,6 +74,19 @@ class CliveTyper(typer.Typer):
         )
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        """
+        Call the Typer instance, handling errors with registered error handlers.
+
+        Args:
+            *args: Positional arguments to pass to the Typer instance.
+            **kwargs: Keyword arguments to pass to the Typer instance.
+
+        Raises:
+            Exception: If an error occurs and no handler is registered for it.
+
+        Returns:
+            Any: The result of the Typer instance call.
+        """
         try:
             return super().__call__(*args, **kwargs)
         except Exception as error:  # noqa: BLE001
@@ -72,22 +95,82 @@ class CliveTyper(typer.Typer):
     def error_handler[T: Exception](
         self, error: type[T]
     ) -> Callable[[ErrorHandlingCallback[T]], ErrorHandlingCallback[T]]:
+        """
+        Register an error handler for a specific exception type.
+
+        Args:
+            error: The type of exception to handle.
+
+        Returns:
+            Callable, ErrorHandlingCallback: A decorator that registers the error handling callback.
+        """
+
         def decorator(f: ErrorHandlingCallback[T]) -> ErrorHandlingCallback[T]:
+            """
+            Register an error handling callback for a specific exception type.
+
+            Args:
+                f: The error handling callback function to register.
+
+            Returns:
+                ErrorHandlingCallback: The registered error handling callback function.
+            """
             self.__clive_error_handlers__[error] = f
             return f
 
         return decorator
 
     def callback(self, *args: Any, **kwargs: Any) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        """
+        Register a callback function that will be executed when the command is called.
+
+        Args:
+            *args: Positional arguments to pass to the callback.
+            **kwargs: Keyword arguments to pass to the callback.
+
+        Returns:
+            Callable, CommandFunctionType: A decorator that registers the callback function.
+        """
         return partial(self._maybe_run_async, super().callback(*args, **kwargs))
 
     def command(self, *args: Any, **kwargs: Any) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        """
+        Register a command function that will be executed when the command is called.
+
+        Args:
+            *args: Positional arguments to pass to the command.
+            **kwargs: Keyword arguments to pass to the command.
+
+        Returns:
+            Callable, CommandFunctionType: A decorator that registers the command function.
+        """
         return partial(self._maybe_run_async, super().command(*args, **kwargs))
 
     @staticmethod
     def _maybe_run_async(decorator: Any, func: Any) -> Any:  # noqa: ANN401
+        """
+        Run the function asynchronously if it is a coroutine function.
+
+        Args:
+            decorator: The decorator to apply to the function.
+            func: The function to potentially run asynchronously.
+
+        Returns:
+            Any: The decorated function, which will run asynchronously if it is a coroutine function.
+        """
+
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+            """
+            Wrap the decorated function to run asynchronously if it is a coroutine function.
+
+            Args:
+                *args: Positional arguments to pass to the function.
+                **kwargs: Keyword arguments to pass to the function.
+
+            Returns:
+                Any: The result of the function call, run asynchronously if it is a coroutine function.
+            """
             return asyncio_run(func(*args, **kwargs))
 
         if inspect.iscoroutinefunction(func):
@@ -95,6 +178,19 @@ class CliveTyper(typer.Typer):
         return decorator(func)
 
     def __handle_error(self, error: Exception) -> None:
+        """
+        Handle an error by finding the appropriate error handler and executing it.
+
+        Args:
+            error: The exception to handle.
+
+        Raises:
+            ClickException: If the error handler raises a ClickException.
+            Exception: If any other exception is raised in the error handler.
+
+        Returns:
+            None: The function does not return anything, but it exits the program with the appropriate exit code.
+        """
         handler = self.__get_error_handler(error)
 
         try:
@@ -124,6 +220,18 @@ class CliveTyper(typer.Typer):
             raise exception from None
 
     def __get_error_handler[T: Exception](self, error: T) -> ErrorHandlingCallback[T]:
+        """
+        Get the error handler for the given error type.
+
+        Args:
+            error: The exception for which to find the handler.
+
+        Raises:
+            error: If no handler is found for the error type, the original error is raised.
+
+        Returns:
+            ErrorHandlingCallback: The error handling callback function for the given error type.
+        """
         for type_ in type(error).mro():
             if type_ in self.__clive_error_handlers__:
                 return self.__clive_error_handlers__.pop(type_)
