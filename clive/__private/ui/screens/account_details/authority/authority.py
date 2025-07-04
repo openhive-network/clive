@@ -16,6 +16,7 @@ from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.screens.account_details.authority.clive_authority import AuthorityEntryWrapper, CliveAuthority, WaxAuthorityWrapper
 from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
 from clive.__private.ui.widgets.buttons import (
     CliveButton,
@@ -44,21 +45,21 @@ if TYPE_CHECKING:
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
-class WaxAuthorityWrapper:
-    """A wrapper to provide utility methods for WaxAuthority objects."""
+# class WaxAuthorityWrapper:
+#     """A wrapper to provide utility methods for WaxAuthority objects."""
 
-    def __init__(self, authority: WaxAuthority) -> None:
-        self._authority = authority
+#     def __init__(self, authority: WaxAuthority) -> None:
+#         self._authority = authority
 
-    def collect_all_entries(self) -> list[str]:
-        return list(self._authority.account_auths.keys()) + list(self._authority.key_auths.keys())
+#     def collect_all_entries(self) -> list[str]:
+#         return list(self._authority.account_auths.keys()) + list(self._authority.key_auths.keys())
 
-    def collect_weights(self, keys: KeyManager) -> list[int]:
-        """Collect weights for keys that are present in the KeyManager."""
-        return [self._authority.key_auths[key] for key in list(self._authority.key_auths.keys()) if key in keys]
+#     def collect_weights(self, keys: KeyManager) -> list[int]:
+#         """Collect weights for keys that are present in the KeyManager."""
+#         return [self._authority.key_auths[key] for key in list(self._authority.key_auths.keys()) if key in keys]
 
-    def is_object_has_entry_that_matches_pattern(self, *patterns: str) -> bool:
-        return any(is_match(entry, *patterns) for entry in self.collect_all_entries())
+#     def is_object_has_entry_that_matches_pattern(self, *patterns: str) -> bool:
+#         return any(is_match(entry, *patterns) for entry in self.collect_all_entries())
 
 
 def is_match(text: str, *patterns: str) -> bool:
@@ -116,10 +117,10 @@ class AuthorityRoles(SectionScrollable):
     def body(self) -> SectionBody:
         return self.query_exactly_one(SectionBody)
 
-    async def build(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
+    async def build(self, authority_operations: list[CliveAuthority]) -> None:
         await self.body.mount_all([AccountCollapsible(operation) for operation in authority_operations])
 
-    async def rebuild(self, authority_operations: list[AccountAuthorityUpdateOperation]) -> None:
+    async def rebuild(self, authority_operations: list[CliveAuthority]) -> None:
         await self.body.query("*").remove()
         await self.build(authority_operations)
 
@@ -149,7 +150,7 @@ class AuthorityRoles(SectionScrollable):
 class AccountCollapsible(CliveCollapsible):
     def __init__(
         self,
-        operation: AccountAuthorityUpdateOperation,
+        operation: CliveAuthority,
         *,
         collapsed: bool = False,
     ) -> None:
@@ -161,7 +162,7 @@ class AccountCollapsible(CliveCollapsible):
         )
 
     @property
-    def operation(self) -> AccountAuthorityUpdateOperation:
+    def operation(self) -> CliveAuthority:
         return self._operation
 
     def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> bool:
@@ -172,7 +173,7 @@ class AccountCollapsible(CliveCollapsible):
             for authority_type in self.query(AuthorityType):
                 authority_type.update(*filter_patterns)
 
-        if self.operation.categories.hive.account not in selected_accounts_in_filter:
+        if self.operation.account not in selected_accounts_in_filter:
             self.display = False
             return False
 
@@ -181,24 +182,30 @@ class AccountCollapsible(CliveCollapsible):
             update_display_of_authority_types()
             return True
 
-        for role in self.operation.categories.hive:
-            if role.level != "memo":
-                if WaxAuthorityWrapper(role.value).is_object_has_entry_that_matches_pattern(*filter_patterns):
-                    self.display = True
-                    update_display_of_authority_types()
-                    return True
-            elif is_match(role.value, *filter_patterns):
+        for role in self.operation.roles:
+            if role.is_role_has_entry_that_matches_pattern(*filter_patterns):
                 self.display = True
-                update_display_of_authority_types()
                 return True
-
         self.display = False
         return False
+
+        #     if role.level != "memo":
+        #         if WaxAuthorityWrapper(role.value).is_object_has_entry_that_matches_pattern(*filter_patterns):
+        #             self.display = True
+        #             update_display_of_authority_types()
+        #             return True
+        #     elif is_match(role.value, *filter_patterns):
+        #         self.display = True
+        #         update_display_of_authority_types()
+        #         return True
+
+        # self.display = False
+        # return False
 
     def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityType]:
         widgets_to_mount = []
 
-        for role in self._operation.categories.hive:
+        for role in self._operation.roles:
             title = role.level if role.level != "memo" else "memo key"
             widgets_to_mount.append(AuthorityType(role.value, title=title, collapsed=collapsed))
 
@@ -208,7 +215,7 @@ class AccountCollapsible(CliveCollapsible):
 class AuthorityType(CliveCollapsible):
     def __init__(
         self,
-        account_authorities: WaxAuthority | str | None,
+        account_authorities: AuthorityEntryWrapper | WaxAuthorityWrapper | None,
         *,
         title: str,
         collapsed: bool = False,
@@ -222,7 +229,7 @@ class AuthorityType(CliveCollapsible):
         )
 
     @property
-    def authority(self) -> WaxAuthority | str | None:
+    def authority(self) -> AuthorityEntryWrapper | WaxAuthorityWrapper | None:
         return self._account_authorities
 
     def update(self, *filter_patterns: str) -> None:
@@ -375,6 +382,7 @@ class AuthorityTable(CliveCheckerboardTable):
         super().__init__(header=AuthorityHeader(memo_header=self._is_authority_memo))
 
     def create_static_rows(self) -> Sequence[AuthorityItem] | Sequence[MemoItem]:
+        from clive.__private.logger import logger
         if not self._single_authority:  # no entries in this type of authority
             return []
 
@@ -385,9 +393,12 @@ class AuthorityTable(CliveCheckerboardTable):
 
         key_entries = self._single_authority.key_auths
         account_entries = self._single_authority.account_auths
-
+        logger.debug(f"KEY ENTRIES {key_entries}")
+        logger.debug(f"ACCOUNT ENTRIES {account_entries}")
         key_rows = [AuthorityItem(key_entry, weight) for key_entry, weight in key_entries.items()]
-        account_rows = [AuthorityItem(account_entry, weight) for account_entry, weight in account_entries.items()]
+        account_rows = [
+            AuthorityItem(account_entry, weight) for account_entry, weight in account_entries.items()
+        ]
         return key_rows + account_rows
 
     def update_cell_colors(self) -> None:
@@ -424,7 +435,7 @@ class Authority(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._authority_operations: list[AccountAuthorityUpdateOperation] = []
+        self._authority_operations: list[CliveAuthority] = []
         self._filter_pattern_already_applied: bool = False
 
     async def on_mount(self) -> None:
@@ -490,7 +501,7 @@ class Authority(TabPane, CliveWidget):
             authority_operation = await AccountAuthorityUpdateOperation.create_for(
                 self.world.wax_interface, account.name
             )
-            self._authority_operations.append(authority_operation)
+            self._authority_operations.append(CliveAuthority(authority_operation))
 
     async def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:
         with self.app.batch_update():
