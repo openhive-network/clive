@@ -11,4 +11,11 @@ class AlarmIdentifier(CliveBaseModel, ABC):
 
 
 class DateTimeAlarmIdentifier(AlarmIdentifier):
+    """
+    Alarm identifier based on a specific date and time.
+
+    Args:
+        value: The date and time for the alarm.
+    """
+
     value: HiveDateTime
