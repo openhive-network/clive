@@ -23,7 +23,12 @@ show.add_typer(pending)
 
 @show.command("profiles")
 async def show_profiles() -> None:
-    """Show all stored profiles."""
+    """
+    Show all stored profiles.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowProfiles command to display profile information.
+    """
     from clive.__private.cli.commands.show.show_profiles import ShowProfiles
 
     await ShowProfiles().run()
@@ -31,7 +36,12 @@ async def show_profiles() -> None:
 
 @show.command(name="profile")
 async def show_profile() -> None:
-    """Show profile information."""
+    """
+    Show profile information.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowProfile command to display profile details.
+    """
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
     await ShowProfile().run()
@@ -39,7 +49,12 @@ async def show_profile() -> None:
 
 @show.command(name="accounts")
 async def show_accounts() -> None:
-    """Show all accounts stored in the profile."""
+    """
+    Show all accounts stored in the profile.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowAccounts command to display account information.
+    """
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
     await ShowAccounts().run()
@@ -47,7 +62,12 @@ async def show_accounts() -> None:
 
 @show.command(name="keys")
 async def show_keys() -> None:
-    """Show all the public keys stored in Clive."""
+    """
+    Show all the public keys stored in Clive.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowKeys command to display keys.
+    """
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
     await ShowKeys().run()
@@ -58,7 +78,16 @@ async def show_balances(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Show balances of the selected account."""
+    """
+    Show balances of the selected account.
+
+    Args:
+        account_name: Name of the account to show balances for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowBalances command to display account balances.
+    """
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
     await ShowBalances(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -66,7 +95,12 @@ async def show_balances(
 
 @show.command(name="node")
 async def show_node() -> None:
-    """Show address of the currently selected node."""
+    """
+    Show address of the currently selected node.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowNode command to display node information.
+    """
     from clive.__private.cli.commands.show.show_node import ShowNode
 
     await ShowNode().run()
@@ -82,7 +116,16 @@ async def show_transaction_status(
     transaction_id: str | None = _transaction_id_argument,
     transaction_id_option: str | None = argument_related_options.transaction_id,
 ) -> None:
-    """Print status of a specific transaction."""
+    """
+    Print status of a specific transaction.
+
+    Args:
+        transaction_id: The ID of the transaction to show status for.
+        transaction_id_option: Optional argument for transaction ID, if not provided will use the default.
+
+    Returns:
+        None: Runs the ShowTransactionStatus command to display transaction status.
+    """
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
 
     await ShowTransactionStatus(
@@ -121,7 +164,16 @@ async def show_proxy(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Show proxy of selected account."""
+    """
+    Show proxy of selected account.
+
+    Args:
+        account_name: Name of the account to show proxy for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowProxy command to display proxy information.
+    """
     from clive.__private.cli.commands.show.show_proxy import ShowProxy
 
     await ShowProxy(
@@ -144,7 +196,18 @@ async def show_witnesses(
     page_size: int = witnesses_page_size,
     page_no: int = witnesses_page_no,
 ) -> None:
-    """List witnesses and votes of selected account."""
+    """
+    List witnesses and votes of selected account.
+
+    Args:
+        account_name: Name of the account to show witnesses for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+        page_size: Number of witnesses to display per page.
+        page_no: Page number of the witnesses list, considering the given page size.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowWitnesses command to display witness information.
+    """
     from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses
 
     await ShowWitnesses(
@@ -162,7 +225,16 @@ async def show_witness(
     name: str | None = _witness_name_argument,
     name_option: str | None = argument_related_options.name,
 ) -> None:
-    """Show details of a specified witness."""
+    """
+    Show details of a specified witness.
+
+    Args:
+        name: Name of the witness to show details for.
+        name_option: Optional argument for witness name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowWitness command to display witness details.
+    """
     from clive.__private.cli.commands.show.show_witness import ShowWitness
 
     await ShowWitness(
@@ -195,7 +267,21 @@ async def show_proposals(  # noqa: PLR0913
     page_size: int = proposals_page_size,
     page_no: int = proposals_page_no,
 ) -> None:
-    """List proposals filtered by status."""
+    """
+    List proposals filtered by status.
+
+    Args:
+        account_name: Name of the account to show proposals for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+        order_by: Criteria to order the proposals list.
+        order_direction: Direction to order the proposals list.
+        status: Status to filter the proposals list.
+        page_size: Number of proposals to display per page.
+        page_no: Page number of the proposals list, considering the given page size.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowProposals command to display proposals.
+    """
     from clive.__private.cli.commands.show.show_proposals import ShowProposals
 
     assert isinstance(order_by, Enum), f"Expected Enum type, but got: {type(order_by)}"
@@ -228,7 +314,16 @@ async def show_proposal(
     proposal_id: int | None = _proposal_id_argument,
     proposal_id_option: int | None = argument_related_options.proposal_id,
 ) -> None:
-    """Show details of a specified proposal."""
+    """
+    Show details of a specified proposal.
+
+    Args:
+        proposal_id: Identifier of the proposal to show details for.
+        proposal_id_option: Optional argument for proposal ID, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowProposal command to display proposal details.
+    """
     from clive.__private.cli.commands.show.show_proposal import ShowProposal
 
     await ShowProposal(
@@ -241,7 +336,16 @@ async def show_owner_authority(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Fetch from blockchain and display owner authority of selected account."""
+    """
+    Fetch from blockchain and display owner authority of selected account.
+
+    Args:
+        account_name: Name of the account to show owner authority for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowAuthority command to display owner authority.
+    """
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     await ShowAuthority(
@@ -255,7 +359,16 @@ async def show_active_authority(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Fetch from blockchain and display active authority of selected account."""
+    """
+    Fetch from blockchain and display active authority of selected account.
+
+    Args:
+        account_name: Name of the account to show active authority for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowAuthority command to display active authority.
+    """
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     await ShowAuthority(
@@ -269,7 +382,16 @@ async def show_posting_authority(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Fetch from blockchain and display posting authority of selected account."""
+    """
+    Fetch from blockchain and display posting authority of selected account.
+
+    Args:
+        account_name: Name of the account to show posting authority for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowAuthority command to display posting authority.
+    """
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     await ShowAuthority(
@@ -283,7 +405,16 @@ async def show_memo_key(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Fetch from blockchain and display memo key of selected account."""
+    """
+    Fetch from blockchain and display memo key of selected account.
+
+    Args:
+        account_name: Name of the account to show memo key for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowMemoKey command to display memo key.
+    """
     from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
 
     await ShowMemoKey(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -291,7 +422,12 @@ async def show_memo_key(
 
 @show.command(name="chain")
 async def show_chain() -> None:
-    """Fetch from blockchain and display chain info."""
+    """
+    Fetch from blockchain and display chain info.
+
+    Returns:
+        None: This function does not return any value. It runs the ShowChain command to display chain information.
+    """
     from clive.__private.cli.commands.show.show_chain import ShowChain
 
     await ShowChain().run()
@@ -302,7 +438,16 @@ async def show_hive_power(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Show info about hive power related to account including delegations and withdraw routes."""
+    """
+    Show info about hive power related to account including delegations and withdraw routes.
+
+    Args:
+        account_name: Name of the account to show hive power for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: It runs the ShowHivePower command to display hive power information.
+    """
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
 
     await ShowHivePower(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -317,6 +462,13 @@ async def show_new_account_token(
     Show number of possessed tokens for account creation.
 
     To get account creation fee use command `clive show chain`.
+
+    Args:
+        account_name: Name of the account to show new account token for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: It runs the ShowNewAccountToken command to display new account token information.
     """
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
 
@@ -328,7 +480,16 @@ async def show_transfer_schedule(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Fetch from blockchain information about recurrent transfers of selected account."""
+    """
+    Fetch from blockchain information about recurrent transfers of selected account.
+
+    Args:
+        account_name: Name of the account to show transfer schedule for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: It runs the ShowTransferSchedule command to display transfer schedule information.
+    """
     from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
 
     await ShowTransferSchedule(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
@@ -339,7 +500,16 @@ async def show_account(
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
 ) -> None:
-    """Show information about given account."""
+    """
+    Show information about given account.
+
+    Args:
+        account_name: Name of the account to show information for.
+        account_name_option: Optional argument for account name, if not provided will use the default.
+
+    Returns:
+        None: It runs the ShowAccount command to display account information.
+    """
     from clive.__private.cli.commands.show.show_account import ShowAccount
 
     await ShowAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
