@@ -20,6 +20,12 @@ if TYPE_CHECKING:
 
 
 def _load_bad_accounts_from_file() -> list[str]:
+    """
+    Load the list of bad accounts from a file.
+
+    Returns:
+        list: A list of bad account names.
+    """
     current_dir = Path(__file__).parent
     bad_accounts_file_path = current_dir / "bad_accounts_list.txt"
 
@@ -45,6 +51,17 @@ class AccountManager:
         watched_accounts: Iterable[str | Account] | None = None,
         known_accounts: Iterable[str | Account] | None = None,
     ) -> None:
+        """
+        Initialize the AccountManager with optional working, watched, and known accounts.
+
+        Args:
+            working_account: The account to set as the working account. If None, no working account is set.
+            watched_accounts: An iterable of accounts to add to the watched accounts.
+            known_accounts: An iterable of accounts to add to the known accounts.
+
+        Returns:
+            None
+        """
         self._working_account: WorkingAccount | None = None
         self._watched_accounts = WatchedAccountContainer()
         self._known_accounts = KnownAccountContainer()
@@ -64,8 +81,10 @@ class AccountManager:
         Returns the working account.
 
         Raises:  # noqa: D406
-        ------
             NoWorkingAccountError: If no working account is set.
+
+        Returns:
+            WorkingAccount: The currently set working account.
         """
         if not self.has_working_account:
             raise NoWorkingAccountError
@@ -74,22 +93,44 @@ class AccountManager:
 
     @property
     def working_or_none(self) -> WorkingAccount | None:
-        """Same as `working`, but returns None if no working account is set."""
+        """
+        Same as `working`, but returns None if no working account is set.
+
+        Returns:
+            WorkingAccount | None: The currently set working account or None if no working account is set.
+        """
         if not self.has_working_account:
             return None
         return self._working_account
 
     @property
     def watched(self) -> WatchedAccountContainer:
+        """
+        Returns the container of watched accounts.
+
+        Returns:
+            WatchedAccountContainer: The container of watched accounts.
+        """
         return self._watched_accounts
 
     @property
     def known(self) -> KnownAccountContainer:
+        """
+        Returns the container of known accounts.
+
+        Returns:
+            KnownAccountContainer: The container of known accounts.
+        """
         return self._known_accounts
 
     @property
     def tracked(self) -> list[TrackedAccount]:
-        """Get a new list of tracked accounts (watched and working) sorted by name with working account always first."""
+        """
+        Get a new list of tracked accounts (watched and working) sorted by name with working account always first.
+
+        Returns:
+            list[TrackedAccount]: A sorted list of tracked accounts, with the working account first if it exists.
+        """
         accounts: set[WatchedAccount | WorkingAccount] = set(self._watched_accounts.content)
         if self.has_working_account:
             accounts.add(self.working)
@@ -100,22 +141,52 @@ class AccountManager:
 
     @property
     def has_working_account(self) -> bool:
+        """
+        Check if there is a working account set.
+
+        Returns:
+            bool: True if there is a working account set, False otherwise.
+        """
         return self._working_account is not None
 
     @property
     def has_watched_accounts(self) -> bool:
+        """
+        Check if there are any watched accounts.
+
+        Returns:
+            bool: True if there are watched accounts, False otherwise.
+        """
         return bool(self._watched_accounts)
 
     @property
     def has_known_accounts(self) -> bool:
+        """
+        Check if there are any known accounts.
+
+        Returns:
+            bool: True if there are known accounts, False otherwise.
+        """
         return bool(self._known_accounts)
 
     @property
     def has_tracked_accounts(self) -> bool:
+        """
+        Check if there are any tracked accounts.
+
+        Returns:
+            bool: True if there are tracked accounts, False otherwise.
+        """
         return bool(self.tracked)
 
     @property
     def is_tracked_accounts_alarms_data_available(self) -> bool:
+        """
+        Check if alarms data is available for all tracked accounts.
+
+        Returns:
+            bool: True if alarms data is available for all tracked accounts, False otherwise.
+        """
         tracked_accounts = self.tracked
         if not tracked_accounts:
             return False
@@ -124,6 +195,12 @@ class AccountManager:
 
     @property
     def is_tracked_accounts_node_data_available(self) -> bool:
+        """
+        Check if node data is available for all tracked accounts.
+
+        Returns:
+            bool: True if node data is available for all tracked accounts, False otherwise.
+        """
         tracked_accounts = self.tracked
         if not tracked_accounts:
             return False
@@ -131,6 +208,15 @@ class AccountManager:
         return all(account.is_node_data_available for account in tracked_accounts)
 
     def is_account_working(self, account: str | Account) -> bool:
+        """
+        Check if the given account is the working account.
+
+        Args:
+            account: The account to check, can be a string or an Account object.
+
+        Returns:
+            bool: True if the account is the working account, False otherwise.
+        """
         if not self.has_working_account:
             return False
 
@@ -138,26 +224,70 @@ class AccountManager:
         return self.working.name == account_name
 
     def is_account_watched(self, account: str | Account) -> bool:
+        """
+        Check if the given account is in the watched accounts.
+
+        Args:
+            account: The account to check, can be a string or an Account object.
+
+        Returns:
+            bool: True if the account is in the watched accounts, False otherwise.
+        """
         account_name = Account.ensure_account_name(account)
         return account_name in [watched_account.name for watched_account in self.watched]
 
     def is_account_known(self, account: str | Account) -> bool:
+        """
+        Check if the given account is in the known accounts.
+
+        Args:
+            account: The account to check, can be a string or an Account object.
+
+        Returns:
+            bool: True if the account is in the known accounts, False otherwise.
+        """
         account_name = Account.ensure_account_name(account)
         return account_name in [known_account.name for known_account in self.known]
 
     def is_account_tracked(self, account: str | Account) -> bool:
+        """
+        Check if the given account is in the tracked accounts.
+
+        Args:
+            account: The account to check, can be a string or an Account object.
+
+        Returns:
+            bool: True if the account is in the tracked accounts, False otherwise.
+        """
         account_name = Account.ensure_account_name(account)
         return account_name in [tracked_account.name for tracked_account in self.tracked]
 
     @classmethod
     def get_bad_accounts(cls) -> list[str]:
-        """Get list of all bad accounts names."""
+        """
+        Get list of all bad accounts names.
+
+        Args:
+            cls: The class itself, used for class-level caching of bad accounts.
+
+        Returns:
+            list[str]: A list of bad account names.
+        """
         if cls._BAD_ACCOUNT_NAMES is None:
             cls._BAD_ACCOUNT_NAMES = _load_bad_accounts_from_file()
         return cls._BAD_ACCOUNT_NAMES
 
     @classmethod
     def is_account_bad(cls, account: str | Account) -> bool:
+        """
+        Check if the given account is a bad account.
+
+        Args:
+            account: The account to check, can be a string or an Account object.
+
+        Returns:
+            bool: True if the account is a bad account, False otherwise.
+        """
         account_name = Account.ensure_account_name(account)
         return account_name in cls.get_bad_accounts()
 
@@ -166,15 +296,23 @@ class AccountManager:
         Set the working account.
 
         Args:
-        ----
             value: The account to set as working account.  If WorkingAccount is passed, it will be set directly.
                 Otherwise, new WorkingAccount will be created.
+
+        Returns:
+            None
         """
         self._working_account = (
             value if isinstance(value, WorkingAccount) else WorkingAccount(Account.ensure_account_name(value))
         )
 
     def unset_working_account(self) -> None:
+        """
+        Set working account to None.
+
+        Returns:
+            None
+        """
         self._working_account = None
 
     def switch_working_account(self, new_working_account: str | Account | None = None) -> None:
@@ -185,18 +323,25 @@ class AccountManager:
         Method will look for corresponding watched account by name if `new_working_account` is filled.
 
         Args:
-        ----
             new_working_account: The new working account to switch to.
                 -  will set the given watched account as working and move the current working to watched accounts.
                 -  will only move the current working account to watched accounts if None.
 
         Raises:
-        ------
             AccountNotFoundError: If given account wasn't found in watched accounts.
             AccountAlreadyExistsError: If the given account is already a working account.
+
+        Returns:
+            None
         """
 
         def is_given_account_already_working() -> bool:
+            """
+            Check if the given account is already set as working account.
+
+            Returns:
+                bool: True if the given account is already working, False otherwise.
+            """
             return new_working_account is not None and self.is_account_working(new_working_account)
 
         if is_given_account_already_working():
@@ -219,14 +364,15 @@ class AccountManager:
         Each tracked account is added to the known list if it doesn't already exist there.
 
         Args:
-        ----
             to_add: Accounts to add.
 
         Raises:
-        ------
             AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
                 (either as working or watched).
             TryingToAddBadAccountError: If any of the accounts is a bad account.
+
+        Returns:
+            None
         """
         if not to_add:
             return
@@ -262,8 +408,10 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-        ----
             to_remove: Accounts to remove.
+
+        Returns:
+            None
         """
         should_unset_working_account = any(self.is_account_working(account) for account in to_remove)
         if should_unset_working_account:
@@ -274,9 +422,14 @@ class AccountManager:
         """
         Get tracked account by name.
 
+        Args:
+            value: Account to get, can be a string or an Account object.
+
         Raises:  # noqa: D406
-        ------
             AccountNotFoundError: If given account wasn't found.
+
+        Returns:
+            TrackedAccount: The tracked account object if found, which can be either a WorkingAccount or WatchedAccount.
         """
         searched_account_name = Account.ensure_account_name(value)
         for account in self.tracked:
@@ -290,6 +443,9 @@ class AccountManager:
         Move the working account to watched accounts.
 
         Working account will be unset and moved to watched accounts.
+
+        Returns:
+            None
         """
         self.watched.add(WatchedAccount.create_from_working(self.working))
         self.unset_working_account()
@@ -300,9 +456,14 @@ class AccountManager:
 
         Will look for the account by name in watched accounts and set it as working account, removing the watched one.
 
+        Args:
+            watched_account: The watched account to set as working account. Can be a string or an Account object.
+
         Raises: # noqa: D406
-        ------
              AccountNotFoundError: If given account wasn't found in watched accounts.
+
+        Returns:
+            None
         """
         watched_account = self._watched_accounts.get(watched_account)
         self.watched.remove(watched_account)
@@ -313,12 +474,13 @@ class AccountManager:
         Add accounts to the known accounts list.
 
         Args:
-        ----
             accounts_to_add: Accounts that should be considered as known.
 
         Raises:
-        ------
             AccountAlreadyExistsError: If any of the accounts already exists in known accounts
+
+        Returns:
+            None
         """
         self.known.add(*accounts_to_add)
 
@@ -329,8 +491,10 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-        ----
             accounts_to_remove: Accounts that should no longer be considered as known.
+
+        Returns:
+            None
         """
         self.known.remove(*accounts_to_remove)
 
@@ -339,11 +503,12 @@ class AccountManager:
         Get known account by name.
 
         Args:
-        ----
             account_to_get: Account to get.
 
         Raises:
-        ------
             AccountNotFoundError: If given account wasn't found.
+
+        Returns:
+            KnownAccount: The known account object if found.
         """
         return self.known.get(account_to_get)
