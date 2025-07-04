@@ -363,6 +363,14 @@ class SafeSettings:
         self.node = self._create_namespace(self._Node)
 
     @property
+    def custom_bindings_path(self) -> Path:
+        return self.data_path / "custom_bindings.toml"
+
+    @property
+    def default_bindings_path(self) -> Path:
+        return self.data_path / "default_bindings.toml"
+
+    @property
     def data_path(self) -> Path:
         return self._get_data_path()
 

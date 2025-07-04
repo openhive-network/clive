@@ -88,7 +88,7 @@ class CliveBindingSection:
         try:
             cls = CliveBindingSection._ID_TO_SUBCLASS[section_name]
         except KeyError as error:
-            raise BindingsDeserializeError(str(error)) from error
+            raise BindingsDeserializeError(f"Found unknown section `{section_name}` when parsing bindings") from error
         instance = cls()
         for id_, keyboard_shortcut in section_dict.items():
             instance._update_keyboard_shortcut(id_, keyboard_shortcut)
@@ -111,7 +111,7 @@ class CliveBindingSection:
             if value.id == id_:
                 value.key = keyboard_shortcut
                 return
-        raise BindingsDeserializeError(f"Found unknown id `{id_}` when parsing bindings.")
+        raise BindingsDeserializeError(f"Found unknown id `{id_}` when parsing bindings")
 
 
 @dataclass
@@ -259,7 +259,7 @@ class CliveBindings:
             if section_name == value.ID:
                 setattr(self, name, section_instance)
                 return
-        raise BindingsDeserializeError(f"Found section name `{section_name}` when parsing bindings.")
+        raise AssertionError("Won't reach here")
 
 
 CLIVE_PREDEFINED_BINDINGS: Final[CliveBindings] = CliveBindings()
