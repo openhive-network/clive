@@ -43,10 +43,7 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
         }
     }
     """
-    BINDINGS = [
-        Binding("f1", "help", "Help"),
-        Binding("f2", "load_from_file", "Load from file"),
-    ]
+    BINDINGS = [Binding("f2", "load_from_file", "Load from file")]
 
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
