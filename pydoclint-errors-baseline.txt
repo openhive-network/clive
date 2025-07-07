@@ -2,11 +2,7 @@ clive/__private/cli/clive_typer.py
     DOC101: Method `CliveTyper.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveTyper.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [chain: bool, help: str | None, name: str | None].
 --------------------
-clive/__private/cli/commands/abc/contextual_cli_command.py
-    DOC502: Method `ContextualCLICommand.validate_inside_context_manager` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
 clive/__private/cli/commands/abc/external_cli_command.py
-    DOC502: Method `ExternalCLICommand.validate` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC201: Method `ExternalCLICommand.from_` does not have a return section in docstring
 --------------------
 clive/__private/cli/common/parameters/argument_related_options.py

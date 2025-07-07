@@ -33,9 +33,6 @@ class ExternalCLICommand(ABC):
         Validate the command before running.
 
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
-
-        Raises:
-            CLIPrettyError: If the command is invalid.
         """
         return
 

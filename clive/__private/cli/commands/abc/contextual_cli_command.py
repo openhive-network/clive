@@ -28,9 +28,6 @@ class ContextualCLICommand[AsyncContextManagerT: AbstractAsyncContextManager[Any
         Validate the command inside the context manager.
 
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
-
-        Raises:
-            CLIPrettyError: If the command is invalid inside the context manager.
         """
         return
 
