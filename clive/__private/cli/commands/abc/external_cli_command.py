@@ -35,8 +35,7 @@ class ExternalCLICommand(ABC):
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
 
         Raises:
-        ------
-        CLIPrettyError: If the command is invalid.
+            CLIPrettyError: If the command is invalid.
         """
         return
 
@@ -52,8 +51,7 @@ class ExternalCLICommand(ABC):
         Unused kwargs are ignored.
 
         Args:
-        ----
-        **kwargs: The kwargs to create the instance from.
+            **kwargs: The kwargs to create the instance from.
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)

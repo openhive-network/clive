@@ -48,7 +48,6 @@ class EnsureSingleValue(Generic[ExpectedT]):
         Option takes precedence over positional argument
 
         Args:
-        ----
             positional: The positional argument value.
             option: The option argument value.
             allow_none: When argument and option is not required.
