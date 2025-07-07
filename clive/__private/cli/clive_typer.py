@@ -25,6 +25,11 @@ class CliveTyper(typer.Typer):
     Such a handlers could be only registered for the main Typer instance, but not for sub-commands. That's because
     Typer.__call__ is not called for each sub-commands, but only for the main Typer instance.
 
+    Args:
+        name: The name of the command.
+        help: The help text for the command.
+        chain: Decides whether command will be chained.
+
     Example:
     -------
     >>> raise TypeError("Some error")

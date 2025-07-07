@@ -29,6 +29,10 @@ class CLIPrettyError(ClickException):
     """
     A pretty error to be shown to the user.
 
+    Args:
+        message: The error message to be shown.
+        exit_code: The exit code to be used when exiting the program.
+
     Example:
     -------
     >>> raise CLIPrettyError("some message")
