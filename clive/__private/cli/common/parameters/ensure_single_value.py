@@ -52,6 +52,10 @@ class EnsureSingleValue(Generic[ExpectedT]):
             option: The option argument value.
             allow_none: When argument and option is not required.
 
+        Raises:
+            CLIPrettyError: If both positional and option arguments are missing and allow_none is set to False.
+
+
         Returns:
             The value of the option or positional argument, or None
         """

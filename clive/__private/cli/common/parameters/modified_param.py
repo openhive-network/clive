@@ -15,6 +15,9 @@ def modified_param(source: OptionInfo | ArgumentInfo, **kwargs: Any) -> Any:  # 
         source: The option/argument to modify.
         **kwargs: The attributes to modify.
 
+    Raises:
+        ValueError: If an unknown attribute is specified in kwargs.
+
     Returns:
         A modified option/argument based on the source with the specified attributes changed.
     """
