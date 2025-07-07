@@ -25,10 +25,7 @@ class Description(Static):
 
 
 class WelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
-    BINDINGS = [
-        Binding("f1", "help", "Help"),
-        Binding(f"{PREVIOUS_SCREEN_BINDING_KEY},escape", "_there_is_no_back", "Nothing", show=False),
-    ]
+    BINDINGS = [Binding(f"{PREVIOUS_SCREEN_BINDING_KEY},escape", "_there_is_no_back", "Nothing", show=False)]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 
