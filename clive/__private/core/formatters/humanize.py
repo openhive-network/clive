@@ -85,6 +85,10 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
     return aligned_strings
 
 
+def humanize_binding_id(id_: str) -> str:
+    return inflection.humanize(id_)
+
+
 def humanize_validation_result(result: ValidationResult) -> str:
     """Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message."""
     if result.is_valid:
