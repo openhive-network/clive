@@ -38,9 +38,6 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
         self._is_voted = is_voted
         self._checkbox = CheckBoxWithoutFocus(value=initial_state)
 
-        if initial_state:
-            self.add_class("-voted" if not self._is_voted else "-unvoted")
-
     @property
     def value(self) -> bool:
         return self._checkbox.value
@@ -55,11 +52,8 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
 
         if self._checkbox.value:
             self._checkbox.value = False
-            self.remove_class("-voted" if not self._is_voted else "-unvoted")
             return
-
         self._checkbox.value = True
-        self.add_class("-voted" if not self._is_voted else "-unvoted")
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:
