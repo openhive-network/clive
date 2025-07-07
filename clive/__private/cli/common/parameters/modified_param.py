@@ -14,6 +14,9 @@ def modified_param(source: OptionInfo | ArgumentInfo, **kwargs: Any) -> Any:  # 
     Args:
         source: The option/argument to modify.
         **kwargs: The attributes to modify.
+
+    Returns:
+        A modified option/argument based on the source with the specified attributes changed.
     """
     destination = deepcopy(source)
     for key, value in kwargs.items():

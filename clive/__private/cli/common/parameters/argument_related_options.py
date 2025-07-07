@@ -25,6 +25,9 @@ def _make_argument_related_option(source: str | OptionInfo) -> Any:  # noqa: ANN
 
     Args:
         source: The option to modify or param_decls of the new option.
+
+    Returns:
+        A modified option or a new option based on the source.
     """
     if isinstance(source, str):
         return typer.Option(None, source, show_default=False, help=LOOK_INTO_ARGUMENT_OPTION_HELP)

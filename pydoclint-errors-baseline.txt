@@ -1,16 +1,8 @@
-clive/__private/cli/commands/abc/external_cli_command.py
-    DOC201: Method `ExternalCLICommand.from_` does not have a return section in docstring
---------------------
-clive/__private/cli/common/parameters/argument_related_options.py
-    DOC201: Function `_make_argument_related_option` does not have a return section in docstring
---------------------
 clive/__private/cli/common/parameters/ensure_single_value.py
-    DOC201: Method `EnsureSingleValue.of` does not have a return section in docstring
     DOC501: Method `EnsureSingleValue.of` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `EnsureSingleValue.of` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIPrettyError'].
 --------------------
 clive/__private/cli/common/parameters/modified_param.py
-    DOC201: Function `modified_param` does not have a return section in docstring
     DOC501: Function `modified_param` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `modified_param` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
 --------------------

@@ -49,6 +49,9 @@ class ExternalCLICommand(ABC):
 
         Args:
             **kwargs: The kwargs to create the instance from.
+
+        Returns:
+            An instance of the command class with the provided kwargs.
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)

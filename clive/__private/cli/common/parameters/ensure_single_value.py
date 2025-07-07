@@ -51,6 +51,9 @@ class EnsureSingleValue(Generic[ExpectedT]):
             positional: The positional argument value.
             option: The option argument value.
             allow_none: When argument and option is not required.
+
+        Returns:
+            The value of the option or positional argument, or None
         """
         if allow_none and positional is None and option is None:
             return None
