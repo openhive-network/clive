@@ -82,12 +82,10 @@ class Asset:
         Create Hive asset.
 
         Args:
-        ----
-        amount: Amount of Hive.
+            amount: Amount of Hive.
 
         Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         return cls.__create(Asset.Hive, amount)
 
@@ -97,12 +95,10 @@ class Asset:
         Create Hbd asset.
 
         Args:
-        ----
-        amount: Amount of Hbd.
+            amount: Amount of Hbd.
 
         Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         return cls.__create(Asset.Hbd, amount)
 
@@ -112,12 +108,10 @@ class Asset:
         Create Vests asset.
 
         Args:
-        ----
-        amount: Amount of Vests.
+            amount: Amount of Vests.
 
         Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         return cls.__create(Asset.Vests, amount)
 
@@ -127,13 +121,11 @@ class Asset:
         Create asset.
 
         Args:
-        ----
-        asset: Asset type.
-        amount: Amount of asset.
+            asset: Asset type.
+            amount: Amount of asset.
 
         Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         try:
             amount = cls.__convert_amount_to_internal_representation(amount, asset)
@@ -202,9 +194,12 @@ class Asset:
         """
         Convert given amount to internal representation of integer value.
 
+        Args:
+            amount: Amount to convert.
+            precision: Precision to determine how many decimal places to consider.
+
         Raises:
-        ------
-        DecimalConversionNotANumberError: If given amount is not a valid number.
+            DecimalConversionNotANumberError: If given amount is not a valid number.
         """
         precision = precision if isinstance(precision, int) else cls.get_precision(precision)
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
