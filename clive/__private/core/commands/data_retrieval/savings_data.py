@@ -56,6 +56,9 @@ class SavingsData:
 
         Raises:
             RequestIdError: If the maximum number of request ids is exceeded.
+
+        Returns:
+            The next available request id.
         """
         max_number_of_request_ids: Final[int] = 100
 
