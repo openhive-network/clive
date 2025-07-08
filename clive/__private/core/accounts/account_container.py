@@ -52,7 +52,6 @@ class AccountContainerBase[AccountT: Account](ABC):
         Won't raise an error if the account is not found.
 
         Args:
-        ----
             to_remove: Accounts to remove.
         """
 
@@ -89,7 +88,6 @@ class WatchedAccountContainer(AccountContainerBase[WatchedAccount]):
         Add a new account to the container.
 
         Args:
-        ----
              to_add: Accounts to add. If WatchedAccount is passed, it will be added directly.
                  Otherwise, new WatchedAccount will be created.
         """
@@ -102,7 +100,6 @@ class KnownAccountContainer(AccountContainerBase[KnownAccount]):
         Add a new account to the container.
 
         Args:
-        ----
             to_add: Accounts to add. If KnownAccount is passed, it will be added directly.
                 Otherwise, new KnownAccount will be created.
         """

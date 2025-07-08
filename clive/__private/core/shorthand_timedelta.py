@@ -41,11 +41,13 @@ def timedelta_to_shorthand_timedelta(td: timedelta) -> str:
     """
     Convert a timedelta to a shorthand date string.
 
-    Examples:
-    --------
-        timedelta_to_shorthand_date(timedelta(days=7)) -> "1w"
-        timedelta_to_shorthand_date(timedelta(hours=50)) -> "2d 2h"
-        timedelta_to_shorthand_date(timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)) -> "1w 2d 3h 4m 5s"
+    Example:
+        >>> timedelta_to_shorthand_timedelta(timedelta(days=7))
+        "1w"
+        >>> timedelta_to_shorthand_timedelta(timedelta(hours=50))
+        "2d 2h"
+        >>> timedelta_to_shorthand_timedelta(timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5))
+        "1w 2d 3h 4m 5s"
     """
     total_seconds = int(td.total_seconds())
 
@@ -76,14 +78,19 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
     """
     Convert a shorthand date string to a timedelta.
 
-    Examples:
-    --------
-        shorthand_date_to_timedelta("1w") -> timedelta(weeks=1)
-        shorthand_date_to_timedelta("1W") -> timedelta(weeks=1)
-        shorthand_date_to_timedelta("2d 2h") -> timedelta(days=2, hours=2)
-        shorthand_date_to_timedelta("2D 2H") -> timedelta(days=2, hours=2)
-        shorthand_date_to_timedelta("1w 2d 3h 4m 5s") -> timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
-        shorthand_date_to_timedelta("1W 2D 3H 4M 5S") -> timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
+    Example:
+        >>> shorthand_timedelta_to_timedelta("1w")
+        timedelta(weeks=1)
+        >>> shorthand_timedelta_to_timedelta("1W")
+        timedelta(weeks=1)
+        >>> shorthand_timedelta_to_timedelta("2d 2h")
+        timedelta(days=2, hours=2)
+        >>> shorthand_timedelta_to_timedelta("2D 2H")
+        timedelta(days=2, hours=2)
+        >>> shorthand_timedelta_to_timedelta("1w 2d 3h 4m 5s")
+        timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
+        >>> shorthand_timedelta_to_timedelta("1W 2D 3H 4M 5S")
+        timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
     """
     time_units = {"w": "weeks", "d": "days", "h": "hours", "m": "minutes", "s": "seconds"}
     allowed_units = "".join(time_units.keys())

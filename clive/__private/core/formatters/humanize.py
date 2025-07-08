@@ -103,12 +103,17 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     """
     Return pretty formatted relative time from now.
 
-    Examples:
-    --------
-    now=datetime(1971, 1, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "29 years ago"
-    now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
-    now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
-    now=datetime(2000, 1, 1, 1, 30), value=datetime(2000, 1, 1, 0, 0) -> "an hour from now"
+    Example:
+        Assuming that the current time is `datetime(2000, 1, 1, 0, 0)`:
+
+        >>> humanize_natural_time(datetime(1971, 1, 1, 0, 0))
+        "29 years ago"
+        >>> humanize_natural_time(datetime(1999, 2, 1, 0, 0))
+        "10 months ago"
+        >>> humanize_natural_time(datetime(1999, 12, 31, 0, 0))
+        "a day ago"
+        >>> humanize_natural_time(datetime(2000, 1, 1, 1, 30))
+        "an hour from now"
     """
     if isinstance(value, datetime) and is_null_date(value):
         return "never"
@@ -119,9 +124,19 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     """
     Return pretty formatted datetime.
 
-    Examples:
-    --------
-    datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
+    Example:
+        >>> humanize_datetime(datetime(1970, 1, 1, 0, 0))
+        'never'
+        >>> humanize_datetime(datetime(2025, 1, 1, 0, 0))
+        '2025-01-01T00:00:00'
+        >>> humanize_datetime(datetime(2025, 1, 1, 0, 0), with_time=False)
+        '2025-01-01'
+        >>> humanize_datetime(datetime(2025, 1, 1, 0, 0), with_relative_time=True)
+        '2025-01-01T00:00:00 (6 months ago)'
+        >>> humanize_datetime(datetime(2050, 1, 1), with_relative_time=True)
+        '2050-01-01T00:00:00 (24 years from now)'
+        >>> humanize_datetime(datetime(2000, 1, 1), with_time=False, with_relative_time=True)
+        '2000-01-01 (25 years ago)'
     """
     if is_null_date(value):
         return "never"
@@ -138,12 +153,11 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     Return pretty formatted class name.
 
     Args:
-    ----
-    cls: Class name or class itself.
+        cls: Class name or class itself.
 
-    Examples:
-    --------
-    TransferToVestingOperation -> "Transfer to vesting operation"
+    Example:
+        >>> humanize_class_name(TransferToVestingOperation)
+        "Transfer to vesting operation"
     """
     class_name = cls if isinstance(cls, str) else cls.__name__
     return inflection.humanize(underscore(class_name))
@@ -153,9 +167,10 @@ def humanize_operation_name(operation: OperationBase) -> str:
     """
     Return pretty formatted operation name.
 
-    Examples:
-    --------
-    TransferToVestingOperation -> Transfer to vesting
+    Example:
+        >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
+        >>> humanize_operation_name(operation)
+        "Transfer to vesting"
     """
     return inflection.humanize(operation.get_name())
 
@@ -164,9 +179,10 @@ def humanize_operation_details(operation: OperationBase) -> str:
     """
     Return pretty formatted operation details (properties).
 
-    Examples:
-    --------
-    TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
+    Example:
+        >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
+        >>> humanize_operation_details(operation)
+        "from='alice', to='bob', amount='1.000 HIVE'"
     """
     out = ""
 
@@ -315,11 +331,13 @@ def humanize_timedelta(value: timedelta) -> str:
     """
     Return pretty formatted timedelta.
 
-    Examples:
-    --------
-    timedelta(days=730) -> 2 years
-    timedelta(days=2016) -> 5 years, 6 months and 8 days
-    timedelta(days=6720) -> 18 years, 4 months and 28 days
+    Example:
+        >>> humanize_timedelta(timedelta(days=730))
+        2 years
+        >>> humanize_timedelta(timedelta(days=2016))
+        5 years, 6 months and 8 days
+        >>> humanize_timedelta(timedelta(days=6720))
+        18 years, 4 months and 28 days
     """
     return humanize.precisedelta(value)
 

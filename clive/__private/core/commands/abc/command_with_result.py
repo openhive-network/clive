@@ -27,11 +27,9 @@ class CommandWithResult(Command, Generic[CommandResultT], ABC):
         Get the result of the command.
 
         Returns:
-        -------
             The result of the command.
 
         Raises:
-        ------
             ValueError: If the result has not been set before.
         """
         if self._result is None:

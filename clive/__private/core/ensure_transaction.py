@@ -17,12 +17,10 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     If the content is a list of operations, they are gathered into a transaction and returned.
 
     Args:
-    ----
-    content: The content to ensure is a transaction.
+        content: The content to ensure is a transaction.
 
     Returns:
-    -------
-    The transaction.
+        The transaction.
     """
 
     def __ensure_operation(item: Any) -> OperationUnion:  # noqa: ANN401

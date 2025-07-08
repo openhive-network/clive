@@ -23,7 +23,6 @@ class CommandRestricted(Command, ABC):
         Execute the command if the conditions are met.
 
         Raises:
-        ------
             CommandExecutionNotPossibleError: If the command cannot be executed.
         """
         if self._should_skip_execution:
