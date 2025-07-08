@@ -1,21 +1,9 @@
-clive/__private/core/accounts/account_container.py
-    DOC103: Method `AccountContainerBase.remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_remove: str | Account]. Arguments in the docstring but not in the function signature: [to_remove: ].
-    DOC103: Method `WatchedAccountContainer.add`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account]. Arguments in the docstring but not in the function signature: [to_add: ].
-    DOC103: Method `KnownAccountContainer.add`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account]. Arguments in the docstring but not in the function signature: [to_add: ].
---------------------
 clive/__private/core/accounts/account_manager.py
     DOC503: Method `AccountManager.switch_working_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['AccountAlreadyExistsError', 'AccountNotFoundError']. Raised exceptions in the body: ['AccountAlreadyExistsError'].
-    DOC103: Method `AccountManager.add_tracked_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_add: str | Account]. Arguments in the docstring but not in the function signature: [to_add: ].
-    DOC103: Method `AccountManager.remove_tracked_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*to_remove: str | Account]. Arguments in the docstring but not in the function signature: [to_remove: ].
-    DOC103: Method `AccountManager.add_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*accounts_to_add: str | Account]. Arguments in the docstring but not in the function signature: [accounts_to_add: ].
     DOC502: Method `AccountManager.add_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC103: Method `AccountManager.remove_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*accounts_to_remove: str | Account]. Arguments in the docstring but not in the function signature: [accounts_to_remove: ].
     DOC201: Method `AccountManager.get_known_account` does not have a return section in docstring
     DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/accounts/accounts.py
-    DOC101: Method `Account.validate`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `Account.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [name: str].
 --------------------
 clive/__private/core/commands/abc/command_restricted.py
     DOC503: Method `CommandRestricted.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['CommandExecutionNotPossibleError']. Raised exceptions in the body: ['self._execution_impossible_error'].
@@ -35,8 +23,6 @@ clive/__private/core/commands/perform_actions_on_transaction.py
     DOC603: Class `PerformActionsOnTransaction`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [already_signed_mode: AlreadySignedMode, app_state: AppState, broadcast: bool, chain_id: str | None, content: TransactionConvertibleType, force_save_format: Literal['json', 'bin'] | None, force_unsign: bool, node: Node, save_file_path: Path | None, sign_key: PublicKey | None, unlocked_wallet: AsyncUnlockedWallet | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/core/date_utils.py
-    DOC101: Function `timedelta_to_int_hours`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `timedelta_to_int_hours`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [td: timedelta].
     DOC201: Function `timedelta_to_int_hours` does not have a return section in docstring
 --------------------
 clive/__private/core/decimal_conventer.py
@@ -49,47 +35,25 @@ clive/__private/core/ensure_transaction.py
     DOC503: Function `ensure_transaction` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['TypeError'].
 --------------------
 clive/__private/core/formatters/humanize.py
-    DOC101: Function `humanize_natural_time`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_natural_time`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: datetime | timedelta].
     DOC201: Function `humanize_natural_time` does not have a return section in docstring
-    DOC101: Function `humanize_datetime`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_datetime`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: datetime, with_relative_time: bool, with_time: bool].
     DOC201: Function `humanize_datetime` does not have a return section in docstring
     DOC201: Function `humanize_class_name` does not have a return section in docstring
-    DOC101: Function `humanize_operation_name`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_operation_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: OperationBase].
     DOC201: Function `humanize_operation_name` does not have a return section in docstring
-    DOC101: Function `humanize_operation_details`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_operation_details`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: OperationBase].
     DOC201: Function `humanize_operation_details` does not have a return section in docstring
-    DOC101: Function `humanize_timedelta`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: timedelta].
     DOC201: Function `humanize_timedelta` does not have a return section in docstring
 --------------------
 clive/__private/core/keys/keys.py
     DOC601: Class `PrivateKey`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PrivateKey`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [file_path: Path | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `PrivateKey.validate`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `PrivateKey.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].
 --------------------
 clive/__private/core/known_exchanges.py
-    DOC101: Method `KnownExchanges.get_by_account_name`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `KnownExchanges.get_by_account_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str | Account].
     DOC201: Method `KnownExchanges.get_by_account_name` does not have a return section in docstring
-    DOC101: Method `KnownExchanges.get_entity_by_account_name`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `KnownExchanges.get_entity_by_account_name`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str | Account].
     DOC201: Method `KnownExchanges.get_entity_by_account_name` does not have a return section in docstring
     DOC502: Method `KnownExchanges.get_entity_by_account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC101: Method `KnownExchanges.get_account_name_by_entity`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `KnownExchanges.get_account_name_by_entity`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [entity: ExchangeEntity].
     DOC201: Method `KnownExchanges.get_account_name_by_entity` does not have a return section in docstring
 --------------------
 clive/__private/core/percent_conversions.py
-    DOC101: Function `hive_percent_to_percent`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `hive_percent_to_percent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hive_percent: int | str].
     DOC201: Function `hive_percent_to_percent` does not have a return section in docstring
-    DOC101: Function `percent_to_hive_percent`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `percent_to_hive_percent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [percent: Decimal].
     DOC201: Function `percent_to_hive_percent` does not have a return section in docstring
 --------------------
 clive/__private/core/profile.py
@@ -101,20 +65,14 @@ clive/__private/core/profile.py
     DOC502: Method `Profile.delete_by_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/core/shorthand_timedelta.py
-    DOC101: Function `timedelta_to_shorthand_timedelta`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `timedelta_to_shorthand_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [td: timedelta].
     DOC201: Function `timedelta_to_shorthand_timedelta` does not have a return section in docstring
     DOC501: Function `timedelta_to_shorthand_timedelta` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `timedelta_to_shorthand_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidTimedeltaToShorthandError'].
-    DOC101: Function `shorthand_timedelta_to_timedelta`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `shorthand_timedelta_to_timedelta`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [shorthand: str].
     DOC201: Function `shorthand_timedelta_to_timedelta` does not have a return section in docstring
     DOC501: Function `shorthand_timedelta_to_timedelta` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `shorthand_timedelta_to_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidShorthandToTimedeltaError'].
 --------------------
 clive/__private/core/validate_schema_field.py
-    DOC101: Function `validate_schema_field`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `validate_schema_field`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [schema_field: type[Any], value: Any].
     DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/models/asset.py

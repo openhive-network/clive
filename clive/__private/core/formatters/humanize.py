@@ -99,6 +99,9 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     """
     Return pretty formatted relative time from now.
 
+    Args:
+        value: A datetime or timedelta object representing the time to be humanized.
+
     Examples:
     now=datetime(1971, 1, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "29 years ago"
     now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
@@ -113,6 +116,11 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
 def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_time: bool = False) -> str:
     """
     Return pretty formatted datetime.
+
+    Args:
+        value: A datetime object to be formatted.
+        with_time: Whether to include time in the output.
+        with_relative_time: Whether to include relative time from now.
 
     Examples:
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
@@ -145,6 +153,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
     """
     Return pretty formatted operation name.
 
+    Args:
+        operation: An instance of OperationBase or its subclass.
+
     Examples:
     TransferToVestingOperation -> Transfer to vesting
     """
@@ -154,6 +165,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
 def humanize_operation_details(operation: OperationBase) -> str:
     """
     Return pretty formatted operation details (properties).
+
+    Args:
+        operation: An instance of OperationBase or its subclass.
 
     Examples:
     TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
@@ -304,6 +318,9 @@ def humanize_percent(hive_percent: Decimal) -> str:
 def humanize_timedelta(value: timedelta) -> str:
     """
     Return pretty formatted timedelta.
+
+    Args:
+        value: A timedelta object to be formatted.
 
     Examples:
     timedelta(days=730) -> 2 years
