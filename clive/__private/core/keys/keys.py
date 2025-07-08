@@ -102,6 +102,9 @@ class PrivateKey(Key):
     """
     A container for a private key.
 
+    Attributes:
+        file_path: Path to the file from which the key was loaded.
+
     Raises:
         PrivateKeyInvalidFormatError: if private key is not in valid format
     """
