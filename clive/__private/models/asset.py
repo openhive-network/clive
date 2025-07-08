@@ -198,7 +198,6 @@ class Asset:
         Convert given amount to internal representation of integer value.
 
         Args:
-            cls: The class itself.
             amount: Amount to convert.
             precision: Precision of the asset or asset class to determine how many decimal places to consider.
 
