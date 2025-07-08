@@ -41,6 +41,9 @@ def timedelta_to_shorthand_timedelta(td: timedelta) -> str:
     """
     Convert a timedelta to a shorthand date string.
 
+    Args:
+        td: The timedelta to convert.
+
     Examples:
         timedelta_to_shorthand_date(timedelta(days=7)) -> "1w"
         timedelta_to_shorthand_date(timedelta(hours=50)) -> "2d 2h"
@@ -74,6 +77,9 @@ def timedelta_to_shorthand_timedelta(td: timedelta) -> str:
 def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
     """
     Convert a shorthand date string to a timedelta.
+
+    Args:
+        shorthand: The shorthand date string to convert.
 
     Examples:
         shorthand_date_to_timedelta("1w") -> timedelta(weeks=1)

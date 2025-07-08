@@ -16,6 +16,9 @@ def hive_percent_to_percent(hive_percent: int | str) -> Decimal:
     """
     Calculate percent from given hive_percent.
 
+    Args:
+        hive_percent: The hive percent value to convert, can be an integer or a string.
+
     Example:
         1234   -> Decimal("12.34")
         "1234" -> Decimal("12.34")
@@ -26,6 +29,9 @@ def hive_percent_to_percent(hive_percent: int | str) -> Decimal:
 def percent_to_hive_percent(percent: Decimal) -> int:
     """
     Calculate value from given hive percent.
+
+    Args:
+        percent: The percent value to convert, must be a Decimal.
 
     Example:
         Decimal("12.34") -> 1234

@@ -28,6 +28,9 @@ def timedelta_to_int_hours(td: timedelta) -> int:
     """
     Convert a timedelta to a hours int representation.
 
+    Args:
+        td: The timedelta to convert.
+
     Examples:
     --------
         timedelta_to_int_hours(((timedelta(days=7)) -> 168

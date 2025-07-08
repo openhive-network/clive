@@ -55,6 +55,9 @@ class KnownExchanges:
         """
         Get an exchange account by its name.
 
+        Args:
+            account: The account name or Account instance to search for.
+
         Raises:
             KnownExchangeNotFoundError: if the account is not known exchange.
         """
@@ -70,6 +73,9 @@ class KnownExchanges:
         """
         Get an exchange entity by its name.
 
+        Args:
+            account: The account name or Account instance to search for.
+
         Raises:
             KnownExchangeAccountNotFoundError: if the account is not known exchange.
         """
@@ -78,6 +84,9 @@ class KnownExchanges:
     def get_account_name_by_entity(self, entity: ExchangeEntity) -> str:
         """
         Get an exchange account name by its entity.
+
+        Args:
+            entity: The exchange entity to search for.
 
         Raises:
             KnownExchangeNotFoundError: if known exchange with the given entity is not found.
