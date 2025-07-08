@@ -189,8 +189,7 @@ class AccountManager:
                 -  will only move the current working account to watched accounts if None.
 
         Raises:
-            AccountNotFoundError: If given account wasn't found in watched accounts.
-            AccountAlreadyExistsError: If the given account is already a working account.
+            AccountAlreadyExistsError: If the new working account is already set as working.
         """
 
         def is_given_account_already_working() -> bool:
