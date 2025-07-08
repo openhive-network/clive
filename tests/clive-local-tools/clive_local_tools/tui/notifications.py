@@ -47,7 +47,7 @@ async def extract_message_from_notification(
 
     Args:
         pilot: The pilot instance.
-        find_message_cb : The callback function to find the message within the notification content.
+        find_message_cb: The callback function to find the message within the notification content.
         search_in_history: If set to True, will also look for the message in the notification history.
         timeout: The maximum time to wait for the notification to appear.
 
@@ -102,7 +102,7 @@ def _extract_message_from_toasts(app: CliveApp, find_message_cb: Callable[[str],
 
     Args:
         app: The clive app instance
-        find_message_cb : The callback function to find the message within the notification content.
+        find_message_cb: The callback function to find the message within the notification content.
 
     Returns:
     -------
@@ -125,7 +125,7 @@ def _extract_message_from_notifications_history(app: CliveApp, find_message_cb: 
 
     Args:
         app: The clive app instance
-        find_message_cb : The callback function to find the message within the notification content.
+        find_message_cb: The callback function to find the message within the notification content.
 
     Returns:
     -------

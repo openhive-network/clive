@@ -397,8 +397,3 @@ clive/__private/ui/widgets/inputs/proxy_input.py
 clive/__private/ui/widgets/inputs/public_key_alias_input.py
     DOC301: Class `PublicKeyAliasInput`: __init__() should not have a docstring; please combine it with the docstring of the class
 --------------------
-tests/clive-local-tools/clive_local_tools/tui/notifications.py
-    DOC103: Function `extract_message_from_notification`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
-    DOC103: Function `_extract_message_from_toasts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
-    DOC103: Function `_extract_message_from_notifications_history`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
---------------------
