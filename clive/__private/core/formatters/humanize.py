@@ -8,8 +8,6 @@ from typing import TYPE_CHECKING, Any, Literal
 import humanize
 import inflection
 
-from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
-from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
 from clive.__private.core.constants.date import TIME_FORMAT_DAYS, TIME_FORMAT_WITH_SECONDS
 from clive.__private.core.constants.node import NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.constants.precision import (
@@ -31,8 +29,6 @@ from clive.__private.core.formatters.data_labels import (
     PARTICIPATION_COUNT_LABEL,
     VEST_HIVE_RATIO_LABEL,
 )
-from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult
@@ -41,12 +37,16 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         TotalVestingProtocol,
     )
+    from clive.__private.models import Asset
     from clive.__private.models.schemas import HbdExchangeRate, OperationBase, PriceFeed
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:
     return DecimalConverter.round_to_precision(data, precision=precision)
 
+def _get_asset_type() -> type[Asset]:
+    from clive.__private.models import Asset
+    return Asset
 
 type SignPrefixT = Literal["", "+", "-"]
 
@@ -171,8 +171,8 @@ def humanize_operation_details(operation: OperationBase) -> str:
         value_ = value
 
         # Display assets in legacy format.
-        if isinstance(value, Asset.AnyT):
-            value_ = Asset.to_legacy(value)
+        if isinstance(value, _get_asset_type().AnyT):
+            value_ = _get_asset_type().to_legacy(value)
 
         out += f"{key}='{value_}', "
 
@@ -202,7 +202,7 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
 def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
     """Return pretty hive power."""
     symbol = "HP" if show_symbol else ""
-    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
+    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=_get_asset_type().get_precision(_get_asset_type().Hive))
     return f"{hp_value_with_commas} {symbol}".rstrip()
 
 
@@ -223,6 +223,7 @@ def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False
 
 def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
     """Return formatted APR value returned from wax."""
+    from clive.__private.core.iwax import calculate_hp_apr
     calculated = data if isinstance(data, Decimal) else calculate_hp_apr(data)
     return humanize_percent(calculated)
 
@@ -239,12 +240,16 @@ def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: boo
 
 def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool = False) -> str:
     """Return formatted inflation rate for head block returned from wax."""
+    from clive.__private.core.iwax import calculate_current_inflation_rate
+
     inflation = calculate_current_inflation_rate(head_block_number)
     return _maybe_labelize(CURRENT_INFLATION_RATE_LABEL, humanize_percent(inflation), add_label=with_label)
 
 
 def humanize_participation_count(participation_count: int, *, with_label: bool = False) -> str:
     """Return pretty formatted participation rate."""
+    from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
+
     participation_count_percent = calculate_participation_count_percent(participation_count)
     return _maybe_labelize(
         PARTICIPATION_COUNT_LABEL, humanize_percent(participation_count_percent), add_label=with_label
@@ -255,8 +260,10 @@ def humanize_vest_to_hive_ratio(
     data: TotalVestingProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
 ) -> str:
     """Return pretty formatted vest to hive ratio."""
+    from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
+
     calculated = data if isinstance(data, Decimal) else calculate_vests_to_hive_ratio(data)
-    symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
+    symbol = f" {_get_asset_type().get_symbol(_get_asset_type().Vests)}" if show_symbol else ""
     return _maybe_labelize(
         VEST_HIVE_RATIO_LABEL,
         f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}{symbol}",
@@ -276,19 +283,23 @@ def humanize_witness_status(signing_key: str) -> str:
 
 def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
+    from clive.__private.core.iwax import calculate_witness_votes_hp
+
     hive_power = calculate_witness_votes_hp(votes, data)
     return humanize_hive_power(hive_power)
 
 
 def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
+    from clive.__private.core.iwax import calculate_witness_votes_hp
+
     hive_power = calculate_witness_votes_hp(votes, data)
-    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
+    return f"{humanize.intcomma(hive_power.as_float(), ndigits=_get_asset_type().get_precision(_get_asset_type().Hive))} HP"
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
-    pretty_asset = Asset.pretty_amount(asset)
-    asset_symbol = Asset.get_symbol(asset)
+    pretty_asset = _get_asset_type().pretty_amount(asset)
+    asset_symbol = _get_asset_type().get_symbol(asset)
     if sign_prefix and int(asset.amount) != 0:
         # To not allow display + or - if balance is equal to zero.
         return f"{sign_prefix}{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()

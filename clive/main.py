@@ -6,7 +6,7 @@ from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.main import cli
 from clive.__private.core._thread import thread_pool
 from clive.__private.run_cli import run_cli
-from clive.__private.run_tui import run_tui
+# from clive.__private.run_tui import run_tui
 
 
 def _is_cli_requested() -> bool:
@@ -19,17 +19,17 @@ def main() -> None:
             cli()
             return
 
-        if not _is_cli_requested():
-            from clive.__private.cli.exceptions import CLIPrettyError
+        # if not _is_cli_requested():
+        #     from clive.__private.cli.exceptions import CLIPrettyError
 
-            try:
-                run_tui()
-            except CLIPrettyError as error:
-                from typer import rich_utils
+        #     try:
+        #         run_tui()
+        #     except CLIPrettyError as error:
+        #         from typer import rich_utils
 
-                rich_utils.rich_format_error(error)
-                sys.exit(error.exit_code)
-            return
+        #         rich_utils.rich_format_error(error)
+        #         sys.exit(error.exit_code)
+        #     return
 
         run_cli()
 

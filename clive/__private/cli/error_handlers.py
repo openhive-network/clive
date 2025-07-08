@@ -3,8 +3,6 @@ from __future__ import annotations
 import errno
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import CommunicationError
-
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
@@ -22,6 +20,9 @@ def register_error_handlers(cli: CliveTyper) -> None:
         error_message = str(error)
         message = f"Unhandled exception {type(error).__name__}{f': {error_message}' if error_message else ''}"
         raise CLIPrettyError(message, 1)
+
+    from beekeepy.exceptions import CommunicationError
+
 
     @cli.error_handler(CommunicationError)
     def handle_communication_error(error: CommunicationError) -> None:

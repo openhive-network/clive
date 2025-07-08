@@ -2,14 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from beekeepy import AsyncBeekeeper, AsyncSession
-from beekeepy import Settings as BeekeepySettings
-
-from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession, AsyncUnlockedWallet
+    from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
+    from beekeepy import Settings as BeekeepySettings
 
     from clive.__private.core.wallet_container import WalletContainer
 
@@ -104,9 +101,13 @@ class BeekeeperManager:
         self._wallets = None
 
     def _setup_beekeepy_settings(self) -> BeekeepySettings:
+        from clive.__private.settings import safe_settings
+
         return safe_settings.beekeeper.settings_factory()
 
     async def _setup(self) -> AsyncBeekeeper:
+        from beekeepy import AsyncBeekeeper
+
         if self.settings.http_endpoint is not None:
             return await AsyncBeekeeper.remote_factory(url_or_settings=self.settings)
 

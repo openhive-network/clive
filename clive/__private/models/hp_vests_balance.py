@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core import iwax
-
 if TYPE_CHECKING:
     from clive.__private.models import Asset
     from clive.__private.models.schemas import DynamicGlobalProperties
@@ -19,4 +17,6 @@ class HpVestsBalance:
 
     @classmethod
     def create(cls, vests: Asset.Vests, gdpo: DynamicGlobalProperties) -> HpVestsBalance:
+        from clive.__private.core import iwax
+
         return cls(hp_balance=iwax.calculate_vests_to_hp(vests, gdpo), vests_balance=vests)

@@ -9,13 +9,8 @@ from clive.__private.core.constants.node import (
     PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
     SCHEDULED_TRANSFER_MAX_LIFETIME,
 )
-from clive.__private.core.constants.node_special_assets import (
-    DELEGATION_REMOVE_ASSETS,
-    SCHEDULED_TRANSFER_REMOVE_ASSETS,
-)
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.formatters.humanize import humanize_asset, humanize_timedelta
-from clive.__private.settings import clive_prefixed_envvar
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -111,6 +106,7 @@ class WithdrawRoutesZeroPercentError(CLIPrettyError):
 
 class DelegationsZeroAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.node_special_assets import DELEGATION_REMOVE_ASSETS
         remove_assets = " or ".join(humanize_asset(asset) for asset in DELEGATION_REMOVE_ASSETS)
         message = (
             f"Delegation amount can't be {remove_assets}, "
@@ -144,6 +140,7 @@ class ProcessTransferScheduleDoesNotExistsError(CLIPrettyError):
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.node_special_assets import SCHEDULED_TRANSFER_REMOVE_ASSETS
         remove_assets = " or ".join(humanize_asset(asset) for asset in SCHEDULED_TRANSFER_REMOVE_ASSETS)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
@@ -233,6 +230,8 @@ class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
 
 class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.settings import clive_prefixed_envvar
+
         message = (
             "Cannot spawn new instance of Beekeepeer while "
             f"the env variable of {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)} "

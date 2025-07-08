@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy.exceptions import CommunicationError
-
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_encryption import CommandEncryption
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
@@ -19,6 +17,8 @@ class Encrypt(CommandEncryption, CommandWithResult[str]):
     content: str
 
     async def _execute(self) -> None:
+        from beekeepy.exceptions import CommunicationError
+
         try:
             encryption_key = await self.encryption_public_key
             self._result = await self.unlocked_encryption_wallet.encrypt_data(

@@ -12,13 +12,28 @@ from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
 from clive.__private.cli.common.parameters.modified_param import modified_param
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
+from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 show = CliveTyper(name="show", help="Show various data.")
 
 show.add_typer(pending)
+
+# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
+OrdersEnum = Enum(  # type: ignore[misc, no-redef]
+    "OrdersEnum", {option: option for option in ProposalsDataRetrieval.ORDERS}
+)
+OrderDirectionsEnum = Enum(  # type: ignore[misc, no-redef]
+    "OrderDirectionsEnum", {option: option for option in ProposalsDataRetrieval.ORDER_DIRECTIONS}
+)
+StatusesEnum = Enum(  # type: ignore[misc, no-redef]
+    "StatusesEnum", {option: option for option in ProposalsDataRetrieval.STATUSES}
+)
+
+DEFAULT_ORDER = ProposalsDataRetrieval.DEFAULT_ORDER
+DEFAULT_ORDER_DIRECTION = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
+DEFAULT_STATUS = ProposalsDataRetrieval.DEFAULT_STATUS
 
 
 @show.command("profiles")
@@ -90,30 +105,6 @@ async def show_transaction_status(
     ).run()
 
 
-if is_tab_completion_active():
-    OrdersEnum = str
-    OrderDirectionsEnum = str
-    StatusesEnum = str
-    DEFAULT_ORDER = ""  # doesn't matter, won't be shown anyway
-    DEFAULT_ORDER_DIRECTION = ""
-    DEFAULT_STATUS = ""
-else:
-    from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
-
-    # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
-    OrdersEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrdersEnum", {option: option for option in ProposalsDataRetrieval.ORDERS}
-    )
-    OrderDirectionsEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrderDirectionsEnum", {option: option for option in ProposalsDataRetrieval.ORDER_DIRECTIONS}
-    )
-    StatusesEnum = Enum(  # type: ignore[misc, no-redef]
-        "StatusesEnum", {option: option for option in ProposalsDataRetrieval.STATUSES}
-    )
-
-    DEFAULT_ORDER = ProposalsDataRetrieval.DEFAULT_ORDER
-    DEFAULT_ORDER_DIRECTION = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
-    DEFAULT_STATUS = ProposalsDataRetrieval.DEFAULT_STATUS
 
 
 @show.command(name="proxy")

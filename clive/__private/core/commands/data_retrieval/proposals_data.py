@@ -3,11 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, get_args
 
-from beekeepy.exceptions import UnknownDecisionPathError
-
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
-from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     import datetime
@@ -87,6 +84,8 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     status: Statuses = DEFAULT_STATUS
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
+        from beekeepy.exceptions import UnknownDecisionPathError
+
         async with await self.node.batch() as node:
             gdpo = await node.api.database_api.get_dynamic_global_properties()
             proposal_votes = await node.api.database_api.list_proposal_votes(
@@ -130,6 +129,8 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         )
 
     def __create_proposal_data(self, proposal: SchemasProposal, data: SanitizedData) -> Proposal:
+        from clive.__private.models import Asset
+
         return Proposal(
             title=proposal.subject,
             proposal_id=proposal.proposal_id,

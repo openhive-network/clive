@@ -7,16 +7,8 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper_manager import BeekeeperManager
-from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
-from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
-from clive.__private.core.known_exchanges import KnownExchanges
-from clive.__private.core.node import Node
-from clive.__private.core.profile import Profile
-from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.exceptions import ProfileNotLoadedError
-from wax.wax_factory import create_hive_chain
-from wax.wax_options import WaxChainOptions
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable
@@ -25,9 +17,15 @@ if TYPE_CHECKING:
     from typing import Self
 
     from beekeepy.interfaces import HttpUrl
+    from clive.__private.core.profile import Profile
 
     from clive.__private.core.accounts.accounts import Account
     from wax import IHiveChainInterface
+    from clive.__private.core.node import Node
+
+    from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
+    from clive.__private.core.known_exchanges import KnownExchanges
+
 
 
 class World:
@@ -42,6 +40,8 @@ class World:
         *args: Any,
         **kwargs: Any,
     ) -> None:
+        from clive.__private.core.known_exchanges import KnownExchanges
+        
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
@@ -141,6 +141,7 @@ class World:
         watched_accounts: Iterable[str | Account] | None = None,
         known_accounts: Iterable[str | Account] | None = None,
     ) -> None:
+        from clive.__private.core.profile import Profile
         profile = Profile.create(name, working_account, watched_accounts, known_accounts)
         await self.switch_profile(profile)
 
@@ -166,6 +167,8 @@ class World:
         await self.commands.save_profile()
 
     async def load_profile_based_on_beekepeer(self) -> None:
+        from clive.__private.core.wallet_container import WalletContainer
+        
         unlocked_user_wallet = (await self.commands.get_unlocked_user_wallet()).result_or_raise
         unlocked_encryption_wallet = (await self.commands.get_unlocked_encryption_wallet()).result_or_raise
         await self.beekeeper_manager.set_wallets(WalletContainer(unlocked_user_wallet, unlocked_encryption_wallet))
@@ -234,11 +237,17 @@ class World:
         await self._beekeeper_manager.setup()
 
     async def _setup_wax_interface(self) -> None:
+        from wax.wax_factory import create_hive_chain
+        from wax.wax_options import WaxChainOptions
+
+
         chain_id = await self.node.chain_id
         wax_chain_options = WaxChainOptions(chain_id=chain_id, endpoint_url=self.profile.node_address)
         self._wax_interface = create_hive_chain(wax_chain_options)
 
     def _setup_commands(self) -> Commands[World]:
+        from clive.__private.core.commands.commands import Commands
+
         return Commands(self)
 
     async def _update_node(self) -> None:
@@ -251,6 +260,7 @@ class World:
         if self.is_node_available:
             self.node.change_related_profile(self.profile)
         else:
+            from clive.__private.core.node import Node
             self._node = Node(self.profile)
 
     async def _update_wax_interface(self) -> None:
@@ -294,6 +304,8 @@ class TUIWorld(World, CliveDOMNode):
         It's initialized with None because reactive attribute initialization can't be delayed otherwise.
         """
         await super()._setup()
+        from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
+
         try:
             await self.load_profile_based_on_beekepeer()
         except NoProfileUnlockedError:
@@ -310,6 +322,8 @@ class TUIWorld(World, CliveDOMNode):
         await self.app._switch_mode_into_locked(source)
 
     def _setup_commands(self) -> TUICommands:
+        from clive.__private.core.commands.commands import TUICommands
+
         return TUICommands(self)
 
     def _update_profile_related_reactive_attributes(self) -> None:
@@ -331,10 +345,14 @@ class CLIWorld(World):
     @override
     async def _setup(self) -> None:
         await super()._setup()
+        from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
+
         try:
             await self.load_profile_based_on_beekepeer()
         except NoProfileUnlockedError:
             await self.switch_profile(None)
 
     def _setup_commands(self) -> CLICommands:
+        from clive.__private.core.commands.commands import CLICommands
+
         return CLICommands(self)

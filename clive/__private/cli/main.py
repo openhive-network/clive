@@ -7,7 +7,6 @@ import typer
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.configure.main import configure
 from clive.__private.cli.process.main import process
@@ -19,15 +18,16 @@ Type "clive <command> --help" to read more about a specific subcommand.
 """
 cli = CliveTyper(help=HELP)
 
-cli.add_typer(configure)
 cli.add_typer(show)
+cli.add_typer(configure)
 cli.add_typer(process)
 cli.add_typer(beekeeper)
 
 if not is_tab_completion_active():
     from clive.__private.cli.error_handlers import register_error_handlers
 
-    register_error_handlers(cli)
+    # register_error_handlers(cli)
+    pass
 
 
 @cli.callback(invoke_without_command=True)
@@ -55,7 +55,7 @@ _profile_name_unlock_argument = typer.Argument(
 @cli.command(name="unlock")
 async def unlock(
     profile_name: str | None = _profile_name_unlock_argument,
-    profile_name_option: str | None = argument_related_options.profile_name,
+    profile_name_option: str | None = None, #argument_related_options.profile_name,
     unlock_time_mins: int | None = typer.Option(
         None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout.", show_default=False
     ),
@@ -70,6 +70,7 @@ async def unlock(
     By default unlock is permanent and has no timeout.
     """
     from clive.__private.cli.commands.unlock import Unlock
+    from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 
     await Unlock(
         profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option, allow_none=True),

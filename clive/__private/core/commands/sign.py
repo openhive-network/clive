@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING, Final, Literal
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.iwax import calculate_sig_digest
-from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKey
+    from clive.__private.models import Transaction
     from clive.__private.models.schemas import Signature
 
 
@@ -27,7 +26,7 @@ ALREADY_SIGNED_MODE_DEFAULT: Final = "error"
 
 
 @dataclass(kw_only=True)
-class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
+class Sign(CommandInUnlocked, CommandWithResult["Transaction"]):
     transaction: Transaction
     key: PublicKey
     chain_id: str
@@ -35,6 +34,7 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
     """How to handle the situation when transaction is already signed."""
 
     async def _execute(self) -> None:
+        from clive.__private.core.iwax import calculate_sig_digest
         self.__throw_already_signed_error_when_needed()
 
         sig_digest = calculate_sig_digest(self.transaction, self.chain_id)

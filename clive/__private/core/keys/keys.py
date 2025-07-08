@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, overload
 
-from clive.__private.core import iwax
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -43,9 +42,11 @@ class Key(ABC):
         This method requires the key to be in the correct format.
         That's because key in the wrong format will be determined as a public key also.
         """
+        from clive.__private.core.iwax import WaxOperationFailedError, calculate_public_key
+
         try:
-            iwax.calculate_public_key(key)
-        except iwax.WaxOperationFailedError:
+            calculate_public_key(key)
+        except WaxOperationFailedError:
             return PublicKey
         else:
             return PrivateKey
@@ -129,7 +130,9 @@ class PrivateKey(Key):
 
     @staticmethod
     def create(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
-        private_key = iwax.generate_private_key()
+        from clive.__private.core.iwax import generate_private_key
+
+        private_key = generate_private_key()
         return private_key.with_alias(with_alias) if with_alias else private_key
 
     @classmethod
@@ -150,9 +153,11 @@ class PrivateKey(Key):
         ------
         PrivateKeyInvalidFormatError: if private key is not in valid format.
         """
+        from clive.__private.core.iwax import WaxOperationFailedError
+
         try:
-            iwax.calculate_public_key(key)
-        except iwax.WaxOperationFailedError:
+            PrivateKey.__calculate_public_key(key)
+        except WaxOperationFailedError:
             raise PrivateKeyInvalidFormatError(key) from None
 
     @classmethod
@@ -170,7 +175,7 @@ class PrivateKey(Key):
     def calculate_public_key(self, *, with_alias: str) -> PublicKeyAliased: ...
 
     def calculate_public_key(self, *, with_alias: str = "") -> PublicKey | PublicKeyAliased:
-        public_key = iwax.calculate_public_key(self.value)
+        public_key = PrivateKey.__calculate_public_key(self.value)
 
         if with_alias:
             return public_key.with_alias(with_alias)
@@ -178,6 +183,17 @@ class PrivateKey(Key):
 
     def with_alias(self, alias: str) -> PrivateKeyAliased:
         return PrivateKeyAliased(alias=alias, value=self.value, file_path=self.file_path)
+
+    @staticmethod
+    def __calculate_public_key(key: str) -> PublicKey:
+        """
+        Calculate the public key from the given private key.
+
+        This method requires the key to be in the correct format.
+        That's because key in the wrong format will be determined as a public key also.
+        """
+        from clive.__private.core.iwax import calculate_public_key
+        return calculate_public_key(key)
 
 
 @dataclass(kw_only=True, frozen=True)

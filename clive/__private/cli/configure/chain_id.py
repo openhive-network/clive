@@ -4,7 +4,6 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 chain_id = CliveTyper(name="chain-id", help="Manage the chain ID for the profile.")
@@ -27,6 +26,7 @@ async def set_chain_id(
     If not set, the one from node get_config api will be retrieved and set.
     """
     from clive.__private.cli.commands.configure.chain_id import SetChainId
+    from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 
     await SetChainId(chain_id=EnsureSingleValue("chain-id").of(chain_id, chain_id_option)).run()
 

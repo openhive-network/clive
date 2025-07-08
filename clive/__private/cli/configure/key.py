@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
+
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 key = CliveTyper(name="key", help="Manage your key(s).")
@@ -32,6 +32,7 @@ async def add_key(
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
+    from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 
     await AddKey(
         key_or_path=EnsureSingleValue("key").of(key, key_option),
@@ -55,6 +56,7 @@ async def remove_key(
 ) -> None:
     """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
     from clive.__private.cli.commands.configure.key import RemoveKey
+    from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 
     await RemoveKey(
         alias=EnsureSingleValue("alias").of(alias, alias_option),

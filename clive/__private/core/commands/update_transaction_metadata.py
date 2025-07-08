@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.models.schemas import HiveInt
@@ -24,6 +23,8 @@ class UpdateTransactionMetadata(Command):
     """Expiration relative to the gdpo time."""
 
     async def _execute(self) -> None:
+        from clive.__private.core import iwax
+
         # clear existing signatures
         self.transaction = await UnSign(transaction=self.transaction).execute_with_result()
 

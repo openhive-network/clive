@@ -5,11 +5,8 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal, cast, get_args, overload
+from typing import TYPE_CHECKING, Literal, cast, get_args, overload
 
-from beekeepy import Settings as BeekeepySettings
-from beekeepy.handle.remote import RemoteHandleSettings
-from beekeepy.interfaces import HttpUrl
 from inflection import underscore
 
 from clive.__private.core.constants.setting_identifiers import (
@@ -43,6 +40,11 @@ from clive.__private.core.constants.setting_identifiers import (
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import settings
 from clive.exceptions import CliveError
+
+if TYPE_CHECKING:
+    from beekeepy import Settings as BeekeepySettings
+    from beekeepy.handle.remote import RemoteHandleSettings
+    from beekeepy.interfaces import HttpUrl
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -234,6 +236,8 @@ class SafeSettings:
             return self.session_token is not None
 
         def settings_remote_factory(self) -> BeekeepySettings:
+            from beekeepy import Settings as BeekeepySettings
+
             beekeepy_settings = BeekeepySettings()
 
             beekeepy_settings.working_directory = self.working_directory
@@ -314,6 +318,8 @@ class SafeSettings:
             return self._get_node_communication_retries_delay_secs()
 
         def settings_factory(self, http_endpoint: HttpUrl) -> RemoteHandleSettings:
+            from beekeepy.handle.remote import RemoteHandleSettings
+
             remote_handle_settings = RemoteHandleSettings(http_endpoint=http_endpoint)
 
             remote_handle_settings.timeout = timedelta(seconds=self.communication_timeout_total_secs)
@@ -447,6 +453,8 @@ class SafeSettings:
     def _get_url(self, setting_name: str, *, optionally: Literal[True] = True) -> HttpUrl | None: ...
 
     def _get_url(self, setting_name: str, *, optionally: bool = True) -> HttpUrl | None:
+        from beekeepy.interfaces import HttpUrl
+
         value = self._get_value_from_settings(setting_name, "")
         if not value:
             if optionally:

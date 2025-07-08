@@ -10,10 +10,7 @@ from clive.__private.core.commands.abc.command_encryption import CommandRequires
 from clive.__private.core.commands.decrypt import CommandDecryptError
 from clive.__private.core.commands.encrypt import CommandEncryptError
 from clive.__private.logger import logger
-from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
-from clive.__private.storage.storage_history import StorageHistory
-from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -23,8 +20,14 @@ if TYPE_CHECKING:
     from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import MigrationStatus
-    from clive.__private.storage import ProfileStorageBase, ProfileStorageModel
+    from clive.__private.storage.current_model import ProfileStorageBase, ProfileStorageModel
+    from clive.__private.storage.storage_history import StorageHistory
 
+
+def _get_storage_history_type() -> type[StorageHistory]:
+    """Get the current storage history type."""
+    from clive.__private.storage.storage_history import StorageHistory
+    return StorageHistory
 
 class PersistentStorageServiceError(CliveError):
     """Base class for all PersistentStorageService exceptions."""
@@ -139,6 +142,8 @@ class PersistentStorageService:
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
+        from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
+
         self._raise_if_profile_not_stored(profile_name)
         result = await self._load_and_migrate_latest_profile_model(profile_name)
         profile_storage_model = result.model
@@ -216,7 +221,7 @@ class PersistentStorageService:
 
     @classmethod
     def get_current_version_profile_filename(cls) -> str:
-        return cls.get_version_profile_filename(StorageHistory.get_latest_version())
+        return cls.get_version_profile_filename(_get_storage_history_type().get_latest_version())
 
     @classmethod
     def get_version_from_profile_file(cls, filepath: Path) -> int | None:
@@ -253,6 +258,8 @@ class PersistentStorageService:
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
+        from clive.__private.settings import safe_settings
+
         return safe_settings.data_path / "data"
 
     @classmethod
@@ -380,8 +387,8 @@ class PersistentStorageService:
     ) -> _MigrationResult:
         """Migrate profile model and return current version of model even it there was no migration needed."""
         was_migrated = False
-        model_migrated = StorageHistory.apply_all_migrations(profile_model)
-        if profile_model.get_this_version() != StorageHistory.get_latest_version():
+        model_migrated = _get_storage_history_type().apply_all_migrations(profile_model)
+        if profile_model.get_this_version() != _get_storage_history_type().get_latest_version():
             await self._save_profile_model(model_migrated)
             self._move_profile_to_backup(profile_filepath)
             was_migrated = True
@@ -411,13 +418,13 @@ class PersistentStorageService:
         cls._assert_path_is_profile_file(path, file_type="all")
 
         if path.parent.name == cls.FIRST_REVISION:
-            return StorageHistory.get_model_cls_for_version(0)
+            return _get_storage_history_type().get_model_cls_for_version(0)
 
         version = cls.get_version_from_profile_file(path)
 
-        if version not in StorageHistory.get_versions():
+        if version not in _get_storage_history_type().get_versions():
             raise ModelDoesNotExistsError(path)
-        return StorageHistory.get_model_cls_for_version(version)
+        return _get_storage_history_type().get_model_cls_for_version(version)
 
     @classmethod
     def _is_model_cls_for_versioned_profile_file_available(cls, path: Path) -> bool:
