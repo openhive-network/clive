@@ -216,7 +216,7 @@ class AccountManager:
         Each tracked account is added to the known list if it doesn't already exist there.
 
         Args:
-            to_add: Accounts to add.
+            *to_add: Accounts to add.
 
         Raises:
             AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
@@ -257,7 +257,7 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-            to_remove: Accounts to remove.
+            *to_remove: Accounts to remove.
         """
         should_unset_working_account = any(self.is_account_working(account) for account in to_remove)
         if should_unset_working_account:
@@ -305,7 +305,7 @@ class AccountManager:
         Add accounts to the known accounts list.
 
         Args:
-            accounts_to_add: Accounts that should be considered as known.
+            *accounts_to_add: Accounts that should be considered as known.
 
         Raises:
             AccountAlreadyExistsError: If any of the accounts already exists in known accounts

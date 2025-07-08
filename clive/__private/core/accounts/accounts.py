@@ -67,6 +67,9 @@ class Account:
         """
         Validate the given account name.
 
+        Args:
+            name: The account name to validate.
+
         Raises:
             InvalidAccountNameError: if the given account name is invalid.
         """
