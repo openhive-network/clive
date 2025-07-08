@@ -52,12 +52,10 @@ class SavingsData:
         Calculate the next available request id for TransferFromSavingsOperation.
 
         Args:
-        ----
-        future_transfers: Future transfers to include in calculation. (e.g. already stored in the cart)
+            future_transfers: Future transfers to include in calculation. (e.g. already stored in the cart)
 
         Raises:
-        ------
-        RequestIdError: If the maximum number of request ids is exceeded.
+            RequestIdError: If the maximum number of request ids is exceeded.
         """
         max_number_of_request_ids: Final[int] = 100
 

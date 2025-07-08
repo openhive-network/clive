@@ -68,8 +68,7 @@ class Account:
         Validate the given account name.
 
         Raises:
-        ------
-        InvalidAccountNameError: if the given account name is invalid.
+            InvalidAccountNameError: if the given account name is invalid.
         """
         try:
             validate_schema_field(AccountName, name)

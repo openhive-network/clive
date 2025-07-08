@@ -130,12 +130,12 @@ class Commands[WorldT: World]:
         Create a profile-related beekeeper wallets.
 
         Args:
-        ----
-        profile_name: Names of the new wallets will be based on that. If None, the world profile_name will be used.
-        password: Password later used to unlock the wallet.
-        unlock_time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
-            permanently.
-        permanent_unlock: Whether to unlock the wallet permanently. Will take precedence when `unlock_time` is also set.
+            profile_name: Names of the new wallets will be based on that. If None, the world profile_name will be used.
+            password: Password later used to unlock the wallet.
+            unlock_time: The time after which the wallet will be automatically locked. Do not need to pass when
+                unlocking permanently.
+            permanent_unlock: Whether to unlock the wallet permanently. Will take precedence when `unlock_time` is
+                also set.
         """
         return await self.__surround_with_exception_handlers(
             CreateProfileWallets(
@@ -188,12 +188,11 @@ class Commands[WorldT: World]:
         Return a CommandWrapper instance to unlock the profile-related wallets (user keys and encryption key).
 
         Args:
-        ----
-        profile_name: Name of the wallet to unlock. If None, the world wallet will be unlocked.
-        password: Password to unlock the wallet.
-        time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
-            permanently.
-        permanent: Whether to unlock the wallet permanently. Will take precedence when `time` is also set.
+            profile_name: Name of the wallet to unlock. If None, the world wallet will be unlocked.
+            password: Password to unlock the wallet.
+            time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
+                permanently.
+            permanent: Whether to unlock the wallet permanently. Will take precedence when `time` is also set.
         """
         profile_to_unlock = profile_name or self._world.profile.name
         wrapper = await self.__surround_with_exception_handlers(
@@ -253,8 +252,7 @@ class Commands[WorldT: World]:
         Check if the given wallet is unlocked.
 
         Args:
-        ----
-        wallet: Wallet to check. If None, the world wallet will be checked.
+            wallet: Wallet to check. If None, the world wallet will be checked.
         """
         return await self.__surround_with_exception_handlers(
             IsWalletUnlocked(
@@ -267,9 +265,9 @@ class Commands[WorldT: World]:
         Set timeout for beekeeper session. It means the time after all wallets in this session will be locked.
 
         Args:
-        ----
-        time: The time after which the wallet will be automatically locked. Do not need to pass when `permanent` is set.
-        permanent: Whether to keep the wallets unlocked permanently. Will take precedence when `time` is also set.
+            time: The time after which the wallet will be automatically locked. Do not need to pass when `permanent`
+                is set.
+            permanent: Whether to keep the wallets unlocked permanently. Will take precedence when `time` is also set.
         """
         return await self.__surround_with_exception_handlers(
             SetTimeout(session=self._world.beekeeper_manager.session, time=time, permanent=permanent)
@@ -390,8 +388,7 @@ class Commands[WorldT: World]:
         Sync data with the beekeeper.
 
         Args:
-        ----
-        profile: Profile to sync. If None, the world profile will be synced.
+            profile: Profile to sync. If None, the world profile will be synced.
         """
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(

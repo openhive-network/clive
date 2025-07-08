@@ -56,8 +56,7 @@ class KnownExchanges:
         Get an exchange account by its name.
 
         Raises:
-        ------
-        KnownExchangeNotFoundError: if the account is not known exchange.
+            KnownExchangeNotFoundError: if the account is not known exchange.
         """
         account_name = Account.ensure_account_name(account)
 
@@ -72,8 +71,7 @@ class KnownExchanges:
         Get an exchange entity by its name.
 
         Raises:
-        ------
-        KnownExchangeAccountNotFoundError: if the account is not known exchange.
+            KnownExchangeAccountNotFoundError: if the account is not known exchange.
         """
         return self.get_by_account_name(account).entity
 
@@ -82,8 +80,7 @@ class KnownExchanges:
         Get an exchange account name by its entity.
 
         Raises:
-        ------
-        KnownExchangeNotFoundError: if known exchange with the given entity is not found.
+            KnownExchangeNotFoundError: if known exchange with the given entity is not found.
         """
         for exchange in self._exchanges:
             if exchange.entity == entity:
