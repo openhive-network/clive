@@ -91,7 +91,7 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
         shorthand: The value to convert.
 
     Raises:
-        InvalidShorthandToTimedeltaError: If the input string does not match the expected shorthand format.
+        InvalidShorthandToTimedeltaError: If the input does not match the expected shorthand date format.
 
     Example:
         >>> shorthand_timedelta_to_timedelta("1w")

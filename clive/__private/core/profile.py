@@ -152,6 +152,9 @@ class Profile:
 
         Args:
             value: Chain id to be set. If None, it will be fetched from the node api.
+
+        Raises:
+            InvalidChainIdError: If the format of the provided chain ID is wrong.
         """
         if not is_schema_field_valid(ChainId, value):
             raise InvalidChainIdError

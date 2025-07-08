@@ -19,6 +19,9 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     Args:
         content: The content to ensure is a transaction.
 
+    Raises:
+        TypeError: If the given value has an unsupported type.
+
     Returns:
         The transaction.
     """
