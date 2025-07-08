@@ -166,7 +166,6 @@ class AccountManager:
         Set the working account.
 
         Args:
-        ----
             value: The account to set as working account.  If WorkingAccount is passed, it will be set directly.
                 Otherwise, new WorkingAccount will be created.
         """
@@ -185,13 +184,11 @@ class AccountManager:
         Method will look for corresponding watched account by name if `new_working_account` is filled.
 
         Args:
-        ----
             new_working_account: The new working account to switch to.
                 -  will set the given watched account as working and move the current working to watched accounts.
                 -  will only move the current working account to watched accounts if None.
 
         Raises:
-        ------
             AccountNotFoundError: If given account wasn't found in watched accounts.
             AccountAlreadyExistsError: If the given account is already a working account.
         """
@@ -219,11 +216,9 @@ class AccountManager:
         Each tracked account is added to the known list if it doesn't already exist there.
 
         Args:
-        ----
             to_add: Accounts to add.
 
         Raises:
-        ------
             AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
                 (either as working or watched).
             TryingToAddBadAccountError: If any of the accounts is a bad account.
@@ -262,7 +257,6 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-        ----
             to_remove: Accounts to remove.
         """
         should_unset_working_account = any(self.is_account_working(account) for account in to_remove)
@@ -275,7 +269,6 @@ class AccountManager:
         Get tracked account by name.
 
         Raises:  # noqa: D406
-        ------
             AccountNotFoundError: If given account wasn't found.
         """
         searched_account_name = Account.ensure_account_name(value)
@@ -301,7 +294,6 @@ class AccountManager:
         Will look for the account by name in watched accounts and set it as working account, removing the watched one.
 
         Raises: # noqa: D406
-        ------
              AccountNotFoundError: If given account wasn't found in watched accounts.
         """
         watched_account = self._watched_accounts.get(watched_account)
@@ -313,11 +305,9 @@ class AccountManager:
         Add accounts to the known accounts list.
 
         Args:
-        ----
             accounts_to_add: Accounts that should be considered as known.
 
         Raises:
-        ------
             AccountAlreadyExistsError: If any of the accounts already exists in known accounts
         """
         self.known.add(*accounts_to_add)
@@ -329,7 +319,6 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-        ----
             accounts_to_remove: Accounts that should no longer be considered as known.
         """
         self.known.remove(*accounts_to_remove)
@@ -339,11 +328,9 @@ class AccountManager:
         Get known account by name.
 
         Args:
-        ----
             account_to_get: Account to get.
 
         Raises:
-        ------
             AccountNotFoundError: If given account wasn't found.
         """
         return self.known.get(account_to_get)

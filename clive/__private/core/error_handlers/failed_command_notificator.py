@@ -13,10 +13,9 @@ class FailedCommandNotificator(ErrorNotificator[CommandError]):
     When such an exception is raised within the scope of this context manager, the notification is triggered.
 
     Args:
-    ----
-    message: the message to be displayed in the notification. If `None`, the message from the exception is used.
-    catch_only: the type of exception to be caught and notified about. If `None`, all exceptions deriving from
-        CommandError are caught. When a specific exception type is set, only those exceptions are caught.
+        message: the message to be displayed in the notification. If `None`, the message from the exception is used.
+        catch_only: the type of exception to be caught and notified about. If `None`, all exceptions deriving from
+            CommandError are caught. When a specific exception type is set, only those exceptions are caught.
     """
 
     def __init__(self, message: str | None = None, *, catch_only: type[CommandError] | None = None) -> None:

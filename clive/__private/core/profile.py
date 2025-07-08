@@ -151,7 +151,6 @@ class Profile:
         Set the chain id.
 
         Args:
-        ----
             value: Chain id to be set. If None, it will be fetched from the node api.
         """
         if not is_schema_field_valid(ChainId, value):
@@ -185,11 +184,9 @@ class Profile:
         Save the current profile to the storage.
 
         Args:
-        ----
             encryption_service: Service for encrypting and decrypting data.
 
         Raises:
-        ------
             ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
             ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
@@ -202,7 +199,6 @@ class Profile:
         Remove the current profile from the storage.
 
         Raises:  # noqa: D406
-        ------
             ProfileDoesNotExistsError: If this profile is not stored, it could not be removed.
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """
@@ -263,12 +259,10 @@ class Profile:
         Load profile with the given name from the database.
 
         Args:
-        ----
             name: Name of the profile to load.
             encryption_service: Service for encrypting and decrypting data.
 
         Raises:
-        ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
@@ -281,13 +275,11 @@ class Profile:
         Remove profile with the given name from the storage.
 
         Args:
-        ----
             profile_name: Name of the profile to be removed.
             force: If True, remove all profile versions, also not migrated/backed-up.
                 If False and multiple versions or back-ups exist, raise error.
 
         Raises:
-        ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """

@@ -54,8 +54,7 @@ class CommandWithResultWrapper(Generic[CommandResultT], ErrorHolder):
         Returns the result of the command if it was successful, otherwise raises an exception.
 
         Raises:
-        ------
-        ResultNotAvailableError: if the command failed.
+            ResultNotAvailableError: if the command failed.
         """
         if isinstance(self.result, ResultNotAvailable):
             raise ResultNotAvailableError(f"Result is not available because the command failed with error={self.error}")
