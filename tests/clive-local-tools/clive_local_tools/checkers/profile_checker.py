@@ -79,9 +79,9 @@ class ProfileChecker:
         Check working account of profile.
 
         Args:
-        working_account: The name of the working account to check. For:
-        * IsNotSet - check if the working account is not set,
-        * None - skip the check.
+            working_account: The name of the working account to check. For:
+                * IsNotSet - check if the working account is not set,
+                * None - skip the check.
         """
         if working_account is not None:
             profile = await self.profile

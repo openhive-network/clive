@@ -46,19 +46,17 @@ async def extract_message_from_notification(
     will look also in the notification history (as it may be already expired).
 
     Args:
-    ----
-    pilot: The ClivePilot instance.
-    find_message_cb : The callback function to find the message within the notification content.
-    search_in_history: If set to True, will also look for the message in the notification history.
-    timeout: The maximum time to wait for the notification to appear.
+        pilot: The pilot instance.
+        find_message_cb : The callback function to find the message within the notification content.
+        search_in_history: If set to True, will also look for the message in the notification history.
+        timeout: The maximum time to wait for the notification to appear.
 
     Returns:
     -------
     The message extracted from the notification.
 
     Raises:
-    ------
-    AssertionError: If the toast notification containing the expected message couldn't be found within the timeout.
+        AssertionError: If the toast notification containing the expected message couldn't be found within the timeout.
     """
     app = pilot.app
 
@@ -103,9 +101,8 @@ def _extract_message_from_toasts(app: CliveApp, find_message_cb: Callable[[str],
     If more than one message is found, the most recent will be returned.
 
     Args:
-    ----
-    app: The CliveApp instance
-    find_message_cb : The callback function to find the message within the notification content.
+        app: The clive app instance
+        find_message_cb : The callback function to find the message within the notification content.
 
     Returns:
     -------
@@ -127,9 +124,8 @@ def _extract_message_from_notifications_history(app: CliveApp, find_message_cb: 
     If more than one message is found, the most recent will be returned.
 
     Args:
-    ----
-    app: The CliveApp instance
-    find_message_cb : The callback function to find the message within the notification content.
+        app: The clive app instance
+        find_message_cb : The callback function to find the message within the notification content.
 
     Returns:
     -------

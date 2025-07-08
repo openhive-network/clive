@@ -28,8 +28,7 @@ def assert_is_dashboard(pilot: ClivePilot) -> None:
     Assert that the dashboard is the active screen.
 
     Args:
-    ----
-        pilot: ClivePilot instance.
+        pilot: pilot instance.
     """
     assert_is_screen_active(pilot, Dashboard)
 

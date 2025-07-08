@@ -397,34 +397,8 @@ clive/__private/ui/widgets/inputs/proxy_input.py
 clive/__private/ui/widgets/inputs/public_key_alias_input.py
     DOC301: Class `PublicKeyAliasInput`: __init__() should not have a docstring; please combine it with the docstring of the class
 --------------------
-tests/clive-local-tools/clive_local_tools/checkers/profile_checker.py
-    DOC001: Function/method `assert_working_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
-    DOC003: Function/method `assert_working_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Method `ProfileChecker.assert_working_account`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ProfileChecker.assert_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [working_account: str | IsNotSet | None].
---------------------
-tests/clive-local-tools/clive_local_tools/tui/checkers.py
-    DOC001: Function/method `assert_is_dashboard`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
-    DOC003: Function/method `assert_is_dashboard`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `assert_is_dashboard`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `assert_is_dashboard`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [pilot: ClivePilot].
---------------------
 tests/clive-local-tools/clive_local_tools/tui/notifications.py
-    DOC001: Function/method `extract_message_from_notification`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
-    DOC003: Function/method `extract_message_from_notification`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `extract_message_from_notification`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `extract_message_from_notification`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str], pilot: ClivePilot, search_in_history: bool, timeout: float].
-    DOC201: Function `extract_message_from_notification` does not have a return section in docstring
-    DOC501: Function `extract_message_from_notification` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `extract_message_from_notification` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AssertionError'].
-    DOC001: Function/method `_extract_message_from_toasts`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
-    DOC003: Function/method `_extract_message_from_toasts`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `_extract_message_from_toasts`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_extract_message_from_toasts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [app: CliveApp, find_message_cb: Callable[[str], str]].
-    DOC201: Function `_extract_message_from_toasts` does not have a return section in docstring
-    DOC001: Function/method `_extract_message_from_notifications_history`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
-    DOC003: Function/method `_extract_message_from_notifications_history`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `_extract_message_from_notifications_history`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_extract_message_from_notifications_history`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [app: CliveApp, find_message_cb: Callable[[str], str]].
-    DOC201: Function `_extract_message_from_notifications_history` does not have a return section in docstring
+    DOC103: Function `extract_message_from_notification`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
+    DOC103: Function `_extract_message_from_toasts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
+    DOC103: Function `_extract_message_from_notifications_history`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [find_message_cb: Callable[[str], str]]. Arguments in the docstring but not in the function signature: [find_message_cb : ].
 --------------------
