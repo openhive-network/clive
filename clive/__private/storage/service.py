@@ -106,11 +106,9 @@ class PersistentStorageService:
         Save profile to the storage.
 
         Args:
-        ----
             profile: Profile to be saved.
 
         Raises:
-        ------
             ProfileAlreadyExistsError: If given profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
             ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
@@ -130,11 +128,9 @@ class PersistentStorageService:
         Load profile with the given name from the storage.
 
         Args:
-        ----
             profile_name: Name of the profile to be loaded.
 
         Raises:
-        ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
@@ -157,13 +153,11 @@ class PersistentStorageService:
         Remove profile with the given name from the storage.
 
         Args:
-        ----
             profile_name: Name of the profile to be removed, removes all storage versions.
             force: If True, remove all profile versions, also not migrated/backed-up.
                 If False and multiple versions exist, raise error.
 
         Raises:
-        ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """
@@ -281,7 +275,6 @@ class PersistentStorageService:
         It means any newer versions won't be picked up. (Like we're on v2, but there is v3.profile)
 
         Args:
-        ----
             profile_name: If given, only profiles with this name will be returned. If None, return all profiles.
             file_type: Determine which type of files to look for.
             include_impossible_to_load: If True, it will return profiles even we could not load them.
@@ -314,11 +307,9 @@ class PersistentStorageService:
         Save profile model to the storage.
 
         Args:
-        ----
             profile_model: Profile model to be saved.
 
         Raises:
-        ------
             ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
         """
@@ -340,17 +331,14 @@ class PersistentStorageService:
         Find current version of profile storage model by name in the clive data directory or migrate older version.
 
         Args:
-        ----
             profile_name: Name of the profile to be found.
 
         Returns:
-        -------
             ProfileStorageModel in current version if profile in current version exists,
             otherwise in older version that was most recently modified is taken and migrated to current version,
             this older version is then moved to backup.
 
         Raises:
-        ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
