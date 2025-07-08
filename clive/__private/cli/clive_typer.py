@@ -31,22 +31,18 @@ class CliveTyper(typer.Typer):
         chain: Decides whether command will be chained.
 
     Example:
-    -------
-    >>> raise TypeError("Some error")
-
-    @typer_instance.error_handler(SomeError)
-    def may_handle_some_error(error: SomeError) -> int | None:
-        if "Other error" in str(error):
-            typer.echo("Some error occurred")
-            return 1
-        return None
-
-    @typer_instance.error_handler(Exception)
-    def handle_any_error(error: Exception) -> None:
-        raise CLIError(str(error), 1)
-
-    # `may_handle_some_error` will ignore the error, because of the `if` condition.
-    # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
+        >>> raise TypeError("Some error")
+        @typer_instance.error_handler(SomeError)
+        def may_handle_some_error(error: SomeError) -> int | None:
+            if "Other error" in str(error):
+                typer.echo("Some error occurred")
+                return 1
+            return None
+        @typer_instance.error_handler(Exception)
+        def handle_any_error(error: Exception) -> None:
+            raise CLIError(str(error), 1)
+        # `may_handle_some_error` will ignore the error, because of the `if` condition.
+        # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
     """
 
     __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback[Any]]] = {}

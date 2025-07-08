@@ -34,11 +34,10 @@ class CLIPrettyError(ClickException):
         exit_code: The exit code to be used when exiting the program.
 
     Example:
-    -------
-    >>> raise CLIPrettyError("some message")
-    ╭─ Error ───────────────────────────────────────────────────╮
-    │ some message                                              │
-    ╰───────────────────────────────────────────────────────────╯
+        >>> raise CLIPrettyError("some message")
+        ╭─ Error ───────────────────────────────────────────────────╮
+        │ some message                                              │
+        ╰───────────────────────────────────────────────────────────╯
     """
 
     def __init__(self, message: str, exit_code: int = 1) -> None:
