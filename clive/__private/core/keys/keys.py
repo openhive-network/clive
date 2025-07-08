@@ -103,8 +103,7 @@ class PrivateKey(Key):
     A container for a private key.
 
     Raises:
-    ------
-     PrivateKeyInvalidFormatError: if private key is not in valid format
+        PrivateKeyInvalidFormatError: if private key is not in valid format
     """
 
     file_path: Path | None = None
@@ -147,8 +146,7 @@ class PrivateKey(Key):
         Validate the given key.
 
         Raises:
-        ------
-        PrivateKeyInvalidFormatError: if private key is not in valid format.
+            PrivateKeyInvalidFormatError: if private key is not in valid format.
         """
         try:
             iwax.calculate_public_key(key)

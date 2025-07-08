@@ -25,12 +25,10 @@ class DecimalConverter:
         Get precision of given amount.
 
         Args:
-        ----
-        amount: Amount to get precision of.
+            amount: Amount to get precision of.
 
         Raises:
-        ------
-        DecimalConversionNotANumberError: Raised when given amount is in invalid format.
+            DecimalConversionNotANumberError: Raised when given amount is in invalid format.
         """
         converted = cls.convert(amount)
         exponent = int(converted.as_tuple().exponent)
@@ -42,13 +40,11 @@ class DecimalConverter:
         Convert given amount to Decimal.
 
         Args:
-        ----
-        amount: Amount to convert.
-        precision: Precision of the amount.
+            amount: Amount to convert.
+            precision: Precision of the amount.
 
         Raises:
-        ------
-        DecimalConversionNotANumberError: Raised when given amount is in invalid format.
+            DecimalConversionNotANumberError: Raised when given amount is in invalid format.
         """
         try:
             converted = Decimal(amount)

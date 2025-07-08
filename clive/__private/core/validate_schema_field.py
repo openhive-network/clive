@@ -12,8 +12,7 @@ def validate_schema_field(schema_field: type[Any], value: Any) -> None:  # noqa:
     For validating models use `pydantic.validate_model` instead.
 
     Raises:
-    ------
-    pydantic.ValidationError: if the given value is invalid.
+        pydantic.ValidationError: if the given value is invalid.
     """
 
     class Model(BaseModel):
