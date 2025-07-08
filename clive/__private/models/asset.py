@@ -84,9 +84,6 @@ class Asset:
         Args:
             amount: Amount of Hive.
 
-        Raises:
-            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
-
         Returns:
             An instance of Hive asset with the specified amount.
         """
@@ -100,9 +97,6 @@ class Asset:
         Args:
             amount: Amount of Hbd.
 
-        Raises:
-            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
-
         Returns:
             An instance of Hbd asset with the specified amount.
         """
@@ -115,9 +109,6 @@ class Asset:
 
         Args:
             amount: Amount of Vests.
-
-        Raises:
-            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
 
         Returns:
             An instance of Vests asset with the specified amount.
@@ -210,9 +201,6 @@ class Asset:
             cls: The class itself.
             amount: Amount to convert.
             precision: Precision of the asset or asset class to determine how many decimal places to consider.
-
-        Raises:
-            DecimalConversionNotANumberError: If given amount is not a valid number.
 
         Returns:
             Internal representation of the amount as an integer.
