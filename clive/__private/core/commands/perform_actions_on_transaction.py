@@ -30,20 +30,20 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     """
     Performs commands on a transaction object.
 
-    Args:
+    Attributes:
         content: The content to be converted to a transaction.
             (This can be a transaction object, a list of operations, or a single operation.)
         app_state: The app state.
-        node: The node which will be used for transaction broadcasting.
-        beekeeper: The beekeeper to use to sign the transaction.
+        node: The node used for transaction broadcasting.
+        unlocked_wallet: Required if the transaction needs to be signed.
         sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
-        already_signed_mode: How to handle the situation when transaction is already signed.
+        already_signed_mode: How to handle already signed transactions.
         force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
         chain_id: The chain ID to use when signing the transaction. If not provided, the one from the profile and
             then from the node get_config api will be used as fallback.
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
-            Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these
-                - JSON)
+            Format is determined by file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
+        force_save_format: The format to force when saving. Matters only when save_file_path is specified.
         broadcast: Whether to broadcast the transaction.
 
     Returns:
