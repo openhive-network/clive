@@ -19,6 +19,9 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     Args:
         content: The content to ensure is a transaction.
 
+    Raises:
+        TypeError: If the content is not a Transaction, OperationBase, or an iterable of OperationBase.
+
     Returns:
         The transaction.
     """
