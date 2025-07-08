@@ -100,7 +100,6 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     Return pretty formatted relative time from now.
 
     Examples:
-    --------
     now=datetime(1971, 1, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "29 years ago"
     now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
     now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
@@ -116,7 +115,6 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     Return pretty formatted datetime.
 
     Examples:
-    --------
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
     """
     if is_null_date(value):
@@ -134,11 +132,9 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     Return pretty formatted class name.
 
     Args:
-    ----
-    cls: Class name or class itself.
+        cls: Class name or class itself.
 
     Examples:
-    --------
     TransferToVestingOperation -> "Transfer to vesting operation"
     """
     class_name = cls if isinstance(cls, str) else cls.__name__
@@ -150,7 +146,6 @@ def humanize_operation_name(operation: OperationBase) -> str:
     Return pretty formatted operation name.
 
     Examples:
-    --------
     TransferToVestingOperation -> Transfer to vesting
     """
     return inflection.humanize(operation.get_name())
@@ -161,7 +156,6 @@ def humanize_operation_details(operation: OperationBase) -> str:
     Return pretty formatted operation details (properties).
 
     Examples:
-    --------
     TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
     """
     out = ""
@@ -312,7 +306,6 @@ def humanize_timedelta(value: timedelta) -> str:
     Return pretty formatted timedelta.
 
     Examples:
-    --------
     timedelta(days=730) -> 2 years
     timedelta(days=2016) -> 5 years, 6 months and 8 days
     timedelta(days=6720) -> 18 years, 4 months and 28 days
