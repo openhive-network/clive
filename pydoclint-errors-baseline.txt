@@ -44,24 +44,6 @@ clive/__private/cli/exceptions.py
     DOC101: Method `CLIPrettyError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CLIPrettyError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [exit_code: int, message: str].
 --------------------
-clive/__private/core/accounts/account_manager.py
-    DOC502: Method `AccountManager.add_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/decimal_conventer.py
-    DOC502: Method `DecimalConverter.get_precision` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/known_exchanges.py
-    DOC502: Method `KnownExchanges.get_entity_by_account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/profile.py
-    DOC502: Method `Profile.save` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC502: Method `Profile.load` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC502: Method `Profile.delete_by_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/validate_schema_field.py
-    DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
 clive/__private/models/asset.py
     DOC001: Function/method `hive`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
     DOC003: Function/method `hive`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.

@@ -79,9 +79,6 @@ class KnownExchanges:
         Args:
             account: The account name or Account instance to search for.
 
-        Raises:
-            KnownExchangeAccountNotFoundError: if the account is not known exchange.
-
         Returns:
             The entity name of the exchange account.
         """

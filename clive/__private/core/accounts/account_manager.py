@@ -305,9 +305,6 @@ class AccountManager:
 
         Args:
             *accounts_to_add: Accounts that should be considered as known.
-
-        Raises:
-            AccountAlreadyExistsError: If any of the accounts already exists in known accounts
         """
         self.known.add(*accounts_to_add)
 
@@ -328,9 +325,6 @@ class AccountManager:
 
         Args:
             account_to_get: Account to get.
-
-        Raises:
-            AccountNotFoundError: If given account wasn't found.
 
         Returns:
             The known account with the given name.

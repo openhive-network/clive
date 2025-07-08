@@ -189,11 +189,6 @@ class Profile:
         Args:
             encryption_service: Service for encrypting and decrypting data.
 
-        Raises:
-            ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
-                it could not be saved, that would overwrite other profile.
-            ProfileEncryptionError: If profile could not be saved e.g. due to beekeeper wallet being locked
-                or communication with beekeeper failed.
         """
         await PersistentStorageService(encryption_service).save_profile(self)
 
@@ -265,11 +260,6 @@ class Profile:
             name: Name of the profile to load.
             encryption_service: Service for encrypting and decrypting data.
 
-        Raises:
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
-            ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
-                or communication with beekeeper failed.
-
         Returns:
             The loaded profile instance.
         """
@@ -284,10 +274,6 @@ class Profile:
             profile_name: Name of the profile to be removed.
             force: If True, remove all profile versions, also not migrated/backed-up.
                 If False and multiple versions or back-ups exist, raise error.
-
-        Raises:
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
-            MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """
         PersistentStorageService.delete_profile(profile_name, force=force)
 

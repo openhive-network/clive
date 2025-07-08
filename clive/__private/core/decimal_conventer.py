@@ -27,9 +27,6 @@ class DecimalConverter:
         Args:
             amount: Amount to get precision of.
 
-        Raises:
-            DecimalConversionNotANumberError: Raised when given amount is in invalid format.
-
         Returns:
             Precision of the amount.
         """
