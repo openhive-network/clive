@@ -44,6 +44,9 @@ def timedelta_to_shorthand_timedelta(td: timedelta) -> str:
     Args:
         td: The value to convert.
 
+    Raises:
+        InvalidTimedeltaToShorthandError: If the input timedelta cannot be represented in shorthand format.
+
     Example:
         >>> timedelta_to_shorthand_timedelta(timedelta(days=7))
         "1w"
@@ -51,6 +54,9 @@ def timedelta_to_shorthand_timedelta(td: timedelta) -> str:
         "2d 2h"
         >>> timedelta_to_shorthand_timedelta(timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5))
         "1w 2d 3h 4m 5s"
+
+    Returns:
+        Shorthand date string representing the input timedelta.
     """
     total_seconds = int(td.total_seconds())
 
@@ -84,6 +90,9 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
     Args:
         shorthand: The value to convert.
 
+    Raises:
+        InvalidShorthandToTimedeltaError: If the input string does not match the expected shorthand format.
+
     Example:
         >>> shorthand_timedelta_to_timedelta("1w")
         timedelta(weeks=1)
@@ -97,6 +106,9 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
         timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
         >>> shorthand_timedelta_to_timedelta("1W 2D 3H 4M 5S")
         timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5)
+
+    Returns:
+        An object representing the duration specified by the input shorthand date string.
     """
     time_units = {"w": "weeks", "d": "days", "h": "hours", "m": "minutes", "s": "seconds"}
     allowed_units = "".join(time_units.keys())

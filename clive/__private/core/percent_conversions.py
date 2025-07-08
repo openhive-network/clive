@@ -24,6 +24,9 @@ def hive_percent_to_percent(hive_percent: int | str) -> Decimal:
         Decimal("12.34")
         >>> hive_percent_to_percent("1234")
         Decimal("12.34")
+
+    Returns:
+        The percent value.
     """
     return DecimalConverter.convert(hive_percent, precision=HIVE_PERCENT_PRECISION_DOT_PLACES) / HIVE_PERCENT_PRECISION
 
@@ -38,5 +41,8 @@ def percent_to_hive_percent(percent: Decimal) -> int:
     Example:
         >>> percent_to_hive_percent(Decimal("12.34"))
         1234
+
+    Returns:
+        The hive percent value.
     """
     return int(percent * HIVE_PERCENT_PRECISION)

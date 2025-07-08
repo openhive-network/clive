@@ -117,6 +117,9 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
         "a day ago"
         >>> humanize_natural_time(datetime(2000, 1, 1, 1, 30))
         "an hour from now"
+
+    Returns:
+        A human-readable data representing the time difference.
     """
     if isinstance(value, datetime) and is_null_date(value):
         return "never"
@@ -145,6 +148,9 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
         '2050-01-01T00:00:00 (24 years from now)'
         >>> humanize_datetime(datetime(2000, 1, 1), with_time=False, with_relative_time=True)
         '2000-01-01 (25 years ago)'
+
+    Returns:
+        A human-readable data representing the datetime.
     """
     if is_null_date(value):
         return "never"
@@ -166,6 +172,9 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     Example:
         >>> humanize_class_name(TransferToVestingOperation)
         "Transfer to vesting operation"
+
+    Returns:
+        A human-readable data representing the class name.
     """
     class_name = cls if isinstance(cls, str) else cls.__name__
     return inflection.humanize(underscore(class_name))
@@ -182,6 +191,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
         >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
         >>> humanize_operation_name(operation)
         "Transfer to vesting"
+
+    Returns:
+        A human-readable data representing the operation name.
     """
     return inflection.humanize(operation.get_name())
 
@@ -197,6 +209,9 @@ def humanize_operation_details(operation: OperationBase) -> str:
         >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
         >>> humanize_operation_details(operation)
         "from='alice', to='bob', amount='1.000 HIVE'"
+
+    Returns:
+        Human-readable operation details.
     """
     out = ""
 
@@ -355,6 +370,9 @@ def humanize_timedelta(value: timedelta) -> str:
         5 years, 6 months and 8 days
         >>> humanize_timedelta(timedelta(days=6720))
         18 years, 4 months and 28 days
+
+    Returns:
+        A human-readable data representing the timedelta.
     """
     return humanize.precisedelta(value)
 

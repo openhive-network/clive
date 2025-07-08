@@ -1,76 +1,35 @@
 clive/__private/core/accounts/account_manager.py
     DOC503: Method `AccountManager.switch_working_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['AccountAlreadyExistsError', 'AccountNotFoundError']. Raised exceptions in the body: ['AccountAlreadyExistsError'].
     DOC502: Method `AccountManager.add_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC103: Method `AccountManager.remove_known_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*accounts_to_remove: str | Account]. Arguments in the docstring but not in the function signature: [accounts_to_remove: ].
-    DOC201: Method `AccountManager.get_known_account` does not have a return section in docstring
     DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/core/commands/abc/command_restricted.py
     DOC503: Method `CommandRestricted.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['CommandExecutionNotPossibleError']. Raised exceptions in the body: ['self._execution_impossible_error'].
 --------------------
-clive/__private/core/commands/commands.py
-    DOC201: Method `Commands.create_profile_wallets` does not have a return section in docstring
-    DOC201: Method `Commands.unlock` does not have a return section in docstring
-    DOC201: Method `Commands.is_wallet_unlocked` does not have a return section in docstring
-    DOC201: Method `Commands.set_timeout` does not have a return section in docstring
-    DOC201: Method `Commands.sync_data_with_beekeeper` does not have a return section in docstring
---------------------
-clive/__private/core/commands/data_retrieval/savings_data.py
-    DOC201: Method `SavingsData.create_request_id` does not have a return section in docstring
---------------------
 clive/__private/core/commands/perform_actions_on_transaction.py
     DOC601: Class `PerformActionsOnTransaction`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PerformActionsOnTransaction`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [already_signed_mode: AlreadySignedMode, app_state: AppState, broadcast: bool, chain_id: str | None, content: TransactionConvertibleType, force_save_format: Literal['json', 'bin'] | None, force_unsign: bool, node: Node, save_file_path: Path | None, sign_key: PublicKey | None, unlocked_wallet: AsyncUnlockedWallet | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
-clive/__private/core/date_utils.py
-    DOC201: Function `timedelta_to_int_hours` does not have a return section in docstring
---------------------
 clive/__private/core/decimal_conventer.py
-    DOC201: Method `DecimalConverter.get_precision` does not have a return section in docstring
     DOC502: Method `DecimalConverter.get_precision` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC201: Method `DecimalConverter.convert` does not have a return section in docstring
 --------------------
 clive/__private/core/ensure_transaction.py
     DOC501: Function `ensure_transaction` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `ensure_transaction` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['TypeError'].
---------------------
-clive/__private/core/formatters/humanize.py
-    DOC201: Function `humanize_natural_time` does not have a return section in docstring
-    DOC201: Function `humanize_datetime` does not have a return section in docstring
-    DOC201: Function `humanize_class_name` does not have a return section in docstring
-    DOC201: Function `humanize_operation_name` does not have a return section in docstring
-    DOC201: Function `humanize_operation_details` does not have a return section in docstring
-    DOC201: Function `humanize_timedelta` does not have a return section in docstring
 --------------------
 clive/__private/core/keys/keys.py
     DOC601: Class `PrivateKey`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PrivateKey`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [file_path: Path | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/core/known_exchanges.py
-    DOC201: Method `KnownExchanges.get_by_account_name` does not have a return section in docstring
-    DOC201: Method `KnownExchanges.get_entity_by_account_name` does not have a return section in docstring
     DOC502: Method `KnownExchanges.get_entity_by_account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC201: Method `KnownExchanges.get_account_name_by_entity` does not have a return section in docstring
---------------------
-clive/__private/core/percent_conversions.py
-    DOC201: Function `hive_percent_to_percent` does not have a return section in docstring
-    DOC201: Function `percent_to_hive_percent` does not have a return section in docstring
 --------------------
 clive/__private/core/profile.py
     DOC501: Method `Profile.set_chain_id` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `Profile.set_chain_id` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidChainIdError'].
     DOC502: Method `Profile.save` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC201: Method `Profile.load` does not have a return section in docstring
     DOC502: Method `Profile.load` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Profile.delete_by_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/core/shorthand_timedelta.py
-    DOC201: Function `timedelta_to_shorthand_timedelta` does not have a return section in docstring
-    DOC501: Function `timedelta_to_shorthand_timedelta` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `timedelta_to_shorthand_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidTimedeltaToShorthandError'].
-    DOC201: Function `shorthand_timedelta_to_timedelta` does not have a return section in docstring
-    DOC501: Function `shorthand_timedelta_to_timedelta` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `shorthand_timedelta_to_timedelta` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidShorthandToTimedeltaError'].
 --------------------
 clive/__private/core/validate_schema_field.py
     DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body

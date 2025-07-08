@@ -266,6 +266,9 @@ class Profile:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
+
+        Returns:
+            The loaded profile instance.
         """
         return await PersistentStorageService(encryption_service).load_profile(name)
 

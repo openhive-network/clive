@@ -332,5 +332,8 @@ class AccountManager:
 
         Raises:
             AccountNotFoundError: If given account wasn't found.
+
+        Returns:
+            The known account with the given name.
         """
         return self.known.get(account_to_get)
