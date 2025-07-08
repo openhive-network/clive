@@ -134,6 +134,9 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
                 or communication with beekeeper failed.
+
+        Returns:
+            Loaded profile object.
         """
         self._raise_if_profile_not_stored(profile_name)
         result = await self._load_and_migrate_latest_profile_model(profile_name)
@@ -278,6 +281,9 @@ class PersistentStorageService:
             profile_name: If given, only profiles with this name will be returned. If None, return all profiles.
             file_type: Determine which type of files to look for.
             include_impossible_to_load: If True, it will return profiles even we could not load them.
+
+        Returns:
+            A set of objects containing information about the stored profiles.
         """
         storage_dir = cls._get_storage_directory()
         paths: set[PersistentStorageService.ProfileFileInfo] = set()

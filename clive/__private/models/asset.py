@@ -86,6 +86,9 @@ class Asset:
 
         Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
+        Returns:
+            An instance of Hive asset with the specified amount.
         """
         return cls.__create(Asset.Hive, amount)
 
@@ -99,6 +102,9 @@ class Asset:
 
         Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
+        Returns:
+            An instance of Hbd asset with the specified amount.
         """
         return cls.__create(Asset.Hbd, amount)
 
@@ -112,6 +118,9 @@ class Asset:
 
         Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
+        Returns:
+            An instance of Vests asset with the specified amount.
         """
         return cls.__create(Asset.Vests, amount)
 
@@ -126,6 +135,9 @@ class Asset:
 
         Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
+        Returns:
+            An instance of the specified asset type with the given amount.
         """
         try:
             amount = cls.__convert_amount_to_internal_representation(amount, asset)
@@ -200,6 +212,9 @@ class Asset:
 
         Raises:
             DecimalConversionNotANumberError: If given amount is not a valid number.
+
+        Returns:
+            Internal representation of the amount.
         """
         precision = precision if isinstance(precision, int) else cls.get_precision(precision)
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
