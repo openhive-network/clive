@@ -69,7 +69,6 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     def __init__(self) -> None:
         super().__init__()
-        self._actions_votes = 0
 
     @staticmethod
     @abstractmethod
@@ -88,13 +87,6 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
     def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
         """Create an action row."""
 
-    @property
-    def actions_votes(self) -> int:
-        return self._actions_votes
-
-    def hook_on_row_added(self) -> None:
-        """Create any action when an action row is added to the action table."""
-
     def compose(self) -> ComposeResult:
         yield SectionTitle("Actions to be performed")
         with Horizontal(id="name-and-action"):
@@ -104,7 +96,7 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
     async def on_mount(self) -> None:
         await self.mount_operations_from_cart()
 
-    async def add_row(self, identifier: str, *, vote: bool = False, hook_on_added: bool = True) -> None:
+    async def add_row(self, identifier: str, *, vote: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
@@ -114,24 +106,11 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
         action_row = self.create_action_row(identifier, vote=vote)
         await self.mount(action_row)
 
-        if vote:
-            self._actions_votes += 1
-        else:
-            self._actions_votes -= 1
-
-        if hook_on_added:
-            self.hook_on_row_added()
-
-    async def remove_row(self, identifier: str, *, vote: bool = False) -> None:
+    async def remove_row(self, identifier: str) -> None:
         try:
             await self.get_widget_by_id(self.create_action_row_id(identifier)).remove()
         except NoMatches:
             return
-
-        if vote:
-            self._actions_votes -= 1
-        else:
-            self._actions_votes += 1
 
     async def rebuild(self) -> None:
         """Remove all rows from the actions table and mount all operations from the cart."""

@@ -45,7 +45,7 @@ class GovernanceTabPane(AbstractClassMessagePump, TabPane, CliveWidget):
             await actions.add_row(identifier=event.action_identifier, vote=event.vote)
             self.add_operation_to_cart(event.action_identifier, vote=event.vote)
         else:
-            await actions.remove_row(identifier=event.action_identifier, vote=event.vote)
+            await actions.remove_row(identifier=event.action_identifier)
             self.remove_operation_from_cart(event.action_identifier, vote=event.vote)
 
     async def rebuild_actions_and_table(self) -> None:

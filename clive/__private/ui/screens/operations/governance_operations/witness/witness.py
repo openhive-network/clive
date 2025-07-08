@@ -181,13 +181,6 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
     @property
-    def actual_number_of_votes(self) -> int:
-        amount = self.actions_votes
-        if self.provider.is_content_set:
-            amount += self.provider.content.number_of_votes
-        return amount
-
-    @property
     def provider(self) -> WitnessesDataProvider:
         return self.screen.query_exactly_one(WitnessesDataProvider)
 
@@ -198,7 +191,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
-                await self.add_row(identifier=operation.witness, vote=operation.approve, hook_on_added=False)
+                await self.add_row(identifier=operation.witness, vote=operation.approve)
 
     def should_be_added_to_actions(self, operation: object) -> TypeIs[AccountWitnessVoteOperation]:
         return (
@@ -208,15 +201,6 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
 
     def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
         return WitnessActionRow(identifier, vote=vote)
-
-    def hook_on_row_added(self) -> None:
-        notification_message = f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}"
-
-        if self.app.is_notification_present(notification_message):
-            return
-
-        if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
-            self.notify(notification_message, severity="warning")
 
 
 class WitnessesList(GovernanceListWidget[WitnessData]):
@@ -269,8 +253,33 @@ class Witnesses(GovernanceTabPane):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
+    _MAX_NUMBER_OF_WITNESS_VOTES_NOTIFICATION: Final[str] = (
+        f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}"
+    )
+
     def __init__(self) -> None:
         super().__init__(title="Witnesses", id_="witnesses")
+
+    @property
+    def provider(self) -> WitnessesDataProvider:
+        return self.screen.query_exactly_one(WitnessesDataProvider)
+
+    @property
+    def votes_in_cart_delta(self) -> int:
+        num = 0
+        for operation in self.profile.transaction:
+            if not isinstance(operation, AccountWitnessVoteOperation):
+                continue
+
+            if operation.account == self.profile.accounts.working.name:
+                num += 1 if operation.approve else -1
+        return num
+
+    @property
+    def votes_actual_delta(self) -> int:
+        num = self.votes_in_cart_delta
+        num += self.provider.content.number_of_votes
+        return num
 
     def compose(self) -> ComposeResult:
         self._witness_table = WitnessesTable()
@@ -287,6 +296,7 @@ class Witnesses(GovernanceTabPane):
             return
 
         self.profile.transaction.add_operation(operation)
+        self._notify_about_exceeded_votes_amount()
         self.app.trigger_profile_watchers()
 
     def remove_operation_from_cart(self, identifier: str, *, vote: bool = False) -> None:
@@ -300,6 +310,12 @@ class Witnesses(GovernanceTabPane):
     @on(WitnessManualSearch.Clear)
     async def clear_searched_witnesses(self, _: WitnessManualSearch.Clear) -> None:
         await self._witness_table.clear_searched_witnesses()
+
+    def _notify_about_exceeded_votes_amount(self) -> None:
+        is_exceeded = self.votes_actual_delta > MAX_NUMBER_OF_WITNESSES_VOTES
+        is_notification_present = self.app.is_notification_present(self._MAX_NUMBER_OF_WITNESS_VOTES_NOTIFICATION)
+        if is_exceeded and not is_notification_present:
+            self.notify(self._MAX_NUMBER_OF_WITNESS_VOTES_NOTIFICATION, severity="warning")
 
     def _create_operation(self, witness: str, *, vote: bool) -> AccountWitnessVoteOperation:
         """Create account witness vote operation based on the given parameters."""
