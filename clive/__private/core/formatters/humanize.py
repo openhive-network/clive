@@ -103,6 +103,9 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     """
     Return pretty formatted relative time from now.
 
+    Args:
+        value: An object representing the relative time.
+
     Example:
         Assuming that the current time is `datetime(2000, 1, 1, 0, 0)`:
 
@@ -123,6 +126,11 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
 def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_time: bool = False) -> str:
     """
     Return pretty formatted datetime.
+
+    Args:
+        value: An object to be formatted.
+        with_time: Whether to include time in the output.
+        with_relative_time: Whether to include relative time from now.
 
     Example:
         >>> humanize_datetime(datetime(1970, 1, 1, 0, 0))
@@ -167,6 +175,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
     """
     Return pretty formatted operation name.
 
+    Args:
+        operation: Operation to be formatted.
+
     Example:
         >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
         >>> humanize_operation_name(operation)
@@ -178,6 +189,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
 def humanize_operation_details(operation: OperationBase) -> str:
     """
     Return pretty formatted operation details (properties).
+
+    Args:
+        operation: Operation to be formatted.
 
     Example:
         >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
@@ -330,6 +344,9 @@ def humanize_percent(hive_percent: Decimal) -> str:
 def humanize_timedelta(value: timedelta) -> str:
     """
     Return pretty formatted timedelta.
+
+    Args:
+        value: An object to be formatted.
 
     Example:
         >>> humanize_timedelta(timedelta(days=730))

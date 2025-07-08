@@ -145,6 +145,9 @@ class PrivateKey(Key):
         """
         Validate the given key.
 
+        Args:
+            key: The private key to validate.
+
         Raises:
             PrivateKeyInvalidFormatError: if private key is not in valid format.
         """
