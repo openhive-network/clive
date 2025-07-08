@@ -36,5 +36,8 @@ def timedelta_to_int_hours(td: timedelta) -> int:
         timedelta_to_int_hours(((timedelta(days=7)) -> 168
         timedelta_to_int_hours(((timedelta(hours=50)) -> 50
         timedelta_to_int_hours(((timedelta(weeks=1, days=2, hours=3)) -> 219
+
+    Returns:
+        The number of hours represented by the timedelta.
     """
     return int(td.total_seconds() / SECONDS_IN_HOUR)

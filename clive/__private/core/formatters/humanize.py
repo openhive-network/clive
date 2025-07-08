@@ -107,6 +107,9 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
     now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
     now=datetime(2000, 1, 1, 1, 30), value=datetime(2000, 1, 1, 0, 0) -> "an hour from now"
+
+    Returns:
+        A human-readable string representing the time difference.
     """
     if isinstance(value, datetime) and is_null_date(value):
         return "never"
@@ -124,6 +127,9 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
 
     Examples:
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
+
+    Returns:
+        A human-readable string representing the datetime.
     """
     if is_null_date(value):
         return "never"
@@ -144,6 +150,9 @@ def humanize_class_name(cls: str | type[Any]) -> str:
 
     Examples:
     TransferToVestingOperation -> "Transfer to vesting operation"
+
+    Returns:
+        A human-readable string representing the class name.
     """
     class_name = cls if isinstance(cls, str) else cls.__name__
     return inflection.humanize(underscore(class_name))
@@ -158,6 +167,9 @@ def humanize_operation_name(operation: OperationBase) -> str:
 
     Examples:
     TransferToVestingOperation -> Transfer to vesting
+
+    Returns:
+        A human-readable string representing the operation name.
     """
     return inflection.humanize(operation.get_name())
 
@@ -171,6 +183,9 @@ def humanize_operation_details(operation: OperationBase) -> str:
 
     Examples:
     TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
+
+    Returns:
+        Human-readable operation details.
     """
     out = ""
 
@@ -326,6 +341,9 @@ def humanize_timedelta(value: timedelta) -> str:
     timedelta(days=730) -> 2 years
     timedelta(days=2016) -> 5 years, 6 months and 8 days
     timedelta(days=6720) -> 18 years, 4 months and 28 days
+
+    Returns:
+        A human-readable string representing the given timedelta.
     """
     return humanize.precisedelta(value)
 
