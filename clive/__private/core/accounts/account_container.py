@@ -52,7 +52,7 @@ class AccountContainerBase[AccountT: Account](ABC):
         Won't raise an error if the account is not found.
 
         Args:
-            to_remove: Accounts to remove.
+            *to_remove: Accounts to remove.
         """
 
         def remove_single_account(account: str | Account) -> None:
@@ -88,7 +88,7 @@ class WatchedAccountContainer(AccountContainerBase[WatchedAccount]):
         Add a new account to the container.
 
         Args:
-             to_add: Accounts to add. If WatchedAccount is passed, it will be added directly.
+             *to_add: Accounts to add. If WatchedAccount is passed, it will be added directly.
                  Otherwise, new WatchedAccount will be created.
         """
         self._add(*to_add, account_type=WatchedAccount)
@@ -100,7 +100,7 @@ class KnownAccountContainer(AccountContainerBase[KnownAccount]):
         Add a new account to the container.
 
         Args:
-            to_add: Accounts to add. If KnownAccount is passed, it will be added directly.
+            *to_add: Accounts to add. If KnownAccount is passed, it will be added directly.
                 Otherwise, new KnownAccount will be created.
         """
         self._add(*to_add, account_type=KnownAccount)
