@@ -136,6 +136,9 @@ class Commands[WorldT: World]:
                 unlocking permanently.
             permanent_unlock: Whether to unlock the wallet permanently. Will take precedence when `unlock_time` is
                 also set.
+
+        Returns:
+            A wrapper containing the result of the command.
         """
         return await self.__surround_with_exception_handlers(
             CreateProfileWallets(
@@ -193,6 +196,9 @@ class Commands[WorldT: World]:
             time: The time after which the wallet will be automatically locked. Do not need to pass when unlocking
                 permanently.
             permanent: Whether to unlock the wallet permanently. Will take precedence when `time` is also set.
+
+        Returns:
+            A wrapper containing the result of the command.
         """
         profile_to_unlock = profile_name or self._world.profile.name
         wrapper = await self.__surround_with_exception_handlers(
@@ -253,6 +259,9 @@ class Commands[WorldT: World]:
 
         Args:
             wallet: Wallet to check. If None, the world wallet will be checked.
+
+        Returns:
+            A wrapper containing the result of the command.
         """
         return await self.__surround_with_exception_handlers(
             IsWalletUnlocked(
@@ -268,6 +277,9 @@ class Commands[WorldT: World]:
             time: The time after which the wallet will be automatically locked. Do not need to pass when `permanent`
                 is set.
             permanent: Whether to keep the wallets unlocked permanently. Will take precedence when `time` is also set.
+
+        Returns:
+            A wrapper containing the result of the command.
         """
         return await self.__surround_with_exception_handlers(
             SetTimeout(session=self._world.beekeeper_manager.session, time=time, permanent=permanent)
@@ -389,6 +401,9 @@ class Commands[WorldT: World]:
 
         Args:
             profile: Profile to sync. If None, the world profile will be synced.
+
+        Returns:
+            A wrapper containing the result of the command.
         """
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(

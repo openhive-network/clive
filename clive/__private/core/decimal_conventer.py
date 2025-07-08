@@ -29,6 +29,9 @@ class DecimalConverter:
 
         Raises:
             DecimalConversionNotANumberError: Raised when given amount is in invalid format.
+
+        Returns:
+            Precision of the amount.
         """
         converted = cls.convert(amount)
         exponent = int(converted.as_tuple().exponent)
@@ -45,6 +48,9 @@ class DecimalConverter:
 
         Raises:
             DecimalConversionNotANumberError: Raised when given amount is in invalid format.
+
+        Returns:
+            Converted amount.
         """
         try:
             converted = Decimal(amount)

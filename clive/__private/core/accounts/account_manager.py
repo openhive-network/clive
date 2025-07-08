@@ -319,7 +319,7 @@ class AccountManager:
         Won't raise an error if the account is not found.
 
         Args:
-            accounts_to_remove: Accounts that should no longer be considered as known.
+            *accounts_to_remove: accounts that should no longer be considered as known.
         """
         self.known.remove(*accounts_to_remove)
 
@@ -332,5 +332,8 @@ class AccountManager:
 
         Raises:
             AccountNotFoundError: If given account wasn't found.
+
+        Returns:
+            The known account with the given name.
         """
         return self.known.get(account_to_get)
