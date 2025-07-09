@@ -306,9 +306,8 @@ class CliveCheckerboardTable(CliveWidget):
         --------
         return self.provider.content.actual_value != self.previous_value
 
-        Raises:  # noqa: D406
-        ------
-        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
+        Raises:
+            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
 
         Returns:
             Whether the table should be updated or not.
