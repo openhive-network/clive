@@ -9,7 +9,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetNaiAmount, AssetVests, PreconfiguredBaseModel
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests, PreconfiguredBaseModel
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -127,7 +127,7 @@ class Asset:
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount), "Should be a number.") from error
         else:
-            return asset(amount=AssetNaiAmount(amount))
+            return asset(amount=amount)
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
@@ -169,7 +169,7 @@ class Asset:
         if not result.is_valid:
             raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
-        return asset_cls(amount=AssetNaiAmount(cls.__convert_amount_to_internal_representation(amount, asset_cls)))
+        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:

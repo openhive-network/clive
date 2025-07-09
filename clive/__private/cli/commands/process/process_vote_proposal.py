@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
-from clive.__private.models.schemas import Int64t, UpdateProposalVotesOperation
+from clive.__private.models.schemas import UpdateProposalVotesOperation
 
 
 @dataclass(kw_only=True)
@@ -19,7 +19,7 @@ class ProcessVoteProposal(OperationCommand):
         self.proposal_ids.sort()
         return UpdateProposalVotesOperation(
             voter=self.account_name,
-            proposal_ids=[Int64t(proposal_id) for proposal_id in self.proposal_ids],
+            proposal_ids=[self.proposal_ids],
             approve=self.approve,
             extensions=[],
         )

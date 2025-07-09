@@ -37,5 +37,5 @@ class RemoveWithdrawVestingRouteDialog(OperationSummaryBaseDialog):
             from_account=self.working_account_name,
             to_account=self._withdraw_route.to_account,
             auto_vest=self._withdraw_route.auto_vest,
-            percent=Uint16t(PERCENT_TO_REMOVE_WITHDRAW_ROUTE),
+            percent=PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
         )

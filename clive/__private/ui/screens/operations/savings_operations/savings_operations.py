@@ -256,7 +256,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return None
 
         data = {
-            "from": self.default_receiver,
+            "from_": self.default_receiver,
             "to": self._to_account_input.value_or_error,
             "amount": self._amount_input.value_or_error,
             "memo": self._memo_input.value_or_error,

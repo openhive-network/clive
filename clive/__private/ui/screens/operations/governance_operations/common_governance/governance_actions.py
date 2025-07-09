@@ -18,9 +18,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
-    from schemas.operations import AccountWitnessVoteOperation, UpdateProposalVotesOperation
-
-
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     """
     Displays either the name of the witness or the ID of the proposal.

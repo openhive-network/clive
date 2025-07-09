@@ -12,7 +12,7 @@ from clive.__private.core.commands.data_retrieval.proposals_data import Proposal
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.models.schemas import Int64t, UpdateProposalVotesOperation
+from clive.__private.models.schemas import UpdateProposalVotesOperation
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.governance_operations.common_governance.governance_actions import (
@@ -293,7 +293,7 @@ class Proposals(GovernanceTabPane):
         return [
             UpdateProposalVotesOperation(
                 voter=working_account_name,
-                proposal_ids=[Int64t(proposal_id) for proposal_id in proposal_ids],
+                proposal_ids=proposal_ids,
                 approve=approve,
                 extensions=[],
             )

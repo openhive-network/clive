@@ -70,7 +70,7 @@ def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset
 
     asset_cls = Asset.resolve_nai(result.nai.decode())
-    return asset_cls(amount=AssetNaiAmount(result.amount.decode()))
+    return asset_cls(amount=int(result.amount.decode()))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
@@ -136,7 +136,6 @@ def deserialize_transaction(transaction: bytes) -> Transaction:
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
     trx = Transaction.parse_raw(result.result.decode())
-    assert isinstance(trx, Transaction), "Transaction have incompatible type"
     return trx
 
 
@@ -202,8 +201,8 @@ def vests(amount: int) -> Asset.Vests:
 
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     result = wax.calculate_hp_apr(
-        head_block_num=int(data.head_block_number),
-        vesting_reward_percent=int(data.vesting_reward_percent),
+        head_block_num=data.head_block_number,
+        vesting_reward_percent=data.vesting_reward_percent,
         virtual_supply=to_python_json_asset(data.virtual_supply),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
     )

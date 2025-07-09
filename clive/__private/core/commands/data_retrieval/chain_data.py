@@ -262,8 +262,6 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
         )
 
     async def _process_data(self, data: SanitizedData) -> ChainData:
-        assert data.version.chain_id is not None, "Chain ID is missing in the version data."
-
         return ChainData(
             account_creation_fee=data.account_creation_fee,
             chain_id=data.version.chain_id,
