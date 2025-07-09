@@ -356,7 +356,6 @@ class Clive(App[int]):
         any other screen stacks.
 
         Args:
-        ----
             new_mode: The mode to switch to.
         """
 
