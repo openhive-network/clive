@@ -16,7 +16,6 @@ class CliveWidget(CliveDOMNode, Widget):
         Bind a key to an action.
 
         Args:
-        ----
             binding: The binding to add.
         """
         self._bindings.key_to_bindings.setdefault(binding.key, []).append(binding)
