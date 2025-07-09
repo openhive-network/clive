@@ -25,20 +25,19 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     Displays either the name of the witness or the ID of the proposal.
 
     Chosen generically based on the action to be performed.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the action row.
+
+    Args:
+        identifier: Used to pass the identifier of the action. It is used to create id of the widget.
+        vote: Action to be performed - vote or not.
+        pending: Indicates if the operation with such identifier is already in the cart.
     """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, identifier: str, *, vote: bool, pending: bool = False) -> None:
-        """
-        Initialize the GovernanceActionRow.
-
-        Args:
-        ----
-        identifier: Used to pass the identifier of the action. It is used to create id of the widget.
-        vote: Action to be performed - vote or not.
-        pending: Indicates if the operation with such identifier is already in the cart.
-        """
         super().__init__(id=self.create_action_row_id(identifier))
         self._identifier = identifier
         self._vote = vote

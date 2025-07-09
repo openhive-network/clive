@@ -59,16 +59,14 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
-    """A widget containing a list of `GovernanceTableRow` widgets."""
+    """
+    A widget containing a list of `GovernanceTableRow` widgets.
+
+    Args:
+        data: list of data to fill in the `GovernanceTableRow` widgets.
+    """
 
     def __init__(self, data: list[GovernanceDataT] | None) -> None:
-        """
-        Initialize the GovernanceListWidget.
-
-        Args:
-        ----
-        data: list of data to fill in the `GovernanceTableRow` widgets.
-        """
         super().__init__()
         self._data: list[GovernanceDataT] | None = data
 
@@ -112,7 +110,17 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @dataclass
     class ChangeActionStatus(Message):
-        """Message send when user request by GovernanceCheckbox to change the action status."""
+        """Message send when user request by GovernanceCheckbox to change the action status.
+
+        Args:
+            row_data: Data of the row that contains information about the action to be performed.
+            even: Indicates if the row is even or odd, used for styling purposes.
+
+        Attributes:
+            action_identifier: Identifier of the action to be performed, e.g. witness name or proposal id.
+            vote: Indicates if the action is a vote or unvote.
+            add: Indicates if the action should be added to the actions container or removed.
+        """
 
         action_identifier: str
         vote: bool
@@ -120,14 +128,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         """If True, add action to the actions container, if False - remove."""
 
     def __init__(self, row_data: GovernanceDataT, *, even: bool = False) -> None:
-        """
-        Initialize the GovernanceTableRow.
-
-        Args:
-        ----
-        row_data: Data used to create the row of the table.
-        even: Whether the row is even or odd.
-        """
         super().__init__()
         self._row_data: GovernanceDataT = row_data
         self._evenness = "even" if even else "odd"
