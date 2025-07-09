@@ -24,7 +24,26 @@ if TYPE_CHECKING:
 class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
     CliveValidatedInput[AssetInputT], AbstractClassMessagePump
 ):
-    """Base input for all asset types."""
+    """
+    Base input for all asset types.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the asset amount input.
+
+    Args:
+        title: Title of the input.
+        value: Initial value of the input, can be a string or a float.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title.
+        include_title_in_placeholder_when_blurred: If True, includes the title in the placeholder when input is blurred.
+        show_invalid_reasons: Whether to show invalid reasons.
+        required: Whether the input is required.
+        validate_on: When to validate the input.
+        valid_empty: Whether the input is valid when empty.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     DEFAULT_CSS = """
     AssetAmountInput {
@@ -64,13 +83,6 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialize the widget.
-
-        Args difference from `CliveValidatedInput`:
-        ----
-        placeholder: If not provided, placeholder will be dynamically generated based on the asset type.
-        """
         with self.prevent(CurrencySelectorBase.Changed):
             self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
         default_asset_precision = Asset.get_precision(self.default_asset_type)
