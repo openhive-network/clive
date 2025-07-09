@@ -119,8 +119,7 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         This is done so that the bindings in the footer are displayed in a correct, uniform way.
 
         Args:
-        ----
-        data: The bindings to sort.
+            data: The bindings to sort.
 
         Returns:
         -------

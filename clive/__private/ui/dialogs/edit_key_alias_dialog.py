@@ -67,8 +67,7 @@ class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
         Validate the inputs.
 
         Raises:
-        ------
-        FailedValidationError: when key alias is not valid.
+            FailedValidationError: when key alias is not valid.
         """
         key_alias_input = self.key_alias_input
         if not key_alias_input.is_empty:

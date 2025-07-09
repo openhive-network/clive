@@ -53,7 +53,6 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
         Select asset by its type.
 
         Args:
-        ----
             asset_type: Type of asset to select.
         """
         self.value = self._get_selectable(asset_type)
@@ -63,12 +62,10 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
         Create asset from amount.
 
         Args:
-        ----
-        amount: Amount of asset.
+            amount: Amount of asset.
 
         Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+            AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         asset_factory = self.asset_factory
         return asset_factory(amount)
