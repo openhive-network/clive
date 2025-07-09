@@ -357,6 +357,9 @@ class Clive(App[int]):
 
         Args:
             new_mode: The mode to switch to.
+
+        Returns:
+            An awaitable that completes when the mode is switched.
         """
 
         async def impl() -> None:
