@@ -8,9 +8,8 @@ def get_relative_css_path(file_path: str | Path, *, name: str = "") -> Path:
     Get the relative path to the css file.
 
     Args:
-    ----
-    file_path: The path to the file next to which the css file is located.
-    name: Explicit name of the css file.
+        file_path: The path to the file next to which the css file is located.
+        name: Explicit name of the css file.
 
     Example:
     -------

@@ -69,10 +69,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         and then performs a wax validation.
 
         Args:
-        ----
-        create_one_many_operations_cb: A callback that returns either a single operation or a list of operations.
-            It can also return None if the operation(s) couldn't be created. This means that the validation process
-            is done earlier and here it will be skipped.
+            create_one_many_operations_cb: A callback that returns either a single operation or a list of operations.
+                It can also return None if the operation(s) couldn't be created. This means that the validation process
+                is done earlier and here it will be skipped.
         """
         validation_failed_message = "Operation failed the validation process."
 
