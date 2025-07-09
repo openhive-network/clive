@@ -210,6 +210,9 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
                 True by default since this error won't be visible in the UI otherwise.
             notify_on_validation_error: Whether to show a notification when the input validation fails.
                 False by default since the validation error will be visible in the UI, under the input.
+
+        Returns:
+            The validated value of the input or None if validation fails.
         """
         try:
             self.validate_with_error(treat_as_required=False)
@@ -267,6 +270,9 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
                 True by default since this error won't be visible in the UI otherwise.
             notify_on_validation_error: Whether to show a notification when the input validation fails.
                 False by default since the validation error will be visible in the UI, under the input.
+
+        Returns:
+            True if validation passes, False otherwise.
         """
         try:
             self.validate_with_error(treat_as_required=treat_as_required)

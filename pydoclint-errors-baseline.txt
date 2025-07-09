@@ -30,9 +30,6 @@ clive/__private/storage/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `PersistentStorageService.load_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/app.py
-    DOC201: Method `Clive.switch_mode_with_reset` does not have a return section in docstring
---------------------
 clive/__private/ui/dialogs/edit_key_alias_dialog.py
     DOC502: Method `EditKeyAliasDialog._validate` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
@@ -43,16 +40,10 @@ clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
 clive/__private/ui/forms/create_profile/set_account_form_screen.py
     DOC502: Method `SetAccountFormScreen.account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/get_css.py
-    DOC201: Function `get_relative_css_path` does not have a return section in docstring
---------------------
 clive/__private/ui/key_alias_base.py
     DOC502: Method `NewKeyAliasBase._private_key` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `NewKeyAliasBase._private_key_aliased` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `NewKeyAliasBase._validate` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
-    DOC201: Method `OperationActionBindings._validate_and_notify` does not have a return section in docstring
 --------------------
 clive/__private/ui/screens/operations/governance_operations/common_governance/governance_actions.py
     DOC301: Class `GovernanceActionRow`: __init__() should not have a docstring; please combine it with the docstring of the class
@@ -72,7 +63,6 @@ clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
     DOC301: Class `CliveCheckerboardTable`: __init__() should not have a docstring; please combine it with the docstring of the class
     DOC101: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
-    DOC201: Method `CliveCheckerboardTable.check_if_should_be_updated` does not have a return section in docstring
     DOC501: Method `CliveCheckerboardTable.check_if_should_be_updated` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `CliveCheckerboardTable.check_if_should_be_updated` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidDynamicDefinedError'].
 --------------------
@@ -81,7 +71,6 @@ clive/__private/ui/widgets/clive_basic/clive_data_table.py
     DOC301: Class `CliveDataTable`: __init__() should not have a docstring; please combine it with the docstring of the class
 --------------------
 clive/__private/ui/widgets/currency_selector/currency_selector_base.py
-    DOC201: Method `CurrencySelectorBase.create_asset` does not have a return section in docstring
     DOC502: Method `CurrencySelectorBase.create_asset` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/widgets/inputs/account_name_input.py
@@ -95,8 +84,6 @@ clive/__private/ui/widgets/inputs/clive_input.py
 --------------------
 clive/__private/ui/widgets/inputs/clive_validated_input.py
     DOC301: Class `CliveValidatedInput`: __init__() should not have a docstring; please combine it with the docstring of the class
-    DOC201: Method `CliveValidatedInput.value_or_none` does not have a return section in docstring
-    DOC201: Method `CliveValidatedInput.validate_passed` does not have a return section in docstring
 --------------------
 clive/__private/ui/widgets/inputs/numeric_input.py
     DOC301: Class `NumericInput`: __init__() should not have a docstring; please combine it with the docstring of the class

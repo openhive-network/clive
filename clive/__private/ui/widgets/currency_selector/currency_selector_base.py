@@ -66,6 +66,9 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
 
         Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
+        Returns:
+            Created asset instance.
         """
         asset_factory = self.asset_factory
         return asset_factory(amount)
