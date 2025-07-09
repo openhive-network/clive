@@ -79,7 +79,33 @@ Input value error{additional}. Reason:
 
 
 class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
-    """A custom input that shows a title and failed validation reasons (if any). For more look into `CliveInput`."""
+    """
+    A custom input that shows a title and failed validation reasons (if any). For more look into `CliveInput`.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the validated input.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        password: Whether the input is a password input.
+        restrict: Regular expression to restrict input to a specific format.
+        type: The type of the input.
+        max_length: The maximum length of the input.
+        highlighter: Highlighter for syntax highlighting.
+        suggester: A suggester for auto-completion.
+        validators: Validators for the input.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     DEFAULT_CSS = """
     CliveValidatedInput {
@@ -119,13 +145,6 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `CliveInput`):
-        ------------------------------------
-        show_invalid_reasons: Whether to show the reasons why validation failed.
-        """
         super().__init__(id=id, classes=classes, disabled=disabled)
         self.input = CliveInput(
             title=title,

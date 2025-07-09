@@ -14,7 +14,26 @@ if TYPE_CHECKING:
 
 
 class ProxyInput(AccountNameInput):
-    """An input for a Hive proxy account name."""
+    """
+    An input for a Hive proxy account name.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        show_known_account: Whether to show known accounts with a specific style.
+        setting_proxy: Whether setting proxy or just getting proxy for other purpose.
+        suggester: A suggester for auto-completion.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     def __init__(
         self,
@@ -35,13 +54,6 @@ class ProxyInput(AccountNameInput):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `CliveInput`):
-        ------------------------------------
-        setting_proxy: Whether setting proxy or just getting proxy for other purpose.
-        """
         super().__init__(
             title=title,
             value=value,

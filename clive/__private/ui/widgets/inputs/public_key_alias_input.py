@@ -16,7 +16,27 @@ if TYPE_CHECKING:
 
 
 class PublicKeyAliasInput(TextInput):
-    """An input for a public key alias."""
+    """
+    An input for a public key alias.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        setting_key_alias: Whether setting public key alias or just getting key alias for other purpose.
+        suggester: A suggester for auto-completion.
+        key_manager: Key manager to use for validation. If not provided, the key manager
+            from the world will be used.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     def __init__(
         self,
@@ -37,14 +57,6 @@ class PublicKeyAliasInput(TextInput):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `TextInput`):
-        ------------------------------------
-        setting_key_alias: Whether setting public key alias or just getting key alias for other purpose.
-        key_manager: Key manager to use for validation. If not provided, the key manager from the world will be used.
-        """
         key_manager = key_manager if key_manager is not None else self.profile.keys
         placeholder = (
             placeholder

@@ -18,7 +18,19 @@ if TYPE_CHECKING:
 
 
 class CliveDataTableRow(Horizontal, CliveWidget):
-    """Class that represent the one line of the clive data table."""
+    """
+    Class that represent the one line of the clive data table.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the data table row.
+
+    Args:
+        title: Title of the row. Will be displayed as the first cell.
+        *cells: Cells of the table as Static/Label widgets.
+        dynamic: Whether it should be updated dynamically.
+        classes: The CSS classes for the widget.
+        id_: The ID of the widget in the DOM.
+    """
 
     DEFAULT_CSS = """
     $row-color-odd: $panel-lighten-2;
@@ -55,17 +67,6 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         classes: str | None = None,
         id_: str | None = None,
     ) -> None:
-        """
-        Initialize the clive data table row.
-
-        Args:
-        ----
-        title: Title of the row. Will be displayed as the first cell.
-        cells: Cells of the table as Static/Label widgets.
-        dynamic: Whether it should be updated dynamically.
-        classes: The CSS classes for the widget.
-        id_: The ID of the widget in the DOM.
-        """
         super().__init__(classes=classes, id=id_)
         self._dynamic = dynamic
         self._title = title
@@ -90,7 +91,19 @@ class CliveDataTableRow(Horizontal, CliveWidget):
 
 
 class CliveDataTable(CliveWidget):
-    """Clive table to show up data that is static or dynamic."""
+    """
+    Clive table to show up data that is static or dynamic.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the data table.
+
+    Args:
+        header: Header of the table.
+        *rows: The rows of the table.
+        dynamic: Whether the table should be updated dynamically (has at least 1 dynamic row).
+        classes: The CSS classes for the widget.
+        id_: The ID of the widget in the DOM.
+    """
 
     DEFAULT_CSS = """
     CliveDataTable {
@@ -106,17 +119,6 @@ class CliveDataTable(CliveWidget):
         classes: str | None = None,
         id_: str | None = None,
     ) -> None:
-        """
-        Initialize the clive data table.
-
-        Args:
-        ----
-        header: The headline of the table.
-        rows: The rows of the table.
-        dynamic: Whether the table should be updated dynamically (has at least 1 dynamic row).
-        classes: The CSS classes for the widget.
-        id_: The ID of the widget in the DOM.
-        """
         super().__init__(classes=classes, id=id_)
         self._header = header
         self._rows = rows

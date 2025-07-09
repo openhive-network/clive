@@ -21,7 +21,30 @@ if TYPE_CHECKING:
 
 
 class AccountNameInput(TextInput):
-    """An input for a Hive account name."""
+    """
+    An input for a Hive account name.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the account name input.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        show_known_account: Whether to show known accounts with a specific style.
+        show_bad_account: Whether to show bad accounts with a specific style.
+        suggester: A suggester for auto-completion.
+        validators: Validators for the input.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     _KNOWN_ACCOUNT_CLASS: Final[str] = "-known-account"
     _UNKNOWN_ACCOUNT_CLASS: Final[str] = "-unknown-account"
@@ -76,14 +99,6 @@ class AccountNameInput(TextInput):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialize the widget.
-
-        New args (compared to `TextInput`):
-        ------------------------------------
-        ask_known_account: Whether to display the KnownAccount widget which keeps track of know accounts list.
-        accounts_holder: See the docs of `KnownAccount` initializer.
-        """
         super().__init__(
             title=title,
             value=value,

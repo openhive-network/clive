@@ -51,14 +51,14 @@ class ProxyNotSet(ProxyBaseContainer):
 
 
 class ProxySet(ProxyBaseContainer):
-    def __init__(self, current_proxy: str) -> None:
-        """
-        Initialize the ProxySet Container.
+    """
+    Container with the current proxy and input for the new proxy.
 
-        Args:
-        ----
+    Args:
         current_proxy: Proxy that is currently assigned to the account.
-        """
+    """
+
+    def __init__(self, current_proxy: str) -> None:
         super().__init__()
         self._current_proxy = current_proxy
 

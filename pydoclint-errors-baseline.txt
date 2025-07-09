@@ -45,55 +45,12 @@ clive/__private/ui/key_alias_base.py
     DOC502: Method `NewKeyAliasBase._private_key_aliased` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `NewKeyAliasBase._validate` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/screens/operations/governance_operations/common_governance/governance_actions.py
-    DOC301: Class `GovernanceActionRow`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/screens/operations/governance_operations/common_governance/governance_table.py
-    DOC301: Class `GovernanceListWidget`: __init__() should not have a docstring; please combine it with the docstring of the class
-    DOC301: Class `GovernanceTableRow`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/screens/operations/governance_operations/proxy/proxy.py
-    DOC301: Class `ProxySet`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/screens/operations/hive_power_management/delegate_hive_power/delegate_hive_power.py
-    DOC301: Class `Delegation`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
 clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
-    DOC301: Class `CliveCheckerBoardTableCell`: __init__() should not have a docstring; please combine it with the docstring of the class
-    DOC301: Class `CliveCheckerboardTable`: __init__() should not have a docstring; please combine it with the docstring of the class
     DOC101: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
     DOC501: Method `CliveCheckerboardTable.check_if_should_be_updated` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `CliveCheckerboardTable.check_if_should_be_updated` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidDynamicDefinedError'].
 --------------------
-clive/__private/ui/widgets/clive_basic/clive_data_table.py
-    DOC301: Class `CliveDataTableRow`: __init__() should not have a docstring; please combine it with the docstring of the class
-    DOC301: Class `CliveDataTable`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
 clive/__private/ui/widgets/currency_selector/currency_selector_base.py
     DOC502: Method `CurrencySelectorBase.create_asset` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
-clive/__private/ui/widgets/inputs/account_name_input.py
-    DOC301: Class `AccountNameInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/asset_amount_base_input.py
-    DOC301: Class `AssetAmountInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/clive_input.py
-    DOC301: Class `CliveInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/clive_validated_input.py
-    DOC301: Class `CliveValidatedInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/numeric_input.py
-    DOC301: Class `NumericInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/path_input.py
-    DOC301: Class `PathInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/proxy_input.py
-    DOC301: Class `ProxyInput`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
-clive/__private/ui/widgets/inputs/public_key_alias_input.py
-    DOC301: Class `PublicKeyAliasInput`: __init__() should not have a docstring; please combine it with the docstring of the class
 --------------------

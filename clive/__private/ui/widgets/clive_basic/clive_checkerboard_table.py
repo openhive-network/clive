@@ -49,7 +49,17 @@ Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dy
 
 
 class CliveCheckerBoardTableCell(Container):
-    """Cell of the checkerboard-table."""
+    """
+    Cell of the checkerboard-table.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the cell.
+
+    Args:
+        content: Text to be displayed in the cell or widget to be yielded.
+        id_: The ID of the widget in the DOM.
+        classes: The CSS classes for the widget.
+    """
 
     DEFAULT_CSS = """
     CliveCheckerBoardTableCell {
@@ -64,15 +74,6 @@ class CliveCheckerBoardTableCell(Container):
     """
 
     def __init__(self, content: CellContent, id_: str | None = None, classes: str | None = None) -> None:
-        """
-        Initialise the checkerboard table cell.
-
-        Args:
-        ----
-        content: Text to be displayed in the cell or widget to be yielded.
-        id_:  The ID of the widget in the DOM.
-        classes: The CSS classes for the widget.
-        """
         super().__init__(id=id_, classes=classes)
         self._content = content
 
@@ -125,6 +126,17 @@ class CliveCheckerboardTable(CliveWidget):
     Static usage
     ------------
     1. Override `create_static_rows`
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the table.
+        ATTRIBUTE_TO_WATCH: Name of the attribute to observe for triggering table updates in dynamic mode.
+        NO_CONTENT_TEXT: Text to display when the table has no content available.
+
+    Args:
+        header: Header of the table.
+        title: Title of the table.
+        init_dynamic: Whether the table should be created right away because data is already available.
+            If not set will display "Loading..." until the data is received.
     """
 
     DEFAULT_CSS = """
@@ -160,20 +172,9 @@ class CliveCheckerboardTable(CliveWidget):
     """
 
     ATTRIBUTE_TO_WATCH: ClassVar[str] = ""
-    """attribute name to trigger an update of the table and to download new data"""
     NO_CONTENT_TEXT: ClassVar[str] = "No content available"
 
     def __init__(self, *, header: Widget, title: str | Widget | None = None, init_dynamic: bool = True) -> None:
-        """
-        Initialise the checkerboard table.
-
-        Args:
-        ----
-        header: Header of the table.
-        title: Title of the table.
-        init_dynamic: Whether the table should be created right away because data is already available.
-            If not set will display "Loading..." until the data is received.
-        """
         super().__init__()
         self._title = title
         self._header = header

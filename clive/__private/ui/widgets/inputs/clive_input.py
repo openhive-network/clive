@@ -22,7 +22,39 @@ if TYPE_CHECKING:
 
 
 class CliveInput(Input):
-    """A custom input that shows a title on the border top-left corner."""
+    """
+    A custom input that shows a title on the border top-left corner.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the CliveInput.
+        BINDINGS: Key bindings for the CliveInput.
+        DEFAULT_REQUIRED_FAILURE_DESCRIPTION: Default description for required failure.
+        title: The title of the input.
+        required: Whether the input is required.
+        required_failure_description: The description to show when the input is required but empty.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        required: Whether the input is required.
+        password: Whether the input is a password field.
+        restrict: Regular expression to restrict input to a specific format .
+        type: The type of input.
+        max_length: Maximum length of the input value.
+        highlighter: Highlighter for syntax highlighting.
+        suggester: Suggester for auto-completion.
+        validators: Validators for the input.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        name: Name attribute for the input.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     DEFAULT_CSS = """
     $regular-color: $primary;
@@ -93,16 +125,6 @@ class CliveInput(Input):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `Input`):
-        -------------------------------
-        title: The title to show on the border.
-        always_show_title: Whether to always show the title on the border (by default it is shown only when focused).
-        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when not focused.
-        required: Whether the input is required.
-        """
         super().__init__(
             value=value,
             placeholder=placeholder,

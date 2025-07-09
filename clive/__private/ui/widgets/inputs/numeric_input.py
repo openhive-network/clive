@@ -14,7 +14,28 @@ if TYPE_CHECKING:
 
 
 class NumericInput(CliveValidatedInput[Decimal]):
-    """An input for a numeric value."""
+    """
+    An input for a numeric value.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: Placeholder text for the input.
+        precision: Maximum allowed precision for the numeric value.
+        always_show_title: Whether to always show the title (by default it is shown only when focused).
+        include_title_in_placeholder_when_blurred: Whether to include the title in the placeholder when blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        validators: Validators for the input.
+        validate_on: When to validate the input.
+        valid_empty: Whether an empty input is considered as valid.
+        id: The ID of the input in the DOM.
+        classes: The CSS classes for the input.
+        disabled: Whether the input is disabled.
+
+    Raises:
+        ValueError: If precision is less than 1. IntegerInput should be used instead.
+    """
 
     def __init__(
         self,
@@ -34,13 +55,6 @@ class NumericInput(CliveValidatedInput[Decimal]):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `CliveValidatedInput`):
-        ------------------------------------
-        precision: Maximum allowed precision, enforced by restriction.
-        """
         if precision < 1:
             raise ValueError("Precision should be at least 1. Instead use a IntegerInput.")
 
