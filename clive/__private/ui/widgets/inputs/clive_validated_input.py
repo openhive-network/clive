@@ -206,11 +206,10 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Return the value of the input as given InputReturnT or None if validation fails.
 
         Args:
-        ----
-        notify_on_value_error: Whether to show a notification when the input value is invalid.
-            True by default since this error won't be visible in the UI otherwise.
-        notify_on_validation_error: Whether to show a notification when the input validation fails.
-            False by default since the validation error will be visible in the UI, under the input.
+            notify_on_value_error: Whether to show a notification when the input value is invalid.
+                True by default since this error won't be visible in the UI otherwise.
+            notify_on_validation_error: Whether to show a notification when the input validation fails.
+                False by default since the validation error will be visible in the UI, under the input.
         """
         try:
             self.validate_with_error(treat_as_required=False)
@@ -262,13 +261,12 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Validate the input and return True if validation passes, False otherwise.
 
         Args:
-        ----
-        treat_as_required: Whether to treat the input as required when validating.
-            Even if the input is not required, it will be validated as if it was.
-        notify_on_value_error: Whether to show a notification when the input value is invalid.
-            True by default since this error won't be visible in the UI otherwise.
-        notify_on_validation_error: Whether to show a notification when the input validation fails.
-            False by default since the validation error will be visible in the UI, under the input.
+            treat_as_required: Whether to treat the input as required when validating.
+                Even if the input is not required, it will be validated as if it was.
+            notify_on_value_error: Whether to show a notification when the input value is invalid.
+                True by default since this error won't be visible in the UI otherwise.
+            notify_on_validation_error: Whether to show a notification when the input validation fails.
+                False by default since the validation error will be visible in the UI, under the input.
         """
         try:
             self.validate_with_error(treat_as_required=treat_as_required)

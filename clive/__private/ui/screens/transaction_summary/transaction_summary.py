@@ -129,8 +129,7 @@ class KeyContainer(Horizontal, CliveWidget):
         Return selected key.
 
         Raises:
-        ------
-        NoItemSelectedError: When no key was selected.
+            NoItemSelectedError: When no key was selected.
         """
         select_key = self.query_exactly_one(SelectKey)
         try:
