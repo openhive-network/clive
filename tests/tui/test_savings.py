@@ -6,12 +6,12 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
-from clive.__private.core.constants.tui.bindings import ADD_OPERATION_TO_CART_BINDING_KEY
 from clive.__private.models.schemas import (
     CancelTransferFromSavingsOperation,
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.dialogs.operation_summary.cancel_transfer_from_savings_dialog import (
     CancelTransferFromSavingsDialog,
 )
@@ -93,8 +93,8 @@ async def fill_savings_data(
     await focus_next(pilot)  # Go to choose token
     assert_is_clive_composed_input_focused(pilot, LiquidAssetAmountInput, target="select")
     await choose_asset_token(pilot, asset_token)
+    await focus_next(pilot)  # Go to memo input
     if memo:
-        await focus_next(pilot)  # Go to choose memo
         assert_is_clive_composed_input_focused(pilot, MemoInput)
         await write_text(pilot, memo)
 
@@ -121,7 +121,7 @@ def prepare_expected_operation(
 
 async def go_to_savings(pilot: ClivePilot) -> None:
     assert_is_dashboard(pilot)
-    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
@@ -188,6 +188,7 @@ async def test_savings(  # noqa: PLR0913
     await fill_savings_data(pilot, operation_type, other_account, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
+    await focus_next(pilot)  # Go to `Add to cart` button. Alphanumeric bindings do not work in generic inputs
     await process_operation(pilot, operation_processing)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -248,13 +249,16 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
         await focus_next(pilot)  # focus add to cart button
-        await press_binding(pilot, ADD_OPERATION_TO_CART_BINDING_KEY, "Add to cart")
         await focus_next(pilot)  # focus finalize transaction button
+        binding = CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart
+        await press_binding(pilot, binding.key, binding.description)
         await focus_next(pilot)  # focus transfer tab pane
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)
-    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
+    await press_and_wait_for_screen(
+        pilot, CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.key, TransactionSummary
+    )  # Go to transaction summary
     await broadcast_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -307,7 +311,9 @@ async def test_canceling_transfer_from_savings(
         await pilot.press("right")  # switch tab to pending transfers
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavingsDialog)  # Cancel transfer
-        await press_and_wait_for_screen(pilot, "f6", TransactionSummary)  # Finalize transaction
+        await press_and_wait_for_screen(
+            pilot, CLIVE_PREDEFINED_BINDINGS.operations.finalize_transaction.key, TransactionSummary
+        )  # Finalize transaction
         await broadcast_transaction(pilot)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
