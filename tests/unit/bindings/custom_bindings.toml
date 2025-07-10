@@ -1,0 +1,35 @@
+[app]
+clear_notifications = "a"
+dashboard = "b"
+load_transaction_from_file = "c"
+settings = "d"
+transaction_summary = "e"
+quit = "f"
+
+[dashboard]
+operations = "g"
+switch_working_account = "h"
+add_account = "e"
+lock = "f"
+
+[form_navigation]
+next_screen = "g"
+previous_screen = "h"
+
+[help]
+toggle_help = "i"
+toggle_table_of_contents = "j"
+
+[manage_key_aliases]
+add_new_alias = "k"
+load_from_file = "l"
+
+[operations]
+add_to_cart = "m"
+finalize_transaction = "n"
+wtness_show_details = "o"
+
+[transaction_summary]
+broadcast = "p"
+save_transaction_to_file = "q"
+update_metadata = "r"
