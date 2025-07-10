@@ -11,17 +11,20 @@ if TYPE_CHECKING:
 
 
 class ProxyValidator(BadAccountValidator):
+    """
+    Validator for proxy accounts.
+
+    Attributes:
+        PROXY_SELF_FAILURE_DESCRIPTION: Description of the failure when trying to set a proxy to yourself.
+
+    Args:
+        account_manager: Used to check is account bad and retrieve working account name if needed.
+        check_is_not_working_account: Set to True if e.g. setting a proxy, additional validation will take place
+    """
+
     PROXY_SELF_FAILURE_DESCRIPTION: Final[str] = "Cannot set proxy to yourself"
 
     def __init__(self, account_manager: AccountManager, *, check_is_not_working_account: bool = False) -> None:
-        """
-        Initialise the Validator.
-
-        Args:
-        ----
-        account_manager: Used to check is account bad and retrieve working account name if needed.
-        check_is_not_working_account: Set to True if e.g. setting a proxy, additional validation will take place
-        """
         super().__init__(account_manager)
         self._check_is_not_working_account = check_is_not_working_account
 
