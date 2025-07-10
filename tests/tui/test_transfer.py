@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.core.constants.tui.bindings import ADD_OPERATION_TO_CART_BINDING_KEY
 from clive.__private.models.schemas import TransferOperation
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.screens.operations import Operations, TransferToAccount
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -53,8 +53,8 @@ async def fill_transfer_data(
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, LiquidAssetAmountInput, target="select")
     await choose_asset_token(pilot, asset_token)
+    await focus_next(pilot)  # Go to memo input
     if memo:
-        await focus_next(pilot)
         assert_is_clive_composed_input_focused(pilot, MemoInput)
         await write_text(pilot, memo)
 
@@ -95,13 +95,14 @@ async def test_transfers(
 
     # ACT
     ### Create transfer
-    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     # Fill transfer data
     await fill_transfer_data(pilot, RECEIVER, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
+    await focus_next(pilot)  # Go to `Add to cart` button. Alphanumeric bindings do not work in generic inputs
     await process_operation(pilot, operation_processing)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -140,21 +141,24 @@ async def test_transfers_finalize_cart(prepared_tui_on_dashboard: tuple[tt.RawNo
     # ACT
     ### Create 2 transfers
     # Choose transfer operation
-    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     for i in range(TRANSFERS_COUNT):
         # Fill transfer data
         await fill_transfer_data(pilot, RECEIVER, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True)
-        await focus_next(pilot)  # focus on add to cart button
-        await focus_next(pilot)  # focus on finalize transaction button
-        await focus_next(pilot)  # focus on "to" input
-        await press_binding(pilot, ADD_OPERATION_TO_CART_BINDING_KEY, "Add to cart")
+        await focus_next(pilot)  # Go to `Add to cart` button. Alphanumeric bindings do not work in generic inputs
+        binding = CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart
+        await press_binding(pilot, binding.key, binding.description)
+        await focus_next(pilot)  # Go to `Finalize transaction` button.
+        await focus_next(pilot)  # Go to `From` input.
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "escape", Operations)
-    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
+    await press_and_wait_for_screen(
+        pilot, CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.key, TransactionSummary
+    )  # Go to transaction summary
     await broadcast_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
