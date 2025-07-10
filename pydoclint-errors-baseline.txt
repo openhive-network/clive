@@ -1,3 +1,0 @@
-clive/__private/validators/proxy_validator.py
-    DOC301: Class `ProxyValidator`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
