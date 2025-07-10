@@ -21,7 +21,7 @@ def get_config(webserver_http_endpoint: HttpUrl | None = None) -> tt.NodeConfig:
 
 
 def get_alternate_chain_spec() -> tt.AlternateChainSpecs:
-    return tt.AlternateChainSpecs.parse_file(path=BLOCK_LOG_WITH_CONFIG_DIRECTORY)
+    return tt.AlternateChainSpecs.parse_file(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
 
 
 def get_block_log() -> tt.BlockLog:

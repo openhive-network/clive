@@ -20,7 +20,7 @@ VALID_TRANSACTION: Final[Transaction] = Transaction(
     ],
     ref_block_num=1,
     ref_block_prefix=2,
-    expiration=HiveDateTime("2021-01-01T00:00:00"),
+    expiration="2021-01-01T00:00:00",
     extensions=[],
     signatures=[],
 )

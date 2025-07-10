@@ -82,7 +82,7 @@ async def test_custom_authority_in_custom_json_operation(
         required_auths=[],
         required_posting_auths=[ALT_WORKING_ACCOUNT2_NAME],
         id_=custom_id,
-        json_=JsonString.resolve(type, custom_json),
+        json_=custom_json,
     )
     # ACT
     result = cli_tester.process_custom_json(

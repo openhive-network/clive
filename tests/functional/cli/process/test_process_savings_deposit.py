@@ -34,16 +34,18 @@ async def test_deposit_valid(
     amount_to_deposit: tt.Asset.AnyT,
     working_account_balance: tt.Asset.AnyT,
 ) -> None:
-    # ACT
-    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign=WORKING_ACCOUNT_KEY_ALIAS)
-
-    # ASSERT
     checkers.assert_balances(
         cli_tester,
         account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=amount_to_deposit,
         balance="Savings",
     )
+
+    # ACT
+    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign=WORKING_ACCOUNT_KEY_ALIAS)
+
+    # ASSERT
+
     checkers.assert_balances(
         cli_tester,
         account_name=WORKING_ACCOUNT_DATA.account.name,

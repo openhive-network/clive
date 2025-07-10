@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
-from clive.__private.models.schemas import CustomJsonOperation, JsonString
+from clive.__private.models.schemas import CustomJsonOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
@@ -41,7 +41,7 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         required_auths=[],
         required_posting_auths=[WORKING_ACCOUNT_DATA.account.name],
         id_=ID,
-        json_=JsonString.resolve(type, json_),
+        json_=json_,
     )
 
     # ACT
