@@ -6,7 +6,6 @@ from textual.containers import Horizontal
 from textual.reactive import var
 from textual.widgets import Static
 
-from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 
 if TYPE_CHECKING:
@@ -17,9 +16,6 @@ if TYPE_CHECKING:
 
 class NextScreenButton(CliveButton):
     """Button for going to next screen in forms (also used as finish button)."""
-
-    DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN_BINDING_KEY}) →"
-    FINISH_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
 
     is_finish = var(default=False, init=False)
 
@@ -47,26 +43,34 @@ class NextScreenButton(CliveButton):
         self.label = self._determine_label(is_finish=value)
 
     def _determine_label(self, *, is_finish: bool) -> str:
-        return self.FINISH_BUTTON_LABEL if is_finish else self.DEFAULT_NEXT_BUTTON_LABEL
+        key = self.custom_bindings.form_navigation.next_screen.button_display
+        return f"Finish! ({key})" if is_finish else f"Next ({key}) →"
 
 
 class PreviousScreenButton(OneLineButton):
     """Button for going to previous screen in forms."""
-
-    DEFAULT_PREVIOUS_BUTTON_LABEL: Final[str] = f"← Previous ({PREVIOUS_SCREEN_BINDING_KEY})"
 
     class Pressed(OneLineButton.Pressed):
         """Message sent when the PreviousScreenButton is pressed."""
 
     def __init__(
         self,
-        label: str = DEFAULT_PREVIOUS_BUTTON_LABEL,
+        label: str | None = None,
         *,
         id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        super().__init__(label=label, variant="transparent", id_=id_, classes=classes, disabled=disabled)
+        default_previous_button_label: Final[str] = (
+            f"← Previous ({self.custom_bindings.form_navigation.previous_screen.button_display})"
+        )
+        super().__init__(
+            label=label if label is not None else default_previous_button_label,
+            variant="transparent",
+            id_=id_,
+            classes=classes,
+            disabled=disabled,
+        )
 
 
 class PlaceTaker(Static):

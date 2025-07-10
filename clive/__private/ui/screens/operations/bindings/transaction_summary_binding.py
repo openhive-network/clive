@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from textual.binding import Binding
-
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 
 
 class TransactionSummaryBinding(CliveWidget):
-    BINDINGS = [
-        Binding("f2", "transaction_summary", "Transaction summary"),
-    ]
+    BINDINGS = [CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create()]
 
     async def action_transaction_summary(self) -> None:
         if not self.profile.transaction.is_signed:

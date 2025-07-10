@@ -21,6 +21,7 @@ dependencies = [
     'inflection (==0.5.1)',
     'humanize (==4.12.2)',
     'pydantic (==1.10.18)',
+    'toml (==0.10.2)',
     'schemas (==0.0.1.dev345+0b349a2)',
     'beekeepy (==0.0.1.dev388+171802c)',
     'wax (==0.3.10.dev712+7e6218a0)',
@@ -70,6 +71,7 @@ pytest-timeout = "2.3.1"
 ruff = "0.11.5"
 textual-dev = "1.5.1"
 pydoclint = "0.6.6"
+types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 

@@ -126,7 +126,7 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         -------
         New dictionary holding sorted bindings.
         """
-        fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
+        fn_keys = sorted([key for key in data if key != "f" and key.startswith("f")], key=lambda x: int(x[1:]))
         non_fn_keys = [key for key in data if key not in fn_keys]
 
         prioritized = ("escape",)

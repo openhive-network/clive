@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
 
 from clive.__private.logger import logger
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
@@ -43,7 +43,9 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
         }
     }
     """
-    BINDINGS = [Binding("f2", "load_from_file", "Load from file")]
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.load_from_file.create(),
+    ]
 
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"

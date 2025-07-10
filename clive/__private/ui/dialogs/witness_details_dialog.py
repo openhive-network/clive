@@ -25,7 +25,7 @@ class WitnessDetailsWidget(Static):
 
 
 class WitnessDetailsDialog(CliveInfoDialog, CliveWidget):
-    BINDINGS = [Binding("escape,f3", "close", "Close")]
+    BINDINGS = [Binding("escape", "close", "Close")]
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, witness_name: str) -> None:

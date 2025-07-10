@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class AddTrackedAccountDialog(CliveActionDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BINDINGS = [Binding("escape,f4", "cancel", "Cancel")]
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
     AUTO_FOCUS = "Input"
 
     def __init__(self) -> None:

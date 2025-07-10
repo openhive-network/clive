@@ -8,6 +8,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import EditKeyAliasDialog, NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_relative_css_path
@@ -100,7 +101,9 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f2", "new_key_alias", "New alias"),
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(
+            action="new_key_alias", description="New alias"
+        ),
     ]
 
     BIG_TITLE = "configuration"
