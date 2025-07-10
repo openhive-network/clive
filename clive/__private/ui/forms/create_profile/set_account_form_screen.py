@@ -34,12 +34,7 @@ class SetAccountFormScreen(BaseScreen, CreateProfileFormScreen):
 
     @property
     def account_name(self) -> str:
-        """
-        The account name that was entered.
-
-        Raises:
-            FailedValidationError: If the account name is not valid.
-        """
+        """The account name that was entered."""
         return self.query_exactly_one(AccountNameInput).value_or_error
 
     @property
