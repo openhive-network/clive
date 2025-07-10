@@ -57,6 +57,7 @@ class ProxySet(ProxyBaseContainer):
     Args:
         current_proxy: Proxy that is currently assigned to the account.
     """
+
     def __init__(self, current_proxy: str) -> None:
         super().__init__()
         self._current_proxy = current_proxy

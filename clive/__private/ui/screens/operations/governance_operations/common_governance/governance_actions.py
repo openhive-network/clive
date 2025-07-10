@@ -36,7 +36,6 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-
     def __init__(self, identifier: str, *, vote: bool) -> None:
         super().__init__(id=self.create_action_row_id(identifier))
         self._identifier = identifier
