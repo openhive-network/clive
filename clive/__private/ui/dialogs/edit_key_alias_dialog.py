@@ -63,12 +63,7 @@ class EditKeyAliasDialog(CliveActionDialog, KeyAliasBase):
         return True
 
     def _validate(self) -> None:
-        """
-        Validate the inputs.
-
-        Raises:
-            FailedValidationError: when key alias is not valid.
-        """
+        """Validate the inputs."""
         key_alias_input = self.key_alias_input
         if not key_alias_input.is_empty:
             key_alias_input.validate_with_error()
