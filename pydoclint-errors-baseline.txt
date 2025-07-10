@@ -8,11 +8,3 @@ clive/__private/storage/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `PersistentStorageService.load_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
-    DOC101: Method `LoadTransactionFromFileDialog._check_for_unknown_bad_accounts`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `LoadTransactionFromFileDialog._check_for_unknown_bad_accounts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [loaded_transaction: Transaction].
---------------------
-clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
-    DOC101: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CliveCheckerboardTable.check_if_should_be_updated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
---------------------
