@@ -74,24 +74,14 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
 
     @property
     def _private_key(self) -> PrivateKey:
-        """
-        Returns a PrivateKey instance with the given private key value.
-
-        Raises:
-            FailedValidationError: When given input is not a valid private key.
-        """
+        """Returns a PrivateKey instance with the given private key value."""
         private_key_input = self.private_key_input
         private_key_input.validate_with_error()
         return PrivateKey(value=private_key_input.value_or_error, file_path=None)
 
     @property
     def _private_key_aliased(self) -> PrivateKeyAliased:
-        """
-        Returns a PrivateKeyAliased instance with the given alias and private key value.
-
-        Raises:
-            FailedManyValidationError: when cannot create a private key from the given inputs.
-        """
+        """Returns a PrivateKeyAliased instance with the given alias and private key value."""
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
         private_key = self.private_key_input.value_or_error
@@ -140,13 +130,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         self.app.world.profile.keys.set_to_import([self._private_key_aliased])
 
     def _validate(self) -> None:
-        """
-        Validate the inputs.
-
-        Raises:
-            FailedManyValidationError: when key alias / private key inputs are invalid or private key does
-                not match given public key.
-        """
+        """Validate the inputs."""
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
     def _get_inputs_to_validate(self) -> list[PrivateKeyInput | PublicKeyAliasInput]:
