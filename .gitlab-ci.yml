@@ -31,23 +31,20 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-2
   CI_BASE_IMAGE_TAG: "@sha256:81f56a1820497ff3cb1342327b7242dc50270db04cbfdd8d6198af1bb0e910b3"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04
-  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:e4797f961fd6c6a843d100b1838422f3b674430af408664286c1b6a6b23baafa"
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:e4797f961fd6c6a843d100b183842af408664286c1b6a6b23baafa"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04
   CLIVE_BASE_IMAGE_TAG: "@sha256:e751423e7019033d0b70fd0cbd15d05a11fbc5a4756c7e547df63f7029c0f2aa"
   CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
   # other:
-  AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
+  AFTER_SCRIPT_IGNORE_ERRORS: 'false'
 
 include:
   - project: 'hive/hive'
     ref: 9009edf6270db5a0f3bc1d77308bd5cbfb46c1f6
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
-    # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
+    # Do not include common-ci-configuration here; it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml
 
 image: ${CI_BASE_IMAGE}
 
@@ -70,10 +67,9 @@ verify_poetry_lock_sanity:
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
-  script:  # our own script because of newer ruff version
+  script:
     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
-
 
 formatting_with_ruff_check:
   stage: static_code_analysis
@@ -96,11 +92,6 @@ type_check_with_mypy:
   variables:
     GIT_SUBMODULE_DEPTH: 20
 
-    REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
-    REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
-    SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
-    BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
-
 prepare_mainnet_hived_image:
   extends: .common_prepare_hived_image
   variables:
@@ -115,6 +106,7 @@ build_wheel:
   extends: .build_wheel_template
   stage: build
   script:
+    - ./python/scripts/build_clive.sh 1
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al
     - poetry version
@@ -124,10 +116,79 @@ build_wheel:
     - if [ ! -d "${DIST_DIR}" ] && [ -d "dist" ]; then cp -r "dist" "${DIST_DIR}"; fi
     - ls -al ${DIST_DIR}
 
+.build_python_docs_env:
+  extends: .runtime_like_python_env
+  stage: build
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs
+    - pip list
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+.python_docs_variables:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      variables:
+        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+        CURRENT_URL: $CURRENT_CONTENT_PATH
+    - variables:
+        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_URL: ""
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+    PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
+    PAGES_BASE_DIR: "${CI_PROJECT_DIR}"
+    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
+
+
+build_python_docs:
+  extends:
+    - .build_python_docs_env
+    - .python_docs_variables
+  script:
+    - cd $PYPROJECT_DIR
+    - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
+  artifacts:
+    paths:
+      - $DOCS_BUILD_TARGET_DIR
+    when: always
+    expire_in: 1 week
+
+clean_python_docs_preview:
+  extends: .python_docs_deployment_base
+  script:
+    - echo "Removing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+  environment:
+    name: $PAGES_ENV_NAME
+    action: stop
+  when: manual
+  allow_failure: true
+
+
+generate_docs:
+  stage: build
+  extends: .npm_based_job_base
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    SOURCE_DIR: "${CI_PROJECT_DIR}/clive"
+    DIST_DIR: "${CI_PROJECT_DIR}/docs/api"
+  script:
+    - bash scripts/generate_api_docs.sh \
+      "${CI_PROJECT_URL}" \
+      "${CI_COMMIT_SHA}" \
+      "https://docs.clive.com/api" \
+      "${DIST_DIR}"
+  artifacts:
+    paths:
+      - "${DIST_DIR}"
+    when: always
+    expire_in: 1 week
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 .testing:
   stage: tests
@@ -144,12 +205,6 @@ build_wheel:
     CLIVE_NODE__COMMUNICATION_TOTAL_TIMEOUT_SECS: 60
     CLIVE_BEEKEEPER__INITIALIZATION_TIMEOUT: 60
     CLIVE_BEEKEEPER__CLOSE_TIMEOUT: 60
-    BEEKEEPY_INITIALIZATION_TIMEOUT: 60  # for test-tools
-    BEEKEEPY_CLOSE_TIMEOUT: 60  # for test-tools
-    HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
-    CLI_WALLET_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/cli_wallet"
-    GET_DEV_KEY_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/get_dev_key"
-    BLOCK_LOG_UTIL_PATH:  "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/block_log_util"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   before_script:
     - !reference [.project_develop_configuration_template, before_script]
@@ -159,7 +214,7 @@ build_wheel:
     - stat dist/*.whl
     - python3 -m pip install dist/*.whl
     - pip list --editable
-    - clive --version  # assertion that Clive can be run as application
+    - clive --version
   artifacts:
     reports:
       junit: $PATH_TO_REPORT
@@ -170,17 +225,41 @@ build_wheel:
   after_script:
     - bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash"
 
+.python_env_common:
+  before_script:
+    - pip list
+
+.runtime_like_python_env:
+  extends: .python_env_common
+  stage: test
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+  needs:
+    - job: build_wheel
+      artifacts: true
+  before_script:
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${PYPROJECT_DIR}/dist/*.whl
+    - pip list
+
+.python_docs_deployment_base:
+  extends: .python_docs_variables
+  stage: deploy
+  cache:
+    key: gitlab-pages
+    paths: [ public ]
+  artifacts:
+    paths: [ public ]
+  tags:
+    - data-cache-storage
+
+
 testing_clive:
   extends: .testing
   variables:
     PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(
-      --ignore tests/tui --ignore tests/functional/cli
-      -k "not test_autocompletion_time"
-      -v
-      )
+    - export PYTEST_ARGS=(--ignore tests/tui --ignore tests/functional/cli -k "not test_autocompletion_time" -v)
     - !reference [.run-pytest, script]
 
 testing_clive_import_times_during_autocompletion:
@@ -226,12 +305,10 @@ testing_password_private_key_logging:
     - cd "${CI_PROJECT_DIR}/tests"
     - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| DEPLOY |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-.deploy_wheel_needs : &deploy_wheel_needs
-    needs:
+.deploy_wheel_needs: &deploy_wheel_needs
+  needs:
     - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
@@ -250,9 +327,27 @@ deploy_wheel_to_pypi:
   stage: deploy
   <<: *deploy_wheel_needs
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+deploy_python_docs:
+  pages: true
+  extends: .python_docs_deployment_base
+  needs:
+    - job: build_python_docs
+      artifacts: true
+  variables:
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
+  script:
+    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+    - mkdir -p $PAGES_CONTENT_PATH
+    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  environment:
+    name: $PAGES_ENV_NAME
+    action: start
+    url: $PAGES_URL
+    on_stop: clean_python_docs_preview
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD AND DEPLOY DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 .generate_clive_startup_scripts_base:
   extends: .job-defaults
@@ -260,7 +355,6 @@ deploy_wheel_to_pypi:
   variables:
     GIT_SUBMODULE_STRATEGY: none
   script:
-    # CLIVE_IMAGE_PATH variable should come from dependent image builduing job
     - $CI_PROJECT_DIR/scripts/ci-helpers/generate_startup_scripts.sh "${CLIVE_IMAGE_NAME}"
   artifacts:
     expose_as: 'startup scripts'
@@ -283,24 +377,15 @@ deploy_wheel_to_pypi:
       allow_failure: true
     - when: never
   variables:
-    GIT_DEPTH: 0
     BASE_IMAGE: $CLIVE_BASE_IMAGE
-    BUILD_INSTANCE_ARGS: ""
-
     TAG_COMMIT: ${CI_COMMIT_SHORT_SHA}
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
-
   script:
     - echo "WHEEL_BUILD_VERSION is ${WHEEL_BUILD_VERSION}"
-    - $SCRIPTS_PATH/ci-helpers/build_instance.sh
-      "${TAG_COMMIT}"
-      "${CI_PROJECT_DIR}"
-      "${CI_REGISTRY_IMAGE}"
-      --hived-source-image=${HIVED_IMAGE_NAME}
-      --base-image=${BASE_IMAGE}
-      --clive-version=${WHEEL_BUILD_VERSION}
-      ${BUILD_INSTANCE_ARGS}
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" "${CI_REGISTRY_IMAGE}" \
+       --hived-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE} \
+       --clive-version=${WHEEL_BUILD_VERSION}
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD "$CI_REGISTRY"
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
@@ -340,28 +425,24 @@ build_and_push_clive_testnet_image:
     BASE_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
-# extends standard build procedure by additional tagging to branch name based tag
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
   variables:
-    STABLE_IMAGE_TAG: "${CI_COMMIT_REF_NAME}"
-  after_script:
-    - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
-    - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${STABLE_IMAGE_TAG}"
-    - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
-    - docker tag ${CLIVE_IMAGE_NAME} ${BRANCH_IMAGE_NAME}
-    - docker push ${BRANCH_IMAGE_NAME}
-    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
+    TAG_COMMIT: "stable"
+  needs:
+    - job: prepare_mainnet_hived_image
+      artifacts: true
+    - job: deploy_wheel_to_gitlab
+      artifacts: true
   rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
-      when: on_success
+    - if: '$CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
     - when: never
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
 
-# this job is responsible for publishing official docker images specific to protected tags (usually made for release versions)
-build_and_publish_tagged_image:
+build_and_publish_tagged_image: # official release tagged images
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
   needs:
@@ -370,16 +451,14 @@ build_and_publish_tagged_image:
       artifacts: true
     - job: deploy_wheel_to_gitlab
       artifacts: true
-
   variables:
     GIT_DEPTH: 0
     BASE_IMAGE: $CLIVE_BASE_IMAGE
-
   script:
-    - scripts/ci-helpers/build_and_publish_instance.sh
-        --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}"
-        --build-instance-arg="--base-image=${BASE_IMAGE}"
-        --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
+    - scripts/ci-helpers/build_and_publish_instance.sh \
+        --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}" \
+        --build-instance-arg="--base-image=${BASE_IMAGE}" \
+        --clive-version=${WHEEL_BUILD_VERSION}"
   artifacts:
     reports:
       dotenv: docker_image_name.env
@@ -422,7 +501,6 @@ generate_clive_tagged_image_startup_scripts:
   artifacts:
     expire_in: never
 
-
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
   <<: *clive_testnet_needs
@@ -430,5 +508,3 @@ build_and_push_clive_stable_testnet_image:
     BASE_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
     STABLE_IMAGE_TAG: "testnet-${CI_COMMIT_REF_NAME}"
-
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
