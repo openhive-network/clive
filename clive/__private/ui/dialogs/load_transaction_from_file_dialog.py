@@ -65,6 +65,9 @@ class LoadTransactionFromFileDialog(SelectFileBaseDialog[bool]):
         """
         Check if the loaded transaction contains any bad accounts.
 
+        Args:
+            loaded_transaction: The transaction to check for bad accounts.
+
         Returns:
             True: If the transaction has bad accounts that are unknown, and notifies the user with an error message.
             False: If the transaction does not have any bad accounts or if the bad accounts are known,
