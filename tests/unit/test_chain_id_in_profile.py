@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
 from clive.__private.core.profile import InvalidChainIdError, Profile
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.schemas import TransferOperation, HF26RepresentationTransferOperation
+from clive.__private.models.schemas import HF26RepresentationTransferOperation, TransferOperation
 from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password

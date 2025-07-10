@@ -10,7 +10,6 @@ from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models.schemas import (
-    AssetNaiAmount,
     HiveInt,
     convert_to_representation,
     get_hf26_encoder,
@@ -39,7 +38,7 @@ def cast_hiveint_args(func: F) -> F:
 
         return func(*new_args, **new_kwargs)
 
-    return cast(F, wrapper)
+    return cast("F", wrapper)
 
 
 class HpAPRProtocol(Protocol):

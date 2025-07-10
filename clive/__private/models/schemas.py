@@ -139,7 +139,7 @@ from schemas.operations.extensions.representation_types import HF26Representatio
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
 from schemas.operations.representation_types import HF26Representation, HF26RepresentationTransferOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
-from schemas.policies import MissingFieldsInGetConfigPolicy, Policy, set_policies, ExtraFieldsPolicy
+from schemas.policies import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, Policy, set_policies
 from schemas.transaction import Transaction
 from schemas.virtual_operation import VirtualOperation
 

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import humanize_bool
-from clive.__private.models.schemas import SetWithdrawVestingRouteOperation, Uint16t
+from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
 from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 
