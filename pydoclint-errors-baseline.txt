@@ -397,9 +397,6 @@ clive/__private/ui/widgets/inputs/proxy_input.py
 clive/__private/ui/widgets/inputs/public_key_alias_input.py
     DOC301: Class `PublicKeyAliasInput`: __init__() should not have a docstring; please combine it with the docstring of the class
 --------------------
-clive/__private/validators/proxy_validator.py
-    DOC301: Class `ProxyValidator`: __init__() should not have a docstring; please combine it with the docstring of the class
---------------------
 tests/clive-local-tools/clive_local_tools/checkers/profile_checker.py
     DOC001: Function/method `assert_working_account`: Potential formatting errors in docstring. Error message: No specification for "Args": "" (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
     DOC003: Function/method `assert_working_account`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
