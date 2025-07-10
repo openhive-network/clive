@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Horizontal
+from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
@@ -113,7 +114,10 @@ class AuthorityRoles(SectionScrollable):
         if any(results):
             await self._remove_no_content_available_widget()
         else:
-            self._mount_no_content_available_widget()
+            try:
+                self.body.query_exactly_one(NoContentAvailable)
+            except NoMatches:
+                self._mount_no_content_available_widget()
 
     def _mount_no_content_available_widget(self) -> None:
         self.body.mount(NoContentAvailable("There are no authorities that match filter criteria."))
