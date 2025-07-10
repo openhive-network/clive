@@ -1,0 +1,35 @@
+[app]
+clear_notifications = "ctrl+x"
+dashboard = "ctrl+d"
+load_transaction_from_file = "ctrl+o"
+settings = "ctrl+s"
+transaction_summary = "ctrl+t"
+quit = "ctrl+q"
+
+[dashboard]
+operations = "o"
+switch_working_account = "w"
+add_account = "a"
+lock = "ctrl+l"
+
+[form_navigation]
+next_screen = "ctrl+n"
+previous_screen = "ctrl+b"
+
+[help]
+toggle_help = "f1,?"
+toggle_table_of_contents = "t"
+
+[manage_key_aliases]
+add_new_alias = "a"
+load_from_file = "l"
+
+[operations]
+add_to_cart = "a"
+finalize_transaction = "f"
+wtness_show_details = "d"
+
+[transaction_summary]
+broadcast = "b"
+save_transaction_to_file = "s"
+update_metadata = "u"
