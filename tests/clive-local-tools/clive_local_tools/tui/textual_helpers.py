@@ -142,3 +142,8 @@ async def wait_for_focus(
 async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
     """Change focus to the next Widget (waits until something new is focused)."""
     await press_and_wait_for_focus(pilot, "tab", timeout=timeout)
+
+
+async def focus_prev(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
+    """Change focus to the previous Widget (waits until something new is focused)."""
+    await press_and_wait_for_focus(pilot, "shift+tab", timeout=timeout)
