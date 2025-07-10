@@ -106,7 +106,7 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         ------
         AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
-        return cast("AssetInputT", self._currency_selector.create_asset(self.value_raw))
+        return cast(AssetInputT, self._currency_selector.create_asset(self.value_raw))
 
     @property
     def default_asset_type(self) -> type[AssetInputT]:

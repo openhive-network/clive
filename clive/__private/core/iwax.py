@@ -39,7 +39,7 @@ def cast_hiveint_args(func: F) -> F:
 
         return func(*new_args, **new_kwargs)
 
-    return cast("F", wrapper)
+    return cast(F, wrapper)
 
 
 class HpAPRProtocol(Protocol):

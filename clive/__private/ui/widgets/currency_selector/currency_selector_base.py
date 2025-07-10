@@ -53,7 +53,7 @@ class CurrencySelectorBase(
     @property
     def asset_factory(self) -> AssetFactory[AssetT]:
         """Return selected asset factory."""
-        return cast("AssetFactory[AssetT]", self.selection_ensure.asset_factory)
+        return cast(AssetFactory[AssetT], self.selection_ensure.asset_factory)
 
     def select_asset(self, asset_type: type[AssetT]) -> None:
         """
