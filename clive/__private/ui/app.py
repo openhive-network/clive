@@ -23,6 +23,7 @@ from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, load_custom_bindings
+from clive.__private.ui.bindings.exceptions import BindingFileInvalidError
 from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
@@ -33,7 +34,7 @@ from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
-from clive.exceptions import BindingFileInvalidError, ScreenNotFoundError
+from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Awaitable, Callable, Iterator

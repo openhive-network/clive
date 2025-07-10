@@ -6,13 +6,13 @@ import pytest
 
 from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, CliveBindings, load_custom_bindings
-from clive.exceptions import BindingFileInvalidError
+from clive.__private.ui.bindings.exceptions import BindingFileInvalidError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
 
-    from clive.__private.ui.bindings import BindingsDict
+    from clive.__private.ui.bindings.types import BindingsDict
 
 
 # we use path getter because this code runs before fixtures preparing data_path
