@@ -9,7 +9,7 @@ from textual.containers import Horizontal
 from textual.validation import Integer
 from textual.widgets import Button, Checkbox, Static
 
-from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.constants.tui.messages import get_press_help_message
 from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
@@ -94,7 +94,10 @@ class Unlock(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome again!"):
-            yield Static(PRESS_HELP_MESSAGE, id="press-help-message")
+            yield Static(
+                get_press_help_message(self.app.custom_bindings.help.toggle_help.bindings_display),
+                id="press-help-message",
+            )
             yield SelectProfile(disabled=Profile.is_only_one_profile_saved())
             yield PasswordInput()
             yield LockAfterTime()

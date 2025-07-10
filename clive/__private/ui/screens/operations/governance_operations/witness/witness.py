@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Grid, Horizontal
 from textual.events import Click
 from textual.message import Message
@@ -14,6 +13,7 @@ from textual.widgets import Label, Static
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_WITNESSES_VOTES
 from clive.__private.models.schemas import AccountWitnessVoteOperation
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.dialogs import WitnessDetailsDialog
@@ -80,7 +80,9 @@ class WitnessNameLabel(Label, CliveWidget):
 class Witness(GovernanceTableRow[WitnessData]):
     """Check if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
-    BINDINGS = [Binding("f3", "show_details", "Details")]
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.operations.witness_show_details.create(action="show_details", description="Details")
+    ]
 
     @property
     def is_operation_in_cart(self) -> bool:

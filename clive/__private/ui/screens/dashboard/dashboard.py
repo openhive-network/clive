@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Static
 
@@ -16,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.models import Asset
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountDialog
@@ -261,16 +261,18 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    _ADD_ACCOUNT_BINDING_KEY: Final[str] = "f4"
-    NO_ACCOUNTS_INFO: ClassVar[str] = f"No accounts found (press {_ADD_ACCOUNT_BINDING_KEY} to add some)"
 
     BINDINGS = [
-        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-        Binding("f2", "operations", "Operations"),
-        Binding("f3", "switch_working_account", "Switch working account"),
-        Binding(_ADD_ACCOUNT_BINDING_KEY, "add_account", "Add account"),
-        Binding("f5", "switch_mode_into_locked", "Lock wallet"),
-        Binding("f6", "app.go_to_config", "Config"),
+        CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(
+            action="", description="Help"
+        ),  # help is a hidden global binding, but we want to show it here
+        CLIVE_PREDEFINED_BINDINGS.dashboard.operations.create(),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.switch_working_account.create(),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.add_account.create(),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.lock.create(action="switch_mode_into_locked", description="Lock wallet"),
+        CLIVE_PREDEFINED_BINDINGS.app.settings.create(
+            action="", description="Config"
+        ),  # config is a hidden global binding, but we want to show it here
     ]
 
     def __init__(self) -> None:
@@ -285,7 +287,7 @@ class Dashboard(BaseScreen):
             if self.has_watched_accounts:
                 yield WatchedAccountContainer()
             if not self.has_tracked_accounts:
-                yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
+                yield NoContentAvailable(self.no_accounts_info)
 
     def on_mount(self) -> None:
         self.watch(self.world, "profile_reactive", self._update_account_containers)
@@ -305,7 +307,7 @@ class Dashboard(BaseScreen):
             widgets_to_mount.append(WatchedAccountContainer())
 
         if not self.has_tracked_accounts:
-            widgets_to_mount.append(NoContentAvailable(self.NO_ACCOUNTS_INFO))
+            widgets_to_mount.append(NoContentAvailable(self.no_accounts_info))
 
         with self.app.batch_update():
             accounts_container = self.query_exactly_one(AccountsContainer)
@@ -335,6 +337,12 @@ class Dashboard(BaseScreen):
     @property
     def has_watched_accounts(self) -> bool:
         return bool(self.profile.accounts.watched)
+
+    @property
+    def no_accounts_info(self) -> str:
+        return (
+            f"No accounts found (press {self.app.custom_bindings.dashboard.add_account.bindings_display} to add some)"
+        )
 
     @property
     def tracked_accounts(self) -> list[TrackedAccount]:

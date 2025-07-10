@@ -6,6 +6,7 @@ from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.screens.base_screen import BaseScreen
 
 if TYPE_CHECKING:
@@ -18,8 +19,9 @@ class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
     BINDINGS = [
-        Binding("f1,q,question_mark,escape", "app.pop_screen", "Back", key_display="esc"),
-        Binding("t", "toggle_table_of_contents", "Toggle TOC"),
+        Binding("q,escape", "app.pop_screen", "Back", key_display="esc"),
+        CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(action="app.pop_screen", description="Back", show=False),
+        CLIVE_PREDEFINED_BINDINGS.help.toggle_table_of_contents.create(description="Toggle TOC"),
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
@@ -32,10 +34,9 @@ class Help(BaseScreen):
         return self.query_exactly_one(MarkdownViewer)
 
     def create_main_panel(self) -> ComposeResult:
-        yield MarkdownViewer(show_table_of_contents=False)
-
-    async def on_mount(self) -> None:
-        await self.markdown_viewer.go(self.GLOBAL_HELP_FILE_PATH)
+        content = self.GLOBAL_HELP_FILE_PATH.read_text()
+        new_content = self.app.custom_bindings.get_formatted_global_bindings(content)
+        yield MarkdownViewer(new_content, show_table_of_contents=False)
 
     def action_toggle_table_of_contents(self) -> None:
         self.markdown_viewer.show_table_of_contents = not self.markdown_viewer.show_table_of_contents

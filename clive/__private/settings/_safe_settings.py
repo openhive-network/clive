@@ -367,6 +367,14 @@ class SafeSettings:
         return self._get_data_path()
 
     @property
+    def custom_bindings_path(self) -> Path:
+        return self.data_path / "custom_bindings.toml"
+
+    @property
+    def default_bindings_path(self) -> Path:
+        return self.data_path / "default_bindings.toml"
+
+    @property
     def max_number_of_tracked_accounts(self) -> int:
         return self._get_max_number_of_tracked_accounts()
 
