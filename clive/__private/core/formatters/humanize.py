@@ -335,7 +335,16 @@ def humanize_hbd_savings_apr(hbd_savings_apr: Decimal, *, with_label: bool = Fal
 
 
 def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False) -> str:
-    """Return pretty formatted hdb print rate."""
+    """
+    Return pretty formatted hdb print rate.
+
+    Args:
+        hbd_print_rate: A value representing the HBD print rate.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the HBD print rate.
+    """
     return _maybe_labelize(HBD_PRINT_RATE_LABEL, humanize_percent(hbd_print_rate), add_label=with_label)
 
 
