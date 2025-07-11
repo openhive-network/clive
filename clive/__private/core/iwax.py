@@ -38,7 +38,13 @@ class HpAPRProtocol(Protocol):
 
 
 class TotalVestingProtocol(Protocol):
-    """Simply pass gdpo, or object that provides required information."""
+    """
+    Simply pass gdpo, or object that provides required information.
+
+    Attributes:
+        total_vesting_fund_hive: The total vesting fund in HIVE.
+        total_vesting_shares: The total vesting shares.
+    """
 
     total_vesting_fund_hive: Asset.Hive
     total_vesting_shares: Asset.Vests
