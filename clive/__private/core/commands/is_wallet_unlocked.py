@@ -11,7 +11,12 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class IsWalletUnlocked(CommandWithResult[bool]):
-    """Check if the wallet with given name is unlocked on the beekeeper."""
+    """
+    Check if the wallet with given name is unlocked on the beekeeper.
+
+    Attributes:
+        wallet: The wallet to check.
+    """
 
     wallet: AsyncWallet
 
