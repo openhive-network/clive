@@ -65,7 +65,16 @@ class ProcessAccountUpdate(OperationCommand):
 
 
 def is_on_auths_list[T: (AccountName, PublicKey)](elem: T, auths: list[tuple[T, HiveInt]]) -> bool:
-    """Check if element is on list of tuples."""
+    """
+    Check if element is on list of tuples.
+
+    Args:
+        elem: Element to check.
+        auths: List of tuples containing elements and their weights.
+
+    Returns:
+        True if element is found in the list, False otherwise.
+    """
     return any(elem == first for first, _ in auths)
 
 
