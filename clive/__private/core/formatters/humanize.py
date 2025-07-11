@@ -73,7 +73,16 @@ def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:
 
 
 def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]:
-    """Aligns values to dot. Optionally center the longest string to the center_to value."""
+    """
+    Aligns values to dot. Optionally center the longest string to the center_to value.
+
+    Args:
+        *strings: A variable number of strings to align.
+        center_to: A value representing the length to center the longest string.
+
+    Returns:
+        Values aligned to the dot.
+    """
     strings_ = list(strings)
 
     if center_to is not None:
