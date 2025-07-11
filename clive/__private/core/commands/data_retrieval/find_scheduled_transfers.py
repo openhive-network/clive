@@ -45,7 +45,14 @@ class FindRecurrentTransferError(CommandError):
 
 
 class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
-    """Exception raised when there is account mismatch."""
+    """
+    Exception raised when there is account mismatch.
+
+    Args:
+        command: The command that raised the error.
+        account_name: The expected account name.
+        recurrent_transfer: The recurrent transfer that caused the error.
+    """
 
     def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
         self.account_name = account_name
