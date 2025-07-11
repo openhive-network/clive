@@ -80,7 +80,12 @@ class World:
 
     @property
     def node(self) -> Node:
-        """Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors."""
+        """
+        Node shouldn't be used for direct API calls in CLI/TUI. Instead, use commands which also handle errors.
+
+        Raises:
+            ProfileNotLoadedError: If the profile is not loaded yet.
+        """
         if self._node is None:
             raise ProfileNotLoadedError(
                 "World node cannot be accessed before profile is loaded as it is profile dependent."
