@@ -303,7 +303,12 @@ class CLITransactionBadAccountError(CLIPrettyError):
 
 
 class CLITransactionToExchangeError(CLIPrettyError):
-    """Raise when trying to perform transaction to exchange with operation(s) that cannot be performed."""
+    """
+    Raise when trying to perform transaction to exchange with operation(s) that cannot be performed.
+
+    Args:
+        reason: The reason why the transaction cannot be performed.
+    """
 
     def __init__(self, reason: str) -> None:
         message = f"Cannot perform transaction.\n{reason}"
