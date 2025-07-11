@@ -19,7 +19,13 @@ if TYPE_CHECKING:
 
 
 class HpAPRProtocol(Protocol):
-    """Simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
+    """
+    Simply pass gdpo, or object that provides required information needed to calculate Hp APR.
+
+    Attributes:
+        virtual_supply: The virtual supply of HIVE.
+        total_vesting_fund_hive: The total vesting fund in HIVE.
+    """
 
     @property
     def head_block_number(self) -> int: ...
