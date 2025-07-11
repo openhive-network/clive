@@ -280,10 +280,6 @@ clive/__private/core/commands/recover_wallets.py
     DOC201: Method `RecoverWallets._recover_encryption_wallet` does not have a return section in docstring
     DOC201: Method `RecoverWallets._recover_user_wallet` does not have a return section in docstring
 --------------------
-clive/__private/core/commands/unlock.py
-    DOC601: Class `Unlock`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `Unlock`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [app_state: AppState | None, permanent: bool, profile_name: str, session: AsyncSession, time: timedelta | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/core/contextual.py
     DOC101: Method `ContextualHolder.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `ContextualHolder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [context: ContextT].
