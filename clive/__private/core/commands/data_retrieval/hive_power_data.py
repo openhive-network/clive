@@ -61,7 +61,12 @@ class HivePowerData:
     gdpo: DynamicGlobalProperties
 
     def get_delegations_aligned_amounts(self) -> tuple[list[str], list[str]]:
-        """Return aligned amounts of delegations in HP and VESTS."""
+        """
+        Return aligned amounts of delegations in HP and VESTS.
+
+        Returns:
+            The pair of aligned amounts of delegations in HP and VESTS.
+        """
         hp_amounts_to_align, vests_amounts_to_align = [], []
         for delegation in self.delegations:
             hp_vests_amount = HpVestsBalance.create(delegation.vesting_shares, self.gdpo)
