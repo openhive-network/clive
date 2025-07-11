@@ -97,10 +97,6 @@ clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
-clive/__private/cli/exceptions.py
-    DOC101: Method `CLITransactionToExchangeError.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CLITransactionToExchangeError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
---------------------
 clive/__private/cli/main.py
     DOC101: Function `unlock`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `unlock`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [include_create_new_profile: bool, profile_name: str | None, profile_name_option: str | None, unlock_time_mins: int | None].
