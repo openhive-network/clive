@@ -280,10 +280,6 @@ clive/__private/core/commands/recover_wallets.py
     DOC201: Method `RecoverWallets._recover_encryption_wallet` does not have a return section in docstring
     DOC201: Method `RecoverWallets._recover_user_wallet` does not have a return section in docstring
 --------------------
-clive/__private/core/contextual.py
-    DOC101: Method `ContextualHolder.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ContextualHolder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [context: ContextT].
---------------------
 clive/__private/core/decimal_conventer.py
     DOC502: Method `DecimalConverter.get_precision` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
