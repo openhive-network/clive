@@ -278,7 +278,6 @@ clive/__private/core/accounts/account_container.py
     DOC201: Method `AccountContainerBase._sorted_accounts` does not have a return section in docstring
 --------------------
 clive/__private/core/accounts/account_manager.py
-    DOC201: Method `AccountManager.get_bad_accounts` does not have a return section in docstring
     DOC101: Method `AccountManager.get_tracked_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountManager.get_tracked_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: str | Account].
     DOC201: Method `AccountManager.get_tracked_account` does not have a return section in docstring
