@@ -74,7 +74,12 @@ class SavingsData:
         return last_occupied_id + 1
 
     def get_pending_transfers_aligned_amounts(self) -> list[str]:
-        """Return dot-aligned amounts of pending transfers."""
+        """
+        Return dot-aligned amounts of pending transfers.
+
+        Returns:
+            A dot-aligned amounts of pending transfers.
+        """
         amounts_to_align = [f"{humanize_asset(transfer.amount)}" for transfer in self.pending_transfers]
 
         return align_to_dot(*amounts_to_align)
