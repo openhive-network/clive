@@ -36,7 +36,14 @@ _authority_weight = typer.Option(
 
 @pass_context
 def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001
-    """Create and send account update operation updating authority asynchronously."""
+    """
+    Create and send account update operation updating authority asynchronously.
+
+    Args:
+        ctx: The context of the command.
+        *args: Additional positional arguments.
+        **kwargs: Additional keyword arguments.
+    """
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
     assert isinstance(ctx.obj, ProcessAccountUpdate), (
