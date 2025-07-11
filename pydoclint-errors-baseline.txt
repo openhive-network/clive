@@ -325,10 +325,6 @@ clive/__private/core/profile.py
 clive/__private/core/validate_schema_field.py
     DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/core/world.py
-    DOC101: Method `World.on_going_into_locked_mode`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `World.on_going_into_locked_mode`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [source: LockSource].
---------------------
 clive/__private/models/asset.py
     DOC502: Method `Asset.hive` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.hbd` has a "Raises" section in the docstring, but there are not "raise" statements in the body

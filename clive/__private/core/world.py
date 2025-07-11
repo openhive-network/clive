@@ -210,7 +210,12 @@ class World:
         await self._update_wax_interface()
 
     async def on_going_into_locked_mode(self, source: LockSource) -> None:
-        """Triggered when the application is going into the locked mode."""
+        """
+        Triggered when the application is going into the locked mode.
+
+        Args:
+            source: The source of the lock.
+        """
         if self._is_during_setup or self._is_during_closure:
             return
         await self._on_going_into_locked_mode(source)
