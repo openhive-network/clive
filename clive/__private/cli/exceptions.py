@@ -260,7 +260,12 @@ class CLITransactionNotSignedError(CLIPrettyError):
 
 
 class CLITransactionUnknownAccountError(CLIPrettyError):
-    """Raise when trying to perform transaction with operation(s) to unknown account."""
+    """
+    Raise when trying to perform transaction with operation(s) to unknown account.
+
+    Args:
+        *account_names: The names of the accounts that are not known.
+    """
 
     def __init__(self, *account_names: str) -> None:
         assert account_names, (
