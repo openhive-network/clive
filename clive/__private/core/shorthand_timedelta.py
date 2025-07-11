@@ -32,7 +32,12 @@ class InvalidShorthandToTimedeltaError(ShorthandTimedeltaError):
 
 
 class InvalidTimedeltaToShorthandError(ShorthandTimedeltaError):
-    """Exception raised for errors converting timedelta to shorthand format."""
+    """
+    Exception raised for errors converting timedelta to shorthand format.
+
+    Args:
+        invalid_input: The invalid timedelta that could not be converted.
+    """
 
     def __init__(self, invalid_input: timedelta) -> None:
         self.invalid_input = invalid_input
