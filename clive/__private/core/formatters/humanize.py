@@ -321,7 +321,16 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label
 
 
 def humanize_hbd_savings_apr(hbd_savings_apr: Decimal, *, with_label: bool = False) -> str:
-    """Return pretty formatted hdb interese rate (APR)."""
+    """
+    Return pretty formatted hdb interese rate (APR).
+
+    Args:
+        hbd_savings_apr: A value representing the HBD savings APR.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the HBD savings APR.
+    """
     return _maybe_labelize(HBD_SAVINGS_APR_LABEL, humanize_percent(hbd_savings_apr), add_label=with_label)
 
 
