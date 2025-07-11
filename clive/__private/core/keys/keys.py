@@ -33,7 +33,15 @@ class Key(ABC):
 
     @abstractmethod
     def with_alias(self, alias: str) -> KeyAliased:
-        """Return a new instance of the key with the given alias."""
+        """
+        Return a new instance of the key with the given alias.
+
+        Args:
+            alias: The alias to set for the key.
+
+        Returns:
+            A new instance of the aliased key.
+        """
 
     @staticmethod
     def determine_key_type(key: str) -> type[PublicKey | PrivateKey]:
