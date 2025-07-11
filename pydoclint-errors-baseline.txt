@@ -312,7 +312,6 @@ clive/__private/core/node.py
 clive/__private/core/profile.py
     DOC502: Method `Profile.save` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Profile.delete` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC201: Method `Profile.list_profiles` does not have a return section in docstring
     DOC502: Method `Profile.load` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Profile.delete_by_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC101: Method `Profile._create_instance`: Docstring contains fewer arguments than in function signature.
