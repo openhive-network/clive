@@ -90,7 +90,12 @@ class KeyManager:
             self.__keys.add(key)
 
     def remove(self, *keys: PublicKeyAliased) -> None:
-        """Remove a key alias from the Clive's key manager. Still remains in the beekeeper."""
+        """
+        Remove a key alias from the Clive's key manager. Still remains in the beekeeper.
+
+        Args:
+            *keys: The keys to remove.
+        """
         for key in keys:
             self.__keys.remove(key)
 
