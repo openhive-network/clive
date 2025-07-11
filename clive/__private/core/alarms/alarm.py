@@ -32,6 +32,15 @@ class Alarm[AlarmIdentifierT: AlarmIdentifier, AlarmDataT](ABC):
     How to complete handle an alarm in CLI:
     ---------------------------------------
     Soon...
+
+    Attributes:
+        ALARM_DESCRIPTION: A description of the alarm, used in the CLI.
+        FIX_ALARM_INFO: Information about how to fix the alarm.
+
+    Args:
+        identifier: Identifier that uniquely identifies the alarm.
+        alarm_data: Contains data related to the alarm.
+        is_harmless: A boolean indicating whether the alarm is harmless (default is False).
     """
 
     ALARM_DESCRIPTION: ClassVar[str] = ""
