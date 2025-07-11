@@ -281,11 +281,6 @@ clive/__private/core/accounts/account_manager.py
     DOC101: Method `AccountManager._set_watched_account_as_working`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountManager._set_watched_account_as_working`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [watched_account: str | Account].
 --------------------
-clive/__private/core/callback.py
-    DOC101: Function `count_parameters`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `count_parameters`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [callback: Callable[..., Any]].
-    DOC201: Function `count_parameters` does not have a return section in docstring
---------------------
 clive/__private/core/clive_import.py
     DOC201: Function `get_clive` does not have a return section in docstring
 --------------------
