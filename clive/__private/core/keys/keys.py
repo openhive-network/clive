@@ -79,7 +79,12 @@ class KeyAliased(Key, ABC):
 
     @abstractmethod
     def without_alias(self) -> Key:
-        """Return a new instance of the key without the alias."""
+        """
+        Return a new instance of the key without the alias.
+
+        Returns:
+            A new instance of the key without the alias.
+        """
 
 
 @dataclass(kw_only=True, frozen=True)
