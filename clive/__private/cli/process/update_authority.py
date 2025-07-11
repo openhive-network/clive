@@ -58,7 +58,13 @@ def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: AR
 
 
 def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFunction) -> None:
-    """Add callback modifying authority to command ProcessAccountUpdate stored in context."""
+    """
+    Add callback modifying authority to command ProcessAccountUpdate stored in context.
+
+    Args:
+        ctx: The context of the command.
+        callback: The callback function to add to the update command.
+    """
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
     assert ctx.parent, f"{ctx.command_path} context parent does not exist"
