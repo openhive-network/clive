@@ -47,7 +47,12 @@ class AccountAlreadyExistsError(AccountsUpdateError):
 
 
 class TryingToAddBadAccountError(AccountsUpdateError):
-    """Raised when trying to add a bad account to tracked accounts."""
+    """
+    Raised when trying to add a bad account to tracked accounts.
+
+    Args:
+        account_name: The name of the account that is considered bad.
+    """
 
     def __init__(self, account_name: str) -> None:
         super().__init__(f"Trying to add a bad account {account_name} to tracked accounts.")
