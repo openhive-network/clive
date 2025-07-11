@@ -9,7 +9,15 @@ if TYPE_CHECKING:
 
 
 async def is_url_reachable(url: HttpUrl) -> bool:
-    """Check if the given url is reachable."""
+    """
+    Check if the given url is reachable.
+
+    Args:
+        url: The URL to check.
+
+    Returns:
+        True if the URL is reachable, False otherwise.
+    """
     try:
         async with aiohttp.ClientSession() as session, session.get(str(url)):
             return True
