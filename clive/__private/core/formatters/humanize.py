@@ -307,7 +307,16 @@ def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool 
 
 
 def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label: bool = False) -> str:
-    """Return pretty formatted hdb exchange rate (price feed)."""
+    """
+    Return pretty formatted hdb exchange rate (price feed).
+
+    Args:
+        hbd_exchange_rate: An object containing the exchange rate.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the HBD exchange rate.
+    """
     return _maybe_labelize(HBD_EXCHANGE_RATE_LABEL, f"{hbd_exchange_rate.base.pretty_amount()} $", add_label=with_label)
 
 
