@@ -7,7 +7,12 @@ if TYPE_CHECKING:
 
 
 def get_clive() -> type[Clive]:
-    """Get the Clive class. Helper function useful when circular imports occurs."""
+    """
+    Get the Clive class. Helper function useful when circular imports occurs.
+
+    Returns:
+        The Clive class.
+    """
     from clive.__private.ui.app import Clive
 
     return Clive
