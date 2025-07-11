@@ -65,7 +65,16 @@ class ProcessAccountUpdate(OperationCommand):
 
 
 def is_on_auths_list[T: (AccountName, PublicKey)](authority_entry: T, authorities: list[tuple[T, HiveInt]]) -> bool:
-    """Check if element is on list of tuples."""
+    """
+    Check if the authority entry is on the hive-like authorities list.
+
+    Args:
+        authority_entry: Authority entry.
+        authorities: Hive-like format of authority entries and their weights.
+
+    Returns:
+        True if the authority entry is found, False otherwise.
+    """
     return any(authority_entry == entry for entry, _ in authorities)
 
 
