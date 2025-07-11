@@ -212,7 +212,13 @@ class Node(AsyncHived):
         max_attempts: int | None = None,
         timeout_total_secs: float | None = None,
     ) -> Iterator[None]:
-        """Temporarily change connection details."""
+        """
+        Temporarily change connection details.
+
+        Args:
+            max_attempts: Maximum number of retries for connection attempts.
+            timeout_total_secs: Total timeout in seconds for the connection.
+        """
         with self.restore_settings():
             self.settings.max_retries = max_attempts or self.settings.max_retries
             self.settings.timeout = timedelta(seconds=(timeout_total_secs or self.settings.timeout.seconds))
