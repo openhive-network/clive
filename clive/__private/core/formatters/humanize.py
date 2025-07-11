@@ -446,7 +446,15 @@ def humanize_vest_to_hive_ratio(
 
 
 def humanize_bytes(value: int) -> str:
-    """Return pretty formatted bytes."""
+    """
+    Return pretty formatted bytes.
+
+    Args:
+        value: A value representing the number of bytes.
+
+    Returns:
+        A human-readable data representing the size in bytes.
+    """
     return humanize.naturalsize(value, binary=True)
 
 
