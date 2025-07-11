@@ -254,10 +254,6 @@ clive/__private/core/accounts/account_manager.py
     DOC502: Method `AccountManager.add_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/core/async_guard.py
-    DOC601: Class `AsyncGuardNotAvailableError`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `AsyncGuardNotAvailableError`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [MESSAGE: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/core/callback.py
     DOC101: Function `count_parameters`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `count_parameters`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [callback: Callable[..., Any]].
