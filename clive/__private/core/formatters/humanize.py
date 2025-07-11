@@ -95,7 +95,15 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
 
 
 def humanize_validation_result(result: ValidationResult) -> str:
-    """Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message."""
+    """
+    Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message.
+
+    Args:
+        result: An instance of ValidationResult containing validation results.
+
+    Returns:
+        A human-readable string describing the validation result.
+    """
     if result.is_valid:
         return "No failures"
 
