@@ -102,7 +102,7 @@ class ManageKeyAliases(BaseScreen):
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(
-            action="new_key_alias", description="New alias"
+            action="new_key_alias", description="Add new alias"
         ),
     ]
 
