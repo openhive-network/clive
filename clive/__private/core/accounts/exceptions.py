@@ -19,7 +19,12 @@ class NoWorkingAccountError(AccountAccessError):
 
 
 class AccountNotFoundError(AccountAccessError):
-    """Raised when an account is not found."""
+    """
+    Raised when an account is not found.
+
+    Args:
+        account_name: The name of the account that was not found.
+    """
 
     def __init__(self, account_name: str) -> None:
         super().__init__(f"Account {account_name} not found.")
