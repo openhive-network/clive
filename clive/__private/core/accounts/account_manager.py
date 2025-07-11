@@ -35,7 +35,14 @@ def _load_bad_accounts_from_file() -> list[str]:
 
 
 class AccountManager:
-    """Class for storing and managing accounts."""
+    """
+    Class for storing and managing accounts.
+
+    Args:
+        working_account: The account to set as working account.
+        watched_accounts: Accounts to be added to the watched accounts.
+        known_accounts: Accounts to be added to the known accounts.
+    """
 
     _BAD_ACCOUNT_NAMES: ClassVar[list[str] | None] = None
 
