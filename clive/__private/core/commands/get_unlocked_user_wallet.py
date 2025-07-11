@@ -21,7 +21,12 @@ class NoProfileUnlockedError(CommandError):
 
 @dataclass(kw_only=True)
 class GetUnlockedUserWallet(CommandWithResult[AsyncUnlockedWallet]):
-    """Get the unlocked user wallet - the one containing keys imported by user."""
+    """
+    Get the unlocked user wallet - the one containing keys imported by user.
+
+    Attributes:
+        session: The session to use for fetching the unlocked wallet.
+    """
 
     session: AsyncSession
 
