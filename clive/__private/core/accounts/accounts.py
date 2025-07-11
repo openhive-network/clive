@@ -20,7 +20,12 @@ class AccountError(CliveError):
 
 
 class InvalidAccountNameError(AccountError):
-    """An account name is invalid."""
+    """
+    An account name is invalid.
+
+    Args:
+        value: The invalid account name.
+    """
 
     def __init__(self, value: str) -> None:
         self.value = value
