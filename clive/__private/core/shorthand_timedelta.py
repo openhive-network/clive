@@ -16,7 +16,12 @@ class ShorthandTimedeltaError(CliveError):
 
 
 class InvalidShorthandToTimedeltaError(ShorthandTimedeltaError):
-    """Exception raised for invalid shorthand date format inputs."""
+    """
+    Exception raised for invalid shorthand date format inputs.
+
+    Args:
+        invalid_input: The invalid input that caused the error.
+    """
 
     def __init__(self, invalid_input: str) -> None:
         self.invalid_input = invalid_input
