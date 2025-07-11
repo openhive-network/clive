@@ -195,7 +195,15 @@ class Node(AsyncHived):
 
     @http_endpoint.setter
     def http_endpoint(self, address: HttpUrl) -> None:
-        """Override because of mypy: Read-only property cannot override read-write property  [misc]."""
+        """
+        Override because of mypy: Read-only property cannot override read-write property  [misc].
+
+        Args:
+            address: New address to set.
+
+        Raises:
+            NotImplementedError: This method is not intended for usage.
+        """
         raise NotImplementedError("use set_address method!")
 
     @contextmanager
