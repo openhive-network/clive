@@ -9,7 +9,13 @@ from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotif
 
 
 class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
-    """A context manager that notifies about errors of `CommunicatorError` type."""
+    """
+    A context manager that notifies about errors of `CommunicatorError` type.
+
+    Attributes:
+        YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE: A message indicating insufficient funds for an operation.
+        SEARCHED_AND_PRINTED_MESSAGES: A dictionary mapping specific error messages to user-friendly messages.
+    """
 
     YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE: Final[str] = "You don't have enough funds to perform this operation."
 
