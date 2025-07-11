@@ -257,10 +257,6 @@ clive/__private/core/accounts/account_manager.py
 clive/__private/core/commands/abc/command_restricted.py
     DOC503: Method `CommandRestricted.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['CommandExecutionNotPossibleError']. Raised exceptions in the body: ['self._execution_impossible_error'].
 --------------------
-clive/__private/core/commands/abc/command_secured.py
-    DOC601: Class `CommandPasswordSecured`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `CommandPasswordSecured`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [password: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/core/commands/broadcast.py
     DOC601: Class `Broadcast`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `Broadcast`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [node: Node, transaction: Transaction]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
