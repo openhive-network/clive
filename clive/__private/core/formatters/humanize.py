@@ -349,7 +349,15 @@ def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False
 
 
 def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
-    """Return formatted APR value returned from wax."""
+    """
+    Return formatted APR value returned from wax.
+
+    Args:
+        data: An instance representing the APR value.
+
+    Returns:
+        A human-readable data representing the APR value.
+    """
     calculated = data if isinstance(data, Decimal) else calculate_hp_apr(data)
     return humanize_percent(calculated)
 
