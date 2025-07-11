@@ -113,7 +113,12 @@ class Alarm[AlarmIdentifierT: AlarmIdentifier, AlarmDataT](ABC):
 
     @abstractmethod
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        """Change alarm status based on data retrieved during `update_alarms_data`."""
+        """
+        Change alarm status based on data retrieved during `update_alarms_data`.
+
+        Args:
+            data: An instance that contains the latest data for the account.
+        """
 
     @abstractmethod
     def get_alarm_basic_info(self) -> str:
