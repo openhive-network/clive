@@ -119,10 +119,6 @@ clive/__private/cli/process/hive_power/power_down.py
     DOC101: Function `process_power_down_cancel`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_power_down_cancel`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, broadcast: bool, save_file: str | None, sign: str | None].
 --------------------
-clive/__private/cli/process/hive_power/power_up.py
-    DOC101: Function `process_power_up`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `process_power_up`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str, broadcast: bool, force: bool, from_account: str, save_file: str | None, sign: str | None, to_account: str].
---------------------
 clive/__private/cli/process/hive_power/withdraw_routes.py
     DOC101: Function `process_withdraw_routes_set`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_withdraw_routes_set`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auto_vest: bool, broadcast: bool, force: bool, from_account: str, percent: Decimal, save_file: str | None, sign: str | None, to_account: str].

@@ -26,7 +26,21 @@ async def process_power_up(  # noqa: PLR0913
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
-    """Perform power-up by sending transfer_to_vesting_operation."""
+    """
+    Perform power-up by sending transfer_to_vesting_operation.
+
+    Args:
+        from_account: The account to transfer from.
+        to_account: The account to transfer to.
+        amount: The amount of HIVE to power up.
+        sign: Optional signature for the operation.
+        broadcast: Whether to broadcast the transaction.
+        save_file: Optional file path to save the transaction.
+        force: Whether to force the operation even if conditions are not met.
+
+    Returns:
+        None
+    """
     from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp
 
     amount_ = cast("Asset.Hive", amount)
