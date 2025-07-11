@@ -177,4 +177,6 @@ arg-type-hints-in-docstring = false  # we want types to be only provided in the 
 check-return-types = false  # we want types to be only provided in the signatures and not redundant
 check-yield-types = false  # we want types to be only provided in the signatures and not redundant
 check-style-mismatch = true
-#skip-checking-short-docstrings = false  # consider uncommenting (enabling) that in the future
+generate-baseline = true
+skip-checking-short-docstrings = false
+exclude = "tests/*"
