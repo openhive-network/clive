@@ -227,7 +227,12 @@ class Commands[WorldT: World]:
         return wrapper
 
     async def lock(self) -> CommandWrapper:
-        """Lock all the wallets in the given beekeeper session."""
+        """
+        Lock all the wallets in the given beekeeper session.
+
+        Returns:
+            A wrapper containing the result of the command.
+        """
         return await self.__surround_with_exception_handlers(
             Lock(
                 app_state=self._world.app_state,
