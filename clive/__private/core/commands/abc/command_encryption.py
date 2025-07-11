@@ -40,7 +40,12 @@ class EncryptionKeyAmountError(CommandError):
 
 @dataclass(kw_only=True)
 class CommandEncryption(CommandInUnlocked, ABC):
-    """A command that requires both unlocked user wallet and encryption wallet."""
+    """
+    A command that requires both unlocked user wallet and encryption wallet.
+
+    Attributes:
+        unlocked_encryption_wallet: The unlocked encryption wallet to use for the command.
+    """
 
     unlocked_encryption_wallet: AsyncUnlockedWallet
 
