@@ -274,8 +274,6 @@ clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC201: Method `AccountScheduledTransferData._receiver_check` does not have a return section in docstring
 --------------------
 clive/__private/core/commands/recover_wallets.py
-    DOC601: Class `RecoverWallets`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `RecoverWallets`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [profile_name: str, session: AsyncSession, should_recover_encryption_wallet: bool, should_recover_user_wallet: bool]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC501: Method `RecoverWallets._validate_recovery_attempt` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `RecoverWallets._validate_recovery_attempt` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CannotRecoverWalletsError'].
     DOC201: Method `RecoverWallets._recover_wallet` does not have a return section in docstring

@@ -34,6 +34,12 @@ class RecoverWallets(CommandPasswordSecured, CommandWithResult[RecoverWalletsRes
     Recover (if possible) the profile-related wallets (user wallet and encryption wallet) managed by the beekeeper.
 
     Note that only one wallet can be recovered. If both wallets are missing, the recovery process will fail.
+
+    Attributes:
+        profile_name: The name of the profile for which wallets are to be recovered.
+        session: The beekeeper session to interact with.
+        should_recover_encryption_wallet: Flag indicating whether to recover the encryption wallet.
+        should_recover_user_wallet: Flag indicating whether to recover the user wallet.
     """
 
     profile_name: str
