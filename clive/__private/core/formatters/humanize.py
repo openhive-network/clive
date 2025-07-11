@@ -459,7 +459,15 @@ def humanize_bytes(value: int) -> str:
 
 
 def humanize_witness_status(signing_key: str) -> str:
-    """Return active/inactive string, witness is inactive if it has public key set to null account."""
+    """
+    Return active/inactive string, witness is inactive if it has public key set to null account.
+
+    Args:
+        signing_key: The signing key of the witness.
+
+    Returns:
+        A value indicating whether the witness is "active" or "inactive".
+    """
     return "active" if signing_key != NULL_ACCOUNT_KEY_VALUE else "inactive"
 
 
