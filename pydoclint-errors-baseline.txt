@@ -273,10 +273,6 @@ clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC103: Method `AccountScheduledTransferData._receiver_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [receiver: str, scheduled_transfer: ScheduledTransfer].
     DOC201: Method `AccountScheduledTransferData._receiver_check` does not have a return section in docstring
 --------------------
-clive/__private/core/commands/get_unlocked_user_wallet.py
-    DOC601: Class `GetUnlockedUserWallet`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `GetUnlockedUserWallet`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [session: AsyncSession]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/core/commands/is_password_valid.py
     DOC601: Class `IsPasswordValid`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `IsPasswordValid`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [beekeeper: AsyncBeekeeper, password: str, wallet_name: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
