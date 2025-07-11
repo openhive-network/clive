@@ -291,7 +291,16 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
 
 
 def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
-    """Return pretty hive power."""
+    """
+    Return pretty formatted hive power including commas.
+
+    Args:
+        hive_power: A value representing the hive power.
+        show_symbol: Whether to show the HP symbol.
+
+    Returns:
+        A human-readable data representing the hive power with commas.
+    """
     symbol = "HP" if show_symbol else ""
     hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
     return f"{hp_value_with_commas} {symbol}".rstrip()
