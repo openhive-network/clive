@@ -166,6 +166,13 @@ class World:
 
         Since beekeeper wallet will be created, profile will be also saved.
         If beekeeper wallet creation fails, profile will not be saved.
+
+        Args:
+            name: Name of the profile to create.
+            password: Password for the profile's wallets.
+            working_account: The working account for the profile.
+            watched_accounts: The watched accounts for the profile.
+            known_accounts: Accounts to be marked as known in the profile.
         """
         await self.create_new_profile(name, working_account, watched_accounts, known_accounts)
 

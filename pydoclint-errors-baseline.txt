@@ -326,8 +326,6 @@ clive/__private/core/validate_schema_field.py
     DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/core/world.py
-    DOC101: Method `World.create_new_profile_with_wallets`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `World.create_new_profile_with_wallets`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [known_accounts: Iterable[str | Account] | None, name: str, password: str, watched_accounts: Iterable[str | Account] | None, working_account: str | Account | None].
     DOC101: Method `World.on_going_into_locked_mode`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `World.on_going_into_locked_mode`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [source: LockSource].
 --------------------
