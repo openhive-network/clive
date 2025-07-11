@@ -157,7 +157,12 @@ class AccountManager:
 
     @classmethod
     def get_bad_accounts(cls) -> list[str]:
-        """Get list of all bad accounts names."""
+        """
+        Get all bad accounts names.
+
+        Returns:
+            Bad account names.
+        """
         if cls._BAD_ACCOUNT_NAMES is None:
             cls._BAD_ACCOUNT_NAMES = _load_bad_accounts_from_file()
         return cls._BAD_ACCOUNT_NAMES
