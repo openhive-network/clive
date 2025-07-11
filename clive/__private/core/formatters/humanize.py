@@ -487,7 +487,16 @@ def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
 
 
 def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
-    """Return pretty formatted votes converted to hive power."""
+    """
+    Return pretty formatted votes converted to hive power.
+
+    Args:
+        votes: A value representing the number of votes.
+        data: An instance containing vesting data.
+
+    Returns:
+        A human-readable data representing the votes converted to hive power with commas.
+    """
     hive_power = calculate_witness_votes_hp(votes, data)
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
