@@ -945,6 +945,18 @@ rtd = ["jupyter_sphinx", "mdit-py-plugins", "myst-parser", "pyyaml", "sphinx", "
 testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
+name = "markdown-pycon"
+version = "1.0.1"
+description = "Markdown extension to parse `pycon` code blocks without indentation or fences."
+optional = false
+python-versions = ">=3.9"
+groups = ["docs"]
+files = [
+    {file = "markdown_pycon-1.0.1-py3-none-any.whl", hash = "sha256:938ac2595c0056c10f497c2bde3e5add06797e485fc83b187b0eacc29a9ef7b2"},
+    {file = "markdown_pycon-1.0.1.tar.gz", hash = "sha256:02089b53b2056fd844e90e0c0ecd5c5b6f28d24daf313ddbea736fb90e066c32"},
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.2"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -2513,4 +2525,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "64bae0119b49a7b4fa5d2fe048c01225f74785132fb04e69a8f93b408b4ce0cc"
+content-hash = "5fbfa21d73930e03b3976ca981bebf8694a227684a3dcd95eeae920a2e866951"
