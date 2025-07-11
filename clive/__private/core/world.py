@@ -35,6 +35,10 @@ class World:
     World is a top-level container for all application objects.
 
     It is a single source of truth for interacting with the Clive application.
+
+    Args:
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
     """
 
     def __init__(
