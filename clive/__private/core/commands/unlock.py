@@ -30,13 +30,22 @@ class UnlockWalletStatus:
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured, CommandWithResult[UnlockWalletStatus]):
-    """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
+    """
+    Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper.
+
+    Attributes:
+        profile_name: The name of the profile to unlock.
+        session: The session in which wallets should be unlocked.
+        time: Will set a timeout for the profile. Doesn't matter if `permanent` is True.
+            Required when `permanent` is False.
+        permanent: If True, the timeout will be permanent; otherwise, `time` should also be given.
+        app_state: The application state to unlock, if available.
+    """
 
     profile_name: str
     session: AsyncSession
     time: timedelta | None = None
     permanent: bool = True
-    """Will take precedence when `time` is also set."""
     app_state: AppState | None = None
 
     async def _execute(self) -> None:
