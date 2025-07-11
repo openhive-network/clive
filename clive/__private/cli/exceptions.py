@@ -246,7 +246,12 @@ class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
 
 
 class CLITransactionNotSignedError(CLIPrettyError):
-    """Raise when trying to broadcast unsigned transaction."""
+    """
+    Raise when trying to broadcast unsigned transaction.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
 
     MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget the '--sign' option?"
 
