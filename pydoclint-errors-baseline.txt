@@ -233,10 +233,6 @@ clive/__private/cli/show/pending.py
     DOC101: Function `show_pending_removed_delegations`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_pending_removed_delegations`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
-clive/__private/cli/table_pagination_info.py
-    DOC101: Function `add_pagination_info_to_table_if_needed`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `add_pagination_info_to_table_if_needed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [all_entries: int, page_no: int, page_size: int, table: Table].
---------------------
 clive/__private/core/_async.py
     DOC101: Function `asyncio_run`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `asyncio_run`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [awaitable: Awaitable[T]].
