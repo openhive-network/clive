@@ -50,6 +50,12 @@ class Key(ABC):
 
         This method requires the key to be in the correct format.
         That's because key in the wrong format will be determined as a public key also.
+
+        Args:
+            key: The key to determine the type of.
+
+        Returns:
+            The class type corresponding to the key type detected.
         """
         try:
             iwax.calculate_public_key(key)
