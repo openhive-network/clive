@@ -260,8 +260,6 @@ clive/__private/core/accounts/account_manager.py
     DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/core/accounts/exceptions.py
-    DOC101: Method `AccountAlreadyExistsError.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AccountAlreadyExistsError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, place: str].
     DOC101: Method `TryingToAddBadAccountError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `TryingToAddBadAccountError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
 --------------------
