@@ -363,7 +363,16 @@ def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
 
 
 def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = False) -> str:
-    """Return formatted text describing APR value returned from wax."""
+    """
+    Return formatted text describing APR value returned from wax.
+
+    Args:
+        data: An instance representing the APR value.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the APR value with an optional label.
+    """
     return _maybe_labelize(HP_VEST_APR_LABEL, humanize_apr(data), add_label=with_label)
 
 
