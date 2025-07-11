@@ -178,7 +178,20 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         broadcast: bool = options.broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
-        """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
+        """
+        Collect common options for add/remove/modify authority, calls chain of commands at the end of command.
+
+        Args:
+            ctx: The context of the command.
+            account_name: The name of the account to update.
+            threshold: The new threshold to set, if any.
+            sign: The signature to use for the transaction.
+            broadcast: Whether to broadcast the transaction.
+            save_file: The file to save the transaction to, if any.
+
+        Returns:
+            None
+        """
         from clive.__private.cli.commands.process.process_account_update import (
             ProcessAccountUpdate,
             set_threshold,

@@ -168,8 +168,6 @@ clive/__private/cli/process/update_authority.py
     DOC103: Function `modify_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str, ctx: typer.Context, weight: int].
     DOC101: Function `modify_key`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `modify_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, key: str, weight: int].
-    DOC101: Function `set_threshold`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `set_threshold`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, broadcast: bool, ctx: typer.Context, save_file: str | None, sign: str | None, threshold: int | None].
 --------------------
 clive/__private/cli/process/vote_proposal.py
     DOC101: Function `process_vote_proposal_add`: Docstring contains fewer arguments than in function signature.
