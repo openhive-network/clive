@@ -261,7 +261,17 @@ def humanize_operation_details(operation: OperationBase) -> str:
 
 
 def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_symbol: bool = True) -> str:
-    """Return pretty formatted hive power."""
+    """
+    Return pretty formatted hive power.
+
+    Args:
+        value: An asset representing the hive power.
+        use_short_form: Whether to use a short form.
+        show_symbol: Whether to show the HP symbol.
+
+    Returns:
+        A human-readable data representing the hive power.
+    """
     symbol = "HP" if show_symbol else ""
 
     if not use_short_form:
