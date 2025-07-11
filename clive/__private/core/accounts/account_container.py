@@ -12,7 +12,12 @@ if TYPE_CHECKING:
 
 
 class AccountContainerBase[AccountT: Account](ABC):
-    """A container-like object, that controls set of accounts."""
+    """
+    A container-like object, that controls set of accounts.
+
+    Args:
+        accounts: Initial accounts to add to the container.
+    """
 
     def __init__(self, accounts: Iterable[AccountT] | None = None) -> None:
         self._accounts: set[AccountT] = set() if accounts is None else set(accounts)

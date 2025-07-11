@@ -243,8 +243,6 @@ clive/__private/core/_thread.py
     DOC103: Method `CustomThreadPoolExecutor.shutdown`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [cancel_futures: bool, wait: bool].
 --------------------
 clive/__private/core/accounts/account_container.py
-    DOC101: Method `AccountContainerBase.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AccountContainerBase.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [accounts: Iterable[AccountT] | None].
     DOC201: Method `AccountContainerBase._sorted_accounts` does not have a return section in docstring
 --------------------
 clive/__private/core/accounts/account_manager.py
