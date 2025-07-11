@@ -165,7 +165,7 @@ clive/__private/cli/process/transfer_schedule.py
 --------------------
 clive/__private/cli/process/update_authority.py
     DOC101: Function `send_update`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `send_update`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwds: Any, *args: Any, ctx: Context].
+    DOC103: Function `send_update`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any, *args: Any, ctx: Context].
     DOC101: Function `add_callback_to_update_command`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `add_callback_to_update_command`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [callback: AccountUpdateFunction, ctx: typer.Context].
     DOC101: Function `add_account`: Docstring contains fewer arguments than in function signature.
