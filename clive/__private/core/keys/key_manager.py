@@ -100,7 +100,16 @@ class KeyManager:
             self.__keys.remove(key)
 
     def rename(self, old_alias: str, new_alias: str) -> None:
-        """Rename a key alias."""
+        """
+        Rename a key alias.
+
+        Args:
+            old_alias: The current alias of the key.
+            new_alias: The new alias to assign to the key.
+
+        Raises:
+            KeyNotFoundError: If the key with the old alias does not exist.
+        """
         self._assert_no_alias_conflict(new_alias)
 
         for key in self.__keys:
