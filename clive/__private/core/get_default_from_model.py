@@ -27,7 +27,21 @@ def get_default_from_model[T](model: type[BaseModel] | BaseModel, field_name: st
 def get_default_from_model[T](
     model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[T] | None = None
 ) -> T | Any:
-    """Get default value from pydantic model."""
+    """
+    Get default value from pydantic model.
+
+    Args:
+        model: Pydantic model class or instance.
+        field_name: Name of the field to get the default value for.
+        expect_type: Optional type to check against the default value.
+
+    Raises:
+        NoMatchesError: If the field does not exist in the model.
+        WrongTypeError: If the default value is not of the expected type.
+
+    Returns:
+        The default value of the specified field in the model, or raises an error if not found or type mismatch.
+    """
     field = model.__fields__.get(field_name, None)
 
     if field is None:
