@@ -102,7 +102,18 @@ def decimal_percent(raw: str) -> Decimal:
 
 @rename("text")
 def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
-    """Frequency flag parser used in transfer-schedule."""
+    """
+    Frequency flag parser used in transfer-schedule.
+
+    Args:
+        raw: The raw input representing the frequency.
+
+    Raises:
+        typer.BadParameter: If the input is invalid or cannot be parsed.
+
+    Returns:
+        The parsed frequency.
+    """
     from clive.__private.core.formatters.humanize import humanize_validation_result
 
     status = ScheduledTransferFrequencyValidator().validate(raw)
