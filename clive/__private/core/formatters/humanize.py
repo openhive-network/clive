@@ -391,7 +391,16 @@ def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: boo
 
 
 def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool = False) -> str:
-    """Return formatted inflation rate for head block returned from wax."""
+    """
+    Return formatted inflation rate for head block returned from wax.
+
+    Args:
+        head_block_number: The head block number to calculate the inflation rate.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the current inflation rate.
+    """
     inflation = calculate_current_inflation_rate(head_block_number)
     return _maybe_labelize(CURRENT_INFLATION_RATE_LABEL, humanize_percent(inflation), add_label=with_label)
 
