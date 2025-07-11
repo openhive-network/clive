@@ -13,7 +13,17 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class DeleteProfile(Command):
-    """Delete profile and lock if it was unlocked."""
+    """
+    Delete profile and lock if it was unlocked.
+
+    Attributes:
+        profile_name_to_delete: The name of the profile to delete.
+        profile_name_currently_unlocked: The name of the currently unlocked profile, if any.
+        session: The session to use for locking, if needed.
+        force: If True, remove all profile versions, also not migrated/backed-up.
+            If False and multiple versions or back-ups exist, raise error.
+
+    """
 
     profile_name_to_delete: str
     profile_name_currently_unlocked: str | None
