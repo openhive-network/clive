@@ -115,7 +115,15 @@ def humanize_binding_id(id_: str) -> str:
 
 
 def humanize_validation_result(result: ValidationResult) -> str:
-    """Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message."""
+    """
+    Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message.
+
+    Args:
+        result: An instance of ValidationResult containing validation results.
+
+    Returns:
+        A human-readable data describing the validation result.
+    """
     if result.is_valid:
         return "No failures"
 
