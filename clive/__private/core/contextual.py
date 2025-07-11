@@ -23,7 +23,12 @@ class Contextual(Generic[ContextT], AbstractClassMessagePump):
 
 
 class ContextualHolder(Contextual[ContextT]):
-    """A class that holds a context."""
+    """
+    A class that holds a context.
+
+    Args:
+        context: The context to hold.
+    """
 
     def __init__(self, context: ContextT) -> None:
         self.__context = context
