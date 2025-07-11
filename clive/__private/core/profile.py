@@ -253,7 +253,12 @@ class Profile:
 
     @classmethod
     def list_profiles(cls) -> list[str]:
-        """List all stored profile names sorted alphabetically."""
+        """
+        List all stored profile names sorted alphabetically.
+
+        Returns:
+            List of profile names.
+        """
         return PersistentStorageService.list_stored_profile_names()
 
     @classmethod
