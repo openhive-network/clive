@@ -23,7 +23,12 @@ class NoEncryptionWalletUnlockedError(CommandError):
 
 @dataclass(kw_only=True)
 class GetUnlockedEncryptionWallet(CommandWithResult[AsyncUnlockedWallet]):
-    """Get the unlocked encryption wallet - the one containing encryption key managed by clive."""
+    """
+    Get the unlocked encryption wallet - the one containing encryption key managed by clive.
+
+    Attributes:
+        session: The session to use for fetching the encryption wallet.
+    """
 
     session: AsyncSession
 
