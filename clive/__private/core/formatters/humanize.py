@@ -472,7 +472,16 @@ def humanize_witness_status(signing_key: str) -> str:
 
 
 def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
-    """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
+    """
+    Return pretty formatted votes converted to hive power with K, M etc. suffix.
+
+    Args:
+        votes: A value representing the number of votes.
+        data: An instance containing vesting data.
+
+    Returns:
+        A human-readable data representing the votes converted to hive power with suffix.
+    """
     hive_power = calculate_witness_votes_hp(votes, data)
     return humanize_hive_power(hive_power)
 
