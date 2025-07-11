@@ -13,7 +13,12 @@ INVALID_PASSWORD_MESSAGE: Final[str] = "The password you entered is incorrect. P
 
 
 class GeneralErrorNotificator(ErrorNotificator[Exception]):
-    """A context manager that notifies about any catchable errors that are not handled by other notificators."""
+    """
+    A context manager that notifies about any catchable errors that are not handled by other notificators.
+
+    Attributes:
+        SEARCHED_AND_PRINTED_MESSAGES: A mapping of exception types to messages that should be printed.
+    """
 
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
         InvalidPasswordError: INVALID_PASSWORD_MESSAGE,
