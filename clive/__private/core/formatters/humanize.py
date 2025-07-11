@@ -560,7 +560,15 @@ def humanize_timedelta(value: timedelta) -> str:
 
 
 def humanize_manabar_regeneration_time(regeneration_time: timedelta) -> str:
-    """Return pretty information about regeneration time."""
+    """
+    Return pretty information about regeneration time.
+
+    Args:
+        regeneration_time: An object representing the regeneration time.
+
+    Returns:
+        A human-readable data indicating the regeneration time or if it is full.
+    """
 
     def is_full() -> bool:
         return regeneration_time == timedelta(seconds=0)
