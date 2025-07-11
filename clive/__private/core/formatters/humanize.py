@@ -406,7 +406,16 @@ def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool 
 
 
 def humanize_participation_count(participation_count: int, *, with_label: bool = False) -> str:
-    """Return pretty formatted participation rate."""
+    """
+    Return pretty formatted participation rate.
+
+    Args:
+        participation_count: A value representing the participation count.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the participation count percentage.
+    """
     participation_count_percent = calculate_participation_count_percent(participation_count)
     return _maybe_labelize(
         PARTICIPATION_COUNT_LABEL, humanize_percent(participation_count_percent), add_label=with_label
