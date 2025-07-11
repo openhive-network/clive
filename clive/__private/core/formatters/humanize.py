@@ -425,7 +425,17 @@ def humanize_participation_count(participation_count: int, *, with_label: bool =
 def humanize_vest_to_hive_ratio(
     data: TotalVestingProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
 ) -> str:
-    """Return pretty formatted vest to hive ratio."""
+    """
+    Return pretty formatted vest to hive ratio.
+
+    Args:
+        data: An instance representing the vest to hive ratio.
+        with_label: Whether to add a label to the output.
+        show_symbol: Whether to show the VEST symbol.
+
+    Returns:
+        A human-readable data representing the vest to hive ratio.
+    """
     calculated = data if isinstance(data, Decimal) else calculate_vests_to_hive_ratio(data)
     symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
     return _maybe_labelize(
