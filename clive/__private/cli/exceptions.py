@@ -285,7 +285,12 @@ class CLITransactionUnknownAccountError(CLIPrettyError):
 
 
 class CLITransactionBadAccountError(CLIPrettyError):
-    """Raise when trying to perform transaction with operation(s) to bad account."""
+    """
+    Raise when trying to perform transaction with operation(s) to bad account.
+
+    Args:
+        *account_names: The names of the accounts that are on the list of bad accounts.
+    """
 
     def __init__(self, *account_names: str) -> None:
         self.account_names = list(account_names)
