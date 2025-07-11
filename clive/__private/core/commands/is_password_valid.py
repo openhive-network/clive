@@ -17,6 +17,11 @@ class IsPasswordValid(CommandWithResult[bool]):
     Check if the password is valid for the given wallet.
 
     Does it on the new session so the current session is not affected. E.g. unlock time remains the same.
+
+    Attributes:
+        beekeeper: The beekeeper instance to manage the wallet.
+        wallet_name: The name of the wallet to check the password for.
+        password: The password to validate against the wallet.
     """
 
     beekeeper: AsyncBeekeeper
