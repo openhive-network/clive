@@ -122,4 +122,9 @@ class Alarm[AlarmIdentifierT: AlarmIdentifier, AlarmDataT](ABC):
 
     @abstractmethod
     def get_alarm_basic_info(self) -> str:
-        """Return the simplest possible information about the alarm."""
+        """
+        Return the simplest possible information about the alarm.
+
+        Returns:
+            Basic information about the alarm.
+        """
