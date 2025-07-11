@@ -10,7 +10,15 @@ if TYPE_CHECKING:
 
 @lru_cache(maxsize=2048)
 def count_parameters(callback: Callable[..., Any]) -> int:
-    """Count the number of parameters in a callable."""
+    """
+    Count the number of parameters in a callable.
+
+    Args:
+        callback: The callable whose parameters are to be counted.
+
+    Returns:
+        The number of parameters in the callable.
+    """
     return len(signature(callback).parameters)
 
 
