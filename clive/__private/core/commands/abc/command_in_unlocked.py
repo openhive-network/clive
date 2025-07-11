@@ -18,7 +18,12 @@ class CommandRequiresUnlockedModeError(CommandExecutionNotPossibleError):
 
 @dataclass(kw_only=True)
 class CommandInUnlocked(CommandRestricted, ABC):
-    """A command that require the application to be in unlocked mode."""
+    """
+    A command that require the application to be in unlocked mode.
+
+    Attributes:
+        unlocked_wallet: The unlocked wallet to use for the command.
+    """
 
     unlocked_wallet: AsyncUnlockedWallet
 
