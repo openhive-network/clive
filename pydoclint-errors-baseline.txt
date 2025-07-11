@@ -322,10 +322,6 @@ clive/__private/core/profile.py
     DOC101: Method `Profile._set_node_address`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `Profile._set_node_address`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: HttpUrl].
 --------------------
-clive/__private/core/shorthand_timedelta.py
-    DOC101: Method `InvalidTimedeltaToShorthandError.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `InvalidTimedeltaToShorthandError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [invalid_input: timedelta].
---------------------
 clive/__private/core/url_utils.py
     DOC101: Function `is_url_reachable`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `is_url_reachable`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [url: HttpUrl].
