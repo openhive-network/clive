@@ -377,7 +377,16 @@ def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = F
 
 
 def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: bool = False) -> str:
-    """Return formatted median hive price."""
+    """
+    Return formatted median hive price.
+
+    Args:
+        current_price_feed: An instance containing the current price.
+        with_label: Whether to add a label to the output.
+
+    Returns:
+        A human-readable data representing the median hive price.
+    """
     return _maybe_labelize(MEDIAN_HIVE_PRICE_LABEL, current_price_feed.base.pretty_amount(), add_label=with_label)
 
 
