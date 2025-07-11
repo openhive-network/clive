@@ -13,7 +13,13 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class Lock(Command):
-    """Lock all the wallets in the given beekeeper session."""
+    """
+    Lock all the wallets in the given beekeeper session.
+
+    Attributes:
+        app_state: The application state to lock, if available.
+        session: The beekeeper session to lock.
+    """
 
     app_state: AppState | None = None
     session: AsyncSession
