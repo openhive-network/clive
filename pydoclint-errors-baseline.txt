@@ -296,9 +296,6 @@ clive/__private/core/error_handlers/abc/error_notificator.py
     DOC503: Method `ErrorNotificator.__aexit__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CannotNotifyError'].
 --------------------
 clive/__private/core/formatters/humanize.py
-    DOC101: Function `humanize_bool`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `humanize_bool`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: bool].
-    DOC201: Function `humanize_bool` does not have a return section in docstring
     DOC101: Function `humanize_percent`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `humanize_percent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hive_percent: Decimal].
     DOC201: Function `humanize_percent` does not have a return section in docstring

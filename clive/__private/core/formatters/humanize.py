@@ -511,7 +511,15 @@ def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: 
 
 
 def humanize_bool(value: bool) -> str:  # noqa: FBT001
-    """Convert True/False to a more human-readable format."""
+    """
+    Convert True/False to a more human-readable format.
+
+    Args:
+        value: A boolean value to be converted.
+
+    Returns:
+        A string "YES" if value is True, otherwise "NO".
+    """
     if value:
         return "YES"
     return "NO"
