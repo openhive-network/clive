@@ -12,7 +12,12 @@ if TYPE_CHECKING:
 
 
 class AsyncGuardNotAvailableError(CliveError):
-    """Raised when trying to acquire a guard that is already acquired."""
+    """
+    Raised when trying to acquire a guard that is already acquired.
+
+    Attributes:
+        MESSAGE: A message indicating that the guard is already acquired.
+    """
 
     MESSAGE: Final[str] = "Guard is already acquired."
 
