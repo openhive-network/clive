@@ -11,7 +11,16 @@ if TYPE_CHECKING:
 
 
 def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.Vests:
-    """Convert vests/hive asset always to vests. To convert hive to vests gdpo must be provided."""
+    """
+    Convert vests/hive asset always to vests. To convert hive to vests gdpo must be provided.
+
+    Args:
+        value: The asset to convert, can be either vests or hive.
+        gdpo: The dynamic global properties to use for conversion if needed.
+
+    Returns:
+        The converted asset to vests.
+    """
     if isinstance(value, Asset.Vests):
         return value
 
