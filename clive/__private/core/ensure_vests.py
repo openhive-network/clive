@@ -28,7 +28,16 @@ def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.V
 
 
 async def ensure_vests_async(value: Asset.VotingT, world: World) -> Asset.Vests:
-    """Convert vests/hive asset always to vests. To convert hive to vests gdpo must be awaited."""
+    """
+    Convert vests/hive asset always to vests. To convert hive to vests gdpo must be awaited.
+
+    Args:
+        value: The asset to convert, can be either vests or hive.
+        world: The world instance to access the dynamic global properties.
+
+    Returns:
+        The converted asset to vests.
+    """
     if isinstance(value, Asset.Vests):
         return value
 
