@@ -81,7 +81,7 @@ class ButtonOpenTransactionFromFile(CliveButton):
         """Used to identify exactly that open from file button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Open from file ({self.custom_bindings.app.load_transaction_from_file.button_display})")
+        super().__init__(f"Load from file ({self.custom_bindings.app.load_transaction_from_file.button_display})")
 
 
 class ButtonContainer(Horizontal, CliveWidget):
