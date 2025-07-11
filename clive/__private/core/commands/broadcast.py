@@ -13,7 +13,13 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class Broadcast(Command):
-    """Broadcasts the given operations/transactions to the blockchain."""
+    """
+    Broadcasts the given transaction to the blockchain.
+
+    Attributes:
+        node: The node to which the transaction will be broadcasted.
+        transaction: The transaction to be broadcasted.
+    """
 
     node: Node
     transaction: Transaction
