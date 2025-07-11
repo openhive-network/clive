@@ -18,7 +18,12 @@ class CommandError(CliveError):
 
 @dataclass(kw_only=True)
 class Command(ABC):
-    """An abstract class that defines a common interface for executing commands."""
+    """
+    An abstract class that defines a common interface for executing commands.
+
+    Attributes:
+        was_execution_skipped: Indicates whether the command execution was skipped.
+    """
 
     was_execution_skipped: bool = field(default=False, init=False)
 
