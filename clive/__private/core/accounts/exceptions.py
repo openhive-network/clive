@@ -32,7 +32,13 @@ class AccountNotFoundError(AccountAccessError):
 
 
 class AccountAlreadyExistsError(AccountsUpdateError):
-    """Raised when account already exists in some place."""
+    """
+    Raised when account already exists in some place.
+
+    Args:
+        account_name: The name of the account that already exists.
+        place: The place where the account already exists.
+    """
 
     def __init__(self, account_name: str, place: str) -> None:
         super().__init__(f"Account {account_name} already exists in {place}.")
