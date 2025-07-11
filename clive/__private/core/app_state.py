@@ -14,7 +14,12 @@ LockSource = Literal["beekeeper_wallet_lock_status_update_worker", "unknown"]
 
 @dataclass
 class AppState:
-    """A class that holds information about the current state of an application."""
+    """
+    A class that holds information about the current state of an application.
+
+    Attributes:
+        world: The world instance associated with the application.
+    """
 
     world: World
     _is_unlocked: bool = False
