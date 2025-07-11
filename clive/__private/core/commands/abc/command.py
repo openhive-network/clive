@@ -40,7 +40,12 @@ class Command(ABC):
         """
 
     async def execute(self) -> None:
-        """Execute the command. The result could be accessed via the `result` property."""
+        """
+        Execute the command. The result could be accessed via the `result` property.
+
+        Raises:
+            Exception: Reraises any exception that happened in the abstract `_execute`.
+        """
         if self._should_skip_execution:
             self.was_execution_skipped = True
             self._log_execution_skipped()
