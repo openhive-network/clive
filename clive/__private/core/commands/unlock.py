@@ -30,7 +30,16 @@ class UnlockWalletStatus:
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured, CommandWithResult[UnlockWalletStatus]):
-    """Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper."""
+    """
+    Unlock the profile-related wallets (user keys and encryption key) managed by the beekeeper.
+
+    Attributes:
+        profile_name: The name of the profile to unlock.
+        session: The asynchronous session to use for wallet operations.
+        time: Optional; if set, will set a timeout for the profile.
+        permanent: If `True`, the timeout will be permanent; otherwise, it will be temporary.
+        app_state: Optional; if provided, will update the app state with the unlocked wallets.
+    """
 
     profile_name: str
     session: AsyncSession
