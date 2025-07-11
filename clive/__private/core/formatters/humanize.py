@@ -526,7 +526,15 @@ def humanize_bool(value: bool) -> str:  # noqa: FBT001
 
 
 def humanize_percent(hive_percent: Decimal) -> str:
-    """Convert percent Decimal to percent string in human-readable format."""
+    """
+    Convert percent Decimal to percent string in human-readable format.
+
+    Args:
+        hive_percent: A value representing the percentage value.
+
+    Returns:
+        A data representing the percentage value rounded to the defined precision.
+    """
     return f"{_round_to_precision(hive_percent, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
 
 
