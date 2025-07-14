@@ -9,10 +9,10 @@ if TYPE_CHECKING:
 
 
 class ConfirmInvalidateSignaturesDialog(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to invalidate signatures of loaded transaction."""
+    """Dialog to confirm if the user wants to invalidate signatures of a transaction."""
 
     CONFIRM_QUESTION_REFRESH_METADATA: Final[str] = (
-        "Transaction loaded from file contains signatures.\n"
+        "Transaction contains signatures.\n"
         "Confirming this action will invalidate them.\n\n"
         "Are you sure you want to proceed?"
     )
