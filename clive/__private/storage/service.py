@@ -360,6 +360,19 @@ class PersistentStorageService:
         return model_cls.parse_raw(raw)
 
     async def _read_profile_file_raw(self, profile_filepath: Path) -> str:
+        """
+        Read profile file and decrypt it.
+
+        Args:
+            profile_filepath: Path to the profile file to be read.
+
+        Raises:
+            ProfileEncryptionError: If profile could not be decrypted e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
+
+        Returns:
+            Decrypted profile content as a string.
+        """
         encrypted_profile = profile_filepath.read_text()
         try:
             decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
