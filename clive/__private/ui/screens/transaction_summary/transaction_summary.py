@@ -74,26 +74,26 @@ class ButtonSave(CliveButton):
         )
 
 
-class ButtonOpenTransactionFromFile(CliveButton):
+class ButtonLoadTransactionFromFile(CliveButton):
     """Button used to load transaction from file."""
 
     class Pressed(CliveButton.Pressed):
-        """Used to identify exactly that open from file button was pressed."""
+        """Used to identify exactly that load from file button was pressed."""
 
     def __init__(self) -> None:
         super().__init__(f"Load from file ({self.custom_bindings.app.load_transaction_from_file.button_display})")
 
 
 class ButtonContainer(Horizontal, CliveWidget):
-    """Container for storing ButtonBroadcast, ButtonOpenTransactionFromFile and ButtonSave."""
+    """Container for storing ButtonBroadcast, ButtonLoadTransactionFromFile and ButtonSave."""
 
     def compose(self) -> ComposeResult:
         if self.profile.transaction:
             yield ButtonSave()
-            yield ButtonOpenTransactionFromFile()
+            yield ButtonLoadTransactionFromFile()
             yield ButtonBroadcast()
         else:
-            yield ButtonOpenTransactionFromFile()
+            yield ButtonLoadTransactionFromFile()
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
@@ -213,7 +213,7 @@ class TransactionSummary(BaseScreen):
         else:
             await refresh()
 
-    @on(ButtonOpenTransactionFromFile.Pressed)
+    @on(ButtonLoadTransactionFromFile.Pressed)
     def load_transaction_from_file_by_button(self) -> None:
         self.app.action_load_transaction_from_file()
 
