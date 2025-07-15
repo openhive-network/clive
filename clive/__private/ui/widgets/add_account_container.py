@@ -13,7 +13,7 @@ from clive.__private.validators.set_tracked_account_validator import SetTrackedA
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.screens.config.account_management.common.manage_accounts_table import AccountsType
+    from clive.__private.ui.screens.settings.account_management.common.manage_accounts_table import AccountsType
 
 
 class AddAccountContainer(Horizontal, CliveWidget):

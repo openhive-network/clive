@@ -94,7 +94,7 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
             return
 
         async def impl() -> None:
-            if self.app.current_mode == "config":
+            if self.app.current_mode == "settings":
                 await self.app.switch_mode_with_reset("dashboard")
             self.app.push_screen(AccountDetails(self.account))
 

@@ -10,9 +10,9 @@ from clive.__private.ui.forms.create_profile.new_key_alias_form_screen import Ne
 from clive.__private.ui.forms.create_profile.profile_credentials_form_screen import ProfileCredentialsFormScreen
 from clive.__private.ui.forms.create_profile.set_account_form_screen import SetAccountFormScreen, WorkingAccountCheckbox
 from clive.__private.ui.forms.create_profile.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.screens.config import Config
-from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
+from clive.__private.ui.screens.settings import Settings
+from clive.__private.ui.screens.settings.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
@@ -107,7 +107,7 @@ async def create_profile_finish(pilot: ClivePilot) -> None:
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
     assert_is_dashboard(pilot)
-    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.app.settings.key, Config)
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.app.settings.key, Settings)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
     key_aliases = pilot.app.screen.query(KeyAliasRow)

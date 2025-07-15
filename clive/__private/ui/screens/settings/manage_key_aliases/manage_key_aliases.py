@@ -106,7 +106,7 @@ class ManageKeyAliases(BaseScreen):
         ),
     ]
 
-    BIG_TITLE = "configuration"
+    BIG_TITLE = "Settings"
     SUBTITLE = "Manage key aliases"
 
     def __init__(self) -> None:

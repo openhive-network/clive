@@ -8,7 +8,7 @@ from textual.widgets import TabPane
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.screens.config.account_management.common.manage_accounts_table import (
+from clive.__private.ui.screens.settings.account_management.common.manage_accounts_table import (
     AccountsType,
     ManageAccountsTable,
 )

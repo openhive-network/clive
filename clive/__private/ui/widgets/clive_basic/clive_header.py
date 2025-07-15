@@ -117,15 +117,15 @@ class DashboardButton(OneLineButtonUnfocusable):
         self.app.run_worker_with_screen_remove_guard(self.app.go_to_dashboard())
 
 
-class ConfigButton(OneLineButtonUnfocusable):
+class SettingsButton(OneLineButtonUnfocusable):
     def __init__(self) -> None:
-        super().__init__("Config", variant="grey-lighten")
-        self.tooltip = "Go to config"
+        super().__init__("Settings", variant="grey-lighten")
+        self.tooltip = "Go to settings"
 
     @on(OneLineButton.Pressed)
-    def go_to_config(self) -> None:
+    def go_to_settings(self) -> None:
         # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
-        self.app.run_worker_with_screen_remove_guard(self.app.go_to_config())
+        self.app.run_worker_with_screen_remove_guard(self.app.go_to_settings())
 
 
 class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
@@ -175,7 +175,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @property
     def _is_current_screen_account_management(self) -> bool:
-        from clive.__private.ui.screens.config.account_management import AccountManagement
+        from clive.__private.ui.screens.settings.account_management import AccountManagement
 
         return isinstance(self.app.screen, AccountManagement)
 
@@ -254,7 +254,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
     @on(OneLineButton.Pressed)
     async def post_message_to_change_node_address(self) -> None:
         from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
-        from clive.__private.ui.screens.config.switch_node_address import SwitchNodeAddress
+        from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
 
         if isinstance(self.app.screen, SwitchNodeAddressDialog | SwitchNodeAddress):
             return
@@ -379,7 +379,7 @@ class CliveHeader(CliveRawHeader):
 
     def _create_right_part_bar(self) -> ComposeResult:
         if self.app_state.is_unlocked:
-            yield ConfigButton()
+            yield SettingsButton()
             yield DashboardButton()
             yield CartStatus()
         yield NodeStatus()

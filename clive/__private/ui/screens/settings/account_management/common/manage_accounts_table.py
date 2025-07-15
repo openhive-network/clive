@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Literal
 from textual import on
 
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
-from clive.__private.ui.screens.config.account_management.common.header_of_tables import AccountsTableHeader
+from clive.__private.ui.screens.settings.account_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,

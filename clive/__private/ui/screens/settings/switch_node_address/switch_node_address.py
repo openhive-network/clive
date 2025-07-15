@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class SwitchNodeAddress(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BIG_TITLE = "configuration"
+    BIG_TITLE = "Settings"
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
     def create_main_panel(self) -> ComposeResult:

@@ -7,9 +7,9 @@ from textual.binding import Binding
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.config.account_management.account_management import AccountManagement
-from clive.__private.ui.screens.config.manage_key_aliases import ManageKeyAliases
-from clive.__private.ui.screens.config.switch_node_address import SwitchNodeAddress
+from clive.__private.ui.screens.settings.account_management.account_management import AccountManagement
+from clive.__private.ui.screens.settings.manage_key_aliases import ManageKeyAliases
+from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.section import Section
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Config(BaseScreen):
+class Settings(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
@@ -26,7 +26,7 @@ class Config(BaseScreen):
     ]
 
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle("Configuration")
+        yield BigTitle("Settings")
         with Section(title="Please choose which configuration you would like to make"):
             yield OneLineButton("Select node", id_="select-node")
             yield OneLineButton("Manage key aliases", id_="manage-key-aliases")

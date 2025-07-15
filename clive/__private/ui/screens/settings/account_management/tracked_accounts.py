@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final
 
-from clive.__private.ui.screens.config.account_management.common.manage_accounts_tab_pane import ManageAccountsTabPane
+from clive.__private.ui.screens.settings.account_management.common.manage_accounts_tab_pane import ManageAccountsTabPane
 
 
 class TrackedAccounts(ManageAccountsTabPane):

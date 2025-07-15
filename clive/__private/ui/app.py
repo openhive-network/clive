@@ -28,9 +28,9 @@ from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
-from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
+from clive.__private.ui.screens.settings import Settings
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
 from clive.exceptions import BindingFileInvalidError, ScreenNotFoundError
@@ -68,7 +68,7 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(action="help", description="Help", show=False),
         CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(action="go_to_transaction_summary", show=False),
         CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(action="go_to_dashboard", show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.settings.create(action="go_to_config", description="Config", show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.settings.create(action="go_to_settings", show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
     ]
 
@@ -81,7 +81,7 @@ class Clive(App[int]):
         "unlock": Unlock,
         "create_profile": CreateProfileForm,
         "dashboard": Dashboard,
-        "config": Config,
+        "settings": Settings,
     }
 
     _WALLET_LOCK_STATUS_WORKER_GROUP_NAME: Final[str] = "wallet_lock_status"
@@ -241,9 +241,9 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
-    async def action_go_to_config(self) -> None:
+    async def action_go_to_settings(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
-            await self.go_to_config()
+            await self.go_to_settings()
 
     async def action_go_to_dashboard(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
@@ -389,13 +389,13 @@ class Clive(App[int]):
 
         await self.world.commands.lock()
 
-    async def go_to_config(self) -> None:
+    async def go_to_settings(self) -> None:
         if not self.world.app_state.is_unlocked:
             return
-        if self.current_mode == "config":
-            self.get_screen_from_current_stack(Config).pop_until_active()
+        if self.current_mode == "settings":
+            self.get_screen_from_current_stack(Settings).pop_until_active()
         elif self.current_mode == "dashboard":
-            await self.switch_mode_with_reset("config")
+            await self.switch_mode_with_reset("settings")
         else:
             raise AssertionError(f"Unexpected mode: {self.current_mode}")
 
@@ -404,7 +404,7 @@ class Clive(App[int]):
             return
         if self.current_mode == "dashboard":
             self.get_screen_from_current_stack(Dashboard).pop_until_active()
-        elif self.current_mode == "config":
+        elif self.current_mode == "settings":
             await self.switch_mode_with_reset("dashboard")
         else:
             raise AssertionError(f"Unexpected mode: {self.current_mode}")
@@ -418,7 +418,7 @@ class Clive(App[int]):
         if isinstance(self.screen, TransactionSummary):
             return
 
-        if self.current_mode == "config":
+        if self.current_mode == "settings":
             await self.switch_mode_with_reset("dashboard")
 
         if not self.world.profile.transaction.is_signed:
