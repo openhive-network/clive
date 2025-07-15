@@ -1,0 +1,74 @@
+site_name: !ENV [CLIVE_PYDOC_SITE_NAME, 'Clive']
+site_url: !ENV [CLIVE_PYDOC_SITE_URL, 'https://gitlab.syncad.com/']
+repo_name: !ENV [CLIVE_PYDOC_REPO_NAME, 'hive/clive']
+repo_url: !ENV [CLIVE_PYDOC_REPO_URL, 'https://gitlab.syncad.com/hive/clive/']
+
+markdown_extensions:
+  - pycon
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - toc:
+      permalink: true
+      baselevel: 1
+
+theme:
+  name: "material"
+  features:
+      - navigation.tabs
+      - navigation.tabs.sticky
+      - navigation.indexes
+      - navigation.footer
+      - navigation.instant
+      - navigation.path
+      - navigation.instant.progress
+      - navigation.top
+      - search.highlight
+      - content.code.annotate
+      - content.code.copy
+  palette:
+      - media: "(prefers-color-scheme: light)"
+        scheme: default
+        primary: teal
+        accent: green
+        toggle:
+          icon: material/weather-sunny
+          name: Switch to dark mode
+      - media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        primary: black
+        toggle:
+          icon: material/weather-night
+          name: Switch to light mode
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://textual.textualize.io/objects.inv
+            - https://wax-cb93b7.pages.syncad.com/objects.inv
+          options:
+            parameter_headings: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_signature_annotations: true
+            show_submodules: true  # consider disabling (which is disabled by default) so we can manage the structure in a better way
+            separate_signature: true
+            signature_crossrefs: true
+            merge_init_into_class: true
+
+extra_css:
+  - custom.css
+
+nav:
+  - Home: index.md
+  - Development: development.md
+  - Reference: reference.md
