@@ -29,6 +29,15 @@ repos:
           - 'prettier@2.8.8'
           - '@azabraao/prettier-plugin-css-order@1.3.0'
         args: [ "--print-width", "120", "--plugin=@azabraao/prettier-plugin-css-order" ]
+      - id: prettier
+        name: pretty format markdown
+        additional_dependencies: [ 'prettier@2.8.8' ]
+        files: \.md$
+        args:
+          - "--print-width"
+          - "120"
+          - "--prose-wrap"
+          - "always"
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.2.1
     hooks:
