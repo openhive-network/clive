@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.constants.node import CANCEL_PROXY_VALUE
+from clive.__private.models.schemas import AccountWitnessProxyOperation
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -15,7 +16,6 @@ from clive_local_tools.checkers.blockchain_checkers import assert_operations_pla
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
-from schemas.operations import AccountWitnessProxyOperation
 
 ACCOUNT_NAME: Final[str] = WORKING_ACCOUNT_NAME
 PROXY_ACCOUNT_NAME: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
