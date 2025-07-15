@@ -4,7 +4,7 @@ from typing import Final
 
 APP_QUIT_KEY_BINDING: Final[str] = "ctrl+q"
 NEXT_SCREEN_BINDING_KEY: Final[str] = "ctrl+n"
-PREVIOUS_SCREEN_BINDING_KEY: Final[str] = "ctrl+p"
+PREVIOUS_SCREEN_BINDING_KEY: Final[str] = "ctrl+b"
 FINALIZE_TRANSACTION_BINDING_KEY: Final[str] = "f6"
 SAVE_TRANSACTION_TO_FILE_BINDING_KEY: Final[str] = "f2"
 ADD_OPERATION_TO_CART_BINDING_KEY: Final[str] = "f2"

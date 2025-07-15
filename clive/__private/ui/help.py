@@ -20,7 +20,7 @@ class Help(BaseScreen):
     BINDINGS = [
         Binding("f1,q,question_mark,escape", "app.pop_screen", "Back", key_display="esc"),
         Binding("t", "toggle_table_of_contents", "Toggle TOC"),
-        Binding("ctrl+p", "back", "Back", show=False),
+        Binding("ctrl+b", "back", "Back", show=False),
         Binding("ctrl+n", "forward", "Forward", show=False),
     ]
 
