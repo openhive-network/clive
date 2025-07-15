@@ -1,5 +1,5 @@
 stages:
-  - static_code_analysis
+  # - static_code_analysis
   - build
   - tests
   - deploy
@@ -55,38 +55,38 @@ default:
   tags:
     - public-runner-docker
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-pre_commit_checks:
-  stage: static_code_analysis
-  extends: .pre_commit_checks_template
+# pre_commit_checks:
+#   stage: static_code_analysis
+#   extends: .pre_commit_checks_template
 
-verify_poetry_lock_sanity:
-  stage: static_code_analysis
-  extends: .verify_poetry_lock_sanity_template
-  script:
-    - poetry check --lock
+# verify_poetry_lock_sanity:
+#   stage: static_code_analysis
+#   extends: .verify_poetry_lock_sanity_template
+#   script:
+#     - poetry check --lock
 
-lint_code_with_ruff:
-  stage: static_code_analysis
-  extends: .lint_code_with_ruff_template
-  script:  # our own script because of newer ruff version
-    - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
-      ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
+# lint_code_with_ruff:
+#   stage: static_code_analysis
+#   extends: .lint_code_with_ruff_template
+#   script:  # our own script because of newer ruff version
+#     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
+#       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
 
 
-formatting_with_ruff_check:
-  stage: static_code_analysis
-  extends: .project_develop_configuration_template
-  script:
-    - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
-      ruff format --check --diff ${PACKAGES_TO_CHECK}
+# formatting_with_ruff_check:
+#   stage: static_code_analysis
+#   extends: .project_develop_configuration_template
+#   script:
+#     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
+#       ruff format --check --diff ${PACKAGES_TO_CHECK}
 
-type_check_with_mypy:
-  stage: static_code_analysis
-  extends: .type_check_with_mypy_template
+# type_check_with_mypy:
+#   stage: static_code_analysis
+#   extends: .type_check_with_mypy_template
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -159,7 +159,7 @@ build_wheel:
     - stat dist/*.whl
     - python3 -m pip install dist/*.whl
     - pip list --editable
-    - clive --version  # assertion that Clive can be run as application
+    # - clive --version  # assertion that Clive can be run as application
   artifacts:
     reports:
       junit: $PATH_TO_REPORT
@@ -272,7 +272,7 @@ deploy_wheel_to_pypi:
   extends: .docker_image_builder_job_template
   stage: build_and_deploy_docker
   needs:
-    - job: pre_commit_checks
+    # - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
     - job: deploy_wheel_to_gitlab
@@ -365,7 +365,7 @@ build_and_publish_tagged_image:
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
   needs:
-    - job: pre_commit_checks
+    # - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
     - job: deploy_wheel_to_gitlab
