@@ -43,6 +43,11 @@ variables:
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
+  # PIP INDEX URL's
+  FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
+  SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+  THIRD_INDEX: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+
 include:
   - project: 'hive/hive'
     ref: 9009edf6270db5a0f3bc1d77308bd5cbfb46c1f6
@@ -100,6 +105,62 @@ type_check_with_mypy:
     REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
     SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
     BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
+
+.runtime_like_python_env:
+  stage: build
+  extends: .configuration_template
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/clive"
+  needs:
+    - job: build_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_template, before_script]
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
+    - pip list
+
+
+.build_python_docs_env:
+  extends: .runtime_like_python_env
+  stage: build
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
+    - pip list
+
+.python_docs_variables:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      variables:
+        # subpath to branches content for preview
+        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+        CURRENT_URL: $CURRENT_CONTENT_PATH
+    - variables:
+        # default branch is exposed at GitLab Pages root
+        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_URL: ""
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/clive"
+    PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
+    PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
+    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
+
+build_python_docs:
+  extends:
+    - .build_python_docs_env
+    - .python_docs_variables
+  script:
+    - cd $PYPROJECT_DIR
+    - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
+  artifacts:
+    paths:
+      - $DOCS_BUILD_TARGET_DIR
+    when: always
+    expire_in: 1 week
+
 
 prepare_mainnet_hived_image:
   extends: .common_prepare_hived_image
@@ -235,6 +296,50 @@ testing_password_private_key_logging:
     - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
+
+.python_docs_deployment_base:
+  extends: .python_docs_variables
+  stage: deploy
+  cache:
+    # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
+    # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
+    key: gitlab-pages
+    paths: [ public ]
+  artifacts:
+    paths: [ public ]
+  tags:  # has to be a single runner or cache should be shared between multiple runners
+    - data-cache-storage
+
+deploy_python_docs:
+  pages: true
+  extends: .python_docs_deployment_base
+  needs:
+    - job: build_python_docs
+      artifacts: true
+  variables:
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
+  script:
+    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+    - mkdir -p $PAGES_CONTENT_PATH
+    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  environment:
+    name: $PAGES_ENV_NAME
+    action: start
+    url: $PAGES_URL
+    on_stop: clean_python_docs_preview
+
+clean_python_docs_preview:
+  extends: .python_docs_deployment_base
+  script:
+    - echo "Removing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+  environment:
+    name: $PAGES_ENV_NAME
+    action: stop
+  when: manual
+  allow_failure: true
 
 deploy_wheel_to_gitlab:
   extends: .deploy_wheel_to_gitlab_template
