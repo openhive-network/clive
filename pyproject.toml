@@ -75,6 +75,11 @@ types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 
+[tool.poetry.group.docs.dependencies]
+mkdocs = "1.6.1"
+mkdocstrings-python="1.16.10"
+mkdocs-material = "9.6.12"
+markdown-pycon = "1.0.1"
 
 [tool.poetry-dynamic-versioning]
 enable = true
