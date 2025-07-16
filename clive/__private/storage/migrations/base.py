@@ -37,7 +37,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
         cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
-        return hash(self.json(indent=4))
+        return hash(self.json())
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
@@ -92,7 +92,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
 
     @classmethod
     def _get_revision_seed(cls) -> str:
-        return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)
+        return cls.schema_json() + str(cls._REVISION_NONCE)
 
     @classmethod
     def _validate_upgrade_definition(cls) -> None:
