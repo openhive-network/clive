@@ -141,5 +141,5 @@ class Transaction(SchemasTransaction):
         return visitor.get_unknown_accounts(already_known_accounts)
 
 
-class TransactionWithHash(Transaction):
+class TransactionWithHash(Transaction, kw_only=True):
     transaction_id: TransactionId
