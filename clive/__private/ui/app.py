@@ -66,9 +66,9 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.app.quit.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.clear_notifications.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(action="help", description="Help", show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(action="go_to_transaction_summary", show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(action="go_to_dashboard", show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.settings.create(action="go_to_settings", show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.settings.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
     ]
 
@@ -241,11 +241,11 @@ class Clive(App[int]):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
-    async def action_go_to_settings(self) -> None:
+    async def action_settings(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_settings()
 
-    async def action_go_to_dashboard(self) -> None:
+    async def action_dashboard(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_dashboard()
 
@@ -254,7 +254,7 @@ class Clive(App[int]):
             return
         self.push_screen(LoadTransactionFromFileDialog())
 
-    async def action_go_to_transaction_summary(self) -> None:
+    async def action_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_transaction_summary()
 

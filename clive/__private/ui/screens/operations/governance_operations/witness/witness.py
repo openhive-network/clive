@@ -80,9 +80,7 @@ class WitnessNameLabel(Label, CliveWidget):
 class Witness(GovernanceTableRow[WitnessData]):
     """Check if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
-    BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.operations.witness_show_details.create(action="show_details", description="Details")
-    ]
+    BINDINGS = [CLIVE_PREDEFINED_BINDINGS.operations.witness_show_details.create(description="Details")]
 
     @property
     def is_operation_in_cart(self) -> bool:
@@ -111,7 +109,7 @@ class Witness(GovernanceTableRow[WitnessData]):
         yield WitnessDetailsLabel(self.row_data.name, classes=class_name)
 
     @on(WitnessDetailsLabel.Clicked)
-    async def action_show_details(self) -> None:
+    async def action_witness_show_details(self) -> None:
         await self.app.push_screen(WitnessDetailsDialog(witness_name=self.row_data.name))
 
     def get_action_row_id(self) -> str:

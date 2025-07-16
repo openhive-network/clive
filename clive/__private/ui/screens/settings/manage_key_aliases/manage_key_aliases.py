@@ -101,9 +101,7 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(
-            action="new_key_alias", description="Add new alias"
-        ),
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(),
     ]
 
     BIG_TITLE = "Settings"
@@ -117,5 +115,5 @@ class ManageKeyAliases(BaseScreen):
         with self.__scrollable_part:
             yield ManageKeyAliasesTable()
 
-    def action_new_key_alias(self) -> None:
+    def action_add_new_alias(self) -> None:
         self.app.push_screen(NewKeyAliasDialog())

@@ -189,7 +189,7 @@ class TransactionSummary(BaseScreen):
         await self._broadcast()
 
     @on(ButtonSave.Pressed)
-    def action_save_to_file(self) -> None:
+    def action_save_transaction_to_file(self) -> None:
         try:
             sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
         except NoItemSelectedError:
@@ -198,18 +198,18 @@ class TransactionSummary(BaseScreen):
         self.app.push_screen(SaveTransactionToFileDialog(sign_key))
 
     @on(RefreshMetadataButton.Pressed)
-    async def action_refresh_metadata(self) -> None:
+    async def action_update_metadata(self) -> None:
         async def refresh() -> None:
             await self._update_transaction_metadata()
             await self._rebuild_signatures_changed()
             self._update_subtitle()
 
-        async def refresh_metadata_cb(confirm: bool | None) -> None:
+        async def update_metadata_cb(confirm: bool | None) -> None:
             if confirm:
                 await refresh()
 
         if self.profile.transaction.is_signed:
-            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), update_metadata_cb)
         else:
             await refresh()
 
@@ -286,17 +286,9 @@ class TransactionSummary(BaseScreen):
             return
 
         self.bind(transaction_summary_bindings.broadcast.create())
-        self.bind(
-            transaction_summary_bindings.save_transaction_to_file.create(
-                action="save_to_file", description="Save to file"
-            )
-        )
+        self.bind(transaction_summary_bindings.save_transaction_to_file.create(description="Save to file"))
         if self.node.cached.online_or_none:
-            self.bind(
-                transaction_summary_bindings.update_metadata.create(
-                    action="refresh_metadata", description="Update metadata"
-                )
-            )
+            self.bind(transaction_summary_bindings.update_metadata.create())
         else:
             self.unbind(transaction_summary_bindings.update_metadata.key)
 

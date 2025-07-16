@@ -21,7 +21,7 @@ class Quit(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.app.quit.create(action="exit_cleanly"),
+        CLIVE_PREDEFINED_BINDINGS.app.quit.create(),
         Binding("escape", "cancel", "Back"),
     ]
 
@@ -43,7 +43,7 @@ class Quit(BaseScreen):
         self.app.pop_screen()
 
     @on(CliveButton.Pressed, "#quit")
-    def action_exit_cleanly(self) -> None:
+    def action_quit(self) -> None:
         # Profile saving is done when exiting World contextmanager
         self.log("Exiting cleanly")
         self.app.exit(message="CLIVE says goodbye!")

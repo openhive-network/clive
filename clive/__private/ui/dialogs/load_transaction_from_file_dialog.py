@@ -58,7 +58,7 @@ class LoadTransactionFromFileDialog(SelectFileBaseDialog[bool]):
             self._add_known_accounts()
         self.app.trigger_profile_watchers()
 
-        self.call_later(self.app.action_go_to_transaction_summary)
+        self.call_later(self.app.action_transaction_summary)
         return True
 
     def _check_for_unknown_bad_accounts(self, loaded_transaction: Transaction) -> bool:

@@ -61,7 +61,7 @@ class CartItemsAmountButton(CliveButton, can_focus=False):
 
     @on(Pressed)
     async def _go_to_transaction_summary(self) -> None:
-        await self.app.action_go_to_transaction_summary()
+        await self.app.action_transaction_summary()
 
 
 class CartItemsContainer(ScrollablePartFocusable):
