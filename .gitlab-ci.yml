@@ -5,13 +5,6 @@ stages:
   - deploy
   - build_and_deploy_docker
 
-workflow:
-  rules:
-    - if: '$CI_MERGE_REQUEST_IID'
-    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
-      when: never
-    - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
-
 variables:
   # git:
   GIT_STRATEGY: clone
@@ -51,6 +44,7 @@ variables:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
 include:
+  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/hive'
     ref: 9009edf6270db5a0f3bc1d77308bd5cbfb46c1f6
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
