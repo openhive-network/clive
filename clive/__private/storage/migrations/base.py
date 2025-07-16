@@ -35,7 +35,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
         cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
-        return hash(self.json(indent=4))
+        return hash(self.json())
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
