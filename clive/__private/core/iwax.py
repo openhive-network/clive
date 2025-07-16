@@ -199,8 +199,8 @@ def vests(amount: int) -> Asset.Vests:
 
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     result = wax.calculate_hp_apr(
-        head_block_num=data.head_block_number,
-        vesting_reward_percent=data.vesting_reward_percent,
+        head_block_num=int(data.head_block_number),
+        vesting_reward_percent=int(data.vesting_reward_percent),
         virtual_supply=to_python_json_asset(data.virtual_supply),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
     )
