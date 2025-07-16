@@ -17,7 +17,14 @@ variables:
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_SUBMODULE_DEPTH: 1
-
+  # first party libraries gitlab indexes:
+  # - 362 -> schemas
+  # - 419 -> wax
+  # - 434 -> beekeepy
+  FIRST_PARTY_EXTRA_INDEX_ARGS: |
+    --extra-index https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple
+    --extra-index https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
+    --extra-index https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple
   # static code analysis:
   PACKAGES_TO_CHECK: "clive/ tests/"
   # tests:
@@ -54,6 +61,42 @@ image: ${CI_BASE_IMAGE}
 default:
   tags:
     - public-runner-docker
+
+.runtime_like_env:
+  extends: .configuration_template
+  needs:
+    - job: build_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_template, before_script]
+    - pip install ${FIRST_PARTY_EXTRA_INDEX_ARGS} ${PYPROJECT_DIR}/dist/*.whl
+    - pip list
+
+.build_docs_env:
+  extends: .runtime_like_env
+  stage: build
+  before_script:
+    - !reference [.runtime_like_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
+    - pip list
+
+.docs_variables:
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      variables:
+        # subpath to branches content for preview
+        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+        CURRENT_URL: $CURRENT_CONTENT_PATH
+    - variables:
+        # default branch is exposed at GitLab Pages root
+        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_URL: ""
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+    PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
+    PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
+    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -124,6 +167,18 @@ build_wheel:
     - if [ ! -d "${DIST_DIR}" ] && [ -d "dist" ]; then cp -r "dist" "${DIST_DIR}"; fi
     - ls -al ${DIST_DIR}
 
+build_docs:
+  extends:
+    - .build_docs_env
+    - .docs_variables
+  script:
+    - cd $PYPROJECT_DIR
+    - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
+  artifacts:
+    paths:
+      - $DOCS_BUILD_TARGET_DIR
+    when: always
+    expire_in: 1 week
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -249,6 +304,50 @@ deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
   <<: *deploy_wheel_needs
+
+.docs_deployment_base:
+  extends: .docs_variables
+  stage: deploy
+  cache:
+    # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
+    # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
+    key: gitlab-pages
+    paths: [ public ]
+  artifacts:
+    paths: [ public ]
+  tags:  # has to be a single runner or cache should be shared between multiple runners
+    - data-cache-storage
+
+deploy_docs:
+  pages: true
+  extends: .docs_deployment_base
+  needs:
+    - job: build_docs
+      artifacts: true
+  variables:
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
+  script:
+    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+    - mkdir -p $PAGES_CONTENT_PATH
+    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  environment:
+    name: $PAGES_ENV_NAME
+    action: start
+    url: $PAGES_URL
+    on_stop: clean_docs_preview
+
+clean_docs_preview:
+  extends: .docs_deployment_base
+  script:
+    - echo "Removing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+  environment:
+    name: $PAGES_ENV_NAME
+    action: stop
+  when: manual
+  allow_failure: true
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
