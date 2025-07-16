@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
@@ -23,7 +22,7 @@ class StorageVersionNotFoundError(CliveError):
         super().__init__(self.message)
 
 
-class ProfileStorageBase(PreconfiguredBaseModel, ABC):
+class ProfileStorageBase(PreconfiguredBaseModel):
     _REVISIONS: ClassVar[list[Revision]] = []
     _REVISION_TO_MODEL_TYPE_MAP: ClassVar[dict[Revision, type[ProfileStorageBase]]] = {}
 
