@@ -39,8 +39,8 @@ class Transaction(SchemasTransaction):
             return operation in self.operations_models
         return operation in self.operations
 
-    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
-        return iter(self.operations_models)
+    # def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
+    #     raise NotImplementedError("######## __iter__ problem")
 
     def __len__(self) -> int:
         return len(self.operations)
