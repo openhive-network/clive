@@ -86,12 +86,11 @@ default:
       variables:
         # subpath to branches content for preview
         CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-        CURRENT_URL: $CURRENT_CONTENT_PATH
     - variables:
-        # default branch is exposed at GitLab Pages root
+        # default branch subpath
         CURRENT_CONTENT_PATH: "default/"
-        CURRENT_URL: ""
   variables:
+    CURRENT_URL: $CURRENT_CONTENT_PATH
     PYPROJECT_DIR: "${CI_PROJECT_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
