@@ -28,7 +28,7 @@ AllAlarmIdentifiersStorageModel = (
 )
 
 
-class AlarmStorageModel(PreconfiguredBaseModel):
+class AlarmStorageModel(PreconfiguredBaseModel, kw_only=True):
     name: str
     is_harmless: bool = False
     identifier: AllAlarmIdentifiersStorageModel
@@ -63,7 +63,7 @@ class TransactionStorageModel(PreconfiguredBaseModel):
     transaction_file_path: Path | None = None
 
 
-class ProfileStorageModel(ProfileStorageBase):
+class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
