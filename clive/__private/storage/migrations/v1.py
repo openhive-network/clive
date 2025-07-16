@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path  # noqa: TC003
-from typing import Self, TypeAlias
+from typing import ClassVar, Self, TypeAlias
 
 from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.__private.models.schemas import Transaction as SchemasTransaction
@@ -20,7 +20,7 @@ class TransactionStorageModel(PreconfiguredBaseModel):
 class ProfileStorageModel(v0.ProfileStorageModel):
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
-    _TransactionStorageModel: TypeAlias = TransactionStorageModel  # noqa: UP040
+    _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
 
     @classmethod
     def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model
