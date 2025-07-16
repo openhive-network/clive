@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence  # noqa: TC003
 from pathlib import Path  # noqa: TC003
-from typing import Any, Self, TypeAlias
+from typing import Any, ClassVar, Self, TypeAlias
 
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import PreconfiguredBaseModel
@@ -74,16 +74,16 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     node_address: str
     should_enable_known_accounts: bool = True
 
-    _AlarmStorageModel: TypeAlias = AlarmStorageModel  # noqa: UP040
-    _TrackedAccountStorageModel: TypeAlias = TrackedAccountStorageModel  # noqa: UP040
-    _KeyAliasStorageModel: TypeAlias = KeyAliasStorageModel  # noqa: UP040
-    _TransactionCoreStorageModel: TypeAlias = TransactionCoreStorageModel  # noqa: UP040
-    _TransactionStorageModel: TypeAlias = TransactionStorageModel  # noqa: UP040
-    _DateTimeAlarmIdentifierStorageModel: TypeAlias = DateTimeAlarmIdentifierStorageModel  # noqa: UP040
-    _RecoveryAccountWarningListedAlarmIdentifierStorageModel: TypeAlias = (  # noqa: UP040
+    _AlarmStorageModel: ClassVar[TypeAlias] = AlarmStorageModel  # noqa: UP040
+    _TrackedAccountStorageModel: ClassVar[TypeAlias] = TrackedAccountStorageModel  # noqa: UP040
+    _KeyAliasStorageModel: ClassVar[TypeAlias] = KeyAliasStorageModel  # noqa: UP040
+    _TransactionCoreStorageModel: ClassVar[TypeAlias] = TransactionCoreStorageModel  # noqa: UP040
+    _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel  # noqa: UP040
+    _DateTimeAlarmIdentifierStorageModel: ClassVar[TypeAlias] = DateTimeAlarmIdentifierStorageModel  # noqa: UP040
+    _RecoveryAccountWarningListedAlarmIdentifierStorageModel: ClassVar[TypeAlias] = (  # noqa: UP040
         RecoveryAccountWarningListedAlarmIdentifierStorageModel
     )
-    _AllAlarmIdentifiersStorageModel: TypeAlias = AllAlarmIdentifiersStorageModel  # noqa: UP040
+    _AllAlarmIdentifiersStorageModel: ClassVar[TypeAlias] = AllAlarmIdentifiersStorageModel  # noqa: UP040
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
