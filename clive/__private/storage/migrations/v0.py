@@ -15,11 +15,11 @@ from clive.__private.models.schemas import (
 from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
-class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
+class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel, tag=True):
     value: HiveDateTime
 
 
-class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel):
+class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel, tag=True):
     recovery_account: str
 
 
