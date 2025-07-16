@@ -305,9 +305,15 @@ class CliveCheckerboardTable(CliveWidget):
         Args:
             content: The content to check if the table should be updated.
 
-        Examples:
-        --------
-        return self.provider.content.actual_value != self.previous_value
+        Example:
+            The previous value should be stored and compared against the new value.
+            Implementation could look similar to:
+
+            ```python
+            def check_if_should_be_updated(self, content: ContentT) -> bool:
+                return content.actual_value != self._previous_value
+            ```
+
 
         Raises:
             InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.

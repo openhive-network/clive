@@ -12,12 +12,11 @@ def get_relative_css_path(file_path: str | Path, *, name: str = "") -> Path:
         name: Explicit name of the css file.
 
     Example:
-    -------
-    >>> get_relative_css_path("some_parent/some_file.py")
-    Path('some_parent/some_file.scss')
+        >>> get_relative_css_path("some_parent/some_file.py")
+        Path('some_parent/some_file.scss')
 
-    >>> get_relative_css_path("some_parent/some_file.py", name="some_name")
-    Path('some_parent/some_name.scss')
+        >>> get_relative_css_path("some_parent/some_file.py", name="some_name")
+        Path('some_parent/some_name.scss')
 
     Returns:
         The relative path to the css file.
