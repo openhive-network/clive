@@ -18,8 +18,6 @@ class TransactionStorageModel(PreconfiguredBaseModel):
 
 
 class ProfileStorageModel(v0.ProfileStorageModel):
-    _REVISION_NONCE = 1
-
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
     _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
