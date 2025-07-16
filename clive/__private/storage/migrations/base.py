@@ -92,7 +92,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
 
     @classmethod
     def _get_revision_seed(cls) -> str:
-        return cls.schema_json(indent=4) + str(cls._REVISION_NONCE)
+        return cls.schema_json() + str(cls._REVISION_NONCE)
 
     @classmethod
     def _validate_upgrade_definition(cls) -> None:
