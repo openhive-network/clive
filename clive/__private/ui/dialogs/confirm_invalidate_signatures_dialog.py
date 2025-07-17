@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 class ConfirmInvalidateSignaturesDialog(ConfirmActionDialog):
     """Dialog to confirm if the user wants to invalidate signatures of a transaction."""
 
-    CONFIRM_QUESTION_REFRESH_METADATA: Final[str] = (
+    CONFIRM_QUESTION_INVALIDATE_SIGNATURES: Final[str] = (
         "Transaction contains signatures.\n"
         "Confirming this action will invalidate them.\n\n"
         "Are you sure you want to proceed?"
     )
 
     def __init__(self) -> None:
-        super().__init__(confirm_question=self.CONFIRM_QUESTION_REFRESH_METADATA)
+        super().__init__(confirm_question=self.CONFIRM_QUESTION_INVALIDATE_SIGNATURES)
