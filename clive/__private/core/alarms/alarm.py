@@ -36,9 +36,6 @@ class Alarm[AlarmIdentifierT: AlarmIdentifier, AlarmDataT](ABC):
         identifier: An identifier of the alarm, which is used to distinguish alarms.
         alarm_data: Data associated with the alarm, which can be used to provide more information about the alarm.
         is_harmless: A flag indicating whether the alarm is harmless or not.
-
-    How to complete handle an alarm in CLI:
-    Soon...
     """
 
     ALARM_DESCRIPTION: ClassVar[str] = ""
