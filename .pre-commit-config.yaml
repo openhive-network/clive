@@ -38,6 +38,8 @@ repos:
           - "120"
           - "--prose-wrap"
           - "always"
+          - "--tab-width"
+          - "4"
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
     rev: v16.2.1
     hooks:
