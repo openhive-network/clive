@@ -346,6 +346,8 @@ class PersistentStorageService:
 
         Raises:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
+            ProfileEncryptionError: If profile could not be loaded e.g. due to beekeeper wallet being locked
+                or communication with beekeeper failed.
         """
         profile_filepath = self._get_profile_filepath_to_read(profile_name)
         if profile_filepath is None:

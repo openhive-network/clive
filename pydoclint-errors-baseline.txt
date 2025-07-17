@@ -29,6 +29,7 @@ clive/__private/models/asset.py
 clive/__private/storage/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `PersistentStorageService.load_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC503: Method `PersistentStorageService._load_and_migrate_latest_profile_model` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['ProfileDoesNotExistsError', 'ProfileEncryptionError']. Raised exceptions in the body: ['ProfileDoesNotExistsError'].
 --------------------
 clive/__private/ui/dialogs/edit_key_alias_dialog.py
     DOC502: Method `EditKeyAliasDialog._validate` has a "Raises" section in the docstring, but there are not "raise" statements in the body
