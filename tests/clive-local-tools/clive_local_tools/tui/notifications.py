@@ -52,8 +52,7 @@ async def extract_message_from_notification(
         timeout: The maximum time to wait for the notification to appear.
 
     Returns:
-    -------
-    The message extracted from the notification.
+        The message extracted from the notification.
 
     Raises:
         AssertionError: If the toast notification containing the expected message couldn't be found within the timeout.
@@ -105,8 +104,7 @@ def _extract_message_from_toasts(app: CliveApp, find_message_cb: Callable[[str],
         find_message_cb: The callback function to find the message within the notification content.
 
     Returns:
-    -------
-    The message extracted from the present toast notifications. Will return an empty string if no message was found.
+        The message extracted from the present toast notifications. Will return an empty string if no message was found.
     """
     toasts = app.screen.query(Toast)
     contents = [str(toast.render()) for toast in toasts]
@@ -128,8 +126,7 @@ def _extract_message_from_notifications_history(app: CliveApp, find_message_cb: 
         find_message_cb: The callback function to find the message within the notification content.
 
     Returns:
-    -------
-    The message extracted from the notification history. Will return an empty string if no message was found.
+        The message extracted from the notification history. Will return an empty string if no message was found.
     """
     message = ""
     for notification in app.notification_history:
