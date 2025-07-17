@@ -31,18 +31,18 @@ def assert_balances(
     output = result.output
     assert account_name in output, f"no balances of {account_name} account in balances output: {output}"
     assert any(
-        asset_amount.token() in line and asset_amount.pretty_amount() in line and balance in line
+        asset_amount.token(testnet=False) in line and asset_amount.pretty_amount() in line and balance in line
         for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()}  in balances output:\n{output}"
+    ), f"no {asset_amount.pretty_amount()} {asset_amount.token(testnet=False)}  in balances output:\n{output}"
 
 
 def assert_pending_withrawals(context: CLITester | Result, account_name: str, asset_amount: tt.Asset.AnyT) -> None:
     result = context.show_pending_withdrawals() if isinstance(context, CLITester) else context
     output = result.output
     assert any(
-        account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
+        account_name in line and asset_amount.pretty_amount() in line and asset_amount.token(testnet=False) in line.upper()
         for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
+    ), f"no {asset_amount.pretty_amount()} {asset_amount.token(testnet=False)} in pending withdrawals output:\n{output}"
 
 
 def get_authority_output(context: CLITester | Result, authority: AuthorityType) -> str:
