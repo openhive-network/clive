@@ -50,23 +50,23 @@ build system that Clive uses.
 1. [Install poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
 2. Clone the repository
 
-   ```bash
-   git clone https://gitlab.syncad.com/hive/clive.git
-   ```
+    ```bash
+    git clone https://gitlab.syncad.com/hive/clive.git
+    ```
 
 3. Create a virtual environment (you can do it your way, using poetry, pyenv, virtualenv, pipx, etc.)
 
-   ```bash
-   cd clive/                 # Go to repository root directory
-   python -m venv venv/      # Create virtual environment in the venv/ directory
-   . venv/bin/activate       # Activate the virtual environment
-   ```
+    ```bash
+    cd clive/                 # Go to repository root directory
+    python -m venv venv/      # Create virtual environment in the venv/ directory
+    . venv/bin/activate       # Activate the virtual environment
+    ```
 
 4. Install CLIVE
 
-   ```bash
-   poetry install  # Install CLIVE and its dev-dependencies in the virtual environment
-   ```
+    ```bash
+    poetry install  # Install CLIVE and its dev-dependencies in the virtual environment
+    ```
 
 # Running in development
 
