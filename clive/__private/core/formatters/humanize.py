@@ -180,7 +180,7 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     return inflection.humanize(underscore(class_name))
 
 
-def humanize_operation_name(operation: OperationBase) -> str:
+def humanize_operation_name(operation: OperationBase | type[OperationBase]) -> str:
     """
     Return pretty formatted operation name.
 
@@ -188,8 +188,7 @@ def humanize_operation_name(operation: OperationBase) -> str:
         operation: Operation to be formatted.
 
     Example:
-        >>> operation = TransferToVestingOperation(from_='alice', to='bob', amount='1.000 HIVE')
-        >>> humanize_operation_name(operation)
+        >>> humanize_operation_name(TransferToVestingOperation)
         "Transfer to vesting"
 
     Returns:
