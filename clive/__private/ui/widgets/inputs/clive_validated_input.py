@@ -198,9 +198,8 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Return the validated value of the input as given InputReturnT or raise an exception if validation fails.
 
         Raises:  # noqa: D406
-        ------
-        FailedValidationError: Raised when validation fails.
-        InputValueError: Raised when cannot get the value of the input.
+            FailedValidationError: Raised when validation fails.
+            InputValueError: Raised when cannot get the value of the input.
         """
         self.validate_with_error(treat_as_required=False)
         return self._value
@@ -249,9 +248,8 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Validate the input and raise an exception if validation fails.
 
         Raises:  # noqa: D406
-        ------
-        FailedValidationError: Raised when validation fails.
-        InputValueError: Raised when cannot get the value of the input due to an error, which validation doesn't catch.
+            FailedValidationError: Raised when validation fails.
+            InputValueError: Raised when cannot get the input value due to an error, which validation doesn't catch.
         """
 
         def try_get_value() -> None:
@@ -334,8 +332,7 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Validate many inputs and raise an exception if any of them is invalid.
 
         Raises:  # noqa: D406
-        ------
-        FailedManyValidationError: Raised when validation fails.
+            FailedManyValidationError: Raised when validation fails.
         """
         combined_errors: list[FailedValidationError | InputValueError] = []
         for input_obj in inputs:

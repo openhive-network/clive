@@ -56,7 +56,6 @@ class AddAccountContainer(Horizontal, CliveWidget):
         Save the account to the profile.
 
         Returns: # noqa: D406
-        -------
             True if the account was saved, False otherwise.
         """
         if not self._account_input.validate_passed():

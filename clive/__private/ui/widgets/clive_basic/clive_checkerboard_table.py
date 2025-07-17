@@ -114,18 +114,16 @@ class CliveCheckerboardTable(CliveWidget):
     """
     Table that displays checkerboard rows.
 
-    Dynamic usage
-    -------------
-    1. Change `ATTRIBUTE_TO_WATCH` class-var.
-    2. Override `object_to_watch` property.
-    3. Override `check_if_should_be_updated`
-    4. Override (optionally) `is_anything_to_display`
-    5. Override `create_dynamic_rows`
-    6. Override `update_previous_state` (with creating your own previous state in the `__init__` method).
+    Dynamic usage:
+        1. Change `ATTRIBUTE_TO_WATCH` class-var.
+        2. Override `object_to_watch` property.
+        3. Override `check_if_should_be_updated`
+        4. Override (optionally) `is_anything_to_display`
+        5. Override `create_dynamic_rows`
+        6. Override `update_previous_state` (with creating your own previous state in the `__init__` method).
 
-    Static usage
-    ------------
-    1. Override `create_static_rows`
+    Static usage:
+        1. Override `create_static_rows`
 
     Attributes:
         DEFAULT_CSS: Default CSS for the table.
@@ -272,8 +270,7 @@ class CliveCheckerboardTable(CliveWidget):
         Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
         Raises:  # noqa: D406
-        ------
-        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
+            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
@@ -284,8 +281,7 @@ class CliveCheckerboardTable(CliveWidget):
         Override this method when using static table (ATTRIBUTE_TO_WATCH is not set).
 
         Raises:  # noqa: D406
-        ------
-        InvalidStaticDefinedError: When ATTRIBUTE_TO_WATCH has not been set without overriding the method.
+            InvalidStaticDefinedError: When ATTRIBUTE_TO_WATCH has not been set without overriding the method.
         """
         if not self.should_be_dynamic:
             raise InvalidStaticDefinedError
@@ -347,8 +343,7 @@ class CliveCheckerboardTable(CliveWidget):
         Must be overridden by the child class when using dynamic table.
 
         Raises:  # noqa: D406
-        ------
-        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
+            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
