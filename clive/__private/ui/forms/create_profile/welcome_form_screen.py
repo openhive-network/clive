@@ -26,8 +26,8 @@ class Description(Static):
 class WelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
     BINDINGS = [
         CLIVE_PREDEFINED_BINDINGS.form_navigation.previous_screen.create(
-            action="_there_is_no_back", description="Nothing", show=False
-        ),
+            action="", description="", show=False
+        ),  # overridden so it does not trigger the action
     ]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
