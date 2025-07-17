@@ -33,21 +33,21 @@ if TYPE_CHECKING:
     from clive.__private.ui.widgets.clive_basic.clive_checkerboard_table import CellContent
 
 
-class ButtonMoveUp(CliveButton):
+class MoveUpButton(CliveButton):
     """Button used for moving the operation up in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("↑", id_="move-up-button", disabled=disabled)
 
 
-class ButtonMoveDown(CliveButton):
+class MoveDownButton(CliveButton):
     """Button used for moving the operation down in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("↓", id_="move-down-button", disabled=disabled)
 
 
-class ButtonRawJson(CliveButton):
+class RawJsonButton(CliveButton):
     """Button used for displaying raw json of single operation added to cart."""
 
     class Pressed(CliveButton.Pressed):
@@ -119,12 +119,12 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self.query(CliveCheckerBoardTableCell).first()
 
     @property
-    def button_move_up(self) -> ButtonMoveUp:
-        return self.query_exactly_one(ButtonMoveUp)
+    def button_move_up(self) -> MoveUpButton:
+        return self.query_exactly_one(MoveUpButton)
 
     @property
-    def button_move_down(self) -> ButtonMoveDown:
-        return self.query_exactly_one(ButtonMoveDown)
+    def button_move_down(self) -> MoveDownButton:
+        return self.query_exactly_one(MoveDownButton)
 
     @property
     def button_delete(self) -> RemoveButton:
@@ -183,7 +183,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
                     button.focus()
 
         def was_arrow_previously_focused() -> bool:
-            return isinstance(previously_focused, (ButtonMoveUp, ButtonMoveDown))
+            return isinstance(previously_focused, (MoveUpButton, MoveDownButton))
 
         previously_focused = self.app.focused
         if not previously_focused:
@@ -230,7 +230,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         else:
             post_message_and_disable_action()
 
-    @on(ButtonRawJson.Pressed)
+    @on(RawJsonButton.Pressed)
     async def show_raw_json(self) -> None:
         await self.app.push_screen(RawJsonDialog(operation=self.operation))
 
@@ -243,10 +243,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         ]
 
     def _create_buttons_container(self) -> Horizontal:
-        button_move_up = ButtonMoveUp(disabled=self.is_first)
-        button_move_down = ButtonMoveDown(disabled=self.is_last)
+        button_move_up = MoveUpButton(disabled=self.is_first)
+        button_move_down = MoveDownButton(disabled=self.is_last)
         button_delete = RemoveButton()
-        button_show_json = ButtonRawJson()
+        button_show_json = RawJsonButton()
         return Horizontal(button_show_json, button_move_up, button_move_down, button_delete)
 
     def _is_operation_index_valid(self, value: int) -> bool:

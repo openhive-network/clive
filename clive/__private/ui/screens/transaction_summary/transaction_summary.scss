@@ -53,7 +53,7 @@ TransactionSummary {
       min-width: 8;
     }
 
-    ButtonRawJson {
+    RawJsonButton {
       margin-left: 0;
     }
   }
@@ -71,11 +71,11 @@ TransactionSummary {
         width: 23;
       }
 
-      ButtonBroadcast {
+      BroadcastButton {
         margin-left: 1;
       }
 
-      ButtonSave {
+      SaveButton {
         margin-right: 1;
       }
     }

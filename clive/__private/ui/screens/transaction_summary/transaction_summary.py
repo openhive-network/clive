@@ -50,7 +50,7 @@ class AlreadySignedHint(Label):
         super().__init__("(This transaction is already signed)")
 
 
-class ButtonBroadcast(CliveButton):
+class BroadcastButton(CliveButton):
     """Button used to broadcasting transaction."""
 
     class Pressed(CliveButton.Pressed):
@@ -62,7 +62,7 @@ class ButtonBroadcast(CliveButton):
         )
 
 
-class ButtonSave(CliveButton):
+class SaveButton(CliveButton):
     """Button used to save transaction to file."""
 
     class Pressed(CliveButton.Pressed):
@@ -74,7 +74,7 @@ class ButtonSave(CliveButton):
         )
 
 
-class ButtonLoadTransactionFromFile(CliveButton):
+class LoadTransactionFromFileButton(CliveButton):
     """Button used to load transaction from file."""
 
     class Pressed(CliveButton.Pressed):
@@ -85,15 +85,15 @@ class ButtonLoadTransactionFromFile(CliveButton):
 
 
 class ButtonContainer(Horizontal, CliveWidget):
-    """Container for storing ButtonBroadcast, ButtonLoadTransactionFromFile and ButtonSave."""
+    """Container for storing BroadcastButton, LoadTransactionFromFileButton and SaveButton."""
 
     def compose(self) -> ComposeResult:
         if self.profile.transaction:
-            yield ButtonSave()
-            yield ButtonLoadTransactionFromFile()
-            yield ButtonBroadcast()
+            yield SaveButton()
+            yield LoadTransactionFromFileButton()
+            yield BroadcastButton()
         else:
-            yield ButtonLoadTransactionFromFile()
+            yield LoadTransactionFromFileButton()
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
@@ -184,11 +184,11 @@ class TransactionSummary(BaseScreen):
         with ScrollablePart():
             yield CartTable()
 
-    @on(ButtonBroadcast.Pressed)
+    @on(BroadcastButton.Pressed)
     async def action_broadcast(self) -> None:
         await self._broadcast()
 
-    @on(ButtonSave.Pressed)
+    @on(SaveButton.Pressed)
     def action_save_transaction_to_file(self) -> None:
         try:
             sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
@@ -213,7 +213,7 @@ class TransactionSummary(BaseScreen):
         else:
             await refresh()
 
-    @on(ButtonLoadTransactionFromFile.Pressed)
+    @on(LoadTransactionFromFileButton.Pressed)
     def load_transaction_from_file_by_button(self) -> None:
         self.app.action_load_transaction_from_file()
 
