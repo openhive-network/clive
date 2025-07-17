@@ -18,19 +18,26 @@ class Alarm[AlarmIdentifierT: AlarmIdentifier, AlarmDataT](ABC):
     Alarm model to store alarm data and provide basic information about the alarm.
 
     How to complete handle an alarm in TUI:
-    ---------------------------------------
-    1. Create an alarm identifier class that inherits from `AlarmIdentifier` or reuse one of existing identifiers when
-       easily distinguishable. Update identifiers union placed in all_identifiers.py.
-    2. Implement a data class to store alarm data (it must inherit from `BaseAlarmData`).
-    3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data in
-       a generic way).
-    4. Create a dedicated `AlarmFixDetails` and place it in `DETAILED_ALARM_FIX_DETAILS`.
-    5. Place your alarm in `AlarmsStorage`.
-    6. If you need to download additional data to check the presence of an alarm - put it in the `update_alarms_data`
-       command.
+        1. Create an alarm identifier class that inherits from `AlarmIdentifier` or reuse one of existing identifiers
+            when easily distinguishable. Update identifiers union placed in all_identifiers.py.
+        2. Implement a data class to store alarm data (it must inherit from `BaseAlarmData`).
+        3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data
+            in a generic way).
+        4. Create a dedicated `AlarmFixDetails` and place it in `DETAILED_ALARM_FIX_DETAILS`.
+        5. Place your alarm in `AlarmsStorage`.
+        6. If you need to download additional data to check the presence of an alarm - put it in the
+            `update_alarms_data` command.
+
+    Attributes:
+        ALARM_DESCRIPTION: A description of the alarm.
+        FIX_ALARM_INFO: An information on how to fix the alarm.
+
+    Args:
+        identifier: An identifier of the alarm, which is used to distinguish alarms.
+        alarm_data: Data associated with the alarm, which can be used to provide more information about the alarm.
+        is_harmless: A flag indicating whether the alarm is harmless or not.
 
     How to complete handle an alarm in CLI:
-    ---------------------------------------
     Soon...
     """
 

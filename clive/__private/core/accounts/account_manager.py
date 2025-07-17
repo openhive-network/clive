@@ -64,7 +64,6 @@ class AccountManager:
         Returns the working account.
 
         Raises:  # noqa: D406
-        ------
             NoWorkingAccountError: If no working account is set.
         """
         if not self.has_working_account:

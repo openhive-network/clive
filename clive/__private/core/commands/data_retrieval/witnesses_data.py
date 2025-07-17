@@ -75,16 +75,14 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     Available modes for retrieving witnesses data.
 
     search_by_pattern:
-    ------------------
-    Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses (sort by_name)
-    call.
-    Amount of witnesses is limited to the search_by_name_limit.
+        Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses
+            (sort by_name) call.
+        Amount of witnesses is limited to the search_by_name_limit.
 
     search_top_with_voted_first:
-    ------------------------------
-    Retrieves top witnesses with the ones voted for by the account.
-    The list is sorted by the voted status and then by rank.
-    Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
+        Retrieves top witnesses with the ones voted for by the account.
+        The list is sorted by the voted status and then by rank.
+        Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
     """
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
