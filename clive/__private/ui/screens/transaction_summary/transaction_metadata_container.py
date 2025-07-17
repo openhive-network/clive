@@ -74,7 +74,7 @@ class TransactionIdLabel(Label):
         return f"Transaction ID: {self.transaction_id}"
 
 
-class RefreshMetadataButton(RefreshOneLineButton):
+class UpdateMetadataButton(RefreshOneLineButton):
     def __init__(self) -> None:
         super().__init__(f"Update metadata ({self.custom_bindings.transaction_summary.update_metadata.button_display})")
         self.watch(self.world, "node_reactive", self._handle_display)
@@ -92,7 +92,7 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
             yield TransactionExpirationLabel(self.profile.transaction.expiration)
             with Vertical(id="label-and-button-container"):
                 yield TransactionIdLabel(self.profile.transaction.calculate_transaction_id())
-                yield Container(RefreshMetadataButton())
+                yield Container(UpdateMetadataButton())
         else:
             yield Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata")
 

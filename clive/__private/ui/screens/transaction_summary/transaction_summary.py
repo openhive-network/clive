@@ -20,8 +20,8 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
 from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
-    RefreshMetadataButton,
     TransactionMetadataContainer,
+    UpdateMetadataButton,
 )
 from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
@@ -197,7 +197,7 @@ class TransactionSummary(BaseScreen):
 
         self.app.push_screen(SaveTransactionToFileDialog(sign_key))
 
-    @on(RefreshMetadataButton.Pressed)
+    @on(UpdateMetadataButton.Pressed)
     async def action_update_metadata(self) -> None:
         async def refresh() -> None:
             await self._update_transaction_metadata()
