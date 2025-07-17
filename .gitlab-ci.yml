@@ -88,8 +88,9 @@ default:
         CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
     - variables:
         # default branch subpath
-        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_CONTENT_PATH: $GITLAB_PAGES_DEFAULT_BRANCH_PATH
   variables:
+    GITLAB_PAGES_DEFAULT_BRANCH_PATH: "default/"
     CURRENT_URL: $CURRENT_CONTENT_PATH
     PYPROJECT_DIR: "${CI_PROJECT_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
@@ -330,6 +331,7 @@ deploy_docs:
     - rm -rf $PAGES_CONTENT_PATH
     - mkdir -p $PAGES_CONTENT_PATH
     - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > ${PAGES_BASE_DIR}/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/default/
     - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
   environment:
     name: $PAGES_ENV_NAME
