@@ -15,7 +15,18 @@ if TYPE_CHECKING:
 
 
 class ExchangeOperationsValidator(Validator):
-    """Validating operations in a transaction to exchange."""
+    """
+    Validating operations in a transaction to exchange.
+
+    Attributes:
+        HBD_TRANSFER_MSG_ERROR: Error message for HBD transfer operations.
+        MEMOLESS_HIVE_TRANSFER_MSG_ERROR: Error message for memoless Hive transfer operations.
+        UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: Error message for unsafe exchange operations.
+
+    Args:
+        transaction: The transaction to validate.
+        suppress_force_validation: If True, suppresses validation of unsafe exchange operations.
+    """
 
     HBD_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must be in HIVE, not HBD."
     MEMOLESS_HIVE_TRANSFER_MSG_ERROR: Final[str] = (
