@@ -119,7 +119,12 @@ class ExchangeOperationsValidator(Validator):
 
 
 class ExchangeOperationsValidatorCli(ExchangeOperationsValidator):
-    """CLI-specific validator for exchange operations."""
+    """
+    CLI-specific validator for exchange operations.
+
+    Attributes:
+        UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: CLI-specific error message for unsafe exchange operations.
+    """
 
     UNSAFE_EXCHANGE_OPERATION_MSG_ERROR: ClassVar[str] = (
         f"{ExchangeOperationsValidator.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR}"
