@@ -5,6 +5,7 @@ from pathlib import Path  # noqa: TC003
 from typing import Any, ClassVar, Self, TypeAlias
 
 from clive.__private.core.date_utils import utc_epoch
+from clive.__private.core.formatters.case import underscore
 from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -15,29 +16,48 @@ from clive.__private.models.schemas import (
 from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
+class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=True):
+    @classmethod
+    def name(cls) -> str:
+        return cls.__struct_config__.tag
+    is_harmless: bool = True
+    """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
+
 class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
     value: HiveDateTime
-
 
 class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel):
     recovery_account: str
 
+class RecoveryAccountWarningListedStorageModel(AlarmStorageModelBase, tag="recovery_account_warning_listed", kw_only=True):
+    identifier: RecoveryAccountWarningListedAlarmIdentifierStorageModel
 
-AllAlarmIdentifiersStorageModel = (
-    DateTimeAlarmIdentifierStorageModel | RecoveryAccountWarningListedAlarmIdentifierStorageModel
+class GovernanceVotingExpirationStorageModel(AlarmStorageModelBase, tag="governance_voting_expiration", kw_only=True):
+    identifier: DateTimeAlarmIdentifierStorageModel
+
+class GovernanceNoActiveVotesStorageModel(AlarmStorageModelBase, tag="governance_no_active_votes", kw_only=True):
+    identifier: DateTimeAlarmIdentifierStorageModel
+
+class DecliningVotingRightsInProgressStorageModel(AlarmStorageModelBase, tag="declining_voting_rights_in_progress", kw_only=True):
+    identifier: DateTimeAlarmIdentifierStorageModel
+
+class ChangingRecoveryAccountInProgressStorageModel(AlarmStorageModelBase, tag="changing_recovery_account", kw_only=True):
+    identifier: DateTimeAlarmIdentifierStorageModel
+
+
+AllAlarmStorageModel = (
+    RecoveryAccountWarningListedStorageModel
+    | GovernanceVotingExpirationStorageModel
+    | GovernanceNoActiveVotesStorageModel
+    | DecliningVotingRightsInProgressStorageModel
+    | ChangingRecoveryAccountInProgressStorageModel
 )
 
-
-class AlarmStorageModel(PreconfiguredBaseModel, kw_only=True):
-    name: str
-    is_harmless: bool = False
-    identifier: AllAlarmIdentifiersStorageModel
-    """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
 class TrackedAccountStorageModel(PreconfiguredBaseModel):
     name: str
-    alarms: Sequence[AlarmStorageModel] = []
+    alarms: Sequence[AllAlarmStorageModel] = []
 
 
 class KeyAliasStorageModel(PreconfiguredBaseModel):
@@ -74,7 +94,7 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     node_address: str
     should_enable_known_accounts: bool = True
 
-    _AlarmStorageModel: ClassVar[TypeAlias] = AlarmStorageModel  # noqa: UP040
+    _AllAlarmStorageModel: ClassVar[TypeAlias] = AllAlarmStorageModel  # noqa: UP040
     _TrackedAccountStorageModel: ClassVar[TypeAlias] = TrackedAccountStorageModel  # noqa: UP040
     _KeyAliasStorageModel: ClassVar[TypeAlias] = KeyAliasStorageModel  # noqa: UP040
     _TransactionCoreStorageModel: ClassVar[TypeAlias] = TransactionCoreStorageModel  # noqa: UP040
@@ -83,7 +103,13 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     _RecoveryAccountWarningListedAlarmIdentifierStorageModel: ClassVar[TypeAlias] = (  # noqa: UP040
         RecoveryAccountWarningListedAlarmIdentifierStorageModel
     )
-    _AllAlarmIdentifiersStorageModel: ClassVar[TypeAlias] = AllAlarmIdentifiersStorageModel  # noqa: UP040
+    _RecoveryAccountWarningListedStorageModel: ClassVar[TypeAlias] = RecoveryAccountWarningListedStorageModel  # noqa: UP040
+    _GovernanceVotingExpirationStorageModel: ClassVar[TypeAlias] = (  # noqa: UP040
+        GovernanceVotingExpirationStorageModel
+    )
+    _GovernanceNoActiveVotesStorageModel: ClassVar[TypeAlias] = GovernanceNoActiveVotesStorageModel  # noqa: UP040
+    _DecliningVotingRightsInProgressStorageModel: ClassVar[TypeAlias] = DecliningVotingRightsInProgressStorageModel  # noqa: UP040
+    _ChangingRecoveryAccountInProgressStorageModel: ClassVar[TypeAlias] = ChangingRecoveryAccountInProgressStorageModel  # noqa: UP040
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
