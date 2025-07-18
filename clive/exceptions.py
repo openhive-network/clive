@@ -24,7 +24,12 @@ class ScreenNotFoundError(ScreenError):
 
 
 class TransactionNotSignedError(CliveError):
-    """Raise when trying to broadcast unsigned transaction."""
+    """
+    Raise when trying to broadcast unsigned transaction.
+
+    Attributes:
+        MESSAGE: Error message to be displayed.
+    """
 
     MESSAGE: Final[str] = "Could not broadcast unsigned transaction."
 
