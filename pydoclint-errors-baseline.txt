@@ -610,9 +610,6 @@ clive/__private/models/asset.py
 --------------------
 clive/__private/models/transaction.py
     DOC201: Method `Transaction.__bool__` does not have a return section in docstring
-    DOC101: Method `Transaction.get_bad_accounts`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `Transaction.get_bad_accounts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [bad_accounts: Iterable[str]].
-    DOC201: Method `Transaction.get_bad_accounts` does not have a return section in docstring
     DOC101: Method `Transaction.get_unknown_accounts`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `Transaction.get_unknown_accounts`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_known_accounts: Iterable[KnownAccount]].
     DOC201: Method `Transaction.get_unknown_accounts` does not have a return section in docstring
