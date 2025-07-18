@@ -625,8 +625,6 @@ clive/__private/core/world.py
     DOC103: Method `World.on_going_into_locked_mode`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [source: LockSource].
 --------------------
 clive/__private/models/asset.py
-    DOC601: Class `AssetFactoryHolder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `AssetFactoryHolder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [asset_cls: type[AssetT], asset_factory: AssetFactory[AssetT]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC502: Method `Asset.hive` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.hbd` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.vests` has a "Raises" section in the docstring, but there are not "raise" statements in the body
@@ -720,7 +718,7 @@ clive/__private/ui/dialogs/confirm_file_overwrite_dialog.py
 --------------------
 clive/__private/ui/dialogs/confirm_invalidate_signatures_dialog.py
     DOC601: Class `ConfirmInvalidateSignaturesDialog`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `ConfirmInvalidateSignaturesDialog`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CONFIRM_QUESTION_REFRESH_METADATA: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ConfirmInvalidateSignaturesDialog`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CONFIRM_QUESTION_INVALIDATE_SIGNATURES: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
     DOC101: Method `LoadTransactionFromFileDialog._validate_operations_to_exchange`: Docstring contains fewer arguments than in function signature.
@@ -995,10 +993,10 @@ clive/__private/ui/screens/settings/manage_key_aliases/manage_key_aliases.py
     DOC603: Class `ManageKeyAliasesTable`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ATTRIBUTE_TO_WATCH: , NO_CONTENT_TEXT: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/ui/screens/transaction_summary/cart_table.py
-    DOC101: Method `ButtonMoveUp.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ButtonMoveUp.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [disabled: bool].
-    DOC101: Method `ButtonMoveDown.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ButtonMoveDown.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [disabled: bool].
+    DOC101: Method `MoveUpButton.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `MoveUpButton.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [disabled: bool].
+    DOC101: Method `MoveDownButton.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `MoveDownButton.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [disabled: bool].
     DOC601: Class `CartItem`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `CartItem`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [BINDINGS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC601: Class `Focus`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)

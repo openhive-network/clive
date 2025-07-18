@@ -59,7 +59,13 @@ class UnknownAssetNaiError(AssetError):
 
 
 class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
-    """Holds factory for asset."""
+    """
+    Holds factory for asset.
+
+    Attributes:
+        asset_cls: Class of the asset.
+        asset_factory: Factory function to create an instance of the asset.
+    """
 
     class Config:
         frozen = True
