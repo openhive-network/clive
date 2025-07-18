@@ -65,7 +65,15 @@ class ExchangeOperationsValidator(Validator):
 
     @classmethod
     def has_unsafe_operation_to_exchange(cls, result: ValidationResult) -> bool:
-        """Check if unsafe exchange operations was detected in the result ."""
+        """
+        Check if unsafe exchange operations was detected in the result .
+
+        Args:
+            result: The validation result to check.
+
+        Returns:
+            True if unsafe exchange operations were detected, False otherwise.
+        """
         return cls.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR in result.failure_descriptions
 
     def validate(self, value: str) -> ValidationResult:
