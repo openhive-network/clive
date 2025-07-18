@@ -1292,9 +1292,6 @@ clive/__private/visitors/operation/operation_visitor.py
     DOC103: Method `OperationVisitor._default_visit`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: schemas.OperationUnion].
 --------------------
 clive/__private/visitors/operation/potential_exchange_operations_account_collector.py
-    DOC101: Method `PotentialExchangeOperationsAccountCollector.has_memoless_transfer_operations_to_exchange`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `PotentialExchangeOperationsAccountCollector.has_memoless_transfer_operations_to_exchange`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str].
-    DOC201: Method `PotentialExchangeOperationsAccountCollector.has_memoless_transfer_operations_to_exchange` does not have a return section in docstring
     DOC101: Method `PotentialExchangeOperationsAccountCollector.has_unsafe_operation_to_exchange`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `PotentialExchangeOperationsAccountCollector.has_unsafe_operation_to_exchange`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str].
     DOC201: Method `PotentialExchangeOperationsAccountCollector.has_unsafe_operation_to_exchange` does not have a return section in docstring
