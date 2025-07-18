@@ -25,16 +25,22 @@ class StorageVersionNotFoundError(CliveError):
 class ProfileStorageBase(PreconfiguredBaseModel):
     _REVISIONS: ClassVar[list[Revision]] = []
     _REVISION_TO_MODEL_TYPE_MAP: ClassVar[dict[Revision, type[ProfileStorageBase]]] = {}
+    _REGISTERED_MODELS: ClassVar[list[type[ProfileStorageBase]]] = []
 
     _REVISION_NONCE: ClassVar[int] = 0
 
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(*args, **kwargs)
-        revision = cls.get_this_revision()
-        assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
-        cls._REVISIONS.append(revision)
-        cls._REVISION_TO_MODEL_TYPE_MAP[revision] = cls
-        cls._validate_upgrade_definition()
+        cls._REGISTERED_MODELS.append(cls)
+    
+    @classmethod
+    def gather(cls) -> None:
+        for class_ in cls._REGISTERED_MODELS:
+            revision = class_.get_this_revision()
+            assert revision not in cls._get_revisions(), f"Revision: {revision} already exists."
+            class_._REVISIONS.append(revision)
+            class_._REVISION_TO_MODEL_TYPE_MAP[revision] = class_
+            class_._validate_upgrade_definition()
 
     def __hash__(self) -> int:
         return hash(self.json(order="deterministic"))
