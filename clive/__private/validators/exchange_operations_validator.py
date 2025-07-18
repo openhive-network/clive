@@ -49,7 +49,15 @@ class ExchangeOperationsValidator(Validator):
 
     @classmethod
     def has_unsafe_transfer_to_exchange(cls, result: ValidationResult) -> bool:
-        """Check if unsafe exchange transfer was detected in the result ."""
+        """
+        Check if unsafe exchange transfer was detected in the result .
+
+        Args:
+            result: The validation result to check.
+
+        Returns:
+            True if unsafe transfer to exchange was detected, False otherwise.
+        """
         return (
             cls.HBD_TRANSFER_MSG_ERROR in result.failure_descriptions
             or cls.MEMOLESS_HIVE_TRANSFER_MSG_ERROR in result.failure_descriptions
