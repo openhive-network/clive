@@ -1264,10 +1264,6 @@ clive/__private/validators/exchange_operations_validator.py
     DOC103: Method `ExchangeOperationsValidator._validate_unsafe_exchange_operation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: str].
     DOC201: Method `ExchangeOperationsValidator._validate_unsafe_exchange_operation` does not have a return section in docstring
 --------------------
-clive/__private/validators/scheduled_transfer_frequency_value_validator.py
-    DOC601: Class `ScheduledTransferFrequencyValidator`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `ScheduledTransferFrequencyValidator`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [INVALID_INPUT_DESCRIPTION: Final[str], VALUE_TO_SMALL_DESCRIPTION: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/visitors/operation/operation_visitor.py
     DOC101: Method `OperationVisitor._default_visit`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationVisitor._default_visit`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: schemas.OperationUnion].

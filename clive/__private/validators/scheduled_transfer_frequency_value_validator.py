@@ -18,6 +18,10 @@ class ScheduledTransferFrequencyValidator(Validator):
     Validates given frequency value.
 
     Used e.g. in transfer-schedule commands, in the recurrent transfer operation as "recurrence".
+
+    Attributes:
+        INVALID_INPUT_DESCRIPTION: Description for invalid input.
+        VALUE_TO_SMALL_DESCRIPTION: Description for value that is too small.
     """
 
     INVALID_INPUT_DESCRIPTION: Final[str] = (
