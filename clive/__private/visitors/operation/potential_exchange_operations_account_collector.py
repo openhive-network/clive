@@ -73,6 +73,9 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         If:
         1) the memo is empty string, it is considered a memoless transfer.
         2) the amount is Asset.Hbd, this is forbidden operation to exchange.
+
+        Args:
+            operation: The transfer operation to process.
         """
         if operation.memo == "":
             self.memoless_transfers_accounts.add(operation.to)
