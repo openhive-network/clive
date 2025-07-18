@@ -11,7 +11,13 @@ if TYPE_CHECKING:
 
 
 class RepeatValidator(Validator):
-    """Validator which checks if same text is repeated as in the provided input."""
+    """
+    Validator which checks if same text is repeated as in the provided input.
+
+    Args:
+        input_to_repeat: The input whose value should be repeated.
+        failure_description: The description of the failure if the validation fails.
+    """
 
     def __init__(
         self,
