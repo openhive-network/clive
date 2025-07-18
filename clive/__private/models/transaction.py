@@ -125,7 +125,15 @@ class Transaction(SchemasTransaction):
         return visitor.get_bad_accounts(bad_accounts)
 
     def get_unknown_accounts(self, already_known_accounts: Iterable[KnownAccount]) -> list[str]:
-        """Return all unknown accounts names from transaction."""
+        """
+        Return all unknown accounts names from transaction.
+
+        Args:
+            already_known_accounts: Known accounts to exclude from the result.
+
+        Returns:
+            Account names from the transaction that are not present in the already known accounts collection.
+        """
         from clive.__private.visitors.operation.potential_known_account_collector import PotentialKnownAccountCollector
 
         visitor = PotentialKnownAccountCollector()
