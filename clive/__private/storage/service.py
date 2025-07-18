@@ -60,7 +60,12 @@ class ProfileAlreadyExistsError(PersistentStorageServiceError):
 
 
 class ProfileEncryptionError(PersistentStorageServiceError):
-    """Raised when there is an issue with encryption or decryption of the profile e.g. during save or load."""
+    """
+    Raised when there is an issue with encryption or decryption of the profile e.g. during save or load.
+
+    Attributes:
+        MESSAGE: A default error message indicating the failure reason.
+    """
 
     MESSAGE: Final[str] = (
         "Profile encryption failed. Maybe the wallet is locked, or communication with the beekeeper failed?"
