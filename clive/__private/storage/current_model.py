@@ -14,4 +14,5 @@ def _validate_current_model_alias() -> None:
     )
 
 
+ProfileStorageBase.gather()
 _validate_current_model_alias()
