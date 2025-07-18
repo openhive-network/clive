@@ -26,7 +26,15 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         """Names of accounts with hbd transfers."""
 
     def has_hbd_transfer_operations_to_exchange(self, account: str) -> bool:
-        """Check if there are HBD transfer operations to the given exchange account."""
+        """
+        Check if there are HBD transfer operations to the given exchange account.
+
+        Args:
+            account: The exchange account name to check for HBD transfers.
+
+        Returns:
+            True if there are HBD transfer operations to the account, False otherwise.
+        """
         return account in self.hbd_transfers_accounts
 
     def has_memoless_transfer_operations_to_exchange(self, account: str) -> bool:
