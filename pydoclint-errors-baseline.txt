@@ -603,8 +603,6 @@ clive/__private/core/world.py
     DOC103: Method `World.on_going_into_locked_mode`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [source: LockSource].
 --------------------
 clive/__private/models/asset.py
-    DOC601: Class `AssetFactoryHolder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `AssetFactoryHolder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [asset_cls: type[AssetT], asset_factory: AssetFactory[AssetT]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC502: Method `Asset.hive` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.hbd` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.vests` has a "Raises" section in the docstring, but there are not "raise" statements in the body
