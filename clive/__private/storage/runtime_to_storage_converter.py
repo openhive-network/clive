@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
 from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
@@ -71,9 +71,9 @@ class RuntimeToStorageConverter:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
         return ProfileStorageModel._TrackedAccountStorageModel(name=account.name, alarms=alarms)
 
-    def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AlarmStorageModel:
-        return ProfileStorageModel._AlarmStorageModel(
-            name=alarm.get_name(),
+    def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AllAlarmStorageModel:
+        alarm_cls = self._get_alarm_storage_model_cls_by_name(alarm.get_name())
+        return alarm_cls(
             is_harmless=alarm.is_harmless,
             identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
         )
@@ -91,3 +91,11 @@ class RuntimeToStorageConverter:
 
     def _key_alias_to_model(self, key: PublicKeyAliased) -> ProfileStorageModel._KeyAliasStorageModel:
         return ProfileStorageModel._KeyAliasStorageModel(alias=key.alias, public_key=key.value)
+
+    def _get_alarm_storage_model_cls_by_name(self, name: str) -> type[ProfileStorageModel._AllAlarmStorageModel]:
+        all_alarm_storage_model_classes = get_args(ProfileStorageModel._AllAlarmStorageModel)
+        name_to_cls: dict[str, type[ProfileStorageModel._AllAlarmStorageModel]] = {
+            cls.get_name(): cls for cls in all_alarm_storage_model_classes
+        }
+        assert name in name_to_cls, f"Alarm class not found for name: {name}"
+        return name_to_cls[name]
