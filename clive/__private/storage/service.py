@@ -188,7 +188,12 @@ class PersistentStorageService:
 
     @classmethod
     def list_stored_profile_names(cls) -> list[str]:
-        """List all stored profile names sorted alphabetically including older storage versions."""
+        """
+        List all stored profile names sorted alphabetically including older storage versions.
+
+        Returns:
+            A sorted list of profile names stored in the persistent storage.
+        """
         profile_names = {filepath.profile_name for filepath in cls._get_filepaths()}
         return sorted(profile_names)
 

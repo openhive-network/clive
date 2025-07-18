@@ -636,7 +636,6 @@ clive/__private/models/transaction.py
 clive/__private/storage/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `PersistentStorageService.load_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
-    DOC201: Method `PersistentStorageService.list_stored_profile_names` does not have a return section in docstring
     DOC101: Method `PersistentStorageService._migrate_profile_model`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `PersistentStorageService._migrate_profile_model`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile_filepath: Path, profile_model: ProfileStorageBase].
     DOC201: Method `PersistentStorageService._migrate_profile_model` does not have a return section in docstring
