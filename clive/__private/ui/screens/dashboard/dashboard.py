@@ -269,7 +269,7 @@ class Dashboard(BaseScreen):
         CLIVE_PREDEFINED_BINDINGS.dashboard.operations.create(),
         CLIVE_PREDEFINED_BINDINGS.dashboard.switch_working_account.create(),
         CLIVE_PREDEFINED_BINDINGS.dashboard.add_account.create(),
-        CLIVE_PREDEFINED_BINDINGS.dashboard.lock.create(description="Lock wallet"),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.lock_wallet.create(),
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(
             action=""
         ),  # settings is a hidden global binding, but we want to show it here
