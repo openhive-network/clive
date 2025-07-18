@@ -78,7 +78,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         Returns a PrivateKey instance with the given private key value.
 
         Raises:
-            FailedValidationError: When given input is not a valid private key.
+            FailedValidationError: When given private key input is invalid.
         """
         private_key_input = self.private_key_input
         private_key_input.validate_with_error()
@@ -90,7 +90,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         Returns a PrivateKeyAliased instance with the given alias and private key value.
 
         Raises:
-            FailedManyValidationError: when cannot create a private key from the given inputs.
+            FailedManyValidationError: When given private key and alias inputs are not valid.
         """
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
@@ -144,8 +144,7 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         Validate the inputs.
 
         Raises:
-            FailedManyValidationError: when key alias / private key inputs are invalid or private key does
-                not match given public key.
+            FailedManyValidationError: When any of the given inputs is invalid.
         """
         CliveValidatedInput.validate_many_with_error(*self._get_inputs_to_validate())
 
