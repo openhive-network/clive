@@ -12,7 +12,13 @@ if TYPE_CHECKING:
 
 @dataclass
 class HpVestsBalance:
-    """Class to store the balance of shares in HP and VESTS."""
+    """
+    Class to store the balance of shares in HP and VESTS.
+
+    Attributes:
+        hp_balance: The balance in HP.
+        vests_balance: The balance in VESTS.
+    """
 
     hp_balance: Asset.Hive
     vests_balance: Asset.Vests
