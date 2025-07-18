@@ -99,7 +99,12 @@ class Transaction(SchemasTransaction):
         return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
 
     def accept(self, visitor: OperationVisitor) -> None:
-        """Accept a visitor and apply it to all operations in the transaction."""
+        """
+        Accept a visitor and apply it to all operations in the transaction.
+
+        Args:
+            visitor: An instance that will process the operations.
+        """
         for operation in self.operations_models:
             visitor.visit(operation)
 
