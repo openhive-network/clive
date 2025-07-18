@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
 from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
@@ -71,9 +71,12 @@ class RuntimeToStorageConverter:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
         return ProfileStorageModel._TrackedAccountStorageModel(name=account.name, alarms=alarms)
 
-    def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AlarmStorageModel:
-        return ProfileStorageModel._AlarmStorageModel(
-            name=alarm.get_name(),
+    def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AllAlarmStorageModel:
+        name = alarm.get_name()
+        alarm_types = get_args(ProfileStorageModel._AllAlarmStorageModel)
+        tag_map = {cls.name(): cls for cls in alarm_types}
+        alarm_cls = tag_map[name]
+        return alarm_cls(
             is_harmless=alarm.is_harmless,
             identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
         )
