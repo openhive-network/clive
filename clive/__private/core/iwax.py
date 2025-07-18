@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models import Asset, Transaction
-    from clive.__private.models.schemas import OperationRepresentationBase, OperationUnion, PriceFeed
+    from clive.__private.models.schemas import OperationUnion, PriceFeed
 
 T = TypeVar("T")
 F = TypeVar("F", bound=Callable[..., Any])
@@ -95,7 +95,7 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
 
     if not isinstance(item, Transaction):
-        item_repr: OperationRepresentationBase = convert_to_representation(item)
+        item_repr = convert_to_representation(item)
 
     if isinstance(item, Transaction):
         return get_hf26_encoder().encode(item)

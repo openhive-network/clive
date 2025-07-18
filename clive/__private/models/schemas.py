@@ -16,7 +16,7 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 
 from __future__ import annotations
 
-from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
+from schemas._operation_objects import Hf26ApiOperationObject
 from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.apis.account_history_api import EnumVirtualOps, GetAccountHistory, GetOpsInBlock
 from schemas.apis.account_history_api.response_schemas import GetTransaction
@@ -86,7 +86,6 @@ from schemas.operations import (
     AccountUpdateOperation,
     AccountWitnessProxyOperation,
     AccountWitnessVoteOperation,
-    AnyHf26Operation,
     CancelTransferFromSavingsOperation,
     ChangeRecoveryAccountOperation,
     ClaimAccountOperation,
@@ -132,29 +131,21 @@ from schemas.operations import (
     WitnessBlockApproveOperation,
     WitnessSetPropertiesOperation,
     WitnessUpdateOperation,
-    convert_to_representation,
+    convert_to_representation_non_virtual,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperation
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
 from schemas.operations.representation_types import HF26Representation, HF26RepresentationTransferOperation
-from schemas.operations.virtual import Hf26VirtualOperationRepresentation
 from schemas.policies import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, Policy, set_policies
 from schemas.transaction import Transaction
-from schemas.virtual_operation import VirtualOperation
 
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
     "ApiOperationObject",
     "OperationBase",
-    "OperationRepresentationBase",
     "OperationRepresentationUnion",
     "OperationUnion",
-    # virtual operation BASIC aliases
-    "ApiVirtualOperationObject",
-    "VirtualOperationBase",
-    "VirtualOperationRepresentationUnion",
-    "VirtualOperationUnion",
     # list API responses (have nested list property which stores actual model)
     "ListChangeRecoveryAccountRequests",
     "ListDeclineVotingRightsRequests",
@@ -304,19 +295,10 @@ __all__ = [  # noqa: RUF022
 ]
 
 # operation BASIC aliases
-
 ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
-OperationRepresentationBase = AnyHf26Operation
 OperationRepresentationUnion = Hf26OperationRepresentation
 OperationUnion = Hf26Operations
-
-# virtual operation BASIC aliases
-
-ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
-VirtualOperationBase = VirtualOperation
-VirtualOperationRepresentationUnion = Hf26VirtualOperationRepresentation
-VirtualOperationUnion = VirtualOperation
 
 #  list API responses (have nested list property which stores actual model)
 
@@ -377,3 +359,4 @@ JSONRPCRequest = SchemasJSONRPCRequest
 # other
 
 RepresentationBase = HF26Representation
+convert_to_representation = convert_to_representation_non_virtual
