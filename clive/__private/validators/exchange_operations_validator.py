@@ -77,7 +77,15 @@ class ExchangeOperationsValidator(Validator):
         return cls.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR in result.failure_descriptions
 
     def validate(self, value: str) -> ValidationResult:
-        """Validate the given value - exchange name."""
+        """
+        Validate the given value - exchange name.
+
+        Args:
+            value: The exchange name to validate.
+
+        Returns:
+            The result of the validation.
+        """
         validators = [
             Function(self._validate_hbd_transfer_operation, self.HBD_TRANSFER_MSG_ERROR),
             Function(self._validate_memoless_transfer_operation, self.MEMOLESS_HIVE_TRANSFER_MSG_ERROR),
