@@ -109,7 +109,15 @@ class Transaction(SchemasTransaction):
             visitor.visit(operation)
 
     def get_bad_accounts(self, bad_accounts: Iterable[str]) -> list[str]:
-        """Return all accounts names from transaction that are considered as bad account."""
+        """
+        Return all accounts names from transaction that are considered as bad account.
+
+        Args:
+            bad_accounts: Account names that are considered bad.
+
+        Returns:
+            A list of account names from the transaction that match the bad accounts.
+        """
         from clive.__private.visitors.operation.potential_bad_account_collector import PotentialBadAccountCollector
 
         visitor = PotentialBadAccountCollector()
