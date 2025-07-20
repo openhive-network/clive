@@ -23,7 +23,12 @@ class RightContainer(Container):
 
 
 class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
-    """Base class for all screens that should show a brief cart summary."""
+    """
+    Base class for all screens that should show a brief cart summary.
+
+    Attributes:
+        CSS_PATH: CSS path to be applied to the screen.
+    """
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
