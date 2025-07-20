@@ -93,7 +93,16 @@ class AlarmsTable(CliveCheckerboardTable):
 
 
 class Alarms(TabPane, CliveWidget):
-    """TabPane with all info about alarms."""
+    """
+    TabPane with all info about alarms.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the alarms tab pane.
+        ALARM_TAB_PANE_TITLE: Title of the alarms tab pane.
+
+    Args:
+        account: The account for which the alarms are displayed.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
