@@ -346,8 +346,6 @@ clive/__private/storage/service.py
     DOC201: Method `PersistentStorageService._is_model_cls_for_versioned_profile_file_available` does not have a return section in docstring
 --------------------
 clive/__private/ui/app.py
-    DOC101: Method `Clive.run_worker_with_guard`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `Clive.run_worker_with_guard`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [awaitable: Awaitable[None], guard: AsyncGuard].
     DOC201: Method `Clive._load_bindings_from_file` does not have a return section in docstring
 --------------------
 clive/__private/ui/bindings/clive_binding_section.py

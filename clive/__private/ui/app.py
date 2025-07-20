@@ -449,7 +449,13 @@ class Clive(App[int]):
         await self.push_screen(TransactionSummary())
 
     def run_worker_with_guard(self, awaitable: Awaitable[None], guard: AsyncGuard) -> None:
-        """Run work in a worker with a guard. It means that the work will be executed only if the guard is available."""
+        """
+        Run work in a worker with a guard. It means that the work will be executed only if the guard is available.
+
+        Args:
+            awaitable: Represents the work to be done.
+            guard: Will be used to control access to the work.
+        """
 
         async def work_with_release() -> None:
             try:
