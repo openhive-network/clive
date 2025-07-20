@@ -59,7 +59,15 @@ class NextScreenButton(CliveButton):
 
 
 class PreviousScreenButton(OneLineButton):
-    """Button for going to previous screen in forms."""
+    """
+    Button for going to previous screen in forms.
+
+    Args:
+        label: Optional label for the button. If not provided, a default label will be used.
+        id_: Optional identifier for the button.
+        classes: Optional CSS classes to apply to the button.
+        disabled: Whether the button should be disabled initially.
+    """
 
     class Pressed(OneLineButton.Pressed):
         """Message sent when the PreviousScreenButton is pressed."""
