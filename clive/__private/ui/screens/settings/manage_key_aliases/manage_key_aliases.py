@@ -36,7 +36,7 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     Args:
         index: Index of the key alias in the list.
-        public_key: PublicKeyAliased object containing the alias and value.
+        public_key: Object containing the key alias and its value.
     """
 
     def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
