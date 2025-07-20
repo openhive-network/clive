@@ -394,10 +394,6 @@ clive/__private/ui/screens/account_details/authority/authority.py
     DOC103: Function `is_wax_authority_object_has_entry_that_matches_pattern`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, pattern: str | list[str]].
     DOC201: Function `is_wax_authority_object_has_entry_that_matches_pattern` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/operation_base_screen.py
-    DOC601: Class `OperationBaseScreen`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `OperationBaseScreen`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [BINDINGS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
     DOC601: Class `OperationActionBindings`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `OperationActionBindings`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool], BINDINGS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
