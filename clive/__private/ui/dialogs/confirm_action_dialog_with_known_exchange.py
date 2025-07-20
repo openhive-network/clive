@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class ConfirmActionDialogWithKnownExchange(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to proceed operation with a known exchange."""
+    """
+    Dialog to confirm if the user wants to proceed operation with a known exchange.
+
+    Attributes:
+        CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT: The question to confirm the operation with a known exchange.
+    """
 
     CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT: Final[str] = (
         "Recipient of your operation is a known exchange.\n"
