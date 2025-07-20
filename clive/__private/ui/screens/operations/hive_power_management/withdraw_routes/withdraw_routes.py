@@ -112,7 +112,13 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
 
 
 class WithdrawRoutes(TabPane, OperationActionBindings):
-    """TabPane with all content about setting withdraw routes."""
+    """
+    TabPane with all content about setting withdraw routes.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the withdraw routes screen.
+        DEFAULT_AUTO_VEST: Default value for the auto vest checkbox.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
     DEFAULT_AUTO_VEST: Final[bool] = False
