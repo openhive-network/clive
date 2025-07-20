@@ -250,7 +250,7 @@ class GovernanceTable(
         Return the instance of the new witnesses or proposals list.
 
         Returns:
-            Created list widget with the data provided.f
+            Created list widget with the data provided.
         """
 
     @abstractmethod
