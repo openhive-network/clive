@@ -80,7 +80,12 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         yield from self.cells
 
     def refresh_row(self, content: Any) -> None:  # noqa: ANN401
-        """Iterate through the cells and update each of them."""
+        """
+        Iterate through the cells and update each of them.
+
+        Args:
+            content: The content to update the row with. Must be provided by the DataProvider.
+        """
         for cell, value in zip(self.cells, self.get_new_values(content), strict=True):
             cell.update(value)
 
