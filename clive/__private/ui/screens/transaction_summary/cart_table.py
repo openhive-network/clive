@@ -317,7 +317,12 @@ class CartTable(CliveCheckerboardTable):
 
     @dataclass
     class Modified(Message):
-        """Message sent when operations in CartTable were reordered or removed."""
+        """
+        Message sent when operations in CartTable were reordered or removed.
+
+        Attributes:
+            transaction: The modified transaction after the operations were reordered or removed.
+        """
 
         transaction: Transaction
 
