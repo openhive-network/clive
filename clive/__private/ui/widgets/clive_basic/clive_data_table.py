@@ -94,7 +94,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         Must be overridden if the `dynamic` parameter is set to True.
 
         Args:
-            content: The content to update the row with. Must be provided by the DataProvider.
+            content: The content to update the row with.
 
         Raises:
             CliveError: If this method is called on a static row.
