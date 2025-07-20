@@ -33,7 +33,13 @@ class CartInfoContainer(Container):
 
 
 class CartItem(Static):
-    """Holds the cart item info."""
+    """
+    Holds the cart item info.
+
+    Args:
+        index: The index of the operation in the cart.
+        operation: The operation to be displayed.
+    """
 
     def __init__(self, index: int, operation: OperationBase) -> None:
         self._operation = operation
