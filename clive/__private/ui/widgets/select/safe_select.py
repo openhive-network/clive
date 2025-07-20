@@ -29,7 +29,12 @@ class EmptySelect(Static):
 
 
 class SingleSelect(Static, Generic[SelectType]):  # noqa: UP046
-    """Dummy select widget."""
+    """
+    Dummy select widget.
+
+    Args:
+        option: The single option that will be just displayed without any interaction.
+    """
 
     def __init__(self, option: SelectOption[SelectType]) -> None:
         super().__init__(option[0])
