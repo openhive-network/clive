@@ -145,9 +145,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Check if the account name input (action receiver) is a known exchange account (if overwritten).
 
         Notice:
-        _______
-        If this method is not overridden, the account from the account name input (action receiver),
-        will be checked for being a known exchange.
+            If this method is not overridden, the account from the account name input (action receiver),
+                will be checked for being a known exchange.
+
+        Returns:
+            True if known exchange account is present in input. False if not.
         """
         return None
 

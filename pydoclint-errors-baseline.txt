@@ -397,7 +397,6 @@ clive/__private/ui/screens/account_details/authority/authority.py
 clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
     DOC201: Method `OperationActionBindings._create_operation` does not have a return section in docstring
     DOC201: Method `OperationActionBindings._create_operations` does not have a return section in docstring
-    DOC201: Method `OperationActionBindings.check_is_known_exchange_in_input` does not have a return section in docstring
     DOC201: Method `OperationActionBindings.get_account_to_be_marked_as_known` does not have a return section in docstring
     DOC101: Method `OperationActionBindings._add_to_cart`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationActionBindings._add_to_cart`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [notify: bool, operations: list[OperationUnion]].
