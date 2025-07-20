@@ -6,7 +6,13 @@ from clive.__private.ui.screens.settings.account_management.common.manage_accoun
 
 
 class TrackedAccounts(ManageAccountsTabPane):
-    """TabPane used to add and delete tracked accounts."""
+    """
+    TabPane used to add and delete tracked accounts.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the tracked accounts tab pane.
+        TITLE: Title of the tab pane.
+    """
 
     DEFAULT_CSS = """
     TrackedAccounts {
