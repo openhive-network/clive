@@ -422,7 +422,7 @@ class CliveCheckerboardTable(CliveWidget):
             InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
 
         Returns:
-            A sequence of `CliveCheckerboardTableRow` instances to be displayed in the table.
+            A sequence of row instances to be displayed in the table.
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
