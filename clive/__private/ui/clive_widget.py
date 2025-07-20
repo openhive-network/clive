@@ -22,7 +22,12 @@ class CliveWidget(CliveDOMNode, Widget):
         self.refresh_bindings()
 
     def unbind(self, key: str) -> None:
-        """Remove a key binding from this widget."""
+        """
+        Remove a key binding from this widget.
+
+        Args:
+            key: The key to unbind.
+        """
         binding = self._bindings.key_to_bindings.pop(key, None)
         if binding:
             self.refresh_bindings()
