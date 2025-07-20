@@ -30,6 +30,20 @@ class TitledLabel(CliveWidget):
 
     The value can be updated dynamically if :obj_to_watch: and :attribute_name: is given.
     When :value: is provided with both of the mentioned parameters, it will be used as a prefix for the dynamic value.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+
+    Args:
+        title: The title of the label.
+        value: The initial value of the label.
+        obj_to_watch: An object to watch for changes in the specified attribute.
+        attribute_name: The name of the attribute to watch for changes.
+        callback: A callback function to call when the value changes.
+        first_try_callback: A callback function to call on the first try of rendering.
+        init: Whether to initialize the dynamic label immediately.
+        id_: The ID of the widget.
+        shrink: Whether to shrink the label to fit its content.
     """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
