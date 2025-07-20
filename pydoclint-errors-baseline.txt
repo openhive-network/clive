@@ -394,9 +394,6 @@ clive/__private/ui/screens/account_details/authority/authority.py
     DOC103: Function `is_wax_authority_object_has_entry_that_matches_pattern`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, pattern: str | list[str]].
     DOC201: Function `is_wax_authority_object_has_entry_that_matches_pattern` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/base_screen.py
-    DOC201: Method `BaseScreen.create_main_panel` does not have a return section in docstring
---------------------
 clive/__private/ui/screens/cart_based_screen/cart_based_screen.py
     DOC601: Class `CartBasedScreen`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `CartBasedScreen`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CSS_PATH: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
