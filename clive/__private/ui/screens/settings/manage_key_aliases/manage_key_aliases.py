@@ -130,7 +130,13 @@ class KeyAliasesHeader(Horizontal):
 
 
 class ManageKeyAliasesTable(CliveCheckerboardTable):
-    """Table with KeyAliases."""
+    """
+    Table with KeyAliases.
+
+    Attributes:
+        ATTRIBUTE_TO_WATCH: Attribute to watch for updates.
+        NO_CONTENT_TEXT: Text to display when there are no key aliases.
+    """
 
     ATTRIBUTE_TO_WATCH = "profile_reactive"
     NO_CONTENT_TEXT = "You have no key aliases"
