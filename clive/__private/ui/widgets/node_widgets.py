@@ -51,7 +51,12 @@ class NodeSelector(CliveSelect[HttpUrl], CliveWidget):
 
 
 class NodesList(Container, CliveWidget):
-    """Container for the list of nodes to choose with method to save given address."""
+    """
+    Container for the list of nodes to choose with method to save given address.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+    """
 
     DEFAULT_CSS = """
     NodesList {
