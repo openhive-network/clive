@@ -17,7 +17,16 @@ class SubTitle(Static):
 
 
 class LocationIndicator(Vertical):
-    """A widget that can be used to display a user's location in the app with a big title and subtitle."""
+    """
+    A widget that can be used to display a user's location in the app with a big title and subtitle.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+
+    Args:
+        big_title: The main title to display prominently.
+        subtitle: An optional subtitle to provide additional context.
+    """
 
     DEFAULT_CSS = """
     LocationIndicator {
