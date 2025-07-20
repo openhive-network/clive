@@ -62,7 +62,17 @@ class AccountRow(CliveCheckerboardTableRow):
 
 
 class ManageAccountsTable(CliveCheckerboardTable):
-    """Common table for a known and watched accounts."""
+    """
+    Common table for a known and watched accounts.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the manage accounts table.
+        ATTRIBUTE_TO_WATCH: Attribute to watch for updates.
+        NO_CONTENT_TEXT: Text to display when there are no accounts.
+
+    Args:
+        accounts_type: Type of accounts to manage.
+    """
 
     DEFAULT_CSS = """
     ManageAccountsTable {
