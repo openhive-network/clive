@@ -13,7 +13,12 @@ if TYPE_CHECKING:
 
 
 class SectionBody(Container):
-    """A container for the body of the section."""
+    """
+    A container for the body of the section.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+    """
 
     DEFAULT_CSS = """
     SectionBody {
