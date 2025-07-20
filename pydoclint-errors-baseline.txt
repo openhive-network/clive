@@ -424,8 +424,6 @@ clive/__private/ui/widgets/apr.py
     DOC201: Method `APR._get_apr` does not have a return section in docstring
 --------------------
 clive/__private/ui/widgets/clive_basic/clive_data_table.py
-    DOC101: Method `CliveDataTableRow.refresh_row`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CliveDataTableRow.refresh_row`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: Any].
     DOC101: Method `CliveDataTableRow.get_new_values`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveDataTableRow.get_new_values`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: Any].
     DOC201: Method `CliveDataTableRow.get_new_values` does not have a return section in docstring
