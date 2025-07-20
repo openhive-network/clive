@@ -64,7 +64,18 @@ class Section(Container):
 
 
 class SectionScrollable(Section):
-    """Scrollable version of section container."""
+    """
+    Scrollable version of section container.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+
+    Args:
+        title: The title of the section, if any.
+        id_: The ID of the section widget.
+        classes: Additional CSS classes for the section.
+        focusable: Whether the section should be focusable.
+    """
 
     DEFAULT_CSS = """
     SectionScrollable {
