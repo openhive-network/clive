@@ -431,12 +431,6 @@ clive/__private/ui/widgets/currency_selector/currency_selector_base.py
     DOC201: Method `CurrencySelectorBase._create_selectable` does not have a return section in docstring
     DOC502: Method `CurrencySelectorBase.create_asset` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/widgets/dialog_container.py
-    DOC601: Class `DialogContainer`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `DialogContainer`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `DialogContainer.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `DialogContainer.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [big_title: str, classes: str | None, id_: str | None, section_title: str].
---------------------
 clive/__private/ui/widgets/dynamic_widgets/dynamic_widget.py
     DOC601: Class `DynamicWidget`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `DynamicWidget`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
