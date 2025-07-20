@@ -90,7 +90,18 @@ class CliveDataTableRow(Horizontal, CliveWidget):
             cell.update(value)
 
     def get_new_values(self, content: Any) -> tuple[str, ...]:  # type: ignore[return] # noqa: ARG002, ANN401
-        """Must be overridden if the `dynamic` parameter is set to True."""
+        """
+        Must be overridden if the `dynamic` parameter is set to True.
+
+        Args:
+            content: The content to update the row with. Must be provided by the DataProvider.
+
+        Raises:
+            CliveError: If this method is called on a static row.
+
+        Returns:
+            A tuple of new values for the cells in the row.
+        """
         if self._dynamic:
             raise CliveError("You must override this method if the row is dynamic.")
 
