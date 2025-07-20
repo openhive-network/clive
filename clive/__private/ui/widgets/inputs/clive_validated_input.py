@@ -51,7 +51,12 @@ Input validation failed{additional}. Reasons:
 
 
 class FailedManyValidationError(CliveValidatedInputError):
-    """Raised when validation of many `CliveValidatedInput` fails."""
+    """
+    Raised when validation of many `CliveValidatedInput` fails.
+
+    Args:
+        errors: A list of error instances that caused the failure.
+    """
 
     def __init__(self, errors: list[InputValueError | FailedValidationError]) -> None:
         self.errors = errors
