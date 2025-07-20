@@ -104,6 +104,7 @@ class CliveCheckerboardTableRow(CliveWidget):
     Row with checkerboard columns.
 
     Attributes:
+        DEFAULT_CSS: Default CSS for the row.
         BINDINGS: Key bindings for row.
 
     Args:
