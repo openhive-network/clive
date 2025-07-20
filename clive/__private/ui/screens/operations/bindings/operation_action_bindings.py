@@ -168,9 +168,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Return the account (if overwritten) that should have been marked as known after action like add to cart.
 
         Notice:
-        _______
-        If this method is not overridden, the account from the account name input (action receiver),
-        will be marked as known.
+            If this method is not overridden, the account from the account name input (action receiver),
+                will be marked as known.
+
+        Returns:
+            The account name or account object that should be marked as known.
         """
         return None
 
