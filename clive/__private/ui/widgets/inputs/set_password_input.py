@@ -12,7 +12,23 @@ if TYPE_CHECKING:
 
 
 class SetPasswordInput(TextInput):
-    """An input for setting a Clive password."""
+    """
+    An input for setting a Clive password.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: The placeholder text for the input.
+        always_show_title: Whether to always show the title.
+        include_title_in_placeholder_when_blurred: Whether to include the title when the input is blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        validate_on: When to validate the input.
+        valid_empty: Whether the input can be valid when empty.
+        id: The ID of the input widget.
+        classes: Additional CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     def __init__(
         self,
