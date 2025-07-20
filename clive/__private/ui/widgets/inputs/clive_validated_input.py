@@ -379,7 +379,12 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
             raise FailedManyValidationError(combined_errors)
 
     def clear_validation(self, *, clear_value: bool = True) -> None:
-        """Clear the validation of the input."""
+        """
+        Clear the validation of the input.
+
+        Args:
+            clear_value: Whether to clear the input value as well.
+        """
         self.input.clear_validation(clear_value=clear_value)
 
     @on(CliveInput.Validated)
