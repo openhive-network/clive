@@ -163,7 +163,15 @@ class CliveButton(Button, CliveWidget):
             self.post_message(self.Pressed(self))
 
     def validate_variant(self, variant: str) -> str:
-        """No need for runtime validation, as invalid variant will be detected by mypy."""
+        """
+        No need for runtime validation, as invalid variant will be detected by mypy.
+
+        Args:
+            variant: The variant to validate.
+
+        Returns:
+            The validated variant.
+        """
         return variant
 
     def _create_label(self, label: TextType, binding: CliveBinding | None = None) -> TextType:
