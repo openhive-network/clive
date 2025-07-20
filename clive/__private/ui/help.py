@@ -16,7 +16,14 @@ if TYPE_CHECKING:
 
 
 class Help(BaseScreen):
-    """The help screen for the application. Created dynamically, based on previously active screen."""
+    """
+    The help screen for the application.
+
+    Attributes:
+        BINDINGS: List of key bindings for the help screen.
+        GLOBAL_HELP_FILE_PATH: Path to the global help markdown file.
+        SHOW_RAW_HEADER: Whether to show the raw header in this screen.
+    """
 
     BINDINGS = [
         Binding("q,escape", "app.pop_screen", "Back", key_display="esc"),
