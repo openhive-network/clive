@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class RemoveKeyAliasDialog(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to remove key alias from profile."""
+    """
+    Dialog to confirm if the user wants to remove key alias from profile.
+
+    Args:
+        public_key: The public key or its alias to be removed.
+    """
 
     def __init__(self, public_key: str | PublicKey) -> None:
         self._public_key_aliased = self.profile.keys.get_from_public_key(public_key)
