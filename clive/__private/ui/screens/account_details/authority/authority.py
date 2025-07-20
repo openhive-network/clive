@@ -65,7 +65,16 @@ def collect_all_entries_from_wax_authority_object(authority: WaxAuthority) -> li
 
 
 def collect_weights_from_wax_authority_object(authority: WaxAuthority, keys: KeyManager) -> list[int]:
-    """Collect weights from WaxAuthority object for keys that are present in the KeyManager."""
+    """
+    Collect weights from WaxAuthority object for keys that are present in the KeyManager.
+
+    Args:
+        authority: WaxAuthority object containing account and key authorizations.
+        keys: KeyManager instance containing public keys and their aliases.
+
+    Returns:
+        A list of weights corresponding to the keys present in the KeyManager.
+    """
     key_auths = authority.key_auths
     return [key_auths[key] for key in list(key_auths.keys()) if key in keys]
 
