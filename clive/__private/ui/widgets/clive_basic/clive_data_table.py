@@ -84,7 +84,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         Iterate through the cells and update each of them.
 
         Args:
-            content: The content to update the row with. Must be provided by the DataProvider.
+            content: The content to update the row with.
         """
         for cell, value in zip(self.cells, self.get_new_values(content), strict=True):
             cell.update(value)
