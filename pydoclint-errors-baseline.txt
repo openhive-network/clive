@@ -373,11 +373,6 @@ clive/__private/ui/dialogs/save_file_base_dialog.py
 clive/__private/ui/forms/create_profile/set_account_form_screen.py
     DOC502: Method `SetAccountFormScreen.account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/get_css.py
-    DOC101: Function `get_css_from_relative_path`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `get_css_from_relative_path`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_path: str | Path, name: str].
-    DOC201: Function `get_css_from_relative_path` does not have a return section in docstring
---------------------
 clive/__private/ui/help.py
     DOC601: Class `Help`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `Help`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [BINDINGS: , GLOBAL_HELP_FILE_PATH: Final[Path], SHOW_RAW_HEADER: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)

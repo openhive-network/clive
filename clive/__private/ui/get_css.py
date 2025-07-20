@@ -27,5 +27,14 @@ def get_relative_css_path(file_path: str | Path, *, name: str = "") -> Path:
 
 
 def get_css_from_relative_path(file_path: str | Path, *, name: str = "") -> str:
-    """Get the css from file. For more info check `get_relative_css_path`."""
+    """
+    Get the css from file. For more info check `get_relative_css_path`.
+
+    Args:
+        file_path: The path to the file next to which the css file is located.
+        name: Explicit name of the css file.
+
+    Returns:
+        The content of the css file.
+    """
     return get_relative_css_path(file_path, name=name).read_text()
