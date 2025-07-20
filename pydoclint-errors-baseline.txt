@@ -424,9 +424,6 @@ clive/__private/ui/widgets/apr.py
     DOC201: Method `APR._get_apr` does not have a return section in docstring
 --------------------
 clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
-    DOC101: Method `CliveCheckerboardTable.is_anything_to_display`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CliveCheckerboardTable.is_anything_to_display`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
-    DOC201: Method `CliveCheckerboardTable.is_anything_to_display` does not have a return section in docstring
     DOC101: Method `CliveCheckerboardTable.update_previous_state`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveCheckerboardTable.update_previous_state`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
     DOC501: Method `CliveCheckerboardTable.update_previous_state` has raise statements, but the docstring does not have a "Raises" section
