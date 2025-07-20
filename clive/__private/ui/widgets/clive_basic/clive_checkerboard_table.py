@@ -93,7 +93,15 @@ class CliveCheckerBoardTableCell(Container):
 
 
 class CliveCheckerboardTableRow(CliveWidget):
-    """Row with checkerboard columns."""
+    """
+    Row with checkerboard columns.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the row.
+
+    Args:
+        *cells: Cells to be displayed in the row, should be instances of `CliveCheckerBoardTableCell`.
+    """
 
     DEFAULT_CSS = """
     CliveCheckerboardTableRow {
