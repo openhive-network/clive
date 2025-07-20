@@ -77,7 +77,13 @@ class FailedManyValidationError(CliveValidatedInputError):
 
 
 class InputValueError(CliveValidatedInputError):
-    """Raised when cannot get the value of the `CliveValidatedInput`."""
+    """
+    Raised when cannot get the value of the `CliveValidatedInput`.
+
+    Args:
+        reason: The reason why the value could not be obtained.
+        input_name: The name of the input that caused the error, if available.
+    """
 
     def __init__(self, reason: str, *, input_name: str | None = None) -> None:
         self.reason = reason
