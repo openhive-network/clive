@@ -53,7 +53,17 @@ class AlarmData(CliveCheckerboardTable):
 
 
 class AlarmInfoDialog(CliveInfoDialog):
-    """Dialog screen containing information about the alarm and description of how to fix it."""
+    """
+    Dialog screen containing information about the alarm and description of how to fix it.
+
+    Attributes:
+        CSS_PATH: Path to the CSS file for styling the dialog.
+
+    Args:
+        alarm: The alarm object containing details about the alarm.
+        alarm_fix_details: Details on how to fix the alarm.
+        account: The account associated with the alarm.
+    """
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
