@@ -253,7 +253,12 @@ class ProposalsOrderChange(Vertical):
 
 
 class Proposals(GovernanceTabPane):
-    """TabPane with all content about proposals."""
+    """
+    TabPane with all content about proposals.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the proposals tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
