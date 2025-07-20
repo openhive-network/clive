@@ -264,6 +264,9 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         """
         Validate the input and raise an exception if validation fails.
 
+        Args:
+            treat_as_required: Whether to treat the input as required when validating.
+
         Raises:
             FailedValidationError: Raised when validation fails.
             InputValueError: Raised when cannot get the input value due to an error, which validation doesn't catch.
