@@ -432,10 +432,6 @@ clive/__private/ui/widgets/currency_selector/currency_selector_base.py
     DOC502: Method `CurrencySelectorBase.create_asset` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/widgets/dynamic_widgets/dynamic_widget.py
-    DOC601: Class `DynamicWidget`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `DynamicWidget`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `DynamicWidget.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `DynamicWidget.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [attribute_name: str, callback: DynamicWidgetCallbackType[CallbackReturnT], classes: str | None, first_try_callback: DynamicWidgetFirstTryCallbackType, id_: str | None, init: bool, obj_to_watch: Reactable].
     DOC201: Method `DynamicWidget._create_widget` does not have a return section in docstring
     DOC101: Method `DynamicWidget._update_widget_state`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `DynamicWidget._update_widget_state`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [result: CallbackReturnT].
