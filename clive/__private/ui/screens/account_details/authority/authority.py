@@ -102,7 +102,16 @@ def is_wax_account_authority_info_object_has_entry_that_matches_pattern(
 
 
 def is_wax_authority_object_has_entry_that_matches_pattern(authority: WaxAuthority, pattern: str | list[str]) -> bool:
-    """Check if the given pattern or any of the patterns are present in the WaxAuthority object."""
+    """
+    Check if the given pattern or any of the patterns are present in the authority object.
+
+    Args:
+        authority: Authority object containing account and key authorizations.
+        pattern: A string or a list of strings to match against the authority's entries.
+
+    Returns:
+        True if any entry in the authority matches the pattern, False otherwise.
+    """
     for entry in list(authority.account_auths.keys()) + list(authority.key_auths.keys()):
         if is_match(entry, pattern):
             return True
