@@ -18,7 +18,16 @@ if TYPE_CHECKING:
 
 
 class SelectedNodeAddress(Static):
-    """The currently selected node address."""
+    """
+    The currently selected node address.
+
+    Attributes:
+        node_address: The address of the currently selected node. If changed - displayed text will be automatically
+            updated.
+
+    Args:
+        node_address: The address of the node to display.
+    """
 
     node_address: HttpUrl | None = reactive(None)  # type: ignore[assignment]
 
