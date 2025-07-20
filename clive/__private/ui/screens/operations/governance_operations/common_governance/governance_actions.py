@@ -69,7 +69,13 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposalVotesOperation)](
     ScrollablePartFocusable
 ):
-    """Contains a table of actions to be performed after confirmation."""
+    """
+    Contains a table of actions to be performed after confirmation.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the actions table.
+        NAME_OF_ACTION: Name of the action to be performed.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
     NAME_OF_ACTION: ClassVar[str] = "Action"
