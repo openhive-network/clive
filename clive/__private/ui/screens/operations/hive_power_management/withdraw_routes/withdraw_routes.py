@@ -75,7 +75,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
     Table with WithdrawRoutes.
 
     Attributes:
-        ATTRIBUTE_TO_WATCH: Attribute of the HivePowerDataProvider to watch for updates.
+        ATTRIBUTE_TO_WATCH: Attribute to watch for updates.
         NO_CONTENT_TEXT: Text to display when there are no withdraw routes.
     """
 
