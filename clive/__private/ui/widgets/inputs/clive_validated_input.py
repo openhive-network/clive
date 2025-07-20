@@ -334,6 +334,17 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         Validate many inputs and return True if all of them are valid, False otherwise.
 
         For more info look into `validate_passed`.
+
+        Args:
+            *inputs: The inputs to validate.
+            treat_as_required: Whether to treat the inputs as required when validating.
+            notify_on_value_error: Whether to show a notification when the input value is invalid.
+                True by default since this error won't be visible in the UI otherwise.
+            notify_on_validation_error: Whether to show a notification when the input validation fails.
+                False by default since the validation error will be visible in the UI, under the input.
+
+        Returns:
+            True if all inputs are valid, False otherwise.
         """
         results: list[bool] = [
             input_obj.validate_passed(
