@@ -346,10 +346,6 @@ clive/__private/storage/service.py
     DOC201: Method `PersistentStorageService._is_model_cls_for_versioned_profile_file_available` does not have a return section in docstring
 --------------------
 clive/__private/ui/app.py
-    DOC601: Class `Clive`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `Clive`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [AUTO_FOCUS: , BINDINGS: , COMMAND_PALETTE_BINDING: , CSS_PATH: , ENABLE_COMMAND_PALETTE: , MODES: ClassVar[dict[CliveModes, type[CliveScreen]]], SCREENS: , SUB_TITLE: , header_expanded: , notification_history: list[Notification]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `Clive.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `Clive.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any, *args: Any].
     DOC101: Method `Clive.update_alarms_data_on_newest_node_data`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `Clive.update_alarms_data_on_newest_node_data`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [suppress_cancelled_error: bool].
     DOC201: Method `Clive.update_alarms_data_on_newest_node_data` does not have a return section in docstring

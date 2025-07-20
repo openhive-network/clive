@@ -49,7 +49,24 @@ if TYPE_CHECKING:
 
 
 class Clive(App[int]):
-    """A singleton instance of the Clive app."""
+    """
+    A singleton instance of the Clive app.
+
+    Attributes:
+        SUB_TITLE: The version of the Clive app.
+        CSS_PATH: The path to the global CSS file.
+        ENABLE_COMMAND_PALETTE: Whether the command palette is enabled.
+        COMMAND_PALETTE_BINDING: The key binding to open the command palette.
+        BINDINGS: Key bindings for the app.
+        SCREENS: Screens available in the app.
+        MODES: Modes available in the app.
+        header_expanded: Synchronize the expanded header state in all created header objects.
+        notification_history: All notifications that were displayed.
+
+    Args:
+        *args: Positional arguments for the App class.
+        **kwargs: Keyword arguments for the App class.
+    """
 
     from clive import __version__
 
@@ -87,10 +104,8 @@ class Clive(App[int]):
     _ALARMS_DATA_WORKER_GROUP_NAME: Final[str] = "alarms_data"
 
     header_expanded = var(default=False)
-    """Synchronize the expanded header state in all created header objects."""
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
-    """A list of all notifications that were displayed."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
