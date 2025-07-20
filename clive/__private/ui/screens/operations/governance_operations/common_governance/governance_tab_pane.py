@@ -45,7 +45,7 @@ class GovernanceTabPane(AbstractClassMessagePump, TabPane, CliveWidget):
 
         Args:
             identifier: Identifier of the action, used to create id of the widget.
-            vote: Action to be performed - vote or not.
+            vote: Action to be performed - vote or unvote.
         """
 
     @abstractmethod
