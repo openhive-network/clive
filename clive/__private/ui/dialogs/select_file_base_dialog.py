@@ -77,7 +77,12 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
         yield DirectoryTree(str(safe_settings.select_file_root_path))
 
     def additional_content_after_input(self) -> ComposeResult:
-        """Override this method to add additional content before the input."""
+        """
+        Override this method to add additional content below the input.
+
+        Returns:
+            Additional content to be yielded.
+        """
         return []
 
     @on(DirectoryTree.FileSelected)
