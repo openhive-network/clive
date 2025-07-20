@@ -24,7 +24,12 @@ if TYPE_CHECKING:
 
 
 class AccountSelectionList(SelectionList[str], CliveWidget):
-    """Selection list with account names for filtering authorities."""
+    """
+    Selection list with account names for filtering authorities.
+
+    Args:
+        account: The account that will be initially selected.
+    """
 
     def __init__(self, account: TrackedAccount) -> None:
         self._initial_checked_account_name = account.name

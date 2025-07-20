@@ -394,10 +394,6 @@ clive/__private/ui/screens/account_details/authority/authority.py
     DOC103: Function `is_wax_authority_object_has_entry_that_matches_pattern`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, pattern: str | list[str]].
     DOC201: Function `is_wax_authority_object_has_entry_that_matches_pattern` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/account_details/authority/filter_authority.py
-    DOC101: Method `AccountSelectionList.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AccountSelectionList.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: TrackedAccount].
---------------------
 clive/__private/ui/screens/base_screen.py
     DOC201: Method `BaseScreen.create_main_panel` does not have a return section in docstring
 --------------------
