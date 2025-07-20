@@ -83,10 +83,10 @@ class TransactionIdLabel(Label):
 
     Attributes:
         transaction_id: The unique identifier for the transaction. If changed displayed text of this label will
-        be automatically updated.
+            be automatically updated.
 
     Args:
-        transaction_id: The unique identifier of transaction. Used to initialize `transaction_id` attribute.
+        transaction_id: The unique identifier of transaction.
     """
 
     transaction_id: str = reactive(None, init=False)  # type: ignore[assignment]
