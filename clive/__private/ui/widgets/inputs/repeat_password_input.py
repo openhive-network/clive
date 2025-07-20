@@ -10,7 +10,12 @@ if TYPE_CHECKING:
 
 
 class RepeatPasswordInput(TextInput):
-    """Specialized TextInput for repeat password."""
+    """
+    Specialized TextInput for repeat password.
+
+    Args:
+        input_to_repeat: The input to repeat the password against.
+    """
 
     def __init__(self, input_to_repeat: CliveValidatedInput[Any]) -> None:
         super().__init__(
