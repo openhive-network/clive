@@ -42,7 +42,12 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
 
     @abstractmethod
     def create_custom_columns(self) -> ComposeResult:
-        """Yield custom columns for each table."""
+        """
+        Yield custom columns for each table.
+
+        Returns:
+            Custom columns to be displayed in the header.
+        """
 
     @property
     def is_proxy_set(self) -> bool:
