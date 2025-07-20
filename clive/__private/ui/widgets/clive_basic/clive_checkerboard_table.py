@@ -489,7 +489,15 @@ class CliveCheckerboardTable(CliveWidget):
                     cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
 
     def is_anything_to_display(self, content: ContentT) -> bool:  # noqa: ARG002
-        """Check whether there are elements to display. Should be overridden to create a custom condition."""
+        """
+        Check whether there are elements to display. Should be overridden to create a custom condition.
+
+        Args:
+            content: The content to check if there is anything to display.
+
+        Returns:
+            True if there is anything to display, False otherwise.
+        """
         return True
 
     def update_previous_state(self, content: ContentT) -> None:  # noqa: ARG002
