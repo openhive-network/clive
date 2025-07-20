@@ -32,7 +32,13 @@ class CliveValidatedInputError(CliveError):
 
 
 class FailedValidationError(CliveValidatedInputError):
-    """Raised when validation of `CliveValidatedInput`  fails."""
+    """
+    Raised when validation of `CliveValidatedInput` fails.
+
+    Args:
+        validation_result: The result of the validation that failed.
+        input_name: The name of the input that failed validation, if available.
+    """
 
     def __init__(self, validation_result: ValidationResult, *, input_name: str | None = None) -> None:
         self.validation_result = validation_result
