@@ -50,7 +50,13 @@ class GovernanceTabPane(AbstractClassMessagePump, TabPane, CliveWidget):
 
     @abstractmethod
     def remove_operation_from_cart(self, identifier: str, *, vote: bool) -> None:
-        """Remove operation from the cart."""
+        """
+        Remove operation from the cart.
+
+        Args:
+            identifier: Identifier of the action.
+            vote: Action to be performed - vote or unvote.
+        """
 
     @on(GovernanceTableRow.ChangeActionStatus)
     async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:
