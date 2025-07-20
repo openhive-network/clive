@@ -19,12 +19,14 @@ class KnownExchangeHandler(CliveWidget):
     The widget responds to messages: `KnownExchangeDetected` and `KnownExchangeGone` emitted by KnownExchangeInput`.
     Automatically disables/enables the selector  from `LiquidAssetAmountInput` and makes memo input required.
 
-    Notice
-    ______
+    Notice:
+        For the handler to work properly, you must also use `KnownExchangeInput`!
+        Handler is designed to be used as a context manager, and the input must be placed under
+        the with statement with the handler.
 
-    For the handler to work properly, you must also use `KnownExchangeInput`!
-    Handler is designed to be used as a context manager, and the input must be placed under
-    the with statement with the handler.
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the widget.
+        MEMO_REQUIRED_VALIDATION_MESSAGE: Message shown when memo is required by the known exchange account.
     """
 
     DEFAULT_CSS = """
