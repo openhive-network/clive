@@ -72,7 +72,12 @@ class ProxySet(ProxyBaseContainer):
 
 
 class Proxy(TabPane, CliveWidget):
-    """TabPane with all content about proxy."""
+    """
+    TabPane with all content about proxy.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the proxy tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
