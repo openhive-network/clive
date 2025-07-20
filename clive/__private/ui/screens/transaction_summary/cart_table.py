@@ -112,7 +112,12 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @dataclass
     class Focus(Message):
-        """Message sent when other CartItem should be focused."""
+        """
+        Message sent when other CartItem should be focused.
+
+        Attributes:
+            target_index: Index of the CartItem that should be focused.
+        """
 
         target_index: int
 
