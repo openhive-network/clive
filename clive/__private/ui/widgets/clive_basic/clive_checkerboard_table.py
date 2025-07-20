@@ -415,8 +415,14 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
+        Args:
+            content: The content to create rows from.
+
         Raises:
             InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
+
+        Returns:
+            A sequence of `CliveCheckerboardTableRow` instances to be displayed in the table.
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
