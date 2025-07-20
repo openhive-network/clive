@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class MarkAlarmAsHarmlessDialog(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to mark alarm as harmless."""
+    """
+    Dialog to confirm if the user wants to mark alarm as harmless.
+
+    Args:
+        alarm: The alarm to be marked as harmless.
+    """
 
     def __init__(self, alarm: AnyAlarm) -> None:
         self._alarm = alarm
