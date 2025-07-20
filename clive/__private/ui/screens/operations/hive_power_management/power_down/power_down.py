@@ -129,7 +129,12 @@ class PendingPowerDown(CliveCheckerboardTable):
 
 
 class PowerDown(TabPane, OperationActionBindings):
-    """TabPane with all content about power down."""
+    """
+    TabPane with all content about power down.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 

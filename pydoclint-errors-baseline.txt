@@ -413,8 +413,6 @@ clive/__private/ui/screens/operations/governance_operations/witness/witness.py
 clive/__private/ui/screens/operations/hive_power_management/power_down/power_down.py
     DOC101: Method `WithdrawRoutesDisplay._update_withdraw_routes`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `WithdrawRoutesDisplay._update_withdraw_routes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: HivePowerData | NotUpdatedYet].
-    DOC601: Class `PowerDown`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `PowerDown`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC201: Method `PowerDown._calculate_one_withdrawal` does not have a return section in docstring
 --------------------
 clive/__private/ui/screens/operations/hive_power_management/power_up/power_up.py
