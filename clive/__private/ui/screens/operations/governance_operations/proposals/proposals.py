@@ -279,6 +279,10 @@ class Proposals(GovernanceTabPane):
         If the proposal ID is already in the cart, nothing will be done.
         If an operation with a free slot is in the cart, it will be added to the operation.
         If an operation with such a proposal ID is NOT in the cart, a new operation will be created and added.
+
+        Args:
+            identifier: Identifier of the proposal.
+            vote: Action to be performed - vote or unvote.
         """
 
         def append_operation(operation: UpdateProposalVotesOperation) -> None:
