@@ -14,7 +14,18 @@ if TYPE_CHECKING:
 
 
 class GenerousButton(CliveButton):
-    """Button that fill the related input with the entire selected asset balance."""
+    """
+    Button that fill the related input with the entire selected asset balance.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the GenerousButton.
+
+    Args:
+        related_input: The input field that will be filled with the asset balance.
+        amount_callback: A callable that returns the current asset balance.
+        id_: Optional ID for the button.
+        classes: Optional CSS classes for the button.
+    """
 
     class Pressed(CliveButton.Pressed):
         """Used to identify exactly that GenerousButton was pressed."""
