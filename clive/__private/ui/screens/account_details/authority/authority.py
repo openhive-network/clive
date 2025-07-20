@@ -287,7 +287,16 @@ class MemoItem(CliveCheckerboardTableRow):
 
 
 class AuthorityTable(CliveCheckerboardTable):
-    """A table containing all entries of a single type of authority."""
+    """
+    A table containing all entries of a single type of authority.
+
+    Attributes:
+        NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
+
+    Args:
+        single_authority: An authority object or a memo key.
+        filter_pattern: Patterns to filter the entries in the authority.
+    """
 
     NO_CONTENT_TEXT = "No entries in authority"
 
