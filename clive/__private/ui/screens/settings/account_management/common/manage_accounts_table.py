@@ -67,7 +67,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     Attributes:
         DEFAULT_CSS: Default CSS for the manage accounts table.
-        ATTRIBUTE_TO_WATCH: Attribute of the Profile to watch for updates.
+        ATTRIBUTE_TO_WATCH: Attribute to watch for updates.
         NO_CONTENT_TEXT: Text to display when there are no accounts.
 
     Args:
