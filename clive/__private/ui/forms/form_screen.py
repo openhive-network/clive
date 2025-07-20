@@ -34,10 +34,14 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
 
     @dataclass
     class ValidationFail:
-        """Used to determine that form validation failed so next screen should not be displayed."""
+        """
+        Used to determine that form validation failed so next screen should not be displayed.
+
+        Attributes:
+            notification_message: Optional message to be displayed in the notification.
+        """
 
         notification_message: str | None = None
-        """Message to be displayed in the notification."""
 
     def __init__(self, owner: Form[FormContextT]) -> None:
         self._owner = owner
