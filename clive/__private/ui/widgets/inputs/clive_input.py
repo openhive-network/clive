@@ -222,7 +222,12 @@ class CliveInput(Input):
         return result
 
     def clear_validation(self, *, clear_value: bool = True) -> None:
-        """Clear the validation of the input."""
+        """
+        Clear the validation of the input.
+
+        Args:
+            clear_value: If True, also clear the value of the input.
+        """
         if clear_value:
             self.clear()
         self._valid = True
