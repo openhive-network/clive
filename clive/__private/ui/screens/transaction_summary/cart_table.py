@@ -93,7 +93,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     Args:
         operation_index: Index of the operation in the transaction.
-        action_manager: Instance of CartItemsActionManager to manage actions like move/delete.
+        action_manager: Object to manage actions like move/delete.
     """
 
     BINDINGS = [
