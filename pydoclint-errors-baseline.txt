@@ -371,10 +371,6 @@ clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
     DOC103: Method `LoadTransactionFromFileDialog._validate_operations_to_exchange`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [loaded_transaction: Transaction].
     DOC201: Method `LoadTransactionFromFileDialog._validate_operations_to_exchange` does not have a return section in docstring
 --------------------
-clive/__private/ui/dialogs/mark_alarm_as_harmless_dialog.py
-    DOC101: Method `MarkAlarmAsHarmlessDialog.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `MarkAlarmAsHarmlessDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [alarm: AnyAlarm].
---------------------
 clive/__private/ui/dialogs/operation_summary/operation_summary_base_dialog.py
     DOC601: Class `OperationSummaryBaseDialog`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `OperationSummaryBaseDialog`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: , CSS_PATH: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
