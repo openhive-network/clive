@@ -434,6 +434,9 @@ class CliveCheckerboardTable(CliveWidget):
 
         Raises:
             InvalidStaticDefinedError: When ATTRIBUTE_TO_WATCH has not been set without overriding the method.
+
+        Returns:
+            A sequence of `CliveCheckerboardTableRow` instances to be displayed in the table.
         """
         if not self.should_be_dynamic:
             raise InvalidStaticDefinedError
