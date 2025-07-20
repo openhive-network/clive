@@ -30,7 +30,17 @@ class SectionBody(Container):
 
 
 class Section(Container):
-    """Container with predefined background padding and optionally added SectionTitle."""
+    """
+    Container with predefined background padding and optionally added title.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+
+    Args:
+        title: The title of the section, if any.
+        id_: The ID of the section widget.
+        classes: Additional CSS classes for the section.
+    """
 
     DEFAULT_CSS = """
     Section {
