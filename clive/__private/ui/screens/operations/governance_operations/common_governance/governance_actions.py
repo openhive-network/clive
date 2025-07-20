@@ -86,7 +86,15 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
     @staticmethod
     @abstractmethod
     def create_action_row_id(identifier: str) -> str:
-        """Return id of the action row."""
+        """
+        Return id of the action row.
+
+        Args:
+            identifier: Identifier of the action.
+
+        Returns:
+            CSS id of the action row.
+        """
 
     @abstractmethod
     async def mount_operations_from_cart(self) -> None:
