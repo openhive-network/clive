@@ -24,7 +24,12 @@ if TYPE_CHECKING:
 
 
 class PowerUp(TabPane, OperationActionBindings):
-    """TabPane with all content about power up."""
+    """
+    TabPane with all content about power up.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the power up screen.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
