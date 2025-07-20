@@ -41,7 +41,12 @@ if TYPE_CHECKING:
 
 
 class AlreadySignedHint(Label):
-    """Hint about the already signed transaction."""
+    """
+    Hint about the already signed transaction.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for styling the hint.
+    """
 
     DEFAULT_CSS = """
     AlreadySignedHint {
