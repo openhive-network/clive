@@ -14,7 +14,25 @@ if TYPE_CHECKING:
 
 
 class MemoInput(TextInput):
-    """An input for a Hive memo."""
+    """
+    An input for a Hive memo.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: The placeholder text for the input.
+        always_show_title: Whether to always show the title.
+        include_title_in_placeholder_when_blurred: Whether to include the title when the input is blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        suggester: An optional suggester for the input.
+        validators: Validators to apply to the input value.
+        validate_on: When to validate the input.
+        valid_empty: Whether the input can be valid when empty.
+        id: The ID of the input widget.
+        classes: Additional CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     def __init__(
         self,
