@@ -92,5 +92,10 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
         """Apply the form data."""
 
     def is_step_optional(self) -> bool:
-        """Override to skip form validation."""
+        """
+        Override to skip form validation.
+
+        Returns:
+            Whether the step is optional.
+        """
         return False
