@@ -63,7 +63,7 @@ class TransactionExpirationLabel(Label):
         expiration: Time when the transaction expires. If changed - displayed text will automatically update.
 
     Args:
-        expiration: Time when the transaction expires. Used to initialize `expiration` attribute.
+        expiration: Time when the transaction expires.
     """
 
     expiration: datetime = reactive(None, init=False)  # type: ignore[assignment]
