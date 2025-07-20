@@ -19,7 +19,17 @@ if TYPE_CHECKING:
 
 
 class FixAlarmInfoWidget(CliveWidget):
-    """Widget with information how to fix the alarm, and possibly a button to mark it as harmless or go to clive-fix."""
+    """
+    Widget with information how to fix the alarm, and possibly a button to mark it as harmless or go to clive-fix.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the widget.
+
+    Args:
+        alarm: The alarm to be fixed.
+        alarm_fix_details: Details about how to fix the alarm.
+        account: The account associated with the alarm.
+    """
 
     DEFAULT_CSS = """
     FixAlarmInfoWidget {

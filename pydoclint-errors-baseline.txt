@@ -383,12 +383,6 @@ clive/__private/ui/screens/account_details/alarms/alarms.py
     DOC103: Method `AlarmsTable._get_actual_account_state`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: Profile].
     DOC201: Method `AlarmsTable._get_actual_account_state` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/account_details/alarms/fix_alarm_info_widget.py
-    DOC601: Class `FixAlarmInfoWidget`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `FixAlarmInfoWidget`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `FixAlarmInfoWidget.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `FixAlarmInfoWidget.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: Account, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails].
---------------------
 clive/__private/ui/screens/account_details/authority/authority.py
     DOC101: Function `collect_weights_from_wax_authority_object`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `collect_weights_from_wax_authority_object`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, keys: KeyManager].
