@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class ConfirmFileOverwriteDialog(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to save to existing file."""
+    """
+    Dialog to confirm if the user wants to save to existing file.
+
+    Attributes:
+        CONFIRM_QUESTION_SAVE_TO_EXISTING_FILE: The question to confirm overwriting an existing file.
+    """
 
     CONFIRM_QUESTION_SAVE_TO_EXISTING_FILE: Final[str] = "The file already exists. Do you want to overwrite it?"
 
