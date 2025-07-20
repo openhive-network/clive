@@ -44,7 +44,15 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     @staticmethod
     @abstractmethod
     def create_action_row_id(identifier: str) -> str:
-        """Create css id of the action row."""
+        """
+        Create css id of the action row.
+
+        Args:
+            identifier: Identifier of the action.
+
+        Returns:
+            CSS id of the action row.
+        """
 
     @property
     def action_identifier(self) -> str:
