@@ -18,7 +18,12 @@ if TYPE_CHECKING:
 
 
 class Switches(Horizontal):
-    """Container for the switches."""
+    """
+    Container for the switches.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the Switches container.
+    """
 
     DEFAULT_CSS = """
     Switches {
