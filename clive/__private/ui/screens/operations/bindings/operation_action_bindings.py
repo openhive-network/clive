@@ -148,7 +148,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                 will be checked for being a known exchange.
 
         Returns:
-            True if the account is a known exchange, False if not, None if not applicable.
+            True if known exchange account is present in input. False if not.
         """
         return None
 
