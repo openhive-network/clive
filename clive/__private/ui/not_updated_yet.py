@@ -7,7 +7,15 @@ if TYPE_CHECKING:
 
 
 def is_not_updated_yet[T](value: T | NotUpdatedYet) -> TypeIs[NotUpdatedYet]:
-    """Check whether the value is an instance of NotUpdatedYet."""
+    """
+    Check whether the value is an instance of NotUpdatedYet.
+
+    Args:
+        value: The value to check.
+
+    Returns:
+        True if the value is an instance of NotUpdatedYet, False otherwise.
+    """
     return isinstance(value, NotUpdatedYet)
 
 
