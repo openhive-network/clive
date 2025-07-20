@@ -13,7 +13,13 @@ if TYPE_CHECKING:
 
 
 class WitnessesDataProvider(DataProvider[WitnessesData]):
-    """A class for retrieving information about witnesses stored in a WitnessesData dataclass."""
+    """
+    A class for retrieving information about witnesses.
+
+    Args:
+        paused: Whether the data provider is paused.
+        init_update: Whether to perform an initial update.
+    """
 
     _content: WitnessesData | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
     """It is used to check whether witnesses data has been refreshed and to store witnesses data."""
