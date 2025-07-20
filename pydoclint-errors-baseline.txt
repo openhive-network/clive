@@ -401,9 +401,6 @@ clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
     DOC103: Method `OperationActionBindings._add_to_cart`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [notify: bool, operations: list[OperationUnion]].
 --------------------
 clive/__private/ui/screens/operations/governance_operations/common_governance/governance_actions.py
-    DOC101: Method `GovernanceActions.create_action_row_id`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `GovernanceActions.create_action_row_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [identifier: str].
-    DOC201: Method `GovernanceActions.create_action_row_id` does not have a return section in docstring
     DOC101: Method `GovernanceActions.should_be_added_to_actions`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `GovernanceActions.should_be_added_to_actions`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: object].
     DOC201: Method `GovernanceActions.should_be_added_to_actions` does not have a return section in docstring
