@@ -360,10 +360,6 @@ clive/__private/ui/clive_screen.py
     DOC101: Method `CliveScreen._post_to_children`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveScreen._post_to_children`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [message: Message, node: Widget].
 --------------------
-clive/__private/ui/clive_suggester.py
-    DOC101: Method `CliveSuggester.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CliveSuggester.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [suggestions: Iterable[str] | None].
---------------------
 clive/__private/ui/clive_widget.py
     DOC101: Method `CliveWidget.unbind`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveWidget.unbind`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].

@@ -13,6 +13,9 @@ class CliveSuggester(SuggestFromList):
     Suggester that can track the position of suggestion selection.
 
     Can be used mainly for CliveInput - to switch between suggestions by user action.
+
+    Args:
+        suggestions: Initial suggestions to fill the suggester with.
     """
 
     def __init__(self, suggestions: Iterable[str] | None = None) -> None:
