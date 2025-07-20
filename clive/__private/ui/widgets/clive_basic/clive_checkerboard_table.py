@@ -344,7 +344,12 @@ class CliveCheckerboardTable(CliveWidget):
         await self.rebuild(content)
 
     async def rebuild(self, content: ContentT | NotUpdatedYet | None = None) -> None:
-        """Rebuilds whole table - explicit use available for static and dynamic version."""
+        """
+        Rebuilds whole table - explicit use available for static and dynamic version.
+
+        Args:
+            content: Content to be used for rebuilding the table. If None, it will use the current content.
+        """
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(self._create_table_content(content))
