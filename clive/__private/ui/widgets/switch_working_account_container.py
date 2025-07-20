@@ -50,6 +50,9 @@ class NoWorkingAccountRadioButton(CliveRadioButton):
     Button is created because the textual `RadioSet` does not support deselecting radio buttons
     and situations where there are no radio buttons selected. This approach is not ideal, but this way we do not
     have to change the `RadioSet` code.
+
+    Args:
+        value: Whether this button is selected or not.
     """
 
     def __init__(self, *, value: bool) -> None:
