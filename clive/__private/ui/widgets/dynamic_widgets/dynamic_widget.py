@@ -38,7 +38,21 @@ WidgetT = TypeVar("WidgetT", bound=Widget)
 
 
 class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, CallbackReturnT]):  # noqa: UP046
-    """A widget that can be updated dynamically when a reactive variable changes."""
+    """
+    A widget that can be updated dynamically when a reactive variable changes.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the dynamic widget.
+
+    Args:
+        obj_to_watch: The reactive object to watch for changes.
+        attribute_name: The name of the attribute to watch on the reactive object.
+        callback: A callback function that will be called when the attribute changes.
+        first_try_callback: A callback function that will be called before main callback to check if update is needed.
+        init: Whether to initialize the watcher immediately.
+        id_: Optional ID for the widget.
+        classes: Optional CSS classes for the widget.
+    """
 
     DEFAULT_CSS = """
     DynamicWidget {
