@@ -166,7 +166,12 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @abstractmethod
     def get_action_row_id(self) -> str:
-        """Return an id of the action row."""
+        """
+        Return an id of the action row.
+
+        Returns:
+            CSS id of the action row.
+        """
 
     @on(GovernanceCheckbox.Clicked)
     def focus_myself(self) -> None:
