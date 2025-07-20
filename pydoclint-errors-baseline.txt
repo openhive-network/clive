@@ -361,7 +361,6 @@ clive/__private/ui/clive_screen.py
     DOC103: Method `CliveScreen._post_to_children`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [message: Message, node: Widget].
 --------------------
 clive/__private/ui/dialogs/clive_base_dialogs.py
-    DOC201: Method `CliveBaseDialog.create_buttons_content` does not have a return section in docstring
     DOC201: Method `CliveActionDialog._perform_confirmation` does not have a return section in docstring
 --------------------
 clive/__private/ui/dialogs/confirm_action_dialog_with_known_exchange.py
