@@ -179,7 +179,12 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
 
 
 class RemoveTrackedAccountButton(OneLineButtonUnfocusable, CliveWidget):
-    """Used to remove account from the tracked list from the dashboard."""
+    """
+    Used to remove account from the tracked list from the dashboard.
+
+    Args:
+        account: The account to be removed from the tracked list.
+    """
 
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(
