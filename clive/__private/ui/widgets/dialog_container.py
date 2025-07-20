@@ -19,7 +19,18 @@ class DialogBody(Container):
 
 
 class DialogContainer(Container, can_focus=False):
-    """A container for dialog-like looking widgets. Content stored inside this container will be centered."""
+    """
+    A container for dialog-like looking widgets. Content stored inside this container will be centered.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the dialog container.
+
+    Args:
+        big_title: The big title of the dialog, displayed at the top.
+        section_title: The title of the section inside the dialog.
+        id_: Optional ID for the dialog container.
+        classes: Optional CSS classes for the dialog container.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
