@@ -39,24 +39,27 @@ class DataProvider[ProviderContentT](Container, CliveWidget, AbstractClassMessag
     To access the data, use the content reactive attribute.
     Management of data refreshing/cleanup could be done by using DataProvider as a context manager in compose() like
     method, but could be also done by using the provider methods.
+
+    Attributes:
+        updated: Set to True when the provider has updated the content for the first time. Can be watched.
+            Warning: In case when you have to check if the content is ready in the watch callback method,
+            use `is_content_set` instead, as `updated` may be set to True **after** notifying watchers.
+            Flow looks like this:
+            1. Provider is created.
+            2. Provider is updated for the first time.
+            3. `is_content_set` will return True.
+            4. Watchers are notified.
+            5. `updated` is set to True.
+
+    Args:
+        paused: If True, the provider will not update until resumed.
+        init_update: If True, the provider will update immediately after creation.
     """
 
     _content: ProviderContentT | NotUpdatedYet = var(NotUpdatedYet(), init=False)  # type: ignore[assignment]
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
     updated: bool = var(default=False)  # type: ignore[assignment]
-    """
-    Set to True when the provider has updated the content for the first time. Can be watched.
-
-    Warning: In case when you have to check if the content is ready in the watch callback method,
-    use `is_content_set` instead, as `updated` may be set to True **after** notifying watchers.
-    Flow looks like this:
-    1. Provider is created.
-    2. Provider is updated for the first time.
-    3. `is_content_set` will return True.
-    4. Watchers are notified.
-    3. `updated` is set to True.
-    """
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__()
