@@ -268,7 +268,12 @@ class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
 
 
 class Witnesses(GovernanceTabPane):
-    """TabPane with all content about witnesses."""
+    """
+    TabPane with all content about witnesses.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the witnesses tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
