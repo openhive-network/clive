@@ -31,7 +31,13 @@ if TYPE_CHECKING:
 
 
 class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
-    """Row of ManageKeyAliasesTable."""
+    """
+    Row of ManageKeyAliasesTable.
+
+    Args:
+        index: Index of the key alias in the list.
+        public_key: PublicKeyAliased object containing the alias and value.
+    """
 
     def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
         self._index = index
