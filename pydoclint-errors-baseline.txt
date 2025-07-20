@@ -418,12 +418,6 @@ clive/__private/ui/screens/operations/hive_power_management/power_down/power_dow
 clive/__private/ui/screens/operations/transfer_to_account/transfer_to_account.py
     DOC201: Method `TransferToAccount._check_is_known_exchange_in_input` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/settings/account_management/common/manage_accounts_table.py
-    DOC601: Class `ManageAccountsTable`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `ManageAccountsTable`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ATTRIBUTE_TO_WATCH: , DEFAULT_CSS: , NO_CONTENT_TEXT: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `ManageAccountsTable.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ManageAccountsTable.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [accounts_type: AccountsType].
---------------------
 clive/__private/ui/screens/settings/account_management/known_accounts.py
     DOC601: Class `KnownAccounts`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `KnownAccounts`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [TITLE: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
