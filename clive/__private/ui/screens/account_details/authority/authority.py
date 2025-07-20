@@ -82,7 +82,16 @@ def collect_weights_from_wax_authority_object(authority: WaxAuthority, keys: Key
 def is_wax_account_authority_info_object_has_entry_that_matches_pattern(
     authority: WaxAccountAuthorityInfo, pattern: str | list[str]
 ) -> bool:
-    """Check if given pattern or any of the patterns are present in WaxAccountAuthorityInfo object."""
+    """
+    Check if given pattern or any of the patterns are present in given authority object.
+
+    Args:
+        authority: Authority object containing account and key authorizations.
+        pattern: A string or a list of strings to match against the authority's entries.
+
+    Returns:
+        True if any entry in the authority matches the pattern, False otherwise.
+    """
     if is_match(authority.memo_key, pattern):
         return True
     for authority_type in ["owner", "active", "posting"]:
