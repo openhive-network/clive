@@ -80,7 +80,12 @@ class FormScreen(CliveScreen, Contextual[FormContextT], ABC):
 
     @abstractmethod
     async def validate(self) -> ValidationFail | ValidationSuccess | None:
-        """Validate the form. None is same as ValidationSuccess."""
+        """
+        Validate the form. None is same as ValidationSuccess.
+
+        Returns:
+            Result indicating whether the form is valid or not.
+        """
 
     @abstractmethod
     async def apply(self) -> None:
