@@ -6,7 +6,12 @@ from clive.__private.ui.screens.settings.account_management.common.manage_accoun
 
 
 class KnownAccounts(ManageAccountsTabPane):
-    """TabPane used to add and delete known accounts."""
+    """
+    TabPane used to add and delete known accounts.
+
+    Attributes:
+        TITLE: Title of the tab pane.
+    """
 
     TITLE: Final[str] = "Known accounts"
 
