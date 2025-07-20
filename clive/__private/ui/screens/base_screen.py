@@ -43,4 +43,9 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
 
     @abstractmethod
     def create_main_panel(self) -> ComposeResult:
-        """Yield the main panel widgets."""
+        """
+        Yield the main panel widgets.
+
+        Returns:
+            The widgets to be displayed in the main panel.
+        """
