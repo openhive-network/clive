@@ -18,7 +18,16 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
 
 
 class GovernanceTabPane(AbstractClassMessagePump, TabPane, CliveWidget):
-    """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
+    """
+    TabPane with operation bindings and mechanism to handle with message to mount/unmount action.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the governance tab pane.
+
+    Args:
+        title: Title of the tab pane.
+        id_: Unique identifier for the tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
