@@ -20,7 +20,15 @@ if TYPE_CHECKING:
 
 
 class TaposHolder(Vertical):
-    """Container for the TaPoS metadata."""
+    """Container for the TaPoS metadata.
+
+    Attributes:
+        transaction: The transaction object containing TaPoS metadata to display. If changed - widget will automatically
+            refresh content of mounted labels.
+
+    Args:
+        transaction: The transaction object to display tapos metadata for.
+    """
 
     transaction: Transaction = var(None, init=False)  # type: ignore[assignment]
 
@@ -48,7 +56,15 @@ class TaposHolder(Vertical):
 
 
 class TransactionExpirationLabel(Label):
-    """Label for displaying transaction expiration."""
+    """
+    Label for displaying transaction expiration.
+
+    Attributes:
+        expiration: Time when the transaction expires. If changed - displayed text will automatically update.
+
+    Args:
+        expiration: Time when the transaction expires. Used to initialize `expiration` attribute.
+    """
 
     expiration: datetime = reactive(None, init=False)  # type: ignore[assignment]
 
@@ -62,7 +78,16 @@ class TransactionExpirationLabel(Label):
 
 
 class TransactionIdLabel(Label):
-    """Label for displaying transaction id."""
+    """
+    Label for displaying transaction id.
+
+    Attributes:
+        transaction_id: The unique identifier for the transaction. If changed displayed text of this label will
+        be automatically updated.
+
+    Args:
+        transaction_id: The unique identifier of transaction. Used to initialize `transaction_id` attribute.
+    """
 
     transaction_id: str = reactive(None, init=False)  # type: ignore[assignment]
 
