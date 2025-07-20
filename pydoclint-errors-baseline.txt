@@ -406,8 +406,6 @@ clive/__private/ui/screens/operations/governance_operations/common_governance/go
     DOC201: Method `GovernanceListWidget._create_row` does not have a return section in docstring
 --------------------
 clive/__private/ui/screens/operations/governance_operations/witness/witness.py
-    DOC601: Class `Witnesses`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `Witnesses`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC101: Method `Witnesses._create_operation`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `Witnesses._create_operation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [vote: bool, witness: str].
     DOC201: Method `Witnesses._create_operation` does not have a return section in docstring
