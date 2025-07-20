@@ -30,7 +30,12 @@ class Form(ContextualHolder[FormContextT], CliveScreen[None]):
 
     @abstractmethod
     def compose_form(self) -> ComposeFormResult[FormContextT]:
-        """Yield screens types in the order they should be displayed."""
+        """
+        Yield screens types in the order they should be displayed.
+
+        Returns:
+            Form screens that compose the form.
+        """
 
     @property
     def screens_types(self) -> list[type[FormScreen[FormContextT]]]:
