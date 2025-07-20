@@ -7,6 +7,11 @@ from clive.__private.ui.screens.cart_based_screen.cart_based_screen import CartB
 
 
 class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
-    """Base class for all screens that represent operations."""
+    """
+    Base class for all screens that represent operations.
+
+    Attributes:
+        BINDINGS: List of bindings for the screen.
+    """
 
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
