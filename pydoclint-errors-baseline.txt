@@ -436,10 +436,6 @@ clive/__private/ui/widgets/dynamic_widgets/dynamic_widget.py
     DOC101: Method `DynamicWidget._update_widget_state`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `DynamicWidget._update_widget_state`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [result: CallbackReturnT].
 --------------------
-clive/__private/ui/widgets/ellipsed_static.py
-    DOC101: Method `EllipsedStatic.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `EllipsedStatic.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [classes: str | None, id_: str | None, renderable: str].
---------------------
 clive/__private/ui/widgets/inputs/account_name_pattern_input.py
     DOC101: Method `AccountNamePatternInput.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountNamePatternInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, value: str | None].
