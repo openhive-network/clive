@@ -4,7 +4,15 @@ from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 
 class LabelizedInput(TextInput):
-    """An input that cannot be edited. It is used to display a static value with same style as other inputs."""
+    """
+    An input that cannot be edited. It is used to display a static value with same style as other inputs.
+
+    Args:
+        title: The title of the input.
+        value: The value to display in the input.
+        id: The ID of the input widget.
+        classes: Additional CSS classes for the input.
+    """
 
     def __init__(
         self,
