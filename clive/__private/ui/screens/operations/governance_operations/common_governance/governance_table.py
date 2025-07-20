@@ -246,7 +246,12 @@ class GovernanceTable(
 
     @abstractmethod
     def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataT]:
-        """Return the instance of the new witnesses or proposals list."""
+        """
+        Return the instance of the new witnesses or proposals list.
+
+        Returns:
+            Created list widget with the data provided.f
+        """
 
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:
