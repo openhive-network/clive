@@ -442,8 +442,6 @@ clive/__private/ui/widgets/inputs/asset_amount_base_input.py
 clive/__private/ui/widgets/inputs/clive_validated_input.py
     DOC502: Method `CliveValidatedInput.value_or_error` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC503: Method `CliveValidatedInput.validate_with_error` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['FailedValidationError', 'InputValueError']. Raised exceptions in the body: ['FailedValidationError'].
-    DOC101: Method `CliveValidatedInput.validate_many_with_error`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CliveValidatedInput.validate_many_with_error`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*inputs: CliveValidatedInput[Any]].
     DOC101: Method `CliveValidatedInput.clear_validation`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveValidatedInput.clear_validation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clear_value: bool].
 --------------------

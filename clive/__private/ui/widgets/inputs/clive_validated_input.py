@@ -362,6 +362,9 @@ class CliveValidatedInput[InputReturnT](CliveWidget, AbstractClassMessagePump):
         """
         Validate many inputs and raise an exception if any of them is invalid.
 
+        Args:
+            *inputs: The inputs to validate.
+
         Raises:
             FailedManyValidationError: Raised when validation fails.
         """
