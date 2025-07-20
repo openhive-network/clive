@@ -84,7 +84,12 @@ class WitnessNameLabel(Label, CliveWidget):
 
 
 class Witness(GovernanceTableRow[WitnessData]):
-    """Check if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
+    """
+    Check if there is a witness in the action table - if so, move True to the witness checkbox parameter.
+
+    Attributes:
+        BINDINGS: List of predefined bindings for the witness row.
+    """
 
     BINDINGS = [CLIVE_PREDEFINED_BINDINGS.operations.witness_show_details.create(description="Details")]
 
@@ -128,7 +133,13 @@ class WitnessManualSearch(Grid):
 
     @dataclass
     class Search(Message):
-        """Emitted when the search button is pressed."""
+        """
+        Emitted when the search button is pressed.
+
+        Attributes:
+            pattern: The pattern to search for in witness names.
+            limit: The maximum number of witnesses to return.
+        """
 
         pattern: str
         limit: int
