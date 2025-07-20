@@ -60,7 +60,12 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
         yield self.button_down
 
     def create_additional_headlines(self) -> ComposeResult:
-        """Yield custom headlines that will be placed above the arrows and column names."""
+        """
+        Yield custom headlines that will be placed above the arrows and column names.
+
+        Returns:
+            Custom headlines to be displayed in the header.
+        """
         return []
 
 
