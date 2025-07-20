@@ -90,7 +90,12 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
 
     @on(Click)
     def close_dialog(self, event: Click) -> None:
-        """Close the Dialog if the user clicks outside the modal content."""
+        """
+        Close the Dialog if the user clicks outside the modal content.
+
+        Args:
+            event: Click event that contains the screen coordinates of the click.
+        """
         if self.get_widget_at(event.screen_x, event.screen_y)[0] is self:
             self.dismiss()
 
