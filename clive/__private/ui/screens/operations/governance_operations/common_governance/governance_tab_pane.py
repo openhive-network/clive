@@ -40,7 +40,13 @@ class GovernanceTabPane(AbstractClassMessagePump, TabPane, CliveWidget):
 
     @abstractmethod
     def add_operation_to_cart(self, identifier: str, *, vote: bool) -> None:
-        """Add operation to the cart."""
+        """
+        Add operation to the cart.
+
+        Args:
+            identifier: Identifier of the action, used to create id of the widget.
+            vote: Action to be performed - vote or not.
+        """
 
     @abstractmethod
     def remove_operation_from_cart(self, identifier: str, *, vote: bool) -> None:
