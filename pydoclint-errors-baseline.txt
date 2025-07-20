@@ -360,12 +360,6 @@ clive/__private/ui/clive_screen.py
     DOC101: Method `CliveScreen._post_to_children`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveScreen._post_to_children`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [message: Message, node: Widget].
 --------------------
-clive/__private/ui/dialogs/alarm_info_dialog.py
-    DOC601: Class `AlarmInfoDialog`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `AlarmInfoDialog`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CSS_PATH: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `AlarmInfoDialog.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AlarmInfoDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: TrackedAccount, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails].
---------------------
 clive/__private/ui/dialogs/clive_base_dialogs.py
     DOC101: Method `CliveBaseDialog.close_dialog`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveBaseDialog.close_dialog`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [event: Click].
