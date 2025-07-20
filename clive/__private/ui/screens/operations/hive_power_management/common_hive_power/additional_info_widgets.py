@@ -24,7 +24,15 @@ if TYPE_CHECKING:
 
 
 class WithdrawalInfo(Vertical, CliveWidget):
-    """Widget that displays all withdrawal information."""
+    """
+    Widget that displays all withdrawal information.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the withdrawal info widget.
+
+    Args:
+        provider: Data provider that provides the data for the widget.
+    """
 
     DEFAULT_CSS = """
     WithdrawalInfo {
