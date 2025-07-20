@@ -27,7 +27,15 @@ if TYPE_CHECKING:
 
 
 class BadAccountsTable(CliveCheckerboardTable):
-    """Table for a bad accounts."""
+    """
+    Table for a bad accounts.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the bad accounts table.
+        BINDINGS: Key bindings for navigating through pages.
+        MAX_ACCOUNTS_ON_PAGE: Maximum number of accounts displayed on one page.
+        FIRST_PAGE_INDEX: Index of the first page.
+    """
 
     DEFAULT_CSS = """
     BadAccountsTable {
