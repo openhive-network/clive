@@ -85,7 +85,16 @@ class CartItemsActionManager:
 
 
 class CartItem(CliveCheckerboardTableRow, CliveWidget):
-    """Row of CartTable."""
+    """
+    Row of CartTable.
+
+    Attributes:
+        BINDINGS: List of key bindings for this widget.
+
+    Args:
+        operation_index: Index of the operation in the transaction.
+        action_manager: Instance of CartItemsActionManager to manage actions like move/delete.
+    """
 
     BINDINGS = [
         Binding("ctrl+up", "select_previous", "Prev"),
