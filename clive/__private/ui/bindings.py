@@ -294,7 +294,12 @@ CLIVE_PREDEFINED_BINDINGS: Final[CliveBindings] = CliveBindings()
 
 
 def load_custom_bindings() -> CliveBindings:
-    """Load bindings from the bindings.toml file. Throws exception if the file is not found or is invalid."""
+    """
+    Load bindings from the bindings.toml file. Throws exception if the file is not found or is invalid.
+
+    Returns:
+        The loaded custom bindings.
+    """
     return CliveBindings.load_toml(safe_settings.custom_bindings_path)
 
 
