@@ -20,7 +20,15 @@ def is_not_updated_yet[T](value: T | NotUpdatedYet) -> TypeIs[NotUpdatedYet]:
 
 
 def is_updated[T](value: T | NotUpdatedYet) -> TypeIs[T]:
-    """Check whether the value is not an instance of NotUpdatedYet."""
+    """
+    Check whether the value is not an instance of NotUpdatedYet.
+
+    Args:
+        value: The value to check.
+
+    Returns:
+        True if the value is not an instance of NotUpdatedYet, False otherwise.
+    """
     return not is_not_updated_yet(value)
 
 
