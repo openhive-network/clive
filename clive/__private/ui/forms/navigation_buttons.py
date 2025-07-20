@@ -13,7 +13,18 @@ if TYPE_CHECKING:
 
 
 class NextScreenButton(CliveButton):
-    """Button for going to next screen in forms (also used as finish button)."""
+    """
+    Button for going to next screen in forms (also used as finish button).
+
+    Attributes:
+        is_finish: Whether this button is used to finish the form.
+
+    Args:
+        is_finish: Whether this button is used to finish the form.
+        id_: The ID of the button in the DOM.
+        classes: The CSS classes for the button.
+        disabled: Whether the button should be disabled initially.
+    """
 
     is_finish = var(default=False, init=False)
 

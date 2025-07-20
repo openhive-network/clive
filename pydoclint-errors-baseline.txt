@@ -374,10 +374,6 @@ clive/__private/ui/forms/create_profile/set_account_form_screen.py
     DOC502: Method `SetAccountFormScreen.account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/forms/navigation_buttons.py
-    DOC601: Class `NextScreenButton`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `NextScreenButton`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [is_finish: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC101: Method `NextScreenButton.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `NextScreenButton.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [classes: str | None, disabled: bool, id_: str | None, is_finish: bool].
     DOC101: Method `PreviousScreenButton.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `PreviousScreenButton.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [classes: str | None, disabled: bool, id_: str | None, label: str | None].
 --------------------
