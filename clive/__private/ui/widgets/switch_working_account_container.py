@@ -76,12 +76,20 @@ def get_default_profile() -> Profile:
 
 
 class SwitchWorkingAccountContainer(Container, CliveWidget):
-    """Container that displays all tracked accounts (working + watched) and allows to switch between them."""
+    """
+    Container that displays all tracked accounts (working + watched) and allows to switch between them.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styles for the widget.
+        local_profile: Reactive to provide a single state of profile across the widget.
+
+    Args:
+        show_title: Whether to show the title or not.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     local_profile: Profile = var(get_default_profile, init=False)  # type: ignore[assignment, arg-type]
-    """Reactive to provide a single state of profile across the widget."""
 
     def __init__(self, *, show_title: bool = True) -> None:
         super().__init__()
