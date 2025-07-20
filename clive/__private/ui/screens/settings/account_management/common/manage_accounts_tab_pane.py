@@ -23,7 +23,16 @@ if TYPE_CHECKING:
 
 
 class ManageAccountsTabPane(TabPane, CliveWidget):
-    """TabPane used to add and delete watched or known accounts."""
+    """
+    TabPane used to add and delete watched or known accounts.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the manage accounts tab pane.
+
+    Args:
+        title: Title of the tab pane.
+        accounts_type: Type of accounts to manage.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
