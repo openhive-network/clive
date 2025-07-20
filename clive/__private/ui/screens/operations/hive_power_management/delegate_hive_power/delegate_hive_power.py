@@ -108,7 +108,12 @@ class DelegationsTable(CliveCheckerboardTable):
 
 
 class DelegateHivePower(TabPane, OperationActionBindings):
-    """TabPane with all content about delegate hp."""
+    """
+    TabPane with all content about delegate hp.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the DelegateHivePower tab pane.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
