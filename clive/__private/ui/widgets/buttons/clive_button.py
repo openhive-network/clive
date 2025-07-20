@@ -29,7 +29,23 @@ CliveButtonVariant = Literal[
 
 
 class CliveButton(Button, CliveWidget):
-    """A regular Textual button which also displays "enter" action binding."""
+    """
+    A regular Textual button which also displays "enter" action binding.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS styles for the button.
+        variant: The variant of the button.
+
+    Args:
+        label: The label of the button.
+        variant: The variant of the button.
+        binding: Optional binding to display next to the label.
+        id_: Optional ID for the button.
+        classes: Optional CSS classes for the button.
+        disabled: Whether the button is disabled.
+        ellipsis_: Whether to apply ellipsis to the label text.
+
+    """
 
     class Pressed(Button.Pressed):
         """Event sent when a `CliveButton` is pressed."""
