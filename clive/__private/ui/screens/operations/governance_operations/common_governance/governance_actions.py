@@ -114,7 +114,16 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     @abstractmethod
     def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
-        """Create an action row."""
+        """
+        Create an action row.
+
+        Args:
+            identifier: Identifier of the action.
+            vote: Action to be performed - vote or unvote.
+
+        Returns:
+            An instance of row with the specified identifier and vote action.
+        """
 
     def compose(self) -> ComposeResult:
         yield SectionTitle("Actions to be performed")
