@@ -505,6 +505,12 @@ class CliveCheckerboardTable(CliveWidget):
         Must be overridden if the `ATTRIBUTE_TO_WATCH` class-var is set.
 
         Notice that you must also create your own previous state in the `__init__` method.
+
+        Args:
+            content: The content to update the previous state with.
+
+        Raises:
+            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
