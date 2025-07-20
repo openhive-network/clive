@@ -20,7 +20,12 @@ class CheckBoxWithoutFocus(Checkbox):
     can_focus = False
 
     def toggle(self) -> Self:
-        """Do nothing. Changing the value of a checkbox is managed by WitnessCheckbox."""
+        """
+        Do nothing. Changing the value of a checkbox is managed by WitnessCheckbox.
+
+        Returns:
+            Returns itself to allow method chaining.
+        """
         return self
 
 

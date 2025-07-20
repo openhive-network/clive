@@ -405,9 +405,6 @@ clive/__private/ui/screens/operations/governance_operations/common_governance/go
     DOC103: Method `GovernanceListWidget._create_row`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: GovernanceDataT, even: bool].
     DOC201: Method `GovernanceListWidget._create_row` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/operations/governance_operations/governance_checkbox.py
-    DOC201: Method `CheckBoxWithoutFocus.toggle` does not have a return section in docstring
---------------------
 clive/__private/ui/screens/operations/governance_operations/proposals/proposals.py
     DOC601: Class `Search`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `Search`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [order_by: ProposalsDataRetrieval.Orders, order_direction: ProposalsDataRetrieval.OrderDirections, status: ProposalsDataRetrieval.Statuses]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
