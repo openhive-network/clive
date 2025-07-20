@@ -101,7 +101,12 @@ class CliveBaseDialog(ModalScreen[ScreenResultT], CliveWidget, AbstractClassMess
 
     @abstractmethod
     def create_dialog_content(self) -> ComposeResult:
-        """Yield all the content for the dialog."""
+        """
+        Yield all the content for the dialog.
+
+        Returns:
+            The content to be displayed in the dialog.
+        """
 
     @abstractmethod
     def create_buttons_content(self) -> ComposeResult:
