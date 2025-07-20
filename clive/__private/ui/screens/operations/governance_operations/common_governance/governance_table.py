@@ -157,7 +157,12 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
-        """Contains all the information that should be displayed about the item."""
+        """
+        Contains all the information that should be displayed about the item.
+
+        Returns:
+            Widgets that represent the row content.
+        """
 
     @abstractmethod
     def get_action_row_id(self) -> str:
