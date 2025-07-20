@@ -102,7 +102,15 @@ class GovernanceActions[OperationT: (AccountWitnessVoteOperation, UpdateProposal
 
     @abstractmethod
     def should_be_added_to_actions(self, operation: object) -> TypeIs[OperationT]:
-        """Check if the action should be added to the actions table."""
+        """
+        Check if the action should be added to the actions table.
+
+        Args:
+            operation: Operation to be checked.
+
+        Returns:
+            True if the operation should be added to the actions table, False otherwise.
+        """
 
     @abstractmethod
     def create_action_row(self, identifier: str, *, vote: bool) -> GovernanceActionRow:
