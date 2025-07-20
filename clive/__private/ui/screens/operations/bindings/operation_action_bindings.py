@@ -36,7 +36,18 @@ class _NotImplemented:
 
 
 class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
-    """Class to provide access to methods related with operations to not just screens."""
+    """
+    Class to provide access to methods related with operations to not just screens.
+
+    Attributes:
+        BINDINGS: A list of predefined bindings for operations.
+        ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: Whether operation with the same data can
+            be added to the cart multiple times.
+
+    Args:
+        *args: Additional positional arguments.
+        **kwargs: Additional keyword arguments.
+    """
 
     BINDINGS = [
         CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart.create(),
