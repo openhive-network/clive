@@ -282,7 +282,7 @@ class Proposals(GovernanceTabPane):
 
         Args:
             identifier: Identifier of the proposal, used to create id of the widget.
-            vote: Action to be performed - vote or not.
+            vote: Action to be performed - vote or unvote.
         """
 
         def append_operation(operation: UpdateProposalVotesOperation) -> None:
