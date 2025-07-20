@@ -16,7 +16,12 @@ if TYPE_CHECKING:
 
 
 class RemoveWithdrawVestingRouteDialog(OperationSummaryBaseDialog):
-    """Dialog to remove withdraw vesting route."""
+    """
+    Dialog to remove withdraw vesting route.
+
+    Args:
+        withdraw_route: The withdraw route to be removed.
+    """
 
     def __init__(self, withdraw_route: WithdrawRoute) -> None:
         super().__init__("Remove withdraw vesting route")
