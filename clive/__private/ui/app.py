@@ -312,7 +312,15 @@ class Clive(App[int]):
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
     def update_alarms_data_on_newest_node_data(self, *, suppress_cancelled_error: bool = False) -> Worker[None]:
-        """There is periodic work refreshing alarms data and node data, this method triggers immediate update."""
+        """
+        There is periodic work refreshing alarms data and node data, this method triggers immediate update.
+
+        Args:
+            suppress_cancelled_error: If True, suppresses WorkerCancelled exceptions.
+
+        Returns:
+            A worker that runs the update_alarms_data method after the update_data_from_node method.
+        """
 
         async def _update_alarms_data_on_newest_node_data() -> None:
             try:
