@@ -213,7 +213,14 @@ class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
 class ProposalsOrderChange(Vertical):
     @dataclass
     class Search(Message):
-        """Emitted when any selector changed."""
+        """
+        Emitted when any selector changed.
+
+        Attributes:
+            order_by: The order by which proposals should be sorted.
+            order_direction: The direction of the sorting.
+            status: The status of the proposals to be displayed.
+        """
 
         order_by: ProposalsDataRetrieval.Orders
         order_direction: ProposalsDataRetrieval.OrderDirections
