@@ -439,10 +439,6 @@ clive/__private/ui/widgets/dynamic_widgets/dynamic_widget.py
 clive/__private/ui/widgets/inputs/asset_amount_base_input.py
     DOC502: Method `AssetAmountInput._value` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/ui/widgets/inputs/authority_filter_input.py
-    DOC101: Method `AuthorityFilterInput.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `AuthorityFilterInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | None].
---------------------
 clive/__private/ui/widgets/inputs/clive_input.py
     DOC101: Method `CliveInput.validate`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveInput.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [treat_as_required: bool, value: str].
