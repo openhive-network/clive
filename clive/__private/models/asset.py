@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
@@ -10,7 +10,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests, PreconfiguredBaseModel
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -222,7 +222,9 @@ class Asset:
     def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
         return isinstance(asset, Asset.Vests)
 
+
 AssetGactoryGenericT = TypeVar("AssetGactoryGenericT", bound=Asset.AnyT)
+
 
 @dataclass
 class AssetFactoryHolder(Generic[AssetGactoryGenericT]):

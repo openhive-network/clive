@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models.asset import (
@@ -14,9 +14,7 @@ from clive.__private.models.asset import (
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
 
-class CurrencySelectorBase(
-    CliveSelect[AssetFactoryHolder[AssetGactoryGenericT]], AbstractClassMessagePump
-):
+class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetGactoryGenericT]], AbstractClassMessagePump):
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
     def __init__(self) -> None:
@@ -76,9 +74,7 @@ class CurrencySelectorBase(
         asset_factory = self.asset_factory
         return asset_factory(amount)
 
-    def _get_selectable(
-        self, asset_type: type
-    ) -> AssetFactoryHolder[AssetGactoryGenericT]:
+    def _get_selectable(self, asset_type: type) -> AssetFactoryHolder[AssetGactoryGenericT]:
         for asset_factory_holder in self._selectable.values():
             if asset_factory_holder.asset_cls == asset_type:
                 return asset_factory_holder
