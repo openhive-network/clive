@@ -9,7 +9,12 @@ if TYPE_CHECKING:
 
 
 class ConfirmInvalidateSignaturesDialog(ConfirmActionDialog):
-    """Dialog to confirm if the user wants to invalidate signatures of a transaction."""
+    """
+    Dialog to confirm if the user wants to invalidate signatures of a transaction.
+
+    Attributes:
+        CONFIRM_QUESTION_INVALIDATE_SIGNATURES: The question to confirm invalidating signatures.
+    """
 
     CONFIRM_QUESTION_INVALIDATE_SIGNATURES: Final[str] = (
         "Transaction contains signatures.\n"
