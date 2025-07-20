@@ -152,8 +152,11 @@ class CliveButton(Button, CliveWidget):
         Change Button.Pressed namespace to self.Pressed to allow for correct namespace handling.
 
         Related issues:
-        - https://github.com/Textualize/textual/issues/4967
-        - https://github.com/Textualize/textual/issues/1814
+            - https://github.com/Textualize/textual/issues/4967
+            - https://github.com/Textualize/textual/issues/1814
+
+        Args:
+            event: The Button.Pressed event that was triggered.
         """
         if type(event) is Button.Pressed:
             event.stop()
