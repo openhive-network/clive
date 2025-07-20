@@ -35,14 +35,24 @@ if TYPE_CHECKING:
 
 
 class MoveUpButton(CliveButton):
-    """Button used for moving the operation up in the cart."""
+    """
+    Button used for moving the operation up in the cart.
+
+    Args:
+        disabled: Whether the button should be disabled initially.
+    """
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("↑", id_="move-up-button", disabled=disabled)
 
 
 class MoveDownButton(CliveButton):
-    """Button used for moving the operation down in the cart."""
+    """
+    Button used for moving the operation down in the cart.
+
+    Args:
+        disabled: Whether the button should be disabled initially.
+    """
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("↓", id_="move-down-button", disabled=disabled)
