@@ -19,7 +19,13 @@ if TYPE_CHECKING:
 
 
 class OperationSummaryBaseDialog(CliveActionDialog[CliveActionDialogResultT], OperationActionBindings, ABC):
-    """Base class for operation summary dialogs. Confirmation means that operation was added to cart or finalized."""
+    """
+    Base class for operation summary dialogs. Confirmation means that operation was added to cart or finalized.
+
+    Attributes:
+        CSS_PATH: List of paths to the CSS files for styling.
+        ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: Whether the same operation can be added to cart multiple times.
+    """
 
     CSS_PATH = [get_relative_css_path(__file__)]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES = False
