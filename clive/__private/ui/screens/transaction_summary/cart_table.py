@@ -267,7 +267,12 @@ class CartHeader(Horizontal):
 
 
 class CartTable(CliveCheckerboardTable):
-    """Table with CartItems."""
+    """
+    Table with CartItems.
+
+    Attributes:
+        NO_CONTENT_TEXT: Text displayed when there are no items in the cart.
+    """
 
     NO_CONTENT_TEXT = "Cart is empty"
 
