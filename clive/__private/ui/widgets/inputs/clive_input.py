@@ -202,7 +202,16 @@ class CliveInput(Input):
         self.remove_class(invalid_class if valid else valid_class)
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
-        """Validate the value of the input."""
+        """
+        Validate the value of the input.
+
+        Args:
+            value: The value to validate.
+            treat_as_required: If True, treat the input as required even if it is not.
+
+        Returns:
+            The result of the validation.
+        """
         if not self.required and not value and not treat_as_required:
             return ValidationResult.success()
 
