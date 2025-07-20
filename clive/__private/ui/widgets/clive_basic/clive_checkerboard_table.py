@@ -355,7 +355,12 @@ class CliveCheckerboardTable(CliveWidget):
             await self.mount_all(self._create_table_content(content))
 
     async def rebuild_rows(self, content: ContentT | NotUpdatedYet | None = None) -> None:
-        """Rebuilds table rows - explicit use available for static and dynamic version."""
+        """
+        Rebuilds table rows - explicit use available for static and dynamic version.
+
+        Args:
+            content: Content to be used for rebuilding the rows. If None, it will use the current content.
+        """
         with self.app.batch_update():
             await self.query(CliveCheckerboardTableRow).remove()
 
