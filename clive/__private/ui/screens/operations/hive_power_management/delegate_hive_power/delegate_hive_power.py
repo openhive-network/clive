@@ -70,7 +70,13 @@ class Delegation(CliveCheckerboardTableRow):
 
 
 class DelegationsTable(CliveCheckerboardTable):
-    """Table with delegations."""
+    """
+    Table with delegations.
+
+    Attributes:
+        ATTRIBUTE_TO_WATCH: Attribute of the provider to watch for changes.
+        NO_CONTENT_TEXT: Text to display when there are no delegations.
+    """
 
     ATTRIBUTE_TO_WATCH = "_content"
     NO_CONTENT_TEXT = "You have no delegations"
