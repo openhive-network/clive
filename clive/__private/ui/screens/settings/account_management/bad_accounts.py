@@ -152,7 +152,13 @@ class BadAccountsTable(CliveCheckerboardTable):
 
 
 class BadAccounts(TabPane):
-    """Currently only used to display the list of bad accounts (cannot be modified)."""
+    """
+    Currently only used to display the list of bad accounts (cannot be modified).
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the BadAccounts screen.
+        TITLE: Title of the BadAccounts screen.
+    """
 
     DEFAULT_CSS = """
     BadAccounts {
