@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 from clive.__private.models.asset import (
-    AssetFactoryHolderHbd,
-    AssetFactoryHolderHive,
-    AssetFactoryHolderVests,
+    Asset,
+    AssetFactoryHolder,
 )
 from clive.__private.ui.widgets.currency_selector.currency_selector_base import (
     CurrencySelectorBase,
 )
 
 
-class CurrencySelectorHive(CurrencySelectorBase):
+class CurrencySelectorHive(CurrencySelectorBase[Asset.Hive]):
     @staticmethod
-    def _create_selectable() -> dict[str, AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests]:
+    def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.Hive]]:
         return {
-            "HIVE": AssetFactoryHolderHive(),
+            "HIVE": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
         }
 
     def on_mount(self) -> None:

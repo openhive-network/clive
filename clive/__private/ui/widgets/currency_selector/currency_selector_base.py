@@ -7,19 +7,15 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models.asset import (
     AssetAmount,
     AssetFactory,
-    AssetFactoryHolderHbd,
-    AssetFactoryHolderHive,
-    AssetFactoryHolderVests,
+    AssetFactoryHolder,
+    AssetGactoryGenericT,
     AssetT,
 )
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
-if TYPE_CHECKING:
-    from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
-
 
 class CurrencySelectorBase(
-    CliveSelect[AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests], AbstractClassMessagePump
+    CliveSelect[AssetFactoryHolder[AssetGactoryGenericT]], AbstractClassMessagePump
 ):
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
@@ -34,11 +30,11 @@ class CurrencySelectorBase(
 
     @staticmethod
     @abstractmethod
-    def _create_selectable() -> dict[str, AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests]:
+    def _create_selectable() -> dict[str, AssetFactoryHolder[AssetGactoryGenericT]]:
         """Return dict of selectable items."""
 
     @property
-    def default_asset_factory_holder(self) -> AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests:
+    def default_asset_factory_holder(self) -> AssetFactoryHolder[AssetGactoryGenericT]:
         return next(iter(self._selectable.values()))
 
     @property
@@ -65,7 +61,7 @@ class CurrencySelectorBase(
         """
         self.value = self._get_selectable(asset_type)
 
-    def create_asset(self, amount: AssetAmount) -> AssetHive | AssetHbd | AssetVests:
+    def create_asset(self, amount: AssetAmount) -> AssetGactoryGenericT:
         """
         Create asset from amount.
 
@@ -82,7 +78,7 @@ class CurrencySelectorBase(
 
     def _get_selectable(
         self, asset_type: type
-    ) -> AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests:
+    ) -> AssetFactoryHolder[AssetGactoryGenericT]:
         for asset_factory_holder in self._selectable.values():
             if asset_factory_holder.asset_cls == asset_type:
                 return asset_factory_holder
