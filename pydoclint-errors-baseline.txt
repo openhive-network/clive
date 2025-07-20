@@ -418,10 +418,6 @@ clive/__private/ui/screens/operations/hive_power_management/power_down/power_dow
 clive/__private/ui/screens/operations/transfer_to_account/transfer_to_account.py
     DOC201: Method `TransferToAccount._check_is_known_exchange_in_input` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/settings/account_management/known_accounts.py
-    DOC601: Class `KnownAccounts`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `KnownAccounts`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [TITLE: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
---------------------
 clive/__private/ui/screens/settings/account_management/tracked_accounts.py
     DOC601: Class `TrackedAccounts`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `TrackedAccounts`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: , TITLE: Final[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
