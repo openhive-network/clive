@@ -17,7 +17,27 @@ if TYPE_CHECKING:
 
 
 class ReceiverInput(AccountNameInput):
-    """An input for a receiver that support additionally known exchange accounts."""
+    """
+    An input for a receiver that support additionally known exchange accounts.
+
+    Args:
+        title: The title of the input.
+        value: The initial value of the input.
+        placeholder: The placeholder text for the input.
+        always_show_title: Whether to always show the title.
+        include_title_in_placeholder_when_blurred: Whether to include the title when the input is blurred.
+        show_invalid_reasons: Whether to show reasons for invalid input.
+        required: Whether the input is required.
+        show_known_account: Whether to show known exchange accounts.
+        show_bad_account: Whether to show bad accounts.
+        suggester: A suggester for auto-completion.
+        validators: Validators to apply to the input value.
+        validate_on: When to validate the input.
+        valid_empty: Whether the input can be valid when empty.
+        id: The ID of the input widget.
+        classes: Additional CSS classes for the input.
+        disabled: Whether the input is disabled.
+    """
 
     class KnownExchangeDetected(Message):
         """Sent when a known exchange account is detected in the input."""
