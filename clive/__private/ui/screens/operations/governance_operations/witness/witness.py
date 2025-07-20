@@ -67,7 +67,13 @@ class WitnessDetailsLabel(Label):
 
 
 class WitnessNameLabel(Label, CliveWidget):
-    """Label with witness name."""
+    """
+    Label with witness name.
+
+    Args:
+        witness_name: Name of the witness to be displayed.
+        classes: Optional CSS classes for the label.
+    """
 
     def __init__(self, witness_name: str, classes: str) -> None:
         super().__init__(
