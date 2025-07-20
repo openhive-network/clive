@@ -404,7 +404,6 @@ clive/__private/ui/screens/operations/governance_operations/common_governance/go
     DOC101: Method `GovernanceListWidget._create_row`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `GovernanceListWidget._create_row`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: GovernanceDataT, even: bool].
     DOC201: Method `GovernanceListWidget._create_row` does not have a return section in docstring
-    DOC201: Method `GovernanceTable.create_new_list_widget` does not have a return section in docstring
 --------------------
 clive/__private/ui/screens/operations/governance_operations/governance_checkbox.py
     DOC201: Method `CheckBoxWithoutFocus.toggle` does not have a return section in docstring
