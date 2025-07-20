@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Horizontal, Vertical
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models import Asset
-from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
+from clive.__private.ui.widgets.currency_selector.currency_selector_base import (
+    CurrencySelectorBase,
+)
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
 )
@@ -84,7 +86,7 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         disabled: bool = False,
     ) -> None:
         with self.prevent(CurrencySelectorBase.Changed):
-            self._currency_selector: CurrencySelectorBase = self.create_currency_selector()
+            self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
         default_asset_precision = Asset.get_precision(self.default_asset_type)
 
         super().__init__(
@@ -117,7 +119,7 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         Raises:  # noqa: D406
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
-        return cast("AssetInputT", self._currency_selector.create_asset(self.value_raw))
+        return self._currency_selector.create_asset(self.value_raw)
 
     @property
     def default_asset_type(self) -> type[AssetInputT]:
@@ -178,5 +180,5 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         return f"e.g.: 1.{numbers[:precision]}"
 
     @abstractmethod
-    def create_currency_selector(self) -> CurrencySelectorBase:
+    def create_currency_selector(self) -> CurrencySelectorBase[AssetInputT]:
         pass

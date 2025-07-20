@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from typing import TYPE_CHECKING, TypeAlias, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests, PreconfiguredBaseModel
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -232,22 +233,12 @@ class Asset:
         return isinstance(asset, Asset.Vests)
 
 
-class AssetFactoryHolderHive(PreconfiguredBaseModel):
+AssetFactoryGenericT = TypeVar("AssetFactoryGenericT", bound=Asset.AnyT)
+
+
+@dataclass(frozen=True)
+class AssetFactoryHolder(Generic[AssetFactoryGenericT]):
     """Holds factory for asset."""
 
-    asset_cls: type = AssetHive
-    asset_factory: Callable[[int | str | Decimal], AssetHive] = Asset.hive
-
-
-class AssetFactoryHolderHbd(PreconfiguredBaseModel):
-    """Holds factory for asset."""
-
-    asset_cls: type = AssetHbd
-    asset_factory: Callable[[int | str | Decimal], AssetHbd] = Asset.hbd
-
-
-class AssetFactoryHolderVests(PreconfiguredBaseModel):
-    """Holds factory for asset."""
-
-    asset_cls: type = AssetVests
-    asset_factory: Callable[[int | str | Decimal], AssetVests] = Asset.vests
+    asset_cls: type[AssetFactoryGenericT]
+    asset_factory: Callable[[int | str | Decimal], AssetFactoryGenericT]

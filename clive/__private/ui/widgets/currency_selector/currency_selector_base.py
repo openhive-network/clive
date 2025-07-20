@@ -1,26 +1,19 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, cast
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models.asset import (
     AssetAmount,
     AssetFactory,
-    AssetFactoryHolderHbd,
-    AssetFactoryHolderHive,
-    AssetFactoryHolderVests,
+    AssetFactoryGenericT,
+    AssetFactoryHolder,
     AssetT,
 )
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
-if TYPE_CHECKING:
-    from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 
-
-class CurrencySelectorBase(
-    CliveSelect[AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests], AbstractClassMessagePump
-):
+class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetFactoryGenericT]], AbstractClassMessagePump):
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
     def __init__(self) -> None:
@@ -34,11 +27,11 @@ class CurrencySelectorBase(
 
     @staticmethod
     @abstractmethod
-    def _create_selectable() -> dict[str, AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests]:
+    def _create_selectable() -> dict[str, AssetFactoryHolder[AssetFactoryGenericT]]:
         """Return dict of selectable items."""
 
     @property
-    def default_asset_factory_holder(self) -> AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests:
+    def default_asset_factory_holder(self) -> AssetFactoryHolder[AssetFactoryGenericT]:
         return next(iter(self._selectable.values()))
 
     @property
@@ -51,9 +44,9 @@ class CurrencySelectorBase(
         return self.selection_ensure.asset_cls
 
     @property
-    def asset_factory(self) -> AssetFactory[AssetT]:
+    def asset_factory(self) -> AssetFactory[AssetFactoryGenericT]:
         """Return selected asset factory."""
-        return cast("AssetFactory[AssetT]", self.selection_ensure.asset_factory)
+        return self.selection_ensure.asset_factory
 
     def select_asset(self, asset_type: type[AssetT]) -> None:
         """
@@ -64,7 +57,7 @@ class CurrencySelectorBase(
         """
         self.value = self._get_selectable(asset_type)
 
-    def create_asset(self, amount: AssetAmount) -> AssetHive | AssetHbd | AssetVests:
+    def create_asset(self, amount: AssetAmount) -> AssetFactoryGenericT:
         """
         Create asset from amount.
 
@@ -80,9 +73,7 @@ class CurrencySelectorBase(
         asset_factory = self.asset_factory
         return asset_factory(amount)
 
-    def _get_selectable(
-        self, asset_type: type
-    ) -> AssetFactoryHolderHive | AssetFactoryHolderHbd | AssetFactoryHolderVests:
+    def _get_selectable(self, asset_type: type) -> AssetFactoryHolder[AssetFactoryGenericT]:
         for asset_factory_holder in self._selectable.values():
             if asset_factory_holder.asset_cls == asset_type:
                 return asset_factory_holder

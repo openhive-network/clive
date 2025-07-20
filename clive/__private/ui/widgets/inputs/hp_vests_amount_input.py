@@ -13,5 +13,5 @@ if TYPE_CHECKING:
 class HPVestsAmountInput(AssetAmountInput[Asset.VotingT]):
     """An input for HP/VESTS amount."""
 
-    def create_currency_selector(self) -> CurrencySelectorBase:
+    def create_currency_selector(self) -> CurrencySelectorBase[Asset.VotingT]:
         return CurrencySelectorHpVests()
