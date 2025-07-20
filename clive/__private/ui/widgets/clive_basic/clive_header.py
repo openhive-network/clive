@@ -287,6 +287,9 @@ class CliveRawHeader(Header, CliveWidget):
         Default behavior of the textual header is to expand on click.
         We do not want behavior like that, so we had to override the `_on_click` method.
         We only allow for expanding the header by clicking on the HeaderIcon, not on the entire Header.
+
+        Args:
+            event: The click event that triggered this method.
         """
         event.prevent_default()
 
