@@ -94,10 +94,10 @@ class CliveBindingSection:
     def __post_init__(self) -> None:
         self._assert_all_fields_are_clive_binding()
 
-    @staticmethod
-    def from_dict(section_id: SectionID, section_dict: BindingSectionDict) -> CliveBindingSection:
-        cls = CliveBindingSection._get_class_from_section_id(section_id)
-        instance = cls()
+    @classmethod
+    def from_dict(cls, section_id: SectionID, section_dict: BindingSectionDict) -> CliveBindingSection:
+        subclass = cls._get_class_from_section_id(section_id)
+        instance = subclass()
         for id_, keyboard_shortcut in section_dict.items():
             instance._update_keyboard_shortcut(id_, keyboard_shortcut)
         return instance
@@ -121,10 +121,10 @@ class CliveBindingSection:
             if isinstance(field_instance, CliveBinding):
                 yield field_instance
 
-    @staticmethod
-    def _get_class_from_section_id(section_id: SectionID) -> type[CliveBindingSection]:
+    @classmethod
+    def _get_class_from_section_id(cls, section_id: SectionID) -> type[CliveBindingSection]:
         try:
-            return CliveBindingSection._ID_TO_SUBCLASS[section_id]
+            return cls._ID_TO_SUBCLASS[section_id]
         except KeyError as error:
             raise BindingsDeserializeError(f"Found unknown section `{section_id}` when parsing bindings") from error
 
