@@ -43,15 +43,3 @@ class RequestIdError(CliveError):
 
 class ProfileNotLoadedError(CliveError):
     """Raise when profile is requested and was not loaded."""
-
-
-class BindingFileInvalidError(CliveError):
-    """
-    Raise when file with bindings loaded has invalid format.
-
-    Args:
-        message: Error message to be displayed.
-    """
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
