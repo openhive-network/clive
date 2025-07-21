@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.reactive import reactive
 
-    from clive.__private.ui.bindings import CliveBindings
 
 CliveButtonVariant = Literal[
     "loading-variant",
@@ -123,10 +122,6 @@ class CliveButton(Button, CliveWidget):
             classes=classes,
             disabled=disabled,
         )
-
-    @property
-    def custom_bindings(self) -> CliveBindings:
-        return self.app.custom_bindings
 
     def update(self, new_label: TextType) -> None:
         self.label = self._create_label(new_label)

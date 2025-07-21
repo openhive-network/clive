@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
     from clive.__private.core.world import TUIWorld
     from clive.__private.ui.app import Clive
+    from clive.__private.ui.bindings import CliveBindings
 
 
 class CliveDOMNode(DOMNode):
@@ -43,3 +44,7 @@ class CliveDOMNode(DOMNode):
     @property
     def node(self) -> Node:
         return self.world.node
+
+    @property
+    def custom_bindings(self) -> CliveBindings:
+        return self.app.custom_bindings
