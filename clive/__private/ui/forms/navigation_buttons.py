@@ -9,8 +9,6 @@ from textual.widgets import Static
 from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 
 if TYPE_CHECKING:
-    from typing import Final
-
     from textual.app import ComposeResult
 
 
@@ -61,15 +59,19 @@ class PreviousScreenButton(OneLineButton):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        default_previous_button_label: Final[str] = (
-            f"← Previous ({self.custom_bindings.form_navigation.previous_screen.button_display})"
-        )
         super().__init__(
-            label=label if label is not None else default_previous_button_label,
+            label=self._get_init_label(label),
             variant="transparent",
             id_=id_,
             classes=classes,
             disabled=disabled,
+        )
+
+    def _get_init_label(self, label: str | None) -> str:
+        return (
+            label
+            if label is not None
+            else f"← Previous ({self.custom_bindings.form_navigation.previous_screen.button_display})"
         )
 
 
