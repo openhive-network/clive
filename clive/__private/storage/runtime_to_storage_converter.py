@@ -72,7 +72,7 @@ class RuntimeToStorageConverter:
         return ProfileStorageModel._TrackedAccountStorageModel(name=account.name, alarms=alarms)
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AllAlarmStorageModel:
-        name=alarm.get_name()
+        name = alarm.get_name()
         alarm_types = get_args(ProfileStorageModel._AllAlarmStorageModel)
         tag_map = {cls.name(): cls for cls in alarm_types}
         alarm_cls = tag_map[name]

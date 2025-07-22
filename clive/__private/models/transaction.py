@@ -18,8 +18,6 @@ from clive.__private.models.schemas import (
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 

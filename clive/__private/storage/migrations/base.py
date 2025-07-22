@@ -32,7 +32,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(*args, **kwargs)
         cls._REGISTERED_MODELS.append(cls)
-    
+
     @classmethod
     def gather(cls) -> None:
         for class_ in cls._REGISTERED_MODELS:
