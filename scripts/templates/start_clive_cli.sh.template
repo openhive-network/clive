@@ -16,6 +16,8 @@ print_help() {
     echo "Usage: $0 [<docker_img>] [OPTION[=VALUE]]... [<clive_option>]..."
     echo
     echo "Allows to start Clive application in CLI mode."
+    echo "CLI terminal will start in mapped host directory."
+    echo
     echo "OPTIONS:"
     echo "  --data-dir=DIRECTORY_PATH      Points to a Clive data directory to store profile data. Defaults to ${HOME}/.clive directory."
     echo "  --docker-option=OPTION         Allows specifying additional Docker options to pass to underlying Docker run."
