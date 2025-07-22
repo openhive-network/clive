@@ -111,5 +111,9 @@ Savings {
     layout: horizontal;
     margin-bottom: 1;
     height: 3;
+
+    & > RadioButton {
+      width: auto;
+    }
   }
 }
