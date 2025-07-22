@@ -68,11 +68,11 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         """
         Collect memoless and hbd transfers account names.
 
-        Transfer to exchange should have asset in Hive and memo.
+        Notice:
+            Transfer to exchange should have asset in Hive and memo.
 
-        If:
-        1) the memo is empty string, it is considered a memoless transfer.
-        2) the amount is Asset.Hbd, this is forbidden operation to exchange.
+            - If the memo is empty string, it is considered a memoless transfer.
+            - If the amount is Asset.Hbd, this is forbidden operation to exchange.
 
         Args:
             operation: The transfer operation to process.
