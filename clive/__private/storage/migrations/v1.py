@@ -22,7 +22,7 @@ class ProfileStorageModel(v0.ProfileStorageModel):
 
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
-    _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel  # noqa: UP040
+    _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
 
     @classmethod
     def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model

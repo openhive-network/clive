@@ -135,7 +135,9 @@ from schemas.operations import (
     convert_to_representation,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
-from schemas.operations.extensions.representation_types import HF26RepresentationRecurrentTransferPairIdOperationExtension
+from schemas.operations.extensions.representation_types import (
+    HF26RepresentationRecurrentTransferPairIdOperationExtension,
+)
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
 from schemas.operations.representation_types import HF26Representation, HF26RepresentationTransferOperation
 from schemas.operations.virtual import Hf26VirtualOperationRepresentation
