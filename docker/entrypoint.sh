@@ -9,6 +9,7 @@ UNLOCK_TIME_MINS=""
 TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 PIPELINE=""
+CONTAINERS_WORKING_DIRECTORY="/clive"
 
 if ! [ -t 0 ]; then
     read -r PIPELINE
@@ -66,12 +67,14 @@ wait_for_testnet() {
 
 # Launch Clive in CLI mode
 launch_cli() {
+  local activate_beekeeper_script_path="${CONTAINERS_WORKING_DIRECTORY}/scripts/activate_beekeeper.sh"
+
   echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
   clive --install-completion >/dev/null 2>&1
   if [[ -n "${PIPELINE:-}" ]]; then
-    /clive/scripts/activate_beekeeper.sh
+    ${activate_beekeeper_script_path}
   else
-    exec bash --init-file /clive/scripts/activate_beekeeper.sh
+    exec bash --init-file ${activate_beekeeper_script_path}
   fi
 }
 
@@ -126,8 +129,8 @@ activate_virtualenv() {
 
 # Check if the /clive directory exists
 check_if_clive_directory_exists() {
-  if [[ ! -d /clive ]]; then
-    echo "Error: /clive directory does not exist."
+  if [[ ! -d ${CONTAINERS_WORKING_DIRECTORY} ]]; then
+    echo "Error: ${CONTAINERS_WORKING_DIRECTORY} directory does not exist."
     exit 1
   fi
 }
