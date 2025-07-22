@@ -22,7 +22,7 @@ class Settings(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
-        Binding("escape", "app.go_to_dashboard", "Back to dashboard"),
+        Binding("escape", "app.dashboard", "Back to dashboard"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
