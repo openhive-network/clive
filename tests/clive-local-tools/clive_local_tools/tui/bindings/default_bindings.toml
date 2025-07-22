@@ -10,7 +10,7 @@ quit = "ctrl+q"
 operations = "o"
 switch_working_account = "w"
 add_account = "a"
-lock = "ctrl+l"
+lock_wallet = "ctrl+l"
 
 [form_navigation]
 next_screen = "ctrl+n"

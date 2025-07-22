@@ -10,7 +10,7 @@ quit = "f"
 operations = "g"
 switch_working_account = "h"
 add_account = "e"
-lock = "f"
+lock_wallet = "f"
 
 [form_navigation]
 next_screen = "g"
