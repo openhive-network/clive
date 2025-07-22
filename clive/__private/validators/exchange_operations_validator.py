@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class ExchangeOperationsValidator(Validator):
     """
-    Validating operations in a transaction to exchange.
+    Validator used to check if the transaction contains safe operations to exchange accounts.
 
     Attributes:
         HBD_TRANSFER_MSG_ERROR: Error message for HBD transfer operations.
