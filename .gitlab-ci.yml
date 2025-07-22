@@ -359,9 +359,10 @@ clean_docs_preview:
   stage: build_and_deploy_docker
   variables:
     GIT_SUBMODULE_STRATEGY: none
+    IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
   script:
     # CLIVE_IMAGE_PATH variable should come from dependent image builduing job
-    - $CI_PROJECT_DIR/scripts/ci-helpers/generate_startup_scripts.sh "${CLIVE_IMAGE_NAME}"
+    - $CI_PROJECT_DIR/scripts/ci-helpers/generate_startup_scripts.sh "${IMAGE_NAME}"
   artifacts:
     expose_as: 'startup scripts'
     paths:
@@ -480,6 +481,8 @@ build_and_publish_tagged_image:
         --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}"
         --build-instance-arg="--base-image=${BASE_IMAGE}"
         --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
+    # TODO eliminate it once https://gitlab.syncad.com/hive/clive/-/merge_requests/565 is done
+    - echo DOCKERHUB_IMAGE_NAME="hiveio/${CI_PROJECT_NAME}:$CI_COMMIT_TAG" >> docker_image_name.env
   artifacts:
     reports:
       dotenv: docker_image_name.env
@@ -512,6 +515,9 @@ generate_clive_master_startup_scripts:
 
 generate_clive_tagged_image_startup_scripts:
   extends: .generate_clive_startup_scripts_base
+  variables:
+    IMAGE_NAME: "${DOCKERHUB_IMAGE_NAME}"
+
   rules:
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
