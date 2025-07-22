@@ -29,7 +29,7 @@ class Dashboard(CliveBindingSection):
         default_factory=lambda: CliveBinding(id="switch_working_account", key="w")
     )
     add_account: CliveBinding = field(default_factory=lambda: CliveBinding(id="add_account", key="a"))
-    lock: CliveBinding = field(default_factory=lambda: CliveBinding(id="lock", key="ctrl+l"))
+    lock_wallet: CliveBinding = field(default_factory=lambda: CliveBinding(id="lock_wallet", key="ctrl+l"))
 
 
 @dataclass
