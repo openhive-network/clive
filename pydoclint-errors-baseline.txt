@@ -23,7 +23,7 @@ clive/__private/cli/commands/beekeeper.py
 --------------------
 clive/__private/cli/commands/process/process_account_update.py
     DOC101: Function `is_on_auths_list`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `is_on_auths_list`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auths: list[tuple[T, HiveInt]], elem: T].
+    DOC103: Function `is_on_auths_list`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authorities: list[tuple[T, HiveInt]], authority_entry: T].
     DOC201: Function `is_on_auths_list` does not have a return section in docstring
 --------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py

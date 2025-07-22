@@ -64,9 +64,9 @@ class ProcessAccountUpdate(OperationCommand):
         )
 
 
-def is_on_auths_list[T: (AccountName, PublicKey)](elem: T, auths: list[tuple[T, HiveInt]]) -> bool:
+def is_on_auths_list[T: (AccountName, PublicKey)](authority_entry: T, authorities: list[tuple[T, HiveInt]]) -> bool:
     """Check if element is on list of tuples."""
-    return any(elem == first for first, _ in auths)
+    return any(authority_entry == entry for entry, _ in authorities)
 
 
 def add_account(auth: Authority, account: str, weight: int) -> Authority:
