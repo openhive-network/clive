@@ -25,7 +25,8 @@ class ExchangeOperationsValidator(Validator):
 
     Args:
         transaction: The transaction to validate.
-        suppress_force_validation: If True, suppresses validation of unsafe exchange operations.
+        should_validate_for_unsafe_exchange_operations: If True, will also validate for unsafe exchange operations
+            (other than transfer).
     """
 
     HBD_TRANSFER_MSG_ERROR: Final[str] = "The transfer to the exchange must be in HIVE, not HBD."
@@ -41,10 +42,10 @@ class ExchangeOperationsValidator(Validator):
         self,
         transaction: Transaction,
         *,
-        suppress_force_validation: bool = False,
+        should_validate_for_unsafe_exchange_operations: bool = True,
     ) -> None:
         super().__init__()
-        self._suppress_force_required_validation = suppress_force_validation
+        self._should_validate_for_unsafe_exchange_operations = should_validate_for_unsafe_exchange_operations
         self._transaction = transaction
 
     @classmethod
@@ -90,7 +91,7 @@ class ExchangeOperationsValidator(Validator):
             Function(self._validate_hbd_transfer_operation, self.HBD_TRANSFER_MSG_ERROR),
             Function(self._validate_memoless_transfer_operation, self.MEMOLESS_HIVE_TRANSFER_MSG_ERROR),
         ]
-        if not self._suppress_force_required_validation:
+        if self._should_validate_for_unsafe_exchange_operations:
             validators.append(
                 Function(
                     self._validate_unsafe_exchange_operation,

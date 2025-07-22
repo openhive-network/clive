@@ -126,7 +126,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         transaction_ensured = await self.get_transaction()
         exchange_operation_validator = ExchangeOperationsValidatorCli(
             transaction=transaction_ensured,
-            suppress_force_validation=self.force,
+            should_validate_for_unsafe_exchange_operations=not self.force,
         )
         for exchange in self.world.known_exchanges:
             result = exchange_operation_validator.validate(exchange.name)
