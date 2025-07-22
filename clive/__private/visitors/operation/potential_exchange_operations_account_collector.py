@@ -53,7 +53,8 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         """
         Check if there are unsafe operations to the given exchange account.
 
-        Transfer is the only operation considered a safe operation to the exchange account.
+        Notice:
+            Transfer is the only operation considered a safe operation to the exchange account.
 
         Args:
             account: The exchange account name to check for unsafe operations.
