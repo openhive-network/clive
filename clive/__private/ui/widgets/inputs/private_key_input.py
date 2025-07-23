@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class PrivateKeyInput(TextInput):
     """
-    An input for a public key alias.
+    An input for a private key.
 
     Args:
         title: The title of the input.
