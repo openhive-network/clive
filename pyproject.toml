@@ -22,9 +22,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'pydantic (==1.10.18)',
     'toml (==0.10.2)',
-    'schemas (==0.0.1.dev392+20c9a21)',
-    'beekeepy (==0.0.1.dev399+97c9cf9)',
-    'wax (==0.3.10.dev773+f7f86429)',
+    'schemas (==0.0.1.dev393+7e86add)',
+    'beekeepy (==0.0.1.dev400+9bbf139)',
+    'wax (==0.3.10.dev774+1cf44851)',
 ]
 
 [project.urls]
