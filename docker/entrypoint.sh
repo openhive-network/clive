@@ -71,11 +71,21 @@ setup_mapped_directory_as_startup_dir() {
   cd ${CLIVE_SELECT_FILE_ROOT_PATH}
 }
 
+# Set Clives settings and environment.
+# This will create the necessary directories.
+# Necessary directories are created by calling clive commands (like clive beekeeper spawn).
+# But there may be scenario, where we will refer to external beekeeper. So spawn command will not be called.
+# In that case necessary directories will not be created.
+setup_clive_env() {
+  clive init
+}
+
 # Launch Clive in CLI mode
 launch_cli() {
   local activate_beekeeper_script_path="${CONTAINERS_WORKING_DIRECTORY}/scripts/activate_beekeeper.sh"
 
   echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
+  setup_clive_env
   setup_mapped_directory_as_startup_dir
   clive --install-completion >/dev/null 2>&1
   if [[ -n "${PIPELINE:-}" ]]; then
