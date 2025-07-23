@@ -88,3 +88,11 @@ async def lock() -> None:
     from clive.__private.cli.commands.lock import Lock
 
     await Lock().run()
+
+
+@cli.command(name="init", hidden=True)
+async def init() -> None:
+    """Initialize Clive environment and configuration."""
+    from clive.__private.cli.commands.init import Init
+
+    await Init().run()
