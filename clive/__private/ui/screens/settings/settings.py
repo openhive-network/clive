@@ -12,6 +12,7 @@ from clive.__private.ui.screens.settings.manage_key_aliases import ManageKeyAlia
 from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.buttons import OneLineButton
+from clive.__private.ui.widgets.scrolling import ScrollablePartWithArrowBinding
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class Settings(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("Settings")
-        with Section(title="Please choose which configuration you would like to make"):
+        with ScrollablePartWithArrowBinding(), Section("Please choose which configuration you would like to make"):
             yield OneLineButton("Select node", id_="select-node")
             yield OneLineButton("Manage key aliases", id_="manage-key-aliases")
             yield OneLineButton("Accounts management", id_="account-list-management")

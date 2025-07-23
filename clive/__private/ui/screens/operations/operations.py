@@ -12,7 +12,7 @@ from clive.__private.ui.screens.operations.bindings import TransactionSummaryBin
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetButton
-from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.scrolling import ScrollablePartWithArrowBinding
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
@@ -63,7 +63,7 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
         from clive.__private.ui.screens.operations import HivePowerManagement, Savings, TransferToAccount
 
         yield BigTitle("operations")
-        with ScrollablePart():
+        with ScrollablePartWithArrowBinding():
             with Section(title="Financial"):
                 yield OperationButton("Transfer", TransferToAccount)
                 yield OperationButton("Savings", Savings)
