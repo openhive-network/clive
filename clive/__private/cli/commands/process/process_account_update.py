@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -17,14 +17,26 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import Account
 
 
+class NoChangesTransactionError(CLIPrettyError):
+    """Raised when trying to create a transaction with no changes to authority."""
+
+    def __init__(self) -> None:
+        super().__init__("Transaction with no changes to authority cannot be created.")
+
+
 @dataclass(kw_only=True)
 class ProcessAccountUpdate(OperationCommand):
     account_name: str
     _callbacks: list[AccountUpdateFunction] = field(default_factory=list)
 
+    @override
+    async def validate(self) -> None:
+        if len(self._callbacks) == 0:
+            raise NoChangesTransactionError
+        await super().validate()
+
     async def _create_operation(self) -> AccountUpdate2Operation:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
-
         account = accounts[0]
         previous_state = self.__create_operation_from_stored_state(account)
         modified_state = deepcopy(previous_state)
