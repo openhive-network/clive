@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
@@ -41,6 +41,9 @@ class Transaction(SchemasTransaction):
 
     def __len__(self) -> int:
         return len(self.operations)
+
+    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
+        return iter(self.operations_models)
 
     @property
     def is_signed(self) -> bool:
