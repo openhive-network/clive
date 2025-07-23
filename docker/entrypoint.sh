@@ -80,14 +80,24 @@ setup_clive_env() {
   clive init
 }
 
+# Setup the PS1 prompt for the CLI
+setup_PS1() {
+  echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
+}
+
+# Setup the Clive autocompletion for the CLI
+setup_clive_autocompletion(){
+  clive --install-completion >/dev/null 2>&1
+}
+
 # Launch Clive in CLI mode
 launch_cli() {
   local activate_beekeeper_script_path="${CONTAINERS_WORKING_DIRECTORY}/scripts/activate_beekeeper.sh"
 
-  echo 'PS1="\u@cli:\w\$ "' >> ~/.bashrc
+  setup_PS1
   setup_clive_env
   setup_mapped_directory_as_startup_dir
-  clive --install-completion >/dev/null 2>&1
+  setup_clive_autocompletion
   if [[ -n "${PIPELINE:-}" ]]; then
     ${activate_beekeeper_script_path}
   else
