@@ -24,6 +24,20 @@ class NoChangesTransactionError(CLIPrettyError):
         super().__init__("Transaction with no changes to authority cannot be created.")
 
 
+class SignOptionAlreadySetError(CLIPrettyError):
+    """Raised when trying to set the sign option when it is already set."""
+
+    def __init__(self) -> None:
+        super().__init__("Sign option is already set and cannot be modified.")
+
+
+class SaveFileOptionAlreadySetError(CLIPrettyError):
+    """Raised when trying to set the save file option when it is already set."""
+
+    def __init__(self) -> None:
+        super().__init__("Save file option is already set and cannot be modified.")
+
+
 @dataclass(kw_only=True)
 class ProcessAccountUpdate(OperationCommand):
     account_name: str
@@ -48,6 +62,17 @@ class ProcessAccountUpdate(OperationCommand):
 
     def add_callback(self, callback: AccountUpdateFunction) -> None:
         self._callbacks.append(callback)
+
+    def modify_common_options(
+        self, *, sign: str | None = None, broadcast: bool | None = None, save_file: str | None = None
+    ) -> None:
+        if self.sign is not None and sign is not None:
+            raise SignOptionAlreadySetError
+        if self.save_file is not None and save_file is not None:
+            raise SaveFileOptionAlreadySetError
+        self.sign = sign if sign is not None else self.sign
+        self.broadcast = broadcast if broadcast is not None else self.broadcast
+        self.save_file = save_file if save_file is not None else self.save_file
 
     def __skip_untouched_fields(
         self, previous_state: AccountUpdate2Operation, modified_state: AccountUpdate2Operation

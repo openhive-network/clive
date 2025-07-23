@@ -8,9 +8,11 @@ from click import Context, pass_context
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.parameters import modified_param
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
+    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityType
 
 
@@ -32,6 +34,7 @@ _authority_weight = typer.Option(
     help="The new weight of account/key authority",
     show_default=False,
 )
+_optional_broadcast = modified_param(options.broadcast, show_default=False, default=None)
 
 
 @pass_context
@@ -57,6 +60,17 @@ def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: AR
     asyncio_run(send_update_async())
 
 
+def _get_update_command_from_context_parent(ctx: typer.Context) -> ProcessAccountUpdate:
+    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
+
+    assert ctx.parent, f"{ctx.command_path} context parent does not exist"
+    update_command = ctx.parent.obj
+    assert isinstance(update_command, ProcessAccountUpdate), (
+        f"{ctx.parent.command_path} context object is not instance of ProcessAccountUpdate"
+    )
+    return update_command
+
+
 def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFunction) -> None:
     """
     Add callback modifying authority to command ProcessAccountUpdate stored in context.
@@ -65,17 +79,18 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
         ctx: The context of the command.
         callback: The callback function to add to the update command.
     """
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
+    _get_update_command_from_context_parent(ctx).add_callback(callback)
 
-    assert ctx.parent, f"{ctx.command_path} context parent does not exist"
-    update_command = ctx.parent.obj
-    assert isinstance(update_command, ProcessAccountUpdate), (
-        f"{ctx.parent.command_path} context object is not instance of ProcessAccountUpdate"
+
+def modify_command_common_options(
+    ctx: typer.Context, sign: str | None, broadcast: bool | None, save_file: str | None
+) -> None:
+    _get_update_command_from_context_parent(ctx).modify_common_options(
+        sign=sign, broadcast=broadcast, save_file=save_file
     )
-    update_command.add_callback(callback)
 
 
-def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
+def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa: PLR0915
     epilog = f"Look also at the help for command update-{authority}-authority for more options."
     update = CliveTyper(
         name=f"update-{authority}-authority",
@@ -84,10 +99,13 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     )
 
     @update.command(name="add-account", epilog=epilog)
-    async def add_account(
+    async def add_account(  # noqa: PLR0913
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Add account authority with weight."""
         from clive.__private.cli.commands.process.process_account_update import add_account, update_authority
@@ -95,12 +113,16 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         add_account_function = partial(add_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_account_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.command(name="add-key", epilog=epilog)
-    async def add_key(
+    async def add_key(  # noqa: PLR0913
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Add key authority with weight."""
         from clive.__private.cli.commands.process.process_account_update import add_key, update_authority
@@ -108,11 +130,15 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         add_key_function = partial(add_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_key_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.command(name="remove-account", epilog=epilog)
     async def remove_account(
         ctx: typer.Context,
         account: str = _authority_account_name,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Remove account authority."""
         from clive.__private.cli.commands.process.process_account_update import remove_account, update_authority
@@ -120,11 +146,15 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         remove_account_function = partial(remove_account, account=account)
         update_function = partial(update_authority, attribute=authority, callback=remove_account_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.command(name="remove-key", epilog=epilog)
     async def remove_key(
         ctx: typer.Context,
         key: str = _authority_key,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Remove key authority."""
         from clive.__private.cli.commands.process.process_account_update import remove_key, update_authority
@@ -132,12 +162,16 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         remove_key_function = partial(remove_key, key=key)
         update_function = partial(update_authority, attribute=authority, callback=remove_key_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.command(name="modify-account", epilog=epilog)
-    async def modify_account(
+    async def modify_account(  # noqa: PLR0913
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing account authority."""
         from clive.__private.cli.commands.process.process_account_update import modify_account, update_authority
@@ -145,12 +179,16 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         modify_account_function = partial(modify_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_account_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.command(name="modify-key", epilog=epilog)
-    async def modify_key(
+    async def modify_key(  # noqa: PLR0913
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
+        sign: str | None = options.sign,
+        broadcast: bool | None = _optional_broadcast,
+        save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing key authority."""
         from clive.__private.cli.commands.process.process_account_update import modify_key, update_authority
@@ -158,6 +196,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         modify_key_function = partial(modify_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_key_function)
         add_callback_to_update_command(ctx, update_function)
+        modify_command_common_options(ctx, sign, broadcast, save_file)
 
     @update.callback(invoke_without_command=True, result_callback=send_update)
     async def set_threshold(  # noqa: PLR0913
