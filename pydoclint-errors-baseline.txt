@@ -434,9 +434,6 @@ clive/__private/core/formatters/case.py
     DOC201: Function `underscore` does not have a return section in docstring
 --------------------
 clive/__private/core/formatters/humanize.py
-    DOC101: Function `_maybe_labelize`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_maybe_labelize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [add_label: bool, label: str, text: str].
-    DOC201: Function `_maybe_labelize` does not have a return section in docstring
     DOC101: Function `align_to_dot`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `align_to_dot`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*strings: str, center_to: int | str | None].
     DOC201: Function `align_to_dot` does not have a return section in docstring

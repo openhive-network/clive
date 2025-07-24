@@ -52,7 +52,23 @@ type SignPrefixT = Literal["", "+", "-"]
 
 
 def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:
-    """Will conditionally labelize some text, when add_label param is set to True."""
+    """
+    Will conditionally labelize some text.
+
+    Args:
+        label: A label that can be added to the text.
+        text: A text that can be labeled.
+        add_label: Whether to labelize a given text or keep it unchanged.
+
+    Example:
+        >>> _maybe_labelize("Name", "alice")
+        'alice'
+        >>> _maybe_labelize("Name", "alice", add_label=True)
+        'Name: alice'
+
+    Returns:
+        A labeled text or the original text.
+    """
     return f"{label + ':' if add_label else ''} {text}".lstrip()
 
 
