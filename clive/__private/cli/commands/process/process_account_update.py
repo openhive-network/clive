@@ -64,7 +64,13 @@ class SaveFileOptionAlreadySetError(CLIPrettyError):
 @dataclass(kw_only=True)
 class ProcessAccountUpdate(OperationCommand):
     account_name: str
+    _account: Account = field(init=False)
     _callbacks: list[AccountUpdateFunction] = field(default_factory=list)
+
+    @override
+    async def fetch_data(self) -> None:
+        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
+        self._account = accounts[0]
 
     @override
     async def validate(self) -> None:
@@ -73,9 +79,7 @@ class ProcessAccountUpdate(OperationCommand):
         await super().validate()
 
     async def _create_operation(self) -> AccountUpdate2Operation:
-        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
-        account = accounts[0]
-        previous_state = self.__create_operation_from_stored_state(account)
+        previous_state = self.__create_operation_from_stored_state(self._account)
         modified_state = deepcopy(previous_state)
 
         for callback in self._callbacks:
