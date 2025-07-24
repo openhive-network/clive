@@ -13,7 +13,7 @@ from clive.__private.ui.widgets.section import Section
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.schemas import OperationBase, OperationRepresentationBase
+    from clive.__private.models.schemas import OperationBase
 
 
 class RawJsonDialog(CliveInfoDialog):
@@ -27,5 +27,5 @@ class RawJsonDialog(CliveInfoDialog):
 
     @staticmethod
     def _get_operation_representation_json(operation: OperationBase) -> str:
-        representation: OperationRepresentationBase = convert_to_representation(operation=operation)
+        representation = convert_to_representation(operation)
         return representation.json()
