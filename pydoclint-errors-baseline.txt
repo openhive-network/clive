@@ -513,9 +513,6 @@ clive/__private/core/iwax.py
     DOC603: Class `TotalVestingProtocol`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/core/keys/key_manager.py
-    DOC101: Method `KeyManager.__contains__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `KeyManager.__contains__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str | PublicKey | PublicKeyAliased | PrivateKey | PrivateKeyAliased].
-    DOC201: Method `KeyManager.__contains__` does not have a return section in docstring
     DOC101: Method `KeyManager.remove`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `KeyManager.remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*keys: PublicKeyAliased].
     DOC101: Method `KeyManager.rename`: Docstring contains fewer arguments than in function signature.

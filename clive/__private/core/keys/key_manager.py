@@ -47,7 +47,15 @@ class KeyManager:
         return bool(self.__keys)
 
     def __contains__(self, key: str | PublicKey | PublicKeyAliased | PrivateKey | PrivateKeyAliased) -> bool:
-        """Check if a key is in the key manager. Possible types are determined by the __eq__ of keys."""
+        """
+        Check if a key is in the key manager. Possible types are determined by the __eq__ of keys.
+
+        Args:
+            key: The key to check for. Can be either a raw public/private key or a key instance.
+
+        Returns:
+            True if the key is in the key manager, False otherwise.
+        """
         return key in list(self.__keys)
 
     @property
