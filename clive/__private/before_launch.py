@@ -33,6 +33,8 @@ def _log_in_dev_mode() -> None:
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_handlers: bool = False) -> None:
+    _disable_schemas_extra_fields_check()
+
     if is_in_dev_mode():
         # logger also refers to settings, so we need to set it before logger setup
         settings.setenv("dev")
