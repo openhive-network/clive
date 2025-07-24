@@ -21,14 +21,46 @@ class CommandDataRetrievalBase(Generic[HarvestedDataT, SanitizedDataT, Processed
 
     @abstractmethod
     async def _harvest_data_from_api(self) -> HarvestedDataT:
-        """Gather data from an API and return it."""
+        """
+        Harvest raw data from an external API source.
+
+        Subclasses must implement this to fetch data from specific APIs.
+        All calls to the API should be made only within this method.
+
+        Returns:
+            The raw data retrieved from the API.
+        """
 
     async def _sanitize_data(self, data: HarvestedDataT) -> SanitizedDataT:
-        """Sanitize the data and return it."""
+        """
+        Sanitize the harvested data to prepare it for processing.
+
+        This method cleans, validates, and transforms the raw data from the API into a format
+        that can be safely processed. By default, it returns the input data unchanged, but
+        subclasses can override this to implement custom sanitization logic.
+
+        Args:
+            data: The raw data harvested from the API.
+
+        Returns:
+            The sanitized data.
+        """
         return data  # type: ignore[return-value]
 
     async def _process_data(self, data: SanitizedDataT) -> ProcessedDataT:
-        """Process the data and return the result."""
+        """
+        Process the sanitized data into the final output format.
+
+        This method transforms the sanitized data into the desired output format. By default,
+        it returns the sanitized data unchanged, but subclasses can override this to implement
+        custom processing logic such as filtering, aggregating, or transforming the data.
+
+        Args:
+            data: The sanitized data to process.
+
+        Returns:
+            The processed data.
+        """
         return data  # type: ignore[return-value]
 
     async def _perform_data_operations(self) -> ProcessedDataT:

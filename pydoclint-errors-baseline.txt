@@ -286,15 +286,6 @@ clive/__private/core/commands/abc/command.py
     DOC501: Method `Command.execute` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `Command.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
 --------------------
-clive/__private/core/commands/abc/command_data_retrieval_base.py
-    DOC201: Method `CommandDataRetrievalBase._harvest_data_from_api` does not have a return section in docstring
-    DOC101: Method `CommandDataRetrievalBase._sanitize_data`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CommandDataRetrievalBase._sanitize_data`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: HarvestedDataT].
-    DOC201: Method `CommandDataRetrievalBase._sanitize_data` does not have a return section in docstring
-    DOC101: Method `CommandDataRetrievalBase._process_data`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `CommandDataRetrievalBase._process_data`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: SanitizedDataT].
-    DOC201: Method `CommandDataRetrievalBase._process_data` does not have a return section in docstring
---------------------
 clive/__private/core/commands/abc/command_encryption.py
     DOC101: Method `CommandRequiresUnlockedEncryptionWalletError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CommandRequiresUnlockedEncryptionWalletError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [command: CommandEncryption].
