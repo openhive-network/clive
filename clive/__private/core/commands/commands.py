@@ -116,7 +116,13 @@ class Commands[WorldT: World]:
         self.__exception_handlers = [*(exception_handlers or [])]
 
     def _notify(self, message: str, *, level: NotifyLevel = "info") -> None:
-        """Send a notification message to the user."""
+        """
+        Send a notification message to the user.
+
+        Args:
+            message: The message to send.
+            level: The level of the notification.
+        """
 
     async def create_profile_wallets(
         self,
