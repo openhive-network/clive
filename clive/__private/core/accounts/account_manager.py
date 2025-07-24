@@ -279,7 +279,10 @@ class AccountManager:
         """
         Get tracked account by name.
 
-        Raises:  # noqa: D406
+        Args:
+            value: Account name to get. Can be obtained from an account instance.
+
+        Raises:
             AccountNotFoundError: If given account wasn't found.
         """
         searched_account_name = Account.ensure_account_name(value)
