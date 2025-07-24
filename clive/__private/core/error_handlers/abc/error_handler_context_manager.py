@@ -42,11 +42,27 @@ class ErrorHandlerContextManager[ExceptionT: Exception](ABC):
 
     @abstractmethod
     def _is_exception_to_catch(self, error: Exception) -> TypeGuard[ExceptionT]:
-        """Return `True` if the exception should be caught."""
+        """
+        Check if the given error should be caught and narrow the type.
+
+        Args:
+            error: The error that has occurred.
+
+        Returns:
+            True if the error should be caught, False otherwise.
+        """
 
     @abstractmethod
     def _handle_error(self, error: ExceptionT) -> ResultNotAvailable:
-        """Handle all the errors. Reraise if error should not be handled. Return `ResultNotAvailable` otherwise."""
+        """
+        Handle all the errors.
+
+        Args:
+            error: The error that has occurred.
+
+        Returns:
+            An object indicating that the error was handled. If not, should reraise the error.
+        """
 
     async def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
         self._error = error
