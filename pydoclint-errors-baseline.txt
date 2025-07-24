@@ -414,9 +414,6 @@ clive/__private/core/error_handlers/abc/error_notificator.py
     DOC201: Method `ErrorNotificator.__aexit__` does not have a return section in docstring
     DOC501: Method `ErrorNotificator.__aexit__` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ErrorNotificator.__aexit__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CannotNotifyError'].
-    DOC101: Method `ErrorNotificator._determine_message`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ErrorNotificator._determine_message`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [exception: ExceptionT].
-    DOC201: Method `ErrorNotificator._determine_message` does not have a return section in docstring
 --------------------
 clive/__private/core/error_handlers/communication_failure_notificator.py
     DOC601: Class `CommunicationFailureNotificator`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)

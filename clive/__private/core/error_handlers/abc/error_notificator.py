@@ -49,7 +49,15 @@ class ErrorNotificator[ExceptionT: Exception](ErrorHandlerContextManager[Excepti
 
     @abstractmethod
     def _determine_message(self, exception: ExceptionT) -> str:
-        """Return message to be displayed in notification."""
+        """
+        Return message to be displayed in notification.
+
+        Args:
+            exception: The exception that has occurred.
+
+        Returns:
+            A message to be displayed in notification.
+        """
 
     def _handle_error(self, error: ExceptionT) -> ResultNotAvailable:
         self._notify(error)
