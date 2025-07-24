@@ -46,7 +46,15 @@ class KnownExchanges:
         return bool(self._exchanges)
 
     def __contains__(self, account: str | Account | ExchangeAccount) -> bool:
-        """Check if the account is a known exchange."""
+        """
+        Check if the account is a known exchange.
+
+        Args:
+            account: Account name or instance to check for.
+
+        Returns:
+            True if the account is a known exchange, False otherwise.
+        """
         account_name = Account.ensure_account_name(account)
 
         return any(account_name == exchange.name for exchange in self._exchanges)
