@@ -69,7 +69,7 @@ class KeyManager:
                 return key
         raise KeyNotFoundError(alias)
 
-    def get_from_public_key(self, value: str | PublicKey) -> PublicKeyAliased:
+    def get_first_from_public_key(self, value: str | PublicKey) -> PublicKeyAliased:
         value = value if isinstance(value, str) else value.value
         for key in self.__keys:
             if key.value == value:

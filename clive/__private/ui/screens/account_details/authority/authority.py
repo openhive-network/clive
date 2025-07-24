@@ -249,7 +249,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
         key_or_account_text = self._key_or_account
 
         if not self._is_account_entry and self._key_or_account in self.profile.keys:
-            alias = self.profile.keys.get_from_public_key(self._key_or_account).alias
+            alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias
             if alias != self._key_or_account:
                 key_or_account_text = f"{alias} ({self._key_or_account})"
 
@@ -278,7 +278,7 @@ class MemoItem(CliveCheckerboardTableRow):
         memo_key_text = self._memo_key
 
         if self._memo_key in self.profile.keys:
-            alias = self.profile.keys.get_from_public_key(self._memo_key).alias
+            alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias
             if alias != self._memo_key:
                 memo_key_text = f"{alias} ({self._memo_key})"
 
