@@ -65,4 +65,10 @@ class ErrorNotificator[ExceptionT: Exception](ErrorHandlerContextManager[Excepti
         raise CannotNotifyError(exception, message)
 
     def _notify_tui(self, message: str) -> None:
+        """
+        Notify about the error in TUI.
+
+        Args:
+            message: The message to display in the notification.
+        """
         get_clive().app_instance().notify(message, severity="error")

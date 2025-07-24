@@ -47,9 +47,13 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
         """
         Notify about the error in TUI if it's necessary.
 
-        Notifies always only if the error response is available because if there is no response,
-        it indicates general connection issue and no need to notify user about it multiple times
-        because that causes a lot of notifications.
+        Notice:
+            Notifies always only if the error response is available because if there is no response,
+            it indicates general connection issue and no need to notify user about it multiple times
+            because that causes a lot of notifications.
+
+        Args:
+            message: The message to display in the notification.
         """
 
         def is_error_response_available() -> bool:
