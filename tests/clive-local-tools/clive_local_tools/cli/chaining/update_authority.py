@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from clive_local_tools.cli.chaining.chained_command import ChainedCommand
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
@@ -13,28 +15,74 @@ if TYPE_CHECKING:
 
 
 class UpdateAuthority(ChainedCommand):
-    def add_key(self, *, key: PublicKey, weight: int) -> UpdateAuthority:
-        self._add_command_to_chain("add-key", key=key, weight=weight)
+    def add_key(
+        self,
+        *,
+        key: PublicKey,
+        weight: int,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> UpdateAuthority:
+        self._add_command_to_chain(
+            "add-key", key=key, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+        )
         return self
 
-    def add_account(self, *, account: str, weight: int) -> UpdateAuthority:
-        self._add_command_to_chain("add-account", account=account, weight=weight)
+    def add_account(
+        self,
+        *,
+        account: str,
+        weight: int,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> UpdateAuthority:
+        self._add_command_to_chain(
+            "add-account", account=account, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+        )
         return self
 
-    def remove_key(self, *, key: PublicKey) -> UpdateAuthority:
-        self._add_command_to_chain("remove-key", key=key)
+    def remove_key(
+        self, *, key: PublicKey, sign: str | None = None, broadcast: bool | None = None, save_file: Path | None = None
+    ) -> UpdateAuthority:
+        self._add_command_to_chain("remove-key", key=key, sign=sign, broadcast=broadcast, save_file=save_file)
         return self
 
-    def remove_account(self, *, account: str) -> UpdateAuthority:
-        self._add_command_to_chain("remove-account", account=account)
+    def remove_account(
+        self, *, account: str, sign: str | None = None, broadcast: bool | None = None, save_file: Path | None = None
+    ) -> UpdateAuthority:
+        self._add_command_to_chain(
+            "remove-account", account=account, sign=sign, broadcast=broadcast, save_file=save_file
+        )
         return self
 
-    def modify_key(self, *, key: PublicKey, weight: int) -> UpdateAuthority:
-        self._add_command_to_chain("modify-key", key=key, weight=weight)
+    def modify_key(
+        self,
+        *,
+        key: PublicKey,
+        weight: int,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> UpdateAuthority:
+        self._add_command_to_chain(
+            "modify-key", key=key, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+        )
         return self
 
-    def modify_account(self, *, account: str, weight: int) -> UpdateAuthority:
-        self._add_command_to_chain("modify-account", account=account, weight=weight)
+    def modify_account(
+        self,
+        *,
+        account: str,
+        weight: int,
+        sign: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> UpdateAuthority:
+        self._add_command_to_chain(
+            "modify-account", account=account, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+        )
         return self
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, override
+from typing import TYPE_CHECKING, Final, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -18,24 +18,47 @@ if TYPE_CHECKING:
 
 
 class NoChangesTransactionError(CLIPrettyError):
-    """Raised when trying to create a transaction with no changes to authority."""
+    """
+    Raised when trying to create a transaction with no changes to authority.
+
+    Attributes:
+        MESSAGE: A message displayed to user when this error occurs.
+    """
+
+    MESSAGE: Final[str] = "Transaction with no changes to authority cannot be created."
 
     def __init__(self) -> None:
-        super().__init__("Transaction with no changes to authority cannot be created.")
+        super().__init__(self.MESSAGE)
 
 
 class SignOptionAlreadySetError(CLIPrettyError):
-    """Raised when trying to set the sign option when it is already set."""
+    """
+    Raised when trying to set the sign option when it is already set.
+
+    Attributes:
+        MESSAGE: A message displayed to user when this error occurs.
+    """
+
+    MESSAGE: Final[str] = "Sign option is already set and cannot be modified, please use `--sign` option only once."
 
     def __init__(self) -> None:
-        super().__init__("Sign option is already set and cannot be modified.")
+        super().__init__(self.MESSAGE)
 
 
 class SaveFileOptionAlreadySetError(CLIPrettyError):
-    """Raised when trying to set the save file option when it is already set."""
+    """
+    Raised when trying to set the save file option when it is already set.
+
+    Attributes:
+        MESSAGE: A message displayed to user when this error occurs.
+    """
+
+    MESSAGE: Final[str] = (
+        "Save file option is already set and cannot be modified, please use `--save-file` option only once."
+    )
 
     def __init__(self) -> None:
-        super().__init__("Save file option is already set and cannot be modified.")
+        super().__init__(self.MESSAGE)
 
 
 @dataclass(kw_only=True)
