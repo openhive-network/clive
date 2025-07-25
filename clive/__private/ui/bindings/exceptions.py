@@ -4,10 +4,10 @@ from clive.exceptions import CliveError
 
 
 class BindingFileInvalidError(CliveError):
-    """Raised when loaded file with bindings has invalid format.
+    """Raised when the loaded file with bindings has an invalid format.
 
     Args:
-        message: Short description of a problem, message will be displayed as part of notification to user.
+        message: Short description of a problem.
     """
 
     def __init__(self, message: str) -> None:
