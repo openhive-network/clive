@@ -132,7 +132,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
         Attributes:
             action_identifier: Identifier of the action to be performed, e.g. witness name or proposal id.
-            vote: Action to be performed - vote or not.
+            vote: Action to be performed - vote or unvote.
             add: Indicates if the action should be added to the actions container or removed.
         """
 
