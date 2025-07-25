@@ -25,7 +25,6 @@ from clive.__private.core.commands.create_encryption_wallet import CreateEncrypt
 from clive.__private.core.commands.create_user_wallet import CreateUserWallet
 from clive.__private.core.constants.setting_identifiers import DATA_PATH
 from clive.__private.core.encryption import EncryptionService
-from clive.__private.core.formatters.case import underscore
 from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
 from clive.__private.settings import safe_settings, settings
@@ -127,8 +126,7 @@ async def _main() -> None:
         async with prepare_encryption_service() as encryption_service:
             profile_model = create_model_from_scratch()
             profile_model.tracked_accounts[0].alarms = [
-                ProfileStorageModel._AlarmStorageModel(
-                    name=underscore("RecoveryAccountWarningListed"),
+                ProfileStorageModel._RecoveryAccountWarningListedStorageModel(
                     is_harmless=False,
                     identifier=RecoveryAccountWarningListedAlarmIdentifier(
                         recovery_account=ALT_WORKING_ACCOUNT2_DATA.account.name
