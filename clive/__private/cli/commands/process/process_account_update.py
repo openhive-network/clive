@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final, override
+from typing import TYPE_CHECKING, Final, cast, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -31,32 +31,16 @@ class NoChangesTransactionError(CLIPrettyError):
         super().__init__(self.MESSAGE)
 
 
-class SignOptionAlreadySetError(CLIPrettyError):
+class OptionAlreadySetError(CLIPrettyError):
     """
-    Raised when trying to set the sign option when it is already set.
+    Raised when trying to set the option that should be given just once and is already set.
 
-    Attributes:
-        MESSAGE: A message displayed to user when this error occurs.
-    """
-
-    MESSAGE: Final[str] = "The `--sign` option should be set only once, but it was given multiple times."
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
-
-
-class SaveFileOptionAlreadySetError(CLIPrettyError):
-    """
-    Raised when trying to set the save file option when it is already set.
-
-    Attributes:
-        MESSAGE: A message displayed to user when this error occurs.
+    Args:
+        option_name: The name of the option that was already set.
     """
 
-    MESSAGE: Final[str] = "The `--save-file` option should be set only once, but it was given multiple times."
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
+    def __init__(self, option_name: str) -> None:
+        super().__init__(f"The `--{option_name}` option should be set only once, but it was given multiple times.")
 
 
 @dataclass(kw_only=True)
@@ -91,13 +75,28 @@ class ProcessAccountUpdate(OperationCommand):
     def modify_common_options(
         self, *, sign: str | None = None, broadcast: bool | None = None, save_file: str | None = None
     ) -> None:
-        if self.sign is not None and sign is not None:
-            raise SignOptionAlreadySetError
-        if self.save_file is not None and save_file is not None:
-            raise SaveFileOptionAlreadySetError
-        self.sign = sign if sign is not None else self.sign
-        self.broadcast = broadcast if broadcast is not None else self.broadcast
-        self.save_file = save_file if save_file is not None else self.save_file
+        is_sign_already_set = self.sign is not None
+        is_sign_given = sign is not None
+
+        is_broadcast_given = broadcast is not None
+
+        is_save_file_already_set = self.save_file is not None
+        is_save_file_given = save_file is not None
+
+        if is_sign_already_set and is_sign_given:
+            raise OptionAlreadySetError("sign")
+
+        if is_save_file_already_set and is_save_file_given:
+            raise OptionAlreadySetError("save-file")
+
+        if is_sign_given:
+            self.sign = sign
+
+        if is_broadcast_given:
+            self.broadcast = cast("bool", broadcast)
+
+        if is_save_file_given:
+            self.save_file = save_file
 
     def __skip_untouched_fields(
         self, previous_state: AccountUpdate2Operation, modified_state: AccountUpdate2Operation

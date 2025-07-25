@@ -4,10 +4,7 @@ from typing import TYPE_CHECKING, Final, get_args
 
 import pytest
 
-from clive.__private.cli.commands.process.process_account_update import (
-    SaveFileOptionAlreadySetError,
-    SignOptionAlreadySetError,
-)
+from clive.__private.cli.commands.process.process_account_update import OptionAlreadySetError
 from clive.__private.cli.types import AuthorityType
 from clive_local_tools.cli.checkers import (
     assert_authority_weight,
@@ -141,8 +138,11 @@ async def test_no_broadcast_overriden(cli_tester: CLITester, authority: Authorit
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_negative_sign_option_multiple_times(cli_tester: CLITester, authority: AuthorityType) -> None:
+    # ARRANGE
+    expected_error_message = str(OptionAlreadySetError("sign"))
+
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=SignOptionAlreadySetError.MESSAGE):
+    with pytest.raises(CLITestCommandError, match=expected_error_message):
         cli_tester.process_update_authority(
             authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
         ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).add_account(
@@ -158,9 +158,10 @@ async def test_negative_save_file_option_multiple_times(
 ) -> None:
     # ARRANGE
     file_path = tmp_path / f"trx_update_{authority}_authority.json"
+    expected_error_message = str(OptionAlreadySetError("save-file"))
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=SaveFileOptionAlreadySetError.MESSAGE):
+    with pytest.raises(CLITestCommandError, match=expected_error_message):
         cli_tester.process_update_authority(authority, save_file=file_path, threshold=WEIGHT_THRESHOLD).add_key(
             key=OTHER_ACCOUNT.public_key, weight=WEIGHT
         ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
