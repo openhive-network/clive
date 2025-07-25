@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 
     from rich.text import TextType
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.keys.key_manager import KeyManager
@@ -246,26 +247,23 @@ class AuthorityItem(CliveCheckerboardTableRow):
         super().__init__(*self._create_cells())
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        key_or_account_text = self._key_or_account
+        is_known_key = self._key_or_account in self.profile.keys
+        alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias if is_known_key else None
+        key_or_account_text = (
+            f"{alias} ({self._key_or_account})" if alias and alias != self._key_or_account else self._key_or_account
+        )
 
-        if not self._is_account_entry and self._key_or_account in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias
-            if alias != self._key_or_account:
-                key_or_account_text = f"{alias} ({self._key_or_account})"
+        if self._is_account_entry:
+            action_widget: Widget = Static()
+        elif alias is not None:
+            action_widget = RemovePrivateKeyButton(PublicKey(value=self._memo_key))
+        else:
+            action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
 
         return [
             CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account"),
             CliveCheckerBoardTableCell(str(self._weight), classes="weight"),
-            CliveCheckerBoardTableCell(
-                Static()
-                if self._is_account_entry
-                else (
-                    RemovePrivateKeyButton(PublicKey(value=self._key_or_account))
-                    if self._key_or_account in self.profile.keys
-                    else ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
-                ),
-                classes="action",
-            ),
+            CliveCheckerBoardTableCell(action_widget, classes="action"),
         ]
 
 
@@ -275,19 +273,18 @@ class MemoItem(CliveCheckerboardTableRow):
         super().__init__(*self._create_cells())
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        memo_key_text = self._memo_key
+        is_known_key = self._memo_key in self.profile.keys
+        alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias if is_known_key else None
+        memo_key_text = f"{alias} ({self._memo_key})" if alias and alias != self._memo_key else self._memo_key
 
-        if self._memo_key in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias
-            if alias != self._memo_key:
-                memo_key_text = f"{alias} ({self._memo_key})"
-
+        if alias is not None:
+            action_widget: Widget = RemovePrivateKeyButton(PublicKey(value=self._memo_key))
+        else:
+            action_widget = ImportPrivateKeyButton(PublicKey(value=self._memo_key))
         return [
             CliveCheckerBoardTableCell(memo_key_text, classes="memo-key"),
             CliveCheckerBoardTableCell(
-                RemovePrivateKeyButton(PublicKey(value=self._memo_key))
-                if self._memo_key in self.profile.keys
-                else ImportPrivateKeyButton(PublicKey(value=self._memo_key)),
+                action_widget,
                 classes="action",
             ),
         ]
