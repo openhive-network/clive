@@ -31,7 +31,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     Args:
         identifier: Used to pass the identifier of the action. It is used to create id of the widget.
-        vote: Action to be performed - vote or not.
+        vote: Action to be performed - vote or unvote.
     """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
