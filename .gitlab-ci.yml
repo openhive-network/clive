@@ -62,6 +62,42 @@ default:
   tags:
     - public-runner-docker
 
+.runtime_like_env:
+  extends: .configuration_template
+  needs:
+    - job: build_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_template, before_script]
+    - pip install ${FIRST_PARTY_EXTRA_INDEX_ARGS} ${PYPROJECT_DIR}/dist/*.whl
+    - pip list
+
+.build_docs_env:
+  extends: .runtime_like_env
+  stage: build
+  before_script:
+    - !reference [.runtime_like_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
+    - pip list
+
+.docs_variables:
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      variables:
+        # subpath to branches content for preview
+        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+    - variables:
+        # default branch subpath
+        CURRENT_CONTENT_PATH: $GITLAB_PAGES_DEFAULT_BRANCH_PATH
+  variables:
+    GITLAB_PAGES_DEFAULT_BRANCH_PATH: "default/"
+    CURRENT_URL: $CURRENT_CONTENT_PATH
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+    PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
+    PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
+    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
+
 # #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # pre_commit_checks:
