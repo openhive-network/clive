@@ -516,13 +516,6 @@ clive/__private/core/formatters/humanize.py
     DOC103: Function `humanize_manabar_regeneration_time`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [regeneration_time: timedelta].
     DOC201: Function `humanize_manabar_regeneration_time` does not have a return section in docstring
 --------------------
-clive/__private/core/get_default_from_model.py
-    DOC101: Function `get_default_from_model`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `get_default_from_model`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [expect_type: type[T] | None, field_name: str, model: type[BaseModel] | BaseModel].
-    DOC201: Function `get_default_from_model` does not have a return section in docstring
-    DOC501: Function `get_default_from_model` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `get_default_from_model` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NoMatchesError', 'WrongTypeError'].
---------------------
 clive/__private/core/iwax.py
     DOC601: Class `HpAPRProtocol`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `HpAPRProtocol`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [total_vesting_fund_hive: Asset.Hive, virtual_supply: Asset.Hive]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
@@ -589,9 +582,6 @@ clive/__private/core/url_utils.py
     DOC103: Function `is_url_reachable`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [url: HttpUrl].
     DOC201: Function `is_url_reachable` does not have a return section in docstring
 --------------------
-clive/__private/core/validate_schema_field.py
-    DOC502: Function `validate_schema_field` has a "Raises" section in the docstring, but there are not "raise" statements in the body
---------------------
 clive/__private/core/world.py
     DOC101: Method `World.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `World.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any, *args: Any].
@@ -607,6 +597,12 @@ clive/__private/models/asset.py
     DOC502: Method `Asset.hbd` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.vests` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Asset.__convert_amount_to_internal_representation` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC601: Class `AssetFactoryHolderHive`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `AssetFactoryHolderHive`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [asset_cls: type, asset_factory: Callable[[int | str | Decimal], AssetHive]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `AssetFactoryHolderHbd`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `AssetFactoryHolderHbd`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [asset_cls: type, asset_factory: Callable[[int | str | Decimal], AssetHbd]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `AssetFactoryHolderVests`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `AssetFactoryHolderVests`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [asset_cls: type, asset_factory: Callable[[int | str | Decimal], AssetVests]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/models/transaction.py
     DOC201: Method `Transaction.__bool__` does not have a return section in docstring
@@ -702,7 +698,7 @@ clive/__private/ui/dialogs/operation_summary/operation_summary_base_dialog.py
 --------------------
 clive/__private/ui/dialogs/operation_summary/remove_delegation_dialog.py
     DOC101: Method `RemoveDelegationDialog.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `RemoveDelegationDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [delegation: VestingDelegation[Asset.Vests], pretty_hp_amount: str].
+    DOC103: Method `RemoveDelegationDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [delegation: VestingDelegation, pretty_hp_amount: str].
 --------------------
 clive/__private/ui/dialogs/operation_summary/remove_withdraw_vesting_route_dialog.py
     DOC101: Method `RemoveWithdrawVestingRouteDialog.__init__`: Docstring contains fewer arguments than in function signature.
@@ -904,6 +900,7 @@ clive/__private/ui/screens/operations/hive_power_management/common_hive_power/ad
     DOC103: Method `WithdrawalInfo.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [provider: HivePowerDataProvider].
 --------------------
 clive/__private/ui/screens/operations/hive_power_management/delegate_hive_power/delegate_hive_power.py
+    DOC301: Class `Delegation`: __init__() should not have a docstring; please combine it with the docstring of the class
     DOC601: Class `DelegationsTable`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `DelegationsTable`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ATTRIBUTE_TO_WATCH: , NO_CONTENT_TEXT: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC601: Class `DelegateHivePower`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
