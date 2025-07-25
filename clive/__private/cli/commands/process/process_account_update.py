@@ -39,7 +39,7 @@ class SignOptionAlreadySetError(CLIPrettyError):
         MESSAGE: A message displayed to user when this error occurs.
     """
 
-    MESSAGE: Final[str] = "Sign option is already set and cannot be modified, please use `--sign` option only once."
+    MESSAGE: Final[str] = "The `--sign` option should be set only once, but it was given multiple times."
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
@@ -53,9 +53,7 @@ class SaveFileOptionAlreadySetError(CLIPrettyError):
         MESSAGE: A message displayed to user when this error occurs.
     """
 
-    MESSAGE: Final[str] = (
-        "Save file option is already set and cannot be modified, please use `--save-file` option only once."
-    )
+    MESSAGE: Final[str] = "The `--save-file` option should be set only once, but it was given multiple times."
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
