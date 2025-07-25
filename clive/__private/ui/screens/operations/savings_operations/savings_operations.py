@@ -263,7 +263,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         }
 
         if self._to_button.value:
-            return TransferToSavingsOperation.parse_builtins(data)
+            return TransferToSavingsOperation(**data)  # type: ignore[arg-type]
 
         try:
             request_id = self._create_request_id()
