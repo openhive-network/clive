@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from textual.binding import Binding
 from textual.containers import VerticalScroll
 
 from clive.__private.abstract_class import AbstractClassMessagePump
@@ -24,3 +25,16 @@ class ScrollablePartFocusable(VerticalScroll, CanFocusWithScrollbarsOnly):
 
 class ScrollablePart(VerticalScroll, can_focus=False):
     """Scrollable part of the screens that have elements to focus on, so scroll is going down automatically."""
+
+
+class ScrollablePartWithArrowBinding(ScrollablePart):
+    """Same as ScrollablePart but additionally supports vertical arrow keys to navigate through elements.
+
+    Attributes:
+        BINDINGS: Key bindings for the widget.
+    """
+
+    BINDINGS = [
+        Binding("up", "app.focus_previous", "Previous", show=False),
+        Binding("down", "app.focus_next", "Next", show=False),
+    ]
