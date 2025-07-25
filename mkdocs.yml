@@ -6,10 +6,7 @@ repo_url: !ENV [CLIVE_PYDOC_REPO_URL, 'https://gitlab.syncad.com/hive/clive/']
 markdown_extensions:
   - pycon
   - pymdownx.superfences
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
+  - pymdownx.highlight
   - toc:
       permalink: true
       baselevel: 1
