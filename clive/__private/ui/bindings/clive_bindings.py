@@ -56,6 +56,11 @@ class CliveBindings:
         self._assert_all_fields_are_sections()
 
     def dump_toml(self, dest: Path) -> None:
+        """Serialize bindings to a TOML file.
+
+        Args:
+            dest: Path where the TOML file will be written
+        """
         if dest.exists():
             dest.chmod(stat.S_IWRITE)
         data = toml.dumps(self.to_dict())
@@ -64,6 +69,17 @@ class CliveBindings:
 
     @classmethod
     def load_toml(cls, path: Path) -> Self:
+        """Load bindings from a TOML file.
+
+        Args:
+            path: Path to the TOML file to load
+
+        Returns:
+            CliveBindings instance populated from the file
+
+        Raises:
+            BindingFileInvalidError: If the TOML file is invalid or contains invalid bindings
+        """
         try:
             data = toml.load(path)
         except toml.TomlDecodeError as error:
@@ -76,6 +92,11 @@ class CliveBindings:
             raise BindingFileInvalidError(str(error)) from error
 
     def to_dict(self) -> BindingsDict:
+        """Convert all binding sections to a nested dictionary representation.
+
+        Returns:
+            Dictionary mapping section IDs to their binding dictionaries
+        """
         result: BindingsDict = {}
         for _, field_instance in self._binding_section_fields():
             result[field_instance.ID] = field_instance.to_dict()
@@ -83,6 +104,14 @@ class CliveBindings:
 
     @classmethod
     def from_dict(cls, data: BindingsDict) -> Self:
+        """Create a CliveBindings instance from a dictionary representation.
+
+        Args:
+            data: Dictionary mapping section IDs to their binding dictionaries
+
+        Returns:
+            Fully configured CliveBindings instance
+        """
         instance = cls()
         for section_id, section_dict in data.items():
             section_instance = CliveBindingSection.from_dict(section_id, section_dict)
@@ -90,10 +119,24 @@ class CliveBindings:
         return instance
 
     def get_formatted_global_bindings(self, content: str) -> str:
+        """Replace placeholder in content with a formatted global bindings table.
+
+        Args:
+            content: String containing the placeholder to replace
+
+        Returns:
+            String with placeholder replaced with binding table
+        """
         return content.replace(_GLOBAL_BINDING_TABLE_PLACEHOLDER, self._get_global_bindings_table())
 
     @property
     def keymap(self) -> Keymap:
+        """Generate a flat keymap from all binding sections.
+
+        Returns:
+            A flattened dictionary mapping key shortcuts to their binding IDs
+        """
+
         def flatten(bindings_dict: BindingsDict) -> Keymap:
             flattened = {}
             for section_dict in bindings_dict.values():
@@ -147,6 +190,12 @@ def load_custom_bindings() -> CliveBindings:
 
 
 def initialize_bindings_files() -> None:
+    """Initialize binding configuration files.
+
+    This function performs two actions:
+    1. Writes the default bindings to the default bindings path (overwriting if it exists)
+    2. Creates a custom bindings template file if it doesn't already exist
+    """
     CLIVE_PREDEFINED_BINDINGS.dump_toml(safe_settings.default_bindings_path)
     custom_bindings_path = safe_settings.custom_bindings_path
     if not custom_bindings_path.exists():
