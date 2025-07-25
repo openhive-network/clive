@@ -50,7 +50,7 @@ plugins:
           import:
             - https://docs.python.org/3/objects.inv
             - https://textual.textualize.io/objects.inv
-            - https://wax-cb93b7.pages.syncad.com/objects.inv
+            - https://wax-cb93b7.pages.syncad.com/default/objects.inv
           options:
             parameter_headings: true
             show_root_heading: true
