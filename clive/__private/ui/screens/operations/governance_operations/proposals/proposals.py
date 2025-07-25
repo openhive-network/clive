@@ -302,7 +302,7 @@ class Proposals(GovernanceTabPane):
             self.app.trigger_profile_watchers()
             return
 
-        operation.proposal_ids.remove(proposal_id)  # type: ignore[arg-type]
+        operation.proposal_ids.remove(proposal_id)
         self.app.trigger_profile_watchers()
 
     def _find_proposal_operation_with_such_id(
