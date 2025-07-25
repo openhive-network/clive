@@ -114,7 +114,7 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
 
         Probably you want to use other `value_` properties instead.
 
-        Raises:  # noqa: D406
+        Raises:
             AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         return self._currency_selector.create_asset(self.value_raw)

@@ -70,7 +70,7 @@ class AccountManager:
         """
         Returns the working account.
 
-        Raises:  # noqa: D406
+        Raises:
             NoWorkingAccountError: If no working account is set.
         """
         if not self.has_working_account:
@@ -307,7 +307,7 @@ class AccountManager:
 
         Will look for the account by name in watched accounts and set it as working account, removing the watched one.
 
-        Raises: # noqa: D406
+        Raises:
              AccountNotFoundError: If given account wasn't found in watched accounts.
         """
         watched_account = self._watched_accounts.get(watched_account)

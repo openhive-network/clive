@@ -201,7 +201,7 @@ class Profile:
         """
         Remove the current profile from the storage.
 
-        Raises:  # noqa: D406
+        Raises:
             ProfileDoesNotExistsError: If this profile is not stored, it could not be removed.
             MultipleProfileVersionsError: If multiple versions / back-ups of profile exist and force is False.
         """

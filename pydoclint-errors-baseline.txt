@@ -246,12 +246,11 @@ clive/__private/core/accounts/account_container.py
     DOC201: Method `AccountContainerBase._sorted_accounts` does not have a return section in docstring
 --------------------
 clive/__private/core/accounts/account_manager.py
-    DOC501: Method `AccountManager.working` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `AccountManager.working` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NoWorkingAccountError'].
     DOC503: Method `AccountManager.switch_working_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['AccountAlreadyExistsError', 'AccountNotFoundError']. Raised exceptions in the body: ['AccountAlreadyExistsError'].
     DOC201: Method `AccountManager.get_tracked_account` does not have a return section in docstring
     DOC101: Method `AccountManager._set_watched_account_as_working`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountManager._set_watched_account_as_working`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [watched_account: str | Account].
+    DOC502: Method `AccountManager._set_watched_account_as_working` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `AccountManager.add_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `AccountManager.get_known_account` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
@@ -514,6 +513,7 @@ clive/__private/core/node.py
 --------------------
 clive/__private/core/profile.py
     DOC502: Method `Profile.save` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC502: Method `Profile.delete` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC201: Method `Profile.list_profiles` does not have a return section in docstring
     DOC502: Method `Profile.load` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `Profile.delete_by_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
@@ -943,9 +943,6 @@ clive/__private/ui/screens/transaction_summary/transaction_summary.py
     DOC601: Class `AlreadySignedHint`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `AlreadySignedHint`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
-clive/__private/ui/widgets/add_account_container.py
-    DOC201: Method `AddAccountContainer.save_account` does not have a return section in docstring
---------------------
 clive/__private/ui/widgets/apr.py
     DOC101: Method `APR._get_apr`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `APR._get_apr`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: Any].
@@ -984,13 +981,7 @@ clive/__private/ui/widgets/clive_basic/clive_checkerboard_table.py
     DOC101: Method `CliveCheckerboardTable.create_dynamic_rows`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveCheckerboardTable.create_dynamic_rows`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
     DOC201: Method `CliveCheckerboardTable.create_dynamic_rows` does not have a return section in docstring
-    DOC501: Method `CliveCheckerboardTable.create_dynamic_rows` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `CliveCheckerboardTable.create_dynamic_rows` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidDynamicDefinedError'].
     DOC201: Method `CliveCheckerboardTable.create_static_rows` does not have a return section in docstring
-    DOC501: Method `CliveCheckerboardTable.create_static_rows` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `CliveCheckerboardTable.create_static_rows` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidStaticDefinedError'].
-    DOC501: Method `CliveCheckerboardTable.object_to_watch` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `CliveCheckerboardTable.object_to_watch` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['InvalidDynamicDefinedError'].
     DOC101: Method `CliveCheckerboardTable.is_anything_to_display`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveCheckerboardTable.is_anything_to_display`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: ContentT].
     DOC201: Method `CliveCheckerboardTable.is_anything_to_display` does not have a return section in docstring
@@ -1045,6 +1036,9 @@ clive/__private/ui/widgets/inputs/account_name_pattern_input.py
     DOC101: Method `AccountNamePatternInput.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountNamePatternInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, value: str | None].
 --------------------
+clive/__private/ui/widgets/inputs/asset_amount_base_input.py
+    DOC502: Method `AssetAmountInput._value` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+--------------------
 clive/__private/ui/widgets/inputs/authority_filter_input.py
     DOC101: Method `AuthorityFilterInput.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AuthorityFilterInput.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [always_show_title: bool, classes: str | None, disabled: bool, id: str | None, include_title_in_placeholder_when_blurred: bool, placeholder: str, required: bool, show_invalid_reasons: bool, suggester: Suggester | None, title: str, valid_empty: bool, validate_on: Iterable[InputValidationOn] | None, validators: Validator | Iterable[Validator] | None, value: str | None].
@@ -1063,17 +1057,15 @@ clive/__private/ui/widgets/inputs/clive_validated_input.py
     DOC103: Method `FailedManyValidationError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [errors: list[InputValueError | FailedValidationError]].
     DOC101: Method `InputValueError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `InputValueError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [input_name: str | None, reason: str].
+    DOC502: Method `CliveValidatedInput.value_or_error` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC101: Method `CliveValidatedInput.validate_with_error`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveValidatedInput.validate_with_error`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [treat_as_required: bool].
-    DOC501: Method `CliveValidatedInput.validate_with_error` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `CliveValidatedInput.validate_with_error` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['FailedValidationError'].
+    DOC503: Method `CliveValidatedInput.validate_with_error` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['FailedValidationError', 'InputValueError']. Raised exceptions in the body: ['FailedValidationError'].
     DOC101: Method `CliveValidatedInput.validate_many`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveValidatedInput.validate_many`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*inputs: CliveValidatedInput[Any], notify_on_validation_error: bool, notify_on_value_error: bool, treat_as_required: bool].
     DOC201: Method `CliveValidatedInput.validate_many` does not have a return section in docstring
     DOC101: Method `CliveValidatedInput.validate_many_with_error`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveValidatedInput.validate_many_with_error`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*inputs: CliveValidatedInput[Any]].
-    DOC501: Method `CliveValidatedInput.validate_many_with_error` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `CliveValidatedInput.validate_many_with_error` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['FailedManyValidationError'].
     DOC101: Method `CliveValidatedInput.clear_validation`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `CliveValidatedInput.clear_validation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clear_value: bool].
 --------------------
