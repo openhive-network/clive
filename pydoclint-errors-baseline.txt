@@ -709,8 +709,7 @@ clive/__private/ui/dialogs/operation_summary/remove_withdraw_vesting_route_dialo
     DOC103: Method `RemoveWithdrawVestingRouteDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [withdraw_route: WithdrawRoute].
 --------------------
 clive/__private/ui/dialogs/remove_key_alias_dialog.py
-    DOC101: Method `RemoveKeyAliasDialog.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `RemoveKeyAliasDialog.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [public_key: str | PublicKey].
+    DOC502: Method `RemoveKeyAliasDialog.__init__` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/dialogs/save_file_base_dialog.py
     DOC101: Method `SaveFileBaseDialog._save_to_file`: Docstring contains fewer arguments than in function signature.

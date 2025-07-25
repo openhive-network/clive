@@ -96,13 +96,8 @@ class PrivateKeyActionButton(OneLineButton):
     class KeyAliasesChanged(Message):
         """Message sent when key aliases in KeyManager were modified."""
 
-    def __init__(self, label: TextType, variant: CliveButtonVariant, public_key: PublicKey) -> None:
+    def __init__(self, label: TextType, variant: CliveButtonVariant) -> None:
         super().__init__(label, variant)
-        self._public_key = public_key
-
-    @property
-    def public_key(self) -> PublicKey:
-        return self._public_key
 
     def _key_aliases_changed_callback(self, confirm: bool | None) -> None:
         if confirm:
@@ -114,12 +109,13 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
         """Message sent when ImportPrivateKeyButton is pressed."""
 
     def __init__(self, public_key: PublicKey) -> None:
-        super().__init__("Import key", "success", public_key)
+        super().__init__("Import key", "success")
+        self._public_key = public_key
 
     @on(Pressed)
     def add_private_key(self, event: ImportPrivateKeyButton.Pressed) -> None:
         assert isinstance(event.button, ImportPrivateKeyButton), "Incompatible type of button."
-        public_key = event.button.public_key
+        public_key = event.button._public_key
         self.app.push_screen(NewKeyAliasDialog(public_key), self._key_aliases_changed_callback)
 
 
@@ -127,16 +123,16 @@ class RemovePrivateKeyButton(PrivateKeyActionButton):
     class Pressed(PrivateKeyActionButton.Pressed):
         """Message sent when RemovePrivateKeyButton is pressed."""
 
-    def __init__(self, public_key: PublicKey) -> None:
-        super().__init__("Remove", "error", public_key)
+    def __init__(self, key_alias: str) -> None:
+        super().__init__("Remove", "error")
+        self._key_alias = key_alias
 
     @on(Pressed)
     def remove_private_key(self, event: RemovePrivateKeyButton.Pressed) -> None:
         from clive.__private.ui.dialogs import RemoveKeyAliasDialog
 
         assert isinstance(event.button, RemovePrivateKeyButton), "Incompatible type of button."
-        public_key = event.button.public_key
-        self.app.push_screen(RemoveKeyAliasDialog(public_key=public_key), self._key_aliases_changed_callback)
+        self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)
 
 
 class AuthorityRoles(SectionScrollable):
@@ -256,7 +252,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if self._is_account_entry:
             action_widget: Widget = Static()
         elif alias is not None:
-            action_widget = RemovePrivateKeyButton(PublicKey(value=self._memo_key))
+            action_widget = RemovePrivateKeyButton(key_alias=alias)
         else:
             action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
 
@@ -278,7 +274,7 @@ class MemoItem(CliveCheckerboardTableRow):
         memo_key_text = f"{alias} ({self._memo_key})" if alias and alias != self._memo_key else self._memo_key
 
         if alias is not None:
-            action_widget: Widget = RemovePrivateKeyButton(PublicKey(value=self._memo_key))
+            action_widget: Widget = RemovePrivateKeyButton(key_alias=alias)
         else:
             action_widget = ImportPrivateKeyButton(PublicKey(value=self._memo_key))
         return [

@@ -44,7 +44,7 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
     def remove_key_alias(self) -> None:
-        self.app.push_screen(RemoveKeyAliasDialog(self._public_key))
+        self.app.push_screen(RemoveKeyAliasDialog(self._public_key.alias))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [
