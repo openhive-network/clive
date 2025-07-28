@@ -45,7 +45,7 @@ class AccountNamePatternInput(TextInput):
             required=required,
             suggester=suggester,
             validators=[
-                Length(minimum=1, maximum=AccountName._meta().max_length),  # type: ignore[attr-defined]
+                Length(minimum=1, maximum=AccountName.meta.max_length),  # type: ignore[attr-defined]
             ],
             validate_on=validate_on,
             valid_empty=valid_empty,
