@@ -108,6 +108,7 @@ class Clive(App[int]):
         This workaround can create race conditions, so we need to guard against it.
         """
         self.custom_bindings = self._load_bindings_from_file()
+        self.update_keymap(self.custom_bindings.keymap)
 
     @property
     def world(self) -> TUIWorld:
@@ -216,7 +217,6 @@ class Clive(App[int]):
             self.set_interval(debug_loop_period_secs, self._debug_log)
 
         await self._switch_to_initial_mode()
-        self.update_keymap(self.custom_bindings.keymap)
 
     async def on_unmount(self) -> None:
         if self._world is not None:
