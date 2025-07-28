@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Horizontal
+from textual.containers import Horizontal, HorizontalGroup, Right
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
@@ -28,6 +28,27 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
     from clive.__private.core.world import TUIWorld
+
+
+class AddNewKeyAliasButton(CliveButton):
+    DEFAULT_CSS = """
+    AddNewKeyAliasButton {
+        width: 22;
+    }
+    """
+
+    class Pressed(CliveButton.Pressed):
+        """Message sent when AddNewKeyAliasButton is pressed."""
+
+    def __init__(self) -> None:
+        label = f"Add new alias ({self.custom_bindings.manage_key_aliases.add_new_alias.button_display})"
+        super().__init__(label, variant="success")
+
+
+class ButtonContainer(HorizontalGroup):
+    def compose(self) -> ComposeResult:
+        with Right():
+            yield AddNewKeyAliasButton()
 
 
 class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
@@ -112,8 +133,10 @@ class ManageKeyAliases(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
+        yield ButtonContainer()
         with self.__scrollable_part:
             yield ManageKeyAliasesTable()
 
+    @on(AddNewKeyAliasButton.Pressed)
     def action_add_new_alias(self) -> None:
         self.app.push_screen(NewKeyAliasDialog())

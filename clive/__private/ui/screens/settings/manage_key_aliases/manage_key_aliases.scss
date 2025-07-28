@@ -1,7 +1,14 @@
 ManageKeyAliases {
-  ManageKeyAliasesTable {
-    margin-top: 1;
+  ButtonContainer {
+    /* This container has bugged margins: setting margin here is affecting other widgets.
+    Looks like it is another variation of: https://github.com/Textualize/textual/issues/5116
+    Created https://github.com/Textualize/textual/issues/5997 but it was deleted.
+    MRE: https://gitlab.syncad.com/hive/clive/-/merge_requests/698#note_220180
+    Switch from padding to margin when bug is fixed. */
+    padding: 0 1 1 1;
+  }
 
+  ManageKeyAliasesTable {
     SectionTitle {
       margin: 0 1 0 1;
     }
