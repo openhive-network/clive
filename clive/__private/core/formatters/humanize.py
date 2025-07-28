@@ -80,6 +80,17 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
         *strings: A variable number of strings to align.
         center_to: A value representing the length to center the longest string.
 
+    Example:
+        >>> align_to_dot("2.00 %", "6.00 %", "3.00 %", "12.00 %")
+        [" 2.00 %", " 6.00 %", " 3.00 %", "12.00 %"]
+        >>> align_to_dot("2.00 %", "6.00 %", "3.00 %", "12.00 %", "100.00%")
+        ["  2.00 %", "  6.00 %", "  3.00 %", " 12.00 %", "100.00%"]
+        >>> align_to_dot("2.00 %", "6.00 %", "3.00 %", "12.00 %", "100.00 %", center_to=8)
+        ["  2.00 %", "  6.00 %", "  3.00 %", " 12.00 %", "100.00 %"]
+        >>> align_to_dot("2.00 %", "6.00 %", "3.00 %", "12.00 %", "100.00 %", center_to="sometext")
+        ["    2.00 %", "    6.00 %", "    3.00 %", "   12.00 %", "  100.00 %  "]
+
+
     Returns:
         Values aligned to the dot.
     """
@@ -111,6 +122,21 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
 
 
 def humanize_binding_id(id_: str) -> str:
+    """
+    Generates a human-readable description from a binding id.
+
+    Args:
+        id_: The binding id to be humanized.
+
+    Example:
+        >>> humanize_binding_id("lock_wallet")
+        "Lock wallet"
+        >>> humanize_binding_id("transfer_to_vesting")
+        "Transfer to vesting"
+
+    Returns:
+        A human-readable description of the binding id.
+    """
     return inflection.humanize(id_)
 
 
@@ -120,6 +146,18 @@ def humanize_validation_result(result: ValidationResult) -> str:
 
     Args:
         result: An object containing the validation result.
+
+    Example:
+        >>> humanize_validation_result(ValidationResult(failures=[]))
+        "No failures"
+        >>> humanize_validation_result(ValidationResult(failures=[Failure(validator=BadAccountValidator, value='#',
+           description='Invalid account name')]))
+        "Invalid account name"
+        >>> humanize_validation_result(ValidationResult(failures=[Failure(validator=PrivateKeyValidator,
+            value='5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYi', description='Invalid private key format.'),
+            Failure(validator=PrivateKeyValidator, value='5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYi',
+            description='Does not match the expected public key.')]))
+        ["Invalid private key format.", "Does not match the expected public key."]
 
     Returns:
         A human-readable data describing the validation result.
@@ -269,6 +307,15 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
         use_short_form: Whether to use a short form.
         show_symbol: Whether to show the HP symbol.
 
+    Example:
+        >>> asset = Asset.hive(1035.401)
+        >>> humanize_hive_power(asset)
+        "1.0K HP"
+        >>> humanize_hive_power(asset, use_short_form=False)
+        "1035.401 HP"
+        >>> humanize_hive_power(asset, show_symbol=False)
+        "1.0K"
+
     Returns:
         A human-readable data representing the hive power.
     """
@@ -298,6 +345,13 @@ def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool 
         hive_power: A value representing the hive power.
         show_symbol: Whether to show the HP symbol.
 
+    Example:
+        >>> asset = Asset.hive(1035.401)
+        >>> humanize_hive_power_with_comma(asset)
+        "1,035.401 HP"
+        >>> humanize_hive_power_with_comma(asset, show_symbol=False)
+        "1,035.401"
+
     Returns:
         A human-readable data representing the hive power with commas.
     """
@@ -314,6 +368,13 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label
         hbd_exchange_rate: An object containing the exchange rate.
         with_label: Whether to add a label to the output.
 
+    Example:
+        >>> exchange_rate = HbdExchangeRate(base=Asset.Hbd(0.242), quote=Asset.Hive(1))
+        >>> humanize_hbd_exchange_rate(exchange_rate)
+        "0.242 $"
+        >>> humanize_hbd_exchange_rate(exchange_rate, with_label=True)
+        "price feed: 0.242 $"
+
     Returns:
         A human-readable data representing the HBD exchange rate.
     """
@@ -327,6 +388,12 @@ def humanize_hbd_savings_apr(hbd_savings_apr: Decimal, *, with_label: bool = Fal
     Args:
         hbd_savings_apr: A value representing the HBD savings APR.
         with_label: Whether to add a label to the output.
+
+    Example:
+        >>> humanize_hbd_savings_apr(Decimal(15)))
+        "15.00 %"
+        >>> humanize_hbd_savings_apr(Decimal(15), with_label=True)
+        "HBD savings APR: 15.00 %"
 
     Returns:
         A human-readable data representing the HBD savings APR.
@@ -342,6 +409,12 @@ def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False
         hbd_print_rate: A value representing the HBD print rate.
         with_label: Whether to add a label to the output.
 
+    Example:
+        >>> humanize_hbd_print_rate(Decimal(100)))
+        "100.00 %"
+        >>> humanize_hbd_savings_apr(Decimal(100), with_label=True)
+        "HBD print rate: 100.00 %"
+
     Returns:
         A human-readable data representing the HBD print rate.
     """
@@ -354,6 +427,10 @@ def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
 
     Args:
         data: An instance representing the APR value.
+
+    Example:
+        >>> humanize_apr(Decimal(100)))
+        "100.00 %"
 
     Returns:
         A human-readable data representing the APR value.
@@ -370,6 +447,12 @@ def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = F
         data: An instance representing the APR value.
         with_label: Whether to add a label to the output.
 
+    Example:
+        >>> humanize_hp_vests_apr(Decimal("2.94"))
+        "2.94 %"
+        >>> humanize_hp_vests_apr(Decimal("2.94"), with_label=True))
+        "HP/VESTS APR: 2.94 %"
+
     Returns:
         A human-readable data representing the APR value with an optional label.
     """
@@ -383,6 +466,13 @@ def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: boo
     Args:
         current_price_feed: An instance containing the current price.
         with_label: Whether to add a label to the output.
+
+    Example:
+        >>> current_price_feed = PriceFeed(base=Asset.Hbd(0.239), quote=Asset.Hive(1))
+        >>> humanize_median_hive_price(current_price_feed)
+        "0.239"
+        >>> humanize_median_hive_price(current_price_feed, with_label=True))
+        "median Hive price: 0.239"
 
     Returns:
         A human-readable data representing the median hive price.
@@ -398,6 +488,12 @@ def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool 
         head_block_number: The head block number to calculate the inflation rate.
         with_label: Whether to add a label to the output.
 
+    Example:
+        >>> humanize_current_inflation_rate(98063585)
+        "5.86 %"
+        >>> humanize_current_inflation_rate(98063585, with_label=True))
+        "current inflation rate: 5.86 %"
+
     Returns:
         A human-readable data representing the current inflation rate.
     """
@@ -412,6 +508,12 @@ def humanize_participation_count(participation_count: int, *, with_label: bool =
     Args:
         participation_count: A value representing the participation count.
         with_label: Whether to add a label to the output.
+
+    Example:
+        >>> humanize_participation_count(128)
+        "100.00 %"
+        >>> humanize_participation_count(128, with_label=True)
+        "participation: 100.00 %"
 
     Returns:
         A human-readable data representing the participation count percentage.
@@ -433,6 +535,14 @@ def humanize_vest_to_hive_ratio(
         with_label: Whether to add a label to the output.
         show_symbol: Whether to show the VEST symbol.
 
+    Example:
+        >>> humanize_vest_to_hive_ratio(Decimal(1500))
+        "1500.000"
+        >>> humanize_vest_to_hive_ratio(Decimal(1500), show_symbol=True)
+        "1500.000 VESTS"
+        >>> humanize_vest_to_hive_ratio(Decimal(1500), with_label=True, show_symbol=True)
+        ""VESTS/HIVE ratio: 1500.000 VESTS"
+
     Returns:
         A human-readable data representing the vest to hive ratio.
     """
@@ -452,6 +562,9 @@ def humanize_bytes(value: int) -> str:
     Args:
         value: A value representing the number of bytes.
 
+    Example:
+        >>> humanize_bytes(65536)
+        "64.0 KiB"
     Returns:
         A human-readable data representing the size in bytes.
     """
@@ -464,6 +577,10 @@ def humanize_witness_status(signing_key: str) -> str:
 
     Args:
         signing_key: The signing key of the witness.
+
+    Example:
+        >>> humanize_witness_status("STM8PFEEhF9g3PMZu9mu9vso56bzP6i4aMYM73aWL8CkcKi4LEGLR")
+        "active"
 
     Returns:
         A value indicating whether the witness is "active" or "inactive".
@@ -478,6 +595,20 @@ def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
     Args:
         votes: A value representing the number of votes.
         data: An instance containing vesting data.
+
+    Example:
+        >>> @dataclasses.dataclass
+        ... class ImplementsTotalVestingProtocol:
+        ...     total_vesting_fund_hive: Asset.Hive
+        ...     total_vesting_shares: Asset.Vests
+        >>> humanize_votes_with_suffix(
+        ...     1_234_567_890,
+        ...     ImplementsTotalVestingProtocol(
+        ...         Asset.hive(1_000_000_000),
+        ...         Asset.vests(1_000_000_000),
+        ...     )
+        ... )
+        "1.2K HP"
 
     Returns:
         A human-readable data representing the votes converted to hive power with suffix.
@@ -494,6 +625,20 @@ def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
         votes: A value representing the number of votes.
         data: An instance containing vesting data.
 
+    Example:
+        >>> @dataclasses.dataclass
+        ... class ImplementsTotalVestingProtocol:
+        ...     total_vesting_fund_hive: Asset.Hive
+        ...     total_vesting_shares: Asset.Vests
+        >>> humanize_votes_with_comma(
+        ...     1_234_567_890,
+        ...     ImplementsTotalVestingProtocol(
+        ...         Asset.hive(1_000_000_000),
+        ...         Asset.vests(1_000_000_000),
+        ...     )
+        ... )
+        "1,234.567 HP"
+
     Returns:
         A human-readable data representing the votes converted to hive power with commas.
     """
@@ -502,6 +647,26 @@ def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
+    """
+    Generate pretty formatted asset.
+
+    Args:
+        asset: An asset to be formatted.
+        show_symbol: Whether to show the asset symbol.
+        sign_prefix: A prefix to be added to the asset amount.
+
+    Example:
+        >>> asset = Asset.Hive(1035.401)
+        >>> humanize_asset(asset)
+        "1.0K HIVE"
+        >>> humanize_asset(asset, show_symbol=False)
+        "1.0K"
+        >>> humanize_asset(asset, sign_prefix="+")
+        "+1.0K HIVE"
+
+    Returns:
+        A human-readable data representing the asset amount with an optional symbol.
+    """
     pretty_asset = Asset.pretty_amount(asset)
     asset_symbol = Asset.get_symbol(asset)
     if sign_prefix and int(asset.amount) != 0:
@@ -517,6 +682,12 @@ def humanize_bool(value: bool) -> str:  # noqa: FBT001
     Args:
         value: A boolean value to be converted.
 
+    Example:
+        >>> humanize_bool(True)
+        "YES"
+        >>> humanize_bool(False)
+        "NO"
+
     Returns:
         A string "YES" if value is True, otherwise "NO".
     """
@@ -531,6 +702,10 @@ def humanize_percent(hive_percent: Decimal) -> str:
 
     Args:
         hive_percent: A value representing the percentage value.
+
+    Example:
+        >>> humanize_percent(Decimal(100))
+        "100.00 %"
 
     Returns:
         A data representing the percentage value rounded to the defined precision.
@@ -565,6 +740,16 @@ def humanize_manabar_regeneration_time(regeneration_time: timedelta) -> str:
 
     Args:
         regeneration_time: An object representing the regeneration time.
+
+    Example:
+        >>> humanize_manabar_regeneration_time(timedelta(seconds=0))
+        "Full!"
+        >>> humanize_manabar_regeneration_time(timedelta(hours=1))
+        "an hour from now"
+        >>> humanize_manabar_regeneration_time(timedelta(hours=7, minutes=21))
+        "7 hours from now"
+        >>> humanize_manabar_regeneration_time(timedelta(days=1, hours=7, minutes=21))
+        "a day from now"
 
     Returns:
         A human-readable data indicating the regeneration time or if it is full.
