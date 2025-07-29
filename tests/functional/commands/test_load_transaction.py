@@ -7,16 +7,14 @@ import pytest
 from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.schemas import HF26RepresentationTransferOperation, HiveDateTime, TransferOperation
+from clive.__private.models.schemas import HiveDateTime, TransferOperation, convert_to_representation
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 VALID_TRANSACTION: Final[Transaction] = Transaction(
     operations=[
-        HF26RepresentationTransferOperation(
-            value=TransferOperation(from_="alice", to="bob", amount=Asset.hbd(1), memo="test")
-        )
+        convert_to_representation(op=TransferOperation(from_="alice", to="bob", amount=Asset.hbd(1), memo="test"))
     ],
     ref_block_num=1,
     ref_block_prefix=2,
