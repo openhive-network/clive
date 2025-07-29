@@ -238,7 +238,14 @@ AssetFactoryGenericT = TypeVar("AssetFactoryGenericT", bound=Asset.AnyT)
 
 @dataclass(frozen=True)
 class AssetFactoryHolder(Generic[AssetFactoryGenericT]):
-    """Holds factory for asset."""
+    """
+    Holds factory for asset.
+
+    Attributes:
+        asset_cls: Class of the asset.
+        asset_factory: Factory function to create an instance of the asset.
+    """
+
 
     asset_cls: type[AssetFactoryGenericT]
     asset_factory: Callable[[int | str | Decimal], AssetFactoryGenericT]
