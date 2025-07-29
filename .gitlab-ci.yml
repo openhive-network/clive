@@ -18,7 +18,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_SUBMODULE_DEPTH: 1
   # first party libraries gitlab indexes:
-  # - 198 -> database_api and network_broadcast_api
+  # - 198 -> hive (generated APIs)
   # - 362 -> schemas
   # - 419 -> wax
   # - 434 -> beekeepy
