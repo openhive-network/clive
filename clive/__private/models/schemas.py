@@ -61,7 +61,6 @@ from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAc
 from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
 from schemas.decoders import is_matching_model, validate_schema_field
-from schemas.encoders import get_hf26_encoder
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 from schemas.fields.assets._base import AssetBase, AssetNaiAmount
 from schemas.fields.basic import AccountName, PublicKey
@@ -292,7 +291,6 @@ __all__ = [  # noqa: RUF022
     "Serializable",
     # decoders and encoders
     "convert_to_representation",
-    "get_hf26_encoder",
     "is_matching_model",
     "validate_schema_field",
 ]

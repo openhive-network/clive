@@ -12,7 +12,6 @@ from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models.schemas import (
     HiveInt,
     convert_to_representation,
-    get_hf26_encoder,
 )
 from clive.exceptions import CliveError
 
@@ -95,12 +94,9 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
 
     if not isinstance(item, Transaction):
-        item_repr = convert_to_representation(item)
+        item = convert_to_representation(item)  # type: ignore[assignment]
 
-    if isinstance(item, Transaction):
-        return get_hf26_encoder().encode(item)
-
-    return item_repr.json().encode()
+    return item.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
