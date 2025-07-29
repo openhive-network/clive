@@ -62,7 +62,7 @@ from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
 from schemas.decoders import is_matching_model, validate_schema_field
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
-from schemas.fields.assets._base import AssetBase, AssetNaiAmount
+from schemas.fields.assets._base import AssetBase
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
@@ -70,13 +70,9 @@ from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
-from schemas.fields.integers import Int64t, Uint16t
 from schemas.fields.resolvables import JsonString
-from schemas.fields.serializable import Serializable
 from schemas.jsonrpc import ExpectResultT as JSONRPCExpectResultT
-from schemas.jsonrpc import JSONRPCRequest as SchemasJSONRPCRequest
 from schemas.jsonrpc import JSONRPCResult
-from schemas.jsonrpc import get_response_model as schemas_get_response_model
 from schemas.operation import Operation
 from schemas.operations import (
     AccountCreateOperation,
@@ -137,7 +133,6 @@ from schemas.operations.extensions.representation_types import (
     HF26RepresentationRecurrentTransferPairIdOperationExtension,
 )
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.representation_types import HF26Representation, HF26RepresentationTransferOperation
 from schemas.policies import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, Policy, set_policies
 from schemas.transaction import Transaction
 
@@ -229,9 +224,6 @@ __all__ = [  # noqa: RUF022
     "WitnessBlockApproveOperation",
     "WitnessSetPropertiesOperation",
     "WitnessUpdateOperation",
-    # representation
-    "HF26RepresentationTransferOperation",
-    "convert_to_representation",
     # extensions
     "RecurrentTransferPairIdExtension",
     "RecurrentTransferPairIdRepresentation",
@@ -240,12 +232,12 @@ __all__ = [  # noqa: RUF022
     "AssetHbd",
     "AssetHive",
     "AssetVests",
-    "AssetNaiAmount",
     # basic fields
     "AccountName",
     "ChainId",
     "HiveDateTime",
     "HiveInt",
+    "JsonString",
     "PublicKey",
     "Signature",
     "TransactionId",
@@ -269,11 +261,6 @@ __all__ = [  # noqa: RUF022
     "VestingDelegation",
     "VestingDelegationExpiration",
     "WithdrawRoute",
-    # integers
-    "Int64t",
-    "Uint16t",
-    # resolvables
-    "JsonString",
     # policies
     "ExtraFieldsPolicy",
     "JSONRPCExpectResultT",
@@ -282,14 +269,9 @@ __all__ = [  # noqa: RUF022
     "Policy",
     "set_policies",
     # jsonrpc
-    "get_response_model",
-    "JSONRPCRequest",
     "Witness",
     # other
     "PreconfiguredBaseModel",
-    "RepresentationBase",
-    "Serializable",
-    # decoders and encoders
     "convert_to_representation",
     "is_matching_model",
     "validate_schema_field",
@@ -351,12 +333,3 @@ VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament
 WithdrawRoute = WithdrawVestingRoutesFundament
 Witness = WitnessesFundament
-
-# jsonrpc
-
-get_response_model = schemas_get_response_model
-JSONRPCRequest = SchemasJSONRPCRequest
-
-# other
-
-RepresentationBase = HF26Representation
