@@ -32,10 +32,19 @@ WEIGHT_THRESHOLD: Final[int] = 2
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_sign_before_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
     ).fire()
 
     # ASSERT
@@ -50,10 +59,19 @@ async def test_sign_before_chaining(cli_tester: CLITester, authority: AuthorityT
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_sign_after_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT, sign=WORKING_ACCOUNT_KEY_ALIAS
+    cli_tester.process_update_authority(
+        authority,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     ).fire()
 
     # ASSERT
@@ -71,10 +89,21 @@ async def test_save_file_before_chaining(cli_tester: CLITester, authority: Autho
     file_path = tmp_path / f"trx_update_{authority}_authority.json"
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT, save_file=file_path
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT, broadcast=False
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+        save_file=file_path,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
+        broadcast=False,
     ).fire()
 
     # ASSERT
@@ -90,10 +119,21 @@ async def test_save_file_option_after_chaining(cli_tester: CLITester, authority:
     file_path = tmp_path / f"trx_update_{authority}_authority.json"
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT, broadcast=False, save_file=file_path
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
+        broadcast=False,
+        save_file=file_path,
     ).fire()
 
     # ASSERT
@@ -107,8 +147,17 @@ async def test_save_file_option_after_chaining(cli_tester: CLITester, authority:
 async def test_no_broadcast_before_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
     cli_tester.process_update_authority(
-        authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD, broadcast=False
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).fire()
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+        broadcast=False,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).fire()
 
     # ASSERT
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
@@ -120,9 +169,17 @@ async def test_no_broadcast_before_chaining(cli_tester: CLITester, authority: Au
 async def test_no_broadcast_overriden(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
     cli_tester.process_update_authority(
-        authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD, broadcast=False
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT, broadcast=True
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+        broadcast=False,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+        broadcast=True,
     ).fire()
 
     # ASSERT
@@ -137,10 +194,20 @@ async def test_no_broadcast_overriden(cli_tester: CLITester, authority: Authorit
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_sign_option_multiple_times(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, sign="nonexisting", threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT, sign=WORKING_ACCOUNT_KEY_ALIAS
+    cli_tester.process_update_authority(
+        authority,
+        sign="nonexisting",
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     ).fire()
 
     # ASSERT
@@ -159,10 +226,21 @@ async def test_save_file_option_multiple_times(cli_tester: CLITester, authority:
     second_file_path = tmp_path / f"trx_update_{authority}_authority.json"
 
     # ACT
-    cli_tester.process_update_authority(authority, save_file=first_file_path, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT, sign=WORKING_ACCOUNT_KEY_ALIAS
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT, save_file=second_file_path
+    cli_tester.process_update_authority(
+        authority,
+        save_file=first_file_path,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
+        save_file=second_file_path,
     ).fire()
 
     # ASSERT

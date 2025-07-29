@@ -31,8 +31,16 @@ WEIGHT_THRESHOLD: Final[int] = 2
 async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
     cli_tester.process_update_authority(
-        authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).fire()
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).fire()
 
     # ASSERT
     assert_weight_threshold(cli_tester, authority, WEIGHT_THRESHOLD)
@@ -47,11 +55,20 @@ async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None
 async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
     cli_tester.process_update_authority(
-        authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_account(
-        account=OTHER_ACCOUNT2.name, weight=WEIGHT
-    ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).remove_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT2.name,
+        weight=WEIGHT,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).remove_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
     ).fire()
 
     # ASSERT
@@ -67,10 +84,19 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_chaining3(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
+    ).add_account(
+        account=OTHER_ACCOUNT.name,
+        weight=WEIGHT,
+    ).modify_key(
+        key=WORKING_ACCOUNT_DATA.account.public_key,
+        weight=MODIFIED_WEIGHT,
     ).fire()
 
     # ASSERT

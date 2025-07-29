@@ -23,8 +23,12 @@ MODIFIED_WEIGHT: Final[int] = 124
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_add_key(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
     ).fire()
 
     # ASSERT
@@ -35,14 +39,21 @@ async def test_add_key(cli_tester: CLITester, authority: AuthorityType) -> None:
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
     ).fire()
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).remove_key(
-        key=OTHER_ACCOUNT.public_key
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).remove_key(
+        key=OTHER_ACCOUNT.public_key,
     ).fire()
 
     # ASSERT
@@ -52,14 +63,22 @@ async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> No
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_modify_key(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=WEIGHT,
     ).fire()
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).modify_key(
-        key=OTHER_ACCOUNT.public_key, weight=MODIFIED_WEIGHT
+    cli_tester.process_update_authority(
+        authority,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+    ).modify_key(
+        key=OTHER_ACCOUNT.public_key,
+        weight=MODIFIED_WEIGHT,
     ).fire()
 
     # ASSERT
