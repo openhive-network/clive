@@ -31,18 +31,6 @@ class NoChangesTransactionError(CLIPrettyError):
         super().__init__(self.MESSAGE)
 
 
-class OptionAlreadySetError(CLIPrettyError):
-    """
-    Raised when trying to set the option that should be given just once and is already set.
-
-    Args:
-        option_name: The name of the option that was already set.
-    """
-
-    def __init__(self, option_name: str) -> None:
-        super().__init__(f"The `--{option_name}` option should be set only once, but it was given multiple times.")
-
-
 @dataclass(kw_only=True)
 class ProcessAccountUpdate(OperationCommand):
     account_name: str
@@ -75,19 +63,9 @@ class ProcessAccountUpdate(OperationCommand):
     def modify_common_options(
         self, *, sign: str | None = None, broadcast: bool | None = None, save_file: str | None = None
     ) -> None:
-        is_sign_already_set = self.sign is not None
         is_sign_given = sign is not None
-
         is_broadcast_given = broadcast is not None
-
-        is_save_file_already_set = self.save_file is not None
         is_save_file_given = save_file is not None
-
-        if is_sign_already_set and is_sign_given:
-            raise OptionAlreadySetError("sign")
-
-        if is_save_file_already_set and is_save_file_given:
-            raise OptionAlreadySetError("save-file")
 
         if is_sign_given:
             self.sign = sign
