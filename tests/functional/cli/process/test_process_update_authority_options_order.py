@@ -80,7 +80,7 @@ async def test_save_file_before_chaining(cli_tester: CLITester, authority: Autho
     ).fire()
 
     # ASSERT
-    file_path.exists(), f"file {file_path} with transaction should be created"
+    assert file_path.exists(), f"file {file_path} with transaction should be created"
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
@@ -99,7 +99,7 @@ async def test_save_file_option_after_chaining(cli_tester: CLITester, authority:
     ).fire()
 
     # ASSERT
-    file_path.exists(), f"file {file_path} with transaction should be created"
+    assert file_path.exists(), f"file {file_path} with transaction should be created"
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
