@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal
 
 from textual import on
 from textual.containers import Grid, Horizontal
@@ -255,7 +255,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         if not CliveValidatedInput.validate_many(self._to_account_input, self._amount_input, self._memo_input):
             return None
 
-        data = {
+        data: dict[str, Any] = {
             "from_": self.default_receiver,
             "to": self._to_account_input.value_or_error,
             "amount": self._amount_input.value_or_error,
@@ -263,7 +263,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         }
 
         if self._to_button.value:
-            return TransferToSavingsOperation(**data)  # type: ignore[arg-type]
+            return TransferToSavingsOperation(**data)
 
         try:
             request_id = self._create_request_id()
@@ -271,7 +271,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        return TransferFromSavingsOperation(**data, request_id=request_id)  # type: ignore[arg-type]
+        return TransferFromSavingsOperation(**data, request_id=request_id)
 
     def _create_transfer_time_reminder(self) -> Notice:
         notice = Notice("transfer from savings will take 3 days")
