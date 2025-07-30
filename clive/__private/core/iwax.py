@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from clive.__private.models import Asset, Transaction
     from clive.__private.models.schemas import OperationUnion, PriceFeed
 
-T = TypeVar("T")
 F = TypeVar("F", bound=Callable[..., Any])
 
 
