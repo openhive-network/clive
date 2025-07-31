@@ -31,7 +31,7 @@ class LoadTransactionFromFileDialog(SelectFileBaseDialog[bool]):
         return await self._load_transaction_from_file()
 
     async def _load_transaction_from_file(self) -> bool:
-        file_path = self._file_path_input.value_or_none()
+        file_path = self._file_name_input.filepath
 
         if file_path is None:
             return False
