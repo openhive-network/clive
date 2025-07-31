@@ -92,7 +92,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
     transaction = Transaction(
         operations=[
             convert_to_representation(
-                op=TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo="")
+                TransferOperation(from_="doesnt-matter", to="null", amount=Asset.hive(1), memo="")
             ),
         ]
     )

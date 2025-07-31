@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 VALID_TRANSACTION: Final[Transaction] = Transaction(
     operations=[
-        convert_to_representation(op=TransferOperation(from_="alice", to="bob", amount=Asset.hbd(1), memo="test"))
+        convert_to_representation(TransferOperation(from_="alice", to="bob", amount=Asset.hbd(1), memo="test"))
     ],
     ref_block_num=1,
     ref_block_prefix=2,
