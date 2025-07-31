@@ -4,8 +4,6 @@ from collections.abc import Iterable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from msgspec import field
-
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
@@ -14,6 +12,7 @@ from clive.__private.models.schemas import (
     Signature,
     TransactionId,
     convert_to_representation,
+    field,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 

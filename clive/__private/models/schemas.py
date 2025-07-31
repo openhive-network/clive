@@ -60,7 +60,9 @@ from schemas.apis.rc_api import ListRcAccounts as SchemasListRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
+from schemas.base import field
 from schemas.decoders import is_matching_model, validate_schema_field
+from schemas.errors import DecodeError, ValidationError
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 from schemas.fields.assets._base import AssetBase
 from schemas.fields.basic import AccountName, PublicKey
@@ -270,11 +272,15 @@ __all__ = [  # noqa: RUF022
     "set_policies",
     # jsonrpc
     "Witness",
+    # exceptions
+    "DecodeError",
+    "ValidationError",
     # other
     "PreconfiguredBaseModel",
     "convert_to_representation",
     "is_matching_model",
     "validate_schema_field",
+    "field",
 ]
 
 # operation BASIC aliases
