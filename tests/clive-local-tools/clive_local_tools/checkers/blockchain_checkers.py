@@ -11,7 +11,7 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.models.schemas import OperationUnion, TransactionInBlockchain
+    from clive.__private.models.schemas import OperationUnion
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
@@ -41,7 +41,7 @@ def assert_operations_placed_in_blockchain(
 ) -> None:
     assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
     transaction_id = _ensure_transaction_id(trx_id_or_result)
-    transaction: TransactionInBlockchain = node.api.account_history.get_transaction(
+    transaction = node.api.account_history.get_transaction(
         id=transaction_id,
         include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
     )
