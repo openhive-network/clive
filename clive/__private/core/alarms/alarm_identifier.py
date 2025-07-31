@@ -7,5 +7,5 @@ class AlarmIdentifier(PreconfiguredBaseModel):
     """Base class for alarm identifiers."""
 
 
-class DateTimeAlarmIdentifier(AlarmIdentifier, tag=True):
+class DateTimeAlarmIdentifier(AlarmIdentifier):
     value: HiveDateTime
