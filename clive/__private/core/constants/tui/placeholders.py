@@ -19,6 +19,7 @@ KEY_ALIAS_PLACEHOLDER: Final[str] = "e.g.: my-active-key"
 SETTING_KEY_ALIAS_PLACEHOLDER: Final[str] = f"{KEY_ALIAS_PLACEHOLDER} (if not passed - the public key will be used)"
 
 PATH_PLACEHOLDER: Final[str] = "e.g.: /home/me/some-path"
+FILE_NAME_PLACEHOLDER: Final[str] = "e.g.: file-name.json"
 KEY_FILE_PATH_PLACEHOLDER: Final[str] = "e.g. /home/me/my-active-key.wif"
 
 PRIVATE_KEY_PLACEHOLDER: Final[str] = "can be pasted here"
