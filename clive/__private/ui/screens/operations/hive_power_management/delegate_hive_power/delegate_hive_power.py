@@ -54,15 +54,6 @@ class Delegation(CliveCheckerboardTableRow):
     """
 
     def __init__(self, delegation: VestingDelegation, aligned_hp_amount: str, aligned_vests_amount: str) -> None:
-        """
-        Initialize the delegation row.
-
-        Args:
-        ----
-        delegation: delegation data to display.
-        aligned_hp_amount: aligned amount of hp to dots.
-        aligned_vests_amount: aligned amount of vests to dots.
-        """
         self._aligned_hp_amount = aligned_hp_amount
 
         super().__init__(
