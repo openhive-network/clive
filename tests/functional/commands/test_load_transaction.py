@@ -30,6 +30,7 @@ async def test_loading_valid_transaction_file(tmp_path: Path, mode: Literal["jso
     expected_transaction = VALID_TRANSACTION
     file_name = f"transaction.{mode}"
     file_path = tmp_path / file_name
+
     if mode == "json":
         file_path.write_text(expected_transaction.json())
     else:
