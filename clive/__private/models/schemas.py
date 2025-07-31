@@ -261,6 +261,7 @@ __all__ = [  # noqa: RUF022
     "VestingDelegation",
     "VestingDelegationExpiration",
     "WithdrawRoute",
+    "Witness",
     # policies
     "ExtraFieldsPolicy",
     "JSONRPCExpectResultT",
@@ -268,8 +269,6 @@ __all__ = [  # noqa: RUF022
     "MissingFieldsInGetConfigPolicy",
     "Policy",
     "set_policies",
-    # jsonrpc
-    "Witness",
     # other
     "PreconfiguredBaseModel",
     "convert_to_representation",
