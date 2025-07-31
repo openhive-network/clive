@@ -7,21 +7,23 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import DirectoryTree, Label
 
-from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
+from clive.__private.core.constants.tui.placeholders import FILE_NAME_PLACEHOLDER
 from clive.__private.settings import safe_settings
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog, CliveActionDialogResultT
 from clive.__private.ui.widgets.buttons.confirm_button import ConfirmOneLineButton
-from clive.__private.ui.widgets.inputs.path_input import PathInput
+from clive.__private.ui.widgets.inputs.file_name_input import FileNameInput
 from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from textual.app import ComposeResult
 
-    from clive.__private.validators.path_validator import PathValidator
+    from clive.__private.validators.file_path_validator import FilePathValidator
 
 
-class FilePathInputContainer(Horizontal):
-    """Container for file path input and label."""
+class FileNameInputContainer(Horizontal):
+    """Container for file name input and label."""
 
 
 class DirectoryTreeHint(Label):
@@ -35,7 +37,7 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
             width: 70%;
             height: 90%;
 
-            FilePathInputContainer {
+            FileNameInputContainer {
                 height: auto;
             }
 
@@ -64,17 +66,25 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
         self._notice = notice
 
     @property
-    def _file_path_input(self) -> PathInput:
-        return self.query_exactly_one(PathInput)
+    def _file_name_input(self) -> FileNameInput:
+        return self.query_exactly_one(FileNameInput)
+
+    @property
+    def _select_file_root_path(self) -> Path:
+        return safe_settings.select_file_root_path
 
     def create_dialog_content(self) -> ComposeResult:
         if self._notice:
             yield Notice(self._notice)
-        with FilePathInputContainer():
-            yield PathInput(placeholder=PATH_PLACEHOLDER, validator_mode=self._default_validator_mode())
+        with FileNameInputContainer():
+            yield FileNameInput(
+                root_directory_path=self._select_file_root_path,
+                placeholder=FILE_NAME_PLACEHOLDER,
+                validator_mode=self._default_validator_mode(),
+            )
         yield from self.additional_content_after_input()
         yield DirectoryTreeHint("Or select from the directory tree:")
-        yield DirectoryTree(str(safe_settings.select_file_root_path))
+        yield DirectoryTree(str(self._select_file_root_path))
 
     def additional_content_after_input(self) -> ComposeResult:
         """
@@ -86,9 +96,13 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
         return []
 
     @on(DirectoryTree.FileSelected)
-    @on(DirectoryTree.DirectorySelected)
     def _update_input_path(self, event: DirectoryTree.FileSelected) -> None:
-        self._file_path_input.input.value = str(event.path)
+        self._file_name_input.update_root_directory_path(event.path.parent)
+        self._file_name_input.input.value = event.path.name
 
-    def _default_validator_mode(self) -> PathValidator.Modes:
+    @on(DirectoryTree.DirectorySelected)
+    def _update_input_path_from_directory(self, event: DirectoryTree.DirectorySelected) -> None:
+        self._file_name_input.update_root_directory_path(event.path)
+
+    def _default_validator_mode(self) -> FilePathValidator.Modes:
         return "is_file"
