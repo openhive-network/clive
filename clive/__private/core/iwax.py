@@ -86,7 +86,7 @@ def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
 
 def __validate_wax_response(response: wax.python_result) -> None:
     if response.status == wax.python_error_code.fail:
-        raise WaxOperationFailedError(response.exception_message)
+        raise WaxOperationFailedError(response.exception_message.decode())
 
 
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
