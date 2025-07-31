@@ -72,6 +72,7 @@ WORKDIR /clive
 SHELL ["/bin/bash", "-c"]
 
 # Project IDS:
+# - 198 -> hive (generated APIs)
 # - 362 -> schemas
 # - 392 -> clive
 # - 419 -> wax
@@ -79,6 +80,7 @@ SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     source /python_venv/bin/activate && \
     pip install clive=="${CLIVE_VERSION}" \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
