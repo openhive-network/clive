@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.validators.path_validator import PathValidator
+    from clive.__private.validators.file_path_validator import FilePathValidator
 
 from textual import work
 
@@ -29,9 +29,10 @@ class SaveFileBaseDialog(SelectFileBaseDialog[bool]):
         """Implement this method to save the file to the specified path."""
 
     async def get_save_file_path(self) -> Path | None:
-        file_path = self._file_path_input.value_or_none()
+        file_path = self._file_name_input.filepath
         if file_path is None:
             return None
+
         if file_path.exists() and not await self._confirm_overwrite_a_file().wait():
             return None
         return file_path
@@ -47,5 +48,5 @@ class SaveFileBaseDialog(SelectFileBaseDialog[bool]):
         """Confirm overwrite of the file if it already exists."""
         return await self.app.push_screen_wait(ConfirmFileOverwriteDialog())
 
-    def _default_validator_mode(self) -> PathValidator.Modes:
+    def _default_validator_mode(self) -> FilePathValidator.Modes:
         return "is_file_or_can_be_file"

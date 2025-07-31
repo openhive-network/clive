@@ -18,7 +18,7 @@ class LoadKeyFromFileDialog(SelectFileBaseDialog[PrivateKey]):
         return self._load_key_from_file()
 
     def _load_key_from_file(self) -> bool:
-        path = self._file_path_input.value_or_none()
+        path = self._file_name_input.filepath
         if path is None:
             return False
         try:
