@@ -233,11 +233,8 @@ class Asset:
         return isinstance(asset, Asset.Vests)
 
 
-AssetFactoryGenericT = TypeVar("AssetFactoryGenericT", bound=Asset.AnyT)
-
-
 @dataclass(frozen=True)
-class AssetFactoryHolder(Generic[AssetFactoryGenericT]):
+class AssetFactoryHolder(Generic[AssetT]):
     """
     Holds factory for asset.
 
@@ -246,5 +243,5 @@ class AssetFactoryHolder(Generic[AssetFactoryGenericT]):
         asset_factory: Factory function to create an instance of the asset.
     """
 
-    asset_cls: type[AssetFactoryGenericT]
-    asset_factory: Callable[[int | str | Decimal], AssetFactoryGenericT]
+    asset_cls: type[AssetT]
+    asset_factory: Callable[[int | str | Decimal], AssetT]
