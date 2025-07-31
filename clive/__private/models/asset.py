@@ -246,6 +246,5 @@ class AssetFactoryHolder(Generic[AssetFactoryGenericT]):
         asset_factory: Factory function to create an instance of the asset.
     """
 
-
     asset_cls: type[AssetFactoryGenericT]
     asset_factory: Callable[[int | str | Decimal], AssetFactoryGenericT]
