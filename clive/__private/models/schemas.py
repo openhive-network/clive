@@ -135,7 +135,13 @@ from schemas.operations.extensions.representation_types import (
     HF26RepresentationRecurrentTransferPairIdOperationExtension,
 )
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.policies import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, Policy, set_policies
+from schemas.policies import (
+    ExtraFieldsPolicy,
+    MissingFieldsInGetConfigPolicy,
+    Policy,
+    set_policies,
+    TestnetAssetsPolicy,
+)
 from schemas.transaction import Transaction
 
 __all__ = [  # noqa: RUF022
@@ -269,6 +275,7 @@ __all__ = [  # noqa: RUF022
     "JSONRPCResult",
     "MissingFieldsInGetConfigPolicy",
     "Policy",
+    "TestnetAssetsPolicy",
     "set_policies",
     # jsonrpc
     "Witness",

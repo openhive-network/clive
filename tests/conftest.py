@@ -35,6 +35,11 @@ from clive_local_tools.data.constants import (
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
 
+from clive.__private.models.schemas import (
+    TestnetAssetsPolicy,
+    set_policies,
+)
+
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable, Generator, Iterator
 
@@ -252,3 +257,7 @@ def beekeeper_session_token_env_context_factory(
 @pytest.fixture
 def node_address_env_context_factory(generic_env_context_factory: GenericEnvContextFactory) -> EnvContextFactory:
     return generic_env_context_factory(SECRETS_NODE_ADDRESS_ENV_NAME)
+
+@pytest.fixture(autouse=True)
+def _use_testnet_assets() -> None:
+    set_policies(TestnetAssetsPolicy(use_testnet_assets=False))
