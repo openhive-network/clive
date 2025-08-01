@@ -41,7 +41,7 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         required_auths=[],
         required_posting_auths=[WORKING_ACCOUNT_DATA.account.name],
         id_=ID,
-        json_=JsonString.resolve(type, json_),
+        json_=JsonString(json_),
     )
 
     # ACT
