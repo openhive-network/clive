@@ -117,9 +117,7 @@ class StorageToRuntimeConverter:
         return alarm_cls(identifier=identifier, is_harmless=model.is_harmless)
 
     def _alarm_identifier_from_model(
-        self,
-        model: ProfileStorageModel._DateTimeAlarmIdentifierStorageModel
-        | ProfileStorageModel._RecoveryAccountWarningListedAlarmIdentifierStorageModel,
+        self, model: ProfileStorageModel._AllAlarmIdentifiersStorageModel
     ) -> AllAlarmIdentifiers:
         if isinstance(model, ProfileStorageModel._DateTimeAlarmIdentifierStorageModel):
             return DateTimeAlarmIdentifier(value=model.value)

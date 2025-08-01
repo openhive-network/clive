@@ -80,10 +80,7 @@ class RuntimeToStorageConverter:
 
     def _alarm_identifier_to_model(
         self, identifier: AlarmIdentifier
-    ) -> (
-        ProfileStorageModel._DateTimeAlarmIdentifierStorageModel
-        | ProfileStorageModel._RecoveryAccountWarningListedAlarmIdentifierStorageModel
-    ):
+    ) -> ProfileStorageModel._AllAlarmIdentifiersStorageModel:
         if isinstance(identifier, DateTimeAlarmIdentifier):
             return ProfileStorageModel._DateTimeAlarmIdentifierStorageModel(value=identifier.value)
         if isinstance(identifier, RecoveryAccountWarningListedAlarmIdentifier):

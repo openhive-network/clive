@@ -22,6 +22,19 @@ from clive.__private.models.schemas import (
 from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
+class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
+    value: HiveDateTime
+
+
+class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel):
+    recovery_account: str
+
+
+AllAlarmIdentifiersStorageModel = (
+    DateTimeAlarmIdentifierStorageModel | RecoveryAccountWarningListedAlarmIdentifierStorageModel
+)
+
+
 class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=True):
     @classmethod
     def get_name(cls) -> str:
@@ -30,14 +43,6 @@ class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=Tr
 
     is_harmless: bool = True
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
-
-
-class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
-    value: HiveDateTime
-
-
-class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseModel):
-    recovery_account: str
 
 
 class RecoveryAccountWarningListedStorageModel(
@@ -116,6 +121,7 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     node_address: str
     should_enable_known_accounts: bool = True
 
+    _AllAlarmIdentifiersStorageModel: ClassVar[TypeAlias] = AllAlarmIdentifiersStorageModel
     _AllAlarmStorageModel: ClassVar[TypeAlias] = AllAlarmStorageModel
     _TrackedAccountStorageModel: ClassVar[TypeAlias] = TrackedAccountStorageModel
     _KeyAliasStorageModel: ClassVar[TypeAlias] = KeyAliasStorageModel
