@@ -28,4 +28,4 @@ class RawJsonDialog(CliveInfoDialog):
     @staticmethod
     def _get_operation_representation_json(operation: OperationBase) -> str:
         representation: OperationRepresentationBase = convert_to_representation(operation=operation)
-        return representation.json()
+        return representation.json(order="sorted")

@@ -137,7 +137,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return "created"
 
     def __print_transaction(self, transaction: Transaction) -> None:
-        transaction_json = transaction.json()
+        transaction_json = transaction.json(order="sorted")
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
