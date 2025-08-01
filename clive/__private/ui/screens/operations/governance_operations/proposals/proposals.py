@@ -271,7 +271,7 @@ class Proposals(GovernanceTabPane):
 
         def append_operation(operation: UpdateProposalVotesOperation) -> None:
             operation.proposal_ids.append(proposal_id)
-            operation.proposal_ids.sort()
+            operation.proposal_ids.sort()  # proposal id's must be sorted
 
         proposal_id = int(identifier)
         op_to_append: UpdateProposalVotesOperation | None = self._find_proposal_operation_with_empty_slots(vote=vote)
