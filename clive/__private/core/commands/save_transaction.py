@@ -28,7 +28,7 @@ class SaveTransaction(Command):
             self.__save_as_binary() if self.__should_save_as_binary() else self.__save_as_json()
 
     def __save_as_json(self) -> None:
-        serialized = self.transaction.json(order="sorted")  # TODO: Add indent=4 there for pretty formatting
+        serialized = self.transaction.json(order="sorted", indent=4)
         self.file_path.write_text(serialized)
 
     def __save_as_binary(self) -> None:
