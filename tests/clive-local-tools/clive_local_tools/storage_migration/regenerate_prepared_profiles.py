@@ -119,7 +119,7 @@ async def _main() -> None:
     with copy_profile_files_from_tmp_dir("without_alarms_and_operations"):
         async with prepare_encryption_service() as encryption_service:
             profile_model = create_model_from_scratch()
-            encrypted = await encryption_service.encrypt(profile_model.json(indent=4))
+            encrypted = await encryption_service.encrypt(profile_model.json())
             save_encrypted_profile(encrypted)
 
     with copy_profile_files_from_tmp_dir("with_alarms"):
@@ -133,7 +133,7 @@ async def _main() -> None:
                     ),
                 )
             ]
-            encrypted = await encryption_service.encrypt(profile_model.json(indent=4))
+            encrypted = await encryption_service.encrypt(profile_model.json())
             save_encrypted_profile(encrypted)
 
     with copy_profile_files_from_tmp_dir("with_operations"):
@@ -145,7 +145,7 @@ async def _main() -> None:
                 ),
                 transaction_file_path=Path("example/path"),
             )
-            encrypted = await encryption_service.encrypt(profile_model.json(indent=4))
+            encrypted = await encryption_service.encrypt(profile_model.json())
             save_encrypted_profile(encrypted)
 
 
