@@ -49,6 +49,11 @@ if TYPE_CHECKING:
     from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
 
 
+@pytest.fixture(autouse=True)
+def _use_testnet_assets() -> None:
+    set_policies(TestnetAssetsPolicy(use_testnet_assets=False))
+
+
 @pytest.fixture(autouse=True, scope="session")
 def manage_thread_pool() -> Iterator[None]:
     with thread_pool:
@@ -256,8 +261,3 @@ def beekeeper_session_token_env_context_factory(
 @pytest.fixture
 def node_address_env_context_factory(generic_env_context_factory: GenericEnvContextFactory) -> EnvContextFactory:
     return generic_env_context_factory(SECRETS_NODE_ADDRESS_ENV_NAME)
-
-
-@pytest.fixture(autouse=True)
-def _use_testnet_assets() -> None:
-    set_policies(TestnetAssetsPolicy(use_testnet_assets=False))
