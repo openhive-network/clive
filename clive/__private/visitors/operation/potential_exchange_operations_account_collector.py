@@ -81,5 +81,5 @@ class PotentialExchangeOperationsAccountCollector(FinancialOperationsAccountColl
         if operation.memo == "":
             self.memoless_transfers_accounts.add(operation.to)
             return
-        if operation.amount.nai() == Asset.Hbd.nai():
+        if isinstance(operation.amount, Asset.Hbd):
             self.hbd_transfers_accounts.add(operation.to)
