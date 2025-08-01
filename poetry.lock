@@ -429,7 +429,7 @@ beekeepy = "0.0.1.dev415+e0c6b84"
 [package.source]
 type = "legacy"
 url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
-reference = "gitlab-database_api"
+reference = "gitlab-hive"
 
 [[package]]
 name = "distlib"
@@ -1512,7 +1512,7 @@ beekeepy = "0.0.1.dev415+e0c6b84"
 [package.source]
 type = "legacy"
 url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
-reference = "gitlab-database_api"
+reference = "gitlab-hive"
 
 [[package]]
 name = "nodeenv"
@@ -2557,4 +2557,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "3aeafe5515853e009766fdc4f06300808bdabc05fd3b83919c4f4c44a5754140"
+content-hash = "f020b0b1387aca6556e0b370fb2c201cec291832f197ef0377f37c69057a5bd9"
