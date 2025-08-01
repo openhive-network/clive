@@ -139,8 +139,8 @@ from schemas.policies import (
     ExtraFieldsPolicy,
     MissingFieldsInGetConfigPolicy,
     Policy,
-    set_policies,
     TestnetAssetsPolicy,
+    set_policies,
 )
 from schemas.transaction import Transaction
 
