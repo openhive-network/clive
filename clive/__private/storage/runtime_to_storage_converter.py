@@ -72,10 +72,7 @@ class RuntimeToStorageConverter:
         return ProfileStorageModel._TrackedAccountStorageModel(name=account.name, alarms=alarms)
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel._AllAlarmStorageModel:
-        name = alarm.get_name()
-        alarm_types = get_args(ProfileStorageModel._AllAlarmStorageModel)
-        tag_map = {cls.name(): cls for cls in alarm_types}
-        alarm_cls = tag_map[name]
+        alarm_cls = self._get_alarm_storage_model_cls_by_name(alarm.get_name())
         return alarm_cls(
             is_harmless=alarm.is_harmless,
             identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
@@ -97,3 +94,11 @@ class RuntimeToStorageConverter:
 
     def _key_alias_to_model(self, key: PublicKeyAliased) -> ProfileStorageModel._KeyAliasStorageModel:
         return ProfileStorageModel._KeyAliasStorageModel(alias=key.alias, public_key=key.value)
+
+    def _get_alarm_storage_model_cls_by_name(self, name: str) -> type[ProfileStorageModel._AllAlarmStorageModel]:
+        all_alarm_storage_model_classes = get_args(ProfileStorageModel._AllAlarmStorageModel)
+        name_to_cls: dict[str, type[ProfileStorageModel._AllAlarmStorageModel]] = {
+            cls.name(): cls for cls in all_alarm_storage_model_classes
+        }
+        assert name in name_to_cls, f"Alarm class not found for name: {name}"
+        return name_to_cls[name]
