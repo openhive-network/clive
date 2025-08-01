@@ -92,10 +92,8 @@ def __validate_wax_response(response: wax.python_result) -> None:
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction
 
-    if not isinstance(item, Transaction):
-        item = convert_to_representation(item)  # type: ignore[assignment]
-
-    return item.json().encode()
+    to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
+    return to_serialize.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
