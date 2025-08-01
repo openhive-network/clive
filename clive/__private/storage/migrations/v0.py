@@ -4,6 +4,13 @@ from collections.abc import Sequence  # noqa: TC003
 from pathlib import Path  # noqa: TC003
 from typing import Any, ClassVar, Self, TypeAlias
 
+from clive.__private.core.alarms.specific_alarms import (
+    ChangingRecoveryAccountInProgress,
+    DecliningVotingRightsInProgress,
+    GovernanceNoActiveVotes,
+    GovernanceVotingExpiration,
+    RecoveryAccountWarningListed,
+)
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
@@ -34,27 +41,29 @@ class RecoveryAccountWarningListedAlarmIdentifierStorageModel(PreconfiguredBaseM
 
 
 class RecoveryAccountWarningListedStorageModel(
-    AlarmStorageModelBase, tag="recovery_account_warning_listed", kw_only=True
+    AlarmStorageModelBase, tag=RecoveryAccountWarningListed.get_name(), kw_only=True
 ):
     identifier: RecoveryAccountWarningListedAlarmIdentifierStorageModel
 
 
-class GovernanceVotingExpirationStorageModel(AlarmStorageModelBase, tag="governance_voting_expiration", kw_only=True):
+class GovernanceVotingExpirationStorageModel(
+    AlarmStorageModelBase, tag=GovernanceVotingExpiration.get_name(), kw_only=True
+):
     identifier: DateTimeAlarmIdentifierStorageModel
 
 
-class GovernanceNoActiveVotesStorageModel(AlarmStorageModelBase, tag="governance_no_active_votes", kw_only=True):
+class GovernanceNoActiveVotesStorageModel(AlarmStorageModelBase, tag=GovernanceNoActiveVotes.get_name(), kw_only=True):
     identifier: DateTimeAlarmIdentifierStorageModel
 
 
 class DecliningVotingRightsInProgressStorageModel(
-    AlarmStorageModelBase, tag="declining_voting_rights_in_progress", kw_only=True
+    AlarmStorageModelBase, tag=DecliningVotingRightsInProgress.get_name(), kw_only=True
 ):
     identifier: DateTimeAlarmIdentifierStorageModel
 
 
 class ChangingRecoveryAccountInProgressStorageModel(
-    AlarmStorageModelBase, tag="changing_recovery_account", kw_only=True
+    AlarmStorageModelBase, tag=ChangingRecoveryAccountInProgress.get_name(), kw_only=True
 ):
     identifier: DateTimeAlarmIdentifierStorageModel
 
