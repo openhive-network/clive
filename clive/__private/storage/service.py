@@ -335,7 +335,7 @@ class PersistentStorageService:
         profile_directory.mkdir(parents=True, exist_ok=True)
 
         try:
-            encrypted_profile = await self._encryption_service.encrypt(profile_model.json())
+            encrypted_profile = await self._encryption_service.encrypt(profile_model.json(indent=4))
         except (CommandEncryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
             raise ProfileEncryptionError from error
 
