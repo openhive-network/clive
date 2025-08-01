@@ -98,7 +98,7 @@ class RuntimeToStorageConverter:
     def _get_alarm_storage_model_cls_by_name(self, name: str) -> type[ProfileStorageModel._AllAlarmStorageModel]:
         all_alarm_storage_model_classes = get_args(ProfileStorageModel._AllAlarmStorageModel)
         name_to_cls: dict[str, type[ProfileStorageModel._AllAlarmStorageModel]] = {
-            cls.name(): cls for cls in all_alarm_storage_model_classes
+            cls.get_name(): cls for cls in all_alarm_storage_model_classes
         }
         assert name in name_to_cls, f"Alarm class not found for name: {name}"
         return name_to_cls[name]

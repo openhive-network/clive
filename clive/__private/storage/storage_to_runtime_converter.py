@@ -112,7 +112,7 @@ class StorageToRuntimeConverter:
         return KnownAccount(name)
 
     def _alarm_from_model(self, model: ProfileStorageModel._AllAlarmStorageModel) -> AnyAlarm:
-        alarm_cls = Alarm.get_alarm_class_by_name(model.name())
+        alarm_cls = Alarm.get_alarm_class_by_name(model.get_name())
         identifier = self._alarm_identifier_from_model(model.identifier)
         return alarm_cls(identifier=identifier, is_harmless=model.is_harmless)
 

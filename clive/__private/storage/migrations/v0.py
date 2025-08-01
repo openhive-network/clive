@@ -17,7 +17,7 @@ from clive.__private.storage.migrations.base import ProfileStorageBase
 
 class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=True):
     @classmethod
-    def name(cls) -> str:
+    def get_name(cls) -> str:
         assert isinstance(cls.__struct_config__.tag, str), "Alarm storage models must have a string tag."
         return cls.__struct_config__.tag
 
