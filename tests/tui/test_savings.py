@@ -76,7 +76,7 @@ async def fill_savings_data(
     """Assuming Savings is current screen."""
     assert_is_screen_active(pilot, Savings)
     amount = str(asset.as_float())
-    asset_token: LiquidAssetToken = asset.token(testnet=False)  # type: ignore[assignment]
+    asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
     await focus_next(pilot)  # Go to choose operation type
     assert_is_focused(pilot, RadioSet)
     if (operation_type is TransferToSavingsOperation) != is_to_savings_radio_button_checked(pilot):

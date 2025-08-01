@@ -24,6 +24,10 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
 from clive.__private.core.world import World
 from clive.__private.logger import logger
+from clive.__private.models.schemas import (
+    TestnetAssetsPolicy,
+    set_policies,
+)
 from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
@@ -252,3 +256,8 @@ def beekeeper_session_token_env_context_factory(
 @pytest.fixture
 def node_address_env_context_factory(generic_env_context_factory: GenericEnvContextFactory) -> EnvContextFactory:
     return generic_env_context_factory(SECRETS_NODE_ADDRESS_ENV_NAME)
+
+
+@pytest.fixture(autouse=True)
+def _use_testnet_assets() -> None:
+    set_policies(TestnetAssetsPolicy(use_testnet_assets=False))
