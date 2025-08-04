@@ -16,10 +16,8 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 
 from __future__ import annotations
 
-from schemas._operation_objects import Hf26ApiOperationObject
 from schemas._preconfigured_base_model import PreconfiguredBaseModel
-from schemas.apis.account_history_api import EnumVirtualOps, GetAccountHistory, GetOpsInBlock
-from schemas.apis.account_history_api.response_schemas import GetTransaction
+from schemas.apis.account_history_api import GetAccountHistory
 from schemas.apis.database_api import (
     FindAccounts,
     FindProposals,
@@ -47,7 +45,6 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     FindRecurrentTransfersFundament,
     ListChangeRecoveryAccountRequestsFundament,
     ListDeclineVotingRightsRequestsFundament,
-    OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
     VestingDelegationExpirationsFundament,
     VestingDelegationsFundament,
@@ -55,16 +52,13 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     WitnessesFundament,
 )
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
-from schemas.apis.rc_api import GetResourceParams, GetResourcePool, ListRcDirectDelegations
 from schemas.apis.rc_api import ListRcAccounts as SchemasListRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
-from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
 from schemas.base import field
 from schemas.decoders import is_matching_model, validate_schema_field
 from schemas.errors import DecodeError, ValidationError
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
-from schemas.fields.assets._base import AssetBase
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
@@ -73,8 +67,6 @@ from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.fields.resolvables import JsonString
-from schemas.jsonrpc import ExpectResultT as JSONRPCExpectResultT
-from schemas.jsonrpc import JSONRPCResult
 from schemas.operation import Operation
 from schemas.operations import (
     AccountCreateOperation,
@@ -138,7 +130,6 @@ from schemas.operations.recurrent_transfer_operation import RecurrentTransferOpe
 from schemas.policies import (
     ExtraFieldsPolicy,
     MissingFieldsInGetConfigPolicy,
-    Policy,
     TestnetAssetsPolicy,
     set_policies,
 )
@@ -146,7 +137,6 @@ from schemas.transaction import Transaction
 
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
-    "ApiOperationObject",
     "OperationBase",
     "OperationRepresentationUnion",
     "OperationUnion",
@@ -157,7 +147,6 @@ __all__ = [  # noqa: RUF022
     "ListProposalVotes",
     "ListWitnesses",
     "ListWitnessVotes",
-    "ListRcDirectDelegations",
     "ListWithdrawVestingRoutes",
     # find API response aliases (have nested list property which stores actual model)
     "FindAccounts",
@@ -170,15 +159,11 @@ __all__ = [  # noqa: RUF022
     "FindWitnesses",
     # get API responses (have unnecessary nested property which stores actual model)
     "GetAccountHistory",
-    "GetAccountReputations",
-    "GetOperationsInBlock",
-    "GetResourcePool",
     # get API responses (have no unnecessary nested  properties, just the model itself)
     "Config",
     "DynamicGlobalProperties",
     "FeedHistory",
     "HardforkProperties",
-    "ResourceParams",
     "Version",
     "WitnessSchedule",
     # operations
@@ -236,7 +221,6 @@ __all__ = [  # noqa: RUF022
     "RecurrentTransferPairIdExtension",
     "RecurrentTransferPairIdRepresentation",
     # assets
-    "AssetBase",
     "AssetHbd",
     "AssetHive",
     "AssetVests",
@@ -254,17 +238,14 @@ __all__ = [  # noqa: RUF022
     "Authority",
     "ChangeRecoveryAccountRequest",
     "DeclineVotingRightsRequest",
-    "EnumeratedVirtualOperations",
     "HbdExchangeRate",
     "Manabar",
-    "OwnerHistory",
     "PriceFeed",
     "Proposal",
     "RcAccount",
     "RecurrentTransfer",
     "SavingsWithdrawal",
     "Transaction",
-    "TransactionInBlockchain",
     "TransactionStatus",
     "VestingDelegation",
     "VestingDelegationExpiration",
@@ -272,10 +253,7 @@ __all__ = [  # noqa: RUF022
     "Witness",
     # policies
     "ExtraFieldsPolicy",
-    "JSONRPCExpectResultT",
-    "JSONRPCResult",
     "MissingFieldsInGetConfigPolicy",
-    "Policy",
     "TestnetAssetsPolicy",
     "set_policies",
     # exceptions
@@ -290,7 +268,6 @@ __all__ = [  # noqa: RUF022
 ]
 
 # operation BASIC aliases
-ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
 OperationRepresentationUnion = Hf26OperationRepresentation
 OperationUnion = Hf26Operations
@@ -303,17 +280,12 @@ ListRcAccounts = SchemasListRcAccounts
 
 FindRcAccounts = SchemasFindRcAccounts
 
-# get API responses (have unnecessary nested property which stores actual model)
-
-GetOperationsInBlock = GetOpsInBlock
-
 # get API responses (have no unnecessary nested  properties, just the model itself)
 
 Config = GetConfig
 DynamicGlobalProperties = GetDynamicGlobalProperties
 FeedHistory = GetFeedHistory
 HardforkProperties = GetHardforkProperties
-ResourceParams = GetResourceParams
 Version = GetVersion
 WitnessSchedule = GetWitnessSchedule
 
@@ -331,15 +303,12 @@ ChainId = Sha256
 Account = AccountItemFundament
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
-EnumeratedVirtualOperations = EnumVirtualOps
 HbdExchangeRate = SchemasHbdExchangeRate
-OwnerHistory = OwnerHistoriesFundament
 PriceFeed = Price
 Proposal = SchemasProposal
 RcAccount = SchemasRcAccount
 RecurrentTransfer = FindRecurrentTransfersFundament
 SavingsWithdrawal = SavingsWithdrawalsFundament
-TransactionInBlockchain = GetTransaction
 TransactionStatus = FindTransaction
 VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament
