@@ -51,6 +51,22 @@ class ButtonContainer(HorizontalGroup):
             yield AddNewKeyAliasButton()
 
 
+class EditKeyAliasButton(CliveButton):
+    class Pressed(CliveButton.Pressed):
+        """Message sent when EditKeyAliasButton is pressed."""
+
+    def __init__(self) -> None:
+        super().__init__("Edit", id_="edit-key-alias-button")
+
+
+class RemoveKeyAliasButton(CliveButton):
+    class Pressed(CliveButton.Pressed):
+        """Message sent when RemoveKeyAliasButton is pressed."""
+
+    def __init__(self) -> None:
+        super().__init__("Remove", variant="error", id_="remove-key-alias-button")
+
+
 class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
     """Row of ManageKeyAliasesTable."""
 
@@ -59,11 +75,11 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
         self._public_key = public_key
         super().__init__(*self._create_cells())
 
-    @on(CliveButton.Pressed, "#edit-key-alias-button")
+    @on(EditKeyAliasButton.Pressed)
     def push_edit_key_alias_dialog(self) -> None:
         self.app.push_screen(EditKeyAliasDialog(self._public_key))
 
-    @on(CliveButton.Pressed, "#remove-key-alias-button")
+    @on(RemoveKeyAliasButton.Pressed)
     def remove_key_alias(self) -> None:
         self.app.push_screen(RemoveKeyAliasDialog(self._public_key.alias))
 
@@ -74,8 +90,8 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
             CliveCheckerBoardTableCell(self._public_key.value, classes="public-key"),
             CliveCheckerBoardTableCell(
                 Horizontal(
-                    CliveButton("Edit", id_="edit-key-alias-button"),
-                    CliveButton("Remove", variant="error", id_="remove-key-alias-button"),
+                    EditKeyAliasButton(),
+                    RemoveKeyAliasButton(),
                 ),
             ),
         ]
