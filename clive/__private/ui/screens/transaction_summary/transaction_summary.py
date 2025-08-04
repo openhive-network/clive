@@ -8,8 +8,10 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Label, Select, Static
 
+from clive.__private.core.formatters.humanize import humanize_relative_path_to_root
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
@@ -232,7 +234,13 @@ class TransactionSummary(BaseScreen):
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
-            return f"Loaded from {colorize_path(self.profile.transaction_file_path)}"
+            return f"Loaded from {
+                colorize_path(
+                    humanize_relative_path_to_root(
+                        whole_path=self.profile.transaction_file_path, root_path=safe_settings.select_file_root_path
+                    )
+                )
+            }"
         return ""
 
     async def _broadcast(self) -> None:
