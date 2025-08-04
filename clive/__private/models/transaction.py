@@ -25,8 +25,8 @@ if TYPE_CHECKING:
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationUnion] = field(default_factory=list)
-    ref_block_num: HiveInt = field(default_factory=lambda: HiveInt(-1))
-    ref_block_prefix: HiveInt = field(default_factory=lambda: HiveInt(-1))
+    ref_block_num: HiveInt = -1
+    ref_block_prefix: HiveInt = -1
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = field(default_factory=list)
     signatures: list[Signature] = field(default_factory=list)
