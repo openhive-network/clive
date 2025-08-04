@@ -81,8 +81,8 @@ class Transaction(SchemasTransaction):
 
     def reset(self) -> None:
         self.operations = []
-        self.ref_block_num = -1
-        self.ref_block_prefix = -1
+        self.ref_block_num = HiveInt(-1)
+        self.ref_block_prefix = HiveInt(-1)
         self.expiration = HiveDateTime.now() + timedelta(minutes=30)
         self.extensions = []
         self.signatures = []
