@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class CliveError(Exception):
@@ -43,3 +46,17 @@ class RequestIdError(CliveError):
 
 class ProfileNotLoadedError(CliveError):
     """Raise when profile is requested and was not loaded."""
+
+
+class NotRelativePathError(CliveError):
+    """
+    Raised when a path is not relative to the expected root path.
+
+    Args:
+        whole_path: The full path that is expected to be relative.
+        root_path: The root path against which the relative check is made.
+    """
+
+    def __init__(self, whole_path: str | Path, root_path: str | Path) -> None:
+        message = f"The whole_path {whole_path} is not relative to the root_path {root_path}."
+        super().__init__(message)
