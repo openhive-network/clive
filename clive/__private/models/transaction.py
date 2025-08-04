@@ -24,12 +24,12 @@ if TYPE_CHECKING:
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationUnion] = field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: HiveInt = -1
     ref_block_prefix: HiveInt = -1
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
-    extensions: list[Any] = field(default_factory=list)
-    signatures: list[Signature] = field(default_factory=list)
+    extensions: list[Any] = []  # noqa: RUF012
+    signatures: list[Signature] = []  # noqa: RUF012
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
