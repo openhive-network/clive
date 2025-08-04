@@ -57,8 +57,6 @@ class Clive(App[int]):
 
     CSS_PATH = [get_relative_css_path(__file__, name="global")]
 
-    AUTO_FOCUS = "*"
-
     ENABLE_COMMAND_PALETTE = True
     COMMAND_PALETTE_BINDING = "ctrl+p"
 
