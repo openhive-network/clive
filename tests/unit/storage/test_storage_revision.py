@@ -5,7 +5,7 @@ from typing import Final
 from clive.__private.storage import ProfileStorageModel
 from clive.__private.storage.storage_history import StorageHistory
 
-REVISIONS: Final[list[str]] = ["ffc97b51", "a721f943", "9c46df0c"]
+REVISIONS: Final[list[str]] = ["d8fef2cd", "3b81a04e", "0fc1e8b3"]
 LATEST_REVISION: Final[str] = REVISIONS[-1]
 
 
