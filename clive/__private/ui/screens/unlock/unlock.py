@@ -12,6 +12,7 @@ from textual.widgets import Button, Checkbox, Static
 from clive.__private.core.constants.tui.messages import get_press_help_message
 from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -91,6 +92,12 @@ class LockAfterTime(Horizontal):
 class Unlock(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
+
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(
+            action="", show=False
+        ),  # we want to hide binding for lock_wallet in this screen
+    ]
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome again!"):

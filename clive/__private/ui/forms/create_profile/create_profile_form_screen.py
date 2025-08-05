@@ -15,6 +15,9 @@ class CreateProfileFormScreen(FormScreen, ABC):
         CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(
             action="", description="Help"
         ),  # help is a hidden global binding, but we want to show it here
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(
+            action="", show=False
+        ),  # we want to hide binding for lock_wallet in this screen
     ]
 
     def __init__(self, owner: CreateProfileForm) -> None:

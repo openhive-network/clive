@@ -15,6 +15,7 @@ class App(CliveBindingSection):
     load_transaction_from_file: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="load_transaction_from_file", key="ctrl+o")
     )
+    lock_wallet: CliveBinding = field(default_factory=lambda: CliveBinding(id="lock_wallet", key="ctrl+l"))
     settings: CliveBinding = field(default_factory=lambda: CliveBinding(id="settings", key="ctrl+s"))
     transaction_summary: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="transaction_summary", key="ctrl+t")
@@ -29,7 +30,6 @@ class Dashboard(CliveBindingSection):
         default_factory=lambda: CliveBinding(id="switch_working_account", key="w")
     )
     add_account: CliveBinding = field(default_factory=lambda: CliveBinding(id="add_account", key="a"))
-    lock_wallet: CliveBinding = field(default_factory=lambda: CliveBinding(id="lock_wallet", key="ctrl+l"))
 
 
 @dataclass
