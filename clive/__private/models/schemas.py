@@ -63,6 +63,7 @@ from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
+from schemas.fields.resolvables import JsonString
 from schemas.operation import Operation
 from schemas.operations import (
     AccountCreateOperation,
@@ -218,6 +219,7 @@ __all__ = [  # noqa: RUF022
     "ChainId",
     "HiveDateTime",
     "HiveInt",
+    "JsonString",
     "PublicKey",
     "Signature",
     "TransactionId",
