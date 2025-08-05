@@ -274,10 +274,12 @@ class Dashboard(BaseScreen):
         CLIVE_PREDEFINED_BINDINGS.dashboard.operations.create(),
         CLIVE_PREDEFINED_BINDINGS.dashboard.switch_working_account.create(),
         CLIVE_PREDEFINED_BINDINGS.dashboard.add_account.create(),
-        CLIVE_PREDEFINED_BINDINGS.dashboard.lock_wallet.create(),
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(
             action=""
         ),  # settings is a hidden global binding, but we want to show it here
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(
+            action=""
+        ),  # lock_wallet is a hidden global binding, but we want to show it here
     ]
 
     def __init__(self) -> None:
@@ -330,10 +332,6 @@ class Dashboard(BaseScreen):
 
     def action_add_account(self) -> None:
         self.app.push_screen(AddTrackedAccountDialog())
-
-    async def action_lock_wallet(self) -> None:
-        with self.app._screen_remove_guard.suppress(), self.app._screen_remove_guard.guard():
-            await self.app.switch_mode_into_locked()
 
     @property
     def has_working_account(self) -> bool:
