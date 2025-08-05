@@ -3,16 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from beekeepy.exceptions import ErrorInResponseError
+from click.testing import Result
+
+from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.models.schemas import OperationUnion
-
-from beekeepy.exceptions import ErrorInResponseError
-from click.testing import Result
-
-from clive_local_tools.helpers import get_transaction_id_from_output
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
