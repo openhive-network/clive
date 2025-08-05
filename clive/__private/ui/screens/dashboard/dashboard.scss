@@ -38,18 +38,20 @@ Dashboard {
   WatchedAccountContainer {
     border-title-background: $watched-color;
     border: $watched-color;
+
+    Rule {
+      margin: 0;
+      color: $primary-lighten-1;
+    }
   }
 
   TrackedAccountRow {
     box-sizing: content-box;
+    background: $background;
     height: 6;
 
-    &.watched {
-      border-bottom: $primary-lighten-1;
-
-      &.last {
-        border-bottom: none;
-      }
+    &:focus {
+      background-tint: $foreground 20%;
     }
 
     #tables {

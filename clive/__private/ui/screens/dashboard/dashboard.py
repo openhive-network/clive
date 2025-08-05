@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Literal
 
 from textual import on
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
-from textual.widgets import Label, Static
+from textual.widgets import Label, Rule, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
-class Body(ScrollableContainer, can_focus=True):
+class Body(ScrollableContainer, can_focus=False):
     """A body for working/watched accounts container."""
 
 
@@ -217,7 +217,7 @@ class BalanceStats(TrackedAccountReferencingWidget):
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Vertical(id="account-alarms-and-details"):
-            button = OneLineButton(f"{self._account.name}", id_="account-details-button")
+            button = OneLineButtonUnfocusable(f"{self._account.name}", id_="account-details-button")
             button.tooltip = "See account details"
             with Horizontal(id="details-remove-buttons-container"):
                 yield button
@@ -237,7 +237,7 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
         self.app.push_screen(AccountDetails(self._account))
 
 
-class TrackedAccountRow(TrackedAccountReferencingWidget):
+class TrackedAccountRow(TrackedAccountReferencingWidget, can_focus=True, can_focus_children=False):
     def compose(self) -> ComposeResult:
         self.add_class("working" if isinstance(self._account, WorkingAccount) else "watched")
         with Horizontal():
@@ -258,10 +258,10 @@ class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [TrackedAccountRow(account) for account in self.profile.accounts.watched]
-        last_account_row = account_rows[-1]
-        last_account_row.add_class("last")
-        yield from account_rows
+        for index, account in enumerate(self.profile.accounts.watched):
+            if index:
+                yield Rule()
+            yield TrackedAccountRow(account)
 
 
 class Dashboard(BaseScreen):
