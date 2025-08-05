@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
-    sign: str | None = None
+    sign_with: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file: str | Path | None = None
@@ -87,14 +87,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             typer.echo(f"Transaction was saved to {self.save_file}")
 
     def __get_key_to_sign(self) -> PublicKey | None:
-        if self.sign is None:
+        if self.sign_with is None:
             return None
 
         try:
-            return self.profile.keys.get_from_alias(self.sign)
+            return self.profile.keys.get_from_alias(self.sign_with)
         except KeyNotFoundError:
             raise CLIPrettyError(
-                f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
+                f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT
             ) from None
 
     def _validate_save_file_path(self) -> None:
@@ -108,7 +108,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and not self.sign:
+        if self.broadcast and not self.sign_with:
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:

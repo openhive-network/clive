@@ -260,7 +260,7 @@ class CLITransactionNotSignedError(CLIPrettyError):
         MESSAGE: A message to be shown to the user.
     """
 
-    MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget the '--sign' option?"
+    MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget the '--sign-with' option?"
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)

@@ -23,7 +23,7 @@ async def process_claim_new_account_token(
         help="Current account creation fee, if present must be exactly the value returned by clive show chain."
         " If not specified resource credits will be used to obtain token.",
     ),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -36,7 +36,7 @@ async def process_claim_new_account_token(
     await ProcessClaimNewAccountToken(
         creator=creator,
         fee=fee_,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()

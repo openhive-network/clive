@@ -12,7 +12,7 @@ vote_witness = CliveTyper(name="vote-witness", help="Vote/unvote for a witness."
 async def process_vote_witness_add(
     account_name: str = options.account_name,
     witness_name: str = typer.Option(..., help="Witness name to vote."),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -23,7 +23,7 @@ async def process_vote_witness_add(
         account_name=account_name,
         witness_name=witness_name,
         approve=True,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()
@@ -33,7 +33,7 @@ async def process_vote_witness_add(
 async def process_vote_witness_remove(
     account_name: str = options.account_name,
     witness_name: str = typer.Option(..., help="Witness name to unvote."),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -44,7 +44,7 @@ async def process_vote_witness_remove(
         account_name=account_name,
         witness_name=witness_name,
         approve=False,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()

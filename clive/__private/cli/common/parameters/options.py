@@ -118,7 +118,7 @@ force_value = typer.Option(
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
 
-sign = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
+sign_with = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
 broadcast = _operation_common_option(
     typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
 )
