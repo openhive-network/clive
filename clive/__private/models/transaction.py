@@ -96,7 +96,7 @@ class Transaction(SchemasTransaction):
         self.signatures.clear()
 
     def with_hash(self) -> TransactionWithHash:
-        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
+        return TransactionWithHash(**self.dict(), transaction_id=self.calculate_transaction_id())
 
     def accept(self, visitor: OperationVisitor) -> None:
         """
