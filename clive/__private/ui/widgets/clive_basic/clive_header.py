@@ -231,9 +231,6 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
 
 
 class NodeStatus(DynamicOneLineButtonUnfocusable):
-    class ChangeNodeAddress(Message):
-        """Posted when the user wants to change the node address."""
-
     def __init__(self) -> None:
         super().__init__(
             obj_to_watch=self.world,
@@ -252,14 +249,8 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         return "online"
 
     @on(OneLineButton.Pressed)
-    async def post_message_to_change_node_address(self) -> None:
-        from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
-        from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
-
-        if isinstance(self.app.screen, SwitchNodeAddressDialog | SwitchNodeAddress):
-            return
-
-        self.screen.post_message(self.ChangeNodeAddress())
+    async def show_switch_node_address_dialog(self) -> None:
+        await self.app.action_switch_node()
 
 
 class RightPart(Horizontal):

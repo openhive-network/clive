@@ -3,14 +3,12 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from textual import on
 from textual.reactive import reactive
 from textual.widgets import Footer
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
 from clive.__private.ui.widgets.clive_basic import CliveHeader, CliveRawHeader
-from clive.__private.ui.widgets.clive_basic.clive_header import NodeStatus
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
 if TYPE_CHECKING:
@@ -34,12 +32,6 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
             yield LocationIndicator(self.BIG_TITLE, self.subtitle)
         yield from self.create_main_panel()
         yield Footer()
-
-    @on(NodeStatus.ChangeNodeAddress)
-    def push_switch_node_address_dialog(self) -> None:
-        from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
-
-        self.app.push_screen(SwitchNodeAddressDialog())
 
     @abstractmethod
     def create_main_panel(self) -> ComposeResult:

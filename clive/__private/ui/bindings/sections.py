@@ -17,6 +17,7 @@ class App(CliveBindingSection):
     )
     lock_wallet: CliveBinding = field(default_factory=lambda: CliveBinding(id="lock_wallet", key="ctrl+l"))
     settings: CliveBinding = field(default_factory=lambda: CliveBinding(id="settings", key="ctrl+s"))
+    switch_node: CliveBinding = field(default_factory=lambda: CliveBinding(id="switch_node", key="ctrl+n"))
     transaction_summary: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="transaction_summary", key="ctrl+t")
     )
