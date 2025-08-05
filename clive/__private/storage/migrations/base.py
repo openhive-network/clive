@@ -4,7 +4,7 @@ from abc import ABC
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
-from clive.__private.models.base import CliveBaseModel
+from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.exceptions import CliveError
 
 type Revision = str
@@ -23,7 +23,7 @@ class StorageVersionNotFoundError(CliveError):
         super().__init__(self.message)
 
 
-class ProfileStorageBase(CliveBaseModel, ABC):
+class ProfileStorageBase(PreconfiguredBaseModel, ABC):
     _REVISIONS: ClassVar[list[Revision]] = []
     _REVISION_TO_MODEL_TYPE_MAP: ClassVar[dict[Revision, type[ProfileStorageBase]]] = {}
 
