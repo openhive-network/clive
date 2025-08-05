@@ -285,7 +285,7 @@ def humanize_operation_details(operation: OperationBase) -> str:
     """
     out = ""
 
-    operation_dict = dict(operation._iter(by_alias=True))
+    operation_dict = dict(operation._iter())
     for key, value in operation_dict.items():
         value_ = value
 

@@ -62,7 +62,7 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         extension = RecurrentTransferPairIdRepresentation(
             type=recurrent_transfer_extension.get_name(), value=recurrent_transfer_extension
         )
-        return [extension.dict(by_alias=True)]
+        return [extension.dict()]
 
     def _identity_check(self, scheduled_transfer: ScheduledTransfer) -> bool:
         """Determine if a scheduled transfer matches destination and the specified pair ID."""
