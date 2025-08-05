@@ -16,9 +16,7 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 
 from __future__ import annotations
 
-from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
-from schemas.apis.account_history_api import EnumVirtualOps, GetAccountHistory, GetOpsInBlock
-from schemas.apis.account_history_api.response_schemas import GetTransaction
+from schemas.apis.account_history_api import GetAccountHistory
 from schemas.apis.database_api import (
     FindAccounts,
     FindProposals,
@@ -46,7 +44,6 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     FindRecurrentTransfersFundament,
     ListChangeRecoveryAccountRequestsFundament,
     ListDeclineVotingRightsRequestsFundament,
-    OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
     VestingDelegationExpirationsFundament,
     VestingDelegationsFundament,
@@ -54,13 +51,9 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     WitnessesFundament,
 )
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
-from schemas.apis.rc_api import GetResourceParams, GetResourcePool, ListRcDirectDelegations
-from schemas.apis.rc_api import ListRcAccounts as SchemasListRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
-from schemas.apis.reputation_api import GetAccountReputations
 from schemas.apis.transaction_status_api import FindTransaction
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
-from schemas.fields.assets._base import AssetBase
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
@@ -69,10 +62,6 @@ from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.fields.serializable import Serializable
-from schemas.jsonrpc import ExpectResultT as JSONRPCExpectResultT
-from schemas.jsonrpc import JSONRPCRequest as SchemasJSONRPCRequest
-from schemas.jsonrpc import JSONRPCResult
-from schemas.jsonrpc import get_response_model as schemas_get_response_model
 from schemas.operation import Operation
 from schemas.operations import (
     AccountCreateOperation,
@@ -131,24 +120,15 @@ from schemas.operations.recurrent_transfer_operation import RecurrentTransferOpe
 from schemas.operations.representation_types import Hf26OperationRepresentationType
 from schemas.operations.representations import convert_to_representation
 from schemas.operations.representations.hf26_representation import HF26Representation
-from schemas.operations.virtual import AnyVirtualOperation
-from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
 from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
 from schemas.transaction import Transaction
-from schemas.virtual_operation import VirtualOperation
 
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
-    "ApiOperationObject",
     "OperationBase",
     "OperationRepresentationBase",
     "OperationRepresentationUnion",
     "OperationUnion",
-    # virtual operation BASIC aliases
-    "ApiVirtualOperationObject",
-    "VirtualOperationBase",
-    "VirtualOperationRepresentationUnion",
-    "VirtualOperationUnion",
     # list API responses (have nested list property which stores actual model)
     "ListChangeRecoveryAccountRequests",
     "ListDeclineVotingRightsRequests",
@@ -156,7 +136,6 @@ __all__ = [  # noqa: RUF022
     "ListProposalVotes",
     "ListWitnesses",
     "ListWitnessVotes",
-    "ListRcDirectDelegations",
     "ListWithdrawVestingRoutes",
     # find API response aliases (have nested list property which stores actual model)
     "FindAccounts",
@@ -169,15 +148,11 @@ __all__ = [  # noqa: RUF022
     "FindWitnesses",
     # get API responses (have unnecessary nested property which stores actual model)
     "GetAccountHistory",
-    "GetAccountReputations",
-    "GetOperationsInBlock",
-    "GetResourcePool",
     # get API responses (have no unnecessary nested  properties, just the model itself)
     "Config",
     "DynamicGlobalProperties",
     "FeedHistory",
     "HardforkProperties",
-    "ResourceParams",
     "Version",
     "WitnessSchedule",
     # operations
@@ -235,7 +210,6 @@ __all__ = [  # noqa: RUF022
     "RecurrentTransferPairIdExtension",
     "RecurrentTransferPairIdRepresentation",
     # assets
-    "AssetBase",
     "AssetHbdHF26",
     "AssetHiveHF26",
     "AssetVestsHF26",
@@ -252,32 +226,24 @@ __all__ = [  # noqa: RUF022
     "Authority",
     "ChangeRecoveryAccountRequest",
     "DeclineVotingRightsRequest",
-    "EnumeratedVirtualOperations",
     "HbdExchangeRate",
     "Manabar",
-    "OwnerHistory",
     "PriceFeed",
     "Proposal",
     "RcAccount",
     "RecurrentTransfer",
     "SavingsWithdrawal",
     "Transaction",
-    "TransactionInBlockchain",
     "TransactionStatus",
     "VestingDelegation",
     "VestingDelegationExpiration",
     "WithdrawRoute",
+    "Witness",
     # policies
     "ExtraFieldsPolicy",
-    "JSONRPCExpectResultT",
-    "JSONRPCResult",
     "MissingFieldsInGetConfigPolicy",
     "Policy",
     "set_policies",
-    # jsonrpc
-    "get_response_model",
-    "JSONRPCRequest",
-    "Witness",
     # other
     "convert_to_representation",
     "RepresentationBase",
@@ -286,30 +252,14 @@ __all__ = [  # noqa: RUF022
 
 # operation BASIC aliases
 
-ApiOperationObject = Hf26ApiOperationObject
 OperationBase = Operation
 OperationRepresentationBase = HF26Representation[OperationBase]
 OperationRepresentationUnion = Hf26OperationRepresentationType
 OperationUnion = AnyOperation
 
-# virtual operation BASIC aliases
-
-ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
-VirtualOperationBase = VirtualOperation
-VirtualOperationRepresentationUnion = Hf26VirtualOperationRepresentationType
-VirtualOperationUnion = AnyVirtualOperation
-
-#  list API responses (have nested list property which stores actual model)
-
-ListRcAccounts = SchemasListRcAccounts[AssetVestsHF26]
-
 # find API response aliases (have nested list property which stores actual model)
 
 FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
-
-# get API responses (have unnecessary nested property which stores actual model)
-
-GetOperationsInBlock = GetOpsInBlock
 
 # get API responses (have no unnecessary nested  properties, just the model itself)
 
@@ -317,7 +267,6 @@ Config = GetConfig
 DynamicGlobalProperties = GetDynamicGlobalProperties
 FeedHistory = GetFeedHistory
 HardforkProperties = GetHardforkProperties
-ResourceParams = GetResourceParams
 Version = GetVersion
 WitnessSchedule = GetWitnessSchedule
 
@@ -335,15 +284,12 @@ ChainId = Sha256
 Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
-EnumeratedVirtualOperations = EnumVirtualOps
 HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
-OwnerHistory = OwnerHistoriesFundament
 PriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Proposal = SchemasProposal[AssetHbdHF26]
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
 SavingsWithdrawal = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
-TransactionInBlockchain = GetTransaction
 TransactionStatus = FindTransaction
 VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]
@@ -354,11 +300,6 @@ Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
 
 ExtraFieldsPolicy = ExtraFields
 MissingFieldsInGetConfigPolicy = MissingFieldsInGetConfig
-
-# jsonrpc
-
-get_response_model = schemas_get_response_model
-JSONRPCRequest = SchemasJSONRPCRequest
 
 # other
 
