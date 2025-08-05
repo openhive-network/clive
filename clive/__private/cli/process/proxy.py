@@ -12,7 +12,7 @@ proxy = CliveTyper(name="proxy", help="Set, change or remove a proxy.")
 async def process_proxy_set(
     account_name: str = options.account_name,
     proxy: str = typer.Option(..., help="Name of new proxy account."),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -22,7 +22,7 @@ async def process_proxy_set(
     await ProcessProxySet(
         account_name=account_name,
         proxy=proxy,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()
@@ -31,11 +31,13 @@ async def process_proxy_set(
 @proxy.command(name="clear")
 async def process_proxy_clear(
     account_name: str = options.account_name,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Remove a proxy."""
     from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear  # noqa: PLC0415
 
-    await ProcessProxyClear(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file).run()
+    await ProcessProxyClear(
+        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+    ).run()

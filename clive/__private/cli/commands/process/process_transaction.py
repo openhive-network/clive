@@ -54,7 +54,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         await super().validate()
 
     def _validate_signed_transaction(self) -> None:
-        if self.already_signed_mode == "error" and self.sign:
+        if self.already_signed_mode == "error" and self.sign_with:
             raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
 
     def _validate_from_file_argument(self) -> None:

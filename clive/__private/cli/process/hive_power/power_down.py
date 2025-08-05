@@ -15,7 +15,7 @@ power_down = CliveTyper(name="power-down", help="Perform power-down, send withdr
 async def process_power_down_start(
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -30,7 +30,7 @@ async def process_power_down_start(
     operation = ProcessPowerDownStart(
         account_name=account_name,
         amount=amount_,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     )
@@ -41,7 +41,7 @@ async def process_power_down_start(
 async def process_power_down_restart(
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -54,7 +54,7 @@ async def process_power_down_restart(
 
     amount_ = cast("Asset.Hive", amount)
     operation = ProcessPowerDown(
-        account_name=account_name, amount=amount_, sign=sign, broadcast=broadcast, save_file=save_file
+        account_name=account_name, amount=amount_, sign_with=sign_with, broadcast=broadcast, save_file=save_file
     )
     await operation.run()
 
@@ -62,12 +62,14 @@ async def process_power_down_restart(
 @power_down.command(name="cancel")
 async def process_power_down_cancel(
     account_name: str = options.account_name,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Stop power down by setting amount to 0."""
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel  # noqa: PLC0415
 
-    operation = ProcessPowerDownCancel(account_name=account_name, sign=sign, broadcast=broadcast, save_file=save_file)
+    operation = ProcessPowerDownCancel(
+        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+    )
     await operation.run()

@@ -83,13 +83,10 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
 
 
 def modify_command_common_options(
-    ctx: typer.Context,
-    sign: str | None,
-    broadcast: bool | None,  # noqa: FBT001
-    save_file: str | None,
+    ctx: typer.Context, sign_with: str | None, broadcast: bool | None, save_file: str | None
 ) -> None:
     _get_update_command_from_context_parent(ctx).modify_common_options(
-        sign=sign, broadcast=broadcast, save_file=save_file
+        sign_with=sign_with, broadcast=broadcast, save_file=save_file
     )
 
 
@@ -106,8 +103,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Add account authority with weight."""
@@ -119,15 +116,15 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         add_account_function = partial(add_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_account_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.command(name="add-key", epilog=epilog)
     async def add_key(  # noqa: PLR0913
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Add key authority with weight."""
@@ -139,14 +136,14 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         add_key_function = partial(add_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_key_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.command(name="remove-account", epilog=epilog)
     async def remove_account(
         ctx: typer.Context,
         account: str = _authority_account_name,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove account authority."""
@@ -158,14 +155,14 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         remove_account_function = partial(remove_account, account=account)
         update_function = partial(update_authority, attribute=authority, callback=remove_account_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.command(name="remove-key", epilog=epilog)
     async def remove_key(
         ctx: typer.Context,
         key: str = _authority_key,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Remove key authority."""
@@ -177,15 +174,15 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         remove_key_function = partial(remove_key, key=key)
         update_function = partial(update_authority, attribute=authority, callback=remove_key_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.command(name="modify-account", epilog=epilog)
     async def modify_account(  # noqa: PLR0913
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing account authority."""
@@ -197,15 +194,15 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         modify_account_function = partial(modify_account, account=account, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_account_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.command(name="modify-key", epilog=epilog)
     async def modify_key(  # noqa: PLR0913
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
-        sign: str | None = options.sign,
-        broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
+        sign_with: str | None = options.sign_with,
+        broadcast: bool | None = _optional_broadcast,
         save_file: str | None = options.save_file,
     ) -> None:
         """Modify weight of existing key authority."""
@@ -217,7 +214,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         modify_key_function = partial(modify_key, key=key, weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=modify_key_function)
         add_callback_to_update_command(ctx, update_function)
-        modify_command_common_options(ctx, sign, broadcast, save_file)
+        modify_command_common_options(ctx, sign_with, broadcast, save_file)
 
     @update.callback(invoke_without_command=True, result_callback=send_update)
     async def set_threshold(  # noqa: PLR0913
@@ -228,7 +225,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
             help="Set Threshold",
             show_default=False,
         ),
-        sign: str | None = options.sign,
+        sign_with: str | None = options.sign_with,
         broadcast: bool = options.broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
@@ -241,7 +238,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
 
         update_command = ProcessAccountUpdate(
             account_name=account_name,
-            sign=sign,
+            sign_with=sign_with,
             broadcast=broadcast,
             save_file=save_file,
         )
