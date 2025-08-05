@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 
-from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import HiveDateTime  # noqa: TC001
+from clive.__private.models.schemas import HiveDateTime, PreconfiguredBaseModel
 
 
-class AlarmIdentifier(CliveBaseModel, ABC):
+class AlarmIdentifier(PreconfiguredBaseModel, ABC):
     """Base class for alarm identifiers."""
 
 
