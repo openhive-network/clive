@@ -25,12 +25,14 @@ from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, BindingFileInvalidError, load_custom_bindings
 from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
+from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.settings import Settings
+from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
 from clive.exceptions import ScreenNotFoundError
@@ -84,6 +86,7 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(show=False),
     ]
@@ -275,6 +278,19 @@ class Clive(App[int]):
     async def action_lock_wallet(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.switch_mode_into_locked()
+
+    def action_do_nothing(self) -> None:
+        """This action is used to override the default action of some bindings, does nothing."""
+
+    async def action_switch_node(self) -> None:
+        self.show_switch_node_address_dialog()
+
+    def show_switch_node_address_dialog(self) -> None:
+        if self.current_mode == "unlock":
+            return
+        if isinstance(self.screen, SwitchNodeAddressDialog | SwitchNodeAddress):
+            return
+        self.push_screen(SwitchNodeAddressDialog())
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()

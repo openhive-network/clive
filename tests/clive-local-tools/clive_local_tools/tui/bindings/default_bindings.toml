@@ -4,6 +4,7 @@ dashboard = "ctrl+d"
 load_transaction_from_file = "ctrl+o"
 lock_wallet = "ctrl+l"
 settings = "ctrl+s"
+switch_node = "ctrl+n"
 transaction_summary = "ctrl+t"
 quit = "ctrl+q"
 
