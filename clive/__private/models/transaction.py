@@ -41,7 +41,7 @@ class Transaction(SchemasTransaction):
             return operation in self.operations_models
         return operation in self.operations
 
-    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
+    def __iter__(self) -> Iterator[OperationUnion]:
         return iter(self.operations_models)
 
     def __len__(self) -> int:
@@ -58,7 +58,7 @@ class Transaction(SchemasTransaction):
     @property
     def operations_models(self) -> list[OperationUnion]:
         """Get only the operation models from already stored operations representations."""
-        return [op.value for op in self.operations]  # type: ignore[attr-defined]
+        return [op.value for op in self.operations]
 
     @validator("operations", pre=True)
     @classmethod
@@ -72,7 +72,7 @@ class Transaction(SchemasTransaction):
 
     def remove_operation(self, *operations: OperationUnion) -> None:
         for op in self.operations:
-            if op.value in operations:  # type: ignore[attr-defined]
+            if op.value in operations:
                 self.operations.remove(op)
                 return
 

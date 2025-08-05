@@ -270,7 +270,7 @@ class Proposals(GovernanceTabPane):
         """
 
         def append_operation(operation: UpdateProposalVotesOperation) -> None:
-            operation.proposal_ids.append(proposal_id)  # type: ignore[arg-type]
+            operation.proposal_ids.append(proposal_id)
             operation.proposal_ids.sort()  # proposal id's must be sorted
 
         proposal_id = int(identifier)
@@ -302,7 +302,7 @@ class Proposals(GovernanceTabPane):
             self.app.trigger_profile_watchers()
             return
 
-        operation.proposal_ids.remove(proposal_id)  # type: ignore[arg-type]
+        operation.proposal_ids.remove(proposal_id)
         self.app.trigger_profile_watchers()
 
     def _find_proposal_operation_with_such_id(
