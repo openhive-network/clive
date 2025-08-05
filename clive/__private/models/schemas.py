@@ -127,7 +127,6 @@ from schemas.transaction import Transaction
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
     "OperationBase",
-    "OperationRepresentationBase",
     "OperationRepresentationUnion",
     "OperationUnion",
     # list API responses (have nested list property which stores actual model)
@@ -250,13 +249,11 @@ __all__ = [  # noqa: RUF022
     "convert_to_representation",
     "is_matching_model",
     "validate_schema_field",
-    "RepresentationBase",
 ]
 
 # operation BASIC aliases
 
 OperationBase = Operation
-OperationRepresentationBase = HF26Representation[OperationBase]
 OperationRepresentationUnion = Hf26OperationRepresentationType
 OperationUnion = AnyOperation
 
@@ -303,7 +300,3 @@ Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
 
 ExtraFieldsPolicy = ExtraFields
 MissingFieldsInGetConfigPolicy = MissingFieldsInGetConfig
-
-# other
-
-RepresentationBase = HF26Representation
