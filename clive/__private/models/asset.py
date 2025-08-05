@@ -196,7 +196,7 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10**asset.precision:.{asset.precision}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision():.{asset.precision()}f}"
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:

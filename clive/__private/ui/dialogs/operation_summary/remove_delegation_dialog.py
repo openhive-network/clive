@@ -23,7 +23,7 @@ class RemoveDelegationDialog(OperationSummaryBaseDialog):
         pretty_hp_amount: The formatted amount of HP being removed.
     """
 
-    def __init__(self, delegation: VestingDelegation[Asset.Vests], pretty_hp_amount: str) -> None:
+    def __init__(self, delegation: VestingDelegation, pretty_hp_amount: str) -> None:
         super().__init__("Remove delegation")
         self._delegation = delegation
         self._pretty_hp_amount = pretty_hp_amount

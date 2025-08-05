@@ -59,9 +59,7 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
             return []
 
         recurrent_transfer_extension = RecurrentTransferPairIdExtension(pair_id=self.pair_id)
-        extension = RecurrentTransferPairIdRepresentation(
-            type=recurrent_transfer_extension.get_name(), value=recurrent_transfer_extension
-        )
+        extension = RecurrentTransferPairIdRepresentation(value=recurrent_transfer_extension)
         return [extension.dict()]
 
     def _identity_check(self, scheduled_transfer: ScheduledTransfer) -> bool:
