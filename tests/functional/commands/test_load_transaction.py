@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.schemas import TransferOperation, convert_to_representation
+from clive.__private.models.schemas import HiveDateTime, TransferOperation, convert_to_representation
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -18,7 +18,7 @@ VALID_TRANSACTION: Final[Transaction] = Transaction(
     ],
     ref_block_num=1,
     ref_block_prefix=2,
-    expiration="2021-01-01T00:00:00",
+    expiration=HiveDateTime("2021-01-01T00:00:00"),
     extensions=[],
     signatures=[],
 )
