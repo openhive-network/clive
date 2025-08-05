@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.models.schemas import CustomJsonOperation, TransferOperation
+from clive.__private.models.schemas import CustomJsonOperation, JsonString, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT2_KEY_ALIAS,
@@ -82,7 +82,7 @@ async def test_custom_authority_in_custom_json_operation(
         required_auths=[],
         required_posting_auths=[ALT_WORKING_ACCOUNT2_NAME],
         id_=custom_id,
-        json_=custom_json,
+        json_=JsonString(custom_json),
     )
 
     # ACT
