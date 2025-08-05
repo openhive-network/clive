@@ -86,7 +86,7 @@ def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     if not isinstance(item, Transaction):
         item = convert_to_representation(item)
 
-    return item.json(by_alias=True).encode()
+    return item.json().encode()
 
 
 def validate_transaction(transaction: Transaction) -> None:
