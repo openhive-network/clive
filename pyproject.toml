@@ -114,13 +114,13 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 target-version = "py312"
-external = [
-   "DOC",  # pydoclint - we're running it externally since ruff hasn't implemented most of it rules yet. See: https://github.com/astral-sh/ruff/issues/12434
-]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
 select = ["ALL"]
+external = [
+   "DOC",  # pydoclint - we're running it externally since ruff hasn't implemented most of it rules yet. See: https://github.com/astral-sh/ruff/issues/12434
+]
 ignore = [
     "D1", # missing docstring in public
     "D203", # 1 blank line required before class docstring; because we re using D211
