@@ -409,6 +409,9 @@ class Clive(App[int]):
         return AwaitComplete(impl()).call_next(self)
 
     async def switch_mode_into_locked(self, *, save_profile: bool = True) -> None:
+        if not self.world.app_state.is_unlocked:
+            return
+
         if save_profile:
             await self.world.commands.save_profile()
 
