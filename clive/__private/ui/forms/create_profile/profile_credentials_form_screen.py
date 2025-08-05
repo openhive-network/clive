@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
@@ -23,6 +24,11 @@ class ProfileCredentialsFormScreen(BaseScreen, CreateProfileFormScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(
+            action="app.do_nothing", show=False
+        ),  # we want to disable switch_node binding here
+    ]
 
     def __init__(self, owner: CreateProfileForm) -> None:
         self._profile_name_input = SetProfileNameInput()
