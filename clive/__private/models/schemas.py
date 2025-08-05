@@ -54,7 +54,9 @@ from schemas.apis.database_api.fundaments_of_reponses import (
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.transaction_status_api import FindTransaction
+from schemas.base import field
 from schemas.decoders import is_matching_model, validate_schema_field
+from schemas.errors import DecodeError, ValidationError
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
@@ -72,7 +74,6 @@ from schemas.operations import (
     AccountUpdateOperation,
     AccountWitnessProxyOperation,
     AccountWitnessVoteOperation,
-    AnyOperation,
     CancelTransferFromSavingsOperation,
     ChangeRecoveryAccountOperation,
     ClaimAccountOperation,
@@ -94,6 +95,8 @@ from schemas.operations import (
     EscrowReleaseOperation,
     EscrowTransferOperation,
     FeedPublishOperation,
+    Hf26OperationRepresentation,
+    Hf26Operations,
     LimitOrderCancelOperation,
     LimitOrderCreate2Operation,
     LimitOrderCreateOperation,
@@ -116,13 +119,19 @@ from schemas.operations import (
     WitnessBlockApproveOperation,
     WitnessSetPropertiesOperation,
     WitnessUpdateOperation,
+    convert_to_representation,
 )
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
+from schemas.operations.extensions.representation_types import (
+    HF26RepresentationRecurrentTransferPairIdOperationExtension,
+)
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.representation_types import Hf26OperationRepresentationType
-from schemas.operations.representations import convert_to_representation
-from schemas.operations.representations.hf26_representation import HF26Representation
-from schemas.policies import ExtraFields, MissingFieldsInGetConfig, Policy, set_policies
+from schemas.policies import (
+    ExtraFieldsPolicy,
+    MissingFieldsInGetConfigPolicy,
+    TestnetAssetsPolicy,
+    set_policies,
+)
 from schemas.transaction import Transaction
 
 __all__ = [  # noqa: RUF022
@@ -244,24 +253,28 @@ __all__ = [  # noqa: RUF022
     # policies
     "ExtraFieldsPolicy",
     "MissingFieldsInGetConfigPolicy",
-    "Policy",
+    "TestnetAssetsPolicy",
     "set_policies",
+    # exceptions
+    "DecodeError",
+    "ValidationError",
     # other
     "PreconfiguredBaseModel",
     "convert_to_representation",
     "is_matching_model",
     "validate_schema_field",
+    "field",
 ]
 
 # operation BASIC aliases
 
 OperationBase = Operation
-OperationRepresentationUnion = Hf26OperationRepresentationType
-OperationUnion = AnyOperation
+OperationRepresentationUnion = Hf26OperationRepresentation
+OperationUnion = Hf26Operations
 
 # find API response aliases (have nested list property which stores actual model)
 
-FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
+FindRcAccounts = SchemasFindRcAccounts
 
 # get API responses (have no unnecessary nested  properties, just the model itself)
 
@@ -275,7 +288,7 @@ WitnessSchedule = GetWitnessSchedule
 # extensions
 
 RecurrentTransferPairIdExtension = RecurrentTransferPairId
-RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPairIdExtension]
+RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferPairIdOperationExtension
 
 # basic fields
 
@@ -283,22 +296,17 @@ ChainId = Sha256
 
 # compound models
 
-Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+Account = AccountItemFundament
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
-HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
-PriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
-Proposal = SchemasProposal[AssetHbdHF26]
-RcAccount = SchemasRcAccount[AssetVestsHF26]
-RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
-SavingsWithdrawal = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
+HbdExchangeRate = SchemasHbdExchangeRate
+PriceFeed = Price
+Proposal = SchemasProposal
+RcAccount = SchemasRcAccount
+RecurrentTransfer = FindRecurrentTransfersFundament
+SavingsWithdrawal = SavingsWithdrawalsFundament
 TransactionStatus = FindTransaction
 VestingDelegation = VestingDelegationsFundament
-VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]
+VestingDelegationExpiration = VestingDelegationExpirationsFundament
 WithdrawRoute = WithdrawVestingRoutesFundament
-Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
-
-# policies
-
-ExtraFieldsPolicy = ExtraFields
-MissingFieldsInGetConfigPolicy = MissingFieldsInGetConfig
+Witness = WitnessesFundament
