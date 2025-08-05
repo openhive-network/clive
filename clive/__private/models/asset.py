@@ -2,24 +2,22 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
-
-from pydantic.generics import GenericModel
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.base import CliveBaseModel
-from clive.__private.models.schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
-AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
+AssetT = TypeVar("AssetT", bound=AssetHive | AssetHbd | AssetVests)
+AssetExplicitT = TypeVar("AssetExplicitT", AssetHive, AssetHbd, AssetVests)
 
 AssetAmount = DecimalConvertible
 AssetFactory = Callable[[AssetAmount], AssetT]
@@ -58,7 +56,8 @@ class UnknownAssetNaiError(AssetError):
         super().__init__(message)
 
 
-class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
+@dataclass(frozen=True)
+class AssetFactoryHolder(Generic[AssetT]):
     """
     Holds factory for asset.
 
@@ -67,17 +66,14 @@ class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
         asset_factory: Factory function to create an instance of the asset.
     """
 
-    class Config:
-        frozen = True
-
     asset_cls: type[AssetT]
     asset_factory: AssetFactory[AssetT]
 
 
 class Asset:
-    Hive: TypeAlias = AssetHiveHF26  # noqa: UP040  # used in isinstance check
-    Hbd: TypeAlias = AssetHbdHF26  # noqa: UP040  # used in isinstance check
-    Vests: TypeAlias = AssetVestsHF26  # noqa: UP040  # used in isinstance check
+    Hive: TypeAlias = AssetHive  # noqa: UP040  # used in isinstance check
+    Hbd: TypeAlias = AssetHbd  # noqa: UP040  # used in isinstance check
+    Vests: TypeAlias = AssetVests  # noqa: UP040  # used in isinstance check
     LiquidT: TypeAlias = Hive | Hbd  # noqa: UP040  # used in isinstance check
     VotingT: TypeAlias = Hive | Vests  # noqa: UP040  # used in isinstance check
     AnyT: TypeAlias = Hive | Hbd | Vests  # noqa: UP040  # used in isinstance check
