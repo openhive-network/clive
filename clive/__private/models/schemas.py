@@ -16,6 +16,7 @@ has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
 
 from __future__ import annotations
 
+from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.apis.account_history_api import GetAccountHistory
 from schemas.apis.database_api import (
     FindAccounts,
@@ -62,7 +63,6 @@ from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
-from schemas.fields.serializable import Serializable
 from schemas.operation import Operation
 from schemas.operations import (
     AccountCreateOperation,
@@ -246,11 +246,11 @@ __all__ = [  # noqa: RUF022
     "Policy",
     "set_policies",
     # other
+    "PreconfiguredBaseModel",
     "convert_to_representation",
     "is_matching_model",
     "validate_schema_field",
     "RepresentationBase",
-    "Serializable",
 ]
 
 # operation BASIC aliases
