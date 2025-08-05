@@ -18,10 +18,12 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_SUBMODULE_DEPTH: 1
   # first party libraries gitlab indexes:
+  # - 198 -> hive (generated APIs)
   # - 362 -> schemas
   # - 419 -> wax
   # - 434 -> beekeepy
   FIRST_PARTY_EXTRA_INDEX_ARGS: |
+    --extra-index https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple
     --extra-index https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple
     --extra-index https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
     --extra-index https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple
