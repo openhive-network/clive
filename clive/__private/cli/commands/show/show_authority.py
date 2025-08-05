@@ -24,8 +24,8 @@ class ShowAuthority(WorldBasedCommand):
         console = Console()
 
         title = (
-            f"{self.authority} authority of `{account.name}` account, weight threshold is"
-            f" {account[self.authority].weight_threshold}:"
+            f"{self.authority} authority of `{account.name}` account,"
+            f"\nweight threshold is {account[self.authority].weight_threshold}:"
         )
 
         table = Table(title=title)
