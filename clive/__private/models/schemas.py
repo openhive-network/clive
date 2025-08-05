@@ -55,7 +55,7 @@ from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
 from schemas.apis.transaction_status_api import FindTransaction
 from schemas.decoders import is_matching_model, validate_schema_field
-from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
@@ -211,9 +211,9 @@ __all__ = [  # noqa: RUF022
     "RecurrentTransferPairIdExtension",
     "RecurrentTransferPairIdRepresentation",
     # assets
-    "AssetHbdHF26",
-    "AssetHiveHF26",
-    "AssetVestsHF26",
+    "AssetHbd",
+    "AssetHive",
+    "AssetVests",
     # basic fields
     "AccountName",
     "ChainId",
