@@ -46,7 +46,7 @@ async def test_process_transfer(
         from_=WORKING_ACCOUNT_NAME,
         amount=tt.Asset.Hive(1),
         to=RECEIVER,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         memo=MEMO,
     )
 
@@ -59,7 +59,7 @@ async def test_process_multiple_transfers_when_unlocked_once(node: tt.RawNode, c
     # ACT
     for _ in range(2):
         result = cli_tester.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=AMOUNT, to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS, memo=MEMO
+            from_=WORKING_ACCOUNT_NAME, amount=AMOUNT, to=RECEIVER, sign_with=WORKING_ACCOUNT_KEY_ALIAS, memo=MEMO
         )
 
         # ASSERT
@@ -79,7 +79,7 @@ async def test_process_transfer_with_beekeeper_session_token_missing(
             from_=WORKING_ACCOUNT_NAME,
             amount=tt.Asset.Hive(1),
             to=RECEIVER,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 
 
@@ -93,14 +93,14 @@ async def test_process_transfer_in_locked(
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
         cli_tester_locked.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS
+            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, sign_with=WORKING_ACCOUNT_KEY_ALIAS
         )
 
 
 async def test_process_transfer_in_unlocked_without_sign(
     cli_tester: CLITester,
 ) -> None:
-    """Check if clive process transfer without sign throws exception when wallet is unlocked."""
+    """Check if clive process transfer without sign_with throws exception when wallet is unlocked."""
     # ARRANGE
     message = CLITransactionNotSignedError.MESSAGE
 

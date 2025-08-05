@@ -54,7 +54,7 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
     )
 
     result = cli_tester.process_transaction(
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         already_signed_mode="multisign",
         from_file=trx_file(tmp_path),
     )
@@ -73,7 +73,7 @@ async def test_process_signed_transaction(
     cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         broadcast=False,
         save_file=trx_file(tmp_path),
     )
@@ -105,7 +105,7 @@ async def test_process_unsigned_transaction(
     # ACT
     result = cli_tester.process_transaction(
         already_signed_mode="multisign",
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         from_file=trx_file(tmp_path),
     )
 
@@ -134,6 +134,6 @@ async def test_negative_process_transaction_in_locked(
     with pytest.raises(CLITestCommandError, match=message):
         cli_tester.process_transaction(
             already_signed_mode="multisign",
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             from_file=trx_file(tmp_path),
         )

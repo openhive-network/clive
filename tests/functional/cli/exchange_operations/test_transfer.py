@@ -87,7 +87,7 @@ async def test_validate_memoless_transfer_to_exchange(
         cli_tester.process_transfer(
             to=KNOWN_EXCHANGE_NAME,
             amount=amount,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             memo=EMPTY_MEMO_MSG,
         )
 
@@ -110,7 +110,7 @@ async def test_validate_performing_transaction_with_memoless_transfer_to_exchang
     def operation() -> None:
         cli_tester.process_transaction(
             from_file=transaction_with_memoless_transfer_path,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 
     # ACT & ASSERT
@@ -132,7 +132,7 @@ async def test_validate_performing_transaction_with_hbd_transfer_to_exchange(
     def operation() -> None:
         cli_tester.process_transaction(
             from_file=transaction_with_hbd_transfer_path,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 
     # ACT & ASSERT
@@ -150,7 +150,7 @@ async def test_validate_hive_transfer_with_memo_to_exchange(
     cli_tester.process_transfer(
         to=KNOWN_EXCHANGE_NAME,
         amount=amount,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         memo=MEMO_MSG,
     )
 
@@ -166,7 +166,7 @@ async def test_validate_hbd_transfer_with_memo_to_exchange(
         cli_tester.process_transfer(
             to=KNOWN_EXCHANGE_NAME,
             amount=amount,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             memo=MEMO_MSG,
         )
 

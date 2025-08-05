@@ -24,4 +24,4 @@ async def test_no_trasaction_validation_to_unknown_account(cli_tester: CLITester
     cli_tester.configure_known_account_disable()
 
     # ACT & ASSERT
-    cli_tester.process_delegations_set(delegatee=UNKNOWN_ACCOUNT, amount=amount, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_delegations_set(delegatee=UNKNOWN_ACCOUNT, amount=amount, sign_with=WORKING_ACCOUNT_KEY_ALIAS)

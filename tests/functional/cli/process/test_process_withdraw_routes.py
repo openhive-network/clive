@@ -34,7 +34,7 @@ async def test_withdraw_routes_set(node: tt.RawNode, cli_tester: CLITester) -> N
 
     # ACT
     result = cli_tester.process_withdraw_routes_set(
-        to=operation.to_account, percent=PERCENT, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=operation.to_account, percent=PERCENT, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -56,7 +56,7 @@ async def test_withdraw_routes_set_autovest(node: tt.RawNode, cli_tester: CLITes
         to=operation.to_account,
         percent=PERCENT,
         auto_vest=operation.auto_vest,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -66,7 +66,9 @@ async def test_withdraw_routes_set_autovest(node: tt.RawNode, cli_tester: CLITes
 async def test_withdraw_routes_reset(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     percent_reset: int = 30
-    cli_tester.process_withdraw_routes_set(to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_withdraw_routes_set(
+        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,
         to_account=WITHDRAW_TO_ACCOUNT.name,
@@ -78,7 +80,7 @@ async def test_withdraw_routes_reset(node: tt.RawNode, cli_tester: CLITester) ->
     result = cli_tester.process_withdraw_routes_set(
         to=operation.to_account,
         percent=percent_reset,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -87,7 +89,9 @@ async def test_withdraw_routes_reset(node: tt.RawNode, cli_tester: CLITester) ->
 
 async def test_withdraw_routes_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_withdraw_routes_set(to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_withdraw_routes_set(
+        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,
         to_account=WITHDRAW_TO_ACCOUNT.name,
@@ -96,7 +100,7 @@ async def test_withdraw_routes_remove(node: tt.RawNode, cli_tester: CLITester) -
     )
 
     # ACT
-    result = cli_tester.process_withdraw_routes_remove(to=operation.to_account, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_withdraw_routes_remove(to=operation.to_account, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
