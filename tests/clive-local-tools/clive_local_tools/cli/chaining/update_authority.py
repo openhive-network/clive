@@ -20,12 +20,12 @@ class UpdateAuthority(ChainedCommand):
         *,
         key: PublicKey,
         weight: int,
-        sign: str | None = None,
+        sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "add-key", key=key, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+            "add-key", key=key, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
         )
         return self
 
@@ -34,26 +34,36 @@ class UpdateAuthority(ChainedCommand):
         *,
         account: str,
         weight: int,
-        sign: str | None = None,
+        sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "add-account", account=account, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+            "add-account", account=account, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
         )
         return self
 
     def remove_key(
-        self, *, key: PublicKey, sign: str | None = None, broadcast: bool | None = None, save_file: Path | None = None
+        self,
+        *,
+        key: PublicKey,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
     ) -> UpdateAuthority:
-        self._add_command_to_chain("remove-key", key=key, sign=sign, broadcast=broadcast, save_file=save_file)
+        self._add_command_to_chain("remove-key", key=key, sign_with=sign_with, broadcast=broadcast, save_file=save_file)
         return self
 
     def remove_account(
-        self, *, account: str, sign: str | None = None, broadcast: bool | None = None, save_file: Path | None = None
+        self,
+        *,
+        account: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "remove-account", account=account, sign=sign, broadcast=broadcast, save_file=save_file
+            "remove-account", account=account, sign_with=sign_with, broadcast=broadcast, save_file=save_file
         )
         return self
 
@@ -62,12 +72,12 @@ class UpdateAuthority(ChainedCommand):
         *,
         key: PublicKey,
         weight: int,
-        sign: str | None = None,
+        sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "modify-key", key=key, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+            "modify-key", key=key, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
         )
         return self
 
@@ -76,12 +86,17 @@ class UpdateAuthority(ChainedCommand):
         *,
         account: str,
         weight: int,
-        sign: str | None = None,
+        sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "modify-account", account=account, weight=weight, sign=sign, broadcast=broadcast, save_file=save_file
+            "modify-account",
+            account=account,
+            weight=weight,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
         )
         return self
 

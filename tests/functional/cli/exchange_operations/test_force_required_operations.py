@@ -66,7 +66,7 @@ async def test_loading_transaction(
     def send_operation() -> None:
         cli_tester.process_transaction(
             from_file=transaction_with_forceable_operation_path,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
 
@@ -81,7 +81,7 @@ async def test_validate_of_performing_recurrent_transfer_to_exchange(cli_tester:
         cli_tester.process_transfer_schedule_create(
             to=KNOWN_EXCHANGE_NAME,
             amount=AMOUNT,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             repeat=2,
             frequency="24h",
             force=force,
@@ -98,7 +98,11 @@ async def test_validate_of_performing_withdrawing_to_exchange(cli_tester: CLITes
 
     def send_operation() -> None:
         cli_tester.process_savings_withdrawal(
-            to=KNOWN_EXCHANGE_NAME, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, force=force, request_id=request_id
+            to=KNOWN_EXCHANGE_NAME,
+            amount=AMOUNT,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+            force=force,
+            request_id=request_id,
         )
 
     # ACT & ASSERT
@@ -112,7 +116,7 @@ async def test_validate_of_performing_deposit_to_exchange(cli_tester: CLITester,
         cli_tester.process_savings_deposit(
             to=KNOWN_EXCHANGE_NAME,
             amount=AMOUNT,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
 
@@ -127,7 +131,7 @@ async def test_validation_of_powering_up_to_exchange(cli_tester: CLITester, *, f
         cli_tester.process_power_up(
             amount=AMOUNT,
             to=KNOWN_EXCHANGE_NAME,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
 
@@ -142,7 +146,7 @@ async def test_validate_of_performing_delegation_set_to_exchange(cli_tester: CLI
         cli_tester.process_delegations_set(
             delegatee=KNOWN_EXCHANGE_NAME,
             amount=AMOUNT,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
 
@@ -160,7 +164,7 @@ async def test_validate_of_performing_of_withdrawal_routes_set_to_exchange(
         cli_tester.process_withdraw_routes_set(
             to=KNOWN_EXCHANGE_NAME,
             percent=percent,
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
 

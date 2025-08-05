@@ -23,7 +23,7 @@ MODIFIED_WEIGHT: Final[int] = 124
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_add_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_account(
+    cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).add_account(
         account=OTHER_ACCOUNT.name, weight=WEIGHT
     ).fire()
 
@@ -35,13 +35,13 @@ async def test_add_account(cli_tester: CLITester, authority: AuthorityType) -> N
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_remove_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_account(
+    cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).add_account(
         account=OTHER_ACCOUNT.name, weight=WEIGHT
     ).fire()
     assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).remove_account(
+    cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).remove_account(
         account=OTHER_ACCOUNT.name
     ).fire()
 
@@ -52,13 +52,13 @@ async def test_remove_account(cli_tester: CLITester, authority: AuthorityType) -
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_modify_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).add_account(
+    cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).add_account(
         account=OTHER_ACCOUNT.name, weight=WEIGHT
     ).fire()
     assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).modify_account(
+    cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).modify_account(
         account=OTHER_ACCOUNT.name, weight=MODIFIED_WEIGHT
     ).fire()
 

@@ -17,7 +17,7 @@ OTHER_MEMO_KEY: Final[PublicKey] = WATCHED_ACCOUNTS_DATA[0].account.public_key
 
 async def test_set_memo_key(cli_tester: CLITester) -> None:
     # ACT
-    cli_tester.process_update_memo_key(sign=WORKING_ACCOUNT_KEY_ALIAS, key=ALICE_MEMO_KEY)
+    cli_tester.process_update_memo_key(sign_with=WORKING_ACCOUNT_KEY_ALIAS, key=ALICE_MEMO_KEY)
 
     # ASSERT
     assert_memo_key(cli_tester, ALICE_MEMO_KEY)
@@ -34,7 +34,7 @@ async def test_set_memo_key_no_broadcast(cli_tester: CLITester) -> None:
 
 async def test_set_other_memo_key(cli_tester: CLITester) -> None:
     # ACT
-    cli_tester.process_update_memo_key(sign=WORKING_ACCOUNT_KEY_ALIAS, key=OTHER_MEMO_KEY)
+    cli_tester.process_update_memo_key(sign_with=WORKING_ACCOUNT_KEY_ALIAS, key=OTHER_MEMO_KEY)
 
     # ASSERT
     assert_memo_key(cli_tester, OTHER_MEMO_KEY)

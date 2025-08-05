@@ -34,7 +34,9 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     )
 
     # ACT
-    result = cli_tester.process_power_up(amount=AMOUNT_TO_POWER_UP, to=operation.to, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_up(
+        amount=AMOUNT_TO_POWER_UP, to=operation.to, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -53,7 +55,7 @@ async def test_power_up_no_default_account(node: tt.RawNode, cli_tester: CLITest
 
     # ACT
     result = cli_tester.process_power_up(
-        amount=AMOUNT_TO_POWER_UP, from_=operation.from_, to=operation.to, sign=other_account_key_alias
+        amount=AMOUNT_TO_POWER_UP, from_=operation.from_, to=operation.to, sign_with=other_account_key_alias
     )
 
     # ASSERT
@@ -69,7 +71,7 @@ async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester)
     )
 
     # ACT
-    result = cli_tester.process_power_up(amount=AMOUNT_TO_POWER_UP, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_up(amount=AMOUNT_TO_POWER_UP, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)

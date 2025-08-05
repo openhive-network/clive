@@ -20,7 +20,9 @@ async def test_set_threshold(cli_tester: CLITester, authority: AuthorityType) ->
     weight_threshold = 3
 
     # ACT
-    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold).fire()
+    cli_tester.process_update_authority(
+        authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+    ).fire()
 
     # ASSERT
     assert_weight_threshold(cli_tester, authority, weight_threshold)
@@ -30,4 +32,4 @@ async def test_set_threshold(cli_tester: CLITester, authority: AuthorityType) ->
 async def test_negative_do_nothing_command(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=NoChangesTransactionError.MESSAGE):
-        cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS).fire()
+        cli_tester.process_update_authority(authority, sign_with=WORKING_ACCOUNT_KEY_ALIAS).fire()
