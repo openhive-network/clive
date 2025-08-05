@@ -38,7 +38,7 @@ class ProfileStorageBase(PreconfiguredBaseModel, ABC):
         cls._validate_upgrade_definition()
 
     def __hash__(self) -> int:
-        return hash(self.json())
+        return hash(self.json(order="deterministic"))
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
