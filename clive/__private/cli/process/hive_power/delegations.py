@@ -25,7 +25,7 @@ async def process_delegations_set(  # noqa: PLR0913
     account_name: str = options.account_name,
     delegatee: str = _delegatee_account_name,
     amount: str = options.voting_amount,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -38,7 +38,7 @@ async def process_delegations_set(  # noqa: PLR0913
         delegator=account_name,
         delegatee=delegatee,
         amount=amount_,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,
@@ -50,7 +50,7 @@ async def process_delegations_set(  # noqa: PLR0913
 async def process_delegations_remove(
     account_name: str = options.account_name,
     delegatee: str = _delegatee_account_name,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -60,7 +60,7 @@ async def process_delegations_remove(
     operation = ProcessDelegationsRemove(
         delegator=account_name,
         delegatee=delegatee,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     )

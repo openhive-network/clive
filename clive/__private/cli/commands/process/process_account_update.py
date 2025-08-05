@@ -61,14 +61,14 @@ class ProcessAccountUpdate(OperationCommand):
         self._callbacks.append(callback)
 
     def modify_common_options(
-        self, *, sign: str | None = None, broadcast: bool | None = None, save_file: str | None = None
+        self, *, sign_with: str | None = None, broadcast: bool | None = None, save_file: str | None = None
     ) -> None:
-        is_sign_given = sign is not None
+        is_sign_given = sign_with is not None
         is_broadcast_given = broadcast is not None
         is_save_file_given = save_file is not None
 
         if is_sign_given:
-            self.sign = sign
+            self.sign_with = sign_with
 
         if is_broadcast_given:
             self.broadcast = cast("bool", broadcast)

@@ -21,7 +21,7 @@ async def process_power_up(  # noqa: PLR0913
     amount: str = typer.Option(
         ..., parser=hive_asset, help="The amount to transfer to vesting. (e.g. 2.500 HIVE)", show_default=False
     ),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -34,7 +34,7 @@ async def process_power_up(  # noqa: PLR0913
         from_account=from_account,
         to_account=to_account,
         amount=amount_,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,

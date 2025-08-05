@@ -63,7 +63,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     frequency: timedelta = _frequency_value,
     memo: str = options.memo_value,
     pair_id: int = _pair_id_value,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -81,7 +81,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         frequency=frequency,
         memo=memo,
         pair_id=pair_id,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,
@@ -97,7 +97,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     frequency: timedelta | None = _frequency_value_optional,
     memo: str | None = options.memo_value_optional,
     pair_id: int | None = _pair_id_value_none,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -119,7 +119,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         frequency=frequency,
         memo=memo,
         pair_id=pair_id,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,
@@ -131,7 +131,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     pair_id: int | None = _pair_id_value_none,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -144,7 +144,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
         from_account=from_account,
         to=to,
         pair_id=pair_id,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()

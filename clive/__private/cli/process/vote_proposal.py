@@ -19,7 +19,7 @@ _proposal_id = typer.Option(
 async def process_vote_proposal_add(
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -30,7 +30,7 @@ async def process_vote_proposal_add(
         account_name=account_name,
         proposal_ids=proposal_id,
         approve=True,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()
@@ -40,7 +40,7 @@ async def process_vote_proposal_add(
 async def process_vote_proposal_remove(
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -51,7 +51,7 @@ async def process_vote_proposal_remove(
         account_name=account_name,
         proposal_ids=proposal_id,
         approve=False,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()

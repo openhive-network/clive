@@ -19,7 +19,7 @@ async def process_deposit(  # noqa: PLR0913
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -34,7 +34,7 @@ async def process_deposit(  # noqa: PLR0913
         to_account=to_account,
         amount=amount_,
         memo=memo,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,
@@ -52,7 +52,7 @@ async def process_withdrawal(  # noqa: PLR0913
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
         show_default=False,
     ),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -67,7 +67,7 @@ async def process_withdrawal(  # noqa: PLR0913
         amount=amount_,
         memo=memo,
         request_id=request_id,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
         force=force,
@@ -78,7 +78,7 @@ async def process_withdrawal(  # noqa: PLR0913
 async def process_withdrawal_cancel(
     from_account: str = options.from_account_name,
     request_id: int = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
-    sign: str | None = options.sign,
+    sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -88,7 +88,7 @@ async def process_withdrawal_cancel(
     await ProcessWithdrawalCancel(
         from_account=from_account,
         request_id=request_id,
-        sign=sign,
+        sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
     ).run()
