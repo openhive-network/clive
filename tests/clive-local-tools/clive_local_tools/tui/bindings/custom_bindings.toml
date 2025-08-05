@@ -5,12 +5,12 @@ load_transaction_from_file = "c"
 settings = "d"
 transaction_summary = "e"
 quit = "f"
+lock_wallet = "m"
 
 [dashboard]
 operations = "g"
 switch_working_account = "h"
 add_account = "e"
-lock_wallet = "f"
 
 [form_navigation]
 next_screen = "g"

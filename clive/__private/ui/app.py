@@ -85,6 +85,7 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(show=False),
     ]
 
     SCREENS = {
@@ -270,6 +271,10 @@ class Clive(App[int]):
     async def action_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.go_to_transaction_summary()
+
+    async def action_lock_wallet(self) -> None:
+        with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
+            await self.switch_mode_into_locked()
 
     def pause_refresh_alarms_data_interval(self) -> None:
         self._refresh_alarms_data_interval.pause()
