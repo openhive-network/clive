@@ -4,8 +4,6 @@ from collections.abc import Iterable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from pydantic import Field, validator
-
 from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
@@ -14,6 +12,7 @@ from clive.__private.models.schemas import (
     Signature,
     TransactionId,
     convert_to_representation,
+    field,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
@@ -25,18 +24,18 @@ if TYPE_CHECKING:
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationUnion] = Field(default_factory=list)
-    ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(-1))
-    expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
-    extensions: list[Any] = Field(default_factory=list)
-    signatures: list[Signature] = Field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
+    ref_block_num: HiveInt = -1
+    ref_block_prefix: HiveInt = -1
+    expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
+    extensions: list[Any] = []  # noqa: RUF012
+    signatures: list[Signature] = []  # noqa: RUF012
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
         return bool(self.operations)
 
-    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:
+    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:  # type: ignore[override]
         if isinstance(operation, OperationUnion):
             return operation in self.operations_models
         return operation in self.operations
@@ -60,7 +59,6 @@ class Transaction(SchemasTransaction):
         """Get only the operation models from already stored operations representations."""
         return [op.value for op in self.operations]
 
-    @validator("operations", pre=True)
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)

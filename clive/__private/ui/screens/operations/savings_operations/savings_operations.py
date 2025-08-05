@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal
 
 from textual import on
 from textual.containers import Grid, Horizontal
@@ -255,7 +255,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         if not CliveValidatedInput.validate_many(self._to_account_input, self._amount_input, self._memo_input):
             return None
 
-        data = {
+        data: dict[str, Any] = {
             "from_": self.default_receiver,
             "to": self._to_account_input.value_or_error,
             "amount": self._amount_input.value_or_error,
