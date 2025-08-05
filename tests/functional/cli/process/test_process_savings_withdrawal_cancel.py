@@ -21,13 +21,13 @@ async def test_withdrawal_cancel_valid(cli_tester: CLITester) -> None:
     # ARRANGE
     request_id = 13
 
-    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     cli_tester.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
+        amount=AMOUNT_TO_DEPOSIT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
     )
 
     # ACT
-    cli_tester.process_savings_withdrawal_cancel(sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id)
+    cli_tester.process_savings_withdrawal_cancel(sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id)
 
     # ASSERT
     result = cli_tester.show_pending_withdrawals()
@@ -41,10 +41,10 @@ async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
     actual_request_id = 23
     invalid_request_id = 24
 
-    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     cli_tester.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=actual_request_id
+        amount=AMOUNT_TO_DEPOSIT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=actual_request_id
     )
     expected_error = (
         rf"Savings withdraw for `owner` {WORKING_ACCOUNT_NAME} and 'request_id' {invalid_request_id} doesn't exist."
@@ -52,7 +52,7 @@ async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as withdrawal_cancel_exception_info:
-        cli_tester.process_savings_withdrawal_cancel(sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=invalid_request_id)
+        cli_tester.process_savings_withdrawal_cancel(sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=invalid_request_id)
     checkers.assert_exit_code(withdrawal_cancel_exception_info, 1)
 
     # ASSERT

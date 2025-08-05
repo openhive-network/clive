@@ -23,7 +23,7 @@ async def test_no_pending_power_down(cli_tester: CLITester) -> None:
 async def test_pending_power_down_basic(cli_tester: CLITester) -> None:
     # ARRANGE
     amount_to_power_down: Final[tt.Asset.VestT] = tt.Asset.Vest(345.678)
-    cli_tester.process_power_down_restart(sign=WORKING_ACCOUNT_KEY_ALIAS, amount=amount_to_power_down)
+    cli_tester.process_power_down_restart(sign_with=WORKING_ACCOUNT_KEY_ALIAS, amount=amount_to_power_down)
 
     # ACT
     cli_tester.show_pending_power_down(account_name=EMPTY_ACCOUNT.name)

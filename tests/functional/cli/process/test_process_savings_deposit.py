@@ -35,7 +35,7 @@ async def test_deposit_valid(
     working_account_balance: tt.Asset.AnyT,
 ) -> None:
     # ACT
-    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     checkers.assert_balances(
@@ -61,7 +61,7 @@ async def test_deposit_to_other_account(cli_tester: CLITester) -> None:
     cli_tester.process_savings_deposit(
         amount=AMOUNT_TO_DEPOSIT_HIVE,
         to=other_account.name,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         from_=WORKING_ACCOUNT_DATA.account.name,
     )
 
@@ -92,7 +92,7 @@ async def test_deposit_not_enough_hive(cli_tester: CLITester) -> None:
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as deposit_exception_info:
-        cli_tester.process_savings_deposit(amount=LARGE_AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_savings_deposit(amount=LARGE_AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     checkers.assert_exit_code(deposit_exception_info, 1)
 
     # ASSERT
@@ -115,7 +115,7 @@ async def test_deposit_with_memo(cli_tester: CLITester) -> None:
     result = cli_tester.process_savings_deposit(
         amount=AMOUNT_TO_DEPOSIT_HIVE,
         memo=DEPOSIT_MEMO,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT

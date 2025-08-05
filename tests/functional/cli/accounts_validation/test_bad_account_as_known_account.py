@@ -33,5 +33,5 @@ async def test_bad_accounts_as_known_account(
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError) as error:
-        cli_tester.process_power_up(amount=tt.Asset.Hive(10), to=BAD_ACCOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_power_up(amount=tt.Asset.Hive(10), to=BAD_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     assert_output_contains(EXPECTED_MESSAGE, error.value.stdout)

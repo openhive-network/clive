@@ -52,7 +52,7 @@ async def test_validation_of_delegate_vesting_shares(
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_delegations_set(
-            delegatee=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            delegatee=receiver, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -67,7 +67,7 @@ async def test_validation_of_setting_withdrawal_routes(
     def perform_operation() -> None:
         percent: int = 30
         cli_tester.process_withdraw_routes_set(
-            to=receiver, percent=percent, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            to=receiver, percent=percent, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -81,7 +81,7 @@ async def test_validation_of_savings_withdrawal(
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_savings_withdrawal(
-            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            to=receiver, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -95,7 +95,7 @@ async def test_validation_of_deposing_savings(
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_savings_deposit(
-            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            to=receiver, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -109,7 +109,7 @@ async def test_validation_of_powering_up(
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_power_up(
-            amount=AMOUNT, to=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            amount=AMOUNT, to=receiver, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -121,7 +121,7 @@ async def test_validation_of_powering_up_to_self(
 ) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_power_up(amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
+        cli_tester.process_power_up(amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, WORKING_ACCOUNT_NAME)
@@ -134,7 +134,7 @@ async def test_validation_of_transfer(
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_transfer(
-            to=receiver, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
+            to=receiver, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
     # ACT & ASSERT
@@ -147,7 +147,7 @@ async def test_validation_of_setting_proxy(
 ) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_proxy_set(proxy=receiver, sign=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
+        cli_tester.process_proxy_set(proxy=receiver, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, receiver)
@@ -162,7 +162,7 @@ async def test_validation_of_creating_scheduled_transfer(
         cli_tester.process_transfer_schedule_create(
             to=receiver,
             amount=tt.Asset.Hive(1),
-            sign=WORKING_ACCOUNT_KEY_ALIAS,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             repeat=2,
             frequency="24h",
             **process_action_selector,
@@ -189,7 +189,7 @@ def transaction_path(tmp_path: Path, receiver: str) -> Path:
 async def test_loading_transaction(cli_tester: CLITester, receiver: str, transaction_path: Path) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_transaction(from_file=transaction_path, sign=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False)
+        cli_tester.process_transaction(from_file=transaction_path, sign_with=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, receiver)
@@ -201,11 +201,11 @@ async def test_no_validation_of_removing_withdraw_routes_to_account_that_was_kno
     """It should be possible to remove withdraw routes, even if account is not on known account list."""
     # ARRANGE
     percent: int = 30
-    cli_tester.process_withdraw_routes_set(to=KNOWN_ACCOUNT, percent=percent, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_withdraw_routes_set(to=KNOWN_ACCOUNT, percent=percent, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_withdraw_routes_remove(to=KNOWN_ACCOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_withdraw_routes_remove(to=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
 
 async def test_no_validation_of_removing_delegation_of_vesting_shares_to_account_that_was_known(
@@ -213,11 +213,11 @@ async def test_no_validation_of_removing_delegation_of_vesting_shares_to_account
 ) -> None:
     """It should be possible to remove delegation, even if account is not on known account list."""
     # ARRANGE
-    cli_tester.process_delegations_set(delegatee=KNOWN_ACCOUNT, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_delegations_set(delegatee=KNOWN_ACCOUNT, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_delegations_remove(delegatee=KNOWN_ACCOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_delegations_remove(delegatee=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
 
 async def test_no_validation_of_canceling_savings_withdrawal_to_account_that_was_known(
@@ -228,13 +228,13 @@ async def test_no_validation_of_canceling_savings_withdrawal_to_account_that_was
     request_id = 1  # there is already one withdrawal pending in the block log
 
     cli_tester.process_savings_withdrawal(
-        to=KNOWN_ACCOUNT, amount=AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
+        to=KNOWN_ACCOUNT, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
     )
 
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_savings_withdrawal_cancel(sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id)
+    cli_tester.process_savings_withdrawal_cancel(sign_with=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id)
 
 
 async def test_no_validation_of_canceling_proxy_to_account_that_was_known(
@@ -242,11 +242,11 @@ async def test_no_validation_of_canceling_proxy_to_account_that_was_known(
 ) -> None:
     """It should be possible of clearing proxy, even if account is not on known account list."""
     # ARRANGE
-    cli_tester.process_proxy_set(proxy=KNOWN_ACCOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_proxy_set(proxy=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_proxy_clear(sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_proxy_clear(sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
 
 async def test_no_validation_of_removing_scheduled_transfer_to_account_that_was_known(
@@ -257,11 +257,11 @@ async def test_no_validation_of_removing_scheduled_transfer_to_account_that_was_
     cli_tester.process_transfer_schedule_create(
         to=KNOWN_ACCOUNT,
         amount=AMOUNT,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         repeat=2,
         frequency="24h",
     )
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_transfer_schedule_remove(to=KNOWN_ACCOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_transfer_schedule_remove(to=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)

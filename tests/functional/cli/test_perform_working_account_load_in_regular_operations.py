@@ -87,7 +87,7 @@ async def test_custom_authority_in_custom_json_operation(
 
     # ACT
     result = cli_tester.process_custom_json(
-        id_=custom_id, json_=custom_json, sign=ALT_WORKING_ACCOUNT2_KEY_ALIAS, authorize=ALT_WORKING_ACCOUNT2_NAME
+        id_=custom_id, json_=custom_json, sign_with=ALT_WORKING_ACCOUNT2_KEY_ALIAS, authorize=ALT_WORKING_ACCOUNT2_NAME
     )
     transaction_id = get_transaction_id_from_output(result.output)
 
@@ -108,7 +108,7 @@ async def test_perform_working_account_load_in_regular_operations(node: tt.RawNo
     )
 
     # ACT
-    result = cli_tester.process_transfer(to=other_account_name, amount=amount, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_transfer(to=other_account_name, amount=amount, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     transaction_id = get_transaction_id_from_output(result.output)
 
     # ASSERT

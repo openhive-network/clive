@@ -25,7 +25,7 @@ async def test_add_key(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     ).add_key(
         key=OTHER_ACCOUNT.public_key,
         weight=WEIGHT,
@@ -41,7 +41,7 @@ async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> No
     # ARRANGE
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     ).add_key(
         key=OTHER_ACCOUNT.public_key,
         weight=WEIGHT,
@@ -51,7 +51,7 @@ async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> No
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     ).remove_key(
         key=OTHER_ACCOUNT.public_key,
     ).fire()
@@ -65,7 +65,7 @@ async def test_modify_key(cli_tester: CLITester, authority: AuthorityType) -> No
     # ARRANGE
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     ).add_key(
         key=OTHER_ACCOUNT.public_key,
         weight=WEIGHT,
@@ -75,7 +75,7 @@ async def test_modify_key(cli_tester: CLITester, authority: AuthorityType) -> No
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     ).modify_key(
         key=OTHER_ACCOUNT.public_key,
         weight=MODIFIED_WEIGHT,

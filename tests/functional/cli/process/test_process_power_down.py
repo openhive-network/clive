@@ -26,7 +26,7 @@ AMOUNT_TO_POWER_DOWN_VESTS: Final[tt.Asset.VestT] = tt.Asset.Vest(345.456)
 
 async def test_power_down_start_success_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
-    result = cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_transaction_in_blockchain(node, result)
@@ -40,7 +40,7 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
     )
 
     # ACT
-    result = cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_VESTS, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_VESTS, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -49,12 +49,12 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
 async def test_power_down_start_fail(cli_tester: CLITester) -> None:
     # ARRNGE
     amount_to_power_down: Final[tt.Asset.HiveT] = tt.Asset.Hive(234.567)
-    cli_tester.process_power_down_start(sign=WORKING_ACCOUNT_KEY_ALIAS, amount=AMOUNT_TO_POWER_DOWN_HP)
+    cli_tester.process_power_down_start(sign_with=WORKING_ACCOUNT_KEY_ALIAS, amount=AMOUNT_TO_POWER_DOWN_HP)
     expected_error = "Power-down is already in progress"
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as power_down_start_exception_info:
-        cli_tester.process_power_down_start(amount=amount_to_power_down, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_power_down_start(amount=amount_to_power_down, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_exit_code(power_down_start_exception_info, 1)
@@ -62,7 +62,7 @@ async def test_power_down_start_fail(cli_tester: CLITester) -> None:
 
 async def test_power_down_restart_create_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
-    result = cli_tester.process_power_down_restart(amount=AMOUNT_TO_POWER_DOWN_HP, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_restart(amount=AMOUNT_TO_POWER_DOWN_HP, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_transaction_in_blockchain(node, result)
@@ -76,7 +76,9 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
     )
 
     # ACT
-    result = cli_tester.process_power_down_restart(amount=AMOUNT_TO_POWER_DOWN_VESTS, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_restart(
+        amount=AMOUNT_TO_POWER_DOWN_VESTS, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -84,14 +86,16 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
 
 async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
         vesting_shares=AMOUNT_TO_POWER_DOWN_VESTS,
     )
 
     # ACT
-    result = cli_tester.process_power_down_restart(amount=AMOUNT_TO_POWER_DOWN_VESTS, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_restart(
+        amount=AMOUNT_TO_POWER_DOWN_VESTS, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -99,14 +103,14 @@ async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITest
 
 async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_power_down_start(amount=AMOUNT_TO_POWER_DOWN_HP, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
         vesting_shares=POWER_DOWN_REMOVE_ASSET,
     )
 
     # ACT
-    result = cli_tester.process_power_down_cancel(sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_power_down_cancel(sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -119,7 +123,7 @@ async def test_power_down_cancel_fail(cli_tester: CLITester) -> None:
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as power_down_cancel_exception_info:
-        cli_tester.process_power_down_cancel(sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_power_down_cancel(sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_exit_code(power_down_cancel_exception_info, 1)

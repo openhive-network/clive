@@ -32,7 +32,7 @@ async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         threshold=WEIGHT_THRESHOLD,
     ).add_account(
         account=OTHER_ACCOUNT.name,
@@ -56,7 +56,7 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         threshold=WEIGHT_THRESHOLD,
     ).add_account(
         account=OTHER_ACCOUNT.name,
@@ -86,7 +86,7 @@ async def test_chaining3(cli_tester: CLITester, authority: AuthorityType) -> Non
     # ACT
     cli_tester.process_update_authority(
         authority,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         threshold=WEIGHT_THRESHOLD,
     ).add_key(
         key=OTHER_ACCOUNT.public_key,

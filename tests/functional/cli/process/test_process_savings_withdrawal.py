@@ -35,10 +35,10 @@ async def test_withdrawal_valid(
     working_account_balance: tt.Asset.AnyT,
 ) -> None:
     # ARRANGE
-    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(amount=amount_to_deposit, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT
-    cli_tester.process_savings_withdrawal(amount=amount_to_deposit, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_withdrawal(amount=amount_to_deposit, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     checkers.assert_balances(
@@ -61,7 +61,7 @@ async def test_withdrawal_invalid(cli_tester: CLITester) -> None:
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as withdrawal_exception_info:
-        cli_tester.process_savings_withdrawal(amount=LARGE_AMOUNT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_savings_withdrawal(amount=LARGE_AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     checkers.assert_exit_code(withdrawal_exception_info, 1)
 
     # ASSERT
@@ -81,11 +81,13 @@ async def test_withdrawal_invalid(cli_tester: CLITester) -> None:
 
 async def test_withdrawal_with_memo(cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT_HIVE, memo=DEPOSIT_MEMO, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(
+        amount=AMOUNT_TO_DEPOSIT_HIVE, memo=DEPOSIT_MEMO, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ACT
     cli_tester.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT_HIVE, memo=WITHDRAWAL_MEMO, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT_HIVE, memo=WITHDRAWAL_MEMO, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT

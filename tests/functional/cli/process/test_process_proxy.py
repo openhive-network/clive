@@ -27,7 +27,7 @@ async def test_setting_proxy_to_account(node: tt.RawNode, cli_tester: CLITester)
 
     # ACT
     result = cli_tester.process_proxy_set(
-        proxy=PROXY_ACCOUNT_NAME, account_name=ACCOUNT_NAME, sign=WORKING_ACCOUNT_KEY_ALIAS
+        proxy=PROXY_ACCOUNT_NAME, account_name=ACCOUNT_NAME, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -37,10 +37,12 @@ async def test_setting_proxy_to_account(node: tt.RawNode, cli_tester: CLITester)
 async def test_canceling_proxy_to_account(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     proxy_clear_operation = AccountWitnessProxyOperation(account=ACCOUNT_NAME, proxy=CANCEL_PROXY_VALUE)
-    cli_tester.process_proxy_set(proxy=PROXY_ACCOUNT_NAME, account_name=ACCOUNT_NAME, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_proxy_set(
+        proxy=PROXY_ACCOUNT_NAME, account_name=ACCOUNT_NAME, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ACT
-    result = cli_tester.process_proxy_clear(account_name=ACCOUNT_NAME, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_proxy_clear(account_name=ACCOUNT_NAME, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, proxy_clear_operation)
@@ -52,4 +54,4 @@ async def test_canceling_not_existing_proxy(cli_tester: CLITester) -> None:
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=expected_message):
-        cli_tester.process_proxy_clear(account_name=ACCOUNT_NAME, sign=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_proxy_clear(account_name=ACCOUNT_NAME, sign_with=WORKING_ACCOUNT_KEY_ALIAS)

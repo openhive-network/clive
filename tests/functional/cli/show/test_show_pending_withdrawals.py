@@ -27,11 +27,11 @@ async def test_show_pending_withdrawals_none(cli_tester: CLITester) -> None:
 
 async def test_show_pending_withdrawals_basic(cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_deposit(amount=AMOUNT_TO_DEPOSIT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
-    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
-    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW2, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_savings_withdrawal(amount=AMOUNT_TO_WITHDRAW2, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT
     # ASSERT

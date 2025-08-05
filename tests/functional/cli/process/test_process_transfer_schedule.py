@@ -39,7 +39,7 @@ async def test_creation_of_scheduled_transfer(node: tt.RawNode, cli_tester: CLIT
         to=RECEIVER,
         amount=AMOUNT,
         memo=MEMO,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         repeat=REPEAT,
         frequency=FREQUENCY,
     )
@@ -64,14 +64,14 @@ async def test_modification_of_scheduled_transfer(
         to=RECEIVER,
         amount=AMOUNT,
         memo=MEMO,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         repeat=REPEAT,
         frequency=FREQUENCY,
     )
 
     # ACT
     result = cli_tester.process_transfer_schedule_modify(
-        to=RECEIVER, repeat=modified_repeat, memo=modified_memo, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=RECEIVER, repeat=modified_repeat, memo=modified_memo, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -97,13 +97,13 @@ async def test_removing_scheduled_transfer(
         to=RECEIVER,
         amount=AMOUNT,
         memo=MEMO,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         repeat=REPEAT,
         frequency=FREQUENCY,
     )
 
     # ACT
-    result = cli_tester.process_transfer_schedule_remove(to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_transfer_schedule_remove(to=RECEIVER, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
