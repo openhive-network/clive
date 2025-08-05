@@ -136,5 +136,15 @@ save_file = _operation_common_option(
         show_default=False,
     )
 )
+autosign = _operation_common_option(
+    typer.Option(
+        default=None,
+        help=(
+            "Whether to sign the transaction automatically, using single key from the profile as default one"
+            " (if there are multiple keys, it will raise an error)."
+        ),
+        show_default=False,
+    )
+)
 
 # << OPERATION COMMON OPTIONS
