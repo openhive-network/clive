@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
     sign_with: str | None = None
+    autosign: bool | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file: str | Path | None = None

@@ -20,6 +20,7 @@ async def process_deposit(  # noqa: PLR0913
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -38,6 +39,7 @@ async def process_deposit(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -52,6 +54,7 @@ async def process_withdrawal(  # noqa: PLR0913
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
     ),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -70,14 +73,16 @@ async def process_withdrawal(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
 @savings.command(name="withdrawal-cancel")
-async def process_withdrawal_cancel(
+async def process_withdrawal_cancel(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     request_id: int = typer.Option(..., help="Id of previously initiated withdrawal."),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -90,4 +95,5 @@ async def process_withdrawal_cancel(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()

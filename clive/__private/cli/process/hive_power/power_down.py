@@ -12,10 +12,11 @@ power_down = CliveTyper(name="power-down", help="Perform power-down, send withdr
 
 
 @power_down.command(name="start")
-async def process_power_down_start(
+async def process_power_down_start(  # noqa: PLR0913
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -33,15 +34,17 @@ async def process_power_down_start(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()
 
 
 @power_down.command(name="restart")
-async def process_power_down_restart(
+async def process_power_down_restart(  # noqa: PLR0913
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -54,7 +57,12 @@ async def process_power_down_restart(
 
     amount_ = cast("Asset.Hive", amount)
     operation = ProcessPowerDown(
-        account_name=account_name, amount=amount_, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+        account_name=account_name,
+        amount=amount_,
+        sign_with=sign_with,
+        broadcast=broadcast,
+        save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()
 
@@ -63,6 +71,7 @@ async def process_power_down_restart(
 async def process_power_down_cancel(
     account_name: str = options.account_name,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -70,6 +79,6 @@ async def process_power_down_cancel(
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel  # noqa: PLC0415
 
     operation = ProcessPowerDownCancel(
-        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file, autosign=autosign
     )
     await operation.run()

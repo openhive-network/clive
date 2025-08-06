@@ -16,10 +16,11 @@ _proposal_id = typer.Option(
 
 
 @vote_proposal.command(name="add")
-async def process_vote_proposal_add(
+async def process_vote_proposal_add(  # noqa: PLR0913
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -33,14 +34,16 @@ async def process_vote_proposal_add(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()
 
 
 @vote_proposal.command(name="remove")
-async def process_vote_proposal_remove(
+async def process_vote_proposal_remove(  # noqa: PLR0913
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -54,4 +57,5 @@ async def process_vote_proposal_remove(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()
