@@ -23,6 +23,7 @@ async def process_deposit(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Immediately deposit funds to savings account."""
     from clive.__private.cli.commands.process.process_deposit import ProcessDeposit  # noqa: PLC0415
@@ -38,6 +39,7 @@ async def process_deposit(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -56,6 +58,7 @@ async def process_withdrawal(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
     from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal  # noqa: PLC0415
@@ -71,16 +74,18 @@ async def process_withdrawal(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
 @savings.command(name="withdrawal-cancel")
-async def process_withdrawal_cancel(
+async def process_withdrawal_cancel(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     request_id: int = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
     sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Cancel previously initiated withdrawal from savings account."""
     from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel  # noqa: PLC0415
@@ -91,4 +96,5 @@ async def process_withdrawal_cancel(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()

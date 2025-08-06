@@ -67,6 +67,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
@@ -85,6 +86,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -101,6 +103,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """
     Modify an existing recurrent transfer.
@@ -123,6 +126,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -134,6 +138,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Remove an existing recurrent transfer."""
     from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
@@ -147,4 +152,5 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()

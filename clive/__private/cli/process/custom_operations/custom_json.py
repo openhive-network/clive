@@ -36,6 +36,7 @@ async def process_custom_json(  # noqa: PLR0913
     sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Send custom json operation, json can be provided as string or file."""
     from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson  # noqa: PLC0415
@@ -48,5 +49,6 @@ async def process_custom_json(  # noqa: PLR0913
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()

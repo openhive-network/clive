@@ -40,6 +40,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool = False
+    autosign: bool | None = None
 
     @property
     def save_file_path(self) -> Path | None:

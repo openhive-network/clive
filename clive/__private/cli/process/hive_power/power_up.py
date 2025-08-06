@@ -25,6 +25,7 @@ async def process_power_up(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Perform power-up by sending transfer_to_vesting_operation."""
     from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp  # noqa: PLC0415
@@ -38,4 +39,5 @@ async def process_power_up(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()

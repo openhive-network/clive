@@ -24,6 +24,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes  # noqa: PLC0415
@@ -37,17 +38,19 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     )
     await operation.run()
 
 
 @withdraw_routes.command(name="remove")
-async def process_withdraw_routes_remove(
+async def process_withdraw_routes_remove(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name_required,
     sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
 ) -> None:
     """Clear withdraw route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import (  # noqa: PLC0415
@@ -60,5 +63,6 @@ async def process_withdraw_routes_remove(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()
