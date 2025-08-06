@@ -118,7 +118,16 @@ def test_load_custom_bindings() -> None:
 
     # ASSERT
     loaded_data = bindings.to_dict()
-    assert all(loaded_data.get(k) == v for k, v in raw_data.items()), "loaded bindings should be superset of toml file"
+    for section_name, raw_value in raw_data.items():
+        assert section_name in loaded_data, f"binding section `{section_name}` from file `{raw_data}` has invalid name"
+        loaded_value = loaded_data[section_name]
+        assert isinstance(raw_value, dict), (
+            f"binding section `{section_name}` from file `{raw_data}` should be convertible to dict"
+        )
+        assert loaded_value.items() >= raw_value.items(), (
+            f"loaded bindings in section `{section_name}` with default values should be superset of toml file"
+            f" parsed data: `{loaded_value}` raw data in file: `{raw_value}`"
+        )
 
 
 def test_load_empty_bindings() -> None:
