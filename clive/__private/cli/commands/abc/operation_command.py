@@ -13,10 +13,7 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class OperationCommand(PerformActionsOnTransactionCommand, ABC):
-    sign_with: str | None
     force_unsign: bool = field(init=False, default=False)
-    save_file: str | None
-    broadcast: bool
 
     @abstractmethod
     async def _create_operation(self) -> OperationUnion:
