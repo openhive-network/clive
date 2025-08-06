@@ -32,6 +32,7 @@ async def process_custom_json(  # noqa: PLR0913
         help="Custom json content. This can be a path to a file or a string itself.",
     ),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -46,5 +47,6 @@ async def process_custom_json(  # noqa: PLR0913
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()

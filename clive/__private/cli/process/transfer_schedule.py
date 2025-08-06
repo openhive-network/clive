@@ -61,6 +61,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     memo: str = options.memo_value,
     pair_id: int = _pair_id_value,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -82,6 +83,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -95,6 +97,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     memo: str | None = options.memo_value_optional,
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -120,6 +123,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
@@ -129,6 +133,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     to: str = options.to_account_name_required,
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -144,4 +149,5 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()

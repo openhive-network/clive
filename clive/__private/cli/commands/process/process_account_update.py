@@ -61,11 +61,17 @@ class ProcessAccountUpdate(OperationCommand):
         self._callbacks.append(callback)
 
     def modify_common_options(
-        self, *, sign_with: str | None = None, broadcast: bool | None = None, save_file: str | None = None
+        self,
+        *,
+        sign_with: str | None = None,
+        autosign: bool | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
     ) -> None:
         is_sign_given = sign_with is not None
         is_broadcast_given = broadcast is not None
         is_save_file_given = save_file is not None
+        is_autosign_given = autosign is not None
 
         if is_sign_given:
             self.sign_with = sign_with
@@ -75,6 +81,9 @@ class ProcessAccountUpdate(OperationCommand):
 
         if is_save_file_given:
             self.save_file = save_file
+
+        if is_autosign_given:
+            self.autosign = cast("bool", autosign)
 
     def __skip_untouched_fields(
         self, previous_state: AccountUpdate2Operation, modified_state: AccountUpdate2Operation

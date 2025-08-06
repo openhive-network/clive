@@ -15,7 +15,7 @@ claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 
 
 @claim.command(name="new-account-token")
-async def process_claim_new_account_token(
+async def process_claim_new_account_token(  # noqa: PLR0913
     creator: str = options.account_name,
     fee: str | None = typer.Option(
         None,
@@ -24,6 +24,7 @@ async def process_claim_new_account_token(
         " If not specified resource credits will be used to obtain token.",
     ),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -39,4 +40,5 @@ async def process_claim_new_account_token(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()

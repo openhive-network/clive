@@ -25,6 +25,7 @@ async def process_delegations_set(  # noqa: PLR0913
     delegatee: str = _delegatee_account_name,
     amount: str = options.voting_amount,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -41,15 +42,17 @@ async def process_delegations_set(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     )
     await operation.run()
 
 
 @delegations.command(name="remove")
-async def process_delegations_remove(
+async def process_delegations_remove(  # noqa: PLR0913
     account_name: str = options.account_name,
     delegatee: str = _delegatee_account_name,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -62,5 +65,6 @@ async def process_delegations_remove(
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     )
     await operation.run()

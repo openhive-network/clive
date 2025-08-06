@@ -50,6 +50,7 @@ async def transfer(  # noqa: PLR0913
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -65,6 +66,7 @@ async def transfer(  # noqa: PLR0913
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
+        autosign=autosign,
     ).run()
 
 
@@ -82,6 +84,7 @@ async def process_transaction(  # noqa: PLR0913
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
     ),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
@@ -97,11 +100,12 @@ async def process_transaction(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
         force=force,
+        autosign=autosign,
     ).run()
 
 
 @process.command(name="update-memo-key")
-async def process_update_memo_key(
+async def process_update_memo_key(  # noqa: PLR0913
     account_name: str = options.account_name,
     memo_key: str = typer.Option(
         ...,
@@ -109,6 +113,7 @@ async def process_update_memo_key(
         help="New memo public key that will be set for account.",
     ),
     sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
@@ -121,7 +126,7 @@ async def process_update_memo_key(
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
 
     operation = ProcessAccountUpdate(
-        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+        account_name=account_name, sign_with=sign_with, broadcast=broadcast, save_file=save_file, autosign=autosign
     )
     operation.add_callback(update_memo_key_callback)
     await operation.run()
