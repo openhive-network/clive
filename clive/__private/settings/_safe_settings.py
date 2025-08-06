@@ -5,7 +5,7 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal, cast, get_args, overload
+from typing import Final, Literal, cast, get_args, overload
 
 from beekeepy import Settings as BeekeepySettings
 from beekeepy.handle.remote import RemoteHandleSettings
@@ -72,6 +72,13 @@ class SettingsValueError(SettingsError):
         self.details = details
         self.message = f"Value of ({setting_name}) is invalid: `{value}`. {details}".strip()
         super().__init__(self.message)
+
+
+class NotSet:
+    """Used to represent a value that has not been set."""
+
+
+NOT_SET: Final[NotSet] = NotSet()
 
 
 class SafeSettings:
@@ -173,7 +180,7 @@ class SafeSettings:
             from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
             setting_name = SECRETS_DEFAULT_PRIVATE_KEY
-            value = self._parent._get_value_from_settings(setting_name, "")
+            value = self._parent._get_value_from_settings(setting_name, optionally=True)
             if not value:
                 return None
 
@@ -277,7 +284,7 @@ class SafeSettings:
             return self._parent._get_data_path() / "beekeeper"
 
         def _get_beekeeper_session_token(self) -> str | None:
-            beekeeper_session_token = self._parent._get_value_from_settings(BEEKEEPER_SESSION_TOKEN, None)
+            beekeeper_session_token = self._parent._get_value_from_settings(BEEKEEPER_SESSION_TOKEN, optionally=True)
             if beekeeper_session_token:
                 return str(beekeeper_session_token)
             return None
@@ -327,7 +334,7 @@ class SafeSettings:
             from clive.__private.models.schemas import ChainId, is_matching_model  # noqa: PLC0415
 
             setting_name = NODE_CHAIN_ID
-            value = self._parent._get_value_from_settings(setting_name, "")
+            value = self._parent._get_value_from_settings(setting_name, optionally=True)
             if not value:
                 return None
 
@@ -402,7 +409,7 @@ class SafeSettings:
         self._namespaces.add(namespace)
         return namespace(self)
 
-    def _get_path(self, setting_name: str, default: Path | None = None) -> Path:
+    def _get_path(self, setting_name: str, default: Path | NotSet = NOT_SET) -> Path:
         value = self._get_value_from_settings(setting_name, default)
         if isinstance(value, Path):
             # case when value is set in runtime, by us
@@ -424,7 +431,7 @@ class SafeSettings:
     def _get_or_default_false(self, setting_name: str) -> bool:
         return self._get_bool(setting_name, default=False)
 
-    def _get_bool(self, setting_name: str, *, default: bool | None = None) -> bool:
+    def _get_bool(self, setting_name: str, *, default: bool | NotSet = NOT_SET) -> bool:
         value = self._get_value_from_settings(setting_name, default=default)
 
         try:
@@ -432,7 +439,9 @@ class SafeSettings:
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
-    def _get_number(self, setting_name: str, *, default: float | None = None, minimum: float | None = None) -> float:
+    def _get_number(
+        self, setting_name: str, *, default: float | NotSet = NOT_SET, minimum: float | None = None
+    ) -> float:
         from textual.validation import Number  # noqa: PLC0415
 
         value = self._get_value_from_settings(setting_name, default=default)
@@ -445,7 +454,7 @@ class SafeSettings:
 
         return float(value_)
 
-    def _get_list(self, setting_name: str, default: object | None = None) -> list[object]:
+    def _get_list(self, setting_name: str, default: object | NotSet = NOT_SET) -> list[object]:
         value = self._get_value_from_settings(setting_name, default=default)
         if isinstance(value, str):
             # try to parse string as list
@@ -465,11 +474,9 @@ class SafeSettings:
     def _get_url(self, setting_name: str, *, optionally: Literal[True] = True) -> HttpUrl | None: ...
 
     def _get_url(self, setting_name: str, *, optionally: bool = True) -> HttpUrl | None:
-        value = self._get_value_from_settings(setting_name, "")
+        value = self._get_value_from_settings(setting_name, optionally=optionally)
         if not value:
-            if optionally:
-                return None
-            raise SettingsValueError(setting_name=setting_name, value=value, details="URL is required.")
+            return None
 
         self._assert_is_string(setting_name, value=value)
         value_ = cast("str", value)
@@ -478,8 +485,21 @@ class SafeSettings:
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
-    def _get_value_from_settings(self, setting_name: str, default: object | None = None) -> object:
-        return settings.get(setting_name) if default is None else settings.get(setting_name, default)
+    def _get_value_from_settings(
+        self, setting_name: str, default: object | NotSet = NOT_SET, *, optionally: bool = False
+    ) -> object:
+        # Call .get(setting_name, default) will only return the default value when the setting/envvar doesn't exist,
+        #  not when is set to empty string.
+        value = settings.get(setting_name)
+        if value in ("", None):
+            if default is not NOT_SET:
+                return default
+            if optionally:
+                return None
+
+            raise SettingsValueError(setting_name=setting_name, value=value, details="Value is required.")
+
+        return value
 
     def _assert_is_string(self, setting_name: str, *, value: object) -> None:
         self._assert_is_type(setting_name=setting_name, value=value, expected_type=str)
