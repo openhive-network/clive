@@ -95,8 +95,8 @@ class KeyAliasStorageModel(PreconfiguredBaseModel):
 
 class TransactionCoreStorageModel(PreconfiguredBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
-    ref_block_num: HiveInt = -1
-    ref_block_prefix: HiveInt = -1
+    ref_block_num: HiveInt = 0
+    ref_block_prefix: HiveInt = 0
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime(utc_epoch()))
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
