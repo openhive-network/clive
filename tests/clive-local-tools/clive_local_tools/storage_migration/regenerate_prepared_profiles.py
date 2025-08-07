@@ -100,6 +100,7 @@ def save_encrypted_profile(encrypted: str) -> None:
 
 @contextmanager
 def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None, None]:
+    init_file_name = "__init__.py"
     dst_dir = Path(__file__).parent.absolute() / dst_dir_name
 
     with tempfile.TemporaryDirectory() as tmp_dir_name:
@@ -109,7 +110,13 @@ def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None, None]:
         for path in Path(tmp_dir_name).rglob("*"):
             if path.suffix in {".wallet", ".profile"}:
                 dst_path = dst_dir / path.relative_to(tmp_dir_name)
+                dst_last_dir = dst_path.parent
+                dst_last_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copy(path, dst_path)
+
+    all_directories = [dst_dir] + [path for path in dst_dir.rglob("*") if path.is_dir()]
+    for directory in all_directories:
+        (directory / init_file_name).touch(exist_ok=True)
 
 
 async def _main() -> None:
