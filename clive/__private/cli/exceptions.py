@@ -321,3 +321,19 @@ class CLITransactionToExchangeError(CLIPrettyError):
         message = f"Cannot perform transaction.\n{reason}"
         super().__init__(message, errno.EINVAL)
         self.message = message
+
+
+class CLITransactionAutoSignUsedTogetherWithSignWithError(CLIPrettyError):
+    """
+    Raise when trying to perform transaction with --autosign and --sign-with options used together.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "You cannot use --autosign with --sign-with. If you want to sign the transaction, remove --autosign."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

@@ -14,6 +14,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
+    CLITransactionAutoSignUsedTogetherWithSignWithError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
     CLITransactionToExchangeError,
@@ -55,6 +56,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def validate(self) -> None:
         self._validate_save_file_path()
+        self._validate_autosign_with_sign_with()
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
@@ -134,6 +136,16 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             result = exchange_operation_validator.validate(exchange.name)
             if not result.is_valid:
                 raise CLITransactionToExchangeError(humanize_validation_result(result))
+
+    def _validate_autosign_with_sign_with(self) -> None:
+        if self.autosign is None:
+            # We check if autosign is None, because it will allow us to use --sign-with without --no-autosign.
+            # If we set autosifn to True be default, we would get an error, that we are trying to use autosign
+            # together with --sign-with.
+            return
+
+        if self.autosign and self.sign_with:
+            raise CLITransactionAutoSignUsedTogetherWithSignWithError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
