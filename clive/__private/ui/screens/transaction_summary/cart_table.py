@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, Self
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.content import Content
-from textual.css.query import DOMQuery, NoMatches
+from textual.events import Mount
 from textual.message import Message
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
@@ -27,6 +27,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.css.query import DOMQuery
 
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import OperationUnion
@@ -75,12 +76,12 @@ class CartItemsActionManager:
 
 
 class CartItem(CliveCheckerboardTableRow, CliveWidget):
-    """Row of CartTable."""
+    """
+    Row of CartTable.
 
-    BINDINGS = [
-        Binding("ctrl+up", "select_previous", "Prev"),
-        Binding("ctrl+down", "select_next", "Next"),
-    ]
+    Args:
+        action_manager: Object to manage actions like move/delete.
+    """
 
     @dataclass
     class Delete(Message):
@@ -91,32 +92,32 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         from_index: int
         to_index: int
 
-    @dataclass
-    class Focus(Message):
-        """Message sent when other CartItem should be focused."""
-
-        target_index: int
-
-    def __init__(self, operation_index: int, action_manager: CartItemsActionManager) -> None:
-        self.operation_index = operation_index
+    def __init__(self, action_manager: CartItemsActionManager) -> None:
         super().__init__(*self._create_cells())
         self._action_manager = action_manager
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(operation_index={self._operation_index})"
+        return f"{self.__class__.__name__}(operation_index={self.operation_index})"
 
     @property
     def operation_index(self) -> int:
-        return self._operation_index
-
-    @operation_index.setter
-    def operation_index(self, value: int) -> None:
-        assert self._is_operation_index_valid(value), "Operation index was invalid when trying to update."
-        self._operation_index = value
+        return self.index
 
     @property
     def operation_number_cell(self) -> CliveCheckerBoardTableCell:
-        return self.query(CliveCheckerBoardTableCell).first()
+        return self.query_exactly_one("#op-number-cell", CliveCheckerBoardTableCell)
+
+    @property
+    def operation_name_cell(self) -> CliveCheckerBoardTableCell:
+        return self.query_exactly_one("#op-name-cell", CliveCheckerBoardTableCell)
+
+    @property
+    def operation_details_cell(self) -> CliveCheckerBoardTableCell:
+        return self.query_exactly_one("#op-details-cell", CliveCheckerBoardTableCell)
+
+    @property
+    def buttons_cell(self) -> CliveCheckerBoardTableCell:
+        return self.query_exactly_one("#buttons-cell", CliveCheckerBoardTableCell)
 
     @property
     def button_move_up(self) -> MoveUpButton:
@@ -132,8 +133,8 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @property
     def operation(self) -> OperationUnion:
-        assert self._is_operation_index_valid(self._operation_index), "Cannot get operation, position is invalid."
-        return self.profile.operations[self._operation_index]
+        assert self._is_operation_index_valid(self.operation_index), "Cannot get operation, position is invalid."
+        return self.profile.operations[self.operation_index]
 
     @property
     def operations_amount(self) -> int:
@@ -141,21 +142,15 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @property
     def is_first(self) -> bool:
-        return self._operation_index == 0
+        return self.operation_index == 0
 
     @property
     def is_last(self) -> bool:
-        return self._operation_index == self.operations_amount - 1
-
-    def on_mount(self) -> None:
-        if self.is_first:
-            self.unbind("ctrl+up")
-        elif self.is_last:
-            self.unbind("ctrl+down")
+        return self.operation_index == self.operations_amount - 1
 
     def humanize_operation_number(self, *, before_removal: bool = False) -> str:
         cart_items = self.operations_amount - 1 if before_removal else self.operations_amount
-        return f"{self._operation_index + 1}/{cart_items}"
+        return f"{self.operation_index + 1}/{cart_items}"
 
     def humanize_operation_name(self) -> str:
         return humanize_operation_name(self.operation)
@@ -163,46 +158,19 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def humanize_operation_details(self) -> str:
         return humanize_operation_details(self.operation)
 
-    def action_select_previous(self) -> None:
-        self.post_message(self.Focus(target_index=self._operation_index - 1))
+    @on(Mount)
+    async def update_cells(self) -> None:
+        """
+        Update content of cells that require row index.
 
-    def action_select_next(self) -> None:
-        self.post_message(self.Focus(target_index=self._operation_index + 1))
-
-    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002, C901
-        def focus_first_focusable_button() -> None:
-            buttons = self.query(CliveButton)
-            for button in buttons:
-                if button.focusable:
-                    button.focus()
-                    break
-
-        def focus_enabled_arrow_button() -> None:
-            for button in [self.button_move_up, self.button_move_down]:
-                if button.focusable:
-                    button.focus()
-
-        def was_arrow_previously_focused() -> bool:
-            return isinstance(previously_focused, (MoveUpButton, MoveDownButton))
-
-        previously_focused = self.app.focused
-        if not previously_focused:
-            focus_first_focusable_button()
-            return self
-
-        try:
-            same_button_as_before = self.query_exactly_one(type(previously_focused))
-        except NoMatches:
-            focus_first_focusable_button()
-            return self
-
-        if same_button_as_before.focusable:
-            same_button_as_before.focus()
-        elif was_arrow_previously_focused():
-            focus_enabled_arrow_button()
-        else:
-            focus_first_focusable_button()
-        return self
+        The cells are initialized with a LOADING_TEXT because of the row index,
+        which is assigned automatically later, during row creation. The cells content is
+        updated here once the row is fully created and its index becomes available.
+        """
+        await self.operation_number_cell.update_content(self.humanize_operation_number())
+        await self.operation_name_cell.update_content(self.humanize_operation_name())
+        await self.operation_details_cell.update_content(Content(self.humanize_operation_details()))
+        await self.buttons_cell.update_content(self._create_buttons_container())
 
     @on(CliveButton.Pressed, "#move-up-button")
     def move_up(self) -> None:
@@ -236,10 +204,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [
-            CliveCheckerBoardTableCell(self.humanize_operation_number()),
-            CliveCheckerBoardTableCell(self.humanize_operation_name(), classes="operation-name"),
-            CliveCheckerBoardTableCell(Content(self.humanize_operation_details()), classes="operation-details"),
-            CliveCheckerBoardTableCell(self._create_buttons_container(), classes="actions"),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-number-cell"),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-name-cell", classes="operation-name"),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-details-cell", classes="operation-details"),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="buttons-cell", classes="actions"),
         ]
 
     def _create_buttons_container(self) -> Horizontal:
@@ -252,13 +220,15 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def _is_operation_index_valid(self, value: int) -> bool:
         return 0 <= value < self.operations_amount
 
+    def _set_operation_index(self, value: int) -> None:
+        assert self._is_operation_index_valid(value), "Operation index was invalid when trying to update."
+        self._index = value
+
     def _move(self, direction: Literal["up", "down"]) -> None:
         def post_message_and_disable_action() -> None:
             self._action_manager.disable_action()
             index_change = -1 if direction == "up" else 1
-            self.post_message(
-                self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change)
-            )
+            self.post_message(self.Move(from_index=self.operation_index, to_index=self.operation_index + index_change))
 
         async def cb(confirm: bool | None) -> None:
             if confirm:
@@ -305,7 +275,7 @@ class CartTable(CliveCheckerboardTable):
         return bool(self._cart_items)
 
     def create_static_rows(self) -> list[CartItem]:
-        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.transaction))]
+        return [CartItem(self._cart_items_action_manager) for _ in self.profile.transaction]
 
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
@@ -348,16 +318,10 @@ class CartTable(CliveCheckerboardTable):
         self._cart_items_action_manager.enable_action()
         self.post_message(self.Modified(modified_transaction))
 
-    @on(CartItem.Focus)
-    def focus_item(self, event: CartItem.Focus) -> None:
-        for cart_item in self._cart_items:
-            if event.target_index == cart_item.operation_index:
-                cart_item.focus()
-
     async def _update_cart_items_on_deletion(self, removed_item: CartItem) -> None:
         def update_indexes() -> None:
             for cart_item in cart_items_to_update_index:
-                cart_item.operation_index = cart_item.operation_index - 1
+                cart_item._set_operation_index(value=cart_item.operation_index - 1)
 
         async def update_operation_number() -> None:
             """Manually update displayed operation number of all items."""

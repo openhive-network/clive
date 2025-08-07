@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal, HorizontalGroup, Right
+from textual.events import Mount
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import EditKeyAliasDialog, NewKeyAliasDialog, RemoveKeyAliasDialog
@@ -68,12 +70,31 @@ class RemoveKeyAliasButton(CliveButton):
 
 
 class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
-    """Row of ManageKeyAliasesTable."""
+    """
+    Row of ManageKeyAliasesTable.
 
-    def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
-        self._index = index
+    Args:
+        public_key: Aliased public key that row represents.
+    """
+
+    def __init__(self, public_key: PublicKeyAliased) -> None:
         self._public_key = public_key
         super().__init__(*self._create_cells())
+
+    @property
+    def index_cell(self) -> CliveCheckerBoardTableCell:
+        return self.query_exactly_one("#index-cell", CliveCheckerBoardTableCell)
+
+    @on(Mount)
+    async def update_index_cell(self) -> None:
+        """
+        Update content of index cell.
+
+        The index cell is initialized with a LOADING_TEXT because of the row index,
+        which is assigned automatically later, during row creation. The cell content is
+        updated here once the row is fully created and its index becomes available.
+        """
+        await self.index_cell.update_content(str(self.index + 1))
 
     @on(EditKeyAliasButton.Pressed)
     def push_edit_key_alias_dialog(self) -> None:
@@ -85,7 +106,7 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [
-            CliveCheckerBoardTableCell(str(self._index + 1)),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="index-cell"),
             CliveCheckerBoardTableCell(self._public_key.alias),
             CliveCheckerBoardTableCell(self._public_key.value, classes="public-key"),
             CliveCheckerBoardTableCell(
@@ -123,7 +144,7 @@ class ManageKeyAliasesTable(CliveCheckerboardTable):
         return bool(content.keys)
 
     def create_dynamic_rows(self, content: Profile) -> list[KeyAliasRow]:
-        return [KeyAliasRow(index, key) for index, key in enumerate(content.keys)]
+        return [KeyAliasRow(key) for key in content.keys]
 
     def check_if_should_be_updated(self, content: Profile) -> bool:
         actual_key_aliases = list(content.keys)

@@ -48,7 +48,13 @@ class WithdrawRoutesHeader(Horizontal):
 
 
 class WithdrawRoute(CliveCheckerboardTableRow):
-    """Row of the `WithdrawRoutesTable`."""
+    """
+    Row of the `WithdrawRoutesTable`.
+
+    Args:
+        withdraw_route: Withdraw route data to display.
+        aligned_percent: Dot-aligned withdraw route percentage.
+    """
 
     def __init__(self, withdraw_route: SchemasWithdrawRoute, aligned_percent: str) -> None:
         super().__init__(
