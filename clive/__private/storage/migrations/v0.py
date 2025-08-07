@@ -14,10 +14,11 @@ from clive.__private.core.alarms.specific_alarms import (
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
-    HiveInt,
     OperationRepresentationUnion,
     PreconfiguredBaseModel,
     Signature,
+    Uint16t,
+    Uint32t,
     field,
 )
 from clive.__private.storage.migrations.base import ProfileStorageBase
@@ -95,8 +96,8 @@ class KeyAliasStorageModel(PreconfiguredBaseModel):
 
 class TransactionCoreStorageModel(PreconfiguredBaseModel):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
-    ref_block_num: HiveInt = 0
-    ref_block_prefix: HiveInt = 0
+    ref_block_num: Uint16t = 0
+    ref_block_prefix: Uint32t = 0
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime(utc_epoch()))
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
