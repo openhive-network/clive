@@ -1,8 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, ClassVar, Self, TypeVar
 
+from textual import on
+from textual.binding import Binding
 from textual.containers import Container
+from textual.css.query import NoMatches
+from textual.message import Message
 from textual.widget import Widget
 from textual.widgets import Static
 
@@ -18,6 +23,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from textual.app import ComposeResult
+    from textual.css.query import DOMQuery
     from textual.visual import VisualType
 
 ContentT = TypeVar("ContentT", bound=Any)
@@ -94,7 +100,15 @@ class CliveCheckerBoardTableCell(Container):
 
 
 class CliveCheckerboardTableRow(CliveWidget):
-    """Row with checkerboard columns."""
+    """
+    Row with checkerboard columns.
+
+    Attributes:
+        BINDINGS: Key bindings for row.
+
+    Args:
+        *cells: Cells to mount in row.
+    """
 
     DEFAULT_CSS = """
     CliveCheckerboardTableRow {
@@ -103,12 +117,65 @@ class CliveCheckerboardTableRow(CliveWidget):
     }
     """
 
+    BINDINGS = [
+        Binding("up", "focus_previous_row", "Focus previous row", show=False),
+        Binding("down", "focus_next_row", "Focus next row", show=False),
+    ]
+
+    @dataclass
+    class FocusOtherRow(Message):
+        """
+        Message sent when other row should be focused.
+
+        Attributes:
+            target_index: Index of row that is about to be focused.
+        """
+
+        target_index: int
+
     def __init__(self, *cells: CliveCheckerBoardTableCell) -> None:
         super().__init__()
+        self._index: int | None = None
         self.cells = cells
+
+    @property
+    def index(self) -> int:
+        assert self._index is not None, (
+            "Index is not available yet. Will be available after rows creation in the table."
+        )
+        return self._index
 
     def compose(self) -> ComposeResult:
         yield from self.cells
+
+    def action_focus_next_row(self) -> None:
+        self.post_message(self.FocusOtherRow(self.index + 1))
+
+    def action_focus_previous_row(self) -> None:
+        self.post_message(self.FocusOtherRow(self.index - 1))
+
+    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
+        def focus_nth_focusable(*, index: int = 0) -> None:
+            focusable_children = [widget for widget in self.query("*") if widget.focusable]
+            if index < len(focusable_children):
+                focusable_children[index].focus()
+
+        previously_focused = self.app.focused
+        if not previously_focused:
+            focus_nth_focusable()
+            return self
+
+        try:
+            child_with_same_type_as_before = self.query_exactly_one(type(previously_focused))
+        except NoMatches:
+            focus_nth_focusable()
+            return self
+
+        if child_with_same_type_as_before.focusable:
+            child_with_same_type_as_before.focus()
+        else:
+            focus_nth_focusable(index=1)
+        return self
 
 
 class CliveCheckerboardTable(CliveWidget):
@@ -179,6 +246,25 @@ class CliveCheckerboardTable(CliveWidget):
         self._header = header
         self._init_dynamic = init_dynamic
 
+    @property
+    def should_be_dynamic(self) -> bool:
+        return bool(self.ATTRIBUTE_TO_WATCH)
+
+    @property
+    def object_to_watch(self) -> Any:  # noqa: ANN401
+        """
+        Must be overridden by the child class when using dynamic table.
+
+        Raises:
+            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
+        """
+        if self.should_be_dynamic:
+            raise InvalidDynamicDefinedError
+
+    @property
+    def rows(self) -> DOMQuery[CliveCheckerboardTableRow]:
+        return self.query(CliveCheckerboardTableRow)
+
     def compose(self) -> ComposeResult:
         if not self.should_be_dynamic:
             yield from self._create_table_content()
@@ -198,6 +284,14 @@ class CliveCheckerboardTable(CliveWidget):
             self.watch(
                 self.object_to_watch, self.ATTRIBUTE_TO_WATCH, self._update_dynamic_table, init=not self._init_dynamic
             )
+
+    @on(CliveCheckerboardTableRow.FocusOtherRow)
+    def focus_other_row(self, event: CliveCheckerboardTableRow.FocusOtherRow) -> None:
+        rows = self.rows
+        target_index = event.target_index % len(rows)
+        for row in rows:
+            if target_index == row._index:
+                row.focus()
 
     async def _update_dynamic_table(self, content: ContentT) -> None:
         if not self.should_be_dynamic:
@@ -251,6 +345,10 @@ class CliveCheckerboardTable(CliveWidget):
             )
             rows = self.create_static_rows()
 
+        # auto index given rows
+        for index, row in enumerate(rows):
+            row._index = index
+
         self._set_evenness_styles(rows)
         return rows
 
@@ -290,10 +388,6 @@ class CliveCheckerboardTable(CliveWidget):
 
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
-
-    @property
-    def should_be_dynamic(self) -> bool:
-        return bool(self.ATTRIBUTE_TO_WATCH)
 
     def check_if_should_be_updated(self, content: ContentT) -> bool:  # noqa: ARG002
         """
@@ -337,17 +431,6 @@ class CliveCheckerboardTable(CliveWidget):
                     cell.add_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
                 else:
                     cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
-
-    @property
-    def object_to_watch(self) -> Any:  # noqa: ANN401
-        """
-        Must be overridden by the child class when using dynamic table.
-
-        Raises:
-            InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
-        """
-        if self.should_be_dynamic:
-            raise InvalidDynamicDefinedError
 
     def is_anything_to_display(self, content: ContentT) -> bool:  # noqa: ARG002
         """Check whether there are elements to display. Should be overridden to create a custom condition."""
