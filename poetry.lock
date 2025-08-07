@@ -2214,7 +2214,7 @@ develop = false
 abstractcp = "0.9.9"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
-wax = "0.3.10.dev837+37b5a76a"
+wax = "0.3.10.dev840+123e7f02"
 
 [package.source]
 type = "directory"
@@ -2413,13 +2413,13 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "wax"
-version = "0.3.10.dev837+37b5a76a"
+version = "0.3.10.dev840+123e7f02"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "wax-0.3.10.dev837+37b5a76a-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:a0088f596c7eef6843dc25cbfa8e94e49a9da3f23c63144e1d836e00134f4f0c"},
+    {file = "wax-0.3.10.dev840+123e7f02-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:07cf2efc656b4889437a2ec2b096624a26719c523a68d825f28c7848d6dfe71d"},
 ]
 
 [package.dependencies]
@@ -2557,4 +2557,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "918b3803e4d3c9d374fb8b3d7a4cf15ed324120b7431a16506fb4f152fa8bff6"
+content-hash = "df97a164555527c8666d0b2bd938ff411294c2508a779544605d07a997612be7"
