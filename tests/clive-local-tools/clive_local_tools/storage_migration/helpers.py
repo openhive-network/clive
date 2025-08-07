@@ -7,6 +7,7 @@ from clive_local_tools.storage_migration import (
     blank_profile_files,
     with_alarms,
     with_operations,
+    with_transaction_containing_negative_tapos,
     without_alarms_and_operations,
 )
 
@@ -27,6 +28,11 @@ def copy_profile_with_alarms(destination_dir: Path) -> None:
 
 def copy_profile_with_operations(destination_dir: Path) -> None:
     package_path = Path(with_operations.__file__).parent
+    _copy_recursively(package_path, destination_dir)
+
+
+def copy_profile_with_transaction_containing_negative_tapos(destination_dir: Path) -> None:
+    package_path = Path(with_transaction_containing_negative_tapos.__file__).parent
     _copy_recursively(package_path, destination_dir)
 
 

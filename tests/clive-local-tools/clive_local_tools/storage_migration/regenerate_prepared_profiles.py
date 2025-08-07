@@ -152,6 +152,16 @@ async def _main() -> None:
             encrypted = await encryption_service.encrypt(profile_model.json())
             save_encrypted_profile(encrypted)
 
+    with copy_profile_files_from_tmp_dir("with_transaction_containing_negative_tapos"):
+        async with prepare_encryption_service() as encryption_service:
+            transaction_core = ProfileStorageModel.TransactionCoreStorageModel()
+            transaction_core.ref_block_num = -1
+            transaction_core.ref_block_prefix = -1
+            profile_model = create_model_from_scratch()
+            profile_model.transaction = ProfileStorageModel.TransactionStorageModel(transaction_core=transaction_core)
+            encrypted = await encryption_service.encrypt(profile_model.json())
+            save_encrypted_profile(encrypted)
+
 
 def main() -> None:
     asyncio.run(_main())
