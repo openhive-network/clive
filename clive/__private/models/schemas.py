@@ -65,6 +65,7 @@ from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
+from schemas.fields.integers import Uint16t, Uint32t
 from schemas.fields.resolvables import JsonString
 from schemas.operation import Operation
 from schemas.operations import (
@@ -232,6 +233,8 @@ __all__ = [  # noqa: RUF022
     "PublicKey",
     "Signature",
     "TransactionId",
+    "Uint16t",
+    "Uint32t",
     # compound models
     "Account",
     "Authority",

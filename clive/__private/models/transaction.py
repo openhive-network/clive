@@ -6,11 +6,12 @@ from typing import TYPE_CHECKING, Any
 
 from clive.__private.models.schemas import (
     HiveDateTime,
-    HiveInt,
     OperationRepresentationUnion,
     OperationUnion,
     Signature,
     TransactionId,
+    Uint16t,
+    Uint32t,
     convert_to_representation,
     field,
 )
@@ -25,8 +26,8 @@ if TYPE_CHECKING:
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
-    ref_block_num: HiveInt = 0
-    ref_block_prefix: HiveInt = 0
+    ref_block_num: Uint16t = 0
+    ref_block_prefix: Uint32t = 0
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
@@ -81,8 +82,8 @@ class Transaction(SchemasTransaction):
 
     def reset(self) -> None:
         self.operations = []
-        self.ref_block_num = HiveInt(0)
-        self.ref_block_prefix = HiveInt(0)
+        self.ref_block_num = Uint16t(0)
+        self.ref_block_prefix = Uint32t(0)
         self.expiration = HiveDateTime.now() + timedelta(minutes=30)
         self.extensions = []
         self.signatures = []
