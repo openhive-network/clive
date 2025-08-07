@@ -43,8 +43,20 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     broadcast: bool = False
 
     @property
+    def is_sign_with_given(self) -> bool:
+        return self.sign_with is not None
+
+    @property
+    def is_autosign_explicitly_requested(self) -> bool:
+        return self.autosign is True
+
+    @property
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
+
+    @property
+    def use_autosign(self) -> bool:
+        return self.is_autosign_explicitly_requested or (self.autosign is None and not self.is_sign_with_given)
 
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
@@ -54,8 +66,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return ensure_transaction(await self._get_transaction_content())
 
     async def validate(self) -> None:
+        self.validate_all_mutually_exclusive_options()
         self._validate_save_file_path()
         await super().validate()
+
+    def validate_all_mutually_exclusive_options(self) -> None:
+        self._validate_mutually_exclusive(
+            autosign=self.is_autosign_explicitly_requested, sign_with=self.is_sign_with_given
+        )
+        super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
         await self._validate_bad_accounts()
@@ -109,7 +128,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and not self.sign_with:
+        if self.broadcast and not self.is_sign_with_given:
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
