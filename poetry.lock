@@ -221,13 +221,13 @@ extras = ["regex"]
 
 [[package]]
 name = "beekeepy"
-version = "0.0.1.dev413+e124e6e"
+version = "0.0.1.dev414+8470183"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "beekeepy-0.0.1.dev413+e124e6e-py3-none-any.whl", hash = "sha256:a243a04505aaec8ba1addf92d500c9049fd851c284f438e07b9c7b0b4e534771"},
+    {file = "beekeepy-0.0.1.dev414+8470183-py3-none-any.whl", hash = "sha256:52bfd5f6c34c7c2ea75ad64b6a8bacdf8f93046621c6c339cea2b664e40e1c87"},
 ]
 
 [package.dependencies]
@@ -237,7 +237,7 @@ loguru = "0.7.2"
 psutil = "7.0.0"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
-schemas = "0.0.1.dev419+c2d8341"
+schemas = "0.0.1.dev420+4794c40"
 
 [package.source]
 type = "legacy"
@@ -414,17 +414,17 @@ markers = {main = "sys_platform == \"win32\" or platform_system == \"Windows\"",
 
 [[package]]
 name = "database-api"
-version = "1.27.11rc6.dev363+2c8a315c6"
+version = "1.27.11rc6.dev358+9def0896e"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "database_api-1.27.11rc6.dev363+2c8a315c6-py3-none-any.whl", hash = "sha256:d4de23550b545c861a4714a45932c799475149aa05fd9f2b82bd9c914b23b372"},
+    {file = "database_api-1.27.11rc6.dev358+9def0896e-py3-none-any.whl", hash = "sha256:487c46dce682e798e81d3a6f51ba8ebc99b6109c98bae4ef8d6c29719f1f2c30"},
 ]
 
 [package.dependencies]
-beekeepy = "0.0.1.dev413+e124e6e"
+beekeepy = "0.0.1.dev414+8470183"
 
 [package.source]
 type = "legacy"
@@ -1497,17 +1497,17 @@ files = [
 
 [[package]]
 name = "network-broadcast-api"
-version = "1.27.11rc6.dev363+2c8a315c6"
+version = "1.27.11rc6.dev358+9def0896e"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "network_broadcast_api-1.27.11rc6.dev363+2c8a315c6-py3-none-any.whl", hash = "sha256:5381cfb2884e2d2fd5c07c941775c1e64e1ae53bc4fda31ef5ca2a5facfddd91"},
+    {file = "network_broadcast_api-1.27.11rc6.dev358+9def0896e-py3-none-any.whl", hash = "sha256:2f17e7e9f827d6f70d959bbfd9093b76e4009c4fb9ec626635e37b3c6a04bb24"},
 ]
 
 [package.dependencies]
-beekeepy = "0.0.1.dev413+e124e6e"
+beekeepy = "0.0.1.dev414+8470183"
 
 [package.source]
 type = "legacy"
@@ -2144,13 +2144,13 @@ files = [
 
 [[package]]
 name = "schemas"
-version = "0.0.1.dev419+c2d8341"
+version = "0.0.1.dev420+4794c40"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "schemas-0.0.1.dev419+c2d8341-py3-none-any.whl", hash = "sha256:213f47e02ab6a9f410dacb0e1fb9cf2027baae8ef642d2b2ce91fdd1244782a0"},
+    {file = "schemas-0.0.1.dev420+4794c40-py3-none-any.whl", hash = "sha256:f704e712b5bd539f581c3f392f0bf803bf34f6bbadd4bb7277347cecca04d0b0"},
 ]
 
 [package.dependencies]
@@ -2214,7 +2214,7 @@ develop = false
 abstractcp = "0.9.9"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
-wax = "0.3.10.dev837+0accff3b"
+wax = "0.3.10.dev837+37b5a76a"
 
 [package.source]
 type = "directory"
@@ -2413,20 +2413,20 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "wax"
-version = "0.3.10.dev837+0accff3b"
+version = "0.3.10.dev837+37b5a76a"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "wax-0.3.10.dev837+0accff3b-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:378599b9d6c5467b9551174920a295e486d9dfa9db8a20aaf2de7e8e112809dd"},
+    {file = "wax-0.3.10.dev837+37b5a76a-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:a0088f596c7eef6843dc25cbfa8e94e49a9da3f23c63144e1d836e00134f4f0c"},
 ]
 
 [package.dependencies]
-database-api = "1.27.11rc6.dev363+2c8a315c6"
+database-api = "1.27.11rc6.dev358+9def0896e"
 httpx = {version = "0.23.3", extras = ["http2"]}
 loguru = "0.7.2"
-network-broadcast-api = "1.27.11rc6.dev363+2c8a315c6"
+network-broadcast-api = "1.27.11rc6.dev358+9def0896e"
 protobuf = "4.24.4"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
@@ -2557,4 +2557,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "9aac0d7645d51073be0939894f924b93e8be8e0861830bc3cbfd37544f6b679c"
+content-hash = "918b3803e4d3c9d374fb8b3d7a4cf15ed324120b7431a16506fb4f152fa8bff6"
