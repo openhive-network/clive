@@ -46,6 +46,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
 
+    @property
+    def use_autosign(self) -> bool:
+        return self.autosign or (self.autosign is None and not self.sign_with)
+
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
@@ -55,6 +59,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def validate(self) -> None:
         self._validate_save_file_path()
+        self._validate_mutually_exclusive(autosign=self.use_autosign, sign_with=self.sign_with is not None)
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
