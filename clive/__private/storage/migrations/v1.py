@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path  # noqa: TC003
-from typing import ClassVar, Self, TypeAlias
+from typing import Self
 
 from clive.__private.models.schemas import PreconfiguredBaseModel, Transaction
 from clive.__private.storage.migrations import v0
-
-
-class TransactionStorageModel(PreconfiguredBaseModel):
-    transaction_core: Transaction
-    transaction_file_path: Path | None = None
 
 
 class ProfileStorageModel(v0.ProfileStorageModel):
@@ -17,13 +12,15 @@ class ProfileStorageModel(v0.ProfileStorageModel):
 
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
-    _TransactionStorageModel: ClassVar[TypeAlias] = TransactionStorageModel
+    class TransactionStorageModel(PreconfiguredBaseModel):
+        transaction_core: Transaction
+        transaction_file_path: Path | None = None
 
     @classmethod
     def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model
         old_transaction = old.transaction
         new_transaction = (
-            TransactionStorageModel(
+            cls.TransactionStorageModel(
                 transaction_core=Transaction(
                     **old_transaction.transaction_core.dict(),
                 ),
