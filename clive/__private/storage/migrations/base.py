@@ -119,3 +119,13 @@ class ProfileStorageBase(PreconfiguredBaseModel):
             assert return_param is Self, (
                 f"Upgrade function of {cls} should return {Self}, but it returns {return_param} instead."
             )
+
+
+class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=True):
+    @classmethod
+    def get_name(cls) -> str:
+        assert isinstance(cls.__struct_config__.tag, str), "Alarm storage models must have a string tag."
+        return cls.__struct_config__.tag
+
+    is_harmless: bool = False
+    """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
