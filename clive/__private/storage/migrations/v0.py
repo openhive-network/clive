@@ -101,3 +101,33 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
         raise NotImplementedError("Upgrade is not not possible for first revision.")
+
+    @classmethod
+    def _preprocess_data(cls, data: dict[str, Any]) -> dict[str, Any]:
+        cls._ensure_non_negative_tapos_fields(data)
+        return data
+
+    @staticmethod
+    def _ensure_non_negative_tapos_fields(data: dict[str, Any]) -> None:
+        """
+        Ensure that specific TAPoS fields in the transaction data are non-negative.
+
+        This method modifies the data loaded from a disk to ensure that the specified TAPoS
+        fields, namely 'ref_block_num' and 'ref_block_prefix' within the transaction, are non-negative.
+        If the fields are absent or their values are negative, they are set to `0`.
+
+        This method exists because in previous versions of storage we included `-1`
+        by default.
+
+        Args:
+            data: The profile storage data stored on the disk.
+        """
+        transaction: dict[str, Any] | None = data.get("transaction", {})
+        if transaction is None:
+            # transaction can be also none, so we skip in that case
+            return
+
+        transaction_core = transaction.get("transaction_core", {})
+        for field_ in ("ref_block_num", "ref_block_prefix"):
+            value = transaction_core.get(field_, 0)
+            transaction_core[field_] = max(value, 0)

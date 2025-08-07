@@ -369,7 +369,7 @@ class PersistentStorageService:
     async def _parse_profile_model_from_file(self, profile_filepath: Path) -> ProfileStorageBase:
         raw = await self._read_profile_file_raw(profile_filepath)
         model_cls = self._model_cls_from_path(profile_filepath)
-        return model_cls.parse_raw(raw)
+        return model_cls.create(raw)
 
     async def _read_profile_file_raw(self, profile_filepath: Path) -> str:
         """

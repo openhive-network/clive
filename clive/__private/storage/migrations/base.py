@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
@@ -44,6 +45,35 @@ class ProfileStorageBase(PreconfiguredBaseModel):
 
     def __hash__(self) -> int:
         return hash(self.json(order="deterministic"))
+
+    @classmethod
+    def create(cls, raw: str) -> Self:
+        """
+        Create a new model instance from data stored on the disk.
+
+        It handles any preprocessing before parsing it into the model.
+
+        Args:
+            raw: A profile data stored on disk.
+
+        Returns:
+            A new instance of the model class initialized with the provided data.
+        """
+        data = cls._preprocess_data(json.loads(raw))
+        return cls.parse_builtins(data)
+
+    @classmethod
+    def _preprocess_data(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Override to preprocess data before parsing it into the model.
+
+        Args:
+            data: A mapping containing the raw profile data that will be later transformed into the model.
+
+        Returns:
+            Data that will be used to initialize the model instance.
+        """
+        return data
 
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
