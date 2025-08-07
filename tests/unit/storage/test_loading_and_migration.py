@@ -14,6 +14,7 @@ from clive_local_tools.storage_migration import (
     copy_profile_with_operations,
     copy_profile_without_alarms_and_operations,
 )
+from clive_local_tools.storage_migration.helpers import copy_profile_with_transaction_containing_negative_tapos
 from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT2_NAME
 
 PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME
@@ -65,3 +66,16 @@ async def test_migrate_profile_with_operations() -> None:
         assert profile.operations, "Operations should be loaded from older profile version"
         operation = profile.operations[0]
         assert operation == OPERATION, f"Operation should be `{OPERATION}`, but got `{operation}`"
+
+
+async def test_migrate_profile_with_transaction_containing_negative_tapos() -> None:
+    # ARRANGE
+    copy_profile_with_transaction_containing_negative_tapos(safe_settings.data_path)
+
+    async with ProfileChecker.from_password(PROFILE_NAME, PROFILE_PASSWORD) as profile_checker:
+        # ACT
+        profile = await profile_checker.profile
+
+        # ASSERT
+        assert profile.transaction.ref_block_num == 0, "ref_block_num should be 0 after migration"
+        assert profile.transaction.ref_block_prefix == 0, "ref_block_prefix should be 0 after migration"
