@@ -95,7 +95,8 @@ async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: s
         pilot, PrivateKeyInput, context="KeyAliasForm screen should have initial focus"
     )
     await write_text(pilot, private_key)
-    await focus_next(pilot)
+    await focus_next(pilot)  # Go to `Load from file` button
+    await focus_next(pilot)  # Go to `Key alias` input
     assert_is_clive_composed_input_focused(pilot, PublicKeyAliasInput)
     await write_text(pilot, alias_name)
 
