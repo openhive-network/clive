@@ -43,7 +43,7 @@ class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=Tr
         assert isinstance(cls.__struct_config__.tag, str), "Alarm storage models must have a string tag."
         return cls.__struct_config__.tag
 
-    is_harmless: bool = True
+    is_harmless: bool = False
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
