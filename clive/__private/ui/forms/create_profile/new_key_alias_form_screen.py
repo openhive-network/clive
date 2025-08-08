@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual.containers import Horizontal
 
 from clive.__private.logger import logger
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
@@ -11,6 +12,7 @@ from clive.__private.ui.forms.create_profile.create_profile_form_screen import C
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.key_alias_base import NewKeyAliasBase
 from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.widgets.buttons import LoadFromFileButton
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     FailedManyValidationError,
 )
@@ -24,6 +26,30 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys.keys import PrivateKey
     from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
+    from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
+
+
+class PrivateKeyContainer(Horizontal):
+    DEFAULT_CSS = """
+    PrivateKeyContainer {
+        height: auto;
+        PrivateKeyInput {
+            width: 6fr;
+        }
+        LoadFromFileButton {
+            width: 1fr;
+            margin-right: 1;
+        }
+    }
+    """
+
+    def __init__(self, input_to_mount: PrivateKeyInput) -> None:
+        super().__init__()
+        self._input_to_mount = input_to_mount
+
+    def compose(self) -> ComposeResult:
+        yield self._input_to_mount
+        yield LoadFromFileButton()
 
 
 class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase):
@@ -56,7 +82,7 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Add key alias"):
-            yield self._create_private_key_input()
+            yield PrivateKeyContainer(self._create_private_key_input())
             yield self._create_public_key_input()
             yield self._create_key_alias_input()
             if not self.app_state.is_unlocked:
@@ -73,6 +99,7 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
         self.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
+    @on(LoadFromFileButton.Pressed)
     def action_load_from_file(self) -> None:
         self.app.push_screen(LoadKeyFromFileDialog(), self._load_private_key_from_file)
 
