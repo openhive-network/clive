@@ -94,7 +94,7 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
         which is assigned automatically later, during row creation. The cell content is
         updated here once the row is fully created and its index becomes available.
         """
-        await self.index_cell.update_content(str(self.index + 1))
+        await self.index_cell.update_content(self.humanize_row_number())
 
     @on(EditKeyAliasButton.Pressed)
     def push_edit_key_alias_dialog(self) -> None:

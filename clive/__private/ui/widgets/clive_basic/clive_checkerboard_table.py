@@ -177,6 +177,9 @@ class CliveCheckerboardTableRow(CliveWidget):
             focus_nth_focusable(index=1)
         return self
 
+    def humanize_row_number(self) -> str:
+        return str(self.index + 1)
+
 
 class CliveCheckerboardTable(CliveWidget):
     """
