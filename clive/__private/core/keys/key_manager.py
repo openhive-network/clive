@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Iterable, Iterator
+from typing import Final
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.core.str_utils import is_text_matching_pattern
@@ -26,6 +27,13 @@ class KeyNotFoundError(KeyManagerError):
         self.alias = alias
         self.message = f"Key with alias '{alias}' not found." if alias is not None else "Key not found."
         super().__init__(self.message)
+
+
+class MultipleKeysFoundError(KeyManagerError):
+    MESSAGE: Final[str] = "Key manager found multiple different keys while exactly one was expected."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
 
 
 class KeyManager:
@@ -65,6 +73,24 @@ class KeyManager:
             return next(iter(self))
         except StopIteration as error:
             raise KeyNotFoundError from error
+
+    @property
+    def unique_key(self) -> PublicKeyAliased:
+        """
+        Return unique key.
+
+        It will return unique key, even if there are multiple aliases to the same key.
+
+        Raises:
+            KeyNotFoundError: When there are no keys in the manager,
+            MultipleKeysFoundError: When there are multiple different keys in the manager.
+        """
+        public_key_values = {key.value for key in self.__keys}
+        if not public_key_values:
+            raise KeyNotFoundError
+        if len(public_key_values) > 1:
+            raise MultipleKeysFoundError
+        return self.first
 
     def is_alias_available(self, alias: str) -> bool:
         return self._is_public_alias_available(alias) and self._is_key_to_import_alias_available(alias)
