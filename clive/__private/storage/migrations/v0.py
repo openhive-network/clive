@@ -21,7 +21,7 @@ from clive.__private.models.schemas import (
     Uint32t,
     field,
 )
-from clive.__private.storage.migrations.base import ProfileStorageBase
+from clive.__private.storage.migrations.base import AlarmStorageModelBase, ProfileStorageBase
 
 
 class ProfileStorageModel(ProfileStorageBase, kw_only=True):
@@ -44,15 +44,6 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     type AllAlarmIdentifiersStorageModel = (
         DateTimeAlarmIdentifierStorageModel | RecoveryAccountWarningListedAlarmIdentifierStorageModel
     )
-
-    class AlarmStorageModelBase(PreconfiguredBaseModel, tag_field="name", kw_only=True):
-        @classmethod
-        def get_name(cls) -> str:
-            assert isinstance(cls.__struct_config__.tag, str), "Alarm storage models must have a string tag."
-            return cls.__struct_config__.tag
-
-        is_harmless: bool = True
-        """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
     class RecoveryAccountWarningListedStorageModel(
         AlarmStorageModelBase, tag=RecoveryAccountWarningListed.get_name(), kw_only=True
