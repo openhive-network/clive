@@ -341,6 +341,7 @@ deploy_docs:
 
 clean_docs_preview:
   extends: .docs_deployment_base
+  needs: []
   script:
     - echo "Removing ${PAGES_CONTENT_PATH}"
     - rm -rf $PAGES_CONTENT_PATH
