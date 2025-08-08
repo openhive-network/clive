@@ -7,9 +7,9 @@ from textual import on
 from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.key_alias_base import NewKeyAliasBase
+from clive.__private.ui.widgets.buttons import LoadFromFileOneLineButton
 from clive.__private.ui.widgets.buttons.cancel_button import CancelOneLineButton
 from clive.__private.ui.widgets.buttons.confirm_button import ConfirmOneLineButton
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
@@ -17,13 +17,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-
-
-class LoadFromFileOneLineButton(OneLineButton):
-    """OneLineButton to load key from file."""
-
-    class Pressed(OneLineButton.Pressed):
-        """Used to identify exactly that LoadFromFileOneLineButton was pressed."""
 
 
 class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
@@ -57,7 +50,7 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
         yield SelectCopyPasteHint()
 
     def create_buttons_content(self) -> ComposeResult:
-        yield LoadFromFileOneLineButton("Load from file", "success")
+        yield LoadFromFileOneLineButton()
         yield ConfirmOneLineButton(self._confirm_button_text)
         yield CancelOneLineButton()
 
