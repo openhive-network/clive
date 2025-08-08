@@ -363,7 +363,7 @@ clean_docs_preview:
     IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
   script:
     # CLIVE_IMAGE_PATH variable should come from dependent image builduing job
-    - "${CI_PROJECT_DIR}"/scripts/ci-helpers/generate_startup_scripts.sh "${IMAGE_NAME}"
+    - bash "${CI_PROJECT_DIR}/scripts/ci-helpers/generate_startup_scripts.sh" "${IMAGE_NAME}"
   artifacts:
     expose_as: 'startup scripts'
     paths:
