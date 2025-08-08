@@ -65,6 +65,20 @@ class KeyManager:
         except StopIteration as error:
             raise KeyNotFoundError from error
 
+    @property
+    def default_key(self) -> PublicKeyAliased | None:
+        """
+        Return single key, which will be threaded as default key.
+
+        Default key is the single unique key in the key manager.
+        If there are multiple keys, it returns None.
+        If there are multiply aliases for the same key, it returns the first one (this single one).
+        """
+        keys = {key.value for key in self.__keys}
+        if len(keys) == 1:
+            return self.first
+        return None
+
     def is_alias_available(self, alias: str) -> bool:
         return self._is_public_alias_available(alias) and self._is_key_to_import_alias_available(alias)
 
