@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
-from clive.__private.core.alarms.specific_alarms import (
-    ChangingRecoveryAccountInProgress,
-    DecliningVotingRightsInProgress,
-    GovernanceNoActiveVotes,
-    GovernanceVotingExpiration,
-    RecoveryAccountWarningListed,
+from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
+from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
+    RecoveryAccountWarningListedAlarmIdentifier,
 )
 from clive.__private.models.schemas import Transaction
 from clive.__private.storage import ProfileStorageModel
@@ -17,12 +14,13 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
+    from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
 
 
-class AlarmRuntimeToStorageConversionError(CliveError):
-    """Exception raised when an alarm cannot be converted to storage."""
+class AlarmIdentifierRuntimeToStorageConversionError(CliveError):
+    """Exception raised when an alarm identifier cannot be converted to storage."""
 
 
 class RuntimeToStorageConverter:
@@ -74,29 +72,30 @@ class RuntimeToStorageConverter:
         return ProfileStorageModel.TrackedAccountStorageModel(name=account.name, alarms=alarms)
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> ProfileStorageModel.AllAlarmStorageModel:
-        if isinstance(
-            alarm,
-            (
-                ChangingRecoveryAccountInProgress,
-                DecliningVotingRightsInProgress,
-                GovernanceNoActiveVotes,
-                GovernanceVotingExpiration,
-            ),
-        ):
-            return ProfileStorageModel.ChangingRecoveryAccountInProgressStorageModel(
-                is_harmless=alarm.is_harmless,
-                identifier=ProfileStorageModel.DateTimeAlarmIdentifierStorageModel(value=alarm.identifier_ensure.value),
-            )
-        if isinstance(alarm, RecoveryAccountWarningListed):
-            return ProfileStorageModel.RecoveryAccountWarningListedStorageModel(
-                is_harmless=alarm.is_harmless,
-                identifier=ProfileStorageModel.RecoveryAccountWarningListedAlarmIdentifierStorageModel(
-                    recovery_account=alarm.identifier_ensure.recovery_account
-                ),
-            )
-        raise AlarmRuntimeToStorageConversionError(
-            f"Unknown alarm type: `{type(alarm)}` during conversion from runtime to storage model."
+        alarm_cls = self._get_alarm_storage_model_cls_by_name(alarm.get_name())
+        return alarm_cls(
+            is_harmless=alarm.is_harmless,
+            identifier=self._alarm_identifier_to_model(alarm.identifier_ensure),
         )
+
+    def _alarm_identifier_to_model(
+        self, identifier: AlarmIdentifier
+    ) -> ProfileStorageModel.AllAlarmIdentifiersStorageModel:
+        if isinstance(identifier, DateTimeAlarmIdentifier):
+            return ProfileStorageModel.DateTimeAlarmIdentifierStorageModel(value=identifier.value)
+        if isinstance(identifier, RecoveryAccountWarningListedAlarmIdentifier):
+            return ProfileStorageModel.RecoveryAccountWarningListedAlarmIdentifierStorageModel(
+                recovery_account=identifier.recovery_account
+            )
+        raise AlarmIdentifierRuntimeToStorageConversionError(f"Unknown alarm identifier type: {type(identifier)}")
 
     def _key_alias_to_model(self, key: PublicKeyAliased) -> ProfileStorageModel.KeyAliasStorageModel:
         return ProfileStorageModel.KeyAliasStorageModel(alias=key.alias, public_key=key.value)
+
+    def _get_alarm_storage_model_cls_by_name(self, name: str) -> type[ProfileStorageModel.AllAlarmStorageModel]:
+        all_alarm_storage_model_classes = get_args(ProfileStorageModel.AllAlarmStorageModel)
+        name_to_cls: dict[str, type[ProfileStorageModel.AllAlarmStorageModel]] = {
+            cls.get_name(): cls for cls in all_alarm_storage_model_classes
+        }
+        assert name in name_to_cls, f"Alarm class not found for name: {name}"
+        return name_to_cls[name]
