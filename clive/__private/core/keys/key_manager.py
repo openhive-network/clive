@@ -27,6 +27,14 @@ class KeyNotFoundError(KeyManagerError):
         super().__init__(self.message)
 
 
+class NoUniqueKeyFoundError(KeyManagerError):
+    pass
+
+
+class MultipleKeysFoundError(KeyManagerError):
+    pass
+
+
 class KeyManager:
     """A container-like object, that manages a number of keys, which you iterate over to see all the public keys."""
 
@@ -64,6 +72,25 @@ class KeyManager:
             return next(iter(self))
         except StopIteration as error:
             raise KeyNotFoundError from error
+
+    @property
+    def single_key(self) -> PublicKeyAliased:
+        """
+        Return single unique key.
+
+        It will return single key, even if there are multiple aliases to the same key.
+
+        Raises:
+            NoUniqueKeyFoundError: When there is no unique key in the manager.
+            MultipleKeysFoundError: When there are multiple different keys in the manager.
+        """
+        public_keys = {key.value for key in self.__keys}
+        number_of_unique_public_keys = len(public_keys)
+        if number_of_unique_public_keys == 0:
+            raise NoUniqueKeyFoundError
+        if number_of_unique_public_keys > 1:
+            raise MultipleKeysFoundError
+        return self.first
 
     def is_alias_available(self, alias: str) -> bool:
         return self._is_public_alias_available(alias) and self._is_key_to_import_alias_available(alias)
