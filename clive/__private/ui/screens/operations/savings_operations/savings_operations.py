@@ -7,6 +7,7 @@ from textual.containers import Grid, Horizontal
 from textual.widgets import Label, RadioSet, Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models import Asset
@@ -71,7 +72,7 @@ class SavingsBalancesHeader(Horizontal):
 
 class SavingsHiveRow(CliveDataTableRow):
     def __init__(self) -> None:
-        super().__init__("HIVE", Static("loading..."), dynamic=True)
+        super().__init__("HIVE", Static(LOADING_TEXT), dynamic=True)
 
     def get_new_values(self, content: SavingsData) -> tuple[str]:
         return (Asset.pretty_amount(content.hive_savings_balance),)
@@ -79,7 +80,7 @@ class SavingsHiveRow(CliveDataTableRow):
 
 class SavingsHbdRow(CliveDataTableRow):
     def __init__(self) -> None:
-        super().__init__("HBD", Static("loading..."), dynamic=True)
+        super().__init__("HBD", Static(LOADING_TEXT), dynamic=True)
 
     def get_new_values(self, content: SavingsData) -> tuple[str]:
         return (Asset.pretty_amount(content.hbd_savings_balance),)

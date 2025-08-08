@@ -8,6 +8,7 @@ from textual.widgets import Pretty, Static, TabPane
 
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_percent
 from clive.__private.core.percent_conversions import hive_percent_to_percent
@@ -48,7 +49,7 @@ class WithdrawRoutesDisplay(CliveWidget):
         self._pretty.display = False
 
     def compose(self) -> ComposeResult:
-        yield Static("Loading...", id="withdraw-routes-header")
+        yield Static(LOADING_TEXT.capitalize(), id="withdraw-routes-header")
         yield self._pretty
 
     def on_mount(self) -> None:

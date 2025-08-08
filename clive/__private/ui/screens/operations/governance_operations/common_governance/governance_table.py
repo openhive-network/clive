@@ -15,6 +15,7 @@ from textual.widgets import Label
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -326,7 +327,7 @@ class GovernanceTable(
         with contextlib.suppress(NoMatches):
             selected_list = self.query_exactly_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
-            await selected_list.mount(Label("Loading..."))
+            await selected_list.mount(Label(LOADING_TEXT.capitalize()))
 
     def set_loaded(self) -> None:
         self._is_loading = False

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
     DynamicWidget,
@@ -43,7 +44,7 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
         )
 
     def _create_widget(self) -> OneLineButton:
-        return OneLineButton("loading...", self._variant)
+        return OneLineButton(LOADING_TEXT, self._variant)
 
     def _update_widget_state(self, result: str) -> None:
         if self._widget.variant == "loading-variant":

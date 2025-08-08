@@ -7,6 +7,7 @@ from textual.widget import Widget
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_not_updated_yet, is_updated
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
@@ -134,7 +135,7 @@ class CliveCheckerboardTable(CliveWidget):
         header: Header of the table.
         title: Title of the table.
         init_dynamic: Whether the table should be created right away because data is already available.
-            If not set will display "Loading..." until the data is received.
+            If not set will display loading text until the data is received.
     """
 
     DEFAULT_CSS = """
@@ -184,7 +185,7 @@ class CliveCheckerboardTable(CliveWidget):
             return
 
         if self.should_be_dynamic and not self._init_dynamic:
-            yield Static("Loading...", id="loading-static")
+            yield Static(LOADING_TEXT.capitalize(), id="loading-static")
             return
 
         content = self._get_dynamic_initial_content()

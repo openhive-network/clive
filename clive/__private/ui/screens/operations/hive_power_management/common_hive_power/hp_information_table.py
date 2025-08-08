@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.core.formatters.humanize import humanize_asset
 from clive.__private.ui.widgets.clive_basic import CliveDataTable, CliveDataTableRow
 
@@ -22,8 +23,8 @@ class HpInfoTableRow(CliveDataTableRow):
     def __init__(self, title: str) -> None:
         super().__init__(
             title,
-            Static("loading...", classes=self.BALANCE_CELL_CLASS),
-            Static("loading...", classes=self.BALANCE_CELL_CLASS),
+            Static(LOADING_TEXT, classes=self.BALANCE_CELL_CLASS),
+            Static(LOADING_TEXT, classes=self.BALANCE_CELL_CLASS),
             dynamic=True,
         )
 

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.widgets import Label
 
+from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
     DynamicWidget,
     DynamicWidgetFirstTryCallbackType,
@@ -48,7 +49,7 @@ class DynamicLabel(DynamicWidget[Label, str]):
         return self._widget.renderable
 
     def _create_widget(self) -> Label:
-        return Label("loading...", shrink=self._shrink)
+        return Label(LOADING_TEXT, shrink=self._shrink)
 
     def _update_widget_state(self, result: str) -> None:
         if result != self.renderable:
