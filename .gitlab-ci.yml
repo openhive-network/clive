@@ -69,7 +69,7 @@ default:
       artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
-    - pip install ${FIRST_PARTY_EXTRA_INDEX_ARGS} ${PYPROJECT_DIR}/dist/*.whl
+    - pip install ${FIRST_PARTY_EXTRA_INDEX_ARGS} "${PYPROJECT_DIR}"/dist/*.whl
     - pip list
 
 .build_docs_env:
@@ -328,10 +328,10 @@ deploy_docs:
     PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
     - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
-    - rm -rf $PAGES_CONTENT_PATH
-    - mkdir -p $PAGES_CONTENT_PATH
+    - rm -rf "${PAGES_CONTENT_PATH}"
+    - mkdir -p "${PAGES_CONTENT_PATH}"
     - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
-    - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > ${PAGES_BASE_DIR}/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/default/
+    - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > "${PAGES_BASE_DIR}"/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/default/
     - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
   environment:
     name: $PAGES_ENV_NAME
@@ -344,7 +344,7 @@ clean_docs_preview:
   needs: []
   script:
     - echo "Removing ${PAGES_CONTENT_PATH}"
-    - rm -rf $PAGES_CONTENT_PATH
+    - rm -rf "${PAGES_CONTENT_PATH}"
   environment:
     name: $PAGES_ENV_NAME
     action: stop
@@ -363,7 +363,7 @@ clean_docs_preview:
     IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
   script:
     # CLIVE_IMAGE_PATH variable should come from dependent image builduing job
-    - $CI_PROJECT_DIR/scripts/ci-helpers/generate_startup_scripts.sh "${IMAGE_NAME}"
+    - bash "${CI_PROJECT_DIR}/scripts/ci-helpers/generate_startup_scripts.sh" "${IMAGE_NAME}"
   artifacts:
     expose_as: 'startup scripts'
     paths:
@@ -402,9 +402,9 @@ clean_docs_preview:
       --base-image=${BASE_IMAGE}
       --clive-version=${WHEEL_BUILD_VERSION}
       ${BUILD_INSTANCE_ARGS}
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
     - source docker_image_name.env
-    - docker push ${CLIVE_IMAGE_NAME}
+    - docker push "${CLIVE_IMAGE_NAME}"
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
   artifacts:
     reports:
@@ -451,8 +451,8 @@ build_and_push_clive_testnet_image:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
     - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${STABLE_IMAGE_TAG}"
     - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
-    - docker tag ${CLIVE_IMAGE_NAME} ${BRANCH_IMAGE_NAME}
-    - docker push ${BRANCH_IMAGE_NAME}
+    - docker tag "${CLIVE_IMAGE_NAME}" "${BRANCH_IMAGE_NAME}"
+    - docker push "${BRANCH_IMAGE_NAME}"
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
   rules:
     - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
