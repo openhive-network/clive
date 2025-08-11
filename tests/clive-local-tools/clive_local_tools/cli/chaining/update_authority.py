@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class UpdateAuthority(ChainedCommand):
-    def add_key(
+    def add_key(  # noqa: PLR0913
         self,
         *,
         key: PublicKey,
@@ -23,13 +23,20 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "add-key", key=key, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+            "add-key",
+            key=key,
+            weight=weight,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            autosign=autosign,
         )
         return self
 
-    def add_account(
+    def add_account(  # noqa: PLR0913
         self,
         *,
         account: str,
@@ -37,9 +44,16 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "add-account", account=account, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+            "add-account",
+            account=account,
+            weight=weight,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            autosign=autosign,
         )
         return self
 
@@ -50,8 +64,16 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
-        self._add_command_to_chain("remove-key", key=key, sign_with=sign_with, broadcast=broadcast, save_file=save_file)
+        self._add_command_to_chain(
+            "remove-key",
+            key=key,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            autosign=autosign,
+        )
         return self
 
     def remove_account(
@@ -61,13 +83,19 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "remove-account", account=account, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+            "remove-account",
+            account=account,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            autosign=autosign,
         )
         return self
 
-    def modify_key(
+    def modify_key(  # noqa: PLR0913
         self,
         *,
         key: PublicKey,
@@ -75,13 +103,20 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
-            "modify-key", key=key, weight=weight, sign_with=sign_with, broadcast=broadcast, save_file=save_file
+            "modify-key",
+            key=key,
+            weight=weight,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            autosign=autosign,
         )
         return self
 
-    def modify_account(
+    def modify_account(  # noqa: PLR0913
         self,
         *,
         account: str,
@@ -89,6 +124,7 @@ class UpdateAuthority(ChainedCommand):
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         self._add_command_to_chain(
             "modify-account",
@@ -97,6 +133,7 @@ class UpdateAuthority(ChainedCommand):
             sign_with=sign_with,
             broadcast=broadcast,
             save_file=save_file,
+            autosign=autosign,
         )
         return self
 
