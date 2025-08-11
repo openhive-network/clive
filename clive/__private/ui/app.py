@@ -88,7 +88,7 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(),
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(show=False),
     ]
 
     SCREENS = {
