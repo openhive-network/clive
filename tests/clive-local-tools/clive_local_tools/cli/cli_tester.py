@@ -64,6 +64,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateAuthority:
         match authority:
             case "owner":
@@ -105,7 +106,7 @@ class CLITester:
     def show_accounts(self) -> Result:
         return self.__invoke_command_with_options(["show", "accounts"])
 
-    def process_update_owner_authority(
+    def process_update_owner_authority(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -113,6 +114,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateOwnerAuthority:
         return UpdateOwnerAuthority(
             self.__typer,
@@ -120,7 +122,7 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_active_authority(
+    def process_update_active_authority(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -128,6 +130,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdateActiveAuthority:
         return UpdateActiveAuthority(
             self.__typer,
@@ -135,7 +138,7 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_posting_authority(
+    def process_update_posting_authority(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -143,6 +146,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> UpdatePostingAuthority:
         return UpdatePostingAuthority(
             self.__typer,
@@ -150,7 +154,7 @@ class CLITester:
             **extract_params(locals()),
         )
 
-    def process_update_memo_key(
+    def process_update_memo_key(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -158,6 +162,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "update-memo-key"],
@@ -175,6 +180,7 @@ class CLITester:
         memo: str | None = None,
         from_: str | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "deposit"],
@@ -193,13 +199,14 @@ class CLITester:
         memo: str | None = None,
         from_: str | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal"],
             **extract_params(locals()),
         )
 
-    def process_savings_withdrawal_cancel(
+    def process_savings_withdrawal_cancel(  # noqa: PLR0913
         self,
         *,
         from_: str | None = None,
@@ -207,6 +214,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal-cancel"],
@@ -223,6 +231,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "custom-json"],
@@ -239,6 +248,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transaction"],
@@ -269,10 +279,11 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
-    def process_power_down_start(
+    def process_power_down_start(  # noqa: PLR0913
         self,
         *,
         from_: str | None = None,
@@ -280,10 +291,11 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "start"], **extract_params(locals()))
 
-    def process_power_down_restart(
+    def process_power_down_restart(  # noqa: PLR0913
         self,
         *,
         from_: str | None = None,
@@ -291,6 +303,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "restart"], **extract_params(locals()))
 
@@ -300,6 +313,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "cancel"], **extract_params(locals()))
 
@@ -313,10 +327,11 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
-    def process_delegations_remove(
+    def process_delegations_remove(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -324,6 +339,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
 
@@ -338,10 +354,11 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
-    def process_withdraw_routes_remove(
+    def process_withdraw_routes_remove(  # noqa: PLR0913
         self,
         *,
         from_: str | None = None,
@@ -349,6 +366,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "remove"], **extract_params(locals()))
 
@@ -370,6 +388,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         memo: str | None = None,
+        autosign: bool | None = None,
         amount: tt.Asset.HiveT | tt.Asset.HbdT,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "transfer"], **extract_params(locals()))
@@ -456,7 +475,7 @@ class CLITester:
     def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
         return self.__invoke_command_with_options(["configure", "profile", "delete"], **extract_params(locals()))
 
-    def process_proxy_set(
+    def process_proxy_set(  # noqa: PLR0913
         self,
         *,
         proxy: str,
@@ -464,6 +483,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "proxy", "set"], **extract_params(locals()))
 
@@ -474,6 +494,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "proxy", "clear"], **extract_params(locals()))
 
@@ -491,6 +512,7 @@ class CLITester:
         save_file: Path | None = None,
         memo: str | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "create"], **extract_params(locals())
@@ -510,6 +532,7 @@ class CLITester:
         save_file: Path | None = None,
         memo: str | None = None,
         force: bool | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "modify"], **extract_params(locals())
@@ -524,6 +547,7 @@ class CLITester:
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,
+        autosign: bool | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "remove"], **extract_params(locals())
