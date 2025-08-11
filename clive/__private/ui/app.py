@@ -282,6 +282,9 @@ class Clive(App[int]):
     async def action_switch_node(self) -> None:
         if not self.world.app_state.is_unlocked:
             return
+        self.show_switch_node_address_dialog()
+
+    def show_switch_node_address_dialog(self) -> None:
         if isinstance(self.screen, SwitchNodeAddressDialog | SwitchNodeAddress):
             return
         self.push_screen(SwitchNodeAddressDialog())

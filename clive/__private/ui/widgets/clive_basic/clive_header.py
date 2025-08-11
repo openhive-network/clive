@@ -249,8 +249,8 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         return "online"
 
     @on(OneLineButton.Pressed)
-    async def show_switch_node_address_dialog(self) -> None:
-        await self.app.action_switch_node()
+    def show_switch_node_address_dialog(self) -> None:
+        self.app.show_switch_node_address_dialog()
 
 
 class RightPart(Horizontal):
