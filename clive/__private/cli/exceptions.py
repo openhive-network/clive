@@ -330,3 +330,19 @@ class CLITransactionAutoSignUsedTogetherWithSignWithError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionSignWithKeyNotSelectedError(CLIPrettyError):
+    """
+    Raises when there are multiple key assigned to the account and no key is selected for signing.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "There are multiple keys assigned to the profile. You must specify a key to sign the transaction with."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

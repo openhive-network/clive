@@ -17,6 +17,7 @@ from clive.__private.cli.exceptions import (
     CLITransactionAutoSignUsedTogetherWithSignWithError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
+    CLITransactionSignWithKeyNotSelectedError,
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
@@ -42,6 +43,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     broadcast: bool = False
     autosign: bool | None = None
 
+    async def fetch_data(self) -> None:
+        # Better place for configuring the sign_with key, would be configure, or configure_insiside_context.
+        # But unfortunately:
+        # configure - is performed to early, not inside context manager, so we dont have access to self.profile.keys
+        # configure_inside_context - is called after validation_inside_context_manager, so we cannot
+        # validate the sign_with key.
+        self._set_default_sigh_with_key_alias()
+        await super().fetch_data()
+
     @property
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
@@ -56,13 +66,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     async def validate(self) -> None:
         self._validate_save_file_path()
         self._validate_autosign_with_sign_with()
+        await super().validate()
+
+    async def validate_inside_context_manager(self) -> None:
+        self._validate_default_sign_with()
         self._validate_if_broadcast_is_used_without_force_unsign()
         self._validate_signed_transaction() if await (
             self._is_transaction_signed()
         ) else self._validate_if_broadcasting_signed_transaction()
-        await super().validate()
-
-    async def validate_inside_context_manager(self) -> None:
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
@@ -154,8 +165,29 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if self.already_signed_mode == "error" and self.sign_with:
             raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
 
+    def _validate_default_sign_with(self) -> None:
+        if self.sign_with is None and self.autosign and self.profile.keys.default_key is None:
+            raise CLITransactionSignWithKeyNotSelectedError
+
     def _get_transaction_created_message(self) -> str:
         return "created"
+
+    def _set_default_sigh_with_key_alias(self) -> None:
+        use_autosign = self.autosign is None or self.autosign is True
+        # We want to use autosign when is explicitly passed (by --autosign)
+        # The None value, is for situations when we pass only --sign-with.
+        # For example:
+        # clive perform-actions-on-transaction --sign-with my_key
+        # If we would assign default value to autosign to True, it would raise an error
+        # Because we would try to use autosign together with --sign-with.
+        # But now, autosign is set to None, so we can use --sign-with without passing --no-autosign
+        # At this level, (after validaation) we can set the default sign_with key alias
+        # when there is no --sign-with passed.
+
+        if use_autosign and self.sign_with is None:
+            default_key = self.profile.keys.default_key
+            if default_key:
+                self.sign_with = default_key.alias
 
     def __print_transaction(self, transaction: Transaction) -> None:
         transaction_json = transaction.json(order="sorted")
