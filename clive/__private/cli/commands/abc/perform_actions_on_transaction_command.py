@@ -12,6 +12,7 @@ import typer
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
+    CLIAutoSignUsedWithSignedTransactionError,
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
     CLITransactionAutoSignUsedTogetherWithSignWithError,
@@ -66,14 +67,17 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     async def validate(self) -> None:
         self._validate_save_file_path()
         self._validate_autosign_with_sign_with()
+        if await self._is_transaction_signed():
+            self._validate_autosign_with_already_signed_transaction()
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
         self._validate_default_sign_with()
         self._validate_if_broadcast_is_used_without_force_unsign()
-        self._validate_signed_transaction() if await (
-            self._is_transaction_signed()
-        ) else self._validate_if_broadcasting_signed_transaction()
+        if await self._is_transaction_signed():
+            self._validate_signed_transaction()
+        else:
+            self._validate_if_broadcasting_signed_transaction()
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
@@ -168,6 +172,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _validate_default_sign_with(self) -> None:
         if self.sign_with is None and self.autosign and self.profile.keys.default_key is None:
             raise CLITransactionSignWithKeyNotSelectedError
+
+    def _validate_autosign_with_already_signed_transaction(self) -> None:
+        if self.autosign or (self.autosign is None and self.sign_with is None):
+            raise CLIAutoSignUsedWithSignedTransactionError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
