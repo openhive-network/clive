@@ -106,4 +106,4 @@ async def test_process_transfer_in_unlocked_without_sign(
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester.process_transfer(from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER)
+        cli_tester.process_transfer(from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, autosign=False)
