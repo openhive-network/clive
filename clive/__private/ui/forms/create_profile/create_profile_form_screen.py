@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class CreateProfileFormScreen(FormScreen, ABC):
     BINDINGS = [
         CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(
-            action="", description="Help"
+            action="app.help", description="Help"
         ),  # help is a hidden global binding, but we want to show it here
     ]
 
