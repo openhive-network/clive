@@ -29,6 +29,7 @@ from clive_local_tools.tui.checkers import (
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
+    focus_prev,
     press_and_wait_for_screen,
     write_text,
 )
@@ -87,6 +88,7 @@ async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
     assert pilot.app.screen.query_exactly_one(WorkingAccountCheckbox).value is False, (
         "Expected 'Working account?' to be unchecked!"
     )
+    await focus_prev(pilot)  # Go to `Account name` input
 
 
 async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
@@ -102,7 +104,7 @@ async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: s
 
 
 async def create_profile_finish(pilot: ClivePilot) -> None:
-    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.form_navigation.next_screen.key, Dashboard)
+    await press_and_wait_for_screen(pilot, "enter", Dashboard)
     assert_is_dashboard(pilot)
 
 

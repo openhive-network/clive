@@ -52,8 +52,7 @@ class NextScreenButton(CliveButton):
         self.label = self._determine_label(is_finish=value)
 
     def _determine_label(self, *, is_finish: bool) -> str:
-        key = self.custom_bindings.form_navigation.next_screen.button_display
-        return f"Finish! ({key})" if is_finish else f"Next ({key}) →"
+        return "Finish!" if is_finish else "Next"
 
 
 class PreviousScreenButton(OneLineButton):
@@ -87,11 +86,7 @@ class PreviousScreenButton(OneLineButton):
         )
 
     def _get_init_label(self, label: str | None) -> str:
-        return (
-            label
-            if label is not None
-            else f"← Previous ({self.custom_bindings.form_navigation.previous_screen.button_display})"
-        )
+        return label if label is not None else "← Previous"
 
 
 class PlaceTaker(Static):

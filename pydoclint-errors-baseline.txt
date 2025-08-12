@@ -343,7 +343,7 @@ clive/__private/ui/bindings/clive_binding_section.py
 --------------------
 clive/__private/ui/bindings/clive_bindings.py
     DOC601: Class `CliveBindings`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `CliveBindings`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [app: App, dashboard: Dashboard, form_navigation: FormNavigation, help: Help, manage_key_aliases: ManageKeyAliases, operations: Operations, transaction_summary: TransactionSummary]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `CliveBindings`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [app: App, dashboard: Dashboard, help: Help, manage_key_aliases: ManageKeyAliases, operations: Operations, transaction_summary: TransactionSummary]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC502: Function `load_custom_bindings` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/clive_screen.py

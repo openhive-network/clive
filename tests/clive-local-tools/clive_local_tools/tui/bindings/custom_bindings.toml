@@ -5,23 +5,19 @@ load_transaction_from_file = "c"
 settings = "d"
 transaction_summary = "e"
 quit = "f"
-lock_wallet = "m"
+lock_wallet = "g"
 
 [dashboard]
-operations = "g"
-switch_working_account = "h"
-add_account = "e"
-
-[form_navigation]
-next_screen = "g"
-previous_screen = "h"
+operations = "h"
+switch_working_account = "i"
+add_account = "j"
 
 [help]
-toggle_help = "i"
-toggle_table_of_contents = "j"
+toggle_help = "k"
+toggle_table_of_contents = "l"
 
 [manage_key_aliases]
-add_new_alias = "k"
-load_from_file = "l"
+add_new_alias = "m"
+load_from_file = "n"
 
 # this file intentionally doesn't define all bindings
