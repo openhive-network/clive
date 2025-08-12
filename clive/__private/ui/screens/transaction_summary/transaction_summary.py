@@ -150,7 +150,7 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(action=""),
+        CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(action="app.load_transaction_from_file"),
     ]  # load transaction from file is a hidden global binding, but we want to show it here
     BIG_TITLE = "transaction summary"
 
