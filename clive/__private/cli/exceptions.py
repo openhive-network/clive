@@ -346,3 +346,17 @@ class CLITransactionSignWithKeyNotSelectedError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIAutoSignUsedWithSignedTransactionError(CLIPrettyError):
+    """
+    Raises when trying to use --autosign with already signed transaction.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = "You cannot use --autosign with already signed transaction."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
