@@ -25,9 +25,6 @@ class Description(Static):
 
 class WelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
     BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.form_navigation.previous_screen.create(
-            action="", description="", show=False
-        ),  # overridden so it does not trigger the action
         CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(
             action="app.do_nothing", show=False
         ),  # we want to disable switch_node binding here

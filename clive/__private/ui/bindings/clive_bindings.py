@@ -12,7 +12,6 @@ from clive.__private.ui.bindings.exceptions import BindingFileInvalidError, Bind
 from clive.__private.ui.bindings.sections import (
     App,
     Dashboard,
-    FormNavigation,
     Help,
     ManageKeyAliases,
     Operations,
@@ -46,7 +45,6 @@ class CliveBindings:
 
     app: App = field(default_factory=lambda: App())
     dashboard: Dashboard = field(default_factory=lambda: Dashboard())
-    form_navigation: FormNavigation = field(default_factory=lambda: FormNavigation())
     help: Help = field(default_factory=lambda: Help())
     manage_key_aliases: ManageKeyAliases = field(default_factory=lambda: ManageKeyAliases())
     operations: Operations = field(default_factory=lambda: Operations())

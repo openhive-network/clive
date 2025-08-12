@@ -34,12 +34,6 @@ class Dashboard(CliveBindingSection):
 
 
 @dataclass
-class FormNavigation(CliveBindingSection):
-    next_screen: CliveBinding = field(default_factory=lambda: CliveBinding(id="next_screen", key="ctrl+n"))
-    previous_screen: CliveBinding = field(default_factory=lambda: CliveBinding(id="previous_screen", key="ctrl+b"))
-
-
-@dataclass
 class Help(CliveBindingSection):
     toggle_help: CliveBinding = field(default_factory=lambda: CliveBinding(id="toggle_help", key="f1,?"))
     toggle_table_of_contents: CliveBinding = field(

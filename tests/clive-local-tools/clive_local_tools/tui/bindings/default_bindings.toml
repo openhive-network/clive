@@ -13,10 +13,6 @@ operations = "o"
 switch_working_account = "w"
 add_account = "a"
 
-[form_navigation]
-next_screen = "ctrl+n"
-previous_screen = "ctrl+b"
-
 [help]
 toggle_help = "f1,?"
 toggle_table_of_contents = "t"
