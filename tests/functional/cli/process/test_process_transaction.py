@@ -51,6 +51,7 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         json_=json_,
         broadcast=False,
         save_file=trx_file(tmp_path),
+        autosign=False,
     )
 
     result = cli_tester.process_transaction(
