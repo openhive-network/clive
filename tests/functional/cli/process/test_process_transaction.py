@@ -83,6 +83,7 @@ async def test_process_signed_transaction(
     result = cli_tester.process_transaction(
         already_signed_mode="multisign",
         from_file=trx_file(tmp_path),
+        autosign=False,
     )
 
     # ASSERT
