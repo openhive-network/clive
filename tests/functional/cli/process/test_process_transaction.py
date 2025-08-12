@@ -102,6 +102,7 @@ async def test_process_unsigned_transaction(
         to=RECEIVER,
         broadcast=False,
         save_file=trx_file(tmp_path),
+        autosign=False,
     )
 
     # ACT
