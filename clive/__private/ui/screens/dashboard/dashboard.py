@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
+from textual.message import Message
 from textual.widgets import Label, Rule, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
@@ -240,10 +242,37 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
 
 class TrackedAccountRow(TrackedAccountReferencingWidget, can_focus=True, can_focus_children=False):
     BINDINGS = [
+        Binding("up", "focus_previous_row", "Focus previous row", show=False),
+        Binding("down", "focus_next_row", "Focus next row", show=False),
         Binding("enter", "account_details", "Account details", show=False),
         CLIVE_PREDEFINED_BINDINGS.dashboard.account_details.create(),
         CLIVE_PREDEFINED_BINDINGS.dashboard.remove_account.create(),
     ]
+
+    @dataclass
+    class FocusOtherRow(Message):
+        """
+        Message sent when another account row should be focused.
+
+        Attributes:
+            target_index: index of the account row that should be focused.
+        """
+
+        target_index: int
+
+    @property
+    def index(self) -> int:
+        rows = self.screen.query(self.__class__)
+        for index, row in enumerate(rows):
+            if row is self:
+                return index
+        raise AssertionError("Row not found in screen")
+
+    def action_focus_previous_row(self) -> None:
+        self.post_message(self.FocusOtherRow(self.index - 1))
+
+    def action_focus_next_row(self) -> None:
+        self.post_message(self.FocusOtherRow(self.index + 1))
 
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     def action_account_details(self) -> None:
@@ -313,6 +342,12 @@ class Dashboard(BaseScreen):
 
     def on_mount(self) -> None:
         self.watch(self.world, "profile_reactive", self._update_account_containers)
+
+    @on(TrackedAccountRow.FocusOtherRow)
+    def focus_other_row(self, event: TrackedAccountRow.FocusOtherRow) -> None:
+        rows = self.query(TrackedAccountRow)
+        target_index = event.target_index % len(rows)
+        rows[target_index].focus()
 
     async def _update_account_containers(self, profile: Profile) -> None:
         if self.tracked_accounts == self._previous_tracked_accounts:
