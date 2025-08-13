@@ -23,13 +23,6 @@ TransactionSummary {
       }
     }
 
-    CartItem {
-      &:focus-within {
-        opacity: 93%;
-        background: $accent;
-      }
-    }
-
     NoContentAvailable {
       content-align: center middle;
       margin-left: 1;

@@ -114,6 +114,10 @@ class CliveCheckerboardTableRow(CliveWidget):
     CliveCheckerboardTableRow {
         layout: horizontal;
         height: auto;
+
+        &:focus-within > * {
+            background-tint: $foreground 20%;
+        }
     }
     """
 
