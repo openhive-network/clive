@@ -82,7 +82,19 @@ class ProfileStorageBase(PreconfiguredBaseModel):
     @classmethod
     def get_this_revision(cls) -> Revision:
         assert cls is not ProfileStorageBase, "This method should be called on subclass."
-        return sha256(cls._get_revision_seed().encode()).hexdigest()[:8]
+        return sha256(cls.get_model_for_schema_json()._get_revision_seed().encode()).hexdigest()[:8]
+
+    @classmethod
+    def get_model_for_schema_json(cls) -> type[ProfileStorageBase]:
+        schema = cls._get_model_for_schema_json()
+        cls._REGISTERED_MODELS.remove(
+            schema
+        )  # Remove unnecessary duplication of the model schema due to __init_subclass__ being called by defstruct
+        return schema
+
+    @classmethod
+    def _get_model_for_schema_json(cls) -> type[ProfileStorageBase]:
+        raise NotImplementedError("This method should be overridden in subclasses to provide a model for schema JSON.")
 
     @classmethod
     def get_this_version(cls) -> Version:

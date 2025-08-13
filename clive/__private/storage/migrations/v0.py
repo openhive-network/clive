@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence  # noqa: TC003
 from pathlib import Path  # noqa: TC003
-from typing import Any, Self
+from typing import Any, Self, cast
+
+import msgspec
 
 from clive.__private.core.alarms.specific_alarms import (
     ChangingRecoveryAccountInProgress,
@@ -101,6 +103,23 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     @classmethod
     def upgrade(cls, old: ProfileStorageBase) -> Self:
         raise NotImplementedError("Upgrade is not not possible for first revision.")
+
+    @classmethod
+    def _get_model_for_schema_json(cls) -> type[ProfileStorageBase]:
+        transaction_core_storage_model = msgspec.defstruct(
+            "TransactionCoreStorageModel", [("operations", list[Any])], bases=(cls.TransactionCoreStorageModel,)
+        )
+
+        transaction_storage_model = msgspec.defstruct(
+            "TransactionStorageModel",
+            [("transaction_core", transaction_core_storage_model)],
+            bases=(cls.TransactionStorageModel,),
+        )
+
+        return cast(
+            "type[ProfileStorageBase]",
+            msgspec.defstruct("ProfileStorageModel", [("transaction", transaction_storage_model)], bases=(cls,)),
+        )
 
     @classmethod
     def _preprocess_data(cls, data: dict[str, Any]) -> dict[str, Any]:
