@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Self, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, TypeVar
 
 from textual import on
 from textual.binding import Binding
@@ -122,6 +122,8 @@ class CliveCheckerboardTableRow(CliveWidget):
     """
 
     BINDINGS = [
+        Binding("left", "focus_previous_widget_within_row", "Focus previous widget within row", show=False),
+        Binding("right", "focus_next_widget_within_row", "Focus next widget within row", show=False),
         Binding("up", "focus_previous_row", "Focus previous row", show=False),
         Binding("down", "focus_next_row", "Focus next row", show=False),
     ]
@@ -149,6 +151,10 @@ class CliveCheckerboardTableRow(CliveWidget):
         )
         return self._index
 
+    @property
+    def focusable_children(self) -> list[Widget]:
+        return [widget for widget in self.query("*") if widget.focusable]
+
     def compose(self) -> ComposeResult:
         yield from self.cells
 
@@ -158,9 +164,15 @@ class CliveCheckerboardTableRow(CliveWidget):
     def action_focus_previous_row(self) -> None:
         self.post_message(self.FocusOtherRow(self.index - 1))
 
+    def action_focus_next_widget_within_row(self) -> None:
+        self.focus_child(direction="next")
+
+    def action_focus_previous_widget_within_row(self) -> None:
+        self.focus_child(direction="previous")
+
     def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
         def focus_nth_focusable(*, index: int = 0) -> None:
-            focusable_children = [widget for widget in self.query("*") if widget.focusable]
+            focusable_children = self.focusable_children
             if index < len(focusable_children):
                 focusable_children[index].focus()
 
@@ -180,6 +192,23 @@ class CliveCheckerboardTableRow(CliveWidget):
         else:
             focus_nth_focusable(index=1)
         return self
+
+    def focus_child(self, direction: Literal["next", "previous"]) -> None:
+        currently_focused = self.app.focused
+        if not currently_focused:
+            # No currently focused widget; do nothing
+            return
+
+        focusable_children = self.focusable_children
+        try:
+            current_index = focusable_children.index(currently_focused)
+        except ValueError:
+            # Current focus is not my child or have no focusable children; do nothing
+            return
+
+        step = 1 if direction == "next" else -1
+        target_index = (current_index + step) % len(focusable_children)
+        focusable_children[target_index].focus()
 
     def humanize_row_number(self) -> str:
         return str(self.index + 1)
