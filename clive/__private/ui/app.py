@@ -27,12 +27,15 @@ from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.dialogs import LoadTransactionFromFileDialog
 from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
 from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
+from clive.__private.ui.forms.create_profile.profile_credentials_form_screen import ProfileCredentialsFormScreen
+from clive.__private.ui.forms.create_profile.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.settings import Settings
 from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
+from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.types import CliveModes
 from clive.exceptions import ScreenNotFoundError
@@ -80,15 +83,15 @@ class Clive(App[int]):
     COMMAND_PALETTE_BINDING = "ctrl+p"
 
     BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.app.quit.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.clear_notifications.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.help.toggle_help.create(action="help", description="Help", show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.settings.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.clear_notifications.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
-        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.quit.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(),
+        CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(),
+        CLIVE_PREDEFINED_BINDINGS.app.settings.create(),
+        CLIVE_PREDEFINED_BINDINGS.app.transaction_summary.create(),
     ]
 
     SCREENS = {
@@ -142,6 +145,51 @@ class Clive(App[int]):
     @staticmethod
     def app_instance() -> Clive:
         return cast("Clive", active_app.get())
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:  # noqa: ARG002
+        """Check whether an action is enabled/visible.
+
+        Args:
+            action: The name of an action.
+            parameters: A tuple of any action parameters.
+
+        Returns:
+            `True` if the action is enabled+visible,
+            `False` if the action is disabled+hidden,
+            `None` if the action is disabled+visible (grayed out in footer)
+        """
+        app_section = self.custom_bindings.app
+
+        actions_hidden_when_not_unlocked = [
+            app_section.load_transaction_from_file.default_action,
+            app_section.dashboard.default_action,
+            app_section.lock_wallet.default_action,
+            app_section.settings.default_action,
+            app_section.transaction_summary.default_action,
+        ]
+
+        mode_to_hidden_actions: dict[CliveModes, list[str]] = {
+            "unlock": actions_hidden_when_not_unlocked,
+            "create_profile": actions_hidden_when_not_unlocked,
+        }
+
+        screen_to_hidden_actions: dict[type[CliveScreen], list[str]] = {
+            Dashboard: [app_section.dashboard.default_action],
+            Settings: [app_section.settings.default_action],
+            TransactionSummary: [app_section.transaction_summary.default_action],
+            Unlock: [app_section.switch_node.default_action],
+            WelcomeFormScreen: [app_section.switch_node.default_action],
+            ProfileCredentialsFormScreen: [app_section.switch_node.default_action],
+        }
+
+        if action in mode_to_hidden_actions.get(self.current_mode, []):
+            return False
+
+        for screen_type, actions in screen_to_hidden_actions.items():
+            if isinstance(self.screen, screen_type) and action in actions:
+                return False
+
+        return True
 
     @classmethod
     def is_launched(cls) -> bool:
@@ -278,9 +326,6 @@ class Clive(App[int]):
     async def action_lock_wallet(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
             await self.switch_mode_into_locked()
-
-    def action_do_nothing(self) -> None:
-        """This action is used to override the default action of some bindings, does nothing."""
 
     async def action_switch_node(self) -> None:
         self.show_switch_node_address_dialog()

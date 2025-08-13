@@ -6,7 +6,6 @@ from textual import on
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.messages import get_press_help_message
-from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -24,11 +23,6 @@ class Description(Static):
 
 
 class WelcomeFormScreen(BaseScreen, CreateProfileFormScreen):
-    BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(
-            action="app.do_nothing", show=False
-        ),  # we want to disable switch_node binding here
-    ]
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 

@@ -46,6 +46,10 @@ class CliveBinding:
         return self.bindings_display
 
     @property
+    def default_action(self) -> str:
+        return self.id
+
+    @property
     def _key_display(self) -> str:
         """Handles the logic how to display the binding key."""
         key = self.key.split(",")[0]  # display only first key if there are multiple defined
@@ -75,6 +79,6 @@ class CliveBinding:
         Returns:
             A Textual binding object configured with this binding's or explicitly overridden properties
         """
-        action_ = action if action is not None else self.id
+        action_ = action if action is not None else self.default_action
         description_ = description or self.description or ""
         return Binding(self.key, action_, description_, show, key_display, priority, tooltip, self.id)
