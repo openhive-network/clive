@@ -21,9 +21,9 @@ dependencies = [
     'inflection (==0.5.1)',
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
-    'schemas (==0.0.1.dev424+eeb5c94)',
-    'beekeepy (==0.0.1.dev413+0bc0d4b)',
-    'wax (==0.3.10.dev841+5ac4412f)',
+    'schemas (==0.0.1.dev426+0dea163)',
+    'beekeepy (==0.0.1.dev414+2be9929)',
+    'wax (==0.3.10.dev848+12896494)',
 ]
 
 [project.urls]
