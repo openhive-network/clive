@@ -30,7 +30,9 @@ class Dashboard(CliveBindingSection):
     switch_working_account: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="switch_working_account", key="w")
     )
+    account_details: CliveBinding = field(default_factory=lambda: CliveBinding(id="account_details", key="d"))
     add_account: CliveBinding = field(default_factory=lambda: CliveBinding(id="add_account", key="a"))
+    remove_account: CliveBinding = field(default_factory=lambda: CliveBinding(id="remove_account", key="r"))
 
 
 @dataclass

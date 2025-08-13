@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
+from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Rule, Static
 
@@ -238,6 +239,20 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
 
 
 class TrackedAccountRow(TrackedAccountReferencingWidget, can_focus=True, can_focus_children=False):
+    BINDINGS = [
+        Binding("enter", "account_details", "Account details", show=False),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.account_details.create(),
+        CLIVE_PREDEFINED_BINDINGS.dashboard.remove_account.create(),
+    ]
+
+    @CliveScreen.prevent_action_when_no_accounts_node_data()
+    def action_account_details(self) -> None:
+        self.app.push_screen(AccountDetails(self._account))
+
+    def action_remove_account(self) -> None:
+        self.profile.accounts.remove_tracked_account(self._account)
+        self.app.trigger_profile_watchers()
+
     def compose(self) -> ComposeResult:
         self.add_class("working" if isinstance(self._account, WorkingAccount) else "watched")
         with Horizontal():

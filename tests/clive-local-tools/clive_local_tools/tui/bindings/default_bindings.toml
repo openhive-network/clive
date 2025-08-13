@@ -11,7 +11,9 @@ quit = "ctrl+q"
 [dashboard]
 operations = "o"
 switch_working_account = "w"
+account_details = "d"
 add_account = "a"
+remove_account = "r"
 
 [help]
 toggle_help = "f1,?"
