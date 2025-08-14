@@ -347,6 +347,9 @@ class Dashboard(BaseScreen):
     @on(TrackedAccountRow.FocusOtherRow)
     def focus_other_row(self, event: TrackedAccountRow.FocusOtherRow) -> None:
         rows = self.query(TrackedAccountRow)
+        if not rows:
+            return
+
         target_index = event.target_index % len(rows)
         rows[target_index].focus()
 
