@@ -34,10 +34,10 @@ class PrivateKeyContainer(Horizontal):
     PrivateKeyContainer {
         height: auto;
         PrivateKeyInput {
-            width: 6fr;
+            width: 9fr;
         }
         LoadFromFileButton {
-            width: 1fr;
+            width: 2fr;
             margin-right: 1;
         }
     }
