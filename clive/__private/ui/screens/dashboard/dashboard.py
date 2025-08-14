@@ -280,6 +280,7 @@ class TrackedAccountRow(TrackedAccountReferencingWidget, can_focus=True, can_foc
 
     def action_remove_account(self) -> None:
         self.profile.accounts.remove_tracked_account(self._account)
+        self.action_focus_previous_row()
         self.app.trigger_profile_watchers()
 
     def compose(self) -> ComposeResult:
