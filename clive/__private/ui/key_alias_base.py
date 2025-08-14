@@ -8,7 +8,9 @@ from textual.widgets import Input
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.keys import KeyAliasAlreadyInUseError, PrivateKey, PrivateKeyAliased
 from clive.__private.settings import safe_settings
+from clive.__private.ui.bindings.clive_bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_dom_node import CliveDOMNode
+from clive.__private.ui.widgets.buttons import LoadFromFileButton, LoadFromFileOneLineButton
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
     CliveValidatedInputError,
@@ -68,6 +70,10 @@ class KeyAliasBase(CliveDOMNode, AbstractClassMessagePump):
 
 
 class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.load_from_file.create(),
+    ]
+
     @property
     def private_key_input(self) -> PrivateKeyInput:
         return self.query_exactly_one(PrivateKeyInput)
@@ -96,6 +102,19 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
 
         private_key = self.private_key_input.value_or_error
         return PrivateKeyAliased(value=private_key, file_path=None, alias=self._get_key_alias())
+
+    @on(LoadFromFileButton.Pressed)
+    @on(LoadFromFileOneLineButton.Pressed)
+    def action_load_from_file(self) -> None:
+        from clive.__private.ui.dialogs import LoadKeyFromFileDialog
+
+        def load_key_into_input(loaded_private_key: PrivateKey | None) -> None:
+            if loaded_private_key is None:
+                return
+
+            self.private_key_input.input.value = loaded_private_key.value
+
+        self.app.push_screen(LoadKeyFromFileDialog(), load_key_into_input)
 
     @on(Input.Changed, "#key-input Input")
     def _recalculate_public_key(self) -> None:

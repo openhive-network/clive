@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
-
-from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.key_alias_base import NewKeyAliasBase
 from clive.__private.ui.widgets.buttons import LoadFromFileOneLineButton
@@ -16,7 +13,7 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.keys.keys import PrivateKey, PublicKey
+    from clive.__private.core.keys.keys import PublicKey
 
 
 class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
@@ -53,16 +50,6 @@ class NewKeyAliasDialog(CliveActionDialog, NewKeyAliasBase):
         yield LoadFromFileOneLineButton()
         yield ConfirmOneLineButton(self._confirm_button_text)
         yield CancelOneLineButton()
-
-    @on(LoadFromFileOneLineButton.Pressed)
-    def _load_from_file(self) -> None:
-        def load_key_into_input(loaded_private_key: PrivateKey | None) -> None:
-            if loaded_private_key is None:
-                return
-
-            self.private_key_input.input.value = loaded_private_key.value
-
-        self.app.push_screen(LoadKeyFromFileDialog(), load_key_into_input)
 
     async def _perform_confirmation(self) -> bool:
         return await self._save()

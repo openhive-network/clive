@@ -6,8 +6,6 @@ from textual import on
 from textual.containers import Horizontal
 
 from clive.__private.logger import logger
-from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
-from clive.__private.ui.dialogs import LoadKeyFromFileDialog
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.key_alias_base import NewKeyAliasBase
@@ -24,7 +22,6 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.__private.core.keys.keys import PrivateKey
     from clive.__private.ui.forms.create_profile.create_profile_form import CreateProfileForm
     from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 
@@ -69,10 +66,6 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
         }
     }
     """
-    BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.load_from_file.create(),
-    ]
-
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
 
@@ -99,18 +92,8 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
         self.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
-    @on(LoadFromFileButton.Pressed)
-    def action_load_from_file(self) -> None:
-        self.app.push_screen(LoadKeyFromFileDialog(), self._load_private_key_from_file)
-
     def _default_private_key_input_required(self) -> bool:
         return False
-
-    def _load_private_key_from_file(self, loaded_private_key: PrivateKey | None) -> None:
-        if loaded_private_key is None:
-            return
-
-        self.private_key_input.input.value = loaded_private_key.value
 
     async def validate(self) -> NewKeyAliasFormScreen.ValidationFail | None:
         try:
