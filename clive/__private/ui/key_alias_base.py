@@ -97,6 +97,21 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
         private_key = self.private_key_input.value_or_error
         return PrivateKeyAliased(value=private_key, file_path=None, alias=self._get_key_alias())
 
+    @on(Input.Changed, "#key-input Input")
+    def _recalculate_public_key(self) -> None:
+        try:
+            private_key = self._private_key
+        except CliveValidatedInputError:
+            text = "Cannot calculate public key"
+            calculated = False
+        else:
+            text = private_key.calculate_public_key().value
+            calculated = True
+
+        public_key_input = self.public_key_input
+        public_key_input.input.value = text
+        public_key_input.input.set_style("valid" if calculated else "invalid")
+
     def _create_private_key_input(self) -> PrivateKeyInput:
         return PrivateKeyInput(
             value=self._default_private_key(),
@@ -114,21 +129,6 @@ class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
 
     def _default_public_key_to_match(self) -> PublicKey | None:
         return None
-
-    @on(Input.Changed, "#key-input Input")
-    def _recalculate_public_key(self) -> None:
-        try:
-            private_key = self._private_key
-        except CliveValidatedInputError:
-            text = "Cannot calculate public key"
-            calculated = False
-        else:
-            text = private_key.calculate_public_key().value
-            calculated = True
-
-        public_key_input = self.public_key_input
-        public_key_input.input.value = text
-        public_key_input.input.set_style("valid" if calculated else "invalid")
 
     def _get_key_alias(self) -> str:
         key_alias_input = self.key_alias_input
