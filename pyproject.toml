@@ -21,6 +21,7 @@ dependencies = [
     'inflection (==0.5.1)',
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
+    "pathvalidate (==3.3.1)",
     'schemas (==0.0.1.dev424+eeb5c94)',
     'beekeepy (==0.0.1.dev413+0bc0d4b)',
     'wax (==0.3.10.dev841+5ac4412f)',
