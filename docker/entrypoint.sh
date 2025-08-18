@@ -10,6 +10,7 @@ TESTNET_NODE_LOG_FILE="testnet_node.log"
 INTERACTIVE_CLI_MODE=0
 PIPELINE=""
 CONTAINERS_WORKING_DIRECTORY="/clive"
+TESTNET_SCRIPT_PATH="${CONTAINERS_WORKING_DIRECTORY}/testnet_node.py"
 export CLIVE_SELECT_FILE_ROOT_PATH="${CONTAINERS_WORKING_DIRECTORY}/.clive/mapped_host_directory"
 
 if ! [ -t 0 ]; then
@@ -95,8 +96,6 @@ launch_cli() {
   local activate_beekeeper_script_path="${CONTAINERS_WORKING_DIRECTORY}/scripts/activate_beekeeper.sh"
 
   setup_PS1
-  setup_clive_env
-  setup_mapped_directory_as_startup_dir
   setup_clive_autocompletion
   if [[ -n "${PIPELINE:-}" ]]; then
     ${activate_beekeeper_script_path}
@@ -177,11 +176,11 @@ run_mainnet() {
 run_testnet() {
   if [[ "${INTERACTIVE_CLI_MODE}" = "0" ]]; then
     echo "Launching clive in TUI mode on testnet"
-    exec python3 testnet_node.py -p -t
+    exec python3 "${TESTNET_SCRIPT_PATH}" -p -t
   else
     echo "Launching clive in CLI mode on testnet"
     # We use setsid to detach from the process group because ctrl-c will kill the testnet_node.py
-    setsid python3 testnet_node.py -p >${TESTNET_NODE_LOG_FILE} 2>&1 &
+    setsid python3 "${TESTNET_SCRIPT_PATH}" -p >${TESTNET_NODE_LOG_FILE} 2>&1 &
     wait_for_testnet
     launch_cli
   fi
@@ -193,6 +192,8 @@ main() {
   check_and_switch_user "$@"
   parse_arguments "$@"
   activate_virtualenv
+  setup_clive_env
+  setup_mapped_directory_as_startup_dir
 
   if [[ "${TESTNET_MODE}" = "0" ]]; then
     run_mainnet
