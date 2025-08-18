@@ -20,7 +20,6 @@ dependencies = [
     'typer (==0.15.2)',
     'inflection (==0.5.1)',
     'humanize (==4.12.2)',
-    'pydantic (==1.10.18)',
     'toml (==0.10.2)',
     'schemas (==0.0.1.dev424+eeb5c94)',
     'beekeepy (==0.0.1.dev413+0bc0d4b)',
@@ -104,7 +103,6 @@ files = [
 [tool.mypy]
 strict = true
 disallow_untyped_decorators = false
-plugins = "pydantic.mypy"
 
 [[tool.mypy.overrides]]
 module = ["test_tools.*"]
