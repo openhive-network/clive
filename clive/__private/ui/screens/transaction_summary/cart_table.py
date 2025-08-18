@@ -167,6 +167,11 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         which is assigned automatically later, during row creation. The cells content is
         updated here once the row is fully created and its index becomes available.
         """
+        if not self.profile.transaction:
+            # There may be a case where the file save / broadcast is executed beforehand, and the operation
+            # represented by CartItem is no longer available.
+            return
+
         await self.operation_number_cell.update_content(self.humanize_operation_number())
         await self.operation_name_cell.update_content(self.humanize_operation_name())
         await self.operation_details_cell.update_content(Content(self.humanize_operation_details()))
