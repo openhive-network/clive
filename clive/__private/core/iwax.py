@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
@@ -22,10 +22,8 @@ if TYPE_CHECKING:
     from clive.__private.models import Asset, Transaction
     from clive.__private.models.schemas import OperationUnion, PriceFeed
 
-F = TypeVar("F", bound=Callable[..., Any])
 
-
-def cast_hiveint_args(func: F) -> F:
+def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         def hiveint_to_int(value: Any) -> Any:  # noqa: ANN401
