@@ -144,13 +144,22 @@ def serve_forever() -> None:
         return
 
 
+def cleanup_clive_data() -> None:
+    excluded = [safe_settings.select_file_root_path]
+    data_path = safe_settings.data_path
+
+    for child in data_path.iterdir():
+        if child not in excluded:
+            shutil.rmtree(child, ignore_errors=True)
+
+
 async def prepare(*, recreate_profiles: bool) -> tt.RawNode:
     prepare_before_launch(enable_textual_logger=False, enable_stream_handlers=True)
     node = prepare_node()
     print_working_account_keys()
 
     if recreate_profiles:
-        shutil.rmtree(safe_settings.data_path, ignore_errors=True)
+        cleanup_clive_data()
         prepare_before_launch(enable_textual_logger=False, enable_stream_handlers=True)
         await prepare_profiles(node)
 
