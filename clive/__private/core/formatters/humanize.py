@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
 
 import humanize
@@ -762,3 +763,41 @@ def humanize_manabar_regeneration_time(regeneration_time: timedelta) -> str:
     if is_full():
         return "Full!"
     return humanize_natural_time(-regeneration_time)
+
+
+def humanize_path(path: Path, *, add_leading_dot_slash: bool = False, add_trailing_slash: bool = False) -> str:
+    """
+    Humanize a path to a string.
+
+    Path object shrink leading './' and trailing `/` so it is not possible to get it when converting to string.
+
+    Args:
+        path: A path to be humanized.
+        add_leading_dot_slash: Whether to add a leading dot slash (only if path is not absolute).
+        add_trailing_slash: Whether to add a trailing slash.
+
+    Example:
+        >>> humanize_path(Path('user/some/root/path'))
+        'user/some/root/path'
+        >>> humanize_path(Path('user/some/root/path'), add_leading_dot_slash=True)
+        './user/some/root/path'
+        >>> humanize_path(Path('user/some/root/path'), add_leading_dot_slash=True, add_trailing_slash=True)
+        './user/some/root/path/'
+        >>> humanize_path(Path(''))
+        './'
+        >>> humanize_path(Path(''), add_leading_dot_slash=True, add_trailing_slash=True)
+        './'
+        >>> humanize_path(Path('/user/some/root/path'))
+        '/user/some/root/path'
+        >>> humanize_path(Path('/user/some/root/path'), add_leading_dot_slash=True)
+        '/user/some/root/path'
+
+    Returns:
+        Humanized string representation of the path, with optional leading dot slash and trailing slash.
+    """
+    if path == Path():
+        return "./"
+
+    prefix = "./" if add_leading_dot_slash and not path.is_absolute() else ""
+    suffix = "/" if add_trailing_slash else ""
+    return f"{prefix}{path}{suffix}"
