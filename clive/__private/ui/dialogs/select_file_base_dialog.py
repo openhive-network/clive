@@ -4,10 +4,12 @@ from abc import ABC
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal
+from textual.containers import Horizontal, Vertical
+from textual.reactive import reactive
 from textual.widgets import DirectoryTree, Label
 
 from clive.__private.core.constants.tui.placeholders import FILE_NAME_PLACEHOLDER
+from clive.__private.core.formatters.humanize import humanize_relative_path_to_root
 from clive.__private.settings import safe_settings
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog, CliveActionDialogResultT
 from clive.__private.ui.widgets.buttons.confirm_button import ConfirmOneLineButton
@@ -28,6 +30,28 @@ class DirectoryTreeHint(Label):
     """Hint for DirectoryTree widget."""
 
 
+class RelativePathDisplay(Vertical):
+    """
+    Label for displaying relative path.
+
+    Attributes:
+        relative_path: The relative path to display in the label.
+
+    Args:
+        relative_path: The relative path to display in the label.
+    """
+
+    relative_path: str = reactive(None, recompose=True, init=False)  # type: ignore[assignment]
+
+    def __init__(self, relative_path: str) -> None:
+        super().__init__()
+        self.set_reactive(self.__class__.relative_path, relative_path)  # type: ignore[arg-type]
+
+    def compose(self) -> ComposeResult:
+        yield Label("Relative path:")
+        yield Label(self.relative_path, id="relative-path")
+
+
 class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
     DEFAULT_CSS = """
     SelectFileBaseDialog {
@@ -37,6 +61,20 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
 
             FileNameInputContainer {
                 height: auto;
+
+                RelativePathDisplay {
+                    height: auto;
+                    #relative-path {
+                        width: 100%;
+                        overflow: hidden;
+                        text-wrap: nowrap;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                FilenameInput {
+                    height: auto;
+                }
             }
 
             DirectoryTreeHint {
@@ -71,6 +109,11 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
         if self._notice:
             yield Notice(self._notice)
         with FileNameInputContainer():
+            yield RelativePathDisplay(
+                humanize_relative_path_to_root(
+                    safe_settings.select_file_root_path, safe_settings.select_file_root_path, add_trailing_slash=True
+                )
+            )
             yield FileNameInput(
                 root_directory_path=safe_settings.select_file_root_path,
                 placeholder=FILE_NAME_PLACEHOLDER,
@@ -92,11 +135,18 @@ class SelectFileBaseDialog(CliveActionDialog[CliveActionDialogResultT], ABC):
     @on(DirectoryTree.FileSelected)
     def _update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self._file_name_input.update_root_path_of_file(event.path.parent)
+        self._update_relative_path_view()
         self._file_name_input.input.value = event.path.name
 
     @on(DirectoryTree.DirectorySelected)
     def _update_input_path_from_directory(self, event: DirectoryTree.DirectorySelected) -> None:
         self._file_name_input.update_root_path_of_file(event.path)
+        self._update_relative_path_view()
+
+    def _update_relative_path_view(self) -> None:
+        self.query_exactly_one(RelativePathDisplay).relative_path = humanize_relative_path_to_root(
+            self._file_name_input.root_directory_path, safe_settings.select_file_root_path, add_trailing_slash=True
+        )
 
     def _default_validator_mode(self) -> FilePathValidator.Modes:
         return "is_file"
