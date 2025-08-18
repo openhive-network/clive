@@ -1,9 +1,20 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual.validation import Function, ValidationResult, Validator
+
+from clive.__private.validators.filesystem_validation_tools import (
+    validate_can_be_directory,
+    validate_can_be_file,
+    validate_is_directory_or_can_be_directory,
+    validate_is_file_or_can_be_file,
+    validate_is_file_or_directory,
+    validate_path,
+    validate_path_exists,
+    validate_path_is_directory,
+    validate_path_is_file,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -46,57 +57,26 @@ class PathValidator(Validator):
 
     def validate(self, value: str) -> ValidationResult:
         mode_validators: dict[PathValidator.Modes, tuple[Callable[[str], bool], str]] = {
-            "exists": (self._validate_path_exists, self.NOT_EXISTS_FAILURE_DESC),
-            "is_file": (self._validate_path_is_file, self.NOT_A_FILE_FAILURE_DESC),
-            "is_directory": (self._validate_path_is_directory, self.NOT_A_DIRECTORY_FAILURE_DESC),
-            "is_file_or_directory": (self._validate_is_file_or_directory, self.NOT_A_FILE_OR_DIRECTORY_FAILURE_DESC),
-            "can_be_file": (self._validate_can_be_file, self.CANT_BE_FILE_FAILURE_DESC),
-            "can_be_directory": (self._validate_can_be_directory, self.CANT_BE_DIRECTORY_FAILURE_DESC),
+            "exists": (validate_path_exists, self.NOT_EXISTS_FAILURE_DESC),
+            "is_file": (validate_path_is_file, self.NOT_A_FILE_FAILURE_DESC),
+            "is_directory": (validate_path_is_directory, self.NOT_A_DIRECTORY_FAILURE_DESC),
+            "is_file_or_directory": (validate_is_file_or_directory, self.NOT_A_FILE_OR_DIRECTORY_FAILURE_DESC),
+            "can_be_file": (validate_can_be_file, self.CANT_BE_FILE_FAILURE_DESC),
+            "can_be_directory": (validate_can_be_directory, self.CANT_BE_DIRECTORY_FAILURE_DESC),
             "is_file_or_can_be_file": (
-                self._validate_is_file_or_can_be_file,
+                validate_is_file_or_can_be_file,
                 self.NOT_A_FILE_OR_CANT_BE_FILE_FAILURE_DESC,
             ),
             "is_directory_or_can_be_directory": (
-                self._validate_is_directory_or_can_be_directory,
+                validate_is_directory_or_can_be_directory,
                 self.NOT_A_DIRECTORY_OR_CANT_BE_DIRECTORY_FAILURE_DESC,
             ),
         }
 
-        validators = [Function(self._validate_path, self.INVALID_FAILURE_DESC)]
+        validators = [Function(validate_path, self.INVALID_FAILURE_DESC)]
 
         method = mode_validators[self.mode][0]
         desc = mode_validators[self.mode][1]
         validators += [Function(method, desc)]
 
         return ValidationResult.merge([validator.validate(value) for validator in validators])
-
-    def _validate_path(self, value: str) -> bool:
-        try:
-            Path(value).resolve()
-        except (OSError, RuntimeError):
-            return False
-        return True
-
-    def _validate_path_exists(self, value: str) -> bool:
-        return Path(value).exists()
-
-    def _validate_path_is_file(self, value: str) -> bool:
-        return Path(value).is_file()
-
-    def _validate_path_is_directory(self, value: str) -> bool:
-        return Path(value).is_dir()
-
-    def _validate_is_file_or_directory(self, value: str) -> bool:
-        return self._validate_path_is_file(value) or self._validate_path_is_directory(value)
-
-    def _validate_can_be_file(self, value: str) -> bool:
-        return not self._validate_path_is_directory(value)
-
-    def _validate_can_be_directory(self, value: str) -> bool:
-        return not self._validate_path_is_file(value)
-
-    def _validate_is_file_or_can_be_file(self, value: str) -> bool:
-        return self._validate_path_is_file(value) or self._validate_can_be_file(value)
-
-    def _validate_is_directory_or_can_be_directory(self, value: str) -> bool:
-        return self._validate_path_is_directory(value) or self._validate_can_be_directory(value)
