@@ -52,7 +52,7 @@ class NextScreenButton(CliveButton):
         self.label = self._determine_label(is_finish=value)
 
     def _determine_label(self, *, is_finish: bool) -> str:
-        return "Finish!" if is_finish else "Next"
+        return "Finish!" if is_finish else "Next →"
 
 
 class PreviousScreenButton(OneLineButton):
