@@ -67,8 +67,8 @@ wait_for_testnet() {
   echo "Testnet node is ready to use."
 }
 
-# Set mapped directory as the startup directory
-setup_mapped_directory_as_startup_dir() {
+# Set mapped directory as the working directory
+setup_mapped_directory_as_working_directory() {
   cd ${CLIVE_SELECT_FILE_ROOT_PATH}
 }
 
@@ -193,7 +193,7 @@ main() {
   parse_arguments "$@"
   activate_virtualenv
   setup_clive_env
-  setup_mapped_directory_as_startup_dir
+  setup_mapped_directory_as_working_directory
 
   if [[ "${TESTNET_MODE}" = "0" ]]; then
     run_mainnet
