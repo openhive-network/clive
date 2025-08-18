@@ -59,7 +59,7 @@ repos:
         entry: "pydoclint clive/ tests/ testnet_node.py"
         pass_filenames: false
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.12.8'
+    rev: 'v0.12.9'
     hooks:
       - id: ruff
         name: linting code with Ruff
