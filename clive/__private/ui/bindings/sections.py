@@ -37,7 +37,7 @@ class Dashboard(CliveBindingSection):
 
 @dataclass
 class Help(CliveBindingSection):
-    toggle_help: CliveBinding = field(default_factory=lambda: CliveBinding(id="toggle_help", key="f1,?"))
+    toggle_help: CliveBinding = field(default_factory=lambda: CliveBinding(id="toggle_help", key="?,f1"))
     toggle_table_of_contents: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="toggle_table_of_contents", key="t")
     )
