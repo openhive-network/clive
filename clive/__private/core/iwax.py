@@ -264,3 +264,8 @@ def generate_password_based_private_key(
 
     result = wax.generate_password_based_private_key(account_name.encode(), role.encode(), password.encode())
     return PrivateKey(value=result.wif_private_key.decode())
+
+
+def suggest_brain_key() -> str:
+    result = wax.suggest_brain_key()
+    return result.brain_key.decode()

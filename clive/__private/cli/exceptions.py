@@ -321,3 +321,18 @@ class CLITransactionToExchangeError(CLIPrettyError):
         message = f"Cannot perform transaction.\n{reason}"
         super().__init__(message, errno.EINVAL)
         self.message = message
+
+
+class CLIMutuallyExclusiveOptionsError(CLIPrettyError):
+    """
+    Raise when cli command is invoked with mutually exclusive options.
+
+    Args:
+        option0: First option. This ensures that exception is raised with more then one option.
+        *options: Rest of options that can't be used together.
+    """
+
+    def __init__(self, option0: str, *options: str) -> None:
+        options_quoted = [f"'{opt}'" for opt in [option0, *list(options)]]
+        message = f"Options {options_quoted[0]} and {', '.join(options_quoted[1:])} are mutually exclusive."
+        super().__init__(message, errno.EINVAL)
