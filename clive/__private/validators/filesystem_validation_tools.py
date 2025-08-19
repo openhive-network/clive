@@ -30,11 +30,11 @@ def validate_is_file_or_directory(value: str) -> bool:
 
 
 def validate_can_be_file(value: str) -> bool:
-    return not validate_path_is_directory(value)
+    return validate_path(value) and not validate_path_is_directory(value)
 
 
 def validate_can_be_directory(value: str) -> bool:
-    return not validate_path_is_file(value)
+    return validate_path(value) and not validate_path_is_file(value)
 
 
 def validate_is_file_or_can_be_file(value: str) -> bool:
