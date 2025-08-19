@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from textual.widget import Widget
 
     from clive.__private.ui.app import Clive
-    from clive.__private.ui.types import ActiveBindingsMap
 
 
 P = ParamSpec("P")
@@ -39,11 +38,6 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
 
     class Resumed(Message):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
-
-    @property
-    def active_bindings(self) -> ActiveBindingsMap:
-        """Provides the ability to control the binding order in the footer."""
-        return self._sort_bindings(super().active_bindings)
 
     @classmethod
     def prevent_action_when_no_accounts_node_data(
@@ -109,33 +103,3 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         for child in node.children:
             self._post_to_children(child, message)
             child.post_message(message)
-
-    @staticmethod
-    def _sort_bindings(data: ActiveBindingsMap) -> ActiveBindingsMap:
-        """
-        Sort bindings in a Clive-way.
-
-        By placing the ESC key first, then non-fn keys and fn keys at the end of the dictionary.
-        This is done so that the bindings in the footer are displayed in a correct, uniform way.
-
-        Args:
-            data: The bindings to sort.
-
-        Returns:
-            New dictionary holding sorted bindings.
-        """
-        fn_keys = sorted([key for key in data if key != "f" and key.startswith("f")], key=lambda x: int(x[1:]))
-        non_fn_keys = [key for key in data if key not in fn_keys]
-
-        prioritized = ("escape",)
-        prioritized_matches = []
-        for key in prioritized:
-            if key in fn_keys:
-                fn_keys.remove(key)
-                prioritized_matches.append(key)
-            if key in non_fn_keys:
-                non_fn_keys.remove(key)
-                prioritized_matches.append(key)
-
-        ordered_keys = prioritized_matches + non_fn_keys + fn_keys
-        return {key: data[key] for key in ordered_keys}
