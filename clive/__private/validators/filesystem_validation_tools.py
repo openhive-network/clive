@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from pathvalidate import is_valid_filename
+
 
 def validate_path(value: str) -> bool:
     try:
@@ -41,3 +43,7 @@ def validate_is_file_or_can_be_file(value: str) -> bool:
 
 def validate_is_directory_or_can_be_directory(value: str) -> bool:
     return validate_path_is_directory(value) or validate_can_be_directory(value)
+
+
+def validate_filename(value: str) -> bool:
+    return is_valid_filename(value)
