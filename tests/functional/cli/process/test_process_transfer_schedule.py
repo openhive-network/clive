@@ -54,6 +54,7 @@ async def test_modification_of_scheduled_transfer(
 ) -> None:
     # ARRANGE
     modified_memo = "Modified memo"
+    modified_repeat = 2  # can't be 1 because of a known issue: https://gitlab.syncad.com/hive/hive/-/issues/786
     operation = RecurrentTransferOperation(
         from_=ACCOUNT_NAME, to=RECEIVER, amount=AMOUNT, memo=modified_memo, recurrence=RECURRENCE, executions=REPEAT
     )
@@ -70,7 +71,7 @@ async def test_modification_of_scheduled_transfer(
 
     # ACT
     result = cli_tester.process_transfer_schedule_modify(
-        to=RECEIVER, memo=modified_memo, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=RECEIVER, repeat=modified_repeat, memo=modified_memo, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
