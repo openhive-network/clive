@@ -26,7 +26,7 @@ load_from_file = "l"
 [operations]
 add_to_cart = "a"
 finalize_transaction = "f"
-wtness_show_details = "d"
+witness_show_details = "d"
 
 [transaction_summary]
 broadcast = "b"

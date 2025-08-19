@@ -53,7 +53,7 @@ class ManageKeyAliases(CliveBindingSection):
 class Operations(CliveBindingSection):
     add_to_cart: CliveBinding = field(default_factory=lambda: CliveBinding(id="add_to_cart", key="a"))
     finalize_transaction: CliveBinding = field(default_factory=lambda: CliveBinding(id="finalize_transaction", key="f"))
-    witness_show_details: CliveBinding = field(default_factory=lambda: CliveBinding(id="wtness_show_details", key="d"))
+    witness_show_details: CliveBinding = field(default_factory=lambda: CliveBinding(id="witness_show_details", key="d"))
 
 
 @dataclass
