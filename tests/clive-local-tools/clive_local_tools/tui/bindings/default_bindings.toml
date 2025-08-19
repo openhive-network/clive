@@ -16,7 +16,7 @@ add_account = "a"
 remove_account = "r"
 
 [help]
-toggle_help = "?,f1"
+toggle_help = "question_mark,f1"
 toggle_table_of_contents = "t"
 
 [manage_key_aliases]
