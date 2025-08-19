@@ -97,6 +97,12 @@ clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
+clive/__private/cli/generate.py
+    DOC101: Function `key_from_seed`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: str | None, role_option: str | None].
+    DOC101: Function `random_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `random_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key_pairs: int, key_pairs_option: int | None].
+--------------------
 clive/__private/cli/main.py
     DOC101: Function `unlock`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `unlock`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [include_create_new_profile: bool, profile_name: str | None, profile_name_option: str | None, unlock_time_mins: int | None].
