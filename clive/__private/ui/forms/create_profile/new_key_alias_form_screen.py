@@ -6,6 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 
 from clive.__private.logger import logger
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.key_alias_base import NewKeyAliasBase
@@ -68,6 +69,10 @@ class NewKeyAliasFormScreen(BaseScreen, CreateProfileFormScreen, NewKeyAliasBase
     """
     BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
+
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(),
+    ]  # switch node is a hidden global binding, but we want to show it here
 
     def __init__(self, owner: CreateProfileForm) -> None:
         super().__init__(owner=owner)

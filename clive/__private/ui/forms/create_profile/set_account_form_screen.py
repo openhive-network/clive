@@ -6,6 +6,7 @@ from textual import on
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
+from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.forms.create_profile.create_profile_form_screen import CreateProfileFormScreen
 from clive.__private.ui.forms.navigation_buttons import NavigationButtons, PreviousScreenButton
 from clive.__private.ui.get_css import get_relative_css_path
@@ -29,6 +30,10 @@ class WorkingAccountCheckbox(Checkbox):
 class SetAccountFormScreen(BaseScreen, CreateProfileFormScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
+
+    BINDINGS = [
+        CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(),
+    ]  # switch node is a hidden global binding, but we want to show it here
 
     @property
     def account_name(self) -> str:
