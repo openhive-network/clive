@@ -101,6 +101,32 @@ clive/__private/cli/main.py
     DOC101: Function `unlock`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `unlock`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [include_create_new_profile: bool, profile_name: str | None, profile_name_option: str | None, unlock_time_mins: int | None].
 --------------------
+clive/__private/cli/process/account_creation.py
+    DOC101: Function `process_account_creation`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_account_creation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [broadcast: bool, creator: str, ctx: typer.Context, fee: bool, json_metadata: str, new_account_name: str, save_file: str | None, sign: str | None].
+    DOC101: Function `specify_keys`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `specify_keys`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [active_key: str, broadcast: bool, ctx: typer.Context, memo_key: str, owner_key: str, posting_key: str, save_file: str | None, sign: str | None].
+    DOC101: Function `owner_set_threshold`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `owner_set_threshold`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, threshold: int].
+    DOC101: Function `owner_add_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `owner_add_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, key: str, weight: int].
+    DOC101: Function `owner_add_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `owner_add_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, ctx: typer.Context, weight: int].
+    DOC101: Function `active_set_threshold`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `active_set_threshold`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, threshold: int].
+    DOC101: Function `active_add_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `active_add_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, key: str, weight: int].
+    DOC101: Function `active_add_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `active_add_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, ctx: typer.Context, weight: int].
+    DOC101: Function `posting_set_threshold`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `posting_set_threshold`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, threshold: int].
+    DOC101: Function `posting_add_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `posting_add_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ctx: typer.Context, key: str, weight: int].
+    DOC101: Function `posting_add_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `posting_add_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, ctx: typer.Context, weight: int].
+    DOC101: Function `memo_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `memo_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [broadcast: bool, ctx: typer.Context, key: str, save_file: str | None, sign: str | None].
+--------------------
 clive/__private/cli/process/claim.py
     DOC101: Function `process_claim_new_account_token`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_claim_new_account_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [broadcast: bool, creator: str, fee: str | None, save_file: str | None, sign: str | None].
