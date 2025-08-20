@@ -33,6 +33,7 @@ from clive.__private.core.formatters.data_labels import (
     VEST_HIVE_RATIO_LABEL,
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
+from clive.__private.core.relative_path import get_relative_or_whole_path
 from clive.__private.models import Asset
 
 if TYPE_CHECKING:
@@ -801,3 +802,74 @@ def humanize_path(path: Path, *, add_leading_dot_slash: bool = False, add_traili
     prefix = "./" if add_leading_dot_slash and not path.is_absolute() else ""
     suffix = "/" if add_trailing_slash else ""
     return f"{prefix}{path}{suffix}"
+
+
+def humanize_relative_or_whole_path(
+    whole_path: Path,
+    root_path: Path,
+    *,
+    add_leading_dot_slash: bool = False,
+    add_trailing_slash: bool = False,
+) -> str:
+    """
+    Humanize a path to a string, relative to the given root path if possible, otherwise the whole path.
+
+    Args:
+        whole_path: The full path.
+        root_path: The root path to compute the relative path from.
+        add_leading_dot_slash: Whether to add a leading dot slash (only if path is not absolute).
+        add_trailing_slash: Whether to add a trailing slash.
+
+    Example:
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/user/some/root/path'),
+        ...     Path('/user/some')
+        ... )
+        'some/root/path'
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/user/some/root/path'),
+        ...     Path('/user/some'),
+        ...     add_leading_dot_slash=True
+        ... )
+        './some/root/path'
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/user/some/root/path'),
+        ...     Path('/user/some'),
+        ...     add_trailing_slash=True
+        ... )
+        'some/root/path/'
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/user/some/root/path'),
+        ...     Path('/user/some'),
+        ...     add_leading_dot_slash=True,
+        ...     add_trailing_slash=True
+        ... )
+        './some/root/path/'
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/etc/config'),
+        ...     Path('/user/some'),
+        ...     add_leading_dot_slash=True,
+        ...     add_trailing_slash=True
+        ... )
+        '/etc/config/'
+        >>> humanize_relative_or_whole_path(
+        ...     Path('/etc/config'),
+        ...     Path('/user/some'),
+        ...     add_leading_dot_slash=True,
+        ...     add_trailing_slash=False
+        ... )
+        '/etc/config'
+            >>> humanize_relative_or_whole_path(
+        ...     Path('/etc/config'),
+        ...     Path('/user/some'),
+        ...     add_leading_dot_slash=False,
+        ...     add_trailing_slash=False
+        ... )
+        '/etc/config'
+
+    Returns:
+        Humanized string representation of the path, relative to the given root path if possible, otherwise
+        the whole path, with optional leading dot slash and trailing slash.
+    """
+    path = get_relative_or_whole_path(whole_path=whole_path, root_path=root_path)
+    return humanize_path(path, add_leading_dot_slash=add_leading_dot_slash, add_trailing_slash=add_trailing_slash)
