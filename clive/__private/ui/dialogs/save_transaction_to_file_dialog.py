@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
+from clive.__private.core.formatters.humanize import humanize_relative_path_to_root
+from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.save_file_base_dialog import SaveFileBaseDialog
 from clive.__private.ui.styling import colorize_path
@@ -102,7 +104,9 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
         self.profile.transaction_file_path = None
         self.app.trigger_profile_watchers()
         self.notify(
-            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to {colorize_path(file_path)}"
+            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to {
+                colorize_path(humanize_relative_path_to_root(file_path, safe_settings.select_file_root_path))
+            }."
             f" {'(signed)' if transaction.is_signed else ''}"
         )
         return True
