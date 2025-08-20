@@ -33,6 +33,7 @@ from clive.__private.core.formatters.data_labels import (
     VEST_HIVE_RATIO_LABEL,
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
+from clive.__private.core.relative_path import get_relative_path_to_root
 from clive.__private.models import Asset
 
 if TYPE_CHECKING:
@@ -799,3 +800,38 @@ def humanize_path(path: Path, *, add_leading_dot_slash: bool = False, add_traili
     prefix = "./" if add_leading_dot_slash and not path.is_absolute() else ""
     suffix = "/" if add_trailing_slash else ""
     return f"{prefix}{path}{suffix}"
+
+
+def humanize_relative_path_to_root(
+    whole_path: Path,
+    root_path: Path,
+    *,
+    add_leading_dot_slash: bool = False,
+    add_trailing_slash: bool = False,
+) -> str:
+    """
+    Humanize a relative path to a string.
+
+    Args:
+        whole_path: A Path object representing the whole path.
+        root_path: A Path object representing the root path.
+        add_leading_dot_slash: Whether to add a leading dot slash (only if path is not absolute).
+        add_trailing_slash: Whether to add a trailing slash.
+
+    Example:
+        >>> humanize_relative_path_to_root(Path('/user/some/root/path'), Path('/user/some'))
+        'path'
+        >>> humanize_relative_path_to_root(Path('/user/some/root/path'), Path('/user/some'), add_leading_dot_slash=True)
+        './path'
+        >>> humanize_relative_path_to_root(Path('/user/some/root/path'), Path('/user/some'), add_trailing_slash=True)
+        'path/'
+        >>> humanize_relative_path_to_root(Path('/user/some/root/path'), Path('/user/some'), add_leading_dot_slash=True, add_trailing_slash=True)
+        './path/'
+
+    Returns:
+        Humanized string representation of the relative path, with optional leading dot slash and trailing slash.
+    """  # noqa: E501
+    relative_path = get_relative_path_to_root(whole_path=whole_path, root_path=root_path)
+    return humanize_path(
+        relative_path, add_leading_dot_slash=add_leading_dot_slash, add_trailing_slash=add_trailing_slash
+    )
