@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
+from clive.__private.core.clive_import import get_clive
 from clive.__private.core.formatters.humanize import humanize_binding_id
 
 if TYPE_CHECKING:
@@ -37,7 +38,7 @@ class CliveBinding:
     @property
     def bindings_display(self) -> str:
         """Handles the general logic how binding should be displayed in the TUI."""
-        return self._key_short
+        return self._key_display
 
     @property
     def button_display(self) -> str:
@@ -45,9 +46,11 @@ class CliveBinding:
         return self.bindings_display
 
     @property
-    def _key_short(self) -> str:
-        """Returns a shortened version of the key binding (replacing 'ctrl+' with '^')."""
-        return self.key.replace("ctrl+", "^")
+    def _key_display(self) -> str:
+        """Handles the logic how to display the binding key."""
+        key = self.key.split(",")[0]  # display only first key if there are multiple defined
+        app = get_clive().app_instance()
+        return app.get_key_display(Binding(key, ""))
 
     def create(
         self,
