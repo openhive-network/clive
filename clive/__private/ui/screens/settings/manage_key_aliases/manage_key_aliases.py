@@ -43,8 +43,11 @@ class AddNewKeyAliasButton(CliveButton):
         """Message sent when AddNewKeyAliasButton is pressed."""
 
     def __init__(self) -> None:
-        label = f"Add new alias ({self.custom_bindings.manage_key_aliases.add_new_alias.button_display})"
-        super().__init__(label, variant="success")
+        super().__init__(
+            "Add new alias",
+            binding=self.custom_bindings.manage_key_aliases.add_new_alias,
+            variant="success",
+        )
 
 
 class ButtonContainer(HorizontalGroup):

@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.reactive import reactive
 
+    from clive.__private.ui.bindings.clive_binding import CliveBinding
+
 
 CliveButtonVariant = Literal[
     "loading-variant",
@@ -109,6 +111,7 @@ class CliveButton(Button, CliveWidget):
         label: TextType | None = None,
         variant: CliveButtonVariant = "primary",
         *,
+        binding: CliveBinding | None = None,
         id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
@@ -116,15 +119,15 @@ class CliveButton(Button, CliveWidget):
     ) -> None:
         self._ellipsis = ellipsis_
         super().__init__(
-            label=self._create_label(label) if label is not None else None,
+            label=self._create_label(label, binding) if label is not None else None,
             variant=variant,  # type: ignore[arg-type]
             id=id_,
             classes=classes,
             disabled=disabled,
         )
 
-    def update(self, new_label: TextType) -> None:
-        self.label = self._create_label(new_label)
+    def update(self, new_label: TextType, binding: CliveBinding | None = None) -> None:
+        self.label = self._create_label(new_label, binding)
         self.refresh(layout=True)
 
     @on(Button.Pressed)
@@ -144,5 +147,7 @@ class CliveButton(Button, CliveWidget):
         """No need for runtime validation, as invalid variant will be detected by mypy."""
         return variant
 
-    def _create_label(self, label: TextType) -> TextType:
-        return Text(str(label), no_wrap=True, overflow="ellipsis") if self._ellipsis else label
+    def _create_label(self, label: TextType, binding: CliveBinding | None = None) -> TextType:
+        binding_button_display = binding.button_display if binding else None
+        text = f"{label}" if not binding_button_display else f"{label} ({binding_button_display})"
+        return Text(text, no_wrap=True, overflow="ellipsis") if self._ellipsis else text

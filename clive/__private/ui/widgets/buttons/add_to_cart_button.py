@@ -15,7 +15,8 @@ class AddToCartButton(OneLineButton):
 
     def __init__(self) -> None:
         super().__init__(
-            f"Add to cart ({self.custom_bindings.operations.add_to_cart.button_display})",
-            id_="add-to-cart-button",
+            "Add to cart",
             variant="success",
+            binding=self.custom_bindings.operations.add_to_cart,
+            id_="add-to-cart-button",
         )

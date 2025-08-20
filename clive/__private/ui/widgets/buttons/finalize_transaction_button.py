@@ -15,7 +15,8 @@ class FinalizeTransactionButton(OneLineButton):
 
     def __init__(self) -> None:
         super().__init__(
-            f"Finalize transaction ({self.custom_bindings.operations.finalize_transaction.button_display})",
+            "Finalize transaction",
             variant="success",
+            binding=self.custom_bindings.operations.finalize_transaction,
             id_="finalize-button",
         )

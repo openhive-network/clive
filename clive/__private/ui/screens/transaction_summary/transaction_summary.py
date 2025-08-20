@@ -57,9 +57,7 @@ class BroadcastButton(CliveButton):
         """Used to identify exactly that broadcast button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(
-            f"Broadcast ({self.custom_bindings.transaction_summary.broadcast.button_display})", variant="success"
-        )
+        super().__init__("Broadcast", binding=self.custom_bindings.transaction_summary.broadcast, variant="success")
 
 
 class SaveButton(CliveButton):
@@ -69,9 +67,7 @@ class SaveButton(CliveButton):
         """Used to identify exactly that save button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(
-            f"Save to file ({self.custom_bindings.transaction_summary.save_transaction_to_file.button_display})"
-        )
+        super().__init__("Save to file", binding=self.custom_bindings.transaction_summary.save_transaction_to_file)
 
 
 class LoadTransactionFromFileButton(CliveButton):
@@ -81,7 +77,7 @@ class LoadTransactionFromFileButton(CliveButton):
         """Used to identify exactly that load from file button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__(f"Load from file ({self.custom_bindings.app.load_transaction_from_file.button_display})")
+        super().__init__("Load from file", binding=self.custom_bindings.app.load_transaction_from_file)
 
 
 class ButtonContainer(Horizontal, CliveWidget):

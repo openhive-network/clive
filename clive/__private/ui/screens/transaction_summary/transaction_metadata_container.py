@@ -76,7 +76,7 @@ class TransactionIdLabel(Label):
 
 class UpdateMetadataButton(RefreshOneLineButton):
     def __init__(self) -> None:
-        super().__init__(f"Update metadata ({self.custom_bindings.transaction_summary.update_metadata.button_display})")
+        super().__init__("Update metadata", binding=self.custom_bindings.transaction_summary.update_metadata)
         self.watch(self.world, "node_reactive", self._handle_display)
 
     def _handle_display(self, node: Node) -> None:
