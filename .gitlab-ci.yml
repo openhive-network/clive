@@ -138,6 +138,7 @@ type_check_with_mypy:
 .common_prepare_hived_image:
   extends: .prepare_hived_image
   stage: build
+  needs: []
   variables:
     GIT_SUBMODULE_DEPTH: 20
 
@@ -159,6 +160,7 @@ prepare_testnet_hived_image:
 build_wheel:
   extends: .build_wheel_template
   stage: build
+  needs: []
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al

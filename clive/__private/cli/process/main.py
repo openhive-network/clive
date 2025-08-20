@@ -8,6 +8,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.process.account_creation import account_creation, account_creation_example
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
 from clive.__private.cli.process.hive_power.delegations import delegations
@@ -41,6 +42,8 @@ process.add_typer(power_up)
 process.add_typer(withdraw_routes)
 process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
+process.add_typer(account_creation)
+process.add_typer(account_creation_example)
 
 
 @process.command(name="transfer")
