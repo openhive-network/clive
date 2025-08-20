@@ -162,7 +162,7 @@ class ManageKeyAliases(BaseScreen):
 
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(),
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.add_new_alias.create(show=False),
     ]
 
     BIG_TITLE = "Settings"

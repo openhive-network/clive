@@ -71,7 +71,7 @@ class KeyAliasBase(CliveDOMNode, AbstractClassMessagePump):
 
 class NewKeyAliasBase(KeyAliasBase, AbstractClassMessagePump):
     BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.load_from_file.create(),
+        CLIVE_PREDEFINED_BINDINGS.manage_key_aliases.load_from_file.create(show=False),
     ]
 
     @property

@@ -50,8 +50,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     """
 
     BINDINGS = [
-        CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart.create(),
-        CLIVE_PREDEFINED_BINDINGS.operations.finalize_transaction.create(),
+        CLIVE_PREDEFINED_BINDINGS.operations.add_to_cart.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.operations.finalize_transaction.create(show=False),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
 

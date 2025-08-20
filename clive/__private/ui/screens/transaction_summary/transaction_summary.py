@@ -10,7 +10,6 @@ from textual.widgets import Label, Select, Static
 
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
     ConfirmInvalidateSignaturesDialog,
@@ -146,9 +145,6 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(
-            action="app.load_transaction_from_file"
-        ),  # load transaction from file is a hidden global binding, but we want to show it here
     ]
     BIG_TITLE = "transaction summary"
 
@@ -282,10 +278,10 @@ class TransactionSummary(BaseScreen):
             self.unbind(transaction_summary_bindings.update_metadata.key)
             return
 
-        self.bind(transaction_summary_bindings.broadcast.create())
-        self.bind(transaction_summary_bindings.save_transaction_to_file.create(description="Save to file"))
+        self.bind(transaction_summary_bindings.broadcast.create(show=False))
+        self.bind(transaction_summary_bindings.save_transaction_to_file.create(description="Save to file", show=False))
         if self.node.cached.online_or_none:
-            self.bind(transaction_summary_bindings.update_metadata.create())
+            self.bind(transaction_summary_bindings.update_metadata.create(show=False))
         else:
             self.unbind(transaction_summary_bindings.update_metadata.key)
 
