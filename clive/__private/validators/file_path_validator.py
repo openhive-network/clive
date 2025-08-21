@@ -1,23 +1,21 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual.validation import Function, ValidationResult, Validator
 
+from clive.__private.validators.file_name_validator import FileNameValidator
 from clive.__private.validators.filesystem_validation_tools import (
-    validate_filename,
     validate_is_file_or_can_be_file,
     validate_path_is_file,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
 
 class FilePathValidator(Validator):
-    INVALID_PATH_FAILURE_DESC: Final[str] = "Path is invalid (couldn't resolve)."
-    NOT_A_PROPER_FILE_NAME: Final[str] = "File name is not valid."
     NOT_A_FILE_FAILURE_DESC: Final[str] = "Path should be a file"
     NOT_A_FILE_OR_CANT_BE_FILE_FAILURE_DESC: Final[str] = "Path is not a file or can't be a file."
 
@@ -35,6 +33,8 @@ class FilePathValidator(Validator):
         self._root_directory_path = root_path
 
     def validate(self, value: str) -> ValidationResult:
+        validate_filename_result = FileNameValidator().validate(value)
+
         mode_validators: dict[FilePathValidator.Modes, tuple[Callable[[str], bool], str]] = {
             "is_file": (validate_path_is_file, self.NOT_A_FILE_FAILURE_DESC),
             "is_file_or_can_be_file": (
@@ -43,24 +43,12 @@ class FilePathValidator(Validator):
             ),
         }
 
-        validators = [Function(validate_filename, self.NOT_A_PROPER_FILE_NAME)]
-
         method = mode_validators[self.mode][0]
         desc = mode_validators[self.mode][1]
-        validators += [Function(method, desc)]
+        mode_validator = Function(method, desc)
 
-        validation_results: list[ValidationResult] = []
-        for validator in validators:
-            if validator.function is validate_filename:
-                # We need to explicitly check the raw filename passed to validation.
-                # If we passed it as a Path, it would return True for scenarios
-                # where there is a slash / in the filename, as it would be interpreted as a directory separator.
-                # Example:
-                # some/wrong.name -> Path("some/wrong.name").name would return "wrong.name"
-                validation_results.append(validator.validate(value))
-            else:
-                validation_results.append(validator.validate(self._get_filepath(value)))
+        validation_results = [validate_filename_result, mode_validator.validate(str(self._get_filepath(value)))]
         return ValidationResult.merge(validation_results)
 
-    def _get_filepath(self, value: str) -> str:
-        return str(self._root_directory_path / Path(value))
+    def _get_filepath(self, value: str) -> Path:
+        return self._root_directory_path / value
