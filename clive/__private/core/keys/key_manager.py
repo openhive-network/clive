@@ -85,6 +85,26 @@ class KeyManager:
                 return key
         raise KeyNotFoundError
 
+    def get_all_from_public_key(self, value: str | PublicKey) -> list[PublicKeyAliased]:
+        """
+        Get all aliased public keys that match the given public key.
+
+        Args:
+            value: The public key value or public key instance to search for.
+
+        Raises:
+            KeyNotFoundError: If no keys with the given public key value were found.
+
+        Returns:
+            Aliased public keys that match the given public key.
+
+        """
+        value = value if isinstance(value, str) else value.value
+        aliased_keys = [key for key in self if key.value == value]
+        if not aliased_keys:
+            raise KeyNotFoundError
+        return aliased_keys
+
     def get_key_values_by_alias_pattern(self, *patterns: str) -> list[str]:
         return [aliased_key.value for aliased_key in self if is_match(aliased_key.alias, *patterns)]
 
