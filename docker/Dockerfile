@@ -24,7 +24,11 @@ ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
-    mkdir -p /clive && chown -R clive /clive && mkdir -vp "${PYTHON_VENV_PATH}" && chown -R clive "${PYTHON_VENV_PATH}" && \
+    mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
+    chown -R clive:users /clive && \
+    chmod -R 777 /clive && \
+    chown -R clive:users "${PYTHON_VENV_PATH}" && \
+    chmod -R 777 "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
@@ -62,7 +66,11 @@ ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
-    mkdir -p /clive && chown -R clive /clive && mkdir -vp "${PYTHON_VENV_PATH}" && chown -R clive "${PYTHON_VENV_PATH}" && \
+    mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
+    chown -R clive:users /clive && \
+    chmod -R 777 /clive && \
+    chown -R clive:users "${PYTHON_VENV_PATH}" && \
+    chmod -R 777 "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
@@ -85,7 +93,9 @@ RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple && \
-    find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} +
+    find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} + && \
+# grant full access to venv to allow creating files there (like .pyc) by clive user
+    chmod -R 777 "${PYTHON_VENV_PATH}"
 
 FROM preconfigured_base_image AS instance
 
