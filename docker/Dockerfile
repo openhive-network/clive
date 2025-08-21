@@ -24,7 +24,11 @@ ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
-    mkdir -p /clive && chown -R clive /clive && mkdir -vp "${PYTHON_VENV_PATH}" && chown -R clive "${PYTHON_VENV_PATH}" && \
+    mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
+    chown -R clive:users /clive && \
+    chmod -R g+ws /clive && \
+    chown -R clive:users "${PYTHON_VENV_PATH}" && \
+    chmod -R g+ws "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
@@ -62,7 +66,11 @@ ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
-    mkdir -p /clive && chown -R clive /clive && mkdir -vp "${PYTHON_VENV_PATH}" && chown -R clive "${PYTHON_VENV_PATH}" && \
+    mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
+    chown -R clive:users /clive && \
+    chmod -R g+ws /clive && \
+    chown -R clive:users "${PYTHON_VENV_PATH}" && \
+    chmod -R g+ws "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
