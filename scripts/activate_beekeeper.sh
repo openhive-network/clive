@@ -20,6 +20,10 @@ start_beekeeper_with_prepared_session_token() {
     echo "Error: Failed to create a new beekeeper session. Aborting..."
     exit 1
   fi
+
+  echo "CLIVE_BEEKEEPER__REMOTE_ADDRESS=${CLIVE_BEEKEEPER__REMOTE_ADDRESS}" > /clive/session.env
+  echo "CLIVE_BEEKEEPER__SESSION_TOKEN=${CLIVE_BEEKEEPER__SESSION_TOKEN}" >> /clive/session.env
+  echo "HOME=${HOME}" >> /clive/session.env
 }
 
 # Unlock wallet for selected profile

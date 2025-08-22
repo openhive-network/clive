@@ -14,8 +14,8 @@ SRCROOTDIR=""
 
 IMAGE_TAG_PREFIX=""
 
-HIVED_IMAGE=""
-BASE_IMAGE=""
+HIVED_IMAGE="registry.gitlab.syncad.com/hive/hive:1.27.11"
+BASE_IMAGE="registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04"
 
 CLIVE_VERSION=""
 
@@ -83,8 +83,9 @@ done
 _TST_IMGTAG=${BUILD_IMAGE_TAG:?"Missing arg #1 to specify built image tag"}
 _TST_SRCDIR=${SRCROOTDIR:?"Missing arg #2 to specify source directory"}
 _TST_REGISTRY=${REGISTRY:?"Missing arg #3 to specify target container registry"}
-
 _TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source for binaries of hived"}
+
+
 _TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
 _TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
 

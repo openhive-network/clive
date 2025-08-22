@@ -38,7 +38,7 @@ SHELL ["/bin/bash", "-c"]
 
 COPY ./docker/entrypoint.sh .
 RUN mkdir /clive/scripts
-COPY --chown=clive ./scripts/activate_beekeeper.sh /clive/scripts/
+COPY --chown=clive ./scripts/activate_beekeeper.sh ./scripts/clive-cmd.sh /clive/scripts/
 
 COPY --chown=clive ./pyproject.toml /clive/
 COPY --chown=clive ./poetry.lock /clive/
