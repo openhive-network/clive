@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import contextlib
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
+from textual.css.query import NoMatches
+from textual.events import Mount
 from textual.widgets import Label, Select, Static
 
 from clive.__private.core.keys import PublicKey
@@ -176,6 +179,11 @@ class TransactionSummary(BaseScreen):
             yield ButtonContainer()
         with ScrollablePart():
             yield CartTable()
+
+    @on(Mount)
+    def focus_broadcast_button_if_possible(self) -> None:
+        with contextlib.suppress(NoMatches):
+            self.query_exactly_one(BroadcastButton).focus()
 
     @on(BroadcastButton.Pressed)
     async def action_broadcast(self) -> None:
