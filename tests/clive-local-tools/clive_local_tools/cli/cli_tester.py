@@ -528,3 +528,28 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "remove"], **extract_params(locals())
         )
+
+    def generate_key_from_seed(
+        self,
+        *,
+        account_name: str,
+        role: str,
+        only_private_key: bool | None = None,
+        only_public_key: bool | None = None,
+        password_stdin: str | None = None,
+    ) -> Result:
+        named_params = locals()
+        named_params.pop("password_stdin")
+        return self.__invoke_command_with_options(
+            ["generate", "key-from-seed"], password_stdin, **extract_params(named_params)
+        )
+
+    def generate_public_key(self, *, password_stdin: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["generate", "public-key"], password_stdin)
+
+    def generate_random_key(self, *, key_pairs: int | None = None) -> Result:
+        named_params = locals()
+        return self.__invoke_command_with_options(["generate", "random-key"], **extract_params(named_params))
+
+    def generate_secret_phrase(self) -> Result:
+        return self.__invoke_command_with_options(["generate", "secret-phrase"])
