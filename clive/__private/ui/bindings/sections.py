@@ -21,6 +21,7 @@ class App(CliveBindingSection):
     transaction_summary: CliveBinding = field(
         default_factory=lambda: CliveBinding(id="transaction_summary", key="ctrl+t")
     )
+    toggle_keys_panel: CliveBinding = field(default_factory=lambda: CliveBinding(id="toggle_keys_panel", key="ctrl+b"))
     quit: CliveBinding = field(default_factory=lambda: CliveBinding(id="quit", key="ctrl+q"))
 
 
