@@ -11,8 +11,10 @@ from textual import on, work
 from textual._context import active_app
 from textual.app import App
 from textual.await_complete import AwaitComplete
+from textual.css.query import NoMatches
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
+from textual.widgets import HelpPanel
 from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
@@ -88,6 +90,7 @@ class Clive(App[int]):
         CLIVE_PREDEFINED_BINDINGS.app.load_transaction_from_file.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.quit.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.switch_node.create(show=False),
+        CLIVE_PREDEFINED_BINDINGS.app.toggle_keys_panel.create(show=False),
         CLIVE_PREDEFINED_BINDINGS.app.dashboard.create(),
         CLIVE_PREDEFINED_BINDINGS.app.lock_wallet.create(),
         CLIVE_PREDEFINED_BINDINGS.app.settings.create(),
@@ -318,6 +321,14 @@ class Clive(App[int]):
         if not self.world.app_state.is_unlocked:
             return
         self.push_screen(LoadTransactionFromFileDialog())
+
+    def action_toggle_keys_panel(self) -> None:
+        try:
+            self.screen.query_exactly_one(HelpPanel)
+        except NoMatches:
+            self.action_show_help_panel()
+        else:
+            self.action_hide_help_panel()
 
     async def action_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
