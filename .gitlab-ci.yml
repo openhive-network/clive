@@ -424,6 +424,9 @@ clean_docs_preview:
 
 build_and_push_clive_image:
   extends: .prepare_clive_image
+  <<: *clive_testnet_needs
+  variables:
+    BASE_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
 
 generate_clive_startup_scripts:
   extends: .generate_clive_startup_scripts_base
