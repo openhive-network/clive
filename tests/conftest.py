@@ -28,7 +28,7 @@ from clive.__private.models.schemas import (
     TestnetAssetsPolicy,
     set_policies,
 )
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
@@ -61,6 +61,7 @@ def manage_thread_pool() -> Iterator[None]:
 
 
 def _prepare_settings() -> None:
+    settings = get_settings()
     settings.reload()
 
     working_directory = tt.context.get_current_directory() / "clive"
@@ -229,7 +230,7 @@ def generic_env_context_factory(monkeypatch: pytest.MonkeyPatch) -> GenericEnvCo
     def factory(env_name: str) -> EnvContextFactory:
         def _setdelenv(value: str | None) -> None:
             monkeypatch.setenv(env_name, value) if value else monkeypatch.delenv(env_name, raising=False)
-            settings.reload()
+            get_settings().reload()
 
         @wraps(factory)
         @contextmanager

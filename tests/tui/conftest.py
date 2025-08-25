@@ -10,7 +10,7 @@ from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDR
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
 from clive.__private.logger import logger
-from clive.__private.settings import settings
+from clive.__private.settings import get_settings
 from clive.__private.ui.app import Clive
 from clive.__private.ui.bindings import initialize_bindings_files
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -81,7 +81,7 @@ def node_with_wallet() -> NodeWithWallet:
     account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
     tt.logger.debug(f"working account: {account}")
 
-    settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
+    get_settings().set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
 
     return node, wallet
 

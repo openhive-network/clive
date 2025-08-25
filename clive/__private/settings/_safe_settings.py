@@ -42,7 +42,7 @@ from clive.__private.core.constants.setting_identifiers import (
     SELECT_FILE_ROOT_PATH,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.settings._settings import settings
+from clive.__private.settings._settings import get_settings
 from clive.exceptions import CliveError
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
@@ -490,7 +490,7 @@ class SafeSettings:
     ) -> object:
         # Call .get(setting_name, default) will only return the default value when the setting/envvar doesn't exist,
         #  not when is set to empty string.
-        value = settings.get(setting_name)
+        value = get_settings().get(setting_name)
         if value in ("", None):
             if default is not NOT_SET:
                 return default

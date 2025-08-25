@@ -8,7 +8,7 @@ from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
 from clive.__private.core.profile import InvalidChainIdError, Profile
 from clive.__private.models import Asset, Transaction
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
@@ -27,6 +27,7 @@ DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 def profile_with_default_chain_id_from_settings() -> Iterator[Profile]:
     chain_id_identifier = NODE_CHAIN_ID
     chain_id_before = safe_settings.node.chain_id
+    settings = get_settings()
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
     yield Profile.create(name="test")
     settings.set(chain_id_identifier, chain_id_before)

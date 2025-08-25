@@ -24,10 +24,10 @@ def main() -> None:
     )
 
     if _is_cli_requested():  # don't run via textual_dev.run_app when CLI is requested (saves around 1s)
-        from clive.__private.settings import settings  # noqa: PLC0415
+        from clive.__private.settings import get_settings  # noqa: PLC0415
         from clive.main import main as production_main  # noqa: PLC0415
 
-        settings.setenv("dev")
+        get_settings().setenv("dev")
 
         production_main()
         return

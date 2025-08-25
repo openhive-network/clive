@@ -6,7 +6,7 @@ from pathlib import Path
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
 from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import get_settings, safe_settings
 from clive.dev import is_in_dev_mode
 
 
@@ -33,7 +33,7 @@ def _log_in_dev_mode() -> None:
         from rich.pretty import pretty_repr  # noqa: PLC0415
 
         logger.warning("Running in development mode.")
-        logger.debug(f"settings:\n{pretty_repr(settings.as_dict())}")
+        logger.debug(f"settings:\n{pretty_repr(get_settings().as_dict())}")
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_handlers: bool = False) -> None:
@@ -41,7 +41,7 @@ def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_h
 
     if is_in_dev_mode():
         # logger also refers to settings, so we need to set it before logger setup
-        settings.setenv("dev")
+        get_settings().setenv("dev")
 
     safe_settings.validate()
 

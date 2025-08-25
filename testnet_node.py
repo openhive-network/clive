@@ -15,7 +15,7 @@ from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SE
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.world import World
 from clive.__private.run_tui import run_tui
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     TESTNET_CHAIN_ID,
@@ -63,6 +63,7 @@ def prepare_node() -> tt.RawNode:
 
 async def prepare_profiles(node: tt.RawNode) -> None:
     tt.logger.info("Configuring profiles for clive")
+    settings = get_settings()
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 

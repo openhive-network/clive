@@ -24,7 +24,7 @@ from clive.__private.core.constants.setting_identifiers import DATA_PATH
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import get_settings, safe_settings
 from clive.__private.storage.migrations.v0 import ProfileStorageModel
 from clive.__private.storage.service.service import PersistentStorageService
 from clive_local_tools.data.constants import (
@@ -104,7 +104,7 @@ def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None, None]:
     dst_dir = Path(__file__).parent.absolute() / dst_dir_name
 
     with tempfile.TemporaryDirectory() as tmp_dir_name:
-        settings.set(DATA_PATH, tmp_dir_name)
+        get_settings().set(DATA_PATH, tmp_dir_name)
         yield
 
         for path in Path(tmp_dir_name).rglob("*"):
