@@ -67,7 +67,9 @@ class ImportPrivateKeyButton(PrivateKeyActionButton):
 
     @on(Pressed)
     def add_private_key(self) -> None:
-        self.app.push_screen(NewKeyAliasDialog(public_key_to_match=self._public_key), self._key_aliases_changed_callback)
+        self.app.push_screen(
+            NewKeyAliasDialog(public_key_to_match=self._public_key), self._key_aliases_changed_callback
+        )
 
 
 class RemovePrivateKeyButton(PrivateKeyActionButton):
@@ -106,6 +108,10 @@ class AuthorityRoles(SectionScrollable):
 
         This method updates each AccountCollapsible inside the body of AuthorityRoles. Also handles NoContentAvailable
         widget.
+
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
         """
         results = [
             account_collapsible.update(selected_accounts_in_filter, *filter_patterns)
@@ -145,7 +151,16 @@ class AccountCollapsible(CliveCollapsible):
         return self._operation
 
     def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> bool:
-        """Update the display of AccountCollapsible based on accounts selected in filter and filter patterns."""
+        """
+        Update the display of AccountCollapsible based on accounts selected in filter and filter patterns.
+
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
+
+        Returns:
+            True if the display of widget is enabled, False otherwise.
+        """
 
         def update_display_of_authority_types() -> None:
             """Update the display of AuthorityType widgets within this AccountCollapsible."""
@@ -200,7 +215,12 @@ class AuthorityType(CliveCollapsible):
         return self._account_authorities
 
     def update(self, *filter_patterns: str) -> None:
-        """Update the display of AuthorityType based on filter patterns."""
+        """
+        Update the display of AuthorityType based on filter patterns.
+
+        Args:
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
 
         def update_display_in_authority_table() -> None:
             authority_table = self.query_exactly_one(AuthorityTable)
@@ -249,7 +269,12 @@ class AuthorityHeader(Horizontal):
 
 
 class AuthorityItem(CliveCheckerboardTableRow):
-    """Class for items in the  authority table."""
+    """
+    Class for items in the  authority table.
+
+    Args:
+        entry: Object representing the authority entry.
+    """
 
     def __init__(self, entry: CliveAuthorityEntryWrapper) -> None:
         self._entry = entry
@@ -258,10 +283,23 @@ class AuthorityItem(CliveCheckerboardTableRow):
         super().__init__(*self._create_cells())
 
     @property
+    def alias(self) -> str | None:
+        alias: str | None = None
+        if not self._is_account_entry and self.entry in self.profile.keys:
+            alias = self.profile.keys.get_first_from_public_key(self.entry).alias
+        return alias
+
+    @property
     def entry(self) -> str:
         return self._entry.key_or_account
 
     def update(self, *filter_patterns: str) -> None:
+        """
+        Update the display based on filter patterns.
+
+        Args:
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
         filter_pattern_present = bool(filter_patterns)
         self.display = self._entry.is_match(*filter_patterns) if filter_pattern_present else True
 
@@ -274,11 +312,11 @@ class AuthorityItem(CliveCheckerboardTableRow):
             # we can't add corresponding key to the account, so we just display static widget without text
             action_widget = Static()
         else:
-            public_key = self._entry.public_key
+            alias = self.alias
             action_widget = (
-                RemovePrivateKeyButton(public_key)
-                if public_key in self.profile.keys
-                else ImportPrivateKeyButton(public_key)
+                RemovePrivateKeyButton(key_alias=alias)
+                if alias
+                else ImportPrivateKeyButton(public_key=self._entry.public_key)
             )
 
         cells = [
@@ -290,11 +328,16 @@ class AuthorityItem(CliveCheckerboardTableRow):
         return cells
 
     def _generate_key_or_account_text(self) -> str:
-        """Generate the text for the key or account cell."""
+        """
+        Generate the text for the key or account cell.
+
+        Returns:
+            The text to be displayed in the key or account cell.
+        """
         key_or_account_text = self._entry.key_or_account
 
         if not self._is_account_entry and self._entry.key_or_account in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self._entry.key_or_account).alias
+            alias = self.alias
             if alias != self._entry.key_or_account:
                 key_or_account_text = f"{alias} ({self._entry.key_or_account})"
         return key_or_account_text
@@ -308,8 +351,7 @@ class AuthorityTable(CliveCheckerboardTable):
         NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
 
     Args:
-        single_authority: An authority object or a memo key.
-        filter_pattern: Patterns to filter the entries in the authority.
+        single_authority: Object representing single authority.
     """
 
     NO_CONTENT_TEXT = "No entries in authority"
