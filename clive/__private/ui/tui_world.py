@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, cast, override
 
 from textual.reactive import var
 
-from clive.__private.core.commands.commands import TUICommands
 from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
 from clive.__private.core.world import World
 from clive.__private.ui.clive_dom_node import CliveDOMNode
+from clive.__private.ui.tui_commands import TUICommands
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState, LockSource
