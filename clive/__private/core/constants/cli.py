@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Final
 
+HELP_FLAGS: Final[tuple[str, ...]] = ("-h", "--help")
+
 PERFORM_WORKING_ACCOUNT_LOAD: Final[str] = "PERFORM_WORKING_ACCOUNT_LOAD"
 
 REQUIRED_AS_ARG_OR_OPTION: Final[str] = "required as argument or option"

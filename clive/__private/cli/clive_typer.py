@@ -13,6 +13,7 @@ from typer.main import _typer_developer_exception_attr_name
 from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
 from clive.__private.core._async import asyncio_run
+from clive.__private.core.constants.cli import HELP_FLAGS
 
 type ExitCode = int
 type ErrorHandlingCallback[T: Exception] = Callable[[T], ExitCode | None]
@@ -67,7 +68,7 @@ class CliveTyper(typer.Typer):
             help=help,
             chain=chain,
             rich_markup_mode="rich",
-            context_settings={"help_option_names": ["-h", "--help"]},
+            context_settings={"help_option_names": HELP_FLAGS},
             no_args_is_help=True,
         )
 
