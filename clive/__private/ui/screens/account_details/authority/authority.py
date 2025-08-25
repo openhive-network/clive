@@ -40,17 +40,8 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.keys.key_manager import KeyManager
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
-    from wax.models.authority import WaxAccountAuthorityInfo
 
 
-def is_match(text: str, pattern: str | list[str]) -> bool:
-    def generate_regex_pattern(pattern: str) -> str:
-        escaped_pattern = re.escape(pattern)
-        return rf".*{escaped_pattern}.*"
-
-    if isinstance(pattern, list):
-        return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in pattern)
-    return bool(re.match(generate_regex_pattern(pattern), text))
 class WaxAuthorityWrapper:
     """A wrapper to provide utility methods for WaxAccountAuthorityInfo and WaxAuthority objects."""
 
@@ -86,9 +77,6 @@ class WaxAuthorityWrapper:
     @staticmethod
     def _get_account_and_key_auths(authority: WaxAuthority) -> list[str]:
         return list(authority.account_auths.keys()) + list(authority.key_auths.keys())
-
-
-
 
 
 class PrivateKeyActionButton(OneLineButton):
