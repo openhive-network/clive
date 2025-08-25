@@ -7,7 +7,7 @@ from beekeepy.exceptions import InvalidPasswordError, NotExistingKeyError, NoWal
 from clive.__private.core.commands.recover_wallets import CannotRecoverWalletsError
 from clive.__private.core.commands.save_profile import ProfileSavingFailedError
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
-from clive.__private.storage.service import ProfileEncryptionError
+from clive.__private.storage.service.exceptions import ProfileEncryptionError
 
 INVALID_PASSWORD_MESSAGE: Final[str] = "The password you entered is incorrect. Please try again."  # noqa: S105
 

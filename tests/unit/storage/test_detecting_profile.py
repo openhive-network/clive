@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.settings import safe_settings
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 from clive_local_tools.storage_migration import BLANK_PROFILES, copy_blank_profile_files
 
 

@@ -17,7 +17,7 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile import Profile
-from clive.__private.storage.service import MultipleProfileVersionsError
+from clive.__private.storage.service.exceptions import MultipleProfileVersionsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
 from clive.dev import is_in_dev_mode

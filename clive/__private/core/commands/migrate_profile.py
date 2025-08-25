@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandWithRes
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.types import MigrationStatus
 from clive.__private.core.wallet_container import WalletContainer
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 
 
 @dataclass(kw_only=True)

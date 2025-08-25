@@ -14,7 +14,7 @@ from clive.__private.models import Transaction
 from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion, is_matching_model
 from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.exceptions import CliveError
 

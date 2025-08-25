@@ -9,7 +9,7 @@ from clive.__private.core.commands.create_profile_wallets import CreateProfileWa
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 
 if TYPE_CHECKING:
     from pathlib import Path

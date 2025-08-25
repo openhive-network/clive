@@ -5,10 +5,9 @@ from typing import Final
 import pytest
 
 from clive.__private.settings import safe_settings
-from clive.__private.storage.service import (
-    MultipleProfileVersionsError,
+from clive.__private.storage.service.exceptions import MultipleProfileVersionsError, ProfileDoesNotExistsError
+from clive.__private.storage.service.service import (
     PersistentStorageService,
-    ProfileDoesNotExistsError,
 )
 from clive_local_tools.storage_migration import (
     FUTURE_NOT_SUPPORTED_YET_VERSION,

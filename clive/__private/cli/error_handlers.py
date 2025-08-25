@@ -7,7 +7,7 @@ from beekeepy.exceptions import CommunicationError
 
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
-from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
+from clive.__private.storage.service.exceptions import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:

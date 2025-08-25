@@ -7,7 +7,7 @@ import pytest
 from clive.__private.settings import safe_settings
 from clive.__private.storage.current_model import ProfileStorageModel
 from clive.__private.storage.migrations import v0
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_PASSWORD
 from clive_local_tools.storage_migration import copy_profile_without_alarms_and_operations
 from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_NAME, WATCHED_ACCOUNTS_NAMES

@@ -26,7 +26,7 @@ from clive.__private.core.wallet_container import WalletContainer
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
 from clive.__private.settings import safe_settings, settings
 from clive.__private.storage.migrations.v0 import ProfileStorageModel
-from clive.__private.storage.service import PersistentStorageService
+from clive.__private.storage.service.service import PersistentStorageService
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
