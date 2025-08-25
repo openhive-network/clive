@@ -14,12 +14,12 @@ from clive.__private.core.encryption import EncryptionService
 if TYPE_CHECKING:
     from beekeepy import AsyncBeekeeper
 
-    import clive
     from clive.__private.core.profile import Profile
+    from clive.__private.core.world import World
 
 
 async def test_unlock(
-    world: clive.World,
+    world: World,
     prepare_profile_with_wallet: Profile,  # noqa: ARG001
     wallet_password: str,
 ) -> None:
@@ -33,7 +33,7 @@ async def test_unlock(
     assert world.app_state.is_unlocked
 
 
-async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
+async def test_unlock_non_existing_wallets(world: World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ACT & ASSERT
     with pytest.raises(CannotRecoverWalletsError):
         await Unlock(
@@ -46,7 +46,7 @@ async def test_unlock_non_existing_wallets(world: clive.World, prepare_profile_w
 
 @pytest.mark.parametrize("wallet_type", ["user_wallet", "encryption_wallet"])
 async def test_unlock_recovers_missing_wallet(
-    world: clive.World,
+    world: World,
     prepare_profile_with_wallet: Profile,
     beekeeper: AsyncBeekeeper,
     wallet_password: str,
@@ -98,7 +98,7 @@ async def test_unlock_recovers_missing_wallet(
         assert public_keys == encryption_keys_before, "Encryption wallet should be recovered with the same keys"
 
 
-async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
+async def test_lock(world: World, prepare_profile_with_wallet: Profile) -> None:  # noqa: ARG001
     # ARRANGE & ACT
     assert world.app_state.is_unlocked
     await world.commands.lock()
@@ -109,7 +109,7 @@ async def test_lock(world: clive.World, prepare_profile_with_wallet: Profile) ->
 
 
 async def test_unlock_again(
-    world: clive.World,
+    world: World,
     prepare_profile_with_wallet: Profile,  # noqa: ARG001
     wallet_password: str,
 ) -> None:
@@ -123,7 +123,7 @@ async def test_unlock_again(
 
 
 async def test_lock_after_given_time(
-    world: clive.World,
+    world: World,
     prepare_profile_with_wallet: Profile,  # noqa: ARG001
     wallet_password: str,
 ) -> None:

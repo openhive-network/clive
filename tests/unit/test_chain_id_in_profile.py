@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
-    from clive import World
+    from clive.__private.core.world import World
 
 DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
