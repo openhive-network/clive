@@ -5,18 +5,6 @@ from typing import TYPE_CHECKING, Final
 
 from click import ClickException
 
-from clive.__private.core.constants.node import (
-    PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
-    SCHEDULED_TRANSFER_MAX_LIFETIME,
-)
-from clive.__private.core.constants.node_special_assets import (
-    DELEGATION_REMOVE_ASSETS,
-    SCHEDULED_TRANSFER_REMOVE_ASSETS,
-)
-from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
-from clive.__private.core.formatters.humanize import humanize_asset, humanize_timedelta
-from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar
-
 if TYPE_CHECKING:
     from datetime import timedelta
 
@@ -105,6 +93,10 @@ class PowerDownInProgressError(CLIPrettyError):
 
 class WithdrawRoutesZeroPercentError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.node import (  # noqa: PLC0415
+            PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
+        )
+
         message = (
             f"Withdraw routes can't have {PERCENT_TO_REMOVE_WITHDRAW_ROUTE} percent, "
             "if you want to remove withdraw route then use command `clive process withdraw-routes remove`"
@@ -114,6 +106,9 @@ class WithdrawRoutesZeroPercentError(CLIPrettyError):
 
 class DelegationsZeroAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.node_special_assets import DELEGATION_REMOVE_ASSETS  # noqa: PLC0415
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
         remove_assets = " or ".join(humanize_asset(asset) for asset in DELEGATION_REMOVE_ASSETS)
         message = (
             f"Delegation amount can't be {remove_assets}, "
@@ -147,6 +142,9 @@ class ProcessTransferScheduleDoesNotExistsError(CLIPrettyError):
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.node_special_assets import SCHEDULED_TRANSFER_REMOVE_ASSETS  # noqa: PLC0415
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
         remove_assets = " or ".join(humanize_asset(asset) for asset in SCHEDULED_TRANSFER_REMOVE_ASSETS)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
@@ -164,6 +162,9 @@ class ProcessTransferScheduleNullPairIdError(CLIPrettyError):
 
 class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
     def __init__(self, requested_lifetime: timedelta) -> None:
+        from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MAX_LIFETIME  # noqa: PLC0415
+        from clive.__private.core.formatters.humanize import humanize_timedelta  # noqa: PLC0415
+
         self.requested_lifetime = requested_lifetime
         message = (
             f"Requested lifetime of scheduled transfer is too long ({humanize_timedelta(self.requested_lifetime)}).\n"
@@ -236,6 +237,12 @@ class CLIBeekeeperLocallyAlreadyRunningError(CLIPrettyError):
 
 class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
     def __init__(self) -> None:
+        from clive.__private.core.constants.setting_identifiers import (  # noqa: PLC0415
+            BEEKEEPER_REMOTE_ADDRESS,
+            BEEKEEPER_SESSION_TOKEN,
+        )
+        from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar  # noqa: PLC0415
+
         message = (
             "Cannot spawn new instance of Beekeepeer while "
             f"the env variable of {clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)} "
