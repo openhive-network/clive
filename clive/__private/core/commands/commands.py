@@ -89,7 +89,7 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import MigrationStatus, NotifyLevel
-    from clive.__private.core.world import CLIWorld, TUIWorld, World
+    from clive.__private.core.world import CLIWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
         Account,
@@ -98,6 +98,7 @@ if TYPE_CHECKING:
         TransactionStatus,
         Witness,
     )
+    from clive.__private.ui.tui_world import TUIWorld
     from wax.models.authority import WaxAccountAuthorityInfo
 
 

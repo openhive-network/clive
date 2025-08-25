@@ -19,7 +19,6 @@ from clive.__private.core.async_guard import AsyncGuard
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.profile import Profile
-from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS, BindingFileInvalidError, load_custom_bindings
@@ -37,6 +36,7 @@ from clive.__private.ui.screens.settings import Settings
 from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.screens.unlock import Unlock
+from clive.__private.ui.tui_world import TUIWorld
 from clive.__private.ui.types import CliveModes
 from clive.exceptions import ScreenNotFoundError
 

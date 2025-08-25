@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount
     from clive.__private.core.profile import Profile
-    from clive.__private.core.world import TUIWorld
+    from clive.__private.ui.tui_world import TUIWorld
 from clive.__private.core.accounts.accounts import WorkingAccount
 
 AccountsType = Literal["known_accounts", "tracked_accounts"]

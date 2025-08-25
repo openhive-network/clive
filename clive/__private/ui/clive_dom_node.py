@@ -9,9 +9,9 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.commands import TUICommands
     from clive.__private.core.node import Node
     from clive.__private.core.profile import Profile
-    from clive.__private.core.world import TUIWorld
     from clive.__private.ui.app import Clive
     from clive.__private.ui.bindings import CliveBindings
+    from clive.__private.ui.tui_world import TUIWorld
 
 
 class CliveDOMNode(DOMNode):

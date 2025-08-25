@@ -26,8 +26,8 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.core.world import TUIWorld
     from clive.__private.ui.screens.account_details.alarms.alarm_fix_details import AlarmFixDetails
+    from clive.__private.ui.tui_world import TUIWorld
 
 
 class AlarmsTableHeader(Horizontal):
