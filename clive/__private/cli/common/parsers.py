@@ -5,17 +5,6 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
-from clive.__private.cli.completion import is_tab_completion_active
-
-if not is_tab_completion_active():
-    from clive.__private.cli.warnings import typer_echo_warnings
-    from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
-    from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
-    from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
-    from clive.__private.validators.scheduled_transfer_frequency_value_validator import (
-        ScheduledTransferFrequencyValidator,
-    )
-
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import timedelta
@@ -94,6 +83,13 @@ def hive_asset(raw: str) -> Asset.Hive:
 
 
 def decimal_percent(raw: str) -> Decimal:
+    from clive.__private.cli.warnings import typer_echo_warnings  # noqa: PLC0415
+    from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES  # noqa: PLC0415
+    from clive.__private.core.decimal_conventer import (  # noqa: PLC0415
+        DecimalConversionNotANumberError,
+        DecimalConverter,
+    )
+
     try:
         with typer_echo_warnings():
             parsed = DecimalConverter.convert(raw, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
@@ -119,6 +115,10 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
         The parsed frequency.
     """
     from clive.__private.core.formatters.humanize import humanize_validation_result  # noqa: PLC0415
+    from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta  # noqa: PLC0415
+    from clive.__private.validators.scheduled_transfer_frequency_value_validator import (  # noqa: PLC0415
+        ScheduledTransferFrequencyValidator,
+    )
 
     status = ScheduledTransferFrequencyValidator().validate(raw)
     if status.is_valid:
