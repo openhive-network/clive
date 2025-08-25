@@ -15,6 +15,8 @@ def run_cli() -> None:
 
     if not _should_show_help():
         from clive.__private.before_launch import prepare_before_launch  # noqa: PLC0415
+        from clive.__private.cli.error_handlers import register_error_handlers  # noqa: PLC0415
 
         prepare_before_launch(enable_textual_logger=False)
+        register_error_handlers(cli)
     asyncio.run(cli())
