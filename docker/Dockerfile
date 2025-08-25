@@ -32,6 +32,15 @@ RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
+# Set up a dedicated cache directory for Python bytecode (applies to both the virtual env and standard Python modules).
+# Normally, Python stores the cache in __pycache__ folders separately within the venv and the Python installation directory.
+# A lack of cache permissions or skipping the cache can cause a noticeable drop in performance.
+ENV PYTHON_CACHE_PATH="/var/cache/python"
+ENV PYTHONPYCACHEPREFIX="${PYTHON_CACHE_PATH}"
+RUN mkdir "${PYTHON_CACHE_PATH}" && \
+    chown -R clive:users "${PYTHON_CACHE_PATH}" && \
+    chmod -R 777 "${PYTHON_CACHE_PATH}"
+
 USER clive
 
 SHELL ["/bin/bash", "-c"]
