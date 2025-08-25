@@ -23,7 +23,8 @@ if TYPE_CHECKING:
     from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import MigrationStatus
-    from clive.__private.storage import ProfileStorageBase, ProfileStorageModel
+    from clive.__private.storage.current_model import ProfileStorageModel
+    from clive.__private.storage.migrations.base import ProfileStorageBase
 
 
 class PersistentStorageServiceError(CliveError):

@@ -8,7 +8,7 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
     RecoveryAccountWarningListedAlarmIdentifier,
 )
 from clive.__private.models.schemas import Transaction
-from clive.__private.storage import ProfileStorageModel
+from clive.__private.storage.current_model import ProfileStorageModel
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

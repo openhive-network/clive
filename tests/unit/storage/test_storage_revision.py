@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final
 
-from clive.__private.storage import ProfileStorageModel
+from clive.__private.storage.current_model import ProfileStorageModel
 from clive.__private.storage.storage_history import StorageHistory
 
 REVISIONS: Final[list[str]] = ["0313f118", "aaae09eb", "b52dcff7"]
