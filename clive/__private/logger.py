@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Final
 
 from loguru import logger as loguru_logger
 from loguru._simple_sinks import StreamSink
-from textual import log as textual_logger
 
 from clive.__private.core.constants.env import KNOWN_FIRST_PARTY_PACKAGES, LAUNCH_TIME
 
@@ -53,20 +52,19 @@ class Logger:
         self.__enabled_textual = True
 
     def __getattr__(self, item: str) -> Callable[..., None]:
-        patched = loguru_logger.opt(depth=1)
-        loguru_attr = getattr(patched, item, None)
-        textual_log_attr = getattr(textual_logger, item, None)
-
-        if not callable(loguru_attr) or not callable(textual_log_attr):
-            raise TypeError(
-                f"Callable `{item}` not found in either Textual or Loguru loggers.\n"
-                f"Try one of: {self.safe_settings_delayed.AVAILABLE_LOG_LEVELS}"
-            )
-
         def _hooked(*args: Any, **kwargs: Any) -> None:
+            try_one_of = f"Try one of: {self.safe_settings_delayed.AVAILABLE_LOG_LEVELS}"
+
             if self.__enabled_loguru:
+                patched = loguru_logger.opt(depth=1)
+                loguru_attr = getattr(patched, item, None)
+                assert callable(loguru_attr), f"Loguru {item} is not callable. {try_one_of}"
                 loguru_attr(*args, **kwargs)
             if self.__enabled_textual:
+                from textual import log as textual_logger  # noqa: PLC0415
+
+                textual_log_attr = getattr(textual_logger, item, None)
+                assert callable(textual_log_attr), f"Textual {item} is not callable. {try_one_of}"
                 textual_log_attr(*args, **kwargs)
 
         return _hooked
