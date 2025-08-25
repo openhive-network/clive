@@ -15,7 +15,7 @@ from clive.__private.core.constants.node_special_assets import (
 )
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.formatters.humanize import humanize_asset, humanize_timedelta
-from clive.__private.settings import clive_prefixed_envvar
+from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar
 
 if TYPE_CHECKING:
     from datetime import timedelta

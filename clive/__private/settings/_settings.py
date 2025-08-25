@@ -26,8 +26,3 @@ settings = Dynaconf(
 _log_directory = settings.get(LOG_DIRECTORY, "") or _DATA_DIRECTORY
 _log_path = Path(_log_directory) / "logs"
 settings.set(LOG_PATH, _log_path)
-
-
-def clive_prefixed_envvar(setting_name: str) -> str:
-    underscored_setting_name = setting_name.replace(".", "__")
-    return f"{ENVVAR_PREFIX}_{underscored_setting_name}"

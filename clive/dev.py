@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.constants.setting_identifiers import IS_DEV
-from clive.__private.settings import clive_prefixed_envvar
+from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar
 
 
 def is_in_dev_mode() -> bool:
