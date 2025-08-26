@@ -29,6 +29,7 @@ from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFi
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.models.authority import WaxAuthority
+from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -345,9 +346,9 @@ class Authority(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._authorities: list[WaxAccountAuthorityInfo] = []
         self._filtered_authorities: list[WaxAccountAuthorityInfo] = []
         self._authority_roles = AuthorityRoles()
+        self._authority_operations: list[CliveAuthority] = []
         self._filter_pattern_already_applied: bool = False
 
     async def on_mount(self) -> None:
@@ -364,6 +365,7 @@ class Authority(TabPane, CliveWidget):
         await self._authority_roles.body.mount_all(
             [AccountCollapsible(authority, initial_mount=True) for authority in self._filtered_authorities]
         )
+        await self._collect_authorities()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -414,6 +416,14 @@ class Authority(TabPane, CliveWidget):
     @on(FilterAuthority.SelectedAccountsChanged)
     def _update_authorities_and_suggestions_after_account_in_filter_changed(self) -> None:
         self._update_filtered_authorities_and_input_suggestions()
+    async def _collect_authorities(self) -> None:
+        tracked_accounts = self.profile.accounts.tracked
+
+        for account in tracked_accounts:
+            authority_operation = await AccountAuthorityUpdateOperation.create_for(
+                self.world.wax_interface, account.name
+            )
+            self._authority_operations.append(CliveAuthority(authority_operation))
 
     def _update_filtered_authorities_and_input_suggestions(self) -> None:
         """Filter authorities for selected accounts in AccountSelectionList and update input suggestions."""
