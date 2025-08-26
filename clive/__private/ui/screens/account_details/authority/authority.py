@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Horizontal
+from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
+from clive.__private.core.clive_authority import (
+    CliveAuthority,
+    CliveAuthorityEntryWrapper,
+    CliveAuthorityWrapper,
+)
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
@@ -28,7 +33,6 @@ from clive.__private.ui.widgets.clive_basic import (
 from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFilterInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
-from wax.models.authority import WaxAuthority
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 if TYPE_CHECKING:
@@ -39,58 +43,8 @@ if TYPE_CHECKING:
     from textual.widget import Widget
 
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.keys.key_manager import KeyManager
+    from clive.__private.core.keys import PublicKey
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
-    from wax.models.authority import WaxAccountAuthorityInfo
-
-
-def is_match(text: str, pattern: str | list[str]) -> bool:
-    def generate_regex_pattern(pattern: str) -> str:
-        escaped_pattern = re.escape(pattern)
-        return rf".*{escaped_pattern}.*"
-
-    if isinstance(pattern, list):
-        return any(re.match(generate_regex_pattern(single_pattern), text) for single_pattern in pattern)
-    return bool(re.match(generate_regex_pattern(pattern), text))
-
-
-def collect_all_entries_from_wax_account_authority_info_object(authority: WaxAccountAuthorityInfo) -> list[str]:
-    all_entries = [authority.memo_key]
-    for authority_type in ["owner", "active", "posting"]:
-        wax_authority = getattr(authority.authorities, authority_type)
-        all_entries = all_entries + collect_all_entries_from_wax_authority_object(wax_authority)
-    return all_entries
-
-
-def collect_all_entries_from_wax_authority_object(authority: WaxAuthority) -> list[str]:
-    return list(authority.account_auths.keys()) + list(authority.key_auths.keys())
-
-
-def collect_weights_from_wax_authority_object(authority: WaxAuthority, keys: KeyManager) -> list[int]:
-    """Collect weights from WaxAuthority object for keys that are present in the KeyManager."""
-    key_auths = authority.key_auths
-    return [key_auths[key] for key in list(key_auths.keys()) if key in keys]
-
-
-def is_wax_account_authority_info_object_has_entry_that_matches_pattern(
-    authority: WaxAccountAuthorityInfo, pattern: str | list[str]
-) -> bool:
-    """Check if given pattern or any of the patterns are present in WaxAccountAuthorityInfo object."""
-    if is_match(authority.memo_key, pattern):
-        return True
-    for authority_type in ["owner", "active", "posting"]:
-        wax_authority = getattr(authority.authorities, authority_type)
-        if is_wax_authority_object_has_entry_that_matches_pattern(wax_authority, pattern):
-            return True
-    return False
-
-
-def is_wax_authority_object_has_entry_that_matches_pattern(authority: WaxAuthority, pattern: str | list[str]) -> bool:
-    """Check if the given pattern or any of the patterns are present in the WaxAuthority object."""
-    for entry in list(authority.account_auths.keys()) + list(authority.key_auths.keys()):
-        if is_match(entry, pattern):
-            return True
-    return False
 
 
 class PrivateKeyActionButton(OneLineButton):
@@ -143,78 +97,79 @@ class AuthorityRoles(SectionScrollable):
     def body(self) -> SectionBody:
         return self.query_exactly_one(SectionBody)
 
-    async def rebuild(
-        self, filtered_authorities: list[WaxAccountAuthorityInfo], filter_pattern: str | list[str] | None = None
-    ) -> None:
-        body = self.body
+    async def build(self, authority_operations: list[CliveAuthority]) -> None:
+        await self.body.mount_all([AccountCollapsible(operation) for operation in authority_operations])
 
-        widgets: list[AccountCollapsible] | list[NoContentAvailable] = []
-        await body.query("*").remove()
-        if not filtered_authorities:
-            widgets = [NoContentAvailable("There are no authorities that match filter criteria.")]
+    async def rebuild(self, authority_operations: list[CliveAuthority]) -> None:
+        await self.body.query("*").remove()
+        await self.build(authority_operations)
+
+
         else:
-            widgets = [
-                AccountCollapsible(authority, filter_pattern=filter_pattern) for authority in filtered_authorities
-            ]
 
-        await body.mount_all(widgets)
+    async def _remove_no_content_available_widget(self) -> None:
+        await self.body.query(NoContentAvailable).remove()
 
 
 class AccountCollapsible(CliveCollapsible):
     def __init__(
         self,
-        authority: WaxAccountAuthorityInfo,
+        operation: CliveAuthority,
         *,
-        initial_mount: bool = False,
-        filter_pattern: str | list[str] | None = None,
         collapsed: bool = False,
     ) -> None:
+        self._operation = operation
+        super().__init__(
+            *self._create_widgets_to_mount(collapsed=collapsed),
+            title=operation.account,
+            collapsed=collapsed,
+        )
+
+    @property
+    def operation(self) -> CliveAuthority:
+        return self._operation
+
+
+
+    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityType]:
         widgets_to_mount = []
 
-        for authority_type in ["owner", "active", "posting"]:
-            wax_authority = getattr(authority.authorities, authority_type)
-            if filter_pattern:
-                if is_wax_authority_object_has_entry_that_matches_pattern(wax_authority, filter_pattern):
-                    widgets_to_mount.append(
-                        AuthorityType(wax_authority, title=authority_type, filter_pattern=filter_pattern)
-                    )
-            else:
-                widgets_to_mount.append(AuthorityType(wax_authority, title=authority_type, collapsed=initial_mount))
+        for role in self._operation.roles:
+            title = role.level if not role.is_role_memo else "memo key"
+            widgets_to_mount.append(AuthorityType(role.value, title=title, collapsed=collapsed))
 
-        memo_key = authority.memo_key
-        if filter_pattern:
-            if is_match(memo_key, filter_pattern):
-                widgets_to_mount.append(AuthorityType(memo_key, title="memo key"))
-        else:
-            widgets_to_mount.append(AuthorityType(memo_key, title="memo key", collapsed=initial_mount))
-
-        super().__init__(*widgets_to_mount, title=authority.account, collapsed=collapsed)
+        return widgets_to_mount
 
 
 class AuthorityType(CliveCollapsible):
     def __init__(
         self,
-        account_authorities: WaxAuthority | str | None,
+        account_authorities: CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None,
         *,
         title: str,
-        filter_pattern: str | list[str] | None = None,
         collapsed: bool = False,
     ) -> None:
-        self._weight_threshold = None
-        right_hand_side_text = None
-        if account_authorities and isinstance(account_authorities, WaxAuthority):
-            self._weight_threshold = account_authorities.weight_threshold
-            self._collected_weights = collect_weights_from_wax_authority_object(account_authorities, self.profile.keys)
-            right_hand_side_text = (
-                f"imported weights: {sum(self._collected_weights)}, threshold: {self._weight_threshold}"
-            )
-
+        self._account_authorities = account_authorities
         super().__init__(
-            AuthorityTable(account_authorities, filter_pattern=filter_pattern),
+            AuthorityTable(account_authorities),
             title=title,
             collapsed=collapsed,
-            right_hand_side_text=right_hand_side_text,
+            right_hand_side_text=self._get_right_hand_side_text(),
         )
+
+    @property
+    def authority(self) -> CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None:
+        return self._account_authorities
+
+    def _get_right_hand_side_text(self) -> str | None:
+        right_hand_side_text = None
+
+        if self._account_authorities and isinstance(self._account_authorities, CliveAuthorityWrapper):
+            weight_threshold = self._account_authorities.weight_threshold
+            collected_weights = self._account_authorities.collect_weights(self.profile.keys)
+            right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {weight_threshold}"
+
+        return right_hand_side_text
 
 
 class AuthorityHeader(Horizontal):
@@ -233,55 +188,68 @@ class AuthorityHeader(Horizontal):
 
 
 class AuthorityItem(CliveCheckerboardTableRow):
-    def __init__(self, entry: dict[str, int]) -> None:
-        assert len(entry) == 1, "Entry of AuthorityItem should have one key and corresponding value."
-        self._key_or_account = next(iter(entry.keys()))
-        self._weight = entry[self._key_or_account]
-        self._is_account_entry = not self._key_or_account.startswith("STM")
+    """
+    Class for items in the  authority table.
+
+    Args:
+        entry: Object representing the authority entry.
+    """
+
+    def __init__(self, entry: CliveAuthorityEntryWrapper) -> None:
+        self._entry = entry
+        self._weight = entry.weight
+        self._is_account_entry = entry.is_account_entry
         super().__init__(*self._create_cells())
 
+    @property
+    def alias(self) -> str | None:
+        alias: str | None = None
+        if not self._is_account_entry and self.entry in self.profile.keys:
+            alias = self.profile.keys.get_first_from_public_key(self.entry).alias
+        return alias
+
+    @property
+    def entry(self) -> str:
+        return self._entry.key_or_account
+
+
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._key_or_account in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias if is_known_key else None
-        key_or_account_text = (
-            f"{alias} ({self._key_or_account})" if alias and alias != self._key_or_account else self._key_or_account
-        )
+        key_or_account_text = self._generate_key_or_account_text()
+
+        action_widget: Widget | None = None
 
         if self._is_account_entry:
-            action_widget: Widget = Static()
-        elif alias is not None:
-            action_widget = RemovePrivateKeyButton(key_alias=alias)
+            # we can't add corresponding key to the account, so we just display static widget without text
+            action_widget = Static()
         else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
+            alias = self.alias
+            action_widget = (
+                RemovePrivateKeyButton(alias) if alias else ImportPrivateKeyButton(public_key=self._entry.public_key)
+            )
 
-        return [
-            CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account"),
-            CliveCheckerBoardTableCell(str(self._weight), classes="weight"),
-            CliveCheckerBoardTableCell(action_widget, classes="action"),
+        cells = [
+            (CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account" if self._weight else "memo-key"))
         ]
+        if self._weight:
+            cells.append(CliveCheckerBoardTableCell(str(self._weight), classes="weight"))
+        cells.append(CliveCheckerBoardTableCell(action_widget, classes="action"))
+        return cells
 
+    def _generate_key_or_account_text(self) -> str:
+        """
+        Generate the text for the key or account cell.
 
-class MemoItem(CliveCheckerboardTableRow):
-    def __init__(self, memo_key: str) -> None:
-        self._memo_key = memo_key
-        super().__init__(*self._create_cells())
+        Returns:
+            The text to be displayed in the key or account cell.
+        """
+        key_or_account_text = self._entry.key_or_account
 
-    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._memo_key in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias if is_known_key else None
-        memo_key_text = f"{alias} ({self._memo_key})" if alias and alias != self._memo_key else self._memo_key
+        if not self._is_account_entry and self._entry.key_or_account in self.profile.keys:
+            alias = self.alias
+            if alias != self._entry.key_or_account:
+                key_or_account_text = f"{alias} ({self._entry.key_or_account})"
 
-        if alias is not None:
-            action_widget: Widget = RemovePrivateKeyButton(key_alias=alias)
-        else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._memo_key))
-        return [
-            CliveCheckerBoardTableCell(memo_key_text, classes="memo-key"),
-            CliveCheckerBoardTableCell(
-                action_widget,
-                classes="action",
-            ),
-        ]
+        return key_or_account_text
 
 
 class AuthorityTable(CliveCheckerboardTable):
@@ -292,50 +260,23 @@ class AuthorityTable(CliveCheckerboardTable):
         NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
 
     Args:
-        single_authority: An authority object or a memo key.
-        filter_pattern: Patterns to filter the entries in the authority.
+        single_authority: Object representing single authority.
     """
 
     NO_CONTENT_TEXT = "No entries in authority"
 
-    def __init__(self, single_authority: WaxAuthority | str | None, filter_pattern: str | list[str] | None) -> None:
+    def __init__(self, single_authority: CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None) -> None:
         self._single_authority = single_authority
-        self._filter_pattern = filter_pattern
-        self._is_authority_memo = False
-        if single_authority and isinstance(single_authority, str):
-            self._is_authority_memo = True
+        is_memo_authority = False
+        if single_authority:
+            is_memo_authority = single_authority.is_memo_authority
+        super().__init__(header=AuthorityHeader(memo_header=is_memo_authority))
 
-        super().__init__(header=AuthorityHeader(memo_header=self._is_authority_memo))
-
-    def create_static_rows(self) -> Sequence[AuthorityItem] | Sequence[MemoItem]:
+    def create_static_rows(self) -> Sequence[AuthorityItem]:
         if not self._single_authority:  # no entries in this type of authority
             return []
 
-        if self._is_authority_memo:
-            return [MemoItem(self._single_authority)]
-
-        assert isinstance(self._single_authority, WaxAuthority), "In this place authority has to be WaxAuthority type."
-
-        if self._filter_pattern:
-            key_entries = {
-                entry: self._single_authority.key_auths[entry]
-                for entry in self._single_authority.key_auths
-                if is_match(entry, self._filter_pattern)
-            }
-            account_entries = {
-                entry: self._single_authority.account_auths[entry]
-                for entry in self._single_authority.account_auths
-                if is_match(entry, self._filter_pattern)
-            }
-        else:
-            key_entries = self._single_authority.key_auths
-            account_entries = self._single_authority.account_auths
-        key_rows = [AuthorityItem({key_entry: key_entries[key_entry]}) for key_entry in key_entries]
-        account_rows = [
-            AuthorityItem({account_entry: account_entries[account_entry]}) for account_entry in account_entries
-        ]
-
-        return key_rows + account_rows
+        return [AuthorityItem(wrapper_object) for wrapper_object in self._single_authority.get()]
 
 
 class Authority(TabPane, CliveWidget):

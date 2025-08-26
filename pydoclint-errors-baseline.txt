@@ -383,17 +383,6 @@ clive/__private/ui/screens/account_details/alarms/alarms.py
     DOC103: Method `AlarmsTable._get_actual_account_state`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [content: Profile].
     DOC201: Method `AlarmsTable._get_actual_account_state` does not have a return section in docstring
 --------------------
-clive/__private/ui/screens/account_details/authority/authority.py
-    DOC101: Function `collect_weights_from_wax_authority_object`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `collect_weights_from_wax_authority_object`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, keys: KeyManager].
-    DOC201: Function `collect_weights_from_wax_authority_object` does not have a return section in docstring
-    DOC101: Function `is_wax_account_authority_info_object_has_entry_that_matches_pattern`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `is_wax_account_authority_info_object_has_entry_that_matches_pattern`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAccountAuthorityInfo, pattern: str | list[str]].
-    DOC201: Function `is_wax_account_authority_info_object_has_entry_that_matches_pattern` does not have a return section in docstring
-    DOC101: Function `is_wax_authority_object_has_entry_that_matches_pattern`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `is_wax_authority_object_has_entry_that_matches_pattern`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authority: WaxAuthority, pattern: str | list[str]].
-    DOC201: Function `is_wax_authority_object_has_entry_that_matches_pattern` does not have a return section in docstring
---------------------
 clive/__private/ui/screens/operations/bindings/operation_action_bindings.py
     DOC201: Method `OperationActionBindings._create_operation` does not have a return section in docstring
     DOC201: Method `OperationActionBindings._create_operations` does not have a return section in docstring
