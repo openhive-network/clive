@@ -46,8 +46,8 @@ variables:
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:e4797f961fd6c6a843d100b1838422f3b674430af408664286c1b6a6b23baafa"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04
-  CLIVE_BASE_IMAGE_TAG: "@sha256:e751423e7019033d0b70fd0cbd15d05a11fbc5a4756c7e547df63f7029c0f2aa"
+  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04-1
+  CLIVE_BASE_IMAGE_TAG: "@sha256:28f515d0cda87b9372b48f70b9d48468bc074ad9b54940827f2eebf49fd8521f"
   CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
