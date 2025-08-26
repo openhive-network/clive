@@ -72,7 +72,8 @@ if is_tab_completion_active():
     AlreadySignedModeEnum = str
     ALREADY_SIGNED_MODE_DEFAULT = ""  # doesn't matter, won't be shown anyway
 else:
-    from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
+    from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT
+    from clive.__private.core.types import AlreadySignedMode
 
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     AlreadySignedModeEnum = Enum(  # type: ignore[misc, no-redef]

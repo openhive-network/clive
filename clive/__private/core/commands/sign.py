@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
@@ -11,6 +11,7 @@ from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKey
+    from clive.__private.core.types import AlreadySignedMode
     from clive.__private.models.schemas import Signature
 
 
@@ -22,7 +23,6 @@ class TransactionAlreadySignedError(SignCommandError):
     pass
 
 
-AlreadySignedMode = Literal["error", "override", "multisign"]
 ALREADY_SIGNED_MODE_DEFAULT: Final = "error"
 
 

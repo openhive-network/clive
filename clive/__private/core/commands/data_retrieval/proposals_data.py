@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Literal, get_args
+from typing import TYPE_CHECKING, ClassVar, get_args
 
 from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
+from clive.__private.core.types import OrderDirections, ProposalOrders, ProposalStatuses
 from clive.__private.models import Asset
 
 if TYPE_CHECKING:
@@ -59,20 +60,15 @@ class ProposalsData:
     proposals: list[Proposal]
 
 
-_Orders = Literal["by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"]
-_OrderDirections = Literal["ascending", "descending"]
-_Statuses = Literal["all", "active", "inactive", "votable", "expired"]
-
-
 @dataclass(kw_only=True)
 class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ProposalsData]):
-    type Orders = _Orders
-    type OrderDirections = _OrderDirections
-    type Statuses = _Statuses
+    type Orders = ProposalOrders
+    type OrderDirections = OrderDirections
+    type Statuses = ProposalStatuses
 
-    ORDERS: ClassVar[tuple[Orders, ...]] = get_args(_Orders)
-    ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = get_args(_OrderDirections)
-    STATUSES: ClassVar[tuple[Statuses, ...]] = get_args(_Statuses)
+    ORDERS: ClassVar[tuple[Orders, ...]] = get_args(ProposalOrders)
+    ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = get_args(OrderDirections)
+    STATUSES: ClassVar[tuple[Statuses, ...]] = get_args(ProposalStatuses)
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
