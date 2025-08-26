@@ -15,7 +15,6 @@ from clive.__private.core.clive_authority import (
     CliveAuthorityWrapper,
 )
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
-from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -77,13 +76,13 @@ class RemovePrivateKeyButton(PrivateKeyActionButton):
     class Pressed(PrivateKeyActionButton.Pressed):
         """Message sent when RemovePrivateKeyButton is pressed."""
 
-    def __init__(self, key_alias: str) -> None:
+    def __init__(self, *key_aliases: str) -> None:
         super().__init__("Remove", "error")
-        self._key_alias = key_alias
+        self._key_aliases = key_aliases
 
     @on(Pressed)
     def remove_private_key(self) -> None:
-        self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)
+        self.app.push_screen(RemoveKeyAliasDialog(*self._key_aliases), self._key_aliases_changed_callback)
 
 
 class AuthorityRoles(SectionScrollable):
@@ -284,11 +283,11 @@ class AuthorityItem(CliveCheckerboardTableRow):
         super().__init__(*self._create_cells())
 
     @property
-    def alias(self) -> str | None:
-        alias: str | None = None
+    def aliases(self) -> list[str]:
+        aliases: list[str] = []
         if not self._is_account_entry and self.entry in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self.entry).alias
-        return alias
+            aliases = [aliased_key.alias for aliased_key in self.profile.keys.get_all_from_public_key(self.entry)]
+        return aliases
 
     @property
     def entry(self) -> str:
@@ -313,9 +312,11 @@ class AuthorityItem(CliveCheckerboardTableRow):
             # we can't add corresponding key to the account, so we just display static widget without text
             action_widget = Static()
         else:
-            alias = self.alias
+            aliases = self.aliases
             action_widget = (
-                RemovePrivateKeyButton(alias) if alias else ImportPrivateKeyButton(public_key=self._entry.public_key)
+                RemovePrivateKeyButton(*aliases)
+                if aliases
+                else ImportPrivateKeyButton(public_key=self._entry.public_key)
             )
 
         cells = [
@@ -336,9 +337,13 @@ class AuthorityItem(CliveCheckerboardTableRow):
         key_or_account_text = self._entry.key_or_account
 
         if not self._is_account_entry and self._entry.key_or_account in self.profile.keys:
-            alias = self.alias
-            if alias != self._entry.key_or_account:
-                key_or_account_text = f"{alias} ({self._entry.key_or_account})"
+            aliases = self.aliases
+            if len(aliases) == 1:
+                alias = next(iter(aliases))
+                if alias != self._entry.key_or_account:
+                    key_or_account_text = f"{alias} ({self._entry.key_or_account})"
+            else:
+                key_or_account_text = f"many aliases ({self._entry.key_or_account})"
 
         return key_or_account_text
 
