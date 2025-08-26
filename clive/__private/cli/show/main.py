@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -12,13 +11,16 @@ from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
 from clive.__private.cli.common.parameters.modified_param import modified_param
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
-
-if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
-
+from clive.__private.core.constants.data_retrieval import (
+    ORDER_DIRECTION_DEFAULT,
+    ORDER_DIRECTIONS,
+    PROPOSAL_ORDER_DEFAULT,
+    PROPOSAL_ORDERS,
+    PROPOSAL_STATUS_DEFAULT,
+    PROPOSAL_STATUSES,
+)
 
 show = CliveTyper(name="show", help="Show various data.")
 
@@ -94,37 +96,16 @@ async def show_transaction_status(
     ).run()
 
 
-if is_tab_completion_active():
-    OrdersEnum = str
-    OrderDirectionsEnum = str
-    StatusesEnum = str
-    DEFAULT_ORDER = ""  # doesn't matter, won't be shown anyway
-    DEFAULT_ORDER_DIRECTION = ""
-    DEFAULT_STATUS = ""
-else:
-    from clive.__private.core.constants.data_retrieval import (
-        ORDER_DIRECTION_DEFAULT,
-        ORDER_DIRECTIONS,
-        PROPOSAL_ORDER_DEFAULT,
-        PROPOSAL_ORDERS,
-        PROPOSAL_STATUS_DEFAULT,
-        PROPOSAL_STATUSES,
-    )
-
-    # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
-    OrdersEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrdersEnum", {option: option for option in PROPOSAL_ORDERS}
-    )
-    OrderDirectionsEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrderDirectionsEnum", {option: option for option in ORDER_DIRECTIONS}
-    )
-    StatusesEnum = Enum(  # type: ignore[misc, no-redef]
-        "StatusesEnum", {option: option for option in PROPOSAL_STATUSES}
-    )
-
-    DEFAULT_ORDER = PROPOSAL_ORDER_DEFAULT
-    DEFAULT_ORDER_DIRECTION = ORDER_DIRECTION_DEFAULT
-    DEFAULT_STATUS = PROPOSAL_STATUS_DEFAULT
+# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
+OrderDirectionsEnum = Enum(  # type: ignore[misc]
+    "OrderDirectionsEnum", {option: option for option in ORDER_DIRECTIONS}
+)
+ProposalOrdersEnum = Enum(  # type: ignore[misc]
+    "ProposalOrdersEnum", {option: option for option in PROPOSAL_ORDERS}
+)
+ProposalStatusesEnum = Enum(  # type: ignore[misc]
+    "ProposalStatusesEnum", {option: option for option in PROPOSAL_STATUSES}
+)
 
 
 @show.command(name="proxy")
@@ -191,16 +172,16 @@ proposals_page_no = modified_param(
 async def show_proposals(  # noqa: PLR0913
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
-    order_by: OrdersEnum = typer.Option(
-        DEFAULT_ORDER,
+    order_by: ProposalOrdersEnum = typer.Option(
+        PROPOSAL_ORDER_DEFAULT,
         help="Proposals listing can be ordered by criteria.",
     ),
     order_direction: OrderDirectionsEnum = typer.Option(
-        DEFAULT_ORDER_DIRECTION,
+        ORDER_DIRECTION_DEFAULT,
         help="Proposals listing direction.",
     ),
-    status: StatusesEnum = typer.Option(
-        DEFAULT_STATUS,
+    status: ProposalStatusesEnum = typer.Option(
+        PROPOSAL_STATUS_DEFAULT,
         help="Proposals can be filtered by status.",
     ),
     page_size: int = proposals_page_size,
@@ -209,19 +190,11 @@ async def show_proposals(  # noqa: PLR0913
     """List proposals filtered by status."""
     from clive.__private.cli.commands.show.show_proposals import ShowProposals  # noqa: PLC0415
 
-    assert isinstance(order_by, Enum), f"Expected Enum type, but got: {type(order_by)}"
-    assert isinstance(order_direction, Enum), f"Expected Enum type, but got: {type(order_by)}"
-    assert isinstance(status, Enum), f"Expected Enum type, but got: {type(order_by)}"
-
-    order_by_ = cast("ProposalsDataRetrieval.Orders", order_by.value)
-    order_direction_ = cast("ProposalsDataRetrieval.OrderDirections", order_direction.value)
-    status_ = cast("ProposalsDataRetrieval.Statuses", status.value)
-
     await ShowProposals(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
-        order_by=order_by_,
-        order_direction=order_direction_,
-        status=status_,
+        order_by=order_by.value,
+        order_direction=order_direction.value,
+        status=status.value,
         page_size=page_size,
         page_no=page_no,
     ).run()

@@ -8,7 +8,6 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
 from clive.__private.cli.process.hive_power.delegations import delegations
@@ -21,6 +20,7 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
+from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
 
 if TYPE_CHECKING:
     from clive.__private.models import Asset
@@ -68,16 +68,10 @@ async def transfer(  # noqa: PLR0913
     ).run()
 
 
-if is_tab_completion_active():
-    AlreadySignedModeEnum = str
-    ALREADY_SIGNED_MODE_DEFAULT = ""  # doesn't matter, won't be shown anyway
-else:
-    from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
-
-    # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
-    AlreadySignedModeEnum = Enum(  # type: ignore[misc, no-redef]
-        "AlreadySignedModeEnum", {option: option for option in ALREADY_SIGNED_MODES}
-    )
+# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
+AlreadySignedModeEnum = Enum(  # type: ignore[misc]
+    "AlreadySignedModeEnum", {option: option for option in ALREADY_SIGNED_MODES}
+)
 
 
 @process.command(name="transaction")
@@ -95,13 +89,10 @@ async def process_transaction(  # noqa: PLR0913
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
 
-    if isinstance(already_signed_mode, Enum):
-        already_signed_mode = already_signed_mode.value
-
     await ProcessTransaction(
         from_file=from_file,
         force_unsign=force_unsign,
-        already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
+        already_signed_mode=already_signed_mode.value,
         sign=sign,
         broadcast=broadcast,
         save_file=save_file,
