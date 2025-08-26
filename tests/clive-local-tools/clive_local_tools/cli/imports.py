@@ -29,7 +29,7 @@ def get_cli_help_imports_tree(env: dict[str, str] | None = None) -> str:
 
 def get_cli_help_imports_time(env: dict[str, str] | None = None) -> float:
     env_ = os.environ.copy()
-    env_["TIMEFORMAT"] = "%U"
+    env_["TIMEFORMAT"] = "%R"
     if env is not None:
         env_.update(env)
     output = _get_imports_tree(Path(path_to_clive_main), "--help", env=env_, with_time=True)
