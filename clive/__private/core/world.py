@@ -117,6 +117,10 @@ class World:
         return self._wax_interface
 
     @property
+    def is_wax_interface_available(self) -> bool:
+        return self._wax_interface is not None
+
+    @property
     def _should_save_profile_on_close(self) -> bool:
         return self.is_profile_available
 
@@ -132,6 +136,8 @@ class World:
             if self.is_node_available:
                 self.node.teardown()
             self._beekeeper_manager.teardown()
+            if self.is_wax_interface_available:
+                self.wax_interface.teardown()
 
             await self.app_state.lock()
 
