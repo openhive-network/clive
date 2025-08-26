@@ -19,7 +19,7 @@ from clive.__private.cli.exceptions import (
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
-from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import KeyNotFoundError

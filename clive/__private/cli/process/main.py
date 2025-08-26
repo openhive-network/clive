@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, cast, get_args
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -72,12 +72,11 @@ if is_tab_completion_active():
     AlreadySignedModeEnum = str
     ALREADY_SIGNED_MODE_DEFAULT = ""  # doesn't matter, won't be shown anyway
 else:
-    from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT
-    from clive.__private.core.types import AlreadySignedMode
+    from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
 
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     AlreadySignedModeEnum = Enum(  # type: ignore[misc, no-redef]
-        "AlreadySignedModeEnum", {option: option for option in get_args(AlreadySignedMode)}
+        "AlreadySignedModeEnum", {option: option for option in ALREADY_SIGNED_MODES}
     )
 
 

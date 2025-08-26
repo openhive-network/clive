@@ -6,6 +6,11 @@ from typing import TYPE_CHECKING, ClassVar, get_args
 from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.constants.data_retrieval import (
+    ORDER_DIRECTION_DEFAULT,
+    PROPOSAL_ORDER_DEFAULT,
+    PROPOSAL_STATUS_DEFAULT,
+)
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
 from clive.__private.core.types import OrderDirections, ProposalOrders, ProposalStatuses
 from clive.__private.models import Asset
@@ -72,9 +77,9 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
-    DEFAULT_STATUS: ClassVar[Statuses] = "votable"
-    DEFAULT_ORDER: ClassVar[Orders] = "by_total_votes_with_voted_first"
-    DEFAULT_ORDER_DIRECTION: ClassVar[OrderDirections] = "descending"
+    DEFAULT_STATUS: ClassVar[Statuses] = PROPOSAL_STATUS_DEFAULT
+    DEFAULT_ORDER: ClassVar[Orders] = PROPOSAL_ORDER_DEFAULT
+    DEFAULT_ORDER_DIRECTION: ClassVar[OrderDirections] = ORDER_DIRECTION_DEFAULT
 
     node: Node
     account_name: str

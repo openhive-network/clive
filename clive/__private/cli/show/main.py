@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import typer
 
@@ -15,6 +15,10 @@ from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+
+if TYPE_CHECKING:
+    from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
+
 
 show = CliveTyper(name="show", help="Show various data.")
 
@@ -98,22 +102,29 @@ if is_tab_completion_active():
     DEFAULT_ORDER_DIRECTION = ""
     DEFAULT_STATUS = ""
 else:
-    from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
+    from clive.__private.core.constants.data_retrieval import (
+        ORDER_DIRECTION_DEFAULT,
+        ORDER_DIRECTIONS,
+        PROPOSAL_ORDER_DEFAULT,
+        PROPOSAL_ORDERS,
+        PROPOSAL_STATUS_DEFAULT,
+        PROPOSAL_STATUSES,
+    )
 
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     OrdersEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrdersEnum", {option: option for option in ProposalsDataRetrieval.ORDERS}
+        "OrdersEnum", {option: option for option in PROPOSAL_ORDERS}
     )
     OrderDirectionsEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrderDirectionsEnum", {option: option for option in ProposalsDataRetrieval.ORDER_DIRECTIONS}
+        "OrderDirectionsEnum", {option: option for option in ORDER_DIRECTIONS}
     )
     StatusesEnum = Enum(  # type: ignore[misc, no-redef]
-        "StatusesEnum", {option: option for option in ProposalsDataRetrieval.STATUSES}
+        "StatusesEnum", {option: option for option in PROPOSAL_STATUSES}
     )
 
-    DEFAULT_ORDER = ProposalsDataRetrieval.DEFAULT_ORDER
-    DEFAULT_ORDER_DIRECTION = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
-    DEFAULT_STATUS = ProposalsDataRetrieval.DEFAULT_STATUS
+    DEFAULT_ORDER = PROPOSAL_ORDER_DEFAULT
+    DEFAULT_ORDER_DIRECTION = ORDER_DIRECTION_DEFAULT
+    DEFAULT_STATUS = PROPOSAL_STATUS_DEFAULT
 
 
 @show.command(name="proxy")

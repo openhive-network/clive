@@ -50,7 +50,7 @@ from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, Sign
+from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.sync_state_with_beekeeper import SyncStateWithBeekeeper
 from clive.__private.core.commands.unlock import Unlock, UnlockWalletStatus
@@ -58,6 +58,7 @@ from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
     UpdateTransactionMetadata,
 )
+from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
