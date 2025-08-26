@@ -30,7 +30,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
     CliveCollapsible,
 )
-from clive.__private.ui.widgets.inputs.authority_filter_input import AuthorityFilterInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
@@ -104,8 +103,31 @@ class AuthorityRoles(SectionScrollable):
         await self.body.query("*").remove()
         await self.build(authority_operations)
 
+    async def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+        """
+        Update the display of AuthorityRoles based on filter patterns selected accounts in filter.
 
+        This method updates each AccountCollapsible inside the body of AuthorityRoles. Also handles NoContentAvailable
+        widget.
+
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+        results = [
+            account_collapsible.update(selected_accounts_in_filter, *filter_patterns)
+            for account_collapsible in self.body.query(AccountCollapsible)
+        ]
+        if any(results):
+            await self._remove_no_content_available_widget()
         else:
+            try:
+                self.body.query_exactly_one(NoContentAvailable)
+            except NoMatches:
+                self._mount_no_content_available_widget()
+
+    def _mount_no_content_available_widget(self) -> None:
+        self.body.mount(NoContentAvailable("There are no authorities that match filter criteria."))
 
     async def _remove_no_content_available_widget(self) -> None:
         await self.body.query(NoContentAvailable).remove()
@@ -129,7 +151,39 @@ class AccountCollapsible(CliveCollapsible):
     def operation(self) -> CliveAuthority:
         return self._operation
 
+    def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> bool:
+        """
+        Update the display of AccountCollapsible based on accounts selected in filter and filter patterns.
 
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
+
+        Returns:
+            True if the display of widget is enabled, False otherwise.
+        """
+
+        def update_display_of_authority_types() -> None:
+            """Update the display of AuthorityType widgets within this AccountCollapsible."""
+            for authority_type in self.query(AuthorityType):
+                authority_type.update(*filter_patterns)
+
+        if self.operation.account not in selected_accounts_in_filter:
+            self.display = False
+            return False
+
+        if not filter_patterns:
+            self.display = True
+            update_display_of_authority_types()
+            return True
+
+        for role in self.operation.roles:
+            if role.is_match(*filter_patterns):
+                self.display = True
+                update_display_of_authority_types()
+                return True
+        self.display = False
+        return False
 
     def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityType]:
         widgets_to_mount = []
@@ -160,6 +214,34 @@ class AuthorityType(CliveCollapsible):
     @property
     def authority(self) -> CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None:
         return self._account_authorities
+
+    def update(self, *filter_patterns: str) -> None:
+        """
+        Update the display of AuthorityType based on filter patterns.
+
+        Args:
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+
+        def update_display_in_authority_table() -> None:
+            authority_table = self.query_exactly_one(AuthorityTable)
+            authority_table.update(*filter_patterns)
+
+        filter_pattern_present = bool(filter_patterns)
+        if not filter_pattern_present:
+            self.display = True
+            update_display_in_authority_table()
+            return
+
+        if not self._account_authorities:
+            self.display = False
+            return
+
+        matched = self._account_authorities.is_match(*filter_patterns)
+        self.display = matched
+
+        if matched:
+            update_display_in_authority_table()
 
     def _get_right_hand_side_text(self) -> str | None:
         right_hand_side_text = None
@@ -212,6 +294,15 @@ class AuthorityItem(CliveCheckerboardTableRow):
     def entry(self) -> str:
         return self._entry.key_or_account
 
+    def update(self, *filter_patterns: str) -> None:
+        """
+        Update the display based on filter patterns.
+
+        Args:
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+        filter_pattern_present = bool(filter_patterns)
+        self.display = self._entry.is_match(*filter_patterns) if filter_pattern_present else True
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
@@ -276,21 +367,28 @@ class AuthorityTable(CliveCheckerboardTable):
         if not self._single_authority:  # no entries in this type of authority
             return []
 
-        if self._filter_pattern:
-            key_entries = {
-                entry: self._single_authority.key_auths[entry]
-                for entry in self._single_authority.key_auths
-                if is_match(entry, self._filter_pattern)
-            }
-            account_entries = {
-                entry: self._single_authority.account_auths[entry]
-                for entry in self._single_authority.account_auths
-                if is_match(entry, self._filter_pattern)
-            }
-        else:
-            key_entries = self._single_authority.key_auths
-            account_entries = self._single_authority.account_auths
         return [AuthorityItem(wrapper_object) for wrapper_object in self._single_authority.get_entries()]
+
+    def update_cell_colors(self) -> None:
+        """Update background colors according to the actual displayed rows."""
+        displayed_rows = [row for row in self.query(CliveCheckerboardTableRow) if row.display]
+
+        for row_index, row in enumerate(displayed_rows):
+            for cell_index, cell in enumerate(row.cells):
+                should_be_even = (row_index + cell_index) % 2 == 0
+
+                if should_be_even:
+                    cell.remove_class(CLIVE_ODD_COLUMN_CLASS_NAME)
+                    cell.add_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
+                else:
+                    cell.remove_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
+                    cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
+
+    def update(self, *filter_patterns: str) -> None:
+        for row in self.query(CliveCheckerboardTableRow):
+            assert isinstance(row, (AuthorityItem)), "Invalid type of row."
+            row.update(*filter_patterns)
+            self.update_cell_colors()
 
 
 class Authority(TabPane, CliveWidget):
@@ -301,26 +399,13 @@ class Authority(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._filtered_authorities: list[WaxAccountAuthorityInfo] = []
-        self._authority_roles = AuthorityRoles()
         self._authority_operations: list[CliveAuthority] = []
-        self._filter_pattern_already_applied: bool = False
 
     async def on_mount(self) -> None:
-        tracked_accounts = self.profile.accounts.tracked
-
-        for account in tracked_accounts:
-            account_authority = (
-                await self.world.commands.collect_account_authorities(account_name=account.name)
-            ).result_or_raise
-            self._authorities.append(account_authority)
-
-        self._update_filtered_authorities_and_input_suggestions()
-
-        await self._authority_roles.body.mount_all(
-            [AccountCollapsible(authority, initial_mount=True) for authority in self._filtered_authorities]
-        )
         await self._collect_authorities()
+        self._update_input_suggestions()
+        await self.authority_roles.build(self._authority_operations)
+        await self._update_display_inside_authority_roles()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -329,7 +414,11 @@ class Authority(TabPane, CliveWidget):
                 CliveButton(label="Modify", variant="success", id_="modify-button", disabled=True),
                 id="button-container",
             )
-        yield self._authority_roles
+        yield AuthorityRoles()
+
+    @property
+    def authority_roles(self) -> AuthorityRoles:
+        return self.query_exactly_one(AuthorityRoles)
 
     @property
     def filter_authority(self) -> FilterAuthority:
@@ -337,40 +426,35 @@ class Authority(TabPane, CliveWidget):
 
     @on(FilterAuthority.AuthorityFilterReady)
     async def _apply_authority_filter(self) -> None:
-        authority_input = self.query_exactly_one(AuthorityFilterInput)
-        filter_pattern = authority_input.value_or_none()
+        """Apply the authority filter based on the input and update the UI."""
+        authority_filter_input = self.filter_authority.authority_filter_input
+        filter_pattern = authority_filter_input.value_or_error
+        all_patterns = []
+
         if filter_pattern:
-            if self._filter_pattern_already_applied:
-                self._update_filtered_authorities_and_input_suggestions()
+            self._update_input_suggestions()
+            all_patterns.extend(
+                [key.value for key in self.profile.keys.get_key_values_by_alias_pattern(filter_pattern)]
+            )
+            all_patterns.append(filter_pattern)
 
-            alias_patterns = [
-                aliased_key.value for aliased_key in self.profile.keys if is_match(aliased_key.alias, filter_pattern)
-            ]
-            multiple_patterns = [*alias_patterns, filter_pattern]
-            # filtered_authorities variable is already filtered for accounts
-            authorities_that_match_pattern = [
-                authority
-                for authority in self._filtered_authorities
-                if is_wax_account_authority_info_object_has_entry_that_matches_pattern(authority, multiple_patterns)
-            ]
-            self._filtered_authorities = authorities_that_match_pattern
-
-        self._filter_pattern_already_applied = bool(filter_pattern)
         self.filter_authority.collapse_account_filter_collapsible()
-        await self._rebuild_authority_roles(multiple_patterns if "multiple_patterns" in locals() else filter_pattern)
+        await self._update_display_inside_authority_roles(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def rebuild_after_key_aliases_changed(self) -> None:
         await self._rebuild_authority_roles()
+        await self._apply_authority_filter()
 
     @on(FilterAuthority.Cleared)
-    async def rebuild_after_clearing_authority_filter(self) -> None:
-        self._update_filtered_authorities_and_input_suggestions()
-        await self._rebuild_authority_roles()
+    async def handle_filter_cleared(self) -> None:
+        self._update_input_suggestions()
+        await self._update_display_inside_authority_roles()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _update_authorities_and_suggestions_after_account_in_filter_changed(self) -> None:
-        self._update_filtered_authorities_and_input_suggestions()
+        self._update_input_suggestions()
+
     async def _collect_authorities(self) -> None:
         tracked_accounts = self.profile.accounts.tracked
 
@@ -380,28 +464,27 @@ class Authority(TabPane, CliveWidget):
             )
             self._authority_operations.append(CliveAuthority(authority_operation))
 
-    def _update_filtered_authorities_and_input_suggestions(self) -> None:
-        """Filter authorities for selected accounts in AccountSelectionList and update input suggestions."""
-        self._filtered_authorities.clear()
-        input_suggestions = []
+    async def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:
+        with self.app.batch_update():
+            await self.authority_roles.update(self.filter_authority.selected_options, *filter_patterns)
 
+    def _update_input_suggestions(self) -> None:
+        input_suggestions: set[str] = set()
         filter_authority = self.filter_authority
 
         options_selected_in_filter = filter_authority.selected_options
-        for authority in self._authorities:
-            if authority.account in options_selected_in_filter:
-                self._filtered_authorities.append(authority)
-                for collected_entry in collect_all_entries_from_wax_account_authority_info_object(authority):
-                    if collected_entry not in input_suggestions:
-                        input_suggestions.append(collected_entry)
+        for operation in self._authority_operations:
+            if operation.account in options_selected_in_filter:
+                suggestions_to_add = [wrapper_object.key_or_account for wrapper_object in operation.get_entries()]
+                input_suggestions.update(suggestions_to_add)
 
-        input_suggestions.extend(self.profile.keys.get_all_aliases())
+        input_suggestions.update(self.profile.keys.get_all_aliases())
         filter_authority.authority_filter_input.clear_suggestions()
         filter_authority.authority_filter_input.add_suggestion(*input_suggestions)
 
-    async def _rebuild_authority_roles(self, filter_pattern: str | list[str] | None = None) -> None:
+    async def _rebuild_authority_roles(self) -> None:
         with self.app.batch_update():
-            await self._authority_roles.rebuild(self._filtered_authorities, filter_pattern)
+            await self.authority_roles.rebuild(self._authority_operations)
 
             # somehow after mounting widgets inside authority roles body scroll is moved down, so focus first mounted
             # account collapsible title (and move the scroll by it) then refocus previously focused widget.
