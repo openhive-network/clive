@@ -363,6 +363,7 @@ clive/__private/ui/dialogs/load_transaction_from_file_dialog.py
 --------------------
 clive/__private/ui/dialogs/remove_key_alias_dialog.py
     DOC502: Method `RemoveKeyAliasDialog.__init__` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC502: Method `RemoveKeyAliasDialog.get_keys_to_remove` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/ui/dialogs/save_file_base_dialog.py
     DOC101: Method `SaveFileBaseDialog._save_to_file`: Docstring contains fewer arguments than in function signature.
