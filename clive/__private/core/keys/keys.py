@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, overload
 
 from clive.__private.core import iwax
+from clive.__private.models.schemas import PublicKey as SchemaPublicKey
+from clive.__private.models.schemas import is_matching_model
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -15,7 +17,18 @@ class PrivateKeyError(CliveError):
     """A PrivateKey related error."""
 
 
+class PublicKeyError(CliveError):
+    """A PublicKey related error."""
+
+
 class PrivateKeyInvalidFormatError(PrivateKeyError):
+    def __init__(self, value: str) -> None:
+        self.value = value
+        message = f"Given key is in invalid form: `{value}`"
+        super().__init__(message)
+
+
+class PublicKeyInvalidFormatError(PublicKeyError):
     def __init__(self, value: str) -> None:
         self.value = value
         message = f"Given key is in invalid form: `{value}`"
@@ -94,6 +107,9 @@ class KeyAliased(Key, ABC):
 class PublicKey(Key):
     value: str
 
+    def __post_init__(self) -> None:
+        self.validate(self.value)
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, PrivateKey):
             return self == other.calculate_public_key()
@@ -105,6 +121,28 @@ class PublicKey(Key):
 
     def __hash__(self) -> int:
         return super().__hash__()
+
+    @staticmethod
+    def validate(key: str) -> None:
+        """
+        Validate the given key.
+
+        Args:
+            key: Provided key to validate.
+
+        Raises:
+            PublicKeyInvalidFormatError: if public key is not in valid format.
+        """
+        if not is_matching_model(key, SchemaPublicKey):
+            raise PublicKeyInvalidFormatError(key)
+
+    @classmethod
+    def is_valid(cls, key: str) -> bool:
+        try:
+            cls.validate(key)
+        except PublicKeyInvalidFormatError:
+            return False
+        return True
 
     def with_alias(self, alias: str) -> PublicKeyAliased:
         return PublicKeyAliased(alias=alias, value=self.value)
