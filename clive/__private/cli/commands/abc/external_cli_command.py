@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import errno
 import inspect
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import Field, dataclass, field, fields
+from getpass import getpass
 from typing import TYPE_CHECKING, Any, Self
+
+import typer
 
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError
@@ -21,6 +25,10 @@ class ExternalCLICommand(ABC):
     @abstractmethod
     async def _run(self) -> None:
         """Actual implementation of the command."""
+
+    @property
+    def is_interactive(self) -> bool:
+        return sys.stdin.isatty()
 
     async def run(self) -> None:
         if not self._skip_validation:
@@ -55,6 +63,14 @@ class ExternalCLICommand(ABC):
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)
+
+    def read_interactive(self, msg: str, *, secret: bool = True) -> str:
+        if secret:
+            return getpass(msg)
+        return typer.prompt(msg)
+
+    def read_piped(self) -> str:
+        return sys.stdin.readline().rstrip()
 
     def __get_initialized_fields(self) -> list[Field[Any]]:
         return [field_instance for field_instance in fields(self) if field_instance.init]

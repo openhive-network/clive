@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from datetime import timedelta
-from getpass import getpass
 from typing import Final
 
 import typer
@@ -63,10 +61,10 @@ class Unlock(WorldBasedCommand):
         if profile_name is None:
             self._display_create_profile_help_info()
             return
-        if sys.stdin.isatty():
-            await self._unlock_in_tty_mode(profile_name)
+        if self.is_interactive:
+            await self._unlock_interactive(profile_name)
         else:
-            await self._unlock_in_non_tty_mode(profile_name)
+            await self._unlock_piped(profile_name)
         print_cli(f"Profile `{profile_name}` is unlocked.")
 
     def _get_profile_name(self) -> str | None:
@@ -131,10 +129,10 @@ class Unlock(WorldBasedCommand):
         if profile_name not in Profile.list_profiles():
             raise CLIProfileDoesNotExistsError(profile_name)
 
-    async def _unlock_in_tty_mode(self, profile_name: str) -> None:
-        prompt = f"Enter password for profile `{profile_name}`: "
+    async def _unlock_interactive(self, profile_name: str) -> None:
+        prompt = f"Enter password for profile `{profile_name}`"
         for i in range(PASSWORD_SELECTION_ATTEMPTS):
-            password = getpass(prompt)
+            password = self.read_interactive(prompt)
             try:
                 await self._unlock_profile(profile_name, password)
             except CLIInvalidPasswordError:
@@ -147,8 +145,8 @@ class Unlock(WorldBasedCommand):
                 return
         raise AssertionError("Won't reach here")
 
-    async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
-        password = sys.stdin.readline().rstrip()
+    async def _unlock_piped(self, profile_name: str) -> None:
+        password = self.read_piped()
         await self._unlock_profile(profile_name, password)
 
     def _should_display_profile_creation_help(self) -> bool:
