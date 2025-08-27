@@ -67,9 +67,6 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         await self._validate_remote_beekeeper_running()
         await super().validate()
 
-    async def validate_inside_context_manager(self) -> None:
-        await super().validate_inside_context_manager()
-
     def _validate_beekeeper_remote_address_set(self) -> None:
         if self.beekeeper_remote_url is None:
             raise CLIBeekeeperRemoteAddressIsNotSetError
