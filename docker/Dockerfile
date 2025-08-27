@@ -26,9 +26,9 @@ RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
     mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /clive && \
-    chmod -R g+ws /clive && \
+    chmod -R g+w /clive && \
     chown -R clive:users "${PYTHON_VENV_PATH}" && \
-    chmod -R g+ws "${PYTHON_VENV_PATH}" && \
+    chmod -R g+w "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
@@ -68,9 +68,9 @@ RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     useradd -o -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
     mkdir -p /clive && mkdir -vp "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /clive && \
-    chmod -R g+ws /clive && \
+    chmod -R g+w /clive && \
     chown -R clive:users "${PYTHON_VENV_PATH}" && \
-    chmod -R g+ws "${PYTHON_VENV_PATH}" && \
+    chmod -R g+w "${PYTHON_VENV_PATH}" && \
     chown -R clive:users /var/cache/ && \
     chmod -R 777 /var/cache/
 
@@ -95,7 +95,7 @@ RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple && \
     # Remove the cache so it is not included in the image to save space, but grant group write access so the clive user can generate it itself.
     find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} + && \
-    chmod -R g+ws "${PYTHON_VENV_PATH}"
+    chmod -R g+w "${PYTHON_VENV_PATH}"
 
 
 FROM preconfigured_base_image AS instance
