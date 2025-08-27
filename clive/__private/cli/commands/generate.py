@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
-from getpass import getpass
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrettyError
@@ -24,7 +22,9 @@ class GenerateKeyFromSeed(ExternalCLICommand):
         await super().validate()
 
     async def _run(self) -> None:
-        password = self._read_password_in_tty_mode() if sys.stdin.isatty() else self._read_password_in_non_tty_mode()
+        password = (
+            self.read_interactive("Enter seed (like as secret phrase): ") if self.is_interactive else self.read_piped()
+        )
 
         private_key = iwax.generate_password_based_private_key(password, self.role, self.account_name)
         if self.only_public_key:
@@ -35,17 +35,11 @@ class GenerateKeyFromSeed(ExternalCLICommand):
             print_cli(private_key.value)
             print_cli(private_key.calculate_public_key().value)
 
-    def _read_password_in_tty_mode(self) -> str:
-        return getpass("Enter seed (like a secret phrase): ")
-
-    def _read_password_in_non_tty_mode(self) -> str:
-        return sys.stdin.readline().rstrip()
-
 
 @dataclass(kw_only=True)
 class GeneratePublicKey(ExternalCLICommand):
     async def _run(self) -> None:
-        value = self._read_private_key_in_tty_mode() if sys.stdin.isatty() else self._read_private_key_in_non_tty_mode()
+        value = self.read_interactive("Enter private key: ") if self.is_interactive else self.read_piped()
         try:
             private_key = PrivateKey(value=value)
         except PrivateKeyInvalidFormatError as error:
@@ -54,12 +48,6 @@ class GeneratePublicKey(ExternalCLICommand):
                 "(look at `clive generate random-key` to display example)."
             ) from error
         print_cli(private_key.calculate_public_key().value)
-
-    def _read_private_key_in_tty_mode(self) -> str:
-        return getpass("Enter private key: ")
-
-    def _read_private_key_in_non_tty_mode(self) -> str:
-        return sys.stdin.readline().rstrip()
 
 
 @dataclass(kw_only=True)
