@@ -93,7 +93,10 @@ RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple && \
-    find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} +
+    # Remove the cache so it is not included in the image to save space, but grant group write access so the clive user can generate it itself.
+    find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} + && \
+    chmod -R g+ws "${PYTHON_VENV_PATH}"
+
 
 FROM preconfigured_base_image AS instance
 
