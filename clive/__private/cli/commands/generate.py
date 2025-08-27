@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
-from getpass import getpass
 
 import typer
 
@@ -20,7 +18,7 @@ class KeyFromSeed(ExternalCLICommand):
     only_public_key: bool
 
     async def _run(self) -> None:
-        password = self._read_password_in_tty_mode() if sys.stdin.isatty() else self._read_password_in_non_tty_mode()
+        password = self.read_tty_mode("Enter secret phrase: ") if self.is_atty else self.read_not_tty_mode()
 
         private_key = iwax.generate_password_based_private_key(password, self.role, self.account_name)
         if self.only_public_key:
@@ -31,17 +29,11 @@ class KeyFromSeed(ExternalCLICommand):
             typer.echo(private_key.value)
             typer.echo(private_key.calculate_public_key().value)
 
-    def _read_password_in_tty_mode(self) -> str:
-        return getpass("Enter secret phrase: ")
-
-    def _read_password_in_non_tty_mode(self) -> str:
-        return sys.stdin.readline().rstrip()
-
 
 @dataclass(kw_only=True)
 class PublicKey(ExternalCLICommand):
     async def _run(self) -> None:
-        value = self._read_private_key_in_tty_mode() if sys.stdin.isatty() else self._read_private_key_in_non_tty_mode()
+        value = self.read_tty_mode("Enter private key: ") if self.is_atty else self.read_not_tty_mode()
         try:
             private_key = PrivateKey(value=value)
         except PrivateKeyInvalidFormatError as error:
@@ -50,12 +42,6 @@ class PublicKey(ExternalCLICommand):
                 "(for example `5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n`)."
             ) from error
         typer.echo(private_key.calculate_public_key().value)
-
-    def _read_private_key_in_tty_mode(self) -> str:
-        return getpass("Enter private key: ")
-
-    def _read_private_key_in_non_tty_mode(self) -> str:
-        return sys.stdin.readline().rstrip()
 
 
 @dataclass(kw_only=True)

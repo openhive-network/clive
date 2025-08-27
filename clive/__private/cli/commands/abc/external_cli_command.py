@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import errno
 import inspect
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import Field, dataclass, field, fields
+from getpass import getpass
 from typing import TYPE_CHECKING, Any, Self
 
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -55,6 +57,16 @@ class ExternalCLICommand(ABC):
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)
+
+    @property
+    def is_atty(self) -> bool:
+        return sys.stdin.isatty()
+
+    def read_tty_mode(self, msg: str) -> str:
+        return getpass(msg)
+
+    def read_not_tty_mode(self) -> str:
+        return sys.stdin.readline().rstrip()
 
     def __get_initialized_fields(self) -> list[Field[Any]]:
         return [field_instance for field_instance in fields(self) if field_instance.init]

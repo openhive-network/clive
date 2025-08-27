@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from datetime import timedelta
-from getpass import getpass
 from typing import Final
 
 import typer
@@ -62,7 +60,7 @@ class Unlock(WorldBasedCommand):
         if profile_name is None:
             self._display_create_profile_help_info()
             return
-        if sys.stdin.isatty():
+        if self.is_atty:
             await self._unlock_in_tty_mode(profile_name)
         else:
             await self._unlock_in_non_tty_mode(profile_name)
@@ -133,7 +131,7 @@ class Unlock(WorldBasedCommand):
     async def _unlock_in_tty_mode(self, profile_name: str) -> None:
         prompt = f"Enter password for profile `{profile_name}`: "
         for i in range(PASSWORD_SELECTION_ATTEMPTS):
-            password = getpass(prompt)
+            password = self.read_tty_mode(prompt)
             try:
                 await self._unlock_profile(profile_name, password)
             except CLIInvalidPasswordError:
@@ -147,7 +145,7 @@ class Unlock(WorldBasedCommand):
         raise AssertionError("Won't reach here")
 
     async def _unlock_in_non_tty_mode(self, profile_name: str) -> None:
-        password = sys.stdin.readline().rstrip()
+        password = self.read_not_tty_mode()
         await self._unlock_profile(profile_name, password)
 
     def _should_display_profile_creation_help(self) -> bool:

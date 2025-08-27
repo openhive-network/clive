@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import errno
-import sys
 from dataclasses import dataclass
-from getpass import getpass
 
 from beekeepy.exceptions import CommunicationError
 
@@ -72,10 +70,7 @@ class CreateProfile(WorldBasedCommand):
         ).execute()
 
     def _get_validated_password(self) -> str:
-        if sys.stdin.isatty():
-            password = self._get_password_input_in_tty_mode()
-        else:
-            password = self._get_password_input_in_non_tty_mode()
+        password = self._get_password_input_in_tty_mode() if self.is_atty else self.read_not_tty_mode()
         password_result = SetPasswordValidator().validate(password)
         if not password_result.is_valid:
             raise CLIPrettyError(
@@ -84,16 +79,11 @@ class CreateProfile(WorldBasedCommand):
         return password
 
     def _get_password_input_in_tty_mode(self) -> str:
-        prompt = "Set a new password: "
-        password = getpass(prompt)
-        prompt_repeat = "Repeat password: "
-        password_repeat = getpass(prompt_repeat)
+        password = self.read_tty_mode("Set a new password: ")
+        password_repeat = self.read_tty_mode("Repeat password: ")
         if password != password_repeat:
             raise CLIInvalidPasswordRepeatError
         return password
-
-    def _get_password_input_in_non_tty_mode(self) -> str:
-        return sys.stdin.readline().rstrip()
 
 
 @dataclass(kw_only=True)
