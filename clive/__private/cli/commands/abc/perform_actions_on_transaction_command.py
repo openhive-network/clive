@@ -57,6 +57,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     async def validate(self) -> None:
         self._validate_save_file_path()
         self._validate_autosign_with_sign_with()
+        self._validate_if_broadcast_is_used_without_force_unsign()
+        self._validate_signed_transaction() if await (
+            self._is_transaction_signed()
+        ) else self._validate_if_broadcasting_signed_transaction()
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
@@ -147,6 +151,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if self.autosign and self.sign_with:
             raise CLITransactionAutoSignUsedTogetherWithSignWithError
 
+    def _validate_signed_transaction(self) -> None:
+        if self.already_signed_mode == "error" and self.sign_with:
+            raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
+
     def _get_transaction_created_message(self) -> str:
         return "created"
 
@@ -155,3 +163,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
+
+    async def _is_transaction_signed(self) -> bool:
+        return False
