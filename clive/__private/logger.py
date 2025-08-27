@@ -53,7 +53,7 @@ class Logger:
 
     def __getattr__(self, item: str) -> Callable[..., None]:
         def _hooked(*args: Any, **kwargs: Any) -> None:
-            try_one_of = f"Try one of: {self.safe_settings_delayed.AVAILABLE_LOG_LEVELS}"
+            try_one_of = f"Try one of: {self._get_safe_settings_lazy().AVAILABLE_LOG_LEVELS}"
 
             if self.__enabled_loguru:
                 patched = loguru_logger.opt(depth=1)
@@ -69,12 +69,6 @@ class Logger:
 
         return _hooked
 
-    @property
-    def safe_settings_delayed(self) -> SafeSettings:
-        from clive.__private.settings import safe_settings  # noqa: PLC0415
-
-        return safe_settings
-
     def setup(
         self, *, enable_loguru: bool = True, enable_textual: bool = True, enable_stream_handlers: bool = False
     ) -> None:
@@ -83,6 +77,12 @@ class Logger:
 
         if enable_loguru:
             self._configure_loguru(enable_stream_handlers=enable_stream_handlers)
+
+    @staticmethod
+    def _get_safe_settings_lazy() -> SafeSettings:
+        from clive.__private.settings import safe_settings  # noqa: PLC0415
+
+        return safe_settings
 
     def _configure_loguru(self, *, enable_stream_handlers: bool = False) -> None:
         log_paths = self._create_log_files()
@@ -103,9 +103,9 @@ class Logger:
 
     def _create_log_files(self) -> GroupLogFilePaths:
         log_paths: GroupLogFilePaths = {}
-        log_levels = self.safe_settings_delayed.log.levels
+        log_levels = self._get_safe_settings_lazy().log.levels
         for log_level in log_levels:
-            available_log_levels = self.safe_settings_delayed.AVAILABLE_LOG_LEVELS
+            available_log_levels = self._get_safe_settings_lazy().AVAILABLE_LOG_LEVELS
             if log_level not in available_log_levels:
                 raise RuntimeError(f"Invalid log level: {log_level}, expected one of {available_log_levels}.")
 
@@ -119,13 +119,13 @@ class Logger:
                 """We just need to create an empty file to which we will log later"""
             return empty_file_path
 
-        log_group_directory: Path = self.safe_settings_delayed.log.path / group_name
+        log_group_directory: Path = self._get_safe_settings_lazy().log.path / group_name
         log_group_directory.mkdir(parents=True, exist_ok=True)
 
         latest_log_file_name = "latest.log"
         latest_log_path = create_empty_file(latest_log_file_name)
 
-        should_keep_history = self.safe_settings_delayed.log.should_keep_history
+        should_keep_history = self._get_safe_settings_lazy().log.should_keep_history
         if not should_keep_history:
             return (latest_log_path,)
 
@@ -151,10 +151,10 @@ class Logger:
                 )
 
     def _get_1st_party_log_level(self) -> str:
-        return self.safe_settings_delayed.log.level_1st_party
+        return self._get_safe_settings_lazy().log.level_1st_party
 
     def _get_3rd_party_log_level(self) -> str:
-        return self.safe_settings_delayed.log.level_3rd_party
+        return self._get_safe_settings_lazy().log.level_3rd_party
 
     def _make_filter(self, *, level: str) -> Callable[..., bool]:
         level_mapping: dict[str, int] = {
