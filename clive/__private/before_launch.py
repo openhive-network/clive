@@ -7,6 +7,7 @@ from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
 from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
 from clive.__private.settings import get_settings, safe_settings
+from clive.__private.storage.storage_history import StorageHistory
 from clive.dev import is_in_dev_mode
 
 
@@ -36,6 +37,10 @@ def _log_in_dev_mode() -> None:
         logger.debug(f"settings:\n{pretty_repr(get_settings().as_dict())}")
 
 
+def _initialize_storage_history() -> None:
+    StorageHistory.initialize()
+
+
 def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_handlers: bool = False) -> None:
     _disable_schemas_extra_fields_check()
 
@@ -51,3 +56,4 @@ def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_h
     _create_select_file_root_directory()
     _initialize_user_settings()
     _log_in_dev_mode()
+    _initialize_storage_history()

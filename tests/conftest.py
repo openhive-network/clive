@@ -15,6 +15,7 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 from clive.__private.before_launch import (
     _create_clive_data_directory,
     _disable_schemas_extra_fields_check,
+    _initialize_storage_history,
     _initialize_user_settings,
 )
 from clive.__private.core import iwax
@@ -109,6 +110,7 @@ def prepare_before_launch(
     _prepare_settings()
     _disable_schemas_extra_fields_check()
     logger_configuration_factory()
+    _initialize_storage_history()
 
 
 @pytest.fixture
