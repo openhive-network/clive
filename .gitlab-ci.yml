@@ -234,19 +234,19 @@ testing_clive:
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(
-      --ignore tests/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py
+      --ignore tests/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py --ignore tests/unit/test_command_execution_times.py
       -v
       )
     - !reference [.run-pytest, script]
 
-testing_clive_imports_times:
+testing_clive_times:
   extends: .testing
   variables:
     PYTEST_NUMBER_OF_PROCESSES: 1
     PYTEST_TIMEOUT_MINUTES: 3
   script:
-    - echo -e "${TXT_BLUE}Launching clive tests for imports time...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/unit/test_imports_times.py -v)
+    - echo -e "${TXT_BLUE}Launching clive tests for imports time and execution time...${TXT_CLEAR}"
+    - export PYTEST_ARGS=(tests/unit/test_imports_times.py tests/unit/test_command_execution_times.py -v)
     - !reference [.run-pytest, script]
 
 testing_tui:
@@ -272,7 +272,7 @@ testing_password_private_key_logging:
   needs:
     - job: testing_clive
       artifacts: true
-    - job: testing_clive_imports_times
+    - job: testing_clive_times
       artifacts: true
     - job: testing_tui
       artifacts: true
