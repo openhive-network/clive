@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clive_local_tools.cli.imports import get_autocompletion_time, get_cli_help_imports_time
+from clive_local_tools.cli.timing import get_autocompletion_time, get_cli_help_imports_time
 
 
 def test_autocompletion_time() -> None:

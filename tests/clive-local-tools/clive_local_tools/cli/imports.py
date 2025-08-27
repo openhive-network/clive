@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import subprocess
 from pathlib import Path
 
@@ -25,18 +24,3 @@ def _get_imports_tree(file_path: Path, *args: str, env: dict[str, str] | None = 
 
 def get_cli_help_imports_tree(env: dict[str, str] | None = None) -> str:
     return _get_imports_tree(Path(path_to_clive_main), "--help", env=env)
-
-
-def get_cli_help_imports_time(env: dict[str, str] | None = None) -> float:
-    env_ = os.environ.copy()
-    env_["TIMEFORMAT"] = "%R"
-    if env is not None:
-        env_.update(env)
-    output = _get_imports_tree(Path(path_to_clive_main), "--help", env=env_, with_time=True)
-    import_time = float(output.strip().splitlines()[-1].replace(",", "."))
-    logger.info(f"Cumulative import time: {import_time:.6f}s")
-    return import_time
-
-
-def get_autocompletion_time() -> float:
-    return get_cli_help_imports_time(env={"_CLIVE_COMPLETE": "1"})
