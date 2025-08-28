@@ -94,6 +94,10 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
         extensions: list[Any] = []  # noqa: RUF012
         signatures: list[Signature] = []  # noqa: RUF012
 
+        @classmethod
+        def excluded_fields_for_schema_json(cls) -> set[str]:
+            return {"operations"}
+
     class TransactionStorageModel(PreconfiguredBaseModel):
         transaction_core: ProfileStorageModel.TransactionCoreStorageModel
         transaction_file_path: Path | None = None

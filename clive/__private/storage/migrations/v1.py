@@ -16,6 +16,10 @@ class ProfileStorageModel(v0.ProfileStorageModel):
         transaction_core: Transaction
         transaction_file_path: Path | None = None
 
+        @classmethod
+        def excluded_fields_for_schema_json(cls) -> set[str]:
+            return {"transaction_core"}
+
     @classmethod
     def upgrade(cls, old: v0.ProfileStorageModel) -> Self:  # type: ignore[override]  # should always take previous model
         old_transaction = old.transaction
