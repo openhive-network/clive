@@ -77,6 +77,7 @@ if TYPE_CHECKING:
 
     from beekeepy import AsyncUnlockedWallet, AsyncWallet
 
+    from clive.__private.cli.cli_world import CLIWorld
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
     from clive.__private.core.commands.abc.command import Command
@@ -87,7 +88,7 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import AlreadySignedMode, MigrationStatus, NotifyLevel
-    from clive.__private.core.world import CLIWorld, World
+    from clive.__private.core.world import World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
         Account,

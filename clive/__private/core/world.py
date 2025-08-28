@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, cast, override
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper_manager import BeekeeperManager
-from clive.__private.core.commands.commands import CLICommands, Commands
-from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
+from clive.__private.core.commands.commands import Commands
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
@@ -279,20 +278,3 @@ class World:
             self._wax_interface.endpoint_url = self.profile.node_address
         else:
             await self._setup_wax_interface()
-
-
-class CLIWorld(World):
-    @property
-    def commands(self) -> CLICommands:
-        return cast("CLICommands", super().commands)
-
-    @override
-    async def _setup(self) -> None:
-        await super()._setup()
-        try:
-            await self.load_profile_based_on_beekepeer()
-        except NoProfileUnlockedError:
-            await self.switch_profile(None)
-
-    def _setup_commands(self) -> CLICommands:
-        return CLICommands(self)

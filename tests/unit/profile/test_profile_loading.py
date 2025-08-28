@@ -5,11 +5,12 @@ from typing import TYPE_CHECKING
 import pytest
 from beekeepy import AsyncBeekeeper
 
+from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.get_unlocked_user_wallet import GetUnlockedUserWallet
 from clive.__private.core.commands.save_profile import SaveProfile
 from clive.__private.core.profile import Profile
-from clive.__private.core.world import CLIWorld, World
+from clive.__private.core.world import World
 from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
