@@ -25,6 +25,22 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         return Path(self.from_file)
 
     @property
+    async def should_be_signed(self) -> bool:
+        if self.force_unsign:
+            # force_unsign removes signatures and no signing happens when given
+            return False
+
+        if await self._is_transaction_signed():
+            if self.use_autosign:
+                # autosign is be skipped when transaction is already signed
+                return False
+
+            # signing happens in different already_signed_mode than error when sign_with is given
+            return self.sign_with is not None and self.already_signed_mode != "error"
+
+        return await super().should_be_signed
+
+    @property
     async def __loaded_transaction(self) -> Transaction:
         if self._loaded_transaction is None:
             self._loaded_transaction = await self.__load_transaction()
