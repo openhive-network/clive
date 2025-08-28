@@ -46,7 +46,6 @@ if TYPE_CHECKING:
 ACCOUNT_DATA: Final[AccountData] = ALT_WORKING_ACCOUNT1_DATA
 PROFILE_NAME: Final[str] = ALT_WORKING_ACCOUNT1_NAME
 PROFILE_PASSWORD: Final[str] = ALT_WORKING_ACCOUNT1_PASSWORD
-VERSION: Final[int] = ProfileStorageModel.get_this_version()
 OPERATION: Final[TransferOperation] = TransferOperation(
     from_=ACCOUNT_DATA.account.name,
     to=ALT_WORKING_ACCOUNT2_DATA.account.name,
@@ -94,7 +93,8 @@ def create_model_from_scratch() -> ProfileStorageModel:
 def save_encrypted_profile(encrypted: str) -> None:
     profile_directory = PersistentStorageService.get_profile_directory(PROFILE_NAME)
     profile_directory.mkdir(parents=True)
-    filepath = profile_directory / PersistentStorageService.get_version_profile_filename(VERSION)
+    version = ProfileStorageModel.get_this_version()
+    filepath = profile_directory / PersistentStorageService.get_version_profile_filename(version)
     filepath.write_text(encrypted)
 
 
