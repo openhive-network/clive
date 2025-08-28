@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Iterable, Iterator
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.__private.core.str_utils import is_text_matching_pattern
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
@@ -70,6 +71,9 @@ class KeyManager:
 
     def get_all_aliases(self) -> list[str]:
         return [aliased_key.alias for aliased_key in self]
+
+    def get_by_alias_pattern(self, *patterns: str) -> list[PublicKeyAliased]:
+        return [aliased_key for aliased_key in self if is_text_matching_pattern(aliased_key.alias, *patterns)]
 
     def get_from_alias(self, alias: str) -> PublicKeyAliased:
         for key in self.__keys:
