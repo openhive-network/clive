@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import cast, override
 
-from clive.__private.core.commands.commands import CLICommands
+from clive.__private.cli.cli_commands import CLICommands
 from clive.__private.core.commands.get_unlocked_user_wallet import NoProfileUnlockedError
 from clive.__private.core.world import World
 
