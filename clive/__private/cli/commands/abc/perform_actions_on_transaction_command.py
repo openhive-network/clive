@@ -47,6 +47,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
 
+    @property
+    def use_autosign(self) -> bool:
+        return self.autosign or (self.autosign is None and not self.sign_with)
+
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
@@ -77,11 +81,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
-                sign_key=self.__get_key_to_sign(),
+                sign_key=None if self.use_autosign else self.__get_key_to_sign(),
                 already_signed_mode=self.already_signed_mode,
                 force_unsign=self.force_unsign,
                 save_file_path=self.save_file_path,
                 broadcast=self.broadcast,
+                autosign=self.use_autosign,
             )
         ).result_or_raise
 

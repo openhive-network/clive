@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.autosign import AutoSign
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
@@ -47,6 +48,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
             Format is determined by file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
         force_save_format: The format to force when saving. Matters only when save_file_path is specified.
         broadcast: Whether to broadcast the transaction.
+        autosign: Whether to automatically sign the transaction with the default key from the profile.
 
     Returns:
     The transaction object.
@@ -64,20 +66,30 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
     broadcast: bool = False
+    autosign: bool = False
 
     async def _execute(self) -> None:
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
-        if self.sign_key and not self.force_unsign:
-            assert self.unlocked_wallet is not None, "wallet is required when sign_key is provided"
+        if not self.force_unsign:
+            assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"
 
-            transaction = await Sign(
-                unlocked_wallet=self.unlocked_wallet,
-                transaction=transaction,
-                key=self.sign_key,
-                chain_id=self.chain_id or await self.node.chain_id,
-                already_signed_mode=self.already_signed_mode,
-            ).execute_with_result()
+            if self.autosign:
+                transaction = await AutoSign(
+                    unlocked_wallet=self.unlocked_wallet,
+                    transaction=transaction,
+                    profile=self.app_state.world.profile,
+                    chain_id=self.chain_id or await self.node.chain_id,
+                    already_signed_mode=self.already_signed_mode,
+                ).execute_with_result()
+            elif self.sign_key:
+                transaction = await Sign(
+                    unlocked_wallet=self.unlocked_wallet,
+                    transaction=transaction,
+                    key=self.sign_key,
+                    chain_id=self.chain_id or await self.node.chain_id,
+                    already_signed_mode=self.already_signed_mode,
+                ).execute_with_result()
 
         if self.force_unsign:
             transaction = await UnSign(transaction=transaction).execute_with_result()

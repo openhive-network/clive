@@ -303,13 +303,14 @@ class Commands[WorldT: World]:
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
         broadcast: bool = False,
+        autosign: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             PerformActionsOnTransaction(
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key else None,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
@@ -317,6 +318,7 @@ class Commands[WorldT: World]:
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
                 broadcast=broadcast,
+                autosign=autosign,
             )
         )
 
