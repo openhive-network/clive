@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable, Iterable, Iterator
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.__private.core.str_utils import is_match
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
@@ -83,6 +84,9 @@ class KeyManager:
             if key.value == value:
                 return key
         raise KeyNotFoundError
+
+    def get_key_values_by_alias_pattern(self, *patterns: str) -> list[PublicKeyAliased]:
+        return [aliased_key for aliased_key in self if is_match(aliased_key.alias, *patterns)]
 
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
