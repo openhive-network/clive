@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from loguru._logger import Core
+    from textual import Logger as TextualLogger
 
     from clive.__private.settings import SafeSettings
 
@@ -61,8 +62,7 @@ class Logger:
                 assert callable(loguru_attr), f"Loguru {item} is not callable. {try_one_of}"
                 loguru_attr(*args, **kwargs)
             if self.__enabled_textual:
-                from textual import log as textual_logger  # noqa: PLC0415
-
+                textual_logger = self._get_textual_logger_lazy()
                 textual_log_attr = getattr(textual_logger, item, None)
                 assert callable(textual_log_attr), f"Textual {item} is not callable. {try_one_of}"
                 textual_log_attr(*args, **kwargs)
@@ -83,6 +83,12 @@ class Logger:
         from clive.__private.settings import safe_settings  # noqa: PLC0415
 
         return safe_settings
+
+    @staticmethod
+    def _get_textual_logger_lazy() -> TextualLogger:
+        from textual import log as textual_logger  # noqa: PLC0415
+
+        return textual_logger
 
     def _configure_loguru(self, *, enable_stream_handlers: bool = False) -> None:
         log_paths = self._create_log_files()
