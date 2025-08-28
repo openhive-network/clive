@@ -337,3 +337,37 @@ class CLITransactionAutoSignUsedTogetherWithSignWithError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionSignWithKeyNoKeysAvailableError(CLIPrettyError):
+    """
+    Raises when there are no keys assigned to the account and no key is selected for signing.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "No keys are available in the profile. "
+        "You need to add a key to the profile by using `clive configure key add` command."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionSignWithKeyNotSelectedError(CLIPrettyError):
+    """
+    Raises when there are multiple key assigned to the account and no key is selected for signing.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "There are multiple keys assigned to the profile. You must specify a key to sign the transaction by using the"
+        " --sign-with option."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

@@ -17,12 +17,15 @@ from clive.__private.cli.exceptions import (
     CLITransactionAutoSignUsedTogetherWithSignWithError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
+    CLITransactionSignWithKeyNoKeysAvailableError,
+    CLITransactionSignWithKeyNotSelectedError,
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
+from clive.__private.core.keys import MultipleKeysFoundError, NoUniqueKeyFoundError
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
 from clive.__private.validators.path_validator import PathValidator
@@ -68,6 +71,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         await super().validate()
 
     async def validate_inside_context_manager(self) -> None:
+        await self._validate_keys_avability()
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
@@ -120,7 +124,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and not self.sign_with:
+        if self.broadcast and (not self.sign_with and self.autosign is False):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
@@ -159,6 +163,20 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _validate_signed_transaction(self) -> None:
         if self.already_signed_mode == "error" and self.sign_with:
             raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
+
+    async def _validate_keys_avability(self) -> None:
+        if await self._is_transaction_signed() and self.use_autosign:
+            # Number of keys has no importance, because we won't sign anything anyway
+            # There will only be a warning that the transaction is already signed in AutoSign command
+            return
+
+        try:
+            _ = self.profile.keys.single_key
+        except NoUniqueKeyFoundError:
+            raise CLITransactionSignWithKeyNoKeysAvailableError from None
+        except MultipleKeysFoundError:
+            if not self.sign_with:
+                raise CLITransactionSignWithKeyNotSelectedError from None
 
     def _get_transaction_created_message(self) -> str:
         return "created"
