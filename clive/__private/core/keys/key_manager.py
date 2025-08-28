@@ -72,6 +72,19 @@ class KeyManager:
     def get_all_aliases(self) -> list[str]:
         return [aliased_key.alias for aliased_key in self]
 
+    def get_all_from_public_key(self, value: str | PublicKey) -> list[PublicKeyAliased]:
+        """
+        Get all aliased public keys that match the given public key.
+
+        Args:
+            value: The public key value or public key instance to search for.
+
+        Returns:
+            Aliased public keys that match the given public key.
+        """
+        value = value if isinstance(value, str) else value.value
+        return [key for key in self if key.value == value]
+
     def get_by_alias_pattern(self, *patterns: str) -> list[PublicKeyAliased]:
         return [aliased_key for aliased_key in self if is_text_matching_pattern(aliased_key.alias, *patterns)]
 
