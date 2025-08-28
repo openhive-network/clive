@@ -22,6 +22,7 @@ from clive.__private.models.schemas import (
     field,
 )
 from clive.__private.storage.migrations.base import AlarmStorageModelBase, ProfileStorageBase
+from schemas._exclude_json_schema_toolset import TreeExclusion, merge_excluded_fields_for_schema_dictionaries
 
 
 class ProfileStorageModel(ProfileStorageBase, kw_only=True):
@@ -34,6 +35,17 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     chain_id: str | None = None
     node_address: str
     should_enable_known_accounts: bool = True
+
+    @classmethod
+    def _excluded_fields_for_schema_json(cls) -> TreeExclusion:
+        return merge_excluded_fields_for_schema_dictionaries(
+            super()._excluded_fields_for_schema_json(),
+            {
+                "transaction": {
+                    "transaction_core": {"operations": None},
+                }
+            },
+        )
 
     class DateTimeAlarmIdentifierStorageModel(PreconfiguredBaseModel):
         value: HiveDateTime
