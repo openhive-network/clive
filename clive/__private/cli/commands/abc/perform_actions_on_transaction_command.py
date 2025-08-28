@@ -12,6 +12,8 @@ from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLIC
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
+    CLIMultipleKeysAutoSignError,
+    CLINoKeysAvailableError,
     CLIPrettyError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
@@ -24,7 +26,7 @@ from clive.__private.core.commands.perform_actions_on_transaction import AutoSig
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.core.keys.key_manager import MultipleKeysFoundError
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
 from clive.__private.validators.path_validator import PathValidator
 
@@ -83,6 +85,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def use_autosign(self) -> bool:
         return self.is_autosign_explicitly_requested or (self.autosign is None and not self.is_sign_with_given)
 
+    @property
+    async def should_be_signed(self) -> bool:
+        if self.force_unsign:
+            # force_unsign removes signatures and no signing happens when given
+            return False
+        return self.use_autosign or self.is_sign_with_given
+
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
@@ -106,6 +115,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
         await self._validate_operations_to_exchange()
+        await self._validate_keys_availability()
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -137,12 +147,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if not self.is_sign_with_given or self.use_autosign:
             return None
 
-        try:
-            return self.profile.keys.get_from_alias(self.sign_with_ensure)
-        except KeyNotFoundError:
-            raise CLIPrettyError(
-                f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT
-            ) from None
+        return self.profile.keys.get_from_alias(self.sign_with_ensure)
 
     def _validate_save_file_path(self) -> None:
         if self.save_file:
@@ -155,7 +160,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and not self.is_sign_with_given:
+        if self.broadcast and (not self.is_sign_with_given and not self.use_autosign):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
@@ -180,6 +185,22 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             result = exchange_operation_validator.validate(exchange.name)
             if not result.is_valid:
                 raise CLITransactionToExchangeError(humanize_validation_result(result))
+
+    async def _validate_keys_availability(self) -> None:
+        if not await self.should_be_signed:
+            return
+
+        if len(self.profile.keys) == 0:
+            raise CLINoKeysAvailableError
+
+        if self.is_sign_with_given and self.profile.keys.is_alias_available(self.sign_with_ensure):
+            raise CLIPrettyError(f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT)
+
+        if self.use_autosign:
+            try:
+                _ = self.profile.keys.unique_key
+            except MultipleKeysFoundError:
+                raise CLIMultipleKeysAutoSignError from None
 
     def _get_transaction_created_message(self) -> str:
         return "created"

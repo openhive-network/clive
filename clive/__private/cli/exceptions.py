@@ -397,6 +397,43 @@ class CLIPrivateKeyInvalidFormatError(CLIPrettyError):
         super().__init__(self.MESSAGE, errno.EINVAL)
 
 
+class CLINoKeysAvailableError(CLIPrettyError):
+    """
+    Raises when there are no keys assigned to the account and no key is selected for signing.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "No keys are available in the profile.\n"
+        "If you want to sign the transaction, add a key to the profile by using `clive configure key add` command.\n"
+        "If you want to show the unsigned transaction, use option '--no-autosign' and '--no-broadcast' together."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIMultipleKeysAutoSignError(CLIPrettyError):
+    """
+    Raises when there are multiple key assigned to the account and no key is selected for signing.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "There are multiple keys assigned to the profile.\n"
+        "If you want to sign the transaction, you must specify a key to sign the transaction by "
+        "using the '--sign-with' option.\n"
+        "If you want to show the unsigned transaction, use option '--no-autosign' and '--no-broadcast' together."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
+
+
 class CLIWrongAlreadySignedModeAutoSignError(CLIPrettyError):
     """
     Raises when trying to use autosign together with already_signed_mode that is not 'error'.
