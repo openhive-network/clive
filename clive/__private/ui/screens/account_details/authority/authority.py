@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from textual.widget import Widget
 
     from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.keys import PublicKey
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
@@ -187,55 +188,68 @@ class AuthorityHeader(Horizontal):
 
 
 class AuthorityItem(CliveCheckerboardTableRow):
-    def __init__(self, entry: dict[str, int]) -> None:
-        assert len(entry) == 1, "Entry of AuthorityItem should have one key and corresponding value."
-        self._key_or_account = next(iter(entry.keys()))
-        self._weight = entry[self._key_or_account]
-        self._is_account_entry = not self._key_or_account.startswith("STM")
+    """
+    Class for items in the  authority table.
+
+    Args:
+        entry: Object representing the authority entry.
+    """
+
+    def __init__(self, entry: CliveAuthorityEntryWrapper) -> None:
+        self._entry = entry
+        self._weight = entry.weight
+        self._is_account_entry = entry.is_account_entry
         super().__init__(*self._create_cells())
 
+    @property
+    def alias(self) -> str | None:
+        alias: str | None = None
+        if not self._is_account_entry and self.entry in self.profile.keys:
+            alias = self.profile.keys.get_first_from_public_key(self.entry).alias
+        return alias
+
+    @property
+    def entry(self) -> str:
+        return self._entry.key_or_account
+
+
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._key_or_account in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._key_or_account).alias if is_known_key else None
-        key_or_account_text = (
-            f"{alias} ({self._key_or_account})" if alias and alias != self._key_or_account else self._key_or_account
-        )
+        key_or_account_text = self._generate_key_or_account_text()
+
+        action_widget: Widget | None = None
 
         if self._is_account_entry:
-            action_widget: Widget = Static()
-        elif alias is not None:
-            action_widget = RemovePrivateKeyButton(key_alias=alias)
+            # we can't add corresponding key to the account, so we just display static widget without text
+            action_widget = Static()
         else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._key_or_account))
+            alias = self.alias
+            action_widget = (
+                RemovePrivateKeyButton(alias) if alias else ImportPrivateKeyButton(public_key=self._entry.public_key)
+            )
 
-        return [
-            CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account"),
-            CliveCheckerBoardTableCell(str(self._weight), classes="weight"),
-            CliveCheckerBoardTableCell(action_widget, classes="action"),
+        cells = [
+            (CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account" if self._weight else "memo-key"))
         ]
+        if self._weight:
+            cells.append(CliveCheckerBoardTableCell(str(self._weight), classes="weight"))
+        cells.append(CliveCheckerBoardTableCell(action_widget, classes="action"))
+        return cells
 
+    def _generate_key_or_account_text(self) -> str:
+        """
+        Generate the text for the key or account cell.
 
-class MemoItem(CliveCheckerboardTableRow):
-    def __init__(self, memo_key: str) -> None:
-        self._memo_key = memo_key
-        super().__init__(*self._create_cells())
+        Returns:
+            The text to be displayed in the key or account cell.
+        """
+        key_or_account_text = self._entry.key_or_account
 
-    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        is_known_key = self._memo_key in self.profile.keys
-        alias = self.profile.keys.get_first_from_public_key(self._memo_key).alias if is_known_key else None
-        memo_key_text = f"{alias} ({self._memo_key})" if alias and alias != self._memo_key else self._memo_key
+        if not self._is_account_entry and self._entry.key_or_account in self.profile.keys:
+            alias = self.alias
+            if alias != self._entry.key_or_account:
+                key_or_account_text = f"{alias} ({self._entry.key_or_account})"
 
-        if alias is not None:
-            action_widget: Widget = RemovePrivateKeyButton(key_alias=alias)
-        else:
-            action_widget = ImportPrivateKeyButton(PublicKey(value=self._memo_key))
-        return [
-            CliveCheckerBoardTableCell(memo_key_text, classes="memo-key"),
-            CliveCheckerBoardTableCell(
-                action_widget,
-                classes="action",
-            ),
-        ]
+        return key_or_account_text
 
 
 class AuthorityTable(CliveCheckerboardTable):
@@ -258,14 +272,9 @@ class AuthorityTable(CliveCheckerboardTable):
             is_memo_authority = single_authority.is_memo_authority
         super().__init__(header=AuthorityHeader(memo_header=is_memo_authority))
 
-    def create_static_rows(self) -> Sequence[AuthorityItem] | Sequence[MemoItem]:
+    def create_static_rows(self) -> Sequence[AuthorityItem]:
         if not self._single_authority:  # no entries in this type of authority
             return []
-
-        if self._is_authority_memo:
-            return [MemoItem(self._single_authority)]
-
-        assert isinstance(self._single_authority, WaxAuthority), "In this place authority has to be WaxAuthority type."
 
         if self._filter_pattern:
             key_entries = {
@@ -281,12 +290,7 @@ class AuthorityTable(CliveCheckerboardTable):
         else:
             key_entries = self._single_authority.key_auths
             account_entries = self._single_authority.account_auths
-        key_rows = [AuthorityItem({key_entry: key_entries[key_entry]}) for key_entry in key_entries]
-        account_rows = [
-            AuthorityItem({account_entry: account_entries[account_entry]}) for account_entry in account_entries
-        ]
-
-        return key_rows + account_rows
+        return [AuthorityItem(wrapper_object) for wrapper_object in self._single_authority.get_entries()]
 
 
 class Authority(TabPane, CliveWidget):
