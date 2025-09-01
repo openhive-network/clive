@@ -8,7 +8,6 @@ from typing import Any, ClassVar
 
 import typer
 from click import ClickException
-from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
 from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
@@ -114,6 +113,8 @@ class CliveTyper(typer.Typer):
 
             sys.exit(exit_code)
         except ClickException as click_exception:
+            from typer import rich_utils  # noqa: PLC0415
+
             # See: `typer/core.py` -> `_main` -> `except click.ClickException as e:`
             # If ClickException was raised in the registered error handler, we need to format it like Typer does.
             rich_utils.rich_format_error(click_exception)
