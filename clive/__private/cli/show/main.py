@@ -78,9 +78,7 @@ async def show_node() -> None:
     await ShowNode().run()
 
 
-_transaction_id_argument = typer.Argument(
-    None, help=f"Hash of the transaction ({REQUIRED_AS_ARG_OR_OPTION}).", show_default=False
-)
+_transaction_id_argument = typer.Argument(None, help=f"Hash of the transaction ({REQUIRED_AS_ARG_OR_OPTION}).")
 
 
 @show.command(name="transaction-status")
@@ -146,7 +144,7 @@ async def show_witnesses(
     ).run()
 
 
-_witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False)
+_witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS_ARG_OR_OPTION})")
 
 
 @show.command(name="witness")
@@ -203,7 +201,6 @@ async def show_proposals(  # noqa: PLR0913
 _proposal_id_argument = typer.Argument(
     None,
     help=f"Identifier of chosen proposal. ({REQUIRED_AS_ARG_OR_OPTION})",
-    show_default=False,
 )
 
 

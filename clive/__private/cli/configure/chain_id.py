@@ -12,7 +12,6 @@ chain_id = CliveTyper(name="chain-id", help="Manage the chain ID for the profile
 _chain_id_argument = typer.Argument(
     None,
     help=(f"The chain ID to use when signing the transaction. ({REQUIRED_AS_ARG_OR_OPTION})"),
-    show_default=False,
 )
 
 

@@ -46,7 +46,7 @@ process.add_typer(custom_json)
 @process.command(name="transfer")
 async def transfer(  # noqa: PLR0913
     from_account: str = options.from_account_name,
-    to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
+    to: str = typer.Option(..., help="The account to transfer to."),
     amount: str = options.liquid_amount,
     memo: str = options.memo_value,
     sign: str | None = options.sign,
@@ -76,7 +76,7 @@ AlreadySignedModeEnum = Enum(  # type: ignore[misc]
 
 @process.command(name="transaction")
 async def process_transaction(  # noqa: PLR0913
-    from_file: str = typer.Option(..., help="The file to load the transaction from.", show_default=False),
+    from_file: str = typer.Option(..., help="The file to load the transaction from."),
     force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
@@ -107,7 +107,6 @@ async def process_update_memo_key(
         ...,
         "--key",
         help="New memo public key that will be set for account.",
-        show_default=False,
     ),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001

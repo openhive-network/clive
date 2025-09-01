@@ -41,7 +41,6 @@ profile_name = typer.Option(
     ...,
     "--profile-name",
     help="The profile to use.",
-    show_default=False,
 )
 
 account_name = modified_param(working_account_template, param_decls=("--account-name",))
@@ -62,7 +61,6 @@ to_account_name_required = typer.Option(
     ...,
     "--to",
     help='The account to use as "to" argument.',
-    show_default=False,
 )
 
 liquid_amount = typer.Option(
@@ -70,7 +68,6 @@ liquid_amount = typer.Option(
     "--amount",
     parser=liquid_asset,
     help="The liquid asset (HIVE/HBD) amount. (e.g. 2.500 HIVE)",
-    show_default=False,
 )
 
 liquid_amount_optional = modified_param(liquid_amount, default=None)
@@ -80,7 +77,6 @@ voting_amount = typer.Option(
     "--amount",
     parser=voting_asset,
     help="The voting asset (HP/VESTS) amount. (e.g. 2.500 HP)",
-    show_default=False,
 )
 
 percent = typer.Option(
@@ -116,14 +112,13 @@ force_value = typer.Option(
         "Some operations are not handled by exchanges.\n"
         "Use --force to explicitly confirm and proceed with the operation despite this limitation."
     ),
-    show_default=False,
 )
 
 # OPERATION COMMON OPTIONS >>
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
 
-sign = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with.", show_default=False))
+sign = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
 broadcast = _operation_common_option(
     typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
 )
@@ -131,7 +126,6 @@ save_file = _operation_common_option(
     typer.Option(
         None,
         help="The file to save the transaction to (format is determined by file extension - .bin or .json).",
-        show_default=False,
     )
 )
 

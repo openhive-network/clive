@@ -12,7 +12,6 @@ working_account = CliveTyper(name="working-account", help="Manage your working a
 _account_name_switch_argument = typer.Argument(
     None,
     help=f"The name of the account to switch to. ({REQUIRED_AS_ARG_OR_OPTION})",
-    show_default=False,
 )
 
 

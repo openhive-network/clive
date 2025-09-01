@@ -22,7 +22,6 @@ async def process_claim_new_account_token(
         parser=hive_asset,
         help="Current account creation fee, if present must be exactly the value returned by clive show chain."
         " If not specified resource credits will be used to obtain token.",
-        show_default=False,
     ),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001

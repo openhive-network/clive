@@ -50,7 +50,6 @@ async def process_withdrawal(  # noqa: PLR0913
     request_id: int | None = typer.Option(
         None,
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
-        show_default=False,
     ),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
@@ -77,7 +76,7 @@ async def process_withdrawal(  # noqa: PLR0913
 @savings.command(name="withdrawal-cancel")
 async def process_withdrawal_cancel(
     from_account: str = options.from_account_name,
-    request_id: int = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
+    request_id: int = typer.Option(..., help="Id of previously initiated withdrawal."),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

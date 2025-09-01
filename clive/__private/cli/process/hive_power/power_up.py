@@ -18,9 +18,7 @@ power_up = CliveTyper(name="power-up", help="Perform power-up by sending transfe
 async def process_power_up(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
-    amount: str = typer.Option(
-        ..., parser=hive_asset, help="The amount to transfer to vesting. (e.g. 2.500 HIVE)", show_default=False
-    ),
+    amount: str = typer.Option(..., parser=hive_asset, help="The amount to transfer to vesting. (e.g. 2.500 HIVE)"),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

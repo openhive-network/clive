@@ -10,7 +10,7 @@ from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 known_account = CliveTyper(name="known-account", help="Manage your known account(s).")
 
 _account_name_add_argument = typer.Argument(
-    None, help=f"The name of the known account to add. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False
+    None, help=f"The name of the known account to add. ({REQUIRED_AS_ARG_OR_OPTION})"
 )
 
 

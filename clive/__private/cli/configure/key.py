@@ -12,14 +12,12 @@ key = CliveTyper(name="key", help="Manage your key(s).")
 _key_argument = typer.Argument(
     None,
     help=f"The key to import. This can be a path to a file or a key itself ({REQUIRED_AS_ARG_OR_OPTION}).",
-    show_default=False,
 )
 
 
 _alias_argument = typer.Argument(
     None,
     help="The alias to use for the key. (If not given, calculated public key will be used).",
-    show_default=False,
 )
 
 
@@ -39,9 +37,7 @@ async def add_key(
     ).run()
 
 
-_alias_remove_argument = typer.Argument(
-    None, help=f"The key alias to remove ({REQUIRED_AS_ARG_OR_OPTION}).", show_default=False
-)
+_alias_remove_argument = typer.Argument(None, help=f"The key alias to remove ({REQUIRED_AS_ARG_OR_OPTION}).")
 
 
 @key.command(name="remove")

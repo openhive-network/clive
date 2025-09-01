@@ -30,8 +30,8 @@ def _make_argument_related_option(source: str | OptionInfo) -> Any:  # noqa: ANN
         A modified option or a new option based on the source.
     """
     if isinstance(source, str):
-        return typer.Option(None, source, show_default=False, help=LOOK_INTO_ARGUMENT_OPTION_HELP)
-    return modified_param(source, default=None, show_default=False, help=LOOK_INTO_ARGUMENT_OPTION_HELP)
+        return typer.Option(None, source, help=LOOK_INTO_ARGUMENT_OPTION_HELP)
+    return modified_param(source, default=None, help=LOOK_INTO_ARGUMENT_OPTION_HELP)
 
 
 account_name = _make_argument_related_option(options.account_name)

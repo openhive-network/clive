@@ -20,21 +20,18 @@ _authority_account_name = typer.Option(
     ...,
     "--account",
     help="The account to  add/remove/modify (account must exist).",
-    show_default=False,
 )
 _authority_key = typer.Option(
     ...,
     "--key",
     help="The public key to add/remove/modify",
-    show_default=False,
 )
 _authority_weight = typer.Option(
     ...,
     "--weight",
     help="The new weight of account/key authority",
-    show_default=False,
 )
-_optional_broadcast = modified_param(options.broadcast, show_default=False, default=None)
+_optional_broadcast = modified_param(options.broadcast, default=None)
 
 
 @pass_context
@@ -226,7 +223,6 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
         threshold: int | None = typer.Option(
             None,
             help="Set Threshold",
-            show_default=False,
         ),
         sign: str | None = options.sign,
         broadcast: bool = options.broadcast,  # noqa: FBT001

@@ -16,7 +16,6 @@ _delegatee_account_name = typer.Option(
     ...,
     "--delegatee",
     help='The account to use as "delegatee" argument.',
-    show_default=False,
 )
 
 

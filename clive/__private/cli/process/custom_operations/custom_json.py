@@ -25,13 +25,11 @@ async def process_custom_json(  # noqa: PLR0913
         ...,
         "--id",
         help="Custom identifier that allows filtering of custom json operations.",
-        show_default=False,
     ),
     json_: str = typer.Option(
         ...,
         "--json",
         help="Custom json content. This can be a path to a file or a string itself.",
-        show_default=False,
     ),
     sign: str | None = options.sign,
     broadcast: bool = options.broadcast,  # noqa: FBT001

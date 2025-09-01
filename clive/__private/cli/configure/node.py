@@ -11,7 +11,6 @@ node = CliveTyper(name="node", help="Manage the node for the profile.")
 _node_address_argument = typer.Argument(
     None,
     help="The address of the node to use.",
-    show_default=False,
 )
 
 

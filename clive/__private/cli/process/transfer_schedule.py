@@ -24,7 +24,6 @@ _frequency_value = typer.Option(
     "--frequency",
     parser=scheduled_transfer_frequency_parser,
     help=f"How often the transfer should be executed ({SHORTHAND_TIMEDELTA_EXAMPLE})",
-    show_default=False,
 )
 
 _frequency_value_optional = modified_param(_frequency_value, default=None)
@@ -37,10 +36,9 @@ _pair_id_value = typer.Option(
         "Unique pair id used to differentiate between multiple transfers to the same account \n"
         "(will be mandatory since HF28)."
     ),
-    show_default=True,
 )
 
-_pair_id_value_none = modified_param(_pair_id_value, default=None, show_default=False)
+_pair_id_value_none = modified_param(_pair_id_value, default=None)
 
 
 _repeat_value = typer.Option(
@@ -48,7 +46,6 @@ _repeat_value = typer.Option(
     "--repeat",
     min=SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
     help="How many times the recurrent transfer should be executed. (must be greater than 1)",
-    show_default=False,
 )
 
 _repeat_value_optional = modified_param(_repeat_value, default=None)

@@ -42,7 +42,6 @@ def main(
 _profile_name_unlock_argument = typer.Argument(
     None,
     help="The name of the profile to unlock (can be selected interactively if not provided).",
-    show_default=False,
 )
 
 
@@ -51,7 +50,7 @@ async def unlock(
     profile_name: str | None = _profile_name_unlock_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
     unlock_time_mins: int | None = typer.Option(
-        None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout.", show_default=False
+        None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout."
     ),
     include_create_new_profile: bool = typer.Option(  # noqa: FBT001
         default=False,
