@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -13,6 +14,7 @@ from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
     from typing import Literal
 
     import test_tools as tt
@@ -202,3 +204,12 @@ def assert_unlocked_profile(context: CLITester | Result, profile_name: str) -> N
 def assert_locked_profile(cli_tester: CLITester) -> None:
     with pytest.raises(CLITestCommandError, match=CLINoProfileUnlockedError.MESSAGE):
         cli_tester.show_profile()
+
+
+def assert_signatures_in_transaction_file(file_path: Path, *, should_be_signature: bool = True) -> None:
+    with file_path.open("r", encoding="utf-8") as f:
+        transaction = json.load(f)
+        if should_be_signature:
+            assert "signatures" in transaction, "Transaction should be signed."
+        else:
+            assert "signatures" not in transaction, "Transaction should not be signed."
