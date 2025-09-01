@@ -12,6 +12,7 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.core.clive_authority import (
     CliveAuthority,
     CliveAuthorityEntryWrapper,
+    CliveAuthorityRoleWrapper,
     CliveAuthorityWrapper,
 )
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
@@ -190,7 +191,7 @@ class AccountCollapsible(CliveCollapsible):
 
         for role in self._operation.roles:
             title = role.level if not role.is_role_memo else "memo key"
-            widgets_to_mount.append(AuthorityRole(role.value, title=title, collapsed=collapsed))
+            widgets_to_mount.append(AuthorityRole(role, title=title, collapsed=collapsed))
 
         return widgets_to_mount
 
@@ -198,22 +199,18 @@ class AccountCollapsible(CliveCollapsible):
 class AuthorityRole(CliveCollapsible):
     def __init__(
         self,
-        account_authorities: CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None,
+        authority_role: CliveAuthorityRoleWrapper,
         *,
         title: str,
         collapsed: bool = False,
     ) -> None:
-        self._account_authorities = account_authorities
+        self._authority_role = authority_role
         super().__init__(
-            AuthorityTable(account_authorities),
+            AuthorityTable(authority_role),
             title=title,
             collapsed=collapsed,
             right_hand_side_text=self._get_right_hand_side_text(),
         )
-
-    @property
-    def authority(self) -> CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None:
-        return self._account_authorities
 
     def update(self, *filter_patterns: str) -> None:
         """
@@ -233,11 +230,11 @@ class AuthorityRole(CliveCollapsible):
             update_display_in_authority_table()
             return
 
-        if not self._account_authorities:
+        if not self._authority_role:
             self.display = False
             return
 
-        matched = self._account_authorities.is_match(*filter_patterns)
+        matched = self._authority_role.is_match(*filter_patterns)
         self.display = matched
 
         if matched:
@@ -246,9 +243,10 @@ class AuthorityRole(CliveCollapsible):
     def _get_right_hand_side_text(self) -> str | None:
         right_hand_side_text = None
 
-        if self._account_authorities and isinstance(self._account_authorities, CliveAuthorityWrapper):
-            weight_threshold = self._account_authorities.weight_threshold
-            collected_weights = self._account_authorities.collect_weights(self.profile.keys)
+        authority_value = self._authority_role.value
+        if isinstance(authority_value, CliveAuthorityWrapper):
+            weight_threshold = authority_value.weight_threshold
+            collected_weights = authority_value.collect_weights(self.profile.keys)
             right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {weight_threshold}"
 
         return right_hand_side_text
@@ -351,23 +349,21 @@ class AuthorityTable(CliveCheckerboardTable):
         NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
 
     Args:
-        single_authority: Object representing single authority.
+        authority_role: Object representing authority role.
     """
 
     NO_CONTENT_TEXT = "No entries in authority"
 
-    def __init__(self, single_authority: CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None) -> None:
-        self._single_authority = single_authority
-        is_memo_authority = False
-        if single_authority:
-            is_memo_authority = single_authority.is_memo_authority
-        super().__init__(header=AuthorityHeader(memo_header=is_memo_authority))
+    def __init__(self, authority_role: CliveAuthorityRoleWrapper) -> None:
+        self._authority_role = authority_role
+        super().__init__(header=AuthorityHeader(memo_header=authority_role.is_role_memo))
 
     def create_static_rows(self) -> Sequence[AuthorityItem]:
-        if not self._single_authority:  # no entries in this type of authority
+        role_entries = self._authority_role.get_entries()
+        if not role_entries:  # no entries in this type of authority
             return []
 
-        return [AuthorityItem(wrapper_object) for wrapper_object in self._single_authority.get_entries()]
+        return [AuthorityItem(wrapper_object) for wrapper_object in role_entries]
 
     def update_cell_colors(self) -> None:
         """Update background colors according to the actual displayed rows."""
