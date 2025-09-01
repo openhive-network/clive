@@ -7,12 +7,14 @@ from click.testing import Result
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
+from clive.__private.models import Transaction
 
 from .cli_tester import CLITester
 from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
     from typing import Literal
 
     import test_tools as tt
@@ -202,3 +204,26 @@ def assert_unlocked_profile(context: CLITester | Result, profile_name: str) -> N
 def assert_locked_profile(cli_tester: CLITester) -> None:
     with pytest.raises(CLITestCommandError, match=CLINoProfileUnlockedError.MESSAGE):
         cli_tester.show_profile()
+
+
+def assert_transaction_file_is_signed(file_path: Path, *, signatures_count: int | None = None) -> None:
+    transaction = Transaction.parse_file(file_path)
+    assert signatures_count is None or signatures_count >= 1, (
+        "signatures_count must be None or greater than or equal to 1"
+    )
+
+    if signatures_count is None:
+        assert transaction.signatures, "Transaction should be signed."
+        return
+
+    count = len(transaction.signatures)
+    assert count == signatures_count, f"Transaction should be signed {signatures_count} times."
+
+
+def assert_transaction_file_is_unsigned(file_path: Path) -> None:
+    transaction = Transaction.parse_file(file_path)
+    assert len(transaction.signatures) == 0, "Transaction should be unsigned."
+
+
+def assert_contains_dry_run_message(message: str) -> None:
+    assert_output_contains("Performing dry run, because --broadcast is not set.", message)
