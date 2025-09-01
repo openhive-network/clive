@@ -58,7 +58,7 @@ class WitnessDetailsLabel(Label):
         """Message send when DetailsLabel is clicked."""
 
     def __init__(self, witness_name: str, *, classes: str | None = None) -> None:
-        super().__init__(renderable="details", classes=classes)
+        super().__init__("details", classes=classes)
         self.tooltip = f"Click to see more details about {witness_name} witness."
 
     @on(Click)
@@ -71,7 +71,7 @@ class WitnessNameLabel(Label, CliveWidget):
 
     def __init__(self, witness_name: str, classes: str) -> None:
         super().__init__(
-            renderable=witness_name,
+            witness_name,
             id=f"{convert_witness_name_to_widget_id(witness_name)}-witness-info",
             classes=classes,
         )
