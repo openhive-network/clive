@@ -137,7 +137,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
         hints = get_type_hints(cls.upgrade)
 
         this_version = cls.get_this_version()
-        prev_version = cls.get_this_version() - 1
+        prev_version = this_version - 1
         if this_version > 0:
             assert "old" in hints, f"Upgrade function of {cls} should accept 'old' parameter, but it doesn't."
 
