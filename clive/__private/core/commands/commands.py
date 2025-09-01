@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
+from clive.__private.core.commands.autosign import AutoSign
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.collect_account_authorities import CollectAccountAuthorities
@@ -83,6 +84,7 @@ if TYPE_CHECKING:
         AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
+    from clive.__private.core.keys.key_manager import KeyManager
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import AlreadySignedMode, MigrationStatus, NotifyLevel
     from clive.__private.core.world import World
@@ -297,6 +299,7 @@ class Commands[WorldT: World]:
         *,
         content: TransactionConvertibleType,
         sign_key: PublicKey | None = None,
+        autosign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
         chain_id: str | None = None,
@@ -309,7 +312,7 @@ class Commands[WorldT: World]:
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key else None,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key or autosign else None,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
@@ -317,6 +320,7 @@ class Commands[WorldT: World]:
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
                 broadcast=broadcast,
+                autosign=autosign,
             )
         )
 
@@ -361,6 +365,24 @@ class Commands[WorldT: World]:
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 transaction=transaction,
                 key=sign_with,
+                chain_id=chain_id or await self._world.node.chain_id,
+                already_signed_mode=already_signed_mode,
+            )
+        )
+
+    async def autosign(
+        self,
+        *,
+        transaction: Transaction,
+        keys: KeyManager | None,
+        chain_id: str | None = None,
+        already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
+    ) -> CommandWithResultWrapper[Transaction]:
+        return await self.__surround_with_exception_handlers(
+            AutoSign(
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                transaction=transaction,
+                keys=keys if keys is not None else self._world.profile.keys,
                 chain_id=chain_id or await self._world.node.chain_id,
                 already_signed_mode=already_signed_mode,
             )

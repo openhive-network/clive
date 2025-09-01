@@ -395,3 +395,21 @@ class CLIPrivateKeyInvalidFormatError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIWrongAlreadySignedModeAutoSignError(CLIPrettyError):
+    """
+    Raises when trying to use autosign together with already_signed_mode that is not 'error'.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "Using '--already-signed-mode override' or '--already-signed-mode multisign' disables autosign.\n"
+        "If you want to sign the transaction, you must specify a key to sign the transaction by using the "
+        "'--sign-with' option."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
