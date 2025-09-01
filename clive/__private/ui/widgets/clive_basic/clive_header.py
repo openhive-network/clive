@@ -295,18 +295,14 @@ class CliveRawHeader(Header, CliveWidget):
         # after pop_screen happens, more details https://github.com/Textualize/textual/pull/4817
         def set_title() -> None:
             with contextlib.suppress(NoMatches, NoScreen):
-                self.query_exactly_one(HeaderTitle).text = self.screen_title
-
-        def set_sub_title() -> None:
-            with contextlib.suppress(NoMatches, NoScreen):
-                self.query_exactly_one(HeaderTitle).sub_text = self.screen_sub_title
+                self.query_exactly_one(HeaderTitle).update(self.format_title())
 
         event.prevent_default()
 
         self.watch(self.app, "title", set_title)
-        self.watch(self.app, "sub_title", set_sub_title)
+        self.watch(self.app, "sub_title", set_title)
         self.watch(self.screen, "title", set_title)
-        self.watch(self.screen, "sub_title", set_sub_title)
+        self.watch(self.screen, "sub_title", set_title)
         # <<< end workaround
 
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
