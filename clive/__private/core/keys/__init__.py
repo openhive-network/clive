@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .key_manager import KeyAliasAlreadyInUseError, KeyManager
+from .key_manager import KeyAliasAlreadyInUseError, KeyManager, MultipleKeysFoundError, NoUniqueKeyFoundError
 from .keys import (
     Key,
     KeyAliased,
@@ -16,6 +16,8 @@ __all__ = [
     "KeyAliasAlreadyInUseError",
     "KeyAliased",
     "KeyManager",
+    "MultipleKeysFoundError",
+    "NoUniqueKeyFoundError",
     "PrivateKey",
     "PrivateKeyAliased",
     "PrivateKeyInvalidFormatError",
