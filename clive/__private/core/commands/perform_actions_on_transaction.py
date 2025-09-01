@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.autosign import (
+    AutoSign,
+    TransactionAlreadySignedAutoSignError,
+)
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
@@ -27,6 +32,20 @@ if TYPE_CHECKING:
     from clive.__private.core.types import AlreadySignedMode
 
 
+class AutoSignSkippedWarning(Warning):
+    """
+    Raised when autosign is skipped because the transaction is already signed.
+
+    Attributes:
+        MESSAGE: The warning message.
+    """
+
+    MESSAGE: Final[str] = "Your transaction is already signed. Autosign will be skipped."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
 @dataclass(kw_only=True)
 class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     """
@@ -39,6 +58,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         node: The node used for transaction broadcasting.
         unlocked_wallet: Required if the transaction needs to be signed.
         sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+        autosign: Whether to automatically sign the transaction.
         already_signed_mode: How to handle already signed transactions.
         force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
         chain_id: The chain ID to use when signing the transaction. If not provided, the one from the profile and
@@ -58,7 +78,11 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     unlocked_wallet: AsyncUnlockedWallet | None = None
     """Required if transaction needs to be signed - when sign_key is provided."""
     sign_key: PublicKey | None = None
+    autosign: bool = False
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
+    """
+    How to handle already signed transaction. "error" will just trigger a warning during autosign (will be skipped).
+    """
     force_unsign: bool = False
     chain_id: str | None = None
     save_file_path: Path | None = None
@@ -68,16 +92,30 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     async def _execute(self) -> None:
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
-        if self.sign_key and not self.force_unsign:
-            assert self.unlocked_wallet is not None, "wallet is required when sign_key is provided"
+        if not self.force_unsign and (self.sign_key or self.autosign):
+            assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"
+            assert not (self.sign_key and self.autosign), "only one of sign_key and autosign can be provided"
 
-            transaction = await Sign(
-                unlocked_wallet=self.unlocked_wallet,
-                transaction=transaction,
-                key=self.sign_key,
-                chain_id=self.chain_id or await self.node.chain_id,
-                already_signed_mode=self.already_signed_mode,
-            ).execute_with_result()
+            if self.autosign:
+                try:
+                    transaction = await AutoSign(
+                        unlocked_wallet=self.unlocked_wallet,
+                        transaction=transaction,
+                        keys=self.app_state.world.profile.keys,
+                        chain_id=self.chain_id or await self.node.chain_id,
+                        already_signed_mode=self.already_signed_mode,
+                    ).execute_with_result()
+                except TransactionAlreadySignedAutoSignError:
+                    # We don't want to raise an error if the transaction is already signed, just skip the signing step.
+                    warnings.warn(AutoSignSkippedWarning(), stacklevel=1)
+            elif self.sign_key:
+                transaction = await Sign(
+                    unlocked_wallet=self.unlocked_wallet,
+                    transaction=transaction,
+                    key=self.sign_key,
+                    chain_id=self.chain_id or await self.node.chain_id,
+                    already_signed_mode=self.already_signed_mode,
+                ).execute_with_result()
 
         if self.force_unsign:
             transaction = await UnSign(transaction=transaction).execute_with_result()

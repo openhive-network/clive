@@ -4,7 +4,7 @@ import errno
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import rich
 
@@ -19,6 +19,8 @@ from clive.__private.cli.exceptions import (
     CLITransactionUnknownAccountError,
 )
 from clive.__private.cli.print_cli import print_cli
+from clive.__private.cli.warnings import typer_echo_warnings
+from clive.__private.core.commands.perform_actions_on_transaction import AutoSignSkippedWarning
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
@@ -33,6 +35,24 @@ if TYPE_CHECKING:
     from clive.__private.models import Transaction
 
 
+class AutoSignSkippedWarningCLI(Warning):
+    """
+    Raised when autosign is skipped because the transaction is already signed.
+
+    Attributes:
+        MESSAGE: The warning message.
+    """
+
+    MESSAGE: Final[str] = (
+        "Your transaction is already signed. Autosign will be skipped. If you want to multisign your "
+        "transaction, use '--sign-with' together with '--already-signed-mode multisign'. "
+        "For more information, check 'clive process transaction -h'"
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
 @dataclass(kw_only=True)
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
     sign_with: str | None = None
@@ -45,6 +65,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     @property
     def is_sign_with_given(self) -> bool:
         return self.sign_with is not None
+
+    @property
+    def sign_with_ensure(self) -> str:
+        assert self.sign_with is not None, "Expected sign_with to be set"
+        return self.sign_with
 
     @property
     def is_autosign_explicitly_requested(self) -> bool:
@@ -87,16 +112,18 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if not self.broadcast:
             print_cli("[Performing dry run, because --broadcast is not set.]\n")
 
-        transaction = (
-            await self.world.commands.perform_actions_on_transaction(
-                content=await self._get_transaction_content(),
-                sign_key=self.__get_key_to_sign(),
-                already_signed_mode=self.already_signed_mode,
-                force_unsign=self.force_unsign,
-                save_file_path=self.save_file_path,
-                broadcast=self.broadcast,
-            )
-        ).result_or_raise
+        with typer_echo_warnings(AutoSignSkippedWarning, AutoSignSkippedWarningCLI()):
+            transaction = (
+                await self.world.commands.perform_actions_on_transaction(
+                    content=await self._get_transaction_content(),
+                    sign_key=self.__get_key_to_sign(),
+                    already_signed_mode=self.already_signed_mode,
+                    force_unsign=self.force_unsign,
+                    save_file_path=self.save_file_path,
+                    broadcast=self.broadcast,
+                    autosign=self.use_autosign,
+                )
+            ).result_or_raise
 
         self.__print_transaction(transaction.with_hash())
         print_cli(
@@ -107,11 +134,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             print_cli(f"Transaction was saved to {self.save_file}")
 
     def __get_key_to_sign(self) -> PublicKey | None:
-        if self.sign_with is None:
+        if not self.is_sign_with_given or self.use_autosign:
             return None
 
         try:
-            return self.profile.keys.get_from_alias(self.sign_with)
+            return self.profile.keys.get_from_alias(self.sign_with_ensure)
         except KeyNotFoundError:
             raise CLIPrettyError(
                 f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT
