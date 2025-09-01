@@ -165,7 +165,7 @@ class AccountCollapsible(CliveCollapsible):
 
         def update_display_of_authority_types() -> None:
             """Update the display of AuthorityType widgets within this AccountCollapsible."""
-            for authority_type in self.query(AuthorityType):
+            for authority_type in self.query(AuthorityRole):
                 authority_type.update(*filter_patterns)
 
         if self.operation.account not in selected_accounts_in_filter:
@@ -185,17 +185,17 @@ class AccountCollapsible(CliveCollapsible):
         self.display = False
         return False
 
-    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityType]:
+    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityRole]:
         widgets_to_mount = []
 
         for role in self._operation.roles:
             title = role.level if not role.is_role_memo else "memo key"
-            widgets_to_mount.append(AuthorityType(role.value, title=title, collapsed=collapsed))
+            widgets_to_mount.append(AuthorityRole(role.value, title=title, collapsed=collapsed))
 
         return widgets_to_mount
 
 
-class AuthorityType(CliveCollapsible):
+class AuthorityRole(CliveCollapsible):
     def __init__(
         self,
         account_authorities: CliveAuthorityEntryWrapper | CliveAuthorityWrapper | None,
