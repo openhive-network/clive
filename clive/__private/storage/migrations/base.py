@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from functools import cache
 from hashlib import sha256
 from typing import Any, ClassVar, Self, get_type_hints
 
@@ -80,6 +81,7 @@ class ProfileStorageBase(PreconfiguredBaseModel):
         raise NotImplementedError
 
     @classmethod
+    @cache
     def get_this_revision(cls) -> Revision:
         assert cls is not ProfileStorageBase, "This method should be called on subclass."
         return sha256(cls._get_revision_seed().encode()).hexdigest()[:8]
