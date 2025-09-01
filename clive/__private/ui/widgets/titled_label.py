@@ -68,7 +68,7 @@ class TitledLabel(CliveWidget):
 
     @property
     def value(self) -> VisualType:
-        return self._value_label.renderable
+        return self._value_label.content
 
     def compose(self) -> ComposeResult:
         yield Label(f"{self.title}:", id="title")
