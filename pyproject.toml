@@ -23,8 +23,8 @@ dependencies = [
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
     'schemas (==0.0.1.dev432+e360cac)',
-    'beekeepy (==0.0.1.dev415+5ac97b3)',
-    'wax (==0.3.10.dev851+0a88430f)',
+    'beekeepy (==0.0.1.dev420+56e6688)',
+    'wax (==0.3.10.dev874+b6568942)',
 ]
 
 [project.urls]
