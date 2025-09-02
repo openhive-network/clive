@@ -26,6 +26,23 @@ _weight = typer.Option(
 )
 
 
+account_creation_example = CliveTyper(
+    name="account-creation-example", help="Show account creation example", chain=True, no_args_is_help=False
+)
+
+
+@account_creation_example.callback(invoke_without_command=True)
+async def show_example() -> None:
+    """Add public key to authority."""
+    typer.echo("from example, initial proposal:")
+    typer.echo(
+        "clive process account-creation --fee --new-account-name alice2 specify-owner-authority add-account --account-name alice specify-active-authority add-account --account-name alice specify-posting-authority add-account --account-name alice specify-memo-key --key STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4 --sign alice_key --no-broadcast"  # noqa: E501
+    )
+    typer.echo(
+        "clive process account-creation --fee  --new-account-name alice3 specify-keys --owner STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4 --active STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4 --posting STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4 --memo STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4 --sign alice_key --no-broadcast"  # noqa: E501
+    )
+
+
 account_creation = CliveTyper(name="account-creation", help="Account creation with token or fee.", chain=True)
 
 
@@ -166,7 +183,7 @@ async def specify_keys(  # noqa: PLR0913
     command.sign = sign
     command.broadcast = broadcast
     command.save_file = save_file
-    typer.echo(f"from specify_keys callback")
+    typer.echo("from specify_keys callback")
 
 
 specify_owner_authority = CliveTyper(

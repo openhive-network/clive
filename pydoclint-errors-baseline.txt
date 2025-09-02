@@ -4,6 +4,10 @@ clive/__private/cli/beekeeper.py
     DOC101: Function `create_session`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `create_session`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [echo_token_only: bool].
 --------------------
+clive/__private/cli/clive_typer.py
+    DOC101: Method `CliveTyper.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveTyper.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [no_args_is_help: bool].
+--------------------
 clive/__private/cli/commands/abc/contextual_cli_command.py
     DOC201: Method `ContextualCLICommand._create_context_manager_instance` does not have a return section in docstring
 --------------------

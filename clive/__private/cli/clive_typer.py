@@ -62,6 +62,7 @@ class CliveTyper(typer.Typer):
         name: str | None = Default(None),
         help: str | None = Default(None),  # noqa: A002
         chain: bool = Default(value=False),
+        no_args_is_help: bool = True,
     ) -> None:
         super().__init__(
             name=name,
@@ -69,7 +70,7 @@ class CliveTyper(typer.Typer):
             chain=chain,
             rich_markup_mode="rich",
             context_settings={"help_option_names": HELP_FLAGS},
-            no_args_is_help=True,
+            no_args_is_help=no_args_is_help,
         )
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
