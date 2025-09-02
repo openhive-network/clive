@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from .authority import Authority
+from .authority_details import AuthorityDetails
 
-__all__ = ["Authority"]
+__all__ = ["AuthorityDetails"]
