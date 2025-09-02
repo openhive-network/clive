@@ -55,6 +55,16 @@ class CliveAuthorityRoleBase[T: (CliveAuthorityRegular, CliveAuthorityEntryMemo)
     def is_memo(self) -> bool:
         return False
 
+    @property
+    def ensure_memo(self) -> CliveAuthorityEntryMemo:
+        assert self.is_memo, "Invalid type of entry."
+        return cast("CliveAuthorityEntryMemo", self)
+
+    @property
+    def ensure_regular(self) -> CliveAuthorityRegular:
+        assert not self.is_memo, "Invalid type of entry."
+        return cast("CliveAuthorityRegular", self)
+
     def is_matching_pattern(self, *patterns: str) -> bool:
         return any(entry.is_matching_pattern(*patterns) for entry in self.get_entries())
 

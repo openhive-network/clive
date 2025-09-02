@@ -18,7 +18,6 @@ from clive.__private.core.clive_authority import (
     CliveAuthorityRoleRegular,
 )
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
-from clive.__private.core.keys import PublicKey
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -99,12 +98,12 @@ class AuthorityRoles(SectionScrollable):
     def body(self) -> SectionBody:
         return self.query_exactly_one(SectionBody)
 
-    async def build(self, authority_operations: list[CliveAuthority]) -> None:
-        await self.body.mount_all([AccountCollapsible(operation) for operation in authority_operations])
+    async def build(self, authorities: list[CliveAuthority]) -> None:
+        await self.body.mount_all([AccountCollapsible(authority) for authority in authorities])
 
-    async def rebuild(self, authority_operations: list[CliveAuthority]) -> None:
+    async def rebuild(self, authorities: list[CliveAuthority]) -> None:
         await self.body.query("*").remove()
-        await self.build(authority_operations)
+        await self.build(authorities)
 
     async def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
         """
@@ -139,20 +138,16 @@ class AuthorityRoles(SectionScrollable):
 class AccountCollapsible(CliveCollapsible):
     def __init__(
         self,
-        operation: CliveAuthority,
+        authority: CliveAuthority,
         *,
         collapsed: bool = False,
     ) -> None:
-        self._operation = operation
+        self._authority = authority
         super().__init__(
             *self._create_widgets_to_mount(collapsed=collapsed),
-            title=operation.account,
+            title=authority.account,
             collapsed=collapsed,
         )
-
-    @property
-    def operation(self) -> CliveAuthority:
-        return self._operation
 
     def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> bool:
         """
@@ -171,7 +166,7 @@ class AccountCollapsible(CliveCollapsible):
             for authority_type in self.query(AuthorityRole):
                 authority_type.update(*filter_patterns)
 
-        if self.operation.account not in selected_accounts_in_filter:
+        if self._authority.account not in selected_accounts_in_filter:
             self.display = False
             return False
 
@@ -180,7 +175,7 @@ class AccountCollapsible(CliveCollapsible):
             update_display_of_authority_types()
             return True
 
-        if self.operation.is_matching_pattern(*filter_patterns):
+        if self._authority.is_matching_pattern(*filter_patterns):
             self.display = True
             update_display_of_authority_types()
             return True
@@ -188,7 +183,7 @@ class AccountCollapsible(CliveCollapsible):
         return False
 
     def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityRole]:
-        return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._operation.roles]
+        return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._authority.roles]
 
 
 class AuthorityRole(CliveCollapsible):
@@ -237,11 +232,12 @@ class AuthorityRole(CliveCollapsible):
 
     def _get_right_hand_side_text(self) -> str | None:
         authority_role = self._authority_role
-        if isinstance(authority_role, CliveAuthorityRoleMemo):
+        if authority_role.is_memo:
             return None
 
-        weight_threshold = authority_role.weight_threshold
-        imported_weights = authority_role.sum_weights_of_already_imported_keys(self.profile.keys)
+        authority_role_regular = authority_role.ensure_regular
+        weight_threshold = authority_role_regular.weight_threshold
+        imported_weights = authority_role_regular.sum_weights_of_already_imported_keys(self.profile.keys)
         return f"imported weights: {imported_weights}, threshold: {weight_threshold}"
 
 
@@ -381,7 +377,7 @@ class AuthorityTable(CliveCheckerboardTable):
 
     def update(self, *filter_patterns: str) -> None:
         for row in self.query(CliveCheckerboardTableRow):
-            assert isinstance(row, (AuthorityItem)), "Invalid type of row."
+            assert isinstance(row, AuthorityItem), "Invalid type of row."
             row.update(*filter_patterns)
             self.update_cell_colors()
 
@@ -394,12 +390,12 @@ class Authority(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._authority_operations: list[CliveAuthority] = []
+        self._authorities: list[CliveAuthority] = []
 
     async def on_mount(self) -> None:
         await self._collect_authorities()
         self._update_input_suggestions()
-        await self.authority_roles.build(self._authority_operations)
+        await self.authority_roles.build(self._authorities)
         await self._update_display_inside_authority_roles()
 
     def compose(self) -> ComposeResult:
@@ -457,7 +453,7 @@ class Authority(TabPane, CliveWidget):
             authority_operation = await AccountAuthorityUpdateOperation.create_for(
                 self.world.wax_interface, account.name
             )
-            self._authority_operations.append(CliveAuthority(authority_operation))
+            self._authorities.append(CliveAuthority(authority_operation))
 
     async def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:
         with self.app.batch_update():
@@ -468,9 +464,9 @@ class Authority(TabPane, CliveWidget):
         filter_authority = self.filter_authority
 
         options_selected_in_filter = filter_authority.selected_options
-        for operation in self._authority_operations:
-            if operation.account in options_selected_in_filter:
-                suggestions_to_add = [entry.value for entry in operation.get_entries()]
+        for authority in self._authorities:
+            if authority.account in options_selected_in_filter:
+                suggestions_to_add = [entry.value for entry in authority.get_entries()]
                 input_suggestions.update(suggestions_to_add)
 
         input_suggestions.update(self.profile.keys.get_all_aliases())
@@ -479,7 +475,7 @@ class Authority(TabPane, CliveWidget):
 
     async def _rebuild_authority_roles(self) -> None:
         with self.app.batch_update():
-            await self.authority_roles.rebuild(self._authority_operations)
+            await self.authority_roles.rebuild(self._authorities)
 
             # somehow after mounting widgets inside authority roles body scroll is moved down, so focus first mounted
             # account collapsible title (and move the scroll by it) then refocus previously focused widget.
