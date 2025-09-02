@@ -10,6 +10,20 @@ if TYPE_CHECKING:
     from clive.__private.core.types import NotifyLevel
 
 
+def print_info(message: str) -> None:
+    notify(message, level="info")
+
+
+def print_warning(message: str) -> None:
+    prefix = "[b]Warning:[/] "
+    notify(prefix + message, level="warning")
+
+
+def print_error(message: str) -> None:
+    prefix = "[b]Error:[/] "
+    notify(prefix + message, level="error")
+
+
 def notify(message: str, *, level: NotifyLevel = "info") -> None:
     if level == "warning":
         message = colorize_warning(message)
