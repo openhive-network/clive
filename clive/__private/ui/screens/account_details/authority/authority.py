@@ -12,12 +12,10 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.core.clive_authority import (
     CliveAuthority,
     CliveAuthorityEntryAccountRegular,
-    CliveAuthorityEntryKeyBase,
     CliveAuthorityEntryKeyRegular,
     CliveAuthorityEntryMemo,
     CliveAuthorityRoleMemo,
     CliveAuthorityRoleRegular,
-    CliveAuthorityWeightedEntryBase,
 )
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
@@ -182,23 +180,15 @@ class AccountCollapsible(CliveCollapsible):
             update_display_of_authority_types()
             return True
 
-        for role in self.operation.roles:
-            if role.is_matching_pattern(*filter_patterns):
-                self.display = True
-                update_display_of_authority_types()
-                return True
+        if self.operation.is_matching_pattern(*filter_patterns):
+            self.display = True
+            update_display_of_authority_types()
+            return True
         self.display = False
         return False
 
     def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityRole]:
-        widgets_to_mount = []
-
-        for role in self._operation.roles:
-            is_role_memo = isinstance(role, CliveAuthorityRoleMemo)
-            title = "memo key" if is_role_memo else role.level
-            widgets_to_mount.append(AuthorityRole(role, title=title, collapsed=collapsed))
-
-        return widgets_to_mount
+        return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._operation.roles]
 
 
 class AuthorityRole(CliveCollapsible):
@@ -282,19 +272,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
         self, entry: CliveAuthorityEntryKeyRegular | CliveAuthorityEntryAccountRegular | CliveAuthorityEntryMemo
     ) -> None:
         self._entry = entry
-        self._is_account_entry = isinstance(entry, CliveAuthorityEntryAccountRegular)
-        self._is_weighted_entry = isinstance(entry, CliveAuthorityWeightedEntryBase)
         super().__init__(*self._create_cells())
-
-    @property
-    def ensure_key_based_entry(self) -> CliveAuthorityEntryKeyBase:
-        assert isinstance(self._entry, CliveAuthorityEntryKeyBase), "Invalid type of entry."
-        return self._entry
-
-    @property
-    def ensure_weighted_entry(self) -> CliveAuthorityWeightedEntryBase:
-        assert isinstance(self._entry, CliveAuthorityWeightedEntryBase), "Invalid type of entry."
-        return self._entry
 
     @property
     def entry_value(self) -> str:
@@ -303,7 +281,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
     @property
     def alias(self) -> str | None:
         alias: str | None = None
-        if not self._is_account_entry and self.entry_value in self.profile.keys:
+        if not self._entry.is_account and self.entry_value in self.profile.keys:
             alias = self.profile.keys.get_first_from_public_key(self.entry_value).alias
         return alias
 
@@ -320,29 +298,33 @@ class AuthorityItem(CliveCheckerboardTableRow):
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
 
-        action_widget: Widget | None
-
-        if self._is_account_entry:
-            # we can't add corresponding key to the account, so we just display static widget without text
-            action_widget = Static()
+        if self._entry.is_account:
+            action_widget: Widget = Static()
         else:
             alias = self.alias
             action_widget = (
                 RemovePrivateKeyButton(alias)
                 if alias
-                else ImportPrivateKeyButton(public_key=self.ensure_key_based_entry.public_key)
+                else ImportPrivateKeyButton(public_key=self._entry.ensure_key.public_key)
             )
 
         cells = [
-            (
-                CliveCheckerBoardTableCell(
-                    key_or_account_text, classes="key-or-account" if self._is_weighted_entry else "memo-key"
-                )
+            CliveCheckerBoardTableCell(
+                key_or_account_text,
+                classes="key-or-account" if self._entry.is_weighted else "memo-key",
             )
         ]
-        if self._is_weighted_entry:
-            cells.append(CliveCheckerBoardTableCell(str(self.ensure_weighted_entry.weight), classes="weight"))
+
+        if self._entry.is_weighted:
+            cells.append(
+                CliveCheckerBoardTableCell(
+                    str(self._entry.ensure_weighted.weight),
+                    classes="weight",
+                )
+            )
+
         cells.append(CliveCheckerBoardTableCell(action_widget, classes="action"))
+
         return cells
 
     def _generate_key_or_account_text(self) -> str:
@@ -353,7 +335,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
             The text to be displayed in the key or account cell.
         """
         entry_value = self.entry_value
-        if self._is_account_entry:
+        if self._entry.is_account:
             return entry_value
 
         alias = self.alias
@@ -377,8 +359,7 @@ class AuthorityTable(CliveCheckerboardTable):
 
     def __init__(self, authority_role: CliveAuthorityRoleRegular | CliveAuthorityRoleMemo) -> None:
         self._authority_role = authority_role
-        is_role_memo = isinstance(authority_role, CliveAuthorityRoleMemo)
-        super().__init__(header=AuthorityHeader(memo_header=is_role_memo))
+        super().__init__(header=AuthorityHeader(memo_header=authority_role.is_memo))
 
     def create_static_rows(self) -> Sequence[AuthorityItem]:
         return [AuthorityItem(entry) for entry in self._authority_role.get_entries()]

@@ -47,6 +47,14 @@ class CliveAuthorityRoleBase[T: (CliveAuthorityRegular, CliveAuthorityEntryMemo)
     def level(self) -> AuthorityLevel:
         return self._role.level
 
+    @property
+    def level_display(self) -> str:
+        return str(self.level)
+
+    @property
+    def is_memo(self) -> bool:
+        return False
+
     def is_matching_pattern(self, *patterns: str) -> bool:
         return any(entry.is_matching_pattern(*patterns) for entry in self.get_entries())
 
@@ -88,6 +96,14 @@ class CliveAuthorityRoleMemo(CliveAuthorityRoleBase[CliveAuthorityEntryMemo]):
     @property
     def level(self) -> AuthorityLevelMemo:
         return cast("AuthorityLevelMemo", super().level)
+
+    @property
+    def level_display(self) -> str:
+        return "memo key"
+
+    @property
+    def is_memo(self) -> bool:
+        return True
 
     def get_entries(self) -> list[CliveAuthorityEntryMemo]:
         return [self._value]
