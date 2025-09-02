@@ -11,9 +11,13 @@ from textual.widgets._collapsible import CollapsibleTitle
 
 from clive.__private.core.clive_authority import (
     CliveAuthority,
-    CliveAuthorityEntryWrapper,
-    CliveAuthorityRoleWrapper,
-    CliveAuthorityWrapper,
+    CliveAuthorityEntryAccountRegular,
+    CliveAuthorityEntryKeyBase,
+    CliveAuthorityEntryKeyRegular,
+    CliveAuthorityEntryMemo,
+    CliveAuthorityRoleMemo,
+    CliveAuthorityRoleRegular,
+    CliveAuthorityWeightedEntryBase,
 )
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.keys import PublicKey
@@ -179,7 +183,7 @@ class AccountCollapsible(CliveCollapsible):
             return True
 
         for role in self.operation.roles:
-            if role.is_match(*filter_patterns):
+            if role.is_matching_pattern(*filter_patterns):
                 self.display = True
                 update_display_of_authority_types()
                 return True
@@ -190,7 +194,8 @@ class AccountCollapsible(CliveCollapsible):
         widgets_to_mount = []
 
         for role in self._operation.roles:
-            title = role.level if not role.is_role_memo else "memo key"
+            is_role_memo = isinstance(role, CliveAuthorityRoleMemo)
+            title = "memo key" if is_role_memo else role.level
             widgets_to_mount.append(AuthorityRole(role, title=title, collapsed=collapsed))
 
         return widgets_to_mount
@@ -199,7 +204,7 @@ class AccountCollapsible(CliveCollapsible):
 class AuthorityRole(CliveCollapsible):
     def __init__(
         self,
-        authority_role: CliveAuthorityRoleWrapper,
+        authority_role: CliveAuthorityRoleRegular | CliveAuthorityRoleMemo,
         *,
         title: str,
         collapsed: bool = False,
@@ -234,22 +239,20 @@ class AuthorityRole(CliveCollapsible):
             self.display = False
             return
 
-        matched = self._authority_role.is_match(*filter_patterns)
+        matched = self._authority_role.is_matching_pattern(*filter_patterns)
         self.display = matched
 
         if matched:
             update_display_in_authority_table()
 
     def _get_right_hand_side_text(self) -> str | None:
-        right_hand_side_text = None
+        authority_role = self._authority_role
+        if isinstance(authority_role, CliveAuthorityRoleMemo):
+            return None
 
-        authority_value = self._authority_role.value
-        if isinstance(authority_value, CliveAuthorityWrapper):
-            weight_threshold = authority_value.weight_threshold
-            collected_weights = authority_value.collect_weights(self.profile.keys)
-            right_hand_side_text = f"imported weights: {sum(collected_weights)}, threshold: {weight_threshold}"
-
-        return right_hand_side_text
+        weight_threshold = authority_role.weight_threshold
+        imported_weights = authority_role.sum_weights_of_already_imported_keys(self.profile.keys)
+        return f"imported weights: {imported_weights}, threshold: {weight_threshold}"
 
 
 class AuthorityHeader(Horizontal):
@@ -275,22 +278,34 @@ class AuthorityItem(CliveCheckerboardTableRow):
         entry: Object representing the authority entry.
     """
 
-    def __init__(self, entry: CliveAuthorityEntryWrapper) -> None:
+    def __init__(
+        self, entry: CliveAuthorityEntryKeyRegular | CliveAuthorityEntryAccountRegular | CliveAuthorityEntryMemo
+    ) -> None:
         self._entry = entry
-        self._weight = entry.weight
-        self._is_account_entry = entry.is_account_entry
+        self._is_account_entry = isinstance(entry, CliveAuthorityEntryAccountRegular)
+        self._is_weighted_entry = isinstance(entry, CliveAuthorityWeightedEntryBase)
         super().__init__(*self._create_cells())
+
+    @property
+    def ensure_key_based_entry(self) -> CliveAuthorityEntryKeyBase:
+        assert isinstance(self._entry, CliveAuthorityEntryKeyBase), "Invalid type of entry."
+        return self._entry
+
+    @property
+    def ensure_weighted_entry(self) -> CliveAuthorityWeightedEntryBase:
+        assert isinstance(self._entry, CliveAuthorityWeightedEntryBase), "Invalid type of entry."
+        return self._entry
+
+    @property
+    def entry_value(self) -> str:
+        return self._entry.value
 
     @property
     def alias(self) -> str | None:
         alias: str | None = None
-        if not self._is_account_entry and self.entry in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self.entry).alias
+        if not self._is_account_entry and self.entry_value in self.profile.keys:
+            alias = self.profile.keys.get_first_from_public_key(self.entry_value).alias
         return alias
-
-    @property
-    def entry(self) -> str:
-        return self._entry.key_or_account
 
     def update(self, *filter_patterns: str) -> None:
         """
@@ -300,12 +315,12 @@ class AuthorityItem(CliveCheckerboardTableRow):
             *filter_patterns: Patterns to filter the entries in the authority.
         """
         filter_pattern_present = bool(filter_patterns)
-        self.display = self._entry.is_match(*filter_patterns) if filter_pattern_present else True
+        self.display = self._entry.is_matching_pattern(*filter_patterns) if filter_pattern_present else True
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
 
-        action_widget: Widget | None = None
+        action_widget: Widget | None
 
         if self._is_account_entry:
             # we can't add corresponding key to the account, so we just display static widget without text
@@ -313,14 +328,20 @@ class AuthorityItem(CliveCheckerboardTableRow):
         else:
             alias = self.alias
             action_widget = (
-                RemovePrivateKeyButton(alias) if alias else ImportPrivateKeyButton(public_key=self._entry.public_key)
+                RemovePrivateKeyButton(alias)
+                if alias
+                else ImportPrivateKeyButton(public_key=self.ensure_key_based_entry.public_key)
             )
 
         cells = [
-            (CliveCheckerBoardTableCell(key_or_account_text, classes="key-or-account" if self._weight else "memo-key"))
+            (
+                CliveCheckerBoardTableCell(
+                    key_or_account_text, classes="key-or-account" if self._is_weighted_entry else "memo-key"
+                )
+            )
         ]
-        if self._weight:
-            cells.append(CliveCheckerBoardTableCell(str(self._weight), classes="weight"))
+        if self._is_weighted_entry:
+            cells.append(CliveCheckerBoardTableCell(str(self.ensure_weighted_entry.weight), classes="weight"))
         cells.append(CliveCheckerBoardTableCell(action_widget, classes="action"))
         return cells
 
@@ -331,14 +352,14 @@ class AuthorityItem(CliveCheckerboardTableRow):
         Returns:
             The text to be displayed in the key or account cell.
         """
-        key_or_account_text = self._entry.key_or_account
+        entry_value = self.entry_value
+        if self._is_account_entry:
+            return entry_value
 
-        if not self._is_account_entry and self._entry.key_or_account in self.profile.keys:
-            alias = self.alias
-            if alias != self._entry.key_or_account:
-                key_or_account_text = f"{alias} ({self._entry.key_or_account})"
-
-        return key_or_account_text
+        alias = self.alias
+        if alias in (None, entry_value):
+            return entry_value
+        return f"{alias} ({entry_value})"
 
 
 class AuthorityTable(CliveCheckerboardTable):
@@ -354,16 +375,13 @@ class AuthorityTable(CliveCheckerboardTable):
 
     NO_CONTENT_TEXT = "No entries in authority"
 
-    def __init__(self, authority_role: CliveAuthorityRoleWrapper) -> None:
+    def __init__(self, authority_role: CliveAuthorityRoleRegular | CliveAuthorityRoleMemo) -> None:
         self._authority_role = authority_role
-        super().__init__(header=AuthorityHeader(memo_header=authority_role.is_role_memo))
+        is_role_memo = isinstance(authority_role, CliveAuthorityRoleMemo)
+        super().__init__(header=AuthorityHeader(memo_header=is_role_memo))
 
     def create_static_rows(self) -> Sequence[AuthorityItem]:
-        role_entries = self._authority_role.get_entries()
-        if not role_entries:  # no entries in this type of authority
-            return []
-
-        return [AuthorityItem(wrapper_object) for wrapper_object in role_entries]
+        return [AuthorityItem(entry) for entry in self._authority_role.get_entries()]
 
     def update_cell_colors(self) -> None:
         """Update background colors according to the actual displayed rows."""
@@ -471,7 +489,7 @@ class Authority(TabPane, CliveWidget):
         options_selected_in_filter = filter_authority.selected_options
         for operation in self._authority_operations:
             if operation.account in options_selected_in_filter:
-                suggestions_to_add = [wrapper_object.key_or_account for wrapper_object in operation.get_entries()]
+                suggestions_to_add = [entry.value for entry in operation.get_entries()]
                 input_suggestions.update(suggestions_to_add)
 
         input_suggestions.update(self.profile.keys.get_all_aliases())
