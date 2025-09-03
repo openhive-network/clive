@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from enum import Enum
+from typing import get_args
+
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
@@ -8,6 +11,7 @@ from clive.__private.cli.common.parameters.argument_related_options import (
     account_name as account_name_argument_related_option,
 )
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
+from clive.__private.core.authority.types import AuthorityLevel
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 generate = CliveTyper(name="generate", help="Commands for generating things (e.g. keys).")
@@ -23,13 +27,19 @@ _role_argument = typer.Argument(
     help=(f"Role for which key is derived. ({REQUIRED_AS_ARG_OR_OPTION})"),
 )
 
+# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
+AuthorityRoleEnum = Enum(  # type: ignore[misc]
+    "AuthorityRoleEnum",
+    {option: option for union_member in get_args(AuthorityLevel) for option in get_args(union_member)},
+)
+
 
 @generate.command(name="key-from-seed")
 async def generate_key_from_seed(  # noqa: PLR0913
     account_name: str | None = _account_name_argument,
     account_name_option: str | None = account_name_argument_related_option,
-    role: str | None = _role_argument,
-    role_option: str | None = _make_argument_related_option("--role"),
+    role: AuthorityRoleEnum | None = _role_argument,
+    role_option: AuthorityRoleEnum | None = _make_argument_related_option("--role"),
     only_private_key: bool = typer.Option(  # noqa: FBT001
         default=False, help="Whether to display only the private key instead of key pair."
     ),
@@ -47,7 +57,7 @@ async def generate_key_from_seed(  # noqa: PLR0913
 
     await GenerateKeyFromSeed(
         account_name=EnsureSingleValue("account-name").of(account_name, account_name_option),
-        role=EnsureSingleValue("role").of(role, role_option),
+        role=EnsureSingleValue[AuthorityRoleEnum]("role").of(role, role_option).value,
         only_private_key=only_private_key,
         only_public_key=only_public_key,
     ).run()

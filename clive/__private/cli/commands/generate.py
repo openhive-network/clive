@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrettyError
@@ -8,11 +9,14 @@ from clive.__private.cli.print_cli import print_cli
 from clive.__private.core import iwax
 from clive.__private.core.keys import PrivateKey, PrivateKeyInvalidFormatError
 
+if TYPE_CHECKING:
+    from clive.__private.core.authority.types import AuthorityLevel
+
 
 @dataclass(kw_only=True)
 class GenerateKeyFromSeed(ExternalCLICommand):
     account_name: str
-    role: str
+    role: AuthorityLevel
     only_private_key: bool
     only_public_key: bool
 
