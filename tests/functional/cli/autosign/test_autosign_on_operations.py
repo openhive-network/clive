@@ -142,4 +142,4 @@ async def test_saving_autosigned_operation_to_file(
 
     # ASSERT
     checkers.assert_no_exit_code_error(result)
-    checkers.assert_signatures_in_transaction_file(save_file, should_be_signature=autosign)
+    checkers.assert_signatures_in_transaction_file(save_file, signatures_count=autosign)

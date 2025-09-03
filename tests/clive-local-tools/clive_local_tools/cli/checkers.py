@@ -206,10 +206,11 @@ def assert_locked_profile(cli_tester: CLITester) -> None:
         cli_tester.show_profile()
 
 
-def assert_signatures_in_transaction_file(file_path: Path, *, should_be_signature: bool = True) -> None:
+def assert_signatures_in_transaction_file(file_path: Path, *, signatures_count: int = 1) -> None:
     with file_path.open("r", encoding="utf-8") as f:
         transaction = json.load(f)
-        if should_be_signature:
-            assert "signatures" in transaction, "Transaction should be signed."
+        if signatures_count > 0:
+            count = len(transaction.get("signatures", []))
+            assert count == signatures_count, f"Transaction should be signed {signatures_count} times."
         else:
             assert "signatures" not in transaction, "Transaction should not be signed."

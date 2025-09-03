@@ -136,7 +136,7 @@ async def test_no_autosign_while_force_unsign(cli_tester: CLITester, signed_tran
 
     # ASSERT
     assert_no_exit_code_error(result)
-    assert_signatures_in_transaction_file(signed_transaction, should_be_signature=False)
+    assert_signatures_in_transaction_file(signed_transaction, signatures_count=0)
 
 
 @pytest.mark.parametrize("already_signed_mode", ["override", "multisign"])
