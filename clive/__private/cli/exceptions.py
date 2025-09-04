@@ -450,3 +450,21 @@ class CLIWrongAlreadySignedModeAutoSignError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionAlreadySignedError(CLIPrettyError):
+    """
+    Raises when trying to sign a transaction that is already signed without proper already-signed-mode.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "You cannot sign a transaction that is already signed.\n"
+        "Use '--already-signed-mode override' to override the existing signature(s) or "
+        "'--already-signed-mode multisign' to add an additional signature."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)

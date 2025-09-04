@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
-from clive.__private.cli.exceptions import CLIPrettyError, CLIWrongAlreadySignedModeAutoSignError
+from clive.__private.cli.exceptions import (
+    CLIPrettyError,
+    CLITransactionAlreadySignedError,
+    CLIWrongAlreadySignedModeAutoSignError,
+)
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.validators.path_validator import PathValidator
@@ -74,7 +78,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
     def _validate_signed_transaction(self) -> None:
         if self.already_signed_mode == "error" and self.is_sign_with_given:
-            raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
+            raise CLITransactionAlreadySignedError
 
     def _validate_from_file_argument(self) -> None:
         result = PathValidator(mode="is_file").validate(str(self.from_file))
