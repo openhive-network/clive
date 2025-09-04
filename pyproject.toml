@@ -22,9 +22,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
-    'schemas (==0.0.1.dev426+0dea163)',
-    'beekeepy (==0.0.1.dev419+dff51e3)',
-    'wax (==0.3.10.dev860+c5e9bffa)',
+    'schemas (==0.0.1.dev429+933dde6)',
+    'beekeepy (==0.0.1.dev422+15ab8c7)',
+    'wax (==0.3.10.dev888+069f7f2f)',
 ]
 
 [project.urls]
