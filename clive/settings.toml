@@ -12,7 +12,7 @@ REMOTE_ADDRESS = "" # Address of the beekeeper, if not given, beekeeper will sta
 SESSION_TOKEN = "" # If there is some existing session on the beekeeper, can be reused. Makes sense only when REMOTE_ADDRESS is given.
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 15
 COMMUNICATION_ATTEMPTS_AMOUNT = 1
-COMMUNICATION_RETRY_TIMEOUT_SECS = 0.2
+COMMUNICATION_RETRIES_DELAY_SECS = 0.2
 REFRESH_TIMEOUT_SECS = 0.5
 INITIALIZATION_TIMEOUT = 5
 CLOSE_TIMEOUT = 5
@@ -26,7 +26,7 @@ REFRESH_RATE_SECS = 1.5 # how often information about accounts are fetched from 
 REFRESH_ALARMS_RATE_SECS = 30 # how often information about alarms are fetched from node
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 30
 COMMUNICATION_ATTEMPTS_AMOUNT = 5
-COMMUNICATION_RETRY_TIMEOUT_SECS = 0.2
+COMMUNICATION_RETRIES_DELAY_SECS = 0.2
 
 [dev]
 IS_DEV = true
