@@ -43,13 +43,6 @@ clive/__private/cli/commands/show/show_transfer_schedule.py
     DOC103: Method `ShowTransferSchedule.__create_table_upcoming`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_scheduled_transfers_data: AccountScheduledTransferData].
     DOC201: Method `ShowTransferSchedule.__create_table_upcoming` does not have a return section in docstring
 --------------------
-clive/__private/cli/commands/unlock.py
-    DOC101: Method `Unlock._get_selected_profile`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `Unlock._get_selected_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [options: ProfileSelectionOptions].
-    DOC201: Method `Unlock._get_selected_profile` does not have a return section in docstring
-    DOC501: Method `Unlock._get_selected_profile` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `Unlock._get_selected_profile` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIInvalidSelectionError'].
---------------------
 clive/__private/cli/common/parsers.py
     DOC101: Function `_parse_asset`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `_parse_asset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*allowed_assets: type[ParsedAssetT], raw: str].
@@ -96,6 +89,12 @@ clive/__private/cli/configure/tracked_account.py
 clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+--------------------
+clive/__private/cli/generate.py
+    DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `generate_key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: AuthorityRoleEnum | None, role_option: AuthorityRoleEnum | None].
+    DOC101: Function `generate_random_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `generate_random_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key_pairs: int, key_pairs_option: int | None].
 --------------------
 clive/__private/cli/main.py
     DOC101: Function `unlock`: Docstring contains fewer arguments than in function signature.

@@ -9,6 +9,7 @@ from clive.__private.cli.exceptions import (
     CLIInvalidPasswordError,
     CLIInvalidSelectionError,
     CLIProfileDoesNotExistsError,
+    CLIProfileSelectionRequiresInteractiveError,
 )
 from clive.__private.cli.print_cli import print_cli, print_error
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
@@ -110,7 +111,21 @@ class Unlock(WorldBasedCommand):
             print_cli(f"{i}. {name}")
 
     def _get_selected_profile(self, options: ProfileSelectionOptions) -> str | None:
-        """Get selected profile name from prompt or None if profile creation is selected."""
+        """
+        Get selected profile name from prompt or None if profile creation is selected.
+
+        Args:
+            options: Mapping of integer to profile name. Zero means no selection and is mapped to info message.
+
+        Raises:
+            CLIProfileSelectionRequiresInteractiveError: When is invoked in non interactive mode (i.e. input is piped).
+            CLIInvalidSelectionError: When selected profile number is invalid.
+
+        Returns:
+            Profile name as string or None if user didn't select profil to unlock.
+        """
+        if not self.is_interactive:
+            raise CLIProfileSelectionRequiresInteractiveError
         selection = self.read_interactive("Enter the number", hide_input=False)
         try:
             option_value = options[int(selection)]
