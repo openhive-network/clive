@@ -336,3 +336,17 @@ class CLIMutuallyExclusiveOptionsError(CLIPrettyError):
         options_quoted = [f"'{opt}'" for opt in [option0, *list(options)]]
         message = f"Options {options_quoted[0]} and {', '.join(options_quoted[1:])} are mutually exclusive."
         super().__init__(message, errno.EINVAL)
+
+
+class CLIProfileSelectionRequiresInteractiveError(CLIPrettyError):
+    """
+    Raise when trying to select a profile to unlock in non-interactive mode.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = "Can't select profile in non-interactive mode. Please use the '--profile-name' option."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
