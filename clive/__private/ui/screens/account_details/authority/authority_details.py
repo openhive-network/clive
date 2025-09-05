@@ -90,7 +90,7 @@ class RemoveKeyAliasButton(PrivateKeyActionButton):
         self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)
 
 
-class AuthorityRoles(SectionScrollable):
+class AccountsAuthorities(SectionScrollable):
     """
     Widget for storing all AccountCollapsibles.
 
@@ -428,8 +428,8 @@ class AuthorityDetails(TabPane, CliveWidget):
         self._authorities: list[Authority] = []
 
     @property
-    def authority_roles(self) -> AuthorityRoles:
-        return self.query_exactly_one(AuthorityRoles)
+    def account_authorities(self) -> AccountsAuthorities:
+        return self.query_exactly_one(AccountsAuthorities)
 
     @property
     def filter_authority(self) -> FilterAuthority:
@@ -438,8 +438,8 @@ class AuthorityDetails(TabPane, CliveWidget):
     async def on_mount(self) -> None:
         await self._collect_authorities()
         self._update_input_suggestions()
-        await self.authority_roles.build(self._authorities)
-        await self._filter_authority_roles()
+        await self.account_authorities.build(self._authorities)
+        await self._filter_account_authorities()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -448,7 +448,7 @@ class AuthorityDetails(TabPane, CliveWidget):
                 CliveButton(label="Modify", variant="success", id_="modify-button", disabled=True),
                 id="button-container",
             )
-        yield AuthorityRoles(self._account)
+        yield AccountsAuthorities(self._account)
 
     @on(FilterAuthority.AuthorityFilterReady)
     async def _apply_authority_filter(self) -> None:
@@ -463,18 +463,18 @@ class AuthorityDetails(TabPane, CliveWidget):
             all_patterns.append(filter_pattern)
 
         self.filter_authority.collapse_account_filter_collapsible()
-        await self._filter_authority_roles(*all_patterns)
+        await self._filter_account_authorities(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def _rebuild_after_key_aliases_changed(self) -> None:
-        await self._rebuild_authority_roles()
+        await self._rebuild_account_authorities()
         await self._apply_authority_filter()
 
     @on(FilterAuthority.Cleared)
     async def _handle_filter_cleared(self) -> None:
         self._update_input_suggestions()
         with self.app.batch_update():
-            await self.authority_roles.filter_clear()
+            await self.account_authorities.filter_clear()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
@@ -489,9 +489,9 @@ class AuthorityDetails(TabPane, CliveWidget):
             )
             self._authorities.append(Authority(authority_operation))
 
-    async def _filter_authority_roles(self, *filter_patterns: str) -> None:
+    async def _filter_account_authorities(self, *filter_patterns: str) -> None:
         with self.app.batch_update():
-            await self.authority_roles.filter(self.filter_authority.selected_options, *filter_patterns)
+            await self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
 
     def _update_input_suggestions(self) -> None:
         input_suggestions: set[str] = set()
@@ -507,12 +507,13 @@ class AuthorityDetails(TabPane, CliveWidget):
         filter_authority.authority_filter_input.clear_suggestions()
         filter_authority.authority_filter_input.add_suggestion(*input_suggestions)
 
-    async def _rebuild_authority_roles(self) -> None:
+    async def _rebuild_account_authorities(self) -> None:
         with self.app.batch_update():
-            await self.authority_roles.rebuild(self._authorities)
+            await self.account_authorities.rebuild(self._authorities)
 
-            # somehow after mounting widgets inside authority roles body scroll is moved down, so focus first mounted
-            # account collapsible title (and move the scroll by it) then refocus previously focused widget.
+            # somehow after mounting widgets inside account authorities body scroll is moved down, so focus
+            # first mounted account collapsible title (and move the scroll by it) then refocus previously
+            # focused widget.
             previously_focused = self.app.focused
             all_account_collapsible_titles = self.query(CollapsibleTitle)
             if all_account_collapsible_titles:
