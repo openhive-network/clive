@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Final
 
-import typer
-
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIInvalidPasswordError,
@@ -113,7 +111,7 @@ class Unlock(WorldBasedCommand):
 
     def _get_selected_profile(self, options: ProfileSelectionOptions) -> str | None:
         """Get selected profile name from prompt or None if profile creation is selected."""
-        selection = typer.prompt("Enter the number")
+        selection = self.read_interactive("Enter the number", hide_input=False)
         try:
             option_value = options[int(selection)]
         except (KeyError, ValueError) as error:

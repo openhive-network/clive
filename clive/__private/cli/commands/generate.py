@@ -27,7 +27,7 @@ class GenerateKeyFromSeed(ExternalCLICommand):
 
     async def _run(self) -> None:
         password = (
-            self.read_interactive("Enter seed (like as secret phrase): ") if self.is_interactive else self.read_piped()
+            self.read_interactive("Enter seed (like as secret phrase)") if self.is_interactive else self.read_piped()
         )
 
         private_key = iwax.generate_password_based_private_key(password, self.role, self.account_name)
@@ -43,7 +43,7 @@ class GenerateKeyFromSeed(ExternalCLICommand):
 @dataclass(kw_only=True)
 class GeneratePublicKey(ExternalCLICommand):
     async def _run(self) -> None:
-        value = self.read_interactive("Enter private key: ") if self.is_interactive else self.read_piped()
+        value = self.read_interactive("Enter private key") if self.is_interactive else self.read_piped()
         try:
             private_key = PrivateKey(value=value)
         except PrivateKeyInvalidFormatError as error:

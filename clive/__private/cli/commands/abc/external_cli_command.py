@@ -5,7 +5,6 @@ import inspect
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import Field, dataclass, field, fields
-from getpass import getpass
 from typing import TYPE_CHECKING, Any, Self
 
 import typer
@@ -64,10 +63,9 @@ class ExternalCLICommand(ABC):
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)
 
-    def read_interactive(self, msg: str, *, secret: bool = True) -> str:
-        if secret:
-            return getpass(msg)
-        return typer.prompt(msg)
+    def read_interactive(self, prompt: str, *, hide_input: bool = True) -> str:
+        input_value = typer.prompt(prompt, hide_input=hide_input, type=str)
+        return str(input_value)
 
     def read_piped(self) -> str:
         return sys.stdin.readline().rstrip()
