@@ -79,8 +79,8 @@ class CreateProfile(WorldBasedCommand):
         return password
 
     def _get_password_input_interactive(self) -> str:
-        password = self.read_interactive("Set a new password: ")
-        password_repeat = self.read_interactive("Repeat password: ")
+        password = self.read_interactive("Set a new password")
+        password_repeat = self.read_interactive("Repeat password")
         if password != password_repeat:
             raise CLIInvalidPasswordRepeatError
         return password
