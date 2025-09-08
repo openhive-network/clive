@@ -4,10 +4,9 @@ import errno
 from dataclasses import dataclass
 from pathlib import Path
 
-import typer
-
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
@@ -66,10 +65,10 @@ class AddKey(WorldBasedCommand):
             raise CLIPrettyError(f"Can't add key: {humanize_validation_result(private_key_result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        typer.echo("Importing key...")
+        print_cli("Importing key...")
         self.profile.keys.add_to_import(self.private_key_aliased)
         await self.world.commands.sync_data_with_beekeeper()
-        typer.echo("Key imported.")
+        print_cli("Key imported.")
 
 
 @dataclass(kw_only=True)
@@ -82,7 +81,7 @@ class RemoveKey(WorldBasedCommand):
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
-        typer.echo(f"Removing a key aliased with `{self.alias}`...")
+        print_cli(f"Removing a key aliased with `{self.alias}`...")
         public_key = self.profile.keys.get_from_alias(self.alias)
         self.__remove_key_association_from_the_profile(public_key)
         if self.from_beekeeper:
@@ -92,7 +91,7 @@ class RemoveKey(WorldBasedCommand):
             if self.from_beekeeper
             else "Key removed from the profile."
         )
-        typer.echo(message)
+        print_cli(message)
 
     def __remove_key_association_from_the_profile(self, key: PublicKeyAliased) -> None:
         self.profile.keys.remove(key)

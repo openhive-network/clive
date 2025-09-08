@@ -9,6 +9,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.configure.main import configure
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.process.main import process
 from clive.__private.cli.show.main import show
 
@@ -34,9 +35,9 @@ def main(
         from clive import __version__  # noqa: PLC0415
         from clive.__private.storage.storage_history import StorageHistory  # noqa: PLC0415
 
-        typer.echo(f"Clive version: {__version__}")
-        typer.echo(f"Storage model revision: {StorageHistory.get_latest_revision()}")
-        typer.echo(f"Storage model version: {StorageHistory.get_latest_version()}")
+        print_cli(f"Clive version: {__version__}")
+        print_cli(f"Storage model revision: {StorageHistory.get_latest_revision()}")
+        print_cli(f"Storage model version: {StorageHistory.get_latest_version()}")
 
 
 _profile_name_unlock_argument = typer.Argument(

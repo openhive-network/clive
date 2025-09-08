@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import typer
-
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 
 
 @dataclass(kw_only=True)
@@ -15,8 +14,8 @@ class ShowAccounts(WorldBasedCommand):
     def _show_accounts_info(self) -> None:
         profile = self.profile
         if profile.accounts.has_working_account:
-            typer.echo(f"Working account: {profile.accounts.working.name}")
+            print_cli(f"Working account: {profile.accounts.working.name}")
         else:
-            typer.echo("Working account is not set.")
-        typer.echo(f"Tracked accounts: {[account.name for account in profile.accounts.tracked]}")
-        typer.echo(f"Known accounts: {[account.name for account in profile.accounts.known]}")
+            print_cli("Working account is not set.")
+        print_cli(f"Tracked accounts: {[account.name for account in profile.accounts.tracked]}")
+        print_cli(f"Known accounts: {[account.name for account in profile.accounts.known]}")

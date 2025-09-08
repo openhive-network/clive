@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import typer
-
 from clive.__private.cli.commands.show.show_accounts import ShowAccounts
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.humanize import humanize_bool
 
 
@@ -16,8 +15,8 @@ class ShowProfile(ShowAccounts):
 
     def _show_profile_info(self) -> None:
         profile = self.profile
-        typer.echo(f"Profile name: {profile.name}")
-        typer.echo(f"Node address: {profile.node_address}")
-        typer.echo(f"Backup node addresses: {[str(url) for url in profile.backup_node_addresses]}")
-        typer.echo(f"Chain ID: {profile.chain_id}")
-        typer.echo(f"Known accounts enabled: {humanize_bool(profile.should_enable_known_accounts)}")
+        print_cli(f"Profile name: {profile.name}")
+        print_cli(f"Node address: {profile.node_address}")
+        print_cli(f"Backup node addresses: {[str(url) for url in profile.backup_node_addresses]}")
+        print_cli(f"Chain ID: {profile.chain_id}")
+        print_cli(f"Known accounts enabled: {humanize_bool(profile.should_enable_known_accounts)}")

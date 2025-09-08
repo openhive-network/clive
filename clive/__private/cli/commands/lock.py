@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import typer
-
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 
 
 @dataclass(kw_only=True)
@@ -15,4 +14,4 @@ class Lock(WorldBasedCommand):
 
     async def _run(self) -> None:
         await self.world.commands.lock()
-        typer.echo("All wallets have been locked.")
+        print_cli("All wallets have been locked.")

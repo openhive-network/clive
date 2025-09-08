@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import rich
-import typer
 
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
@@ -19,6 +18,7 @@ from clive.__private.cli.exceptions import (
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
@@ -65,7 +65,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def _run(self) -> None:
         if not self.broadcast:
-            typer.echo("[Performing dry run, because --broadcast is not set.]\n")
+            print_cli("[Performing dry run, because --broadcast is not set.]\n")
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
@@ -79,12 +79,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         ).result_or_raise
 
         self.__print_transaction(transaction.with_hash())
-        typer.echo(
+        print_cli(
             "Transaction was successfully"
             f" {'broadcasted' if self.broadcast else self._get_transaction_created_message()}."
         )
         if self.save_file is not None:
-            typer.echo(f"Transaction was saved to {self.save_file}")
+            print_cli(f"Transaction was saved to {self.save_file}")
 
     def __get_key_to_sign(self) -> PublicKey | None:
         if self.sign_with is None:
@@ -140,5 +140,5 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def __print_transaction(self, transaction: Transaction) -> None:
         transaction_json = transaction.json(order="sorted")
         message = self._get_transaction_created_message().capitalize()
-        typer.echo(f"{message} transaction:")
+        print_cli(f"{message} transaction:")
         rich.print_json(transaction_json)

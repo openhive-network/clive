@@ -14,7 +14,7 @@ from clive.__private.cli.exceptions import (
     CLIInvalidSelectionError,
     CLIProfileDoesNotExistsError,
 )
-from clive.__private.cli.print_cli import print_error
+from clive.__private.cli.print_cli import print_cli, print_error
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
@@ -67,7 +67,7 @@ class Unlock(WorldBasedCommand):
             await self._unlock_in_tty_mode(profile_name)
         else:
             await self._unlock_in_non_tty_mode(profile_name)
-        typer.echo(f"Profile `{profile_name}` is unlocked.")
+        print_cli(f"Profile `{profile_name}` is unlocked.")
 
     def _get_profile_name(self) -> str | None:
         return self.profile_name or self._prompt_for_profile_name()
@@ -109,9 +109,9 @@ class Unlock(WorldBasedCommand):
         return options
 
     def _display_profile_options(self, options: ProfileSelectionOptions) -> None:
-        typer.echo("Select profile to unlock:")
+        print_cli("Select profile to unlock:")
         for i, name in options.items():
-            typer.echo(f"{i}. {name}")
+            print_cli(f"{i}. {name}")
 
     def _get_selected_profile(self, options: ProfileSelectionOptions) -> str | None:
         """Get selected profile name from prompt or None if profile creation is selected."""
@@ -155,4 +155,4 @@ class Unlock(WorldBasedCommand):
         return not Profile.is_any_profile_saved()
 
     def _display_create_profile_help_info(self) -> None:
-        typer.echo(UNLOCK_CREATE_PROFILE_HELP)
+        print_cli(UNLOCK_CREATE_PROFILE_HELP)

@@ -4,8 +4,6 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import typer
-
 from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -16,6 +14,7 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
     CLISessionNotLockedError,
 )
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.core.commands.get_wallet_names import GetWalletNames
 from clive.__private.core.url_utils import is_url_reachable
@@ -124,4 +123,4 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
             else f"Using beekeeper at {self.beekeeper_remote_url}"
         )
 
-        typer.echo(message)
+        print_cli(message)
