@@ -4,7 +4,7 @@ import warnings
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
-import typer
+from clive.__private.cli.print_cli import print_warning
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -16,4 +16,4 @@ def typer_echo_warnings() -> Iterator[None]:
         yield
 
         for warning in catched_warnings:
-            typer.secho(f"Warning:\n{warning.message}\n", fg=typer.colors.YELLOW)
+            print_warning(f"{warning.message}")

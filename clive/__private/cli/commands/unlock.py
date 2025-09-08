@@ -14,6 +14,7 @@ from clive.__private.cli.exceptions import (
     CLIInvalidSelectionError,
     CLIProfileDoesNotExistsError,
 )
+from clive.__private.cli.print_cli import print_error
 from clive.__private.core.constants.cli import UNLOCK_CREATE_PROFILE_HELP, UNLOCK_CREATE_PROFILE_SELECT
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.general_error_notificator import INVALID_PASSWORD_MESSAGE
@@ -95,7 +96,7 @@ class Unlock(WorldBasedCommand):
                 if attempts_left < 1:
                     raise
                 message = f"Invalid selection. Try again. Attempts left: {attempts_left}"
-                typer.secho(message, fg=typer.colors.RED)
+                print_error(message)
                 self._display_profile_options(options)
         raise AssertionError("Won't reach here")
 
@@ -141,7 +142,7 @@ class Unlock(WorldBasedCommand):
                 if attempts_left < 1:
                     raise
                 message = f"Invalid password. Try again. Attempts left: {attempts_left}"
-                typer.secho(message, fg=typer.colors.RED)
+                print_error(message)
             else:
                 return
         raise AssertionError("Won't reach here")
