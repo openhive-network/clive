@@ -3,8 +3,11 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from textual import on
 from textual.css.query import NoMatches
+from textual.events import Mount
 from textual.reactive import reactive
+from textual.widgets import HelpPanel
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
@@ -34,6 +37,11 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
             yield LocationIndicator(self.BIG_TITLE, self.subtitle)
         yield from self.create_main_panel()
         yield CliveFooter()
+
+    @on(Mount)
+    def mount_help_panel(self) -> None:
+        if self.app.help_panel_mounted:
+            self.mount(HelpPanel())
 
     @abstractmethod
     def create_main_panel(self) -> ComposeResult:
