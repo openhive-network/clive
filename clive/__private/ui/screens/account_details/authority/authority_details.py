@@ -107,9 +107,9 @@ class AuthorityRoles(SectionScrollable):
             await self.body.query("*").remove()
             await self.build(authorities)
 
-    async def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+    async def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
         """
-        Update the display based on filter patterns selected accounts in filter.
+        Update the display based on filter patterns and selected accounts in filter.
 
         This method updates each collapsible representing account inside the body of this widget. Also handles
         NoFilterCriteriaMatch widget.
@@ -121,7 +121,7 @@ class AuthorityRoles(SectionScrollable):
         account_collapsibles = list(self.body.query(AccountCollapsible))
 
         for account_collapsible in account_collapsibles:
-            account_collapsible.update(selected_accounts_in_filter, *filter_patterns)
+            account_collapsible.filter(selected_accounts_in_filter, *filter_patterns)
 
         is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
         if is_any_account_collapsible_displayed:
@@ -155,7 +155,7 @@ class AccountCollapsible(CliveCollapsible):
             collapsed=collapsed,
         )
 
-    def update(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
         """
         Update the display based on accounts selected in filter and filter patterns.
 
@@ -167,7 +167,7 @@ class AccountCollapsible(CliveCollapsible):
         def update_display_of_authority_roles() -> None:
             """Update the display of authority role widgets within this widget."""
             for authority_role in self.query(AuthorityRole):
-                authority_role.update(*filter_patterns)
+                authority_role.filter(*filter_patterns)
 
         if self._authority.account not in selected_accounts_in_filter:
             self.display = False
@@ -204,7 +204,7 @@ class AuthorityRole(CliveCollapsible):
             right_hand_side_text=self._get_right_hand_side_text(),
         )
 
-    def update(self, *filter_patterns: str) -> None:
+    def filter(self, *filter_patterns: str) -> None:
         """
         Update the display based on filter patterns.
 
@@ -214,7 +214,7 @@ class AuthorityRole(CliveCollapsible):
 
         def update_display_in_authority_table() -> None:
             authority_table = self.query_exactly_one(AuthorityTable)
-            authority_table.update(*filter_patterns)
+            authority_table.filter(*filter_patterns)
 
         filter_pattern_present = bool(filter_patterns)
         if not filter_pattern_present:
@@ -280,16 +280,6 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if not self._entry.is_account and self.entry_value in self.profile.keys:
             alias = self.profile.keys.get_first_from_public_key(self.entry_value).alias
         return alias
-
-    def update(self, *filter_patterns: str) -> None:
-        """
-        Update the display based on filter patterns.
-
-        Args:
-            *filter_patterns: Patterns to filter the entries in the authority.
-        """
-        filter_pattern_present = bool(filter_patterns)
-        self.display = self._entry.is_matching_pattern(*filter_patterns) if filter_pattern_present else True
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
@@ -357,14 +347,15 @@ class AuthorityTable(CliveCheckerboardTable):
         self._authority_role = authority_role
         super().__init__(header=AuthorityHeader(memo_header=authority_role.is_memo))
 
+
     def create_static_rows(self) -> Sequence[AuthorityItem]:
         return [AuthorityItem(entry) for entry in self._authority_role.get_entries()]
 
-    def update(self, *filter_patterns: str) -> None:
-        for row in self.query(CliveCheckerboardTableRow):
-            assert isinstance(row, AuthorityItem), "Invalid type of row."
-            row.update(*filter_patterns)
-            self.update_cell_colors()
+    def filter(self, *filter_patterns: str) -> None:
+        for row in self.entry_rows:
+            filter_pattern_present = bool(filter_patterns)
+            row.display = row.entry.is_matching_pattern(*filter_patterns) if filter_pattern_present else True
+        self.update_cell_colors()
 
     def update_cell_colors(self) -> None:
         """Update background colors according to the actual displayed rows."""
@@ -404,7 +395,7 @@ class AuthorityDetails(TabPane, CliveWidget):
         await self._collect_authorities()
         self._update_input_suggestions()
         await self.authority_roles.build(self._authorities)
-        await self._update_display_inside_authority_roles()
+        await self._filter_authority_roles()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -428,7 +419,7 @@ class AuthorityDetails(TabPane, CliveWidget):
             all_patterns.append(filter_pattern)
 
         self.filter_authority.collapse_account_filter_collapsible()
-        await self._update_display_inside_authority_roles(*all_patterns)
+        await self._filter_authority_roles(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def _rebuild_after_key_aliases_changed(self) -> None:
@@ -453,9 +444,9 @@ class AuthorityDetails(TabPane, CliveWidget):
             )
             self._authorities.append(Authority(authority_operation))
 
-    async def _update_display_inside_authority_roles(self, *filter_patterns: str) -> None:
+    async def _filter_authority_roles(self, *filter_patterns: str) -> None:
         with self.app.batch_update():
-            await self.authority_roles.update(self.filter_authority.selected_options, *filter_patterns)
+            await self.authority_roles.filter(self.filter_authority.selected_options, *filter_patterns)
 
     def _update_input_suggestions(self) -> None:
         input_suggestions: set[str] = set()
