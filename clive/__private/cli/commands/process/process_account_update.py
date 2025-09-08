@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final, cast, override
+from typing import TYPE_CHECKING, Final, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
@@ -59,31 +59,6 @@ class ProcessAccountUpdate(OperationCommand):
 
     def add_callback(self, callback: AccountUpdateFunction) -> None:
         self._callbacks.append(callback)
-
-    def modify_common_options(
-        self,
-        *,
-        sign_with: str | None = None,
-        autosign: bool | None = None,
-        broadcast: bool | None = None,
-        save_file: str | None = None,
-    ) -> None:
-        is_sign_given = sign_with is not None
-        is_broadcast_given = broadcast is not None
-        is_save_file_given = save_file is not None
-        is_autosign_given = autosign is not None
-
-        if is_sign_given:
-            self.sign_with = sign_with
-
-        if is_broadcast_given:
-            self.broadcast = cast("bool", broadcast)
-
-        if is_save_file_given:
-            self.save_file = save_file
-
-        if is_autosign_given:
-            self.autosign = cast("bool", autosign)
 
     def __skip_untouched_fields(
         self, previous_state: AccountUpdate2Operation, modified_state: AccountUpdate2Operation
