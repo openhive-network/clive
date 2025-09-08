@@ -4,9 +4,10 @@ from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec
 
 from textual import on
-from textual.events import ScreenResume, ScreenSuspend
+from textual.events import Mount, ScreenResume, ScreenSuspend
 from textual.message import Message
 from textual.screen import Screen
+from textual.widgets import HelpPanel
 from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
@@ -97,6 +98,12 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         """Look in the docstring of _post_suspended."""
         self.app.title = f"Clive ({self.__class__.__name__})"
         self._post_to_children(self, self.Resumed())
+
+    @on(Mount)
+    def _synchronize_help_panel(self) -> None:
+        """Synchronize the presence of help panel on newly created screens."""
+        if self.app.help_panel_mounted:
+            self.mount(HelpPanel())
 
     def _post_to_children(self, node: Widget, message: Message) -> None:
         """Post a message to all widgets of the screen (even grandchildren and further)."""

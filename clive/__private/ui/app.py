@@ -11,7 +11,6 @@ from textual import on, work
 from textual._context import active_app
 from textual.app import App
 from textual.await_complete import AwaitComplete
-from textual.css.query import NoMatches
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 from textual.widgets import HelpPanel
@@ -68,6 +67,7 @@ class Clive(App[int]):
         SCREENS: Screens available in the app.
         MODES: Modes available in the app.
         header_expanded: Synchronize the expanded header state in all created header objects.
+        help_panel_mounted: Synchronize the help panel presence state in all created screens.
         notification_history: All notifications that were displayed.
 
     Args:
@@ -114,6 +114,7 @@ class Clive(App[int]):
     _ALARMS_DATA_WORKER_GROUP_NAME: Final[str] = "alarms_data"
 
     header_expanded = var(default=False)
+    help_panel_mounted = var(default=False, init=False)
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
 
@@ -322,13 +323,16 @@ class Clive(App[int]):
             return
         self.push_screen(LoadTransactionFromFileDialog())
 
+    def action_show_help_panel(self) -> None:
+        """Adds support for global state of help panel."""
+        self.help_panel_mounted = True
+
+    def action_hide_help_panel(self) -> None:
+        """Adds support for global state of help panel."""
+        self.help_panel_mounted = False
+
     def action_toggle_keys_panel(self) -> None:
-        try:
-            self.screen.query_exactly_one(HelpPanel)
-        except NoMatches:
-            self.action_show_help_panel()
-        else:
-            self.action_hide_help_panel()
+        self.help_panel_mounted = not self.help_panel_mounted
 
     async def action_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
@@ -556,6 +560,24 @@ class Clive(App[int]):
                 await self.world.commands.save_profile()
 
         self.app.run_worker(impl(), name="save profile worker", group="save_profile", exclusive=True)
+
+    def _watch_help_panel_mounted(self, mounted: bool) -> None:  # noqa: FBT001
+        """
+        Synchronize the presence of help panel on all the existing screens.
+
+        Since help panel is a separate widget for every screen, we need to handle its presence manually.
+
+        Args:
+            mounted: New value of reactive responsible for global state of help panel presence.
+        """
+        for screen in self.screen_stack:
+            query = screen.query(HelpPanel)
+            is_mounted = bool(query)
+
+            if mounted and not is_mounted:
+                screen.mount(HelpPanel())
+            else:
+                query.remove()
 
     async def _debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
