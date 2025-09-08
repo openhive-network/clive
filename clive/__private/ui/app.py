@@ -11,10 +11,8 @@ from textual import on, work
 from textual._context import active_app
 from textual.app import App
 from textual.await_complete import AwaitComplete
-from textual.css.query import NoMatches
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
-from textual.widgets import HelpPanel
 from textual.worker import NoActiveWorker, WorkerCancelled, get_current_worker
 
 from clive.__private.core.async_guard import AsyncGuard
@@ -68,6 +66,7 @@ class Clive(App[int]):
         SCREENS: Screens available in the app.
         MODES: Modes available in the app.
         header_expanded: Synchronize the expanded header state in all created header objects.
+        is_help_panel_visible: Synchronize the help panel presence state across all screens.
         notification_history: All notifications that were displayed.
 
     Args:
@@ -114,6 +113,8 @@ class Clive(App[int]):
     _ALARMS_DATA_WORKER_GROUP_NAME: Final[str] = "alarms_data"
 
     header_expanded = var(default=False)
+    is_help_panel_visible = var(default=False, init=False)
+    """Used to synchronize the help panel presence state across all screens."""
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
 
@@ -322,13 +323,16 @@ class Clive(App[int]):
             return
         self.push_screen(LoadTransactionFromFileDialog())
 
+    def action_show_help_panel(self) -> None:
+        """Adds support for global state of help panel."""
+        self.is_help_panel_visible = True
+
+    def action_hide_help_panel(self) -> None:
+        """Adds support for global state of help panel."""
+        self.is_help_panel_visible = False
+
     def action_toggle_keys_panel(self) -> None:
-        try:
-            self.screen.query_exactly_one(HelpPanel)
-        except NoMatches:
-            self.action_show_help_panel()
-        else:
-            self.action_hide_help_panel()
+        self.is_help_panel_visible = not self.is_help_panel_visible
 
     async def action_transaction_summary(self) -> None:
         with self._screen_remove_guard.suppress(), self._screen_remove_guard.guard():
@@ -556,6 +560,19 @@ class Clive(App[int]):
                 await self.world.commands.save_profile()
 
         self.app.run_worker(impl(), name="save profile worker", group="save_profile", exclusive=True)
+
+    def _watch_is_help_panel_visible(self, is_help_panel_visible: bool) -> None:  # noqa: FBT001
+        """
+        Synchronize the presence of help panel on all the existing screens.
+
+        Since help panel is a separate widget for every screen, we need to handle its presence manually.
+
+        Args:
+            is_help_panel_visible: New value of reactive responsible for global state of help panel presence.
+        """
+        for screen_ in self.screen_stack:
+            screen = cast("CliveScreen", screen_)
+            screen.toggle_help_panel(show=is_help_panel_visible)
 
     async def _debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

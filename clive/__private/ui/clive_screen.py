@@ -4,9 +4,10 @@ from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec
 
 from textual import on
-from textual.events import ScreenResume, ScreenSuspend
+from textual.events import Mount, ScreenResume, ScreenSuspend
 from textual.message import Message
 from textual.screen import Screen
+from textual.widgets import HelpPanel
 from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
@@ -63,6 +64,21 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
     ) -> Callable[[Callable[P, None]], Callable[P, None]]:
         return cls._create_prevent_decorator(lambda app: app.world.profile.accounts.has_tracked_accounts, message)
 
+    def toggle_help_panel(self, *, show: bool) -> None:
+        """
+        Toggle the presence of help panel on this screen.
+
+        Args:
+            show: Whether to show the help panel.
+        """
+        query = self.query(HelpPanel)
+        is_mounted = bool(query)
+
+        if show and not is_mounted:
+            self.mount(HelpPanel())
+        else:
+            query.remove()
+
     @classmethod
     def _create_prevent_decorator(
         cls, can_run_condition: Callable[[Clive], bool], message: str
@@ -97,6 +113,11 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         """Look in the docstring of _post_suspended."""
         self.app.title = f"Clive ({self.__class__.__name__})"
         self._post_to_children(self, self.Resumed())
+
+    @on(Mount)
+    def _synchronize_help_panel(self) -> None:
+        """Synchronize the presence of help panel on newly created screens."""
+        self.toggle_help_panel(show=self.app.is_help_panel_visible)
 
     def _post_to_children(self, node: Widget, message: Message) -> None:
         """Post a message to all widgets of the screen (even grandchildren and further)."""
