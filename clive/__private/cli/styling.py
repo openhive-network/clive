@@ -4,7 +4,7 @@ from typing import Final
 
 STATUS_OK: Final[str] = "[green]{}[/green]"
 STATUS_ERROR: Final[str] = "[red]{}[/red]"
-STATUS_WARNING: Final[str] = "[yellow]{}[/yellow]"
+STATUS_WARNING: Final[str] = "[orange1]{}[/orange1]"
 STATUS_CONTENT_NOT_AVAILABLE: Final[str] = "[magenta]{}[/magenta]"
 
 
