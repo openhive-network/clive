@@ -30,7 +30,7 @@ class AccountDetails(BaseScreen):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__()
         self._account = account
-        self.subtitle = f"for the {account.name} account"
+        self.set_reactive(self.__class__.subtitle, f"for the {account.name} account")  # type: ignore[arg-type]
 
     def create_main_panel(self) -> ComposeResult:
         with CliveTabbedContent():
