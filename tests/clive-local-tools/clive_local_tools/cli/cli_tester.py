@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
+from .chaining.account_creation import AccountCreation
 from .chaining.update_authority import (
     UpdateActiveAuthority,
     UpdateAuthority,
@@ -577,3 +578,31 @@ class CLITester:
 
     def generate_secret_phrase(self) -> Result:
         return self.__invoke_command_with_options(["generate", "secret-phrase"])
+
+    def process_claim_new_account_token(
+        self,
+        *,
+        account_name: str | None = None,
+        fee: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "claim", "new-account-token"], **extract_params(locals()))
+
+    def process_account_creation(  # noqa: PLR0913
+        self,
+        *,
+        new_account_name: str,
+        creator: str | None = None,
+        fee: bool | None = None,
+        json_metadata: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> AccountCreation:
+        return AccountCreation(
+            self.__typer,
+            self.__runner,
+            **extract_params(locals()),
+        )
