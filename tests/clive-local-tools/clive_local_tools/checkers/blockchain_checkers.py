@@ -33,6 +33,17 @@ def assert_transaction_in_blockchain(
         pytest.fail(f"The transaction with {transaction_id=} couldn't be found in the blockchain.")
 
 
+def assert_transaction_not_in_blockchain(
+    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+) -> None:
+    transaction_id = _ensure_transaction_id(trx_id_or_result)
+    if wait_for_the_next_block:
+        # Ensure transaction would be available in block
+        node.wait_number_of_blocks(1)
+    with pytest.raises(ErrorInResponseError, match="Unknown Transaction"):
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+
+
 def assert_operations_placed_in_blockchain(
     node: tt.RawNode,
     trx_id_or_result: str | Result,
