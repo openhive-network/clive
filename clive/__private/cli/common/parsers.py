@@ -5,11 +5,17 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
+from clive.__private.core.constants.cli import (
+    NEW_ACCOUNT_AUTHORITY_WEIGHT,
+    WEIGHT_MARK,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import timedelta
     from decimal import Decimal
 
+    from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
     from clive.__private.models import Asset
 
 
@@ -124,3 +130,25 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     if status.is_valid:
         return shorthand_timedelta_to_timedelta(raw)
     raise typer.BadParameter(humanize_validation_result(status))
+
+
+def account_with_weight(raw: str) -> AccountWithWeight:
+    if WEIGHT_MARK in raw:
+        key, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as e:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
+        return key, weight
+    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
+
+
+def key_with_weight(raw: str) -> KeyWithWeight:
+    if WEIGHT_MARK in raw:
+        key, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as e:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
+        return key, weight
+    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
