@@ -3,12 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import timedelta
 
-from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core import iwax
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
@@ -23,7 +22,6 @@ class ShowPendingPowerUps(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        console = Console()
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
 
@@ -31,7 +29,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
             message = (
                 f"There are no pending power ups (delayed influence on governance) for account `{self.account_name}`."
             )
-            console.print(colorize_content_not_available(message))
+            print_content_not_available(message)
             return
 
         amount_title = "Amount"
@@ -50,7 +48,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
             delayed_votes_table.add_row(humanize_datetime(entry.time + delayed_voting_interval), hp_aligned)
             delayed_votes_table.add_row("", vests_aligned, end_section=True)
 
-        console.print(delayed_votes_table)
+        print_cli(delayed_votes_table)
 
     async def __get_delayed_voting_interval(self) -> timedelta:
         node_config = await self.world.node.cached.config

@@ -5,11 +5,12 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 from rich.columns import Columns
-from rich.console import Console, Group
+from rich.console import Group
 from rich.padding import Padding
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
     humanize_asset,
@@ -40,14 +41,12 @@ class ShowAccount(WorldBasedCommand):
         self._account_alarms = account.alarms
 
     async def _run(self) -> None:
-        console = Console()
-
         general_info_table = self._create_general_info_table()
         balances_table = self._create_balance_table()
         manabar_stats_table = self._create_manabar_stats_table()
         grouped_tables = Group(general_info_table, Padding(""), balances_table, Padding(""), manabar_stats_table)
         columned_tables = Columns([grouped_tables], title=f"Details of '{self.account_name}' account")
-        console.print(columned_tables)
+        print_cli(columned_tables)
 
     def _get_account_type_name(self) -> str | None:
         if self.profile.accounts.is_account_working(self.account_name):

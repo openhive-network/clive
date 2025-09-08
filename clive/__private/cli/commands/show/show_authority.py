@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import AuthorityType
@@ -21,8 +21,6 @@ class ShowAuthority(WorldBasedCommand):
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         account = accounts[0]
 
-        console = Console()
-
         title = (
             f"{self.authority} authority of `{account.name}` account,"
             f"\nweight threshold is {account[self.authority].weight_threshold}:"
@@ -34,4 +32,4 @@ class ShowAuthority(WorldBasedCommand):
         for auth, weight in [*account[self.authority].key_auths, *account[self.authority].account_auths]:
             table.add_row(f"{auth}", f"{weight}")
 
-        console.print(table)
+        print_cli(table)

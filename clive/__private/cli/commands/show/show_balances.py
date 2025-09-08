@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.models import Asset
 
@@ -31,5 +31,4 @@ class ShowBalances(WorldBasedCommand):
         table.add_row("HIVE Savings", f"{Asset.pretty_amount(data.hive_savings)}")
         table.add_row("HIVE Unclaimed", f"{Asset.pretty_amount(data.hive_unclaimed)}")
 
-        console = Console()
-        console.print(table)
+        print_cli(table)

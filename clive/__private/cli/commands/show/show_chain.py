@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.data_labels import (
     CURRENT_INFLATION_RATE_LABEL,
     HBD_PRINT_RATE_LABEL,
@@ -46,5 +46,4 @@ class ShowChain(WorldBasedCommand):
         table.add_row("account creation fee", financial_data.pretty_account_creation_fee)
         table.add_row(VEST_HIVE_RATIO_LABEL, financial_data.vests_to_hive_ratio, end_section=True)
 
-        console = Console()
-        console.print(table)
+        print_cli(table)

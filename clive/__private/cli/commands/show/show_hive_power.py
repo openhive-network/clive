@@ -4,12 +4,13 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from rich.columns import Columns
-from rich.console import Console, Group
+from rich.console import Group
 from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.styling import colorize_content_not_available
 from clive.__private.core import iwax
 from clive.__private.core.formatters.humanize import (
@@ -53,8 +54,7 @@ class ShowHivePower(WorldBasedCommand):
         right_group = Group(next_withdrawal, Padding(""), to_withdraw, Padding(""), apr, conversion_factor)
         columns = Columns([left_group, right_group], title=f"Hive Power defails of `{self.account_name}` account")
 
-        console = Console()
-        console.print(columns)
+        print_cli(columns)
 
     def __general_info(self) -> RenderableType:
         def add_row(table: Table, title: str, shares: HpVestsBalance, sign_prefix: SignPrefixT = "") -> None:

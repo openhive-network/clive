@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_comma
 from clive.__private.models import Asset
 
@@ -35,5 +35,4 @@ class ShowProposal(WorldBasedCommand):
         table.add_row("total votes", f"{votes}")
         table.add_row("status", f"{proposal.status}")
 
-        console = Console()
-        console.print(table)
+        print_cli(table)

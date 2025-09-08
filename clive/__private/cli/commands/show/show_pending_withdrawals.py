@@ -3,11 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.models import Asset
 
@@ -21,13 +20,11 @@ class ShowPendingWithdrawals(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        console = Console()
         wrapper = await self.world.commands.retrieve_savings_data(account_name=self.account_name)
         result: SavingsData = wrapper.result_or_raise
 
         if not result.pending_transfers:
-            message = f"Account `{self.account_name}` has no pending withdrawals"
-            console.print(colorize_content_not_available(message))
+            print_content_not_available(f"Account `{self.account_name}` has no pending withdrawals")
             return
 
         table = Table(title=f"Pending withdrawals of `{self.account_name}` account")
@@ -47,4 +44,4 @@ class ShowPendingWithdrawals(WorldBasedCommand):
                 f"{transfer.memo}",
                 f"{transfer.request_id}",
             )
-        console.print(table)
+        print_cli(table)

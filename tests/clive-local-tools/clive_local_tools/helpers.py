@@ -6,6 +6,7 @@ import pytest
 from rich.panel import Panel
 from typer import rich_utils
 
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.__private.models.schemas import TransactionId, validate_schema_field
@@ -40,7 +41,7 @@ def get_formatted_error_message(error: ClickException) -> str:
     # It causes errors while running `pytest -s`
     console._color_system = None
     with console.capture() as capture:
-        console.print(panel)
+        print_cli(panel, console=console)
     return capture.get()
 
 

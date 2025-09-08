@@ -5,13 +5,13 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
 from rich.columns import Columns
-from rich.console import Console, Group
+from rich.console import Group
 from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.core.shorthand_timedelta import timedelta_to_shorthand_timedelta
 
@@ -31,10 +31,8 @@ class ShowTransferSchedule(WorldBasedCommand):
             await self.world.commands.find_scheduled_transfers(account_name=self.account_name)
         ).result_or_raise
 
-        console = Console()
-
         if not account_scheduled_transfers_data.scheduled_transfers:
-            console.print(colorize_content_not_available(f"Account `{self.account_name}` has no scheduled transfers."))
+            print_content_not_available(f"Account `{self.account_name}` has no scheduled transfers.")
             return
 
         table_definitions = self.__create_table_definition(account_scheduled_transfers_data)
@@ -44,7 +42,7 @@ class ShowTransferSchedule(WorldBasedCommand):
         table_upcoming_group = Group(table_upcoming, Padding(""))
 
         show_transfer_schedule = Columns([table_definitions_group, table_upcoming_group])
-        console.print(show_transfer_schedule)
+        print_cli(show_transfer_schedule)
 
     def __create_table_definition(self, account_scheduled_transfers_data: AccountScheduledTransferData) -> Table:
         """Create table with definitions."""

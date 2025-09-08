@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.table_pagination_info import add_pagination_info_to_table_if_needed
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_bool
@@ -70,5 +70,4 @@ class ShowWitnesses(WorldBasedCommand):
             table=table, page_no=self.page_no, page_size=self.page_size, all_entries=len(witnesses_list)
         )
 
-        console = Console()
-        console.print(table)
+        print_cli(table)
