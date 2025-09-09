@@ -29,25 +29,30 @@ TransactionSummary {
       height: 3;
     }
 
+    .operation-number {
+      width: 8;
+    }
+
     .operation-name {
-      width: 2fr;
+      width: 23;
     }
 
     .operation-details {
-      width: 5fr;
+      width: 1fr;
     }
 
     .actions {
-      width: 35;
+      width: 29;
     }
 
     CliveButton {
       margin-left: 1;
-      min-width: 8;
+      min-width: 6;
     }
 
     RawJsonButton {
       margin-left: 0;
+      min-width: 8;
     }
   }
 

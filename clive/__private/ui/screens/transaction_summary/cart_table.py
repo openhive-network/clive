@@ -209,7 +209,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [
-            CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-number-cell"),
+            CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-number-cell", classes="operation-number"),
             CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-name-cell", classes="operation-name"),
             CliveCheckerBoardTableCell(LOADING_TEXT, id_="op-details-cell", classes="operation-details"),
             CliveCheckerBoardTableCell(LOADING_TEXT, id_="buttons-cell", classes="actions"),
@@ -250,7 +250,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
 class CartHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("No.", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("No.", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} operation-number")
         yield Static("Operation type", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} operation-name")
         yield Static("Operation details", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} operation-details")
         yield Static("Actions", classes=f"{CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME} actions")
