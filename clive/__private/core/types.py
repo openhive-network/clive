@@ -14,3 +14,7 @@ ProposalOrders = Literal[
     "by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"
 ]
 ProposalStatuses = Literal["all", "active", "inactive", "votable", "expired"]
+
+AuthorityLevelRegular = Literal["owner", "active", "posting"]
+AuthorityLevelMemo = Literal["memo"]
+AuthorityLevel = AuthorityLevelRegular | AuthorityLevelMemo

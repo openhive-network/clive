@@ -10,7 +10,7 @@ from clive.__private.core import iwax
 from clive.__private.core.keys import PrivateKey, PrivateKeyInvalidFormatError
 
 if TYPE_CHECKING:
-    from clive.__private.core.authority.types import AuthorityLevel
+    from clive.__private.core.types import AuthorityLevel
 
 
 @dataclass(kw_only=True)

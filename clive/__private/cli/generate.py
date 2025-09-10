@@ -11,8 +11,8 @@ from clive.__private.cli.common.parameters.argument_related_options import (
     account_name as account_name_argument_related_option,
 )
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
-from clive.__private.core.authority.types import AuthorityLevel
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.core.types import AuthorityLevel
 
 generate = CliveTyper(name="generate", help="Commands for generating things (e.g. keys).")
 

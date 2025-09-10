@@ -17,8 +17,8 @@ from wax.complex_operations.role_classes.hive_authority.hive_role_authority_defi
 from wax.complex_operations.role_classes.hive_authority.hive_role_memo_key import HiveRoleMemoKeyDefinition
 
 if TYPE_CHECKING:
-    from clive.__private.core.authority.types import AuthorityLevel, AuthorityLevelMemo, AuthorityLevelRegular
     from clive.__private.core.keys import KeyManager
+    from clive.__private.core.types import AuthorityLevel, AuthorityLevelMemo, AuthorityLevelRegular
 
 WaxRoleRegular = (
     HiveRoleAuthorityDefinition[Literal["owner"]]
