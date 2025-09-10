@@ -477,8 +477,7 @@ class AuthorityDetails(TabPane, CliveWidget):
     @on(FilterAuthority.Cleared)
     def _handle_filter_cleared(self) -> None:
         self._update_input_suggestions()
-        with self.app.batch_update():
-            self.account_authorities.filter_clear()
+        self.account_authorities.filter_clear()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
@@ -494,8 +493,7 @@ class AuthorityDetails(TabPane, CliveWidget):
             self._authorities.append(Authority(authority_operation))
 
     def _filter_account_authorities(self, *filter_patterns: str) -> None:
-        with self.app.batch_update():
-            self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
+        self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
 
     def _update_input_suggestions(self) -> None:
         input_suggestions: set[str] = set()
