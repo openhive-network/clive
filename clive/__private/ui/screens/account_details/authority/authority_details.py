@@ -118,7 +118,7 @@ class AccountsAuthorities(SectionScrollable):
             await self.body.query("*").remove()
             await self.build(authorities)
 
-    async def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
         """
         Update the display based on filter patterns and selected accounts in filter.
 
@@ -136,12 +136,12 @@ class AccountsAuthorities(SectionScrollable):
 
         is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
         if is_any_account_collapsible_displayed:
-            await self._remove_no_filter_criteria_match_widget()
+            self._remove_no_filter_criteria_match_widget()
             return
 
         self._mount_no_filter_criteria_match_widget()
 
-    async def filter_clear(self) -> None:
+    def filter_clear(self) -> None:
         account_collapsibles = list(self.account_collapsibles)
 
         for account_collapsible in account_collapsibles:
@@ -149,7 +149,7 @@ class AccountsAuthorities(SectionScrollable):
                 account_collapsible.filter_clear()
             else:
                 account_collapsible.display = False
-        await self._remove_no_filter_criteria_match_widget()
+        self._remove_no_filter_criteria_match_widget()
 
     def _mount_no_filter_criteria_match_widget(self) -> None:
         try:
@@ -157,9 +157,9 @@ class AccountsAuthorities(SectionScrollable):
         except NoMatches:
             self.body.mount(NoFilterCriteriaMatch(items_name="authorities"))
 
-    async def _remove_no_filter_criteria_match_widget(self) -> None:
+    def _remove_no_filter_criteria_match_widget(self) -> None:
         with contextlib.suppress(NoMatches):
-            await self.body.query_exactly_one(NoFilterCriteriaMatch).remove()
+            self.body.query_exactly_one(NoFilterCriteriaMatch).remove()
 
 
 class AccountCollapsible(CliveCollapsible):
@@ -443,7 +443,7 @@ class AuthorityDetails(TabPane, CliveWidget):
         await self._collect_authorities()
         self._update_input_suggestions()
         await self.account_authorities.build(self._authorities)
-        await self._filter_account_authorities()
+        self._filter_account_authorities()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="filter-and-modify"):
@@ -455,7 +455,7 @@ class AuthorityDetails(TabPane, CliveWidget):
         yield AccountsAuthorities(self._account)
 
     @on(FilterAuthority.AuthorityFilterReady)
-    async def _apply_authority_filter(self) -> None:
+    def _apply_authority_filter(self) -> None:
         """Apply the authority filter based on the input and update the UI."""
         authority_filter_input = self.filter_authority.authority_filter_input
         filter_pattern = authority_filter_input.value_or_error
@@ -467,18 +467,18 @@ class AuthorityDetails(TabPane, CliveWidget):
             all_patterns.append(filter_pattern)
 
         self.filter_authority.collapse_account_filter_collapsible()
-        await self._filter_account_authorities(*all_patterns)
+        self._filter_account_authorities(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
     async def _rebuild_after_key_aliases_changed(self) -> None:
         await self._rebuild_account_authorities()
-        await self._apply_authority_filter()
+        self._apply_authority_filter()
 
     @on(FilterAuthority.Cleared)
-    async def _handle_filter_cleared(self) -> None:
+    def _handle_filter_cleared(self) -> None:
         self._update_input_suggestions()
         with self.app.batch_update():
-            await self.account_authorities.filter_clear()
+            self.account_authorities.filter_clear()
 
     @on(FilterAuthority.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
@@ -493,9 +493,9 @@ class AuthorityDetails(TabPane, CliveWidget):
             )
             self._authorities.append(Authority(authority_operation))
 
-    async def _filter_account_authorities(self, *filter_patterns: str) -> None:
+    def _filter_account_authorities(self, *filter_patterns: str) -> None:
         with self.app.batch_update():
-            await self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
+            self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
 
     def _update_input_suggestions(self) -> None:
         input_suggestions: set[str] = set()
