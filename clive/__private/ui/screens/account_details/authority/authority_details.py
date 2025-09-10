@@ -234,6 +234,10 @@ class AuthorityRole(CliveCollapsible):
             right_hand_side_text=self._get_right_hand_side_text(),
         )
 
+    @property
+    def authority_table(self) -> AuthorityTable:
+        return self.query_exactly_one(AuthorityTable)
+
     def filter(self, *filter_patterns: str) -> None:
         """
         Update the display based on filter patterns.
@@ -243,7 +247,7 @@ class AuthorityRole(CliveCollapsible):
         """
 
         def update_display_in_authority_table() -> None:
-            authority_table = self.query_exactly_one(AuthorityTable)
+            authority_table = self.authority_table
             authority_table.filter(*filter_patterns)
 
         if not filter_patterns:
@@ -257,7 +261,7 @@ class AuthorityRole(CliveCollapsible):
             update_display_in_authority_table()
 
     def filter_clear(self) -> None:
-        authority_table = self.query_exactly_one(AuthorityTable)
+        authority_table = self.authority_table
         authority_table.filter_clear()
         self.display = True
 
