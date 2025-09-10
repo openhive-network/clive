@@ -82,13 +82,13 @@ class RemoveKeyAliasButton(PrivateKeyActionButton):
     class Pressed(PrivateKeyActionButton.Pressed):
         """Message sent when RemoveKeyAliasButton is pressed."""
 
-    def __init__(self, key_alias: str) -> None:
+    def __init__(self, *keys_to_remove: PublicKeyAliased) -> None:
         super().__init__("Remove", "error")
-        self._key_alias = key_alias
+        self._keys_to_remove = keys_to_remove
 
     @on(Pressed)
     def remove_private_key(self) -> None:
-        self.app.push_screen(RemoveKeyAliasDialog(key_alias=self._key_alias), self._key_aliases_changed_callback)
+        self.app.push_screen(RemoveKeyAliasDialog(*self._keys_to_remove), self._key_aliases_changed_callback)
 
 
 class AccountsAuthorities(SectionScrollable):
@@ -313,11 +313,8 @@ class AuthorityItem(CliveCheckerboardTableRow):
         return self._entry.value
 
     @property
-    def stored_key(self) -> PublicKeyAliased | None:
-        key: PublicKeyAliased | None = None
-        if not self._entry.is_account and self.entry_value in self.profile.keys:
-            key = self.profile.keys.get_first_from_public_key(self.entry_value)
-        return key
+    def stored_keys(self) -> list[PublicKeyAliased]:
+        return self.profile.keys.get_all_from_public_key(self.entry_value)
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
@@ -325,10 +322,10 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if self._entry.is_account:
             action_widget: Widget = Static()
         else:
-            stored_key = self.stored_key
+            stored_keys = self.stored_keys
             action_widget = (
-                RemoveKeyAliasButton(stored_key.alias)
-                if stored_key
+                RemoveKeyAliasButton(*stored_keys)
+                if stored_keys
                 else ImportPrivateKeyButton(public_key=self._entry.ensure_key.public_key)
             )
 
@@ -362,11 +359,14 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if self._entry.is_account:
             return entry_value
 
-        stored_key = self.stored_key
-        alias = stored_key.alias if stored_key else None
-        if alias in (None, entry_value):
+        aliases = [key.alias for key in self.stored_keys]
+
+        if not aliases or aliases == [entry_value]:
+            # by default key is aliased with the public key and we don't want to duplicate
             return entry_value
-        return f"{alias} ({entry_value})"
+        if len(aliases) > 1:
+            return f"many aliases ({entry_value})"
+        return f"{aliases[0]} ({entry_value})"
 
 
 class AuthorityTable(CliveCheckerboardTable):
