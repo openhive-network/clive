@@ -15,6 +15,7 @@ from clive.__private.core.formatters.humanize import humanize_relative_or_whole_
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.settings import safe_settings
+from clive.__private.ui.bindings.clive_bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
     ConfirmInvalidateSignaturesDialog,
@@ -150,15 +151,16 @@ class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
+        CLIVE_PREDEFINED_BINDINGS.transaction_summary.broadcast.create(),
+        CLIVE_PREDEFINED_BINDINGS.transaction_summary.save_transaction_to_file.create(),
+        CLIVE_PREDEFINED_BINDINGS.transaction_summary.update_metadata.create(),
     ]
     BIG_TITLE = "transaction summary"
 
     def __init__(self) -> None:
         super().__init__()
-        self._update_bindings()
         self._previous_transaction = deepcopy(self.profile.transaction)
         self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
-        self.watch(self.world, "node_reactive", self._update_bindings, init=False)
 
     @property
     def key_container(self) -> KeyContainer:
@@ -232,7 +234,25 @@ class TransactionSummary(BaseScreen):
         await self._rebuild_signatures_changed()
         await self.button_container.recompose()
         self._update_subtitle()
-        self._update_bindings()
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:  # noqa: ARG002
+        section = self.custom_bindings.transaction_summary
+
+        update_metadata_action = section.update_metadata.default_action
+        save_transaction_to_file_action = section.save_transaction_to_file.default_action
+        broadcast_action = section.broadcast.default_action
+
+        actions_requiring_non_empty_cart = (update_metadata_action, save_transaction_to_file_action, broadcast_action)
+        is_cart_empty = not self.profile.transaction
+
+        if is_cart_empty and action in actions_requiring_non_empty_cart:
+            return False
+
+        if action == update_metadata_action:
+            # should be available only if the node is online
+            return bool(self.node.cached.online_or_none)
+
+        return True
 
     def _create_subtitle_content(self) -> str:
         if self.profile.transaction_file_path:
@@ -284,21 +304,6 @@ class TransactionSummary(BaseScreen):
     def _get_key_to_sign(self) -> PublicKey:
         return self.key_container.selected_key
 
-    def _update_bindings(self) -> None:
-        transaction_summary_bindings = self.app.custom_bindings.transaction_summary
-        if not self.profile.transaction:
-            self.unbind(transaction_summary_bindings.broadcast.key)
-            self.unbind(transaction_summary_bindings.save_transaction_to_file.key)
-            self.unbind(transaction_summary_bindings.update_metadata.key)
-            return
-
-        self.bind(transaction_summary_bindings.broadcast.create(show=False))
-        self.bind(transaction_summary_bindings.save_transaction_to_file.create(description="Save to file", show=False))
-        if self.node.cached.online_or_none:
-            self.bind(transaction_summary_bindings.update_metadata.create(show=False))
-        else:
-            self.unbind(transaction_summary_bindings.update_metadata.key)
-
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)
         subtitle.update(self._create_subtitle_content())
@@ -309,7 +314,6 @@ class TransactionSummary(BaseScreen):
         await self._rebuild_signatures_changed()
         await self.button_container.recompose()
         self._update_subtitle()
-        self._update_bindings()
 
     async def _rebuild_on_transaction_change(self, profile: Profile) -> None:
         if self._previous_transaction != profile.transaction:
