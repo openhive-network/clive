@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.keys import PublicKey
+    from clive.__private.core.keys.keys import PublicKeyAliased
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
@@ -312,11 +313,11 @@ class AuthorityItem(CliveCheckerboardTableRow):
         return self._entry.value
 
     @property
-    def alias(self) -> str | None:
-        alias: str | None = None
+    def stored_key(self) -> PublicKeyAliased | None:
+        key: PublicKeyAliased | None = None
         if not self._entry.is_account and self.entry_value in self.profile.keys:
-            alias = self.profile.keys.get_first_from_public_key(self.entry_value).alias
-        return alias
+            key = self.profile.keys.get_first_from_public_key(self.entry_value)
+        return key
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         key_or_account_text = self._generate_key_or_account_text()
@@ -324,10 +325,10 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if self._entry.is_account:
             action_widget: Widget = Static()
         else:
-            alias = self.alias
+            stored_key = self.stored_key
             action_widget = (
-                RemoveKeyAliasButton(alias)
-                if alias
+                RemoveKeyAliasButton(stored_key.alias)
+                if stored_key
                 else ImportPrivateKeyButton(public_key=self._entry.ensure_key.public_key)
             )
 
@@ -361,7 +362,8 @@ class AuthorityItem(CliveCheckerboardTableRow):
         if self._entry.is_account:
             return entry_value
 
-        alias = self.alias
+        stored_key = self.stored_key
+        alias = stored_key.alias if stored_key else None
         if alias in (None, entry_value):
             return entry_value
         return f"{alias} ({entry_value})"
