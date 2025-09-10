@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, get_args
+from typing import TYPE_CHECKING, ClassVar
 
 from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.constants.data_retrieval import (
     ORDER_DIRECTION_DEFAULT,
+    ORDER_DIRECTIONS,
     PROPOSAL_ORDER_DEFAULT,
+    PROPOSAL_ORDERS,
     PROPOSAL_STATUS_DEFAULT,
+    PROPOSAL_STATUSES,
 )
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
 from clive.__private.core.types import OrderDirections, ProposalOrders, ProposalStatuses
@@ -71,9 +74,9 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     type OrderDirections = OrderDirections
     type Statuses = ProposalStatuses
 
-    ORDERS: ClassVar[tuple[Orders, ...]] = get_args(ProposalOrders)
-    ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = get_args(OrderDirections)
-    STATUSES: ClassVar[tuple[Statuses, ...]] = get_args(ProposalStatuses)
+    ORDERS: ClassVar[tuple[Orders, ...]] = PROPOSAL_ORDERS
+    ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = ORDER_DIRECTIONS
+    STATUSES: ClassVar[tuple[Statuses, ...]] = PROPOSAL_STATUSES
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
