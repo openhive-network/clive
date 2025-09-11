@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.core.profile import Profile
+    from clive_local_tools.cli.types import CLITesterFactory, CLITesterVariant
     from clive_local_tools.types import EnvContextFactory
 
 
@@ -95,41 +96,88 @@ async def node(
 
 
 @pytest.fixture
-async def cli_tester(
+def _cli_tester_factory(
     beekeeper_remote_address_env_context_factory: EnvContextFactory,
     beekeeper_session_token_env_context_factory: EnvContextFactory,
     beekeeper_local: AsyncBeekeeper,
     node: tt.RawNode,  # noqa: ARG001
     world_cli: World,
-) -> AsyncGenerator[CLITester]:
+) -> CLITesterFactory:
+    """Factory that creates cli_tester depending on desired variant."""
+
+    async def factory(variant: CLITesterVariant) -> AsyncGenerator[CLITester]:
+        # import cli after default values for options/arguments are set
+        from clive.__private.cli.main import cli  # noqa: PLC0415
+
+        env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
+        runner = CliRunner(env=env)
+
+        async def create_cli_tester_unlocked(stack: ExitStack) -> CLITester:
+            address = str(beekeeper_local.http_endpoint)
+            token = await (await beekeeper_local.session).token
+
+            stack.enter_context(beekeeper_remote_address_env_context_factory(address))
+            stack.enter_context(beekeeper_session_token_env_context_factory(token))
+
+            return CLITester(cli, runner, world_cli)
+
+        with ExitStack() as stack:
+            cli_tester = await create_cli_tester_unlocked(stack)
+
+            if variant == "locked":
+                await cli_tester.world.commands.lock()
+                # cannot save profile when it is locked because encryption is not possible
+                cli_tester.world.profile.skip_saving()
+            elif variant == "without remote address":
+                stack.enter_context(beekeeper_remote_address_env_context_factory(None))
+            elif variant == "without session token":
+                stack.enter_context(beekeeper_session_token_env_context_factory(None))
+            elif variant != "unlocked":
+                pytest.fail(f"Invalid parameter for cli_tester factory: {variant!r}")
+
+            yield cli_tester
+
+    return factory
+
+
+@pytest.fixture
+async def cli_tester_variant(_cli_tester_factory: CLITesterFactory, request: pytest.FixtureRequest) -> CLITester:
+    """Variables depend on params."""
+    return await anext(_cli_tester_factory(request.param))
+
+
+@pytest.fixture
+async def cli_tester(_cli_tester_factory: CLITesterFactory) -> CLITester:
     """
     Will return CliveTyper and CliRunner from typer.testing module.
 
     Environment variable for session token is set.
     Environment variable for beekeeper remote address is set.
     """
-    # import cli after default values for options/arguments are set
-    from clive.__private.cli.main import cli  # noqa: PLC0415
-
-    env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
-    runner = CliRunner(env=env)
-    with ExitStack() as stack:
-        address = str(beekeeper_local.http_endpoint)
-        stack.enter_context(beekeeper_remote_address_env_context_factory(address))
-        stack.enter_context(beekeeper_session_token_env_context_factory(await (await beekeeper_local.session).token))
-        yield CLITester(cli, runner, world_cli)
+    return await anext(_cli_tester_factory("unlocked"))
 
 
 @pytest.fixture
-async def cli_tester_locked(cli_tester: CLITester) -> CLITester:
-    """Token is set in environment variable. Beekeeper session is locked."""
-    await cli_tester.world.commands.lock()
-    cli_tester.world.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
-    return cli_tester
+async def cli_tester_locked(_cli_tester_factory: CLITesterFactory) -> CLITester:
+    """Session token and remote address are set in the environment variables. Profile is locked."""
+    return await anext(_cli_tester_factory("locked"))
+
+
+@pytest.fixture
+async def cli_tester_without_remote_address(_cli_tester_factory: CLITesterFactory) -> CLITester:
+    """Remote address not set in environment variable."""
+    return await anext(_cli_tester_factory("without remote address"))
+
+
+@pytest.fixture
+async def cli_tester_without_session_token(_cli_tester_factory: CLITesterFactory) -> CLITester:
+    """Session token is not set in environment variable."""
+    return await anext(_cli_tester_factory("without session token"))
 
 
 @pytest.fixture
 async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) -> CLITester:
+    """There are two profiles and cli_tester is locked."""
     async with World() as world_cm:
         await world_cm.create_new_profile_with_wallets(ALT_WORKING_ACCOUNT1_NAME, ALT_WORKING_ACCOUNT1_PASSWORD)
         world_cm.profile.keys.add_to_import(
@@ -142,22 +190,3 @@ async def cli_tester_locked_with_second_profile(cli_tester_locked: CLITester) ->
         await world_cm.commands.lock()
         world_cm.profile.skip_saving()  # cannot save profile when it is locked because encryption is not possible
     return cli_tester_locked
-
-
-@pytest.fixture
-async def cli_tester_without_remote_address(
-    beekeeper_remote_address_env_context_factory: EnvContextFactory,
-    cli_tester: CLITester,
-) -> AsyncGenerator[CLITester]:
-    with beekeeper_remote_address_env_context_factory(None):
-        yield cli_tester
-
-
-@pytest.fixture
-async def cli_tester_without_session_token(
-    beekeeper_session_token_env_context_factory: EnvContextFactory,
-    cli_tester: CLITester,
-) -> AsyncGenerator[CLITester]:
-    """Token is not set in environment variable."""
-    with beekeeper_session_token_env_context_factory(None):
-        yield cli_tester
