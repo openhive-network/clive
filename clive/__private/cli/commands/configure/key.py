@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIPrivateKeyInvalidFormatError
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
@@ -28,13 +28,12 @@ class AddKey(WorldBasedCommand):
     def private_key(self) -> PrivateKey:
         key_or_path = Path(self.key_or_path)
 
-        if key_or_path.is_file():
-            return PrivateKey.from_file(key_or_path)
-
         try:
+            if key_or_path.is_file():
+                return PrivateKey.from_file(key_or_path)
             return PrivateKey(value=str(self.key_or_path))
-        except PrivateKeyInvalidFormatError as error:
-            raise CLIPrettyError(str(error), errno.EINVAL) from None
+        except PrivateKeyInvalidFormatError:
+            raise CLIPrivateKeyInvalidFormatError from None
 
     @property
     def private_key_aliased(self) -> PrivateKeyAliased:

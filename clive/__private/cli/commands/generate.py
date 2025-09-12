@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrettyError
+from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrivateKeyInvalidFormatError
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core import iwax
 from clive.__private.core.keys import PrivateKey, PrivateKeyInvalidFormatError
@@ -47,10 +47,7 @@ class GeneratePublicKey(ExternalCLICommand):
         try:
             private_key = PrivateKey(value=value)
         except PrivateKeyInvalidFormatError as error:
-            raise CLIPrettyError(
-                "Given private key has invalid format. Enter private key in wif - wallet import format "
-                "(look at `clive generate random-key` to display example)."
-            ) from error
+            raise CLIPrivateKeyInvalidFormatError from error
         print_cli(private_key.calculate_public_key().value)
 
 

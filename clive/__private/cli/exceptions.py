@@ -350,3 +350,20 @@ class CLIProfileSelectionRequiresInteractiveError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIPrivateKeyInvalidFormatError(CLIPrettyError):
+    """
+    Raise when trying to load private key un invalid format.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "Given private key has invalid format. Enter private key in wif - wallet import format "
+        "(look at `clive generate random-key` to display example)."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
