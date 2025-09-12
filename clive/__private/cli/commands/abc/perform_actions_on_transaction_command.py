@@ -100,8 +100,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
-        if not self.broadcast:
-            print_cli("[Performing dry run, because --broadcast is not set.]\n")
+        self._print_dry_run_message_if_needed()
 
         with typer_echo_warnings(AutoSignSkippedWarning, AutoSignSkippedWarningCLI()):
             transaction = (
@@ -116,13 +115,9 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 )
             ).result_or_raise
 
-        self.__print_transaction(transaction.with_hash())
-        print_cli(
-            "Transaction was successfully"
-            f" {'broadcasted' if self.broadcast else self._get_transaction_created_message()}."
-        )
-        if self.save_file is not None:
-            print_cli(f"Transaction was saved to {self.save_file}")
+        self._print_transaction(transaction.with_hash())
+        self._print_transaction_success_message()
+        self._print_saveed_to_file_message_if_needed()
 
     def __get_key_to_sign(self) -> PublicKey | None:
         if self.sign_with is None:
@@ -186,8 +181,23 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _get_transaction_created_message(self) -> str:
         return "created"
 
-    def __print_transaction(self, transaction: Transaction) -> None:
+    def _print_transaction(self, transaction: Transaction) -> None:
         transaction_json = transaction.json(order="sorted")
         message = self._get_transaction_created_message().capitalize()
         print_cli(f"{message} transaction:")
         rich.print_json(transaction_json)
+
+    def _print_dry_run_message_if_needed(self) -> None:
+        if not self.broadcast:
+            print_cli("[Performing dry run, because --broadcast is not set.]\n")
+
+    def _print_transaction_success_message(self) -> None:
+        print_cli(
+            "Transaction was successfully"
+            f" {'broadcasted' if self.broadcast else self._get_transaction_created_message()}."
+        )
+
+    def _print_saveed_to_file_message_if_needed(self) -> None:
+        if self.save_file is not None:
+            print_cli(f"Transaction was saved to {self.save_file}")
+
