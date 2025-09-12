@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import get_args
 
 import typer
 
@@ -11,8 +10,8 @@ from clive.__private.cli.common.parameters.argument_related_options import (
     account_name as account_name_argument_related_option,
 )
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
+from clive.__private.core.constants.authority import AUTHORITY_LEVELS
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
-from clive.__private.core.types import AuthorityLevel
 
 generate = CliveTyper(name="generate", help="Commands for generating things (e.g. keys).")
 
@@ -30,7 +29,7 @@ _role_argument = typer.Argument(
 # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
 AuthorityRoleEnum = Enum(  # type: ignore[misc]
     "AuthorityRoleEnum",
-    {option: option for union_member in get_args(AuthorityLevel) for option in get_args(union_member)},
+    {option: option for option in AUTHORITY_LEVELS},
 )
 
 
