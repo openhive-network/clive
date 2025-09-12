@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.keys import PrivateKey, PublicKey
+from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES
 
 if TYPE_CHECKING:
@@ -13,6 +14,26 @@ if TYPE_CHECKING:
 
 SEED: Final[str] = "seed with multiple words"
 ROLE: Final[AuthorityLevel] = "owner"
+
+
+@pytest.mark.parametrize(
+    "cli_tester_variant",
+    [
+        "unlocked",
+        "locked",
+        "without remote address",
+        "without session token",
+    ],
+    indirect=True,
+)
+async def test_command_is_working_in_environment(cli_tester_variant: CLITester) -> None:
+    # ACT
+    result = cli_tester_variant.generate_key_from_seed(
+        account_name=WATCHED_ACCOUNTS_NAMES[0], role=ROLE, password_stdin=SEED
+    )
+
+    # ASSERT
+    assert_no_exit_code_error(result)
 
 
 async def test_generate_key_pair(cli_tester_locked: CLITester) -> None:
