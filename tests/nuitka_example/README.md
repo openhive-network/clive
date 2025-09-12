@@ -7,7 +7,7 @@ _before run_:
 
 _command_:
 
-    nuitka --standalone --jobs=16 --lto=yes --static-libpython=yes --output-dir=nuitkabuild --follow-imports --include-module=aiohttp --include-module=textual --include-module=dynaconf --include-module=typer --include-module=decimal compose.py
+    nuitka --standalone --jobs=16 --lto=yes --static-libpython=yes --output-dir=nuitkabuild --follow-imports compose.py
 
 
 --standalone: This option creates a fully self-contained application, meaning all necessary Python modules, libraries, and the interpreter itself are bundled together. The final executable will work on other machines without needing a Python installation.
@@ -21,8 +21,6 @@ _command_:
 --output-dir=nuitkabuild: This specifies the directory where Nuitka will place the compiled output. The final executable and its dependencies will be in a folder named nuitkabuild.
 
 --follow-imports: This tells Nuitka to analyze the code and automatically include all modules that are imported by the main script and its dependencies. This is a very common and useful option for bundling all required code.
-
---include-module=<module_name>: This is a powerful option for manually including modules that Nuitka's automatic import analysis might miss. It's often used for modules that are dynamically imported or for which Nuitka's import detection is not perfect.
 
 _run_:
 
