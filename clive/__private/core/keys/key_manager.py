@@ -89,7 +89,8 @@ class KeyManager:
     def get_by_alias_pattern(self, *patterns: str) -> list[PublicKeyAliased]:
         return [aliased_key for aliased_key in self if is_text_matching_pattern(aliased_key.alias, *patterns)]
 
-    def get_from_alias(self, alias: str) -> PublicKeyAliased:
+    def get_from_alias(self, value: str | PublicKeyAliased) -> PublicKeyAliased:
+        alias = value if isinstance(value, str) else value.alias
         for key in self.__keys:
             if key.alias == alias:
                 return key
