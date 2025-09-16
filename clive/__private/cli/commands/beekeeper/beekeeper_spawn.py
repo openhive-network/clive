@@ -3,11 +3,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper, close_already_running_beekeeper
-from beekeepy.exceptions import FailedToDetectRunningBeekeeperError
+from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
     CLIBeekeeperLocallyAlreadyRunningError,
@@ -16,49 +14,6 @@ from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.commands.beekeeper import IsBeekeeperRunning
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar, safe_settings
-
-
-@dataclass(kw_only=True)
-class BeekeeperInfo(WorldBasedCommand):
-    @property
-    def should_require_unlocked_wallet(self) -> bool:
-        return False
-
-    async def _run(self) -> None:
-        session = await self.world.beekeeper_manager.beekeeper.session
-        info = (await session.get_info()).json(order="sorted")
-        print_cli(info)
-
-
-@dataclass(kw_only=True)
-class BeekeeperCreateSession(WorldBasedCommand):
-    echo_token_only: bool
-
-    @property
-    def should_validate_if_session_token_required(self) -> bool:
-        return False
-
-    @property
-    def should_require_unlocked_wallet(self) -> bool:
-        return False
-
-    async def _run(self) -> None:
-        session = await self.world.beekeeper_manager.beekeeper.create_session()
-        token = await session.token
-        if self.echo_token_only:
-            message = token
-        else:
-            message = (
-                f"A new session was created, token is: {token}\n"
-                "If you want to use that Beekeeper session in Clive CLI env, please set:\n"
-                f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
-            )
-        print_cli(message)
-
-    async def _hook_before_entering_context_manager(self) -> None:
-        """Display information about using Beekeeper if not using echo-token-only flag."""
-        if not self.echo_token_only:
-            await super()._hook_before_entering_context_manager()
 
 
 @dataclass(kw_only=True)
@@ -116,16 +71,3 @@ class BeekeeperSpawn(ExternalCLICommand):
 
         while True:
             time.sleep(1)
-
-
-@dataclass(kw_only=True)
-class BeekeeperClose(ExternalCLICommand):
-    async def _run(self) -> None:
-        print_cli("Closing beekeeper...")
-        beekeeper_working_directory = safe_settings.beekeeper.working_directory
-        try:
-            close_already_running_beekeeper(cwd=beekeeper_working_directory)
-        except FailedToDetectRunningBeekeeperError:
-            print_cli("There was no running beekeeper.")
-        else:
-            print_cli("Beekeeper was closed.")

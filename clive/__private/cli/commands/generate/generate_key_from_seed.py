@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrivateKeyInvalidFormatError
+from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError
 from clive.__private.cli.print_cli import print_cli
-from clive.__private.core import iwax
-from clive.__private.core.keys import PrivateKey, PrivateKeyInvalidFormatError
+from clive.__private.core.keys import PrivateKey
 
 if TYPE_CHECKING:
     from clive.__private.core.types import AuthorityLevel
@@ -38,32 +37,3 @@ class GenerateKeyFromSeed(ExternalCLICommand):
         else:
             print_cli(private_key.value)
             print_cli(private_key.calculate_public_key().value)
-
-
-@dataclass(kw_only=True)
-class GeneratePublicKey(ExternalCLICommand):
-    async def _run(self) -> None:
-        value = self.read_interactive("Enter private key") if self.is_interactive else self.read_piped()
-        try:
-            private_key = PrivateKey(value=value)
-        except PrivateKeyInvalidFormatError as error:
-            raise CLIPrivateKeyInvalidFormatError from error
-        print_cli(private_key.calculate_public_key().value)
-
-
-@dataclass(kw_only=True)
-class GenerateRandomKey(ExternalCLICommand):
-    key_pairs: int
-
-    async def _run(self) -> None:
-        for _ in range(self.key_pairs):
-            private_key = PrivateKey.create()
-            print_cli(private_key.value)
-            print_cli(private_key.calculate_public_key().value)
-
-
-@dataclass(kw_only=True)
-class GenerateSecretPhrase(ExternalCLICommand):
-    async def _run(self) -> None:
-        brain_key = iwax.suggest_brain_key()
-        print_cli(brain_key)

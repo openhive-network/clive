@@ -1,4 +1,4 @@
-clive/__private/cli/beekeeper.py
+clive/__private/cli/beekeeper/main.py
     DOC101: Function `spawn`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `spawn`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [background: bool, echo_address_only: bool].
     DOC101: Function `create_session`: Docstring contains fewer arguments than in function signature.
@@ -17,7 +17,7 @@ clive/__private/cli/commands/abc/operation_command.py
 clive/__private/cli/commands/abc/perform_actions_on_transaction_command.py
     DOC201: Method `PerformActionsOnTransactionCommand._get_transaction_content` does not have a return section in docstring
 --------------------
-clive/__private/cli/commands/beekeeper.py
+clive/__private/cli/commands/beekeeper/beekeeper_spawn.py
     DOC501: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError'].
 --------------------
@@ -90,7 +90,7 @@ clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
-clive/__private/cli/generate.py
+clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `generate_key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: AuthorityRoleEnum | None, role_option: AuthorityRoleEnum | None].
     DOC101: Function `generate_random_key`: Docstring contains fewer arguments than in function signature.

@@ -4,12 +4,12 @@ from typing import Final
 
 import typer
 
-from clive.__private.cli.beekeeper import beekeeper
+from clive.__private.cli.beekeeper.main import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.configure.main import configure
-from clive.__private.cli.generate import generate
+from clive.__private.cli.generate.main import generate
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.process.main import process
 from clive.__private.cli.show.main import show
