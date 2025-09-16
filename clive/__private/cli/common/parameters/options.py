@@ -140,3 +140,5 @@ autosign = _operation_common_option(
 )
 
 # << OPERATION COMMON OPTIONS
+
+broadcast_optional = modified_param(broadcast, default=None)
