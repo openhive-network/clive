@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Self
 
 import typer
 
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIRequiresInteractiveError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 
@@ -64,6 +64,21 @@ class ExternalCLICommand(ABC):
         return cls(**sanitized)
 
     def read_interactive(self, prompt: str, *, hide_input: bool = True) -> str:
+        """
+        Read input in interactive mode.
+
+        Args:
+            prompt: Message displayed to the user.
+            hide_input: If True, hides the input (e.g., for passwords).
+
+        Raises:
+            CLIRequiresInteractiveError: If not in interactive mode.
+
+        Returns:
+            The string read from stdin.
+        """
+        if not self.is_interactive:
+            raise CLIRequiresInteractiveError("read input")
         input_value = typer.prompt(prompt, hide_input=hide_input, type=str)
         return str(input_value)
 

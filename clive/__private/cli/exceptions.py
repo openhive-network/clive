@@ -338,6 +338,21 @@ class CLIMutuallyExclusiveOptionsError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
+class CLIRequiresInteractiveError(CLIPrettyError):
+    """
+    Raised when an action is attempted in non-interactive mode.
+
+    Args:
+        action_name: Short description of the action being attempted.
+    """
+
+    def __init__(self, action_name: str = "") -> None:
+        action_description = f"The '{action_name}' action" if action_name else "This action"
+        message = f"{action_description} cannot be performed in non-interactive mode."
+
+        super().__init__(message, errno.EINVAL)
+
+
 class CLIProfileSelectionRequiresInteractiveError(CLIPrettyError):
     """
     Raise when trying to select a profile to unlock in non-interactive mode.
