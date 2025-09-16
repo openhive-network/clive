@@ -130,3 +130,5 @@ save_file = _operation_common_option(
 )
 
 # << OPERATION COMMON OPTIONS
+
+optional_broadcast = modified_param(broadcast, default=None)
