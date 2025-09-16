@@ -30,7 +30,7 @@ class GenerateKeyFromSeed(ExternalCLICommand):
             self.read_interactive("Enter seed (like as secret phrase)") if self.is_interactive else self.read_piped()
         )
 
-        private_key = iwax.generate_password_based_private_key(password, self.role, self.account_name)
+        private_key = PrivateKey.create_from_seed(password, self.account_name, role=self.role)
         if self.only_public_key:
             print_cli(private_key.calculate_public_key().value)
         elif self.only_private_key:
