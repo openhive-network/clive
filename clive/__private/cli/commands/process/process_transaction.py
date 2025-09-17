@@ -34,7 +34,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             # force_unsign removes signatures and no signing happens when given
             return False
 
-        if await self._is_transaction_signed():
+        if await self._is_transaction_already_signed():
             if self.use_autosign:
                 # autosign is be skipped when transaction is already signed
                 return False
@@ -70,7 +70,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self._validate_if_broadcast_is_used_without_force_unsign()
         # check explicitly set of autosign
         self._validate_mutually_exclusive(autosign=self.autosign is True, force_unsign=self.force_unsign)
-        if await self._is_transaction_signed():
+        if await self._is_transaction_already_signed():
             self._validate_signed_transaction()
         else:
             self._validate_if_broadcasting_signed_transaction()
@@ -92,7 +92,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
             raise CLIWrongAlreadySignedModeAutoSignError
 
-    async def _is_transaction_signed(self) -> bool:
+    async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
 
     async def _get_transaction_content(self) -> Transaction:
