@@ -10,14 +10,6 @@ from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
-from clive.__private.core.authority import (
-    Authority,
-    AuthorityEntryAccountRegular,
-    AuthorityEntryKeyRegular,
-    AuthorityEntryMemo,
-    AuthorityRoleMemo,
-    AuthorityRoleRegular,
-)
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
@@ -35,7 +27,6 @@ from clive.__private.ui.widgets.clive_basic import (
 )
 from clive.__private.ui.widgets.no_filter_criteria_match import NoFilterCriteriaMatch
 from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
-from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -46,6 +37,14 @@ if TYPE_CHECKING:
     from textual.widget import Widget
 
     from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.authority import (
+        Authority,
+        AuthorityEntryAccountRegular,
+        AuthorityEntryKeyRegular,
+        AuthorityEntryMemo,
+        AuthorityRoleMemo,
+        AuthorityRoleRegular,
+    )
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.keys.keys import PublicKeyAliased
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
@@ -431,7 +430,7 @@ class AuthorityDetails(TabPane, CliveWidget):
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(self.AUTHORITY_TAB_PANE_TITLE)
         self._account = account
-        self._authorities: list[Authority] = []
+        self._authorities: list[Authority] = [account.data.authority for account in self.profile.accounts.tracked]
 
     @property
     def account_authorities(self) -> AccountsAuthorities:
@@ -442,7 +441,6 @@ class AuthorityDetails(TabPane, CliveWidget):
         return self.query_exactly_one(FilterAuthority)
 
     async def on_mount(self) -> None:
-        await self._collect_authorities()
         self._update_input_suggestions()
         await self.account_authorities.build(self._authorities)
         self._filter_account_authorities()
@@ -484,15 +482,6 @@ class AuthorityDetails(TabPane, CliveWidget):
     @on(FilterAuthority.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
         self._update_input_suggestions()
-
-    async def _collect_authorities(self) -> None:
-        tracked_accounts = self.profile.accounts.tracked
-
-        for account in tracked_accounts:
-            authority_operation = await AccountAuthorityUpdateOperation.create_for(
-                self.world.wax_interface, account.name
-            )
-            self._authorities.append(Authority(authority_operation))
 
     def _filter_account_authorities(self, *filter_patterns: str) -> None:
         self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
