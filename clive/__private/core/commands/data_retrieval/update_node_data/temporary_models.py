@@ -10,6 +10,7 @@ from clive.__private.core.date_utils import utc_epoch
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from clive.__private.core.authority import Authority
     from clive.__private.models.schemas import (
         Account,
         DynamicGlobalProperties,
@@ -58,6 +59,7 @@ class SanitizedData:
 @dataclass
 class AccountProcessedData:
     core: Account
+    authority: Authority
     last_history_entry: datetime = field(default_factory=lambda: utc_epoch())
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
