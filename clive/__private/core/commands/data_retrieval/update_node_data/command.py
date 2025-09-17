@@ -7,7 +7,11 @@ from typing import TYPE_CHECKING, Final
 import beekeepy.interfaces as bki
 
 from clive.__private.core import iwax
+from clive.__private.core.authority import Authority
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.commands.data_retrieval.update_node_data.clive_authority_data_provider import (
+    CliveAuthorityDataProvider,
+)
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
     AccountProcessedData,
@@ -26,6 +30,7 @@ from clive.__private.models.hp_vests_balance import HpVestsBalance
 from clive.__private.models.schemas import (
     DynamicGlobalProperties,
 )
+from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
@@ -40,11 +45,13 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import (
         Manabar as SchemasManabar,
     )
+    from wax import IHiveChainInterface
 
 
 @dataclass
 class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, DynamicGlobalProperties]):
     node: Node
+    wax_interface: IHiveChainInterface
     accounts: list[TrackedAccount] = field(default_factory=list)
 
     async def _execute(self) -> None:
@@ -107,14 +114,20 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         accounts_processed_data: dict[TrackedAccount, AccountProcessedData] = {}
         for account in self.accounts:
             account_data = data.account_sanitized_data[account]
+            authority_provider = CliveAuthorityDataProvider(account_data=account_data.core)
+            authority_operation = await AccountAuthorityUpdateOperation.create_for_with_provider(
+                self.wax_interface, account.name, authority_provider
+            )
             accounts_processed_data[account] = AccountProcessedData(
                 core=account_data.core,
+                authority=Authority(authority_operation),
                 rc=account_data.rc,
                 last_history_entry=self.__get_account_last_history_entry(account_data.account_history),
             )
 
         for account, info in accounts_processed_data.items():
             account._data = NodeData(
+                authority=info.authority,
                 hbd_balance=info.core.hbd_balance,
                 hbd_savings=info.core.savings_hbd_balance,
                 hbd_unclaimed=info.core.reward_hbd_balance,

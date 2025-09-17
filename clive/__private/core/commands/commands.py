@@ -496,7 +496,9 @@ class Commands[WorldT: World]:
         from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData  # noqa: PLC0415
 
         result = await self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
+            UpdateNodeData(
+                accounts=list(accounts or []), wax_interface=self._world.wax_interface, node=self._world.node
+            )
         )
         if result.success:
             await self._world.node.cached.update_dynamic_global_properties(result.result_or_raise)
