@@ -10,7 +10,13 @@ from clive.__private.models.schemas import PublicKey
 from .exceptions import UnsupportedOptionError
 
 type StringConvertibleOptionTypes = str | int | tt.Asset.AnyT | PublicKey | Path
-type CliOptionT = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
+type CliOptionT = (
+    bool
+    | StringConvertibleOptionTypes
+    | list[StringConvertibleOptionTypes]
+    | tuple[StringConvertibleOptionTypes, ...]
+    | None
+)
 
 
 def option_to_string(value: StringConvertibleOptionTypes) -> str:
@@ -37,6 +43,9 @@ def kwargs_to_cli_options(**cli_options: CliOptionT) -> list[str]:
             options.append(f"--no-{option_name}")
         elif isinstance(value, list):
             options.extend([f"--{option_name}={option_to_string(entry)}" for entry in value])
+        elif isinstance(value, tuple):
+            options.append(f"--{option_name}")
+            options.extend([option_to_string(entry) for entry in value])
         elif value is not None:
             options.append(f"--{option_name}={option_to_string(value)}")
     return options

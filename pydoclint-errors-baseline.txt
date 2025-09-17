@@ -102,7 +102,7 @@ clive/__private/cli/main.py
 --------------------
 clive/__private/cli/process/account_creation.py
     DOC101: Function `process_account_creation`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `process_account_creation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [broadcast: bool, creator: str, ctx: typer.Context, fee: bool, json_metadata: str, new_account_name: str, save_file: str | None, sign_with: str | None].
+    DOC103: Function `process_account_creation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [broadcast: bool, creator: str, ctx: typer.Context, fee: bool, json_metadata: str, new_account_name: str, save_file: str | None, sign_with: str | None, specify_public_keys: PublicKeyTuple].
     DOC101: Function `specify_owner`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `specify_owner`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [accounts_with_weight: list[str], broadcast: bool | None, ctx: typer.Context, keys_with_weight: list[str], save_file: str | None, sign_with: str | None, threshold: int].
     DOC101: Function `specify_active`: Docstring contains fewer arguments than in function signature.

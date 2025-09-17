@@ -357,3 +357,29 @@ async def test_save_to_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: P
 
     # ASSERT
     assert_transaction_in_blockchain(node, result)
+
+
+async def test_account_creation_simple_workflow(node: tt.RawNode, cli_tester: CLITester) -> None:
+    # ARRANGE
+    fee = fetch_account_creation_fee(node)
+    operation = AccountCreateOperation(
+        fee=fee,
+        creator=WORKING_ACCOUNT_DATA.account.name,
+        new_account_name=NEW_ACCOUNT_NAME,
+        owner=OWNER_AUTHORITY,
+        active=ACTIVE_AUTHORITY,
+        posting=POSTING_AUTHORITY,
+        memo_key=MEMO_KEY,
+        json_metadata="",
+    )
+
+    # ACT
+    result = cli_tester.process_account_creation(
+        new_account_name=NEW_ACCOUNT_NAME,
+        fee=True,
+        specify_public_keys=(OWNER_KEY, ACTIVE_KEY, POSTING_KEY, MEMO_KEY),
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+    ).fire()
+
+    # ASSERT
+    assert_operations_placed_in_blockchain(node, result, operation)

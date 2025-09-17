@@ -573,6 +573,7 @@ class CLITester:
         creator: str | None = None,
         fee: bool | None = None,
         json_metadata: str | None = None,
+        specify_public_keys: tuple[str, str, str, str] | None = None,
         sign_with: str | None = None,
         broadcast: bool | None = None,
         save_file: Path | None = None,

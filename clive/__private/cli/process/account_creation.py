@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 type AccountWithWeight = tuple[str, int]
 type KeyWithWeight = tuple[str, int]
+PublicKeyTuple = tuple[str, str, str, str]
 
 account_creation = CliveTyper(name="account-creation", help="Account creation with token or fee.", chain=True)
 EPILOG: Final[str] = "Look also at the help for `clive process account-creation` for more options."
@@ -124,7 +125,7 @@ def modify_command_common_options(
     )
 
 
-@account_creation.callback(result_callback=send_account_creation)
+@account_creation.callback(result_callback=send_account_creation, invoke_without_command=True)
 async def process_account_creation(  # noqa: PLR0913
     ctx: typer.Context,
     creator: str = modified_param(options.working_account_template, param_decls=("--creator",)),
@@ -140,6 +141,10 @@ async def process_account_creation(  # noqa: PLR0913
     json_metadata: str = typer.Option(
         "",
         help="The json metadata of the new account.",
+    ),
+    specify_public_keys: PublicKeyTuple = typer.Option(
+        None,
+        help="Four public keys that are used with simplified workflow of account creation.",
     ),
     sign_with: str | None = options.sign_with,
     broadcast: bool = options.broadcast,  # noqa: FBT001
@@ -159,6 +164,11 @@ async def process_account_creation(  # noqa: PLR0913
         broadcast=broadcast,
         save_file=save_file,
     )
+    if specify_public_keys:
+        account_creation_command.add_key_authority("owner", specify_public_keys[0], NEW_ACCOUNT_AUTHORITY_WEIGHT)
+        account_creation_command.add_key_authority("active", specify_public_keys[1], NEW_ACCOUNT_AUTHORITY_WEIGHT)
+        account_creation_command.add_key_authority("posting", specify_public_keys[2], NEW_ACCOUNT_AUTHORITY_WEIGHT)
+        account_creation_command.set_memo_key(specify_public_keys[3])
     ctx.obj = account_creation_command
 
 
