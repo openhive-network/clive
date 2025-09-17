@@ -219,4 +219,3 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _print_saveed_to_file_message_if_needed(self) -> None:
         if self.save_file is not None:
             print_cli(f"Transaction was saved to {self.save_file}")
-
