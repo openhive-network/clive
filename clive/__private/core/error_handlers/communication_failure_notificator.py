@@ -14,13 +14,18 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
 
     Attributes:
         YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE: A message indicating insufficient funds for an operation.
+        MISSING_NEW_ACCOUNT_TOKEN_MESSAGE: A message indicating a missing new account token required for an operation.
         SEARCHED_AND_PRINTED_MESSAGES: A dictionary mapping specific error messages to user-friendly messages.
     """
 
     YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE: Final[str] = "You don't have enough funds to perform this operation."
+    MISSING_NEW_ACCOUNT_TOKEN_MESSAGE: Final[str] = (
+        "You don't have new account token required to create claimed account."  # noqa: S105
+    )
 
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[str, str]] = {
         "does not have sufficient funds": YOU_DONT_HAVE_ENOUGH_FUNDS_MESSAGE,
+        "has no claimed accounts to create": MISSING_NEW_ACCOUNT_TOKEN_MESSAGE,
     }
 
     def _is_exception_to_catch(self, error: Exception) -> TypeGuard[CommunicationError]:
