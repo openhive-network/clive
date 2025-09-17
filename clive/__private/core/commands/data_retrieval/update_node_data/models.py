@@ -11,6 +11,7 @@ from clive.__private.models.disabled_api import DisabledAPI
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
+    from clive.__private.core.authority import Authority
     from clive.__private.models.asset import Asset
     from clive.__private.models.hp_vests_balance import HpVestsBalance
 
@@ -36,6 +37,7 @@ class Manabar:
 
 @dataclass(kw_only=True)
 class NodeData:
+    authority: Authority
     hbd_balance: Asset.Hbd
     hbd_savings: Asset.Hbd
     hbd_unclaimed: Asset.Hbd
