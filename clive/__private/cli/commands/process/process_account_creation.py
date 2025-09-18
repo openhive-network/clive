@@ -17,7 +17,7 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import AuthorityType
+    from clive.__private.core.types import AuthorityLevelRegular
 
 
 class MissingOwnerAuthorityError(CLIPrettyError):
@@ -143,10 +143,10 @@ class ProcessAccountCreation(OperationCommand):
         assert self._memo_key is not None, "Memo key must be specified by user and set with method `set_memo_key`"
         return self._memo_key
 
-    def add_key_authority(self, type_: AuthorityType, key: PublicKey, weight: int) -> None:
+    def add_key_authority(self, type_: AuthorityLevelRegular, key: PublicKey, weight: int) -> None:
         self._get_authority(type_).key_auths.append((key, weight))
 
-    def add_account_authority(self, type_: AuthorityType, account_name: str, weight: int) -> None:
+    def add_account_authority(self, type_: AuthorityLevelRegular, account_name: str, weight: int) -> None:
         self._get_authority(type_).account_auths.append((account_name, weight))
 
     @override
@@ -160,7 +160,7 @@ class ProcessAccountCreation(OperationCommand):
         else:
             self._fee_value = AssetHive(0)
 
-    def set_threshold(self, type_: AuthorityType, threshold: int) -> None:
+    def set_threshold(self, type_: AuthorityLevelRegular, threshold: int) -> None:
         self._get_authority(type_).weight_threshold = threshold
 
     def set_memo_key(self, key: PublicKey) -> None:
@@ -204,7 +204,7 @@ class ProcessAccountCreation(OperationCommand):
             json_metadata=self.json_metadata,
         )
 
-    def _get_authority(self, type_: AuthorityType) -> Authority:
+    def _get_authority(self, type_: AuthorityLevelRegular) -> Authority:
         if type_ == "owner":
             return self._owner_authority
         if type_ == "active":

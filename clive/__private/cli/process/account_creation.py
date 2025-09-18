@@ -20,7 +20,8 @@ from clive.__private.core.constants.cli import (
 
 if TYPE_CHECKING:
     from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation
-    from clive.__private.cli.types import AccountWithWeight, AuthorityType, KeyWithWeight
+    from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
+    from clive.__private.core.types import AuthorityLevelRegular
 
 account_creation = CliveTyper(
     name="account-creation", help="Create an account using a token or by paying a fee.", chain=True
@@ -61,7 +62,7 @@ def send_account_creation(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  
 
 def set_authority(
     ctx: typer.Context,
-    type_: AuthorityType,
+    type_: AuthorityLevelRegular,
     threshold: int,
     keys_with_weight: list[tuple[str, int]],
     accounts_with_weight: list[tuple[str, int]],

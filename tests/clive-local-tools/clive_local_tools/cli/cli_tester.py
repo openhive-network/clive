@@ -21,8 +21,7 @@ if TYPE_CHECKING:
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
-    from clive.__private.cli.types import AuthorityType
-    from clive.__private.core.types import AlreadySignedMode
+    from clive.__private.core.types import AlreadySignedMode, AuthorityLevelRegular
     from clive.__private.core.world import World
     from clive.__private.models.schemas import PublicKey
     from clive_local_tools.cli.command_options import CliOptionT
@@ -45,7 +44,7 @@ class CLITester:
             raise CLITestCommandError(command, result.exit_code, result.stdout, result)
         return result
 
-    def show_authority(self, authority: AuthorityType, *, account_name: str | None = None) -> Result:
+    def show_authority(self, authority: AuthorityLevelRegular, *, account_name: str | None = None) -> Result:
         match authority:
             case "owner":
                 return self.show_owner_authority(account_name=account_name)
@@ -58,7 +57,7 @@ class CLITester:
 
     def process_update_authority(  # noqa: PLR0913
         self,
-        authority: AuthorityType,
+        authority: AuthorityLevelRegular,
         *,
         account_name: str | None = None,
         threshold: int | None = None,

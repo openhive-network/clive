@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
-    from clive.__private.cli.types import AuthorityType
+    from clive.__private.core.types import AuthorityLevelRegular
     from clive.__private.models.schemas import PublicKey
 
 
@@ -47,12 +47,12 @@ def assert_pending_withrawals(context: CLITester | Result, account_name: str, as
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
 
 
-def get_authority_output(context: CLITester | Result, authority: AuthorityType) -> str:
+def get_authority_output(context: CLITester | Result, authority: AuthorityLevelRegular) -> str:
     result = context.show_authority(authority) if isinstance(context, CLITester) else context
     return result.output
 
 
-def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityLevelRegular) -> None:
     output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
     assert any(str(entry) in line for line in table), (
@@ -60,7 +60,9 @@ def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, aut
     )
 
 
-def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+def assert_is_not_authority(
+    context: CLITester | Result, entry: str | PublicKey, authority: AuthorityLevelRegular
+) -> None:
     output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
     assert not any(str(entry) in line for line in table), (
@@ -71,7 +73,7 @@ def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey,
 def assert_authority_weight(
     context: CLITester | Result,
     entry: str | PublicKey,
-    authority: AuthorityType,
+    authority: AuthorityLevelRegular,
     weight: int,
 ) -> None:
     output = get_authority_output(context, authority)
@@ -80,7 +82,7 @@ def assert_authority_weight(
     )
 
 
-def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
+def assert_weight_threshold(context: CLITester | Result, authority: AuthorityLevelRegular, threshold: int) -> None:
     output = get_authority_output(context, authority)
     expected_output = f"weight threshold is {threshold}"
     command = f"show {authority}-authority"

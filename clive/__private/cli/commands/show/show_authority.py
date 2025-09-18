@@ -9,13 +9,13 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.print_cli import print_cli
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import AuthorityType
+    from clive.__private.core.types import AuthorityLevelRegular
 
 
 @dataclass(kw_only=True)
 class ShowAuthority(WorldBasedCommand):
     account_name: str
-    authority: AuthorityType
+    authority: AuthorityLevelRegular
 
     async def _run(self) -> None:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise

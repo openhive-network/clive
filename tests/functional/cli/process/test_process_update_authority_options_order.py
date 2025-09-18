@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final, get_args
 
 import pytest
 
-from clive.__private.cli.types import AuthorityType
+from clive.__private.core.types import AuthorityLevelRegular
 from clive_local_tools.cli.checkers import (
     assert_authority_weight,
     assert_is_authority,
@@ -29,8 +29,8 @@ MODIFIED_WEIGHT: Final[int] = 214
 WEIGHT_THRESHOLD: Final[int] = 2
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_sign_before_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_sign_before_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -56,8 +56,8 @@ async def test_sign_before_chaining(cli_tester: CLITester, authority: AuthorityT
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_sign_after_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_sign_after_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -83,8 +83,10 @@ async def test_sign_after_chaining(cli_tester: CLITester, authority: AuthorityTy
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_save_file_before_chaining(cli_tester: CLITester, authority: AuthorityType, tmp_path: Path) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_save_file_before_chaining(
+    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
+) -> None:
     # ARRANGE
     file_path = tmp_path / f"trx_update_{authority}_authority.json"
 
@@ -113,8 +115,10 @@ async def test_save_file_before_chaining(cli_tester: CLITester, authority: Autho
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_save_file_option_after_chaining(cli_tester: CLITester, authority: AuthorityType, tmp_path: Path) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_save_file_option_after_chaining(
+    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
+) -> None:
     # ARRANGE
     file_path = tmp_path / f"trx_update_{authority}_authority.json"
 
@@ -143,8 +147,8 @@ async def test_save_file_option_after_chaining(cli_tester: CLITester, authority:
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_no_broadcast_before_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_no_broadcast_before_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -165,8 +169,8 @@ async def test_no_broadcast_before_chaining(cli_tester: CLITester, authority: Au
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_no_broadcast_overriden(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_no_broadcast_overriden(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -191,8 +195,8 @@ async def test_no_broadcast_overriden(cli_tester: CLITester, authority: Authorit
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.public_key, authority, WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_sign_option_multiple_times(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_sign_option_multiple_times(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -219,8 +223,10 @@ async def test_sign_option_multiple_times(cli_tester: CLITester, authority: Auth
     assert_authority_weight(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority, MODIFIED_WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_save_file_option_multiple_times(cli_tester: CLITester, authority: AuthorityType, tmp_path: Path) -> None:
+@pytest.mark.parametrize("authority", get_args(AuthorityLevelRegular))
+async def test_save_file_option_multiple_times(
+    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
+) -> None:
     # ARRANGE
     first_file_path = tmp_path / "notcreated.json"
     second_file_path = tmp_path / f"trx_update_{authority}_authority.json"
