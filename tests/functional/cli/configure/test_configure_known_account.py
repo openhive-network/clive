@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.cli.exceptions import CLIAccountDoesNotExistsOnNodeError
 from clive_local_tools.checkers.profile_checker import ProfileChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
+from clive_local_tools.helpers import get_formatted_error_message
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -105,3 +107,21 @@ async def test_configure_disable_known_account_add(cli_tester: CLITester) -> Non
     assert not (await profile_checker.profile).should_enable_known_accounts, (
         "Known account attribute should be disabled."
     )
+
+
+async def test_configure_known_account_add_non_existing(cli_tester: CLITester) -> None:
+    """Check clive configure known-account add command when account doesn't exist."""
+    # ARRANGE
+    non_existing_account = "qwerty"
+    message = get_formatted_error_message(
+        CLIAccountDoesNotExistsOnNodeError(non_existing_account, cli_tester.world.node.http_endpoint)
+    )
+    profile_name = cli_tester.world.profile.name
+    profile_checker = ProfileChecker.from_wallets(profile_name, cli_tester.world.beekeeper_manager._content)
+
+    # ACT
+    with pytest.raises(CLITestCommandError, match=message):
+        cli_tester.configure_known_account_add(account_name=non_existing_account)
+
+    # ASSERT
+    await profile_checker.assert_not_in_known_accounts(account_names=[non_existing_account])

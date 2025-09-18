@@ -18,6 +18,6 @@ class SwitchWorkingAccount(WorldBasedCommand):
             raise CLIPrettyError(f"Account {self.account_name} is already a working account.") from None
 
     async def validate_inside_context_manager(self) -> None:
-        self._validate_account_exists(self.account_name)
+        self._validate_account_is_tracked(self.account_name)
         self._validate_already_working_account()
         await super().validate_inside_context_manager()

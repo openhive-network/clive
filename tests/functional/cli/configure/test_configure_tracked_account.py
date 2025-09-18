@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.cli.exceptions import CLIAccountDoesNotExistsOnNodeError
 from clive_local_tools.checkers.profile_checker import ProfileChecker
 from clive_local_tools.cli.exceptions import CLITestCommandError
+from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_NAME,
     WATCHED_ACCOUNTS_NAMES,
@@ -76,3 +78,21 @@ async def test_configure_tracked_account_remove_with_already_removed_account(cli
     # ASSERT
     with pytest.raises(CLITestCommandError, match=message):
         cli_tester.configure_tracked_account_remove(account_name=ACCOUNT_TO_REMOVE)
+
+
+async def test_configure_tracked_account_add_non_existing(cli_tester: CLITester) -> None:
+    """Check clive configure tracked-account add command when account doesn't exist."""
+    # ARRANGE
+    non_existing_account = "qwerty"
+    message = get_formatted_error_message(
+        CLIAccountDoesNotExistsOnNodeError(non_existing_account, cli_tester.world.node.http_endpoint)
+    )
+    profile_name = cli_tester.world.profile.name
+    profile_checker = ProfileChecker.from_wallets(profile_name, cli_tester.world.beekeeper_manager._content)
+
+    # ACT
+    with pytest.raises(CLITestCommandError, match=message):
+        cli_tester.configure_tracked_account_add(account_name=non_existing_account)
+
+    # ASSERT
+    await profile_checker.assert_not_in_tracked_accounts(account_names=[non_existing_account])

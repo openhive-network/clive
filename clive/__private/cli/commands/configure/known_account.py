@@ -15,6 +15,7 @@ class AddKnownAccount(WorldBasedCommand):
 
     async def validate_inside_context_manager(self) -> None:
         self._validate_known_account()
+        await self._validate_account_exists_in_node(self.account_name)
         await super().validate_inside_context_manager()
 
     def _validate_known_account(self) -> None:

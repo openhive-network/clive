@@ -9,6 +9,7 @@ import beekeepy.communication as bkc
 from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
+    CLIAccountDoesNotExistsOnNodeError,
     CLIBeekeeperRemoteAddressIsNotRespondingError,
     CLIBeekeeperRemoteAddressIsNotSetError,
     CLIBeekeeperSessionTokenNotSetError,
@@ -97,11 +98,17 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         if not self.is_session_token_set:
             raise CLIBeekeeperSessionTokenNotSetError
 
-    def _validate_account_exists(self, account_name: str) -> None:
+    def _validate_account_is_tracked(self, account_name: str) -> None:
         try:
             self.profile.accounts.get_tracked_account(account_name)
         except AccountNotFoundError as ex:
             raise CLIPrettyError(str(ex)) from None
+
+    async def _validate_account_exists_in_node(self, account_name: str) -> None:
+        wrapper = await self.world.commands.does_account_exists_in_node(account_name=account_name)
+        exists = wrapper.result_or_raise
+        if not exists:
+            raise CLIAccountDoesNotExistsOnNodeError(account_name, self.world.node.http_endpoint)
 
     async def _create_context_manager_instance(self) -> World:
         return CLIWorld()

@@ -490,3 +490,17 @@ class CLIPublicKeyInvalidFormatError(CLIPrettyError):
     def __init__(self, invalid_key: str) -> None:
         message = f"Given public key: `{invalid_key}` has an invalid format."
         super().__init__(message, errno.EINVAL)
+
+
+class CLIAccountDoesNotExistsOnNodeError(CLIPrettyError):
+    """
+    Raise when trying to use account non existing on blockchain.
+
+    Args:
+        account_name: Name of account that is checked.
+        http_endpoint: Address of node that is providing account information.
+    """
+
+    def __init__(self, account_name: str, http_endpoint: HttpUrl) -> None:
+        message = f"Account `{account_name}` doesn't exist on node `{http_endpoint}`."
+        super().__init__(message, errno.EINVAL)

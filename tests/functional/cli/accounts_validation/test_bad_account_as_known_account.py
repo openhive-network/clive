@@ -28,7 +28,8 @@ async def test_bad_accounts_as_known_account(
     is on known account list.
     """
     # ARRANGE
-    cli_tester.configure_known_account_add(account_name=BAD_ACCOUNT)
+    cli_tester.world.profile.accounts.add_known_account(BAD_ACCOUNT)
+    await cli_tester.world.commands.save_profile()
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=EXPECTED_MESSAGE):

@@ -20,6 +20,7 @@ class AddTrackedAccount(WorldBasedCommand):
 
     async def validate_inside_context_manager(self) -> None:
         self._validate_tracked_account()
+        await self._validate_account_exists_in_node(self.account_name)
         await super().validate_inside_context_manager()
 
     async def _run(self) -> None:
@@ -34,5 +35,5 @@ class RemoveTrackedAccount(WorldBasedCommand):
         self.profile.accounts.remove_tracked_account(self.account_name)
 
     async def validate_inside_context_manager(self) -> None:
-        self._validate_account_exists(self.account_name)
+        self._validate_account_is_tracked(self.account_name)
         await super().validate_inside_context_manager()
