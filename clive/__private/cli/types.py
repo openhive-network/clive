@@ -12,3 +12,6 @@ if TYPE_CHECKING:
 
 
 AuthorityType = Literal["owner", "active", "posting"]
+
+type AccountWithWeight = tuple[str, int]
+type KeyWithWeight = tuple[str, int]

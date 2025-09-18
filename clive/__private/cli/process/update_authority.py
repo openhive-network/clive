@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import typer
 from click import Context, pass_context
@@ -10,12 +10,49 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters import modified_param
 from clive.__private.core._async import asyncio_run
+from clive.__private.core.constants.cli import (
+    NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+    NEW_ACCOUNT_AUTHORITY_WEIGHT,
+    WEIGHT_MARK,
+)
+
 
 if TYPE_CHECKING:
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
-    from clive.__private.cli.types import AccountUpdateFunction, AuthorityType
+    from clive.__private.cli.types import AccountUpdateFunction, AuthorityType, AccountWithWeight, KeyWithWeight
 
 
+
+def _account_with_weight(raw: str) -> AccountWithWeight:
+    if WEIGHT_MARK in raw:
+        key, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as e:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
+        return key, weight
+    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
+
+
+def _key_with_weight(raw: str) -> KeyWithWeight:
+    if WEIGHT_MARK in raw:
+        key, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as e:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
+        return key, weight
+    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
+
+
+KEY_WITH_WEIGHT_METAVAR: Final[str] = (
+    f"KEY[{WEIGHT_MARK}WEIGHT]\nExamples:\n"
+    " --key STM1111111111111111111111111111111114T1Anm\n"
+    f" --key STM1111111111111111111111111111111114T1Anm{WEIGHT_MARK}2"
+)
+ACCOUNT_WITH_WEIGHT_METAVAR: Final[str] = (
+    f"ACCOUNT[{WEIGHT_MARK}WEIGHT]\nExamples:\n --account alice\n --account alice{WEIGHT_MARK}2"
+)
 _authority_account_name = typer.Option(
     ...,
     "--account",
@@ -24,13 +61,15 @@ _authority_account_name = typer.Option(
 _authority_key = typer.Option(
     ...,
     "--key",
-    help="The public key to add/remove/modify",
+    help="The public key to add/remove/modify.",
 )
 _authority_weight = typer.Option(
-    ...,
+    None,
     "--weight",
-    help="The new weight of account/key authority",
+    help="The new weight of account/key authority.",
 )
+_authority_account_name_with_key = modified_param(_authority_account_name, parser=_account_with_weight, metavar=ACCOUNT_WITH_WEIGHT_METAVAR)
+_authority_key_with_key = modified_param(_authority_key, parser=_key_with_weight, metavar=KEY_WITH_WEIGHT_METAVAR)
 _optional_broadcast = modified_param(options.broadcast, default=None)
 
 
@@ -101,8 +140,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
     @update.command(name="add-account", epilog=epilog)
     async def add_account(  # noqa: PLR0913
         ctx: typer.Context,
-        account: str = _authority_account_name,
-        weight: int = _authority_weight,
+        account_with_weight: str = _authority_account_name_with_key,
+        weight: int | None = _authority_weight,
         sign_with: str | None = options.sign_with,
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -113,7 +152,12 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
             update_authority,
         )
 
-        add_account_function = partial(add_account, account=account, weight=weight)
+        account_with_weight_ = cast("list[AccountWithWeight]", account_with_weight)
+        account = account_with_weight_[0]
+        weight_ = weight
+        if weight is None:
+            weight_ = account_with_weight_[1]
+        add_account_function = partial(add_account, account=account, weight=weight_)
         update_function = partial(update_authority, attribute=authority, callback=add_account_function)
         add_callback_to_update_command(ctx, update_function)
         modify_command_common_options(ctx, sign_with, broadcast, save_file)
