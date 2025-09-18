@@ -9,7 +9,10 @@ from click import Context, pass_context
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters import modified_param
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.core._async import asyncio_run
+from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.cli.common.parameters.argument_related_options import _make_argument_related_option
 
 if TYPE_CHECKING:
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
@@ -27,7 +30,7 @@ _authority_key = typer.Option(
     help="The public key to add/remove/modify",
 )
 _authority_weight = typer.Option(
-    ...,
+    1,
     "--weight",
     help="The new weight of account/key authority",
 )
@@ -101,7 +104,11 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
     @update.command(name="add-account", epilog=epilog)
     async def add_account(  # noqa: PLR0913
         ctx: typer.Context,
-        account: str = _authority_account_name,
+        account: str = typer.Argument(
+            None,
+            help=f"The account to  add/remove/modify (account must exist, {REQUIRED_AS_ARG_OR_OPTION}).",
+        ),
+        account_option: str = _make_argument_related_option("--account"),
         weight: int = _authority_weight,
         sign_with: str | None = options.sign_with,
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
@@ -113,7 +120,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa:
             update_authority,
         )
 
-        add_account_function = partial(add_account, account=account, weight=weight)
+        add_account_function = partial(add_account, account=EnsureSingleValue("account").of(account, account_option), weight=weight)
         update_function = partial(update_authority, attribute=authority, callback=add_account_function)
         add_callback_to_update_command(ctx, update_function)
         modify_command_common_options(ctx, sign_with, broadcast, save_file)
