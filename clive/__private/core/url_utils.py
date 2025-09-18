@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import aiohttp
+from beekeepy.communication import get_communicator_cls
+from beekeepy.exceptions import CommunicationError
+from beekeepy.handle.remote import RemoteHandleSettings
 
 if TYPE_CHECKING:
+    from beekeepy.communication import AbstractCommunicator
     from beekeepy.interfaces import HttpUrl
 
 
@@ -19,7 +22,10 @@ async def is_url_reachable(url: HttpUrl) -> bool:
         True if the URL is reachable, False otherwise.
     """
     try:
-        async with aiohttp.ClientSession() as session, session.get(str(url)):
-            return True
-    except aiohttp.ClientConnectorError:
+        s = RemoteHandleSettings()
+        c: AbstractCommunicator = get_communicator_cls("httpx")(settings=s)
+        await c.async_get(url=url)
+    except CommunicationError:
         return False
+
+    return True
