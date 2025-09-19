@@ -3,8 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy import AsyncUnlockedWallet
-
+from clive.__private.core.beekeeper_manager import AsyncUnlockedWallet
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 
 if TYPE_CHECKING:

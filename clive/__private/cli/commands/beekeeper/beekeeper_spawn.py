@@ -3,14 +3,13 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper
-
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import (
     CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError,
     CLIBeekeeperLocallyAlreadyRunningError,
 )
 from clive.__private.cli.print_cli import print_cli
+from clive.__private.core.beekeeper_manager import AsyncBeekeeper
 from clive.__private.core.commands.beekeeper import IsBeekeeperRunning
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar, safe_settings
