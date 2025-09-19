@@ -22,7 +22,6 @@ from clive.__private.core.constants.cli import (
 if TYPE_CHECKING:
     from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
     from clive.__private.core.keys.keys import PublicKey
-    from clive.__private.core.types import AuthorityLevelRegular
 
 account_creation = CliveTyper(
     name="account-creation", help="Create an account using a token or by paying a fee.", chain=True
@@ -48,57 +47,30 @@ def send_account_creation(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  
     asyncio_run(send_account_creation_async())
 
 
-def set_authority(
-    ctx: typer.Context,
-    type_: AuthorityLevelRegular,
-    threshold: int,
-    keys_with_weight: list[KeyWithWeight],
-    accounts_with_weight: list[AccountWithWeight],
-) -> None:
-    command = get_process_account_creation_command(ctx)
-    command.set_threshold(type_, threshold)
-    for key, weight in keys_with_weight:
-        command.add_key_authority(type_, key, weight)
-    for account_name, weight in accounts_with_weight:
-        command.add_account_authority(type_, account_name, weight)
+_new_account_name_option = typer.Option(
+    None,
+    "--new-account-name",
+    help="The name of the new account. Required at least on one of command/subcommands.",
+)
+_fee = typer.Option(
+    None,
+    help="If set to true then account creation fee will be paid, you can check it with command `clive show chain`."
+    " If set to false then new account token will be used. Default is false.",
+)
+_json_metadata = typer.Option(
+    None,
+    "--json-metadata",
+    help="The json metadata of the new account passed as string. Default is empty string.",
+)
 
 
-def set_memo_key(
-    ctx: typer.Context,
-    key: PublicKey,
-) -> None:
-    get_process_account_creation_command(ctx).set_memo_key(key)
-
-
-def modify_command_common_options(
-    ctx: typer.Context,
-    sign_with: str | None,
-    autosign: bool | None,  # noqa: FBT001
-    broadcast: bool | None,  # noqa: FBT001
-    save_file: str | None,
-) -> None:
-    get_process_account_creation_command(ctx).modify_common_options(
-        sign_with=sign_with, broadcast=broadcast, save_file=save_file, autosign=autosign
-    )
-
-
-@account_creation.callback(result_callback=send_account_creation)
+@account_creation.callback(invoke_without_command=True, result_callback=send_account_creation)
 async def process_account_creation(  # noqa: PLR0913
     ctx: typer.Context,
     creator: str = modified_param(options.working_account_template, param_decls=("--creator",)),
-    new_account_name: str = typer.Option(
-        ...,
-        help="The name of the new account.",
-    ),
-    fee: bool = typer.Option(  # noqa: FBT001
-        default=False,
-        help="If set to true then account creation fee will be paid, you can check it with command `clive show chain`."
-        " If set to false then new account token will be used.",
-    ),
-    json_metadata: str = typer.Option(
-        "",
-        help="The json metadata of the new account.",
-    ),
+    new_account_name: str | None = _new_account_name_option,
+    fee: bool | None = _fee,  # noqa: FBT001
+    json_metadata: str | None = _json_metadata,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
@@ -152,6 +124,9 @@ async def specify_owner(  # noqa: PLR0913
         show_default=False,
         metavar=ACCOUNTS_WITH_WEIGHT_METAVAR,
     ),  # typer does not allow type "list[tuple[str, int]]" here so we use custom parser
+    new_account_name: str | None = _new_account_name_option,
+    fee: bool | None = _fee,  # noqa: FBT001
+    json_metadata: str | None = _json_metadata,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast_optional,  # noqa: FBT001
@@ -160,8 +135,11 @@ async def specify_owner(  # noqa: PLR0913
     """Specify owner authority: keys or accounts with optional weights and threshold."""
     keys_with_weight_ = cast("list[KeyWithWeight]", keys_with_weight)
     accounts_with_weight_ = cast("list[AccountWithWeight]", accounts_with_weight)
-    set_authority(ctx, "owner", threshold, keys_with_weight_, accounts_with_weight_)
-    modify_command_common_options(ctx, sign_with, autosign, broadcast, save_file)
+    command = get_process_account_creation_command(ctx)
+    command.add_authority("owner", threshold, keys_with_weight_, accounts_with_weight_)
+    command.modify_account_creation_common_options(
+        new_account_name, fee, json_metadata, sign_with, autosign, broadcast, save_file
+    )
 
 
 @account_creation.command(name="active", epilog=EPILOG)
@@ -188,6 +166,9 @@ async def specify_active(  # noqa: PLR0913
         show_default=False,
         metavar=ACCOUNTS_WITH_WEIGHT_METAVAR,
     ),  # typer does not allow type "list[tuple[str, int]]" here so we use custom parser
+    new_account_name: str | None = _new_account_name_option,
+    fee: bool | None = _fee,  # noqa: FBT001
+    json_metadata: str | None = _json_metadata,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast_optional,  # noqa: FBT001
@@ -196,8 +177,11 @@ async def specify_active(  # noqa: PLR0913
     """Specify active authority: keys or accounts with optional weights and threshold."""
     keys_with_weight_ = cast("list[KeyWithWeight]", keys_with_weight)
     accounts_with_weight_ = cast("list[AccountWithWeight]", accounts_with_weight)
-    set_authority(ctx, "active", threshold, keys_with_weight_, accounts_with_weight_)
-    modify_command_common_options(ctx, sign_with, autosign, broadcast, save_file)
+    command = get_process_account_creation_command(ctx)
+    command.add_authority("active", threshold, keys_with_weight_, accounts_with_weight_)
+    command.modify_account_creation_common_options(
+        new_account_name, fee, json_metadata, sign_with, autosign, broadcast, save_file
+    )
 
 
 @account_creation.command(name="posting", epilog=EPILOG)
@@ -224,6 +208,9 @@ async def specify_posting(  # noqa: PLR0913
         show_default=False,
         metavar=ACCOUNTS_WITH_WEIGHT_METAVAR,
     ),  # typer does not allow type "list[tuple[str, int]]" here so we use custom parser
+    new_account_name: str | None = _new_account_name_option,
+    fee: bool | None = _fee,  # noqa: FBT001
+    json_metadata: str | None = _json_metadata,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast_optional,  # noqa: FBT001
@@ -232,8 +219,11 @@ async def specify_posting(  # noqa: PLR0913
     """Specify posting authority: keys or accounts with optional weights and threshold."""
     keys_with_weight_ = cast("list[KeyWithWeight]", keys_with_weight)
     accounts_with_weight_ = cast("list[AccountWithWeight]", accounts_with_weight)
-    set_authority(ctx, "posting", threshold, keys_with_weight_, accounts_with_weight_)
-    modify_command_common_options(ctx, sign_with, autosign, broadcast, save_file)
+    command = get_process_account_creation_command(ctx)
+    command.add_authority("posting", threshold, keys_with_weight_, accounts_with_weight_)
+    command.modify_account_creation_common_options(
+        new_account_name, fee, json_metadata, sign_with, autosign, broadcast, save_file
+    )
 
 
 @account_creation.command(name="memo", epilog=EPILOG)
@@ -246,6 +236,9 @@ async def specify_memo(  # noqa: PLR0913
         help="Memo public key that will be set for account.",
         show_default=False,
     ),
+    new_account_name: str | None = _new_account_name_option,
+    fee: bool | None = _fee,  # noqa: FBT001
+    json_metadata: str | None = _json_metadata,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast_optional,  # noqa: FBT001
@@ -253,5 +246,8 @@ async def specify_memo(  # noqa: PLR0913
 ) -> None:
     """Specify memo key."""
     key_ = cast("PublicKey", key)
-    set_memo_key(ctx, key_)
-    modify_command_common_options(ctx, sign_with, autosign, broadcast, save_file)
+    command = get_process_account_creation_command(ctx)
+    command.set_memo_key(key_)
+    command.modify_account_creation_common_options(
+        new_account_name, fee, json_metadata, sign_with, autosign, broadcast, save_file
+    )
