@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
+    from clive.__private.core.beekeeper_manager import AsyncUnlockedWallet
 
 
 @dataclass

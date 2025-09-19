@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy import AsyncSession, AsyncUnlockedWallet
-
+from clive.__private.core.beekeeper_manager import AsyncSession, AsyncUnlockedWallet
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.encryption import EncryptionService
