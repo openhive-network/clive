@@ -19,7 +19,6 @@ _SETTINGS_FILES: Final[list[str]] = ["settings.toml", str(_DATA_DIRECTORY / "set
 @cache
 def get_settings() -> Dynaconf:
     from dynaconf import Dynaconf  # noqa: PLC0415
-
     settings = Dynaconf(
         envvar_prefix=ENVVAR_PREFIX,
         root_path=ROOT_DIRECTORY,

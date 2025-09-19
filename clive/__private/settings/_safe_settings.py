@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 from abc import ABC
+from functools import cache
+import toml
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -11,6 +13,7 @@ from beekeepy import Settings as BeekeepySettings
 from beekeepy.handle.remote import RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from inflection import underscore
+from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar
 
 from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_CLOSE_TIMEOUT,
@@ -44,6 +47,8 @@ from clive.__private.core.constants.setting_identifiers import (
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import get_settings
 from clive.exceptions import CliveError
+from clive.__private.core.constants.setting_identifiers import LOG_DIRECTORY, LOG_PATH
+_log_path = Path("/home/marcin/.clive") / "logs"
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -485,18 +490,34 @@ class SafeSettings:
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
+
+    @staticmethod
+    @cache
+    def get_raw_settings():
+        dictionary = toml.load("/workspace/.clive/settings.toml")
+        dictionary[LOG_PATH] = _log_path
+        return dictionary
+
+    @staticmethod
+    def get_env_var(setting_name: str):
+        import os
+        return os.environ.get(clive_prefixed_envvar(setting_name))
+
     def _get_value_from_settings(
         self, setting_name: str, default: object | NotSet = NOT_SET, *, optionally: bool = False
     ) -> object:
         # Call .get(setting_name, default) will only return the default value when the setting/envvar doesn't exist,
         #  not when is set to empty string.
-        value = get_settings().get(setting_name)
+        # value = get_settings().get(setting_name)
+        raw_settings = self.get_raw_settings()
+        value = self.get_env_var(setting_name) or raw_settings.get(setting_name)
         if value in ("", None):
             if default is not NOT_SET:
                 return default
             if optionally:
                 return None
 
+            breakpoint()
             raise SettingsValueError(setting_name=setting_name, value=value, details="Value is required.")
 
         return value
