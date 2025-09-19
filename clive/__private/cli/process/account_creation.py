@@ -9,18 +9,19 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters import options  # noqa: F811
 from clive.__private.cli.common.parameters.modified_param import modified_param
-from clive.__private.cli.common.parsers import account_with_weight, key_with_weight
+from clive.__private.cli.common.parsers import account_with_weight, key_with_weight, public_key
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.constants.cli import (
     ACCOUNTS_WITH_WEIGHT_METAVAR,
+    DEFAULT_AUTHORITY_THRESOHLD,
     KEYS_WITH_WEIGHT_METAVAR,
-    NEW_ACCOUNT_AUTHORITY_THRESOHLD,
     WEIGHT_MARK,
 )
 
 if TYPE_CHECKING:
     from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation
     from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.types import AuthorityLevelRegular
 
 account_creation = CliveTyper(
@@ -64,8 +65,8 @@ def set_authority(
     ctx: typer.Context,
     type_: AuthorityLevelRegular,
     threshold: int,
-    keys_with_weight: list[tuple[str, int]],
-    accounts_with_weight: list[tuple[str, int]],
+    keys_with_weight: list[KeyWithWeight],
+    accounts_with_weight: list[AccountWithWeight],
 ) -> None:
     command = _get_command_from_context(ctx)
     command.set_threshold(type_, threshold)
@@ -77,7 +78,7 @@ def set_authority(
 
 def set_memo_key(
     ctx: typer.Context,
-    key: str,
+    key: PublicKey,
 ) -> None:
     _get_command_from_context(ctx).set_memo_key(key)
 
@@ -138,7 +139,7 @@ async def process_account_creation(  # noqa: PLR0913
 async def specify_owner(  # noqa: PLR0913
     ctx: typer.Context,
     threshold: int = typer.Option(
-        NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+        DEFAULT_AUTHORITY_THRESOHLD,
         help="Set threshold for owner authority.",
         show_default=True,
     ),
@@ -180,7 +181,7 @@ async def specify_owner(  # noqa: PLR0913
 async def specify_active(  # noqa: PLR0913
     ctx: typer.Context,
     threshold: int = typer.Option(
-        NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+        DEFAULT_AUTHORITY_THRESOHLD,
         help="Set threshold for active authority.",
         show_default=True,
     ),
@@ -216,7 +217,7 @@ async def specify_active(  # noqa: PLR0913
 async def specify_posting(  # noqa: PLR0913
     ctx: typer.Context,
     threshold: int = typer.Option(
-        NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+        DEFAULT_AUTHORITY_THRESOHLD,
         help="Set threshold for posting authority.",
         show_default=True,
     ),
@@ -254,6 +255,7 @@ async def specify_memo(  # noqa: PLR0913
     key: str = typer.Option(
         ...,
         "--key",
+        parser=public_key,
         help="Memo public key that will be set for account.",
         show_default=False,
     ),
@@ -263,5 +265,6 @@ async def specify_memo(  # noqa: PLR0913
     save_file: str | None = options.save_file,
 ) -> None:
     """Specify memo key."""
-    set_memo_key(ctx, key)
+    key_ = cast("PublicKey", key)
+    set_memo_key(ctx, key_)
     modify_command_common_options(ctx, sign_with, autosign, broadcast, save_file)

@@ -11,7 +11,7 @@ from clive.__private.cli.commands.process.process_account_creation import (
     MissingPostingAuthorityError,
 )
 from clive.__private.core import iwax
-from clive.__private.core.constants.cli import NEW_ACCOUNT_AUTHORITY_THRESOHLD, NEW_ACCOUNT_AUTHORITY_WEIGHT
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_THRESOHLD, DEFAULT_AUTHORITY_WEIGHT
 from clive.__private.core.keys import PrivateKey
 from clive.__private.models.schemas import (
     AccountCreateOperation,
@@ -51,21 +51,21 @@ def create_public_key_for_role(role: str) -> PublicKey:
 
 OWNER_KEY: Final[PublicKey] = create_public_key_for_role("owner")
 OWNER_AUTHORITY: Final[Authority] = Authority(
-    weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+    weight_threshold=DEFAULT_AUTHORITY_THRESOHLD,
     account_auths=[],
-    key_auths=[(OWNER_KEY, NEW_ACCOUNT_AUTHORITY_WEIGHT)],
+    key_auths=[(OWNER_KEY, DEFAULT_AUTHORITY_WEIGHT)],
 )
 ACTIVE_KEY: Final[PublicKey] = create_public_key_for_role("active")
 ACTIVE_AUTHORITY: Final[Authority] = Authority(
-    weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+    weight_threshold=DEFAULT_AUTHORITY_THRESOHLD,
     account_auths=[],
-    key_auths=[(ACTIVE_KEY, NEW_ACCOUNT_AUTHORITY_WEIGHT)],
+    key_auths=[(ACTIVE_KEY, DEFAULT_AUTHORITY_WEIGHT)],
 )
 POSTING_KEY: Final[PublicKey] = create_public_key_for_role("posting")
 POSTING_AUTHORITY: Final[Authority] = Authority(
-    weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+    weight_threshold=DEFAULT_AUTHORITY_THRESOHLD,
     account_auths=[],
-    key_auths=[(POSTING_KEY, NEW_ACCOUNT_AUTHORITY_WEIGHT)],
+    key_auths=[(POSTING_KEY, DEFAULT_AUTHORITY_WEIGHT)],
 )
 MEMO_KEY: Final[PublicKey] = create_public_key_for_role("memo")
 
@@ -142,7 +142,7 @@ async def test_account_creation_authority_with_weight(node: tt.RawNode, cli_test
     fee = fetch_account_creation_fee(node)
     weight = 5
     posting_authority_with_weight: Final[Authority] = Authority(
-        weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+        weight_threshold=DEFAULT_AUTHORITY_THRESOHLD,
         account_auths=[],
         key_auths=[(POSTING_KEY, weight)],
     )
@@ -176,11 +176,11 @@ async def test_account_creation_multiple_subcommands(node: tt.RawNode, cli_teste
     fee = fetch_account_creation_fee(node)
     additional_posting_key: PublicKey = PrivateKey.create_from_seed("", "", role="posting").calculate_public_key().value
     posting_authority_multiple_keys: Final[Authority] = Authority(
-        weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD,
+        weight_threshold=DEFAULT_AUTHORITY_THRESOHLD,
         account_auths=[
-            (WATCHED_ACCOUNTS_DATA[0].account.name, NEW_ACCOUNT_AUTHORITY_WEIGHT),
+            (WATCHED_ACCOUNTS_DATA[0].account.name, DEFAULT_AUTHORITY_WEIGHT),
         ],
-        key_auths=[(POSTING_KEY, NEW_ACCOUNT_AUTHORITY_WEIGHT), (additional_posting_key, NEW_ACCOUNT_AUTHORITY_WEIGHT)],
+        key_auths=[(POSTING_KEY, DEFAULT_AUTHORITY_WEIGHT), (additional_posting_key, DEFAULT_AUTHORITY_WEIGHT)],
     )
     operation = AccountCreateOperation(
         fee=fee,

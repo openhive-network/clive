@@ -6,17 +6,18 @@ from typing import TYPE_CHECKING, Final, override
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli
-from clive.__private.core.constants.cli import NEW_ACCOUNT_AUTHORITY_THRESOHLD
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_THRESOHLD
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     AccountCreateOperation,
     AssetHive,
     Authority,
     CreateClaimedAccountOperation,
-    PublicKey,
 )
+from clive.__private.models.schemas import PublicKey as SchemasPublicKey
 
 if TYPE_CHECKING:
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.types import AuthorityLevelRegular
 
 
@@ -100,21 +101,15 @@ class ProcessAccountCreation(OperationCommand):
     fee: bool
     json_metadata: str
     _owner_authority: Authority = field(
-        default_factory=lambda: Authority(
-            weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[]
-        )
+        default_factory=lambda: Authority(weight_threshold=DEFAULT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[])
     )
     _active_authority: Authority = field(
-        default_factory=lambda: Authority(
-            weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[]
-        )
+        default_factory=lambda: Authority(weight_threshold=DEFAULT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[])
     )
     _posting_authority: Authority = field(
-        default_factory=lambda: Authority(
-            weight_threshold=NEW_ACCOUNT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[]
-        )
+        default_factory=lambda: Authority(weight_threshold=DEFAULT_AUTHORITY_THRESOHLD, account_auths=[], key_auths=[])
     )
-    _memo_key: PublicKey | None = None
+    _memo_key: SchemasPublicKey | None = None
     _fee_value: AssetHive | None = None  # Set after fetching from node
 
     @property
@@ -139,12 +134,12 @@ class ProcessAccountCreation(OperationCommand):
         return self._memo_key is not None
 
     @property
-    def memo_key_ensure(self) -> PublicKey:
+    def memo_key_ensure(self) -> SchemasPublicKey:
         assert self._memo_key is not None, "Memo key must be specified by user and set with method `set_memo_key`"
         return self._memo_key
 
     def add_key_authority(self, type_: AuthorityLevelRegular, key: PublicKey, weight: int) -> None:
-        self._get_authority(type_).key_auths.append((key, weight))
+        self._get_authority(type_).key_auths.append((key.value, weight))
 
     def add_account_authority(self, type_: AuthorityLevelRegular, account_name: str, weight: int) -> None:
         self._get_authority(type_).account_auths.append((account_name, weight))
@@ -164,7 +159,7 @@ class ProcessAccountCreation(OperationCommand):
         self._get_authority(type_).weight_threshold = threshold
 
     def set_memo_key(self, key: PublicKey) -> None:
-        self._memo_key = key
+        self._memo_key = key.value
 
     @override
     async def validate(self) -> None:

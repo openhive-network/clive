@@ -5,10 +5,8 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
-from clive.__private.core.constants.cli import (
-    NEW_ACCOUNT_AUTHORITY_WEIGHT,
-    WEIGHT_MARK,
-)
+from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_WEIGHT, WEIGHT_MARK
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -16,6 +14,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.models import Asset
 
 
@@ -132,15 +131,25 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     raise typer.BadParameter(humanize_validation_result(status))
 
 
+def public_key(raw: str) -> PublicKey:
+    from clive.__private.core.keys.keys import PublicKey, PublicKeyInvalidFormatError  # noqa: PLC0415
+
+    try:
+        parsed = PublicKey(value=raw)
+    except PublicKeyInvalidFormatError as error:
+        raise CLIPublicKeyInvalidFormatError(raw) from error
+    return parsed
+
+
 def account_with_weight(raw: str) -> AccountWithWeight:
     if WEIGHT_MARK in raw:
-        key, weight_str = raw.split(WEIGHT_MARK, 1)
+        account_name, weight_str = raw.split(WEIGHT_MARK, 1)
         try:
             weight = int(weight_str)
         except ValueError as e:
             raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
-        return key, weight
-    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
+        return account_name, weight
+    return raw, DEFAULT_AUTHORITY_WEIGHT
 
 
 def key_with_weight(raw: str) -> KeyWithWeight:
@@ -150,5 +159,5 @@ def key_with_weight(raw: str) -> KeyWithWeight:
             weight = int(weight_str)
         except ValueError as e:
             raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from e
-        return key, weight
-    return raw, NEW_ACCOUNT_AUTHORITY_WEIGHT
+        return public_key(key), weight
+    return public_key(raw), DEFAULT_AUTHORITY_WEIGHT
