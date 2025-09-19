@@ -10,8 +10,8 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
+from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 
 if TYPE_CHECKING:
     from decimal import Decimal
