@@ -7,7 +7,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Final, Literal, cast, get_args, overload
 
-from beekeepy import Settings as BeekeepySettings
+from beekeepy._interface import InterfaceSettings as BeekeepySettings
 from beekeepy.handle.remote import RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from inflection import underscore
@@ -515,3 +515,9 @@ class SafeSettings:
 
 
 safe_settings = SafeSettings()
+
+__all__ = [
+    "BeekeepySettings",
+    "SafeSettings",
+    "safe_settings",
+]

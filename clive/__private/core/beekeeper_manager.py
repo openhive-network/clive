@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING, Final
 
 from beekeepy._interface.abc import (
     AsyncBeekeeper,
+    AsyncSession,
     AsyncUnlockedWallet,
-    AsyncSession
+    AsyncWallet,
 )
 
-from beekeepy._interface import InterfaceSettings as BeekeepySettings
-
 from clive.__private.settings import safe_settings
+from clive.__private.settings._safe_settings import BeekeepySettings
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -114,3 +114,12 @@ class BeekeeperManager:
             return await AsyncBeekeeper.remote_factory(url_or_settings=self.settings)
 
         return await AsyncBeekeeper.factory(settings=self.settings)
+
+
+__all__ = [
+    "AsyncBeekeeper",
+    "AsyncSession",
+    "AsyncUnlockedWallet",
+    "AsyncWallet",
+    "BeekeepySettings",
+]

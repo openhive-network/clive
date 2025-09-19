@@ -13,9 +13,8 @@ from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DE
 from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
-
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.beekeeper_manager import AsyncUnlockedWallet
 
 
 if TYPE_CHECKING:

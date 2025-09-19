@@ -10,7 +10,7 @@ from clive.__private.core.commands.create_encryption_wallet import CreateEncrypt
 from clive.__private.core.commands.create_user_wallet import CreateUserWallet
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession, AsyncUnlockedWallet
+    from clive.__private.core.beekeeper_manager import AsyncSession, AsyncUnlockedWallet
 
 RecoverWalletsStatus = Literal["nothing_recovered", "encryption_wallet_recovered", "user_wallet_recovered"]
 
