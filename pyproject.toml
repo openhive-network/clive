@@ -6,7 +6,7 @@ requires = [
 build-backend = "poetry_dynamic_versioning.backend"
 
 [project]
-name = "clive"
+name = "hiveio-clive"
 description = "CLI application for interacting with the Hive blockchain."
 dynamic = ["version"]
 readme = "README.md"
@@ -22,9 +22,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
-    'schemas (==0.0.1.dev430+47552ae)',
-    'beekeepy (==0.0.1.dev429+8a918a3)',
-    'wax (==0.3.10.dev896+7fc5c927)',
+    'hiveio-schemas (==0.0.1.dev431+2255381)',
+    'hiveio-beekeepy (==0.0.1.dev430+d766238)',
+    'hiveio-wax (==0.3.10.dev898+fe053737)',
 ]
 
 [project.urls]
@@ -53,9 +53,9 @@ poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.dependencies]
-schemas = { source = "gitlab-schemas" }
-wax = { source = "gitlab-wax" }
-beekeepy = { source = "gitlab-beekeepy" }
+hiveio-schemas = { source = "gitlab-schemas" }
+hiveio-wax = { source = "gitlab-wax" }
+hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }

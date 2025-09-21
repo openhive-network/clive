@@ -87,7 +87,7 @@ SHELL ["/bin/bash", "-c"]
 # - 434 -> beekeepy
 RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     source /python_venv/bin/activate && \
-    pip install clive=="${CLIVE_VERSION}" \
+    pip install hiveio_clive=="${CLIVE_VERSION}" \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
