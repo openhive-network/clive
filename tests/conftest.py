@@ -22,7 +22,7 @@ from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_LEVEL_1ST_PARTY, LOG_LEVELS, LOG_PATH
+from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_DIRECTORY, LOG_LEVEL_1ST_PARTY, LOG_LEVELS
 from clive.__private.core.world import World
 from clive.__private.logger import logger
 from clive.__private.models.schemas import (
@@ -79,7 +79,7 @@ def _prepare_settings() -> None:
     if profile_data_directory.exists():
         shutil.rmtree(profile_data_directory)
 
-    settings.set(LOG_PATH, working_directory / "logs")
+    settings.set(LOG_DIRECTORY, working_directory)
 
     settings.set(LOG_LEVELS, ["DEBUG"])
     settings.set(LOG_LEVEL_1ST_PARTY, "DEBUG")
