@@ -4,8 +4,12 @@ from clive.__private.core.world import World
 class CliveSi:
     def __init__(self) -> None:
         from clive.__private.si.show import ShowInterface
+        from clive.__private.si.process import ProcessInterface
+
         self.world =  World()
         self.show = ShowInterface(self)
+        self.process = ProcessInterface(self)
+
 
     async def setup(self) -> None:
         await self.world.setup()
