@@ -25,11 +25,11 @@ from clive.__private.core.constants.setting_identifiers import (
     IS_DEV,
     LOG_DEBUG_LOOP,
     LOG_DEBUG_PERIOD_SECS,
+    LOG_DIRECTORY,
     LOG_KEEP_HISTORY,
     LOG_LEVEL_1ST_PARTY,
     LOG_LEVEL_3RD_PARTY,
     LOG_LEVELS,
-    LOG_PATH,
     MAX_NUMBER_OF_TRACKED_ACCOUNTS,
     NODE_CHAIN_ID,
     NODE_COMMUNICATION_ATTEMPTS_AMOUNT,
@@ -148,10 +148,8 @@ class SafeSettings:
             return cast("_AvailableLogLevels", value)
 
         def _get_log_path(self) -> Path:
-            value = self._parent._get_value_from_settings(LOG_PATH)
-            message = "log path is set dynamically and always ensured, so should be available now"
-            assert isinstance(value, Path), message
-            return value
+            value = self._parent._get_path(LOG_DIRECTORY, default=self._parent.data_path)
+            return value / "logs"
 
         def _assert_log_levels(self, setting_name: str, *, value: list[object]) -> None:
             for log_level in value:

@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Final
 import toml
 
 from clive.__private.core.constants.env import ENVVAR_PREFIX, ROOT_DIRECTORY
-from clive.__private.core.constants.setting_identifiers import LOG_DIRECTORY, LOG_PATH
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -330,13 +329,7 @@ class Settings:
 
 @cache
 def get_settings() -> Settings:
-    settings = Settings(
+    return Settings(
         files=_SETTINGS_FILES,
         data_path=_DATA_DIRECTORY,
     )
-
-    # preconfigured settings, but initialized with a value based on other settings
-    _log_directory = settings.get(LOG_DIRECTORY, "") or _DATA_DIRECTORY
-    _log_path = Path(_log_directory) / "logs"
-    settings.set(LOG_PATH, _log_path)
-    return settings
