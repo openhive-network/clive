@@ -1,4 +1,6 @@
 from __future__ import annotations
+import asyncio
+from py_compile import main
 
 import loguru
 
@@ -8,9 +10,9 @@ from clive.__private.cli.commands.process.transfer import Transfer
 from schemas.operations.transfer_operation import TransferOperation
 from schemas.fields.assets import AssetHbd
 
-async def test_first() -> None:
+async def first_function() -> None:
     world = World()
-    await world.setup()
+    # await world.setup()
     await world.create_new_profile("alice")
 
     # pokazywanie profili
@@ -38,3 +40,6 @@ async def test_first() -> None:
             )).result_or_raise
     pass
     # await Transfer(from_account="alice", to="gtg", amount="1.000 HIVE", memo="Test transfer", broadcast=False).run()()
+
+if __name__ == "__main__":
+    asyncio.run(first_function())
