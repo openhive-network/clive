@@ -12,6 +12,12 @@ workflow:
       when: never
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
+include:
+  - project: 'hive/hive'
+    ref: 888c7b858da0da4ca12a003c97b1387d070d247a
+    file: '/scripts/ci-helpers/prepare_data_image_job.yml'
+    # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
+
 variables:
   # git:
   GIT_STRATEGY: clone
@@ -40,8 +46,8 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-2
-  CI_BASE_IMAGE_TAG: "@sha256:81f56a1820497ff3cb1342327b7242dc50270db04cbfdd8d6198af1bb0e910b3"
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-XXX (defined in hive/scripts/ci-helpers/ci_image_tag_vars.yml)
+  CI_BASE_IMAGE_TAG: "${TEST_IMAGE_TAG}"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:e4797f961fd6c6a843d100b1838422f3b674430af408664286c1b6a6b23baafa"
@@ -51,12 +57,6 @@ variables:
   CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
-
-include:
-  - project: 'hive/hive'
-    ref: 8b287d3990df722eccd4a81fc75b1a4b2fc50fc3
-    file: '/scripts/ci-helpers/prepare_data_image_job.yml'
-    # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
 
 image: ${CI_BASE_IMAGE}
 
