@@ -6,6 +6,7 @@ from .cancel_button import CancelButton, CancelOneLineButton
 from .clive_button import CliveButton
 from .close_button import CloseButton, CloseOneLineButton
 from .confirm_button import ConfirmButton, ConfirmOneLineButton
+from .edit_button import EditButton, EditOneLineButton
 from .finalize_transaction_button import FinalizeTransactionButton
 from .generous_button import GenerousButton
 from .load_from_file_button import LoadFromFileButton, LoadFromFileOneLineButton
@@ -27,6 +28,8 @@ __all__ = [
     "CloseOneLineButton",
     "ConfirmButton",
     "ConfirmOneLineButton",
+    "EditButton",
+    "EditOneLineButton",
     "FinalizeTransactionButton",
     "GenerousButton",
     "LoadFromFileButton",
