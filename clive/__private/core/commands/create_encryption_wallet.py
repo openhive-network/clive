@@ -9,7 +9,7 @@ from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.keys import PrivateKey
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
 
 @dataclass(kw_only=True)

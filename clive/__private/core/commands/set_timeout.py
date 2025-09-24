@@ -8,7 +8,7 @@ from clive.__private.core.commands.abc.command import Command
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
 
 @dataclass(kw_only=True)

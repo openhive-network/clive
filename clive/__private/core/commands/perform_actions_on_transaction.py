@@ -13,13 +13,10 @@ from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DE
 from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.app_state import AppState
-    from clive.__private.core.beekeeper_manager import AsyncUnlockedWallet
-
-
-if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.core.app_state import AppState
+    from clive.__private.core.beekeeper_manager import AsyncUnlockedWallet
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.node import Node

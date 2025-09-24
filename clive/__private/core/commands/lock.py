@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
     from clive.__private.core.app_state import AppState
 

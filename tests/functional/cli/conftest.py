@@ -4,7 +4,7 @@ from contextlib import ExitStack
 from typing import TYPE_CHECKING
 
 import pytest
-from beekeepy import AsyncBeekeeper
+from beekeepy.asynchronous import AsyncBeekeeper
 from typer.testing import CliRunner
 
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH

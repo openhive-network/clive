@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy import find_running_beekeepers
+from beekeepy.asynchronous import find_running_beekeepers
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.settings import safe_settings

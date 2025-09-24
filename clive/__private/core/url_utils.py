@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING
 
 from beekeepy.communication import get_communicator_cls
 from beekeepy.exceptions import CommunicationError
-from beekeepy.handle.remote import RemoteHandleSettings
+from beekeepy.handle.settings import RemoteHandleSettings
 
 if TYPE_CHECKING:
-    from beekeepy.communication import AbstractCommunicator
     from beekeepy.interfaces import HttpUrl
 
 
@@ -23,7 +22,7 @@ async def is_url_reachable(url: HttpUrl) -> bool:
     """
     try:
         s = RemoteHandleSettings()
-        c: AbstractCommunicator = get_communicator_cls("httpx")(settings=s)
+        c = get_communicator_cls()(settings=s)
         await c.async_get(url=url)
     except CommunicationError:
         return False

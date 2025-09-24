@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandWithRes
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
 
 type WalletStatus = Literal["all", "locked", "unlocked"]

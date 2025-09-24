@@ -12,7 +12,7 @@ from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.encryption import EncryptionService
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncBeekeeper
+    from beekeepy.asynchronous import AsyncBeekeeper
 
     from clive.__private.core.profile import Profile
     from clive.__private.core.world import World
