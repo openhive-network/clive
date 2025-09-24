@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.commands.abc.command import CommandError
+from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
@@ -17,11 +17,14 @@ if TYPE_CHECKING:
 
 
 class SignCommandError(CommandError):
-    pass
+    """Base error for all sign related errors."""
 
 
-class TransactionAlreadySignedError(SignCommandError):
-    pass
+class TransactionAlreadySignedSignError(SignCommandError):
+    REASON: Final[str] = "Your transaction is already signed."
+
+    def __init__(self, command: Command) -> None:
+        super().__init__(command, self.REASON)
 
 
 @dataclass(kw_only=True)
@@ -43,7 +46,7 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
 
     def __throw_already_signed_error_when_needed(self) -> None:
         if self.already_signed_mode == "error" and self.transaction.is_signed:
-            raise TransactionAlreadySignedError(self, "Transaction is already signed!")
+            raise TransactionAlreadySignedSignError(self)
 
     def __set_transaction_signature(self, signature: Signature) -> None:
         if self.already_signed_mode == "multisign":
