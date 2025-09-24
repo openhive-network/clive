@@ -231,7 +231,7 @@ class AuthorityRole(CliveCollapsible):
             AuthorityTable(authority_role),
             title=title,
             collapsed=collapsed,
-            right_hand_side_text=self._get_right_hand_side_text(),
+            right_hand_side_content=self._get_right_hand_side_text(),
         )
 
     @property
