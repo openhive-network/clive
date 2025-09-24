@@ -227,11 +227,15 @@ class AuthorityRole(CliveCollapsible):
         collapsed: bool = False,
     ) -> None:
         self._authority_role = authority_role
+        threshold_text = self._get_right_hand_side_text()
+        right_hand_side_widget: Widget | None = (
+            Static(threshold_text, id="right-hand-side-text") if threshold_text else None
+        )
         super().__init__(
             AuthorityTable(authority_role),
             title=title,
             collapsed=collapsed,
-            right_hand_side_text=self._get_right_hand_side_text(),
+            right_hand_side_widget=right_hand_side_widget,
         )
 
     @property
