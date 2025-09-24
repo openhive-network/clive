@@ -4,8 +4,25 @@ FilterAuthority {
   border-title-background: $primary;
   border: $primary outer;
   padding-top: 1;
-  width: 10fr;
+  width: 6fr;
   height: auto;
+
+  CliveButton {
+    width: 1fr;
+    min-width: 1fr;
+  }
+
+  ClearButton {
+    margin: 0 1;
+  }
+
+  AuthorityFilterInput {
+    width: 9fr;
+  }
+}
+
+FilterAuthorityExtended {
+  width: 10fr;
 
   CliveButton {
     width: 1fr;
@@ -29,6 +46,23 @@ FilterAuthority {
 
     Contents {
       padding: 1 0 0 0;
+    }
+  }
+}
+
+FilterAuthorityContainer {
+  margin: 1 0;
+  width: auto;
+  height: auto;
+
+  #button-container {
+    margin: 2 0 0 2;
+    padding-right: 1;
+    width: 1fr;
+    height: auto;
+
+    CliveButton {
+      min-width: 1fr;
     }
   }
 }

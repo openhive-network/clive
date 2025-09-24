@@ -4,7 +4,6 @@ import contextlib
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.containers import Container, Horizontal
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static, TabPane
@@ -13,8 +12,11 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
 from clive.__private.ui.screens.account_details.authority.common import AuthorityHeader
+from clive.__private.ui.screens.account_details.authority.filter_authority import (
+    FilterAuthorityContainer,
+    FilterAuthorityExtended,
+)
 from clive.__private.ui.widgets.buttons import (
     CliveButton,
     OneLineButton,
@@ -413,8 +415,8 @@ class AuthorityDetails(TabPane, CliveWidget):
         return self.query_exactly_one(AccountsAuthorities)
 
     @property
-    def filter_authority(self) -> FilterAuthority:
-        return self.query_exactly_one(FilterAuthority)
+    def filter_authority(self) -> FilterAuthorityExtended:
+        return self.query_exactly_one(FilterAuthorityExtended)
 
     async def on_mount(self) -> None:
         self._update_input_suggestions()
@@ -422,15 +424,11 @@ class AuthorityDetails(TabPane, CliveWidget):
         self._filter_account_authorities()
 
     def compose(self) -> ComposeResult:
-        with Horizontal(id="filter-and-modify"):
-            yield FilterAuthority(self._account)
-            yield Container(
-                CliveButton(label="Modify", variant="success", id_="modify-button", disabled=True),
-                id="button-container",
-            )
+        modify_button = CliveButton(label="Modify", variant="success", id_="modify-button")
+        yield FilterAuthorityContainer(action_button=modify_button, account=self._account)
         yield AccountsAuthorities(self._account)
 
-    @on(FilterAuthority.AuthorityFilterReady)
+    @on(FilterAuthorityExtended.AuthorityFilterReady)
     def _apply_authority_filter(self) -> None:
         """Apply the authority filter based on the input and update the UI."""
         authority_filter_input = self.filter_authority.authority_filter_input
@@ -450,12 +448,12 @@ class AuthorityDetails(TabPane, CliveWidget):
         await self._rebuild_account_authorities()
         self._apply_authority_filter()
 
-    @on(FilterAuthority.Cleared)
+    @on(FilterAuthorityExtended.Cleared)
     def _handle_filter_cleared(self) -> None:
         self._update_input_suggestions()
         self.account_authorities.filter_clear()
 
-    @on(FilterAuthority.SelectedAccountsChanged)
+    @on(FilterAuthorityExtended.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
         self._update_input_suggestions()
 
