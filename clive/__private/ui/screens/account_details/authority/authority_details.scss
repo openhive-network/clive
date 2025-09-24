@@ -32,6 +32,11 @@ AuthorityDetails {
       &:focus-within {
         background-tint: $foreground 20%;
       }
+
+      #right-hand-side-text {
+        margin-right: 1;
+        width: auto;
+      }
     }
 
     AuthorityTable {
