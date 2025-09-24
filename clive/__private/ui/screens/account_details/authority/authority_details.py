@@ -10,11 +10,11 @@ from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
-from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.account_details.authority.filter_authority import FilterAuthority
+from clive.__private.ui.screens.account_details.authority.common import AuthorityHeader
 from clive.__private.ui.widgets.buttons import (
     CliveButton,
     OneLineButton,
@@ -276,21 +276,6 @@ class AuthorityRole(CliveCollapsible):
         return f"imported weights: {imported_weights}, threshold: {weight_threshold}"
 
 
-class AuthorityHeader(Horizontal):
-    def __init__(self, *, memo_header: bool = False) -> None:
-        super().__init__()
-        self._memo_header = memo_header
-
-    def compose(self) -> ComposeResult:
-        if not self._memo_header:
-            yield Static("Key / Account", classes=f"{CLIVE_ODD_COLUMN_CLASS_NAME} key-or-account")
-            yield Static("Weight", classes=f"{CLIVE_EVEN_COLUMN_CLASS_NAME} weight")
-            yield Static("Wallet keys", classes=f"{CLIVE_ODD_COLUMN_CLASS_NAME} action")
-        else:
-            yield Static("Key", classes=f"{CLIVE_ODD_COLUMN_CLASS_NAME} memo-key")
-            yield Static("Wallet keys", classes=f"{CLIVE_EVEN_COLUMN_CLASS_NAME} action")
-
-
 class AuthorityItem(CliveCheckerboardTableRow):
     """
     Class for items in the authority table.
@@ -374,16 +359,22 @@ class AuthorityTable(CliveCheckerboardTable):
 
     Attributes:
         NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
+        LAST_COLUMN_HEADER_TITLE: Title of last column in authority header
 
     Args:
         authority_role: Object representing authority role.
     """
 
     NO_CONTENT_TEXT = "No entries in authority"
+    LAST_COLUMN_HEADER_TITLE: Final[str] = "Wallet keys"
 
     def __init__(self, authority_role: AuthorityRoleRegular | AuthorityRoleMemo) -> None:
         self._authority_role = authority_role
-        super().__init__(header=AuthorityHeader(memo_header=authority_role.is_memo))
+        super().__init__(
+            header=AuthorityHeader(
+                last_column_header_title=self.LAST_COLUMN_HEADER_TITLE, memo_header=authority_role.is_memo
+            )
+        )
 
     @property
     def authority_items(self) -> DOMQuery[AuthorityItem]:
