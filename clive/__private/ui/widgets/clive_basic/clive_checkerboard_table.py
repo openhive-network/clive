@@ -20,7 +20,7 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
     from textual.app import ComposeResult
     from textual.css.query import DOMQuery
@@ -452,8 +452,10 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return True
 
-    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
-        for row_index, row in enumerate(rows):
+    def _set_evenness_styles(self, rows: Iterable[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
+        displayed_rows = [row for row in rows if row.display]
+
+        for row_index, row in enumerate(displayed_rows):
             for cell_index, cell in enumerate(row.cells):
                 if not isinstance(cell, CliveCheckerBoardTableCell):
                     continue
@@ -471,6 +473,10 @@ class CliveCheckerboardTable(CliveWidget):
     def is_anything_to_display(self, content: ContentT) -> bool:  # noqa: ARG002
         """Check whether there are elements to display. Should be overridden to create a custom condition."""
         return True
+
+    def update_cell_colors(self) -> None:
+        """Update background colors according to the actual displayed rows."""
+        self._set_evenness_styles(self.rows)
 
     def update_previous_state(self, content: ContentT) -> None:  # noqa: ARG002
         """
