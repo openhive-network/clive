@@ -13,7 +13,7 @@ from .load_from_file_button import LoadFromFileButton, LoadFromFileOneLineButton
 from .one_line_button import OneLineButton, OneLineButtonUnfocusable
 from .page_switch_buttons import PageDownButton, PageDownOneLineButton, PageUpButton, PageUpOneLineButton
 from .refresh_button import RefreshButton, RefreshOneLineButton
-from .remove_button import RemoveButton
+from .remove_button import RemoveButton, RemoveOneLineButton
 from .search_operation_buttons import ClearButton, SearchButton
 
 __all__ = [
@@ -43,5 +43,6 @@ __all__ = [
     "RefreshButton",
     "RefreshOneLineButton",
     "RemoveButton",
+    "RemoveOneLineButton",
     "SearchButton",
 ]
