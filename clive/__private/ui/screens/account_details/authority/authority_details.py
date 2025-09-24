@@ -406,21 +406,6 @@ class AuthorityTable(CliveCheckerboardTable):
             item.display = True
         self.update_cell_colors()
 
-    def update_cell_colors(self) -> None:
-        """Update background colors according to the actual displayed rows."""
-        displayed_rows = [row for row in self.query(CliveCheckerboardTableRow) if row.display]
-
-        for row_index, row in enumerate(displayed_rows):
-            for cell_index, cell in enumerate(row.cells):
-                should_be_even = (row_index + cell_index) % 2 == 0
-
-                if should_be_even:
-                    cell.remove_class(CLIVE_ODD_COLUMN_CLASS_NAME)
-                    cell.add_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
-                else:
-                    cell.remove_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
-                    cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
-
 
 class AuthorityDetails(TabPane, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
