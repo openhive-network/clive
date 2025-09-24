@@ -9,7 +9,6 @@ from textual.widgets import Collapsible, SelectionList
 from textual.widgets._selection_list import Selection
 
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.buttons import (
     ClearButton,
     SearchButton,
@@ -127,7 +126,30 @@ class AccountFilterCollapsible(Collapsible):
 
 
 class FilterAuthority(Horizontal, CliveWidget):
-    DEFAULT_CSS = get_css_from_relative_path(__file__)
+    DEFAULT_CSS = """
+    FilterAuthority {
+        border-title-style: bold;
+        border-title-color: $text;
+        border-title-background: $primary;
+        border: $primary outer;
+        padding-top: 1;
+        width: 6fr;
+        height: auto;
+
+        CliveButton {
+            width: 1fr;
+            min-width: 1fr;
+        }
+
+        ClearButton {
+            margin: 0 1;
+        }
+
+        AuthorityFilterInput {
+            width: 9fr;
+        }
+    }
+    """
     BORDER_TITLE = "Filter authority"
 
     class AuthorityFilterReady(Message):
@@ -136,38 +158,14 @@ class FilterAuthority(Horizontal, CliveWidget):
     class Cleared(Message):
         """Message sent when authority filter was restored to default."""
 
-    class SelectedAccountsChanged(Message):
-        """Message sent when selected accounts in AccountSelectionList were changed."""
-
-    def __init__(self, account: TrackedAccount) -> None:
-        super().__init__()
-        self._account = account
-
     def compose(self) -> ComposeResult:
-        yield AuthorityFilterInput()
-        yield AccountFilterCollapsible(account=self._account)
+        yield AuthorityFilterInput(title="Authority entry account or public/private key")
         yield SearchButton()
         yield ClearButton()
 
     @property
-    def account_filter_collapsible(self) -> AccountFilterCollapsible:
-        return self.query_exactly_one(AccountFilterCollapsible)
-
-    @property
-    def account_selection_list(self) -> AccountSelectionList:
-        return self.query_exactly_one(AccountSelectionList)
-
-    @property
-    def selected_options(self) -> list[str]:
-        return self.account_selection_list.selected
-
-    @property
     def authority_filter_input(self) -> AuthorityFilterInput:
         return self.query_exactly_one(AuthorityFilterInput)
-
-    @on(AccountSelectionList.SelectionToggled)
-    def account_toggled(self) -> None:
-        self.post_message(self.SelectedAccountsChanged())
 
     @on(SearchButton.Pressed)
     def request_authority_filter_by_button(self) -> None:
@@ -184,12 +182,87 @@ class FilterAuthority(Horizontal, CliveWidget):
 
     def apply_default_filter(self) -> None:
         self.authority_filter_input.clear_validation()
+
+    def _request_authority_filter(self) -> None:
+        self.post_message(self.AuthorityFilterReady())
+
+
+class FilterAuthorityExtended(FilterAuthority):
+    """
+    Extended version of filter authority with option to filter by specific accounts.
+
+    Attributes:
+        DEFAULT_CSS: The default CSS styling for this widget.
+
+    Args:
+        account: The account that will be initially selected in the account filter collapsible widget.
+    """
+
+    DEFAULT_CSS = """
+    FilterAuthorityExtended {
+        width: 10fr;
+
+        CliveButton {
+            width: 1fr;
+            min-width: 1fr;
+        }
+
+        ClearButton {
+            margin: 0 1;
+        }
+
+        AuthorityFilterInput {
+            width: 6fr;
+        }
+
+        AccountFilterCollapsible {
+            border-title-background: $primary;
+            border-title-color: $text;
+            border-title-style: bold;
+            margin-right: 1;
+            width: 3fr;
+
+            Contents {
+            padding: 1 0 0 0;
+            }
+        }
+    }
+    """
+
+    class SelectedAccountsChanged(Message):
+        """Message sent when selected accounts in AccountSelectionList were changed."""
+
+    def __init__(self, account: TrackedAccount) -> None:
+        super().__init__()
+        self._account = account
+
+    def compose(self) -> ComposeResult:
+        yield AuthorityFilterInput()
+        yield AccountFilterCollapsible(self._account)
+        yield SearchButton()
+        yield ClearButton()
+
+    @property
+    def account_filter_collapsible(self) -> AccountFilterCollapsible:
+        return self.query_exactly_one(AccountFilterCollapsible)
+
+    @property
+    def account_selection_list(self) -> AccountSelectionList:
+        return self.query_exactly_one(AccountSelectionList)
+
+    @property
+    def selected_options(self) -> list[str]:
+        return self.account_selection_list.selected
+
+    @on(AccountSelectionList.SelectionToggled)
+    def account_toggled(self) -> None:
+        self.post_message(self.SelectedAccountsChanged())
+
+    def apply_default_filter(self) -> None:
+        super().apply_default_filter()
         self.account_selection_list.restore_default()
         self.account_filter_collapsible.restore_title()
         self.collapse_account_filter_collapsible()
 
     def collapse_account_filter_collapsible(self) -> None:
         self.account_filter_collapsible.collapsed = True
-
-    def _request_authority_filter(self) -> None:
-        self.post_message(self.AuthorityFilterReady())
