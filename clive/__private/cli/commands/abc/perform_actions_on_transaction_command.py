@@ -64,19 +64,32 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     broadcast: bool = False
 
     @property
-    def save_file_path(self) -> Path | None:
-        return Path(self.save_file) if self.save_file is not None else None
+    def is_sign_with_given(self) -> bool:
+        return self.sign_with is not None
+
+    @property
+    def sign_with_ensure(self) -> str:
+        assert self.sign_with is not None, "Expected sign_with to be set"
+        return self.sign_with
+
+    @property
+    def is_autosign_explicitly_requested(self) -> bool:
+        return self.autosign is True
 
     @property
     def use_autosign(self) -> bool:
-        return self.autosign or (self.autosign is None and not self.sign_with)
+        return self.is_autosign_explicitly_requested or (self.autosign is None and not self.is_sign_with_given)
 
     @property
     async def should_be_signed(self) -> bool:
         if self.force_unsign:
             # force_unsign removes signatures and no signing happens when given
             return False
-        return self.use_autosign or self.sign_with is not None
+        return self.use_autosign or self.is_sign_with_given
+
+    @property
+    def save_file_path(self) -> Path | None:
+        return Path(self.save_file) if self.save_file is not None else None
 
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
@@ -86,9 +99,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return ensure_transaction(await self._get_transaction_content())
 
     async def validate(self) -> None:
-        self._validate_mutually_exclusive(autosign=self.use_autosign, sign_with=self.sign_with is not None)
+        self.validate_all_mutually_exclusive_options()
         self._validate_save_file_path()
         await super().validate()
+
+    def validate_all_mutually_exclusive_options(self) -> None:
+        self._validate_mutually_exclusive(
+            autosign=self.is_autosign_explicitly_requested, sign_with=self.is_sign_with_given
+        )
+        super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
         await self._validate_bad_accounts()
@@ -105,7 +124,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             transaction = (
                 await self.world.commands.perform_actions_on_transaction(
                     content=await self._get_transaction_content(),
-                    sign_key=None if self.use_autosign else self.__get_key_to_sign(),
+                    sign_key=self.__get_key_to_sign(),
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
@@ -119,10 +138,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._print_saveed_to_file_message_if_needed()
 
     def __get_key_to_sign(self) -> PublicKey | None:
-        if self.sign_with is None:
+        if not self.is_sign_with_given or self.use_autosign:
             return None
 
-        return self.profile.keys.get_from_alias(self.sign_with)
+        return self.profile.keys.get_from_alias(self.sign_with_ensure)
 
     def _validate_save_file_path(self) -> None:
         if self.save_file:
@@ -130,18 +149,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             if not result.is_valid:
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
-    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
-        details = (
-            "\n"
-            "If you want to broadcast the transaction, don't remove the signature - "
-            "remove the '--force-unsign' option.\n"
-            "If you want to remove the signature and show or save the unsigned transaction, "
-            "add the '--no-broadcast' option."
-        )
-        self._validate_mutually_exclusive(details=details, broadcast=self.broadcast, force_unsign=self.force_unsign)
-
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and (not self.sign_with and not self.use_autosign):
+        if self.broadcast and (not self.is_sign_with_given and not self.use_autosign):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
@@ -174,7 +183,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if len(self.profile.keys) == 0:
             raise CLINoKeysAvailableError
 
-        if self.sign_with and self.profile.keys.is_alias_available(self.sign_with):
+        if self.is_sign_with_given and self.profile.keys.is_alias_available(self.sign_with_ensure):
             raise CLIPrettyError(f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT)
 
         if self.use_autosign:

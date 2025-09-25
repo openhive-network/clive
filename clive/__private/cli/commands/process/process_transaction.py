@@ -40,7 +40,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
                 return False
 
             # signing happens in different already_signed_mode than strict when sign_with is given
-            return self.sign_with is not None and self.already_signed_mode != "strict"
+            return self.is_sign_with_given and self.already_signed_mode != "strict"
 
         return await super().should_be_signed
 
@@ -66,9 +66,8 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             * if sign_key is not provided, it will be saved as unsigned.
 
         """
+        self.validate_all_mutually_exclusive_options()
         self._validate_already_signed_mode()
-        self._validate_if_broadcast_is_used_without_force_unsign()
-        self._validate_all_mutually_exclusive_options()
         if await self._is_transaction_already_signed():
             self._validate_signed_transaction()
         else:
@@ -77,7 +76,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         await super().validate()
 
     def _validate_signed_transaction(self) -> None:
-        if self.already_signed_mode == "strict" and self.sign_with:
+        if self.already_signed_mode == "strict" and self.is_sign_with_given:
             raise CLITransactionAlreadySignedError
 
     def _validate_from_file_argument(self) -> None:
@@ -91,10 +90,23 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
             raise CLIWrongAlreadySignedModeAutoSignError
 
-    def _validate_all_mutually_exclusive_options(self) -> None:
-        # check explicitly set of autosign
-        self._validate_mutually_exclusive(autosign=self.autosign is True, force_unsign=self.force_unsign)
-        self._validate_mutually_exclusive(sign_with=self.sign_with is not None, force_unsign=self.force_unsign)
+    def validate_all_mutually_exclusive_options(self) -> None:
+        self._validate_mutually_exclusive(
+            autosign=self.is_autosign_explicitly_requested, force_unsign=self.force_unsign
+        )
+        self._validate_mutually_exclusive(sign_with=self.is_sign_with_given, force_unsign=self.force_unsign)
+        self._validate_if_broadcast_is_used_without_force_unsign()
+        super().validate_all_mutually_exclusive_options()
+
+    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
+        details = (
+            "\n"
+            "If you want to broadcast the transaction, don't remove the signature - "
+            "remove the '--force-unsign' option.\n"
+            "If you want to remove the signature and show or save the unsigned transaction, "
+            "add the '--no-broadcast' option."
+        )
+        self._validate_mutually_exclusive(broadcast=self.broadcast, force_unsign=self.force_unsign, details=details)
 
     async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed

@@ -41,6 +41,10 @@ class ExternalCLICommand(ABC):
 
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
         """
+        self.validate_all_mutually_exclusive_options()
+
+    def validate_all_mutually_exclusive_options(self) -> None:
+        """All mutually exclusive options should be validated here."""
         return
 
     async def _configure(self) -> None:
