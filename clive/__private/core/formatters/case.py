@@ -14,3 +14,22 @@ def underscore(string: str) -> str:
         The converted string in snake_case format.
     """
     return inflection.underscore(string)
+
+
+def dasherize(string: str) -> str:
+    """
+    Replace underscores with dashes in the string.
+
+    Args:
+        string: The input string in snake_case format.
+
+    Example:
+        >>> dasherize("some_text")
+        'some-text'
+        >>> dasherize("some-text")
+        'some-text'
+
+    Returns:
+        The converted string.
+    """
+    return inflection.dasherize(string)
