@@ -334,13 +334,21 @@ class CLIMutuallyExclusiveOptionsError(CLIPrettyError):
     """
 
     def __init__(self, option0: str, *options: str, details: str = "") -> None:
-        options_quoted = [f"'{opt}'" for opt in [option0, *options]]
+        options_quoted = [f"'{self._normalize(opt)}'" for opt in [option0, *options]]
         message = f"Options {options_quoted[0]} and {', '.join(options_quoted[1:])} are mutually exclusive."
 
         if details:
             message = f"{message}\nDetails: {details}"
 
         super().__init__(message, errno.EINVAL)
+
+    def _normalize(self, option: str) -> str:
+        from clive.__private.core.formatters.case import dasherize  # noqa: PLC0415
+
+        option = dasherize(option)
+        if not option.startswith("--"):
+            option = f"--{option}"
+        return option
 
 
 class CLIRequiresInteractiveError(CLIPrettyError):
