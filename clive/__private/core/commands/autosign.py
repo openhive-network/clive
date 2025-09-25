@@ -67,8 +67,8 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
         self._result = self.transaction
 
     def _throw_wrong_already_signed_mode(self) -> None:
-        if self.already_signed_mode == "error":
-            # autosign can be used only in `error` mode
+        if self.already_signed_mode == "strict":
+            # autosign can be used only in `strict` mode
             return
 
         if self.already_signed_mode in ["multisign", "override"]:

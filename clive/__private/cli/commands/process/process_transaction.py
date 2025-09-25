@@ -39,8 +39,8 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
                 # autosign is be skipped when transaction is already signed
                 return False
 
-            # signing happens in different already_signed_mode than error when sign_with is given
-            return self.is_sign_with_given and self.already_signed_mode != "error"
+            # signing happens in different already_signed_mode than strict when sign_with is given
+            return self.is_sign_with_given and self.already_signed_mode != "strict"
 
         return await super().should_be_signed
 
@@ -76,7 +76,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         await super().validate()
 
     def _validate_signed_transaction(self) -> None:
-        if self.already_signed_mode == "error" and self.is_sign_with_given:
+        if self.already_signed_mode == "strict" and self.is_sign_with_given:
             raise CLITransactionAlreadySignedError
 
     def _validate_from_file_argument(self) -> None:

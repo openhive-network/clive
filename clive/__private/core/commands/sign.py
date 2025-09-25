@@ -45,13 +45,13 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
         self._result = self.transaction
 
     def __throw_already_signed_error_when_needed(self) -> None:
-        if self.already_signed_mode == "error" and self.transaction.is_signed:
+        if self.already_signed_mode == "strict" and self.transaction.is_signed:
             raise TransactionAlreadySignedSignError(self)
 
     def __set_transaction_signature(self, signature: Signature) -> None:
         if self.already_signed_mode == "multisign":
             self.transaction.signatures.append(signature)
-        elif self.already_signed_mode in ["override", "error"]:
+        elif self.already_signed_mode in ["override", "strict"]:
             # this should be after the error check, because we don't want to take unnecessary action like signing
             # if we're going to throw an error anyway
             self.transaction.signatures = [signature]

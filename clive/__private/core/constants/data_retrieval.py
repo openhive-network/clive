@@ -14,4 +14,4 @@ PROPOSAL_STATUSES: Final[tuple[ProposalStatuses, ...]] = get_args(ProposalStatus
 PROPOSAL_STATUS_DEFAULT: Final[ProposalStatuses] = "votable"
 
 ALREADY_SIGNED_MODES: Final[tuple[AlreadySignedMode, ...]] = get_args(AlreadySignedMode)
-ALREADY_SIGNED_MODE_DEFAULT: Final[AlreadySignedMode] = "error"
+ALREADY_SIGNED_MODE_DEFAULT: Final[AlreadySignedMode] = "strict"
