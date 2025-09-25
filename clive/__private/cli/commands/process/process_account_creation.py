@@ -21,46 +21,34 @@ if TYPE_CHECKING:
     from clive.__private.core.types import AuthorityLevelRegular
 
 
-class MissingOwnerAuthorityError(CLIPrettyError):
+class MissingNewAccountNameOptionError(CLIPrettyError):
     """
-    Raised when trying to create a account without owner authority.
+    Raised when option '--new-account-name` is missing.
 
     Attributes:
         MESSAGE: A message displayed to user when this error occurs.
     """
 
-    MESSAGE: Final[str] = "There must be at least one key or account in owner authority."
+    MESSAGE: Final[str] = "Missing option '--new-account-name'."
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
 
 
-class MissingActiveAuthorityError(CLIPrettyError):
+class MissingAuthorityError(CLIPrettyError):
     """
-    Raised when trying to create a account without active authority.
+    Raised when trying to create a account without authority given as parameter.
 
-    Attributes:
-        MESSAGE: A message displayed to user when this error occurs.
-    """
-
-    MESSAGE: Final[str] = "There must be at least one key or account in active authority."
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
-
-
-class MissingPostingAuthorityError(CLIPrettyError):
-    """
-    Raised when trying to create a account without posting authority.
-
-    Attributes:
-        MESSAGE: A message displayed to user when this error occurs.
+    Args:
+        type_: A type of authority that is missing.
     """
 
-    MESSAGE: Final[str] = "There must be at least one key or account in posting authority."
+    def __init__(self, type_: AuthorityLevelRegular) -> None:
+        super().__init__(MissingAuthorityError.create_message(type_))
 
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
+    @staticmethod
+    def create_message(type_: AuthorityLevelRegular) -> str:
+        return f"There must be at least one key or account in {type_} authority."
 
 
 class MissingMemoKeyError(CLIPrettyError):
@@ -164,11 +152,11 @@ class ProcessAccountCreation(OperationCommand):
     @override
     async def validate(self) -> None:
         if not self.is_owner_authority_set:
-            raise MissingOwnerAuthorityError
+            raise MissingAuthorityError("owner")
         if not self.is_active_authority_set:
-            raise MissingActiveAuthorityError
+            raise MissingAuthorityError("active")
         if not self.is_posting_authority_set:
-            raise MissingPostingAuthorityError
+            raise MissingAuthorityError("posting")
         if not self.is_memo_key_set:
             raise MissingMemoKeyError
         await super().validate()

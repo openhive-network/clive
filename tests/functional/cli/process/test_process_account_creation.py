@@ -4,12 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.cli.commands.process.process_account_creation import (
-    MissingActiveAuthorityError,
-    MissingMemoKeyError,
-    MissingOwnerAuthorityError,
-    MissingPostingAuthorityError,
-)
+from clive.__private.cli.commands.process.process_account_creation import MissingAuthorityError, MissingMemoKeyError
 from clive.__private.core import iwax
 from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_THRESOHLD, DEFAULT_AUTHORITY_WEIGHT
 from clive.__private.core.keys import PrivateKey
@@ -27,6 +22,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
 )
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -275,7 +271,7 @@ async def test_account_creation_complex_authority(node: tt.RawNode, cli_tester: 
 
 async def test_negative_empty_owner_authority(cli_tester: CLITester) -> None:
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=MissingOwnerAuthorityError.MESSAGE):
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(MissingAuthorityError("owner"))):
         (
             cli_tester.process_account_creation(new_account_name=NEW_ACCOUNT_NAME, fee=True)
             .active(key=ACTIVE_KEY)
@@ -287,7 +283,7 @@ async def test_negative_empty_owner_authority(cli_tester: CLITester) -> None:
 
 async def test_negative_empty_active_authority(cli_tester: CLITester) -> None:
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=MissingActiveAuthorityError.MESSAGE):
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(MissingAuthorityError("active"))):
         (
             cli_tester.process_account_creation(new_account_name=NEW_ACCOUNT_NAME, fee=True)
             .owner(key=OWNER_KEY)
@@ -299,7 +295,7 @@ async def test_negative_empty_active_authority(cli_tester: CLITester) -> None:
 
 async def test_negative_empty_posting_authority(cli_tester: CLITester) -> None:
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=MissingPostingAuthorityError.MESSAGE):
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(MissingAuthorityError("posting"))):
         (
             cli_tester.process_account_creation(new_account_name=NEW_ACCOUNT_NAME, fee=True)
             .owner(key=OWNER_KEY)
