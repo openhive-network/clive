@@ -9,10 +9,6 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models.schemas import (
-    HiveInt,
-    convert_to_representation,
-)
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -26,6 +22,8 @@ if TYPE_CHECKING:
 def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        from clive.__private.models.schemas import HiveInt
+
         def hiveint_to_int(value: Any) -> Any:  # noqa: ANN401
             return int(value) if isinstance(value, HiveInt) else value
 
@@ -101,6 +99,7 @@ def __validate_wax_response(response: wax.python_result) -> None:
 
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
     from clive.__private.models import Transaction  # noqa: PLC0415
+    from clive.__private.models.schemas import convert_to_representation  # noqa: PLC0415
 
     to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
     return to_serialize.json().encode()
