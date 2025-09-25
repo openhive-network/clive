@@ -330,11 +330,16 @@ class CLIMutuallyExclusiveOptionsError(CLIPrettyError):
     Args:
         option0: First option. This ensures that exception is raised with more then one option.
         *options: Rest of options that can't be used together.
+        details: Additional information or hints about the error.
     """
 
-    def __init__(self, option0: str, *options: str) -> None:
-        options_quoted = [f"'{opt}'" for opt in [option0, *list(options)]]
+    def __init__(self, option0: str, *options: str, details: str = "") -> None:
+        options_quoted = [f"'{opt}'" for opt in [option0, *options]]
         message = f"Options {options_quoted[0]} and {', '.join(options_quoted[1:])} are mutually exclusive."
+
+        if details:
+            message = f"{message}\nDetails: {details}"
+
         super().__init__(message, errno.EINVAL)
 
 
