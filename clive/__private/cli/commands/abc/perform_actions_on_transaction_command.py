@@ -11,7 +11,6 @@ import rich
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
-    CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIMultipleKeysAutoSignError,
     CLINoKeysAvailableError,
     CLIPrettyError,
@@ -149,10 +148,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             result = PathValidator(mode="can_be_file").validate(str(self.save_file))
             if not result.is_valid:
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
-
-    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
-        if self.broadcast and self.force_unsign:
-            raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
         if self.broadcast and (not self.is_sign_with_given and not self.use_autosign):

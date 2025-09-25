@@ -97,6 +97,16 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self._validate_if_broadcast_is_used_without_force_unsign()
         super().validate_all_mutually_exclusive_options()
 
+    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
+        details = (
+            "\n"
+            "If you want to broadcast the transaction, don't remove the signature - "
+            "remove the '--force-unsign' option.\n"
+            "If you want to remove the signature and show or save the unsigned transaction, "
+            "add the '--no-broadcast' option."
+        )
+        self._validate_mutually_exclusive(broadcast=self.broadcast, force_unsign=self.force_unsign, details=details)
+
     async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
 
