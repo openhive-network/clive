@@ -5,13 +5,13 @@ from pathlib import Path
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
-from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
 from clive.__private.settings import get_settings, safe_settings
 from clive.__private.storage.storage_history import StorageHistory
 from clive.dev import is_in_dev_mode
 
 
 def _disable_schemas_extra_fields_check() -> None:
+    from clive.__private.models.policies import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
     set_policies(ExtraFieldsPolicy(allow=True), MissingFieldsInGetConfigPolicy(allow=True))
 
 

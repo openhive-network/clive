@@ -127,12 +127,6 @@ from schemas.operations.extensions.representation_types import (
     HF26RepresentationRecurrentTransferPairIdOperationExtension,
 )
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.policies import (
-    ExtraFieldsPolicy,
-    MissingFieldsInGetConfigPolicy,
-    TestnetAssetsPolicy,
-    set_policies,
-)
 from schemas.transaction import Transaction
 
 __all__ = [  # noqa: RUF022
@@ -253,11 +247,6 @@ __all__ = [  # noqa: RUF022
     "VestingDelegationExpiration",
     "WithdrawRoute",
     "Witness",
-    # policies
-    "ExtraFieldsPolicy",
-    "MissingFieldsInGetConfigPolicy",
-    "TestnetAssetsPolicy",
-    "set_policies",
     # exceptions
     "DecodeError",
     "ValidationError",
