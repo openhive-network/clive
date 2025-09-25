@@ -8,7 +8,7 @@ NotifyLevel = Literal["info", "warning", "error"]
 
 OrderDirections = Literal["ascending", "descending"]
 
-AlreadySignedMode = Literal["error", "override", "multisign"]
+AlreadySignedMode = Literal["strict", "override", "multisign"]
 
 ProposalOrders = Literal[
     "by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"

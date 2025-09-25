@@ -203,11 +203,11 @@ async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path
     assert_transaction_file_is_signed(override_transaction, signatures_count=1)
 
 
-@pytest.mark.parametrize("already_signed_mode", ["error", None])
+@pytest.mark.parametrize("already_signed_mode", ["strict", None])
 async def test_negative_error_placing_multisign(
     cli_tester: CLITester, tmp_path: Path, already_signed_mode: AlreadySignedMode | None
 ) -> None:
-    """Check if clive process transaction will raise error with `already-signed-mode` set to `error` or default."""
+    """Check if clive process transaction will raise error with `already-signed-mode` set to `strict` or default."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
     signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)

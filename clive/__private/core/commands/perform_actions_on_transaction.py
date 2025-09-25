@@ -81,7 +81,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     autosign: bool = False
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """
-    How to handle already signed transaction. "error" will just trigger a warning during autosign (will be skipped).
+    How to handle already signed transaction. "strict" will just trigger a warning during autosign (will be skipped).
     """
     force_unsign: bool = False
     chain_id: str | None = None

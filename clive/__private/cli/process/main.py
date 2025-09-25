@@ -81,7 +81,14 @@ async def process_transaction(  # noqa: PLR0913
     from_file: str = typer.Option(..., help="The file to load the transaction from."),
     force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
-        ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
+        ALREADY_SIGNED_MODE_DEFAULT,
+        help=(
+            "How to handle situations when a transaction is already signed.\n\n "
+            "In 'strict' mode for: \n\n"
+            "- '--sign-with': an error is raised, \n\n"
+            "- '--autosign': a warning is shown, but will continue."
+            ""
+        ),
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
