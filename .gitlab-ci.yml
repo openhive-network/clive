@@ -314,6 +314,7 @@ deploy_wheel_to_pypi:
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
     key: gitlab-pages
     paths: [ public ]
+
   artifacts:
     paths: [ public ]
   tags:  # has to be a single runner or cache should be shared between multiple runners
@@ -334,6 +335,12 @@ deploy_docs:
     - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
     - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > "${PAGES_BASE_DIR}"/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/default/
     - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+    - when: manual
+      allow_failure: true
+
   environment:
     name: $PAGES_ENV_NAME
     action: start
