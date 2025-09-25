@@ -76,12 +76,6 @@ class CLIBeekeeperSessionTokenNotSetError(CLIPrettyError):
         super().__init__(self.MESSAGE, errno.EINVAL)
 
 
-class CLIBroadcastCannotBeUsedWithForceUnsignError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = "You cannot broadcast a transaction and force-unsign it at the same time."
-        super().__init__(message, errno.EINVAL)
-
-
 class PowerDownInProgressError(CLIPrettyError):
     def __init__(self) -> None:
         message = (

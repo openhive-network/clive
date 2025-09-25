@@ -11,7 +11,6 @@ import rich
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
-    CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIMultipleKeysAutoSignError,
     CLINoKeysAvailableError,
     CLIPrettyError,
@@ -132,8 +131,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
-        if self.broadcast and self.force_unsign:
-            raise CLIBroadcastCannotBeUsedWithForceUnsignError
+        details = (
+            "\n"
+            "If you want to broadcast the transaction, don't remove the signature - "
+            "remove the '--force-unsign' option.\n"
+            "If you want to remove the signature and show or save the unsigned transaction, "
+            "add the '--no-broadcast' option."
+        )
+        self._validate_mutually_exclusive(details=details, broadcast=self.broadcast, force_unsign=self.force_unsign)
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
         if self.broadcast and (not self.sign_with and not self.use_autosign):
