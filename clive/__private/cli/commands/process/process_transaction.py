@@ -94,6 +94,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self._validate_mutually_exclusive(
             autosign=self.is_autosign_explicitly_requested, force_unsign=self.force_unsign
         )
+        self._validate_mutually_exclusive(sign_with=self.is_sign_with_given, force_unsign=self.force_unsign)
         self._validate_if_broadcast_is_used_without_force_unsign()
         super().validate_all_mutually_exclusive_options()
 
