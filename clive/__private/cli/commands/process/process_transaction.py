@@ -68,8 +68,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         """
         self._validate_already_signed_mode()
         self._validate_if_broadcast_is_used_without_force_unsign()
-        # check explicitly set of autosign
-        self._validate_mutually_exclusive(autosign=self.autosign is True, force_unsign=self.force_unsign)
+        self._validate_all_mutually_exclusive_options()
         if await self._is_transaction_already_signed():
             self._validate_signed_transaction()
         else:
@@ -91,6 +90,11 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
     def _validate_already_signed_mode(self) -> None:
         if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
             raise CLIWrongAlreadySignedModeAutoSignError
+
+    def _validate_all_mutually_exclusive_options(self) -> None:
+        # check explicitly set of autosign
+        self._validate_mutually_exclusive(autosign=self.autosign is True, force_unsign=self.force_unsign)
+        self._validate_mutually_exclusive(sign_with=self.sign_with is not None, force_unsign=self.force_unsign)
 
     async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
