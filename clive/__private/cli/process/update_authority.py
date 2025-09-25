@@ -8,10 +8,10 @@ from click import Context, pass_context
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.get_command_from_context import get_process_account_update_command
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
     from clive.__private.cli.types import AccountUpdateFunction
     from clive.__private.core.types import AuthorityLevelRegular
 
@@ -56,17 +56,6 @@ def send_update(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  # noqa: AR
     asyncio_run(send_update_async())
 
 
-def _get_update_command_from_context_parent(ctx: typer.Context) -> ProcessAccountUpdate:
-    from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate  # noqa: PLC0415
-
-    assert ctx.parent, f"{ctx.command_path} context parent does not exist"
-    update_command = ctx.parent.obj
-    assert isinstance(update_command, ProcessAccountUpdate), (
-        f"{ctx.parent.command_path} context object is not instance of ProcessAccountUpdate"
-    )
-    return update_command
-
-
 def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFunction) -> None:
     """
     Add callback modifying authority to command ProcessAccountUpdate stored in context.
@@ -75,7 +64,7 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
         ctx: The context of the command.
         callback: The callback function to add to the update command.
     """
-    _get_update_command_from_context_parent(ctx).add_callback(callback)
+    get_process_account_update_command(ctx).add_callback(callback)
 
 
 def modify_command_common_options(
@@ -85,7 +74,7 @@ def modify_command_common_options(
     broadcast: bool | None,  # noqa: FBT001
     save_file: str | None,
 ) -> None:
-    _get_update_command_from_context_parent(ctx).modify_common_options(
+    get_process_account_update_command(ctx).modify_common_options(
         sign_with=sign_with, broadcast=broadcast, save_file=save_file, autosign=autosign
     )
 

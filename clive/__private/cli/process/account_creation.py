@@ -7,6 +7,7 @@ from click import Context, pass_context
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.get_command_from_context import get_process_account_creation_command
 from clive.__private.cli.common.parameters import options  # noqa: F811
 from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.common.parsers import account_with_weight, key_with_weight, public_key
@@ -19,7 +20,6 @@ from clive.__private.core.constants.cli import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation
     from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
     from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.types import AuthorityLevelRegular
@@ -28,19 +28,6 @@ account_creation = CliveTyper(
     name="account-creation", help="Create an account using a token or by paying a fee.", chain=True
 )
 EPILOG: Final[str] = "Look also at the help for `clive process account-creation` for more options."
-
-
-def _get_command_from_context(ctx: Context) -> ProcessAccountCreation:
-    from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation  # noqa: PLC0415
-
-    if not isinstance(ctx.obj, ProcessAccountCreation):
-        assert ctx.parent, (
-            f"{ctx.command_path}"
-            " context or context parent should contain ProcessAccountCreation"
-            " but context parent does not exist"
-        )
-        return _get_command_from_context(ctx.parent)
-    return ctx.obj
 
 
 @pass_context
@@ -55,7 +42,7 @@ def send_account_creation(ctx: Context, /, *args: Any, **kwargs: Any) -> None:  
     """
 
     async def send_account_creation_async() -> None:
-        account_creation_command = _get_command_from_context(ctx)
+        account_creation_command = get_process_account_creation_command(ctx)
         await account_creation_command.run()
 
     asyncio_run(send_account_creation_async())
@@ -68,7 +55,7 @@ def set_authority(
     keys_with_weight: list[KeyWithWeight],
     accounts_with_weight: list[AccountWithWeight],
 ) -> None:
-    command = _get_command_from_context(ctx)
+    command = get_process_account_creation_command(ctx)
     command.set_threshold(type_, threshold)
     for key, weight in keys_with_weight:
         command.add_key_authority(type_, key, weight)
@@ -80,7 +67,7 @@ def set_memo_key(
     ctx: typer.Context,
     key: PublicKey,
 ) -> None:
-    _get_command_from_context(ctx).set_memo_key(key)
+    get_process_account_creation_command(ctx).set_memo_key(key)
 
 
 def modify_command_common_options(
@@ -90,7 +77,7 @@ def modify_command_common_options(
     broadcast: bool | None,  # noqa: FBT001
     save_file: str | None,
 ) -> None:
-    _get_command_from_context(ctx).modify_common_options(
+    get_process_account_creation_command(ctx).modify_common_options(
         sign_with=sign_with, broadcast=broadcast, save_file=save_file, autosign=autosign
     )
 
