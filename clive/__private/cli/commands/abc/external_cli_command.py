@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Self
 
 import typer
 
-from clive.__private.cli.exceptions import CLIPrettyError, CLIRequiresInteractiveError
+from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError, CLIPrettyError, CLIRequiresInteractiveError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 
@@ -84,6 +84,11 @@ class ExternalCLICommand(ABC):
 
     def read_piped(self) -> str:
         return sys.stdin.readline().rstrip()
+
+    def _validate_mutually_exclusive(self, *, details: str = "", **options: bool) -> None:
+        truthy = [name for name, value in options.items() if value]
+        if len(truthy) > 1:
+            raise CLIMutuallyExclusiveOptionsError(truthy[0], *truthy[1:], details=details)
 
     def __get_initialized_fields(self) -> list[Field[Any]]:
         return [field_instance for field_instance in fields(self) if field_instance.init]

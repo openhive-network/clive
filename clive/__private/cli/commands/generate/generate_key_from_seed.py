@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.keys import PrivateKey
 
@@ -20,8 +19,7 @@ class GenerateKeyFromSeed(ExternalCLICommand):
     only_public_key: bool
 
     async def validate(self) -> None:
-        if self.only_private_key and self.only_public_key:
-            raise CLIMutuallyExclusiveOptionsError("--only-private-key", "--only-public-key")
+        self._validate_mutually_exclusive(only_private_key=self.only_private_key, only_public_key=self.only_public_key)
         await super().validate()
 
     async def _run(self) -> None:
