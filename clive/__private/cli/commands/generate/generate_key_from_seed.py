@@ -18,9 +18,9 @@ class GenerateKeyFromSeed(ExternalCLICommand):
     only_private_key: bool
     only_public_key: bool
 
-    async def validate(self) -> None:
+    def validate_all_mutually_exclusive_options(self) -> None:
         self._validate_mutually_exclusive(only_private_key=self.only_private_key, only_public_key=self.only_public_key)
-        await super().validate()
+        return super().validate_all_mutually_exclusive_options()
 
     async def _run(self) -> None:
         password = (
