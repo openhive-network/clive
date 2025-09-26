@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import WorkingAccount
     from clive.__private.core.profile import Profile
-    from clive.__private.models.schemas import OperationBase
+    from clive.__private.models.operations import OperationBase
 
 
 class Resources(Grid):

@@ -11,7 +11,7 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.logger import logger
 from clive.__private.models import Transaction
-from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion, is_matching_model
+from clive.__private.models.schemas import ChainId, is_matching_model
 from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.service.service import PersistentStorageService
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import Account
     from clive.__private.core.encryption import EncryptionService
-
+    from clive.__private.models.operations import OperationRepresentationUnion, OperationUnion
 
 class ProfileError(CliveError):
     """An error related to profile."""

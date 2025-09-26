@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-from clive.__private.models import Transaction
-from clive.__private.models.schemas import OperationBase, convert_to_representation
+if TYPE_CHECKING:
+    from clive.__private.models import Transaction
+    from clive.__private.models.operations import OperationBase, convert_to_representation
 
 type TransactionConvertibleType = OperationBase | Iterable[OperationBase] | Transaction
 
@@ -26,6 +27,9 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
         The transaction.
     """
 
+    from clive.__private.models.operations import OperationBase, convert_to_representation
+    from clive.__private.models import Transaction
+    
     def __ensure_operation(item: Any) -> OperationBase:  # noqa: ANN401
         assert isinstance(item, OperationBase)
         return item

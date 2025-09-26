@@ -43,7 +43,8 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         TotalVestingProtocol,
     )
-    from clive.__private.models.schemas import HbdExchangeRate, OperationBase, PriceFeed
+    from clive.__private.models.schemas import HbdExchangeRate, PriceFeed
+    from clive.__private.models.operations import OperationBase
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:

@@ -14,7 +14,6 @@ from clive.__private.core.alarms.specific_alarms import (
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
-    OperationRepresentationUnion,
     PreconfiguredBaseModel,
     Signature,
     Uint16t,
@@ -23,6 +22,7 @@ from clive.__private.models.schemas import (
 )
 from clive.__private.storage.migrations.base import AlarmStorageModelBase, ProfileStorageBase
 
+from clive.__private.models.operations import OperationRepresentationUnion
 
 class ProfileStorageModel(ProfileStorageBase, kw_only=True):
     name: str

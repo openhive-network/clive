@@ -67,73 +67,9 @@ from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.fields.integers import Uint16t, Uint32t
 from schemas.fields.resolvables import JsonString
-from schemas.operation import Operation
-from schemas.operations import (
-    AccountCreateOperation,
-    AccountCreateWithDelegationOperation,
-    AccountUpdate2Operation,
-    AccountUpdateOperation,
-    AccountWitnessProxyOperation,
-    AccountWitnessVoteOperation,
-    CancelTransferFromSavingsOperation,
-    ChangeRecoveryAccountOperation,
-    ClaimAccountOperation,
-    ClaimRewardBalanceOperation,
-    CollateralizedConvertOperation,
-    CommentOperation,
-    CommentOptionsOperation,
-    ConvertOperation,
-    CreateClaimedAccountOperation,
-    CreateProposalOperation,
-    CustomBinaryOperation,
-    CustomJsonOperation,
-    CustomOperation,
-    DeclineVotingRightsOperation,
-    DelegateVestingSharesOperation,
-    DeleteCommentOperation,
-    EscrowApproveOperation,
-    EscrowDisputeOperation,
-    EscrowReleaseOperation,
-    EscrowTransferOperation,
-    FeedPublishOperation,
-    Hf26OperationRepresentation,
-    Hf26Operations,
-    LimitOrderCancelOperation,
-    LimitOrderCreate2Operation,
-    LimitOrderCreateOperation,
-    Pow2Operation,
-    PowOperation,
-    RecoverAccountOperation,
-    RemoveProposalOperation,
-    RequestAccountRecoveryOperation,
-    ResetAccountOperation,
-    SetResetAccountOperation,
-    SetWithdrawVestingRouteOperation,
-    TransferFromSavingsOperation,
-    TransferOperation,
-    TransferToSavingsOperation,
-    TransferToVestingOperation,
-    UpdateProposalOperation,
-    UpdateProposalVotesOperation,
-    VoteOperation,
-    WithdrawVestingOperation,
-    WitnessBlockApproveOperation,
-    WitnessSetPropertiesOperation,
-    WitnessUpdateOperation,
-    convert_to_representation,
-)
-from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
-from schemas.operations.extensions.representation_types import (
-    HF26RepresentationRecurrentTransferPairIdOperationExtension,
-)
-from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
 from schemas.transaction import Transaction
 
 __all__ = [  # noqa: RUF022
-    # operation BASIC aliases
-    "OperationBase",
-    "OperationRepresentationUnion",
-    "OperationUnion",
     # list API responses (have nested list property which stores actual model)
     "ListChangeRecoveryAccountRequests",
     "ListDeclineVotingRightsRequests",
@@ -160,60 +96,6 @@ __all__ = [  # noqa: RUF022
     "HardforkProperties",
     "Version",
     "WitnessSchedule",
-    # operations
-    "AccountCreateOperation",
-    "AccountCreateWithDelegationOperation",
-    "AccountUpdate2Operation",
-    "AccountUpdateOperation",
-    "AccountWitnessProxyOperation",
-    "AccountWitnessVoteOperation",
-    "CancelTransferFromSavingsOperation",
-    "ChangeRecoveryAccountOperation",
-    "ClaimAccountOperation",
-    "ClaimRewardBalanceOperation",
-    "CollateralizedConvertOperation",
-    "CommentOperation",
-    "CommentOptionsOperation",
-    "ConvertOperation",
-    "CreateClaimedAccountOperation",
-    "CreateProposalOperation",
-    "CustomBinaryOperation",
-    "CustomJsonOperation",
-    "CustomOperation",
-    "DeclineVotingRightsOperation",
-    "DelegateVestingSharesOperation",
-    "DeleteCommentOperation",
-    "EscrowApproveOperation",
-    "EscrowDisputeOperation",
-    "EscrowReleaseOperation",
-    "EscrowTransferOperation",
-    "FeedPublishOperation",
-    "LimitOrderCancelOperation",
-    "LimitOrderCreate2Operation",
-    "LimitOrderCreateOperation",
-    "Pow2Operation",
-    "PowOperation",
-    "RecoverAccountOperation",
-    "RecurrentTransferOperation",
-    "RemoveProposalOperation",
-    "RequestAccountRecoveryOperation",
-    "ResetAccountOperation",
-    "SetResetAccountOperation",
-    "SetWithdrawVestingRouteOperation",
-    "TransferFromSavingsOperation",
-    "TransferOperation",
-    "TransferToSavingsOperation",
-    "TransferToVestingOperation",
-    "UpdateProposalOperation",
-    "UpdateProposalVotesOperation",
-    "VoteOperation",
-    "WithdrawVestingOperation",
-    "WitnessBlockApproveOperation",
-    "WitnessSetPropertiesOperation",
-    "WitnessUpdateOperation",
-    # extensions
-    "RecurrentTransferPairIdExtension",
-    "RecurrentTransferPairIdRepresentation",
     # assets
     "AssetHbd",
     "AssetHive",
@@ -258,12 +140,6 @@ __all__ = [  # noqa: RUF022
     "field",
 ]
 
-# operation BASIC aliases
-
-OperationBase = Operation
-OperationRepresentationUnion = Hf26OperationRepresentation
-OperationUnion = Hf26Operations
-
 # find API response aliases (have nested list property which stores actual model)
 
 FindRcAccounts = SchemasFindRcAccounts
@@ -276,11 +152,6 @@ FeedHistory = GetFeedHistory
 HardforkProperties = GetHardforkProperties
 Version = GetVersion
 WitnessSchedule = GetWitnessSchedule
-
-# extensions
-
-RecurrentTransferPairIdExtension = RecurrentTransferPairId
-RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferPairIdOperationExtension
 
 # basic fields
 

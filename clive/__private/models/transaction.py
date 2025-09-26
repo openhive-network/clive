@@ -6,23 +6,21 @@ from typing import TYPE_CHECKING, Any
 
 from clive.__private.models.schemas import (
     HiveDateTime,
-    OperationRepresentationUnion,
-    OperationUnion,
     Signature,
     TransactionId,
     Uint16t,
     Uint32t,
-    convert_to_representation,
     field,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.visitors.operation.operation_visitor import OperationVisitor
-
+    from clive.__private.models.operations import OperationRepresentationUnion, OperationUnion
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
@@ -37,6 +35,7 @@ class Transaction(SchemasTransaction):
         return bool(self.operations)
 
     def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:  # type: ignore[override]
+        from clive.__private.models.operations import OperationUnion
         if isinstance(operation, OperationUnion):
             return operation in self.operations_models
         return operation in self.operations
@@ -63,6 +62,7 @@ class Transaction(SchemasTransaction):
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, Iterable)
+        from clive.__private.models.operations import  convert_to_representation
         return [convert_to_representation(op) for op in value]
 
     def add_operation(self, *operations: OperationUnion) -> None:

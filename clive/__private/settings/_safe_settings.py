@@ -41,7 +41,7 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_NODE_ADDRESS,
     SELECT_FILE_ROOT_PATH,
 )
-from clive.__private.core.formatters.humanize import humanize_validation_result
+
 from clive.__private.settings._settings import get_settings
 from clive.exceptions import CliveError
 
@@ -441,6 +441,7 @@ class SafeSettings:
         self, setting_name: str, *, default: float | NotSet = NOT_SET, minimum: float | None = None
     ) -> float:
         from textual.validation import Number  # noqa: PLC0415
+        from clive.__private.core.formatters.humanize import humanize_validation_result
 
         value = self._get_value_from_settings(setting_name, default=default)
         value_ = str(value)
