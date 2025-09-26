@@ -73,6 +73,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return self.sign_with
 
     @property
+    def sign_key(self) -> PublicKey | None:
+        if not self.is_sign_with_given:
+            return None
+        return self.profile.keys.get_from_alias(self.sign_with_ensure)
+
+    @property
     def is_autosign_explicitly_requested(self) -> bool:
         return self.autosign is True
 
@@ -124,7 +130,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             transaction = (
                 await self.world.commands.perform_actions_on_transaction(
                     content=await self._get_transaction_content(),
-                    sign_key=self.__get_key_to_sign(),
+                    sign_key=self.sign_key,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
@@ -136,12 +142,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._print_transaction(transaction.with_hash())
         self._print_transaction_success_message()
         self._print_saveed_to_file_message_if_needed()
-
-    def __get_key_to_sign(self) -> PublicKey | None:
-        if not self.is_sign_with_given or self.use_autosign:
-            return None
-
-        return self.profile.keys.get_from_alias(self.sign_with_ensure)
 
     def _validate_save_file_path(self) -> None:
         if self.save_file:
