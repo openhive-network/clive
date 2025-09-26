@@ -30,7 +30,7 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCollapsible,
 )
 from clive.__private.ui.widgets.no_filter_criteria_match import NoFilterCriteriaMatch
-from clive.__private.ui.widgets.section import SectionBody, SectionScrollable
+from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -105,10 +105,6 @@ class AccountsAuthorities(SectionScrollable):
     def __init__(self, initial_account: TrackedAccount) -> None:
         super().__init__("Authority roles")
         self._initial_account = initial_account
-
-    @property
-    def body(self) -> SectionBody:
-        return self.query_exactly_one(SectionBody)
 
     @property
     def account_collapsibles(self) -> DOMQuery[AccountCollapsible]:
