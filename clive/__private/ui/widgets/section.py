@@ -38,6 +38,10 @@ class Section(Container):
         self._title = title
         self._section_children: list[Widget] = []
 
+    @property
+    def body(self) -> SectionBody:
+        return self.query_exactly_one(SectionBody)
+
     def compose(self) -> ComposeResult:
         if self._title:
             yield SectionTitle(self._title)
