@@ -144,7 +144,7 @@ async def test_saving_autosigned_operation_to_file(
     save_file_path = tmp_path / "saved_transaction.txt"
 
     # ACT
-    cli_tester.process_transfer(
+    result = cli_tester.process_transfer(
         from_=WORKING_ACCOUNT_NAME,
         amount=tt.Asset.Hive(1),
         to=RECEIVER,
@@ -159,6 +159,9 @@ async def test_saving_autosigned_operation_to_file(
         assert_transaction_file_is_signed(save_file_path)
     else:
         assert_transaction_file_is_unsigned(save_file_path)
+    assert_contains_dry_run_message(result.stdout)
+    assert_contains_transaction_created_message(result.stdout)
+    assert_contains_transaction_saved_to_file_message(save_file_path, result.stdout)
 
 
 async def test_dry_run_of_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester) -> None:
