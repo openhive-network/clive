@@ -14,6 +14,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
 )
 from clive_local_tools.cli.checkers import assert_transaction_file_is_signed
 from clive_local_tools.cli.exceptions import CLITestCommandError
+from clive_local_tools.cli.helpers import load_transaction_from_file
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
@@ -186,6 +187,7 @@ async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
     signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)
+    signed_transaction_data = load_transaction_from_file(signed_transaction)
     override_transaction = tmp_path / "override_trx.json"
 
     # ACT
@@ -196,8 +198,12 @@ async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path
         from_file=signed_transaction,
         save_file=override_transaction,
     )
+    override_transaction_data = load_transaction_from_file(override_transaction)
 
     # ASSERT
+    assert signed_transaction_data.signatures != override_transaction_data.signatures, (
+        "Transaction signatures were not overridden."
+    )
     assert_transaction_file_is_signed(override_transaction, signatures_count=1)
 
 
