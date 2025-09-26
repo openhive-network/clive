@@ -14,6 +14,10 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.cli.checkers import (
+    assert_contains_dry_run_message,
+    assert_contains_transaction_broadcasted_message,
+    assert_contains_transaction_loaded_message,
+    assert_contains_transaction_saved_to_file_message,
     assert_output_contains,
     assert_transaction_file_is_signed,
     assert_transaction_file_is_unsigned,
@@ -77,9 +81,10 @@ async def test_autosign_transaction(cli_tester: CLITester, transaction_path: Pat
     signed_transaction = tmp_path / "signed_transaction.json"
 
     # ACT
-    cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
+    result = cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
 
     # ASSERT
+    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
     assert_transaction_file_is_signed(signed_transaction)
 
 
@@ -94,9 +99,10 @@ async def test_autosign_transaction_with_different_aliases_to_the_same_key(
     cli_tester.configure_key_add(key=WORKING_ACCOUNT_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
     # ACT
-    cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
+    result = cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
 
     # ASSERT
+    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
     assert_transaction_file_is_signed(signed_transaction)
 
 
@@ -113,6 +119,7 @@ async def test_autosign_already_signed_transaction(cli_tester: CLITester, signed
     # ASSERT
     assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
+    assert_contains_transaction_loaded_message(result.stdout)
 
 
 async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
@@ -135,6 +142,8 @@ async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
     # ASSERT
     assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
+    assert_contains_transaction_loaded_message(result.stdout)
+    assert_contains_dry_run_message(result.stdout)
 
 
 async def test_autosign_already_signed_transaction_with_multiple_keys_in_profile(
@@ -156,6 +165,8 @@ async def test_autosign_already_signed_transaction_with_multiple_keys_in_profile
     # ASSERT
     assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
+    assert_contains_transaction_loaded_message(result.stdout)
+    assert_contains_dry_run_message(result.stdout)
 
 
 async def test_autosign_transaction_failure_due_to_no_keys_in_profile(
@@ -188,11 +199,13 @@ async def test_autosign_transaction_failure_due_to_multiple_keys_in_profile(
 async def test_default_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
     """Test omitting autosign when 'force-unsign' flag is passed and 'autosign' flag is not explicit set."""
     # ACT
-    cli_tester.process_transaction(
+    result = cli_tester.process_transaction(
         from_file=signed_transaction, force_unsign=True, broadcast=False, save_file=signed_transaction
     )
 
     # ASSERT
+    assert_contains_transaction_loaded_message(result.stdout)
+    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
     assert_transaction_file_is_unsigned(signed_transaction)
 
 
@@ -217,7 +230,7 @@ async def test_explicit_autosign_with_force_unsign(cli_tester: CLITester, signed
 async def test_autosign_with_not_allowed_autosigned_mode(
     cli_tester: CLITester, transaction_path: Path, already_signed_mode: AlreadySignedMode
 ) -> None:
-    """Test autosigning failure when ;already-signed-mode; is not 'strict'."""
+    """Test autosigning failure when 'already-signed-mode' is not 'strict'."""
     # ACT & ASSERT
     with pytest.raises(
         CLITestCommandError, match=get_formatted_error_message(CLIWrongAlreadySignedModeAutoSignError())
