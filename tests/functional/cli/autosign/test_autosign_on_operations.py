@@ -56,7 +56,7 @@ async def test_broadcasting_autosign_operation(
     # ACT
     result = cli_tester.process_transfer(
         from_=WORKING_ACCOUNT_NAME,
-        amount=tt.Asset.Hive(1),
+        amount=operation.amount,
         to=RECEIVER,
         memo=MEMO,
     )
