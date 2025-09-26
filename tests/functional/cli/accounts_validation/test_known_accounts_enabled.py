@@ -7,7 +7,6 @@ import test_tools as tt
 
 from clive.__private.cli.exceptions import CLITransactionUnknownAccountError
 from clive.__private.models.schemas import TransferOperation
-from clive_local_tools.cli.checkers import assert_output_contains
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
@@ -33,9 +32,8 @@ VALIDATION_IDS: Final[list[str]] = ["unknown_account", "known_account"]
 
 
 def _assert_operation_to_unknown_account_fails(perform_operation_cb: Callable[[], None]) -> None:
-    with pytest.raises(CLITestCommandError) as error:
+    with pytest.raises(CLITestCommandError, match=EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG):
         perform_operation_cb()
-    assert_output_contains(EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG, error.value.stdout)
 
 
 def _assert_validation_of_known_accounts(perform_operation_cb: Callable[[], None], receiver: str) -> None:

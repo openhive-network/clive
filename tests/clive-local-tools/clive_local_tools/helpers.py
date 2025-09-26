@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 import pytest
@@ -27,7 +28,7 @@ def get_transaction_id_from_output(output: str) -> str:
     pytest.fail(f"Could not find transaction id in output {output}")
 
 
-def get_formatted_error_message(error: ClickException) -> str:
+def get_formatted_error_message(error: ClickException, *, escape: bool = True) -> str:
     panel = Panel(
         rich_utils.highlighter(error.format_message()),
         border_style=rich_utils.STYLE_ERRORS_PANEL_BORDER,
@@ -42,6 +43,13 @@ def get_formatted_error_message(error: ClickException) -> str:
     console._color_system = None
     with console.capture() as capture:
         print_cli(panel, console=console)
+    if escape:
+        # Escape special characters for regex matching, use when in message are
+        # special regex characters like `(`, `)` etc.
+        # Set this to True, when using together with get_formatted_error_message and pytest.raise(match=)
+        # because if there are special characters in the message, it will cause errors in regex matching.
+        # If you want to see the message as is, set escape to False.
+        return re.escape(capture.get())
     return capture.get()
 
 

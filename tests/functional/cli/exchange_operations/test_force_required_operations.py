@@ -8,7 +8,6 @@ import test_tools as tt
 from clive.__private.cli.exceptions import CLITransactionToExchangeError
 from clive.__private.models.schemas import TransferFromSavingsOperation, TransferToSavingsOperation
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
-from clive_local_tools.cli.checkers import assert_output_contains
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
@@ -50,12 +49,13 @@ def _assert_operation_to_exchange(send_operation_cb: Callable[[], None], *, forc
     if force:
         send_operation_cb()
     else:
-        expected_error_msg = get_formatted_error_message(
-            CLITransactionToExchangeError(ExchangeOperationsValidatorCli.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR)
-        )
-        with pytest.raises(CLITestCommandError) as error:
+        with pytest.raises(
+            CLITestCommandError,
+            match=get_formatted_error_message(
+                CLITransactionToExchangeError(ExchangeOperationsValidatorCli.UNSAFE_EXCHANGE_OPERATION_MSG_ERROR)
+            ),
+        ):
             send_operation_cb()
-        assert_output_contains(expected_error_msg, error.value.stdout)
 
 
 @pytest.mark.parametrize("force", [True, False])

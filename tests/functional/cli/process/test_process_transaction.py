@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.cli.exceptions import CLINoProfileUnlockedError
+from clive.__private.cli.exceptions import CLINoProfileUnlockedError, CLITransactionAlreadySignedError
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.models.schemas import CustomJsonOperation, JsonString
 from clive_local_tools.checkers.blockchain_checkers import (
@@ -16,6 +16,7 @@ from clive_local_tools.cli.checkers import assert_transaction_file_is_signed
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.cli.helpers import load_transaction_from_file
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -216,7 +217,7 @@ async def test_negative_error_on_already_signed_transaction_during_manual_signin
     signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match="You cannot sign a transaction that is already signed."):
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLITransactionAlreadySignedError())):
         cli_tester.process_transaction(
             already_signed_mode=already_signed_mode,
             sign_with=ADDITIONAL_KEY_ALIAS_NAME,
