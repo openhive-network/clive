@@ -83,10 +83,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return self.autosign is True
 
     @property
-    def save_file_path(self) -> Path | None:
-        return Path(self.save_file) if self.save_file is not None else None
-
-    @property
     def use_autosign(self) -> bool:
         return self.is_autosign_explicitly_requested or (self.autosign is None and not self.is_sign_with_given)
 
@@ -96,6 +92,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             # force_unsign removes signatures and no signing happens when given
             return False
         return self.use_autosign or self.is_sign_with_given
+
+    @property
+    def save_file_path(self) -> Path | None:
+        return Path(self.save_file) if self.save_file is not None else None
 
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:

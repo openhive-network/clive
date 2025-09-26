@@ -75,21 +75,6 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self._validate_from_file_argument()
         await super().validate()
 
-    def _validate_signed_transaction(self) -> None:
-        if self.already_signed_mode == "strict" and self.is_sign_with_given:
-            raise CLITransactionAlreadySignedError
-
-    def _validate_from_file_argument(self) -> None:
-        result = PathValidator(mode="is_file").validate(str(self.from_file))
-        if not result.is_valid:
-            raise CLIPrettyError(
-                f"Can't load transaction from file: {humanize_validation_result(result)}", errno.EINVAL
-            )
-
-    def _validate_already_signed_mode(self) -> None:
-        if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
-            raise CLIWrongAlreadySignedModeAutoSignError
-
     def validate_all_mutually_exclusive_options(self) -> None:
         self._validate_mutually_exclusive(
             autosign=self.is_autosign_explicitly_requested, force_unsign=self.force_unsign
@@ -107,6 +92,21 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             "add the '--no-broadcast' option."
         )
         self._validate_mutually_exclusive(broadcast=self.broadcast, force_unsign=self.force_unsign, details=details)
+
+    def _validate_signed_transaction(self) -> None:
+        if self.already_signed_mode == "strict" and self.is_sign_with_given:
+            raise CLITransactionAlreadySignedError
+
+    def _validate_from_file_argument(self) -> None:
+        result = PathValidator(mode="is_file").validate(str(self.from_file))
+        if not result.is_valid:
+            raise CLIPrettyError(
+                f"Can't load transaction from file: {humanize_validation_result(result)}", errno.EINVAL
+            )
+
+    def _validate_already_signed_mode(self) -> None:
+        if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
+            raise CLIWrongAlreadySignedModeAutoSignError
 
     async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
