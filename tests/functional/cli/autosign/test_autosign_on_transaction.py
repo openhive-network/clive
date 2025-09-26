@@ -169,7 +169,7 @@ async def test_autosign_already_signed_transaction_with_multiple_keys_in_profile
     assert_contains_dry_run_message(result.stdout)
 
 
-async def test_autosign_transaction_failure_due_to_no_keys_in_profile(
+async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
     cli_tester: CLITester,
     transaction_path: Path,
 ) -> None:
@@ -183,7 +183,7 @@ async def test_autosign_transaction_failure_due_to_no_keys_in_profile(
         cli_tester.process_transaction(from_file=transaction_path)
 
 
-async def test_autosign_transaction_failure_due_to_multiple_keys_in_profile(
+async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_profile(
     cli_tester: CLITester,
     transaction_path: Path,
 ) -> None:
@@ -209,7 +209,7 @@ async def test_default_autosign_with_force_unsign(cli_tester: CLITester, signed_
     assert_transaction_file_is_unsigned(signed_transaction)
 
 
-async def test_explicit_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
+async def test_negative_explicit_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
     """Test error when passing 'autosign' with 'force-unsign' flags."""
     # ACT & ASSERT
 
@@ -227,7 +227,7 @@ async def test_explicit_autosign_with_force_unsign(cli_tester: CLITester, signed
 
 
 @pytest.mark.parametrize("already_signed_mode", ["override", "multisign"])
-async def test_autosign_with_not_allowed_autosigned_mode(
+async def test_negative_autosign_with_not_allowed_autosigned_mode(
     cli_tester: CLITester, transaction_path: Path, already_signed_mode: AlreadySignedMode
 ) -> None:
     """Test autosigning failure when 'already-signed-mode' is not 'strict'."""

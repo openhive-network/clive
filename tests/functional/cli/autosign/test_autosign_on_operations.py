@@ -65,7 +65,7 @@ async def test_broadcasting_autosign_operation(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_autosign_failure_due_to_no_keys_in_profile(cli_tester: CLITester) -> None:
+async def test_negative_autosign_failure_due_to_no_keys_in_profile(cli_tester: CLITester) -> None:
     """Test autosigning failure when there are no keys available."""
     # ARRANGE
     for alias in cli_tester.world.profile.keys.get_all_aliases():
@@ -81,7 +81,7 @@ async def test_autosign_failure_due_to_no_keys_in_profile(cli_tester: CLITester)
         )
 
 
-async def test_autosign_failure_due_to_multiple_keys_in_profile(cli_tester: CLITester) -> None:
+async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(cli_tester: CLITester) -> None:
     """Test autosigning failure when there are multiple keys available."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
@@ -115,7 +115,7 @@ async def test_saving_autosign_operation(cli_tester: CLITester, tmp_path: Path) 
     assert_transaction_file_is_signed(signed_transaction_file)
 
 
-async def test_usage_of_autosign_with_sign_with(cli_tester: CLITester) -> None:
+async def test_negative_usage_of_autosign_with_sign_with(cli_tester: CLITester) -> None:
     """Test failure of using both 'autosign' and 'sign_with' flags."""
     # ACT & ASSERT
     with pytest.raises(
