@@ -141,7 +141,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
         self._print_transaction(transaction.with_hash())
         self._print_transaction_success_message()
-        self._print_saveed_to_file_message_if_needed()
+        self._print_saved_to_file_message_if_needed()
 
     def _validate_save_file_path(self) -> None:
         if self.save_file:
@@ -211,6 +211,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             f" {'broadcasted' if self.broadcast else self._get_transaction_created_message()}."
         )
 
-    def _print_saveed_to_file_message_if_needed(self) -> None:
+    def _print_saved_to_file_message_if_needed(self) -> None:
         if self.save_file is not None:
             print_cli(f"Transaction was saved to {self.save_file}")
