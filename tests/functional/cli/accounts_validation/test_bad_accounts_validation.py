@@ -10,7 +10,6 @@ import test_tools as tt
 
 from clive.__private.cli.exceptions import CLITransactionBadAccountError
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive_local_tools.cli.checkers import assert_output_contains
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import get_formatted_error_message
@@ -73,9 +72,8 @@ def _assert_no_validation_of_bad_account(send_operation_cb: Callable[[], None]) 
 
 
 def _assert_validation_of_bad_accounts(perform_operation_cb: Callable[[], None]) -> None:
-    with pytest.raises(CLITestCommandError) as error:
+    with pytest.raises(CLITestCommandError, match=EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE):
         perform_operation_cb()
-    assert_output_contains(EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE, error.value.stdout)
 
 
 async def test_validation_of_delegate_vesting_shares(
