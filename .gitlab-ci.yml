@@ -83,16 +83,11 @@ default:
     - pip list
 
 .docs_variables:
-  rules:
-    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-      variables:
-        # subpath to branches content for preview
-        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-    - variables:
-        # default branch subpath
-        CURRENT_CONTENT_PATH: $GITLAB_PAGES_DEFAULT_BRANCH_PATH
   variables:
-    GITLAB_PAGES_DEFAULT_BRANCH_PATH: "default/"
+    PAGES_TAGS_PATH: "tags/${CI_COMMIT_TAG}"
+    PAGES_PROTECTED_BRANCH_PATH: "protected/${CI_COMMIT_REF_SLUG}"
+    PAGES_MASTER_BRANCH_PATH: "stable/"
+    PAGES_PREVIEW_BRANCH_PATH: "preview/${CI_COMMIT_REF_SLUG}"
     CURRENT_URL: $CURRENT_CONTENT_PATH
     PYPROJECT_DIR: "${CI_PROJECT_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
@@ -314,7 +309,6 @@ deploy_wheel_to_pypi:
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
     key: gitlab-pages
     paths: [ public ]
-
   artifacts:
     paths: [ public ]
   tags:  # has to be a single runner or cache should be shared between multiple runners
@@ -326,6 +320,26 @@ deploy_docs:
   needs:
     - job: build_docs
       artifacts: true
+  rules:
+    # Protected tags
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        CURRENT_CONTENT_PATH: $PAGES_TAGS_PATH
+      when: on_success
+    # Master branch
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      variables:
+        CURRENT_CONTENT_PATH: $PAGES_MASTER_BRANCH_PATH
+      when: on_success
+    # Protected branches
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+      variables:
+        CURRENT_CONTENT_PATH: $PAGES_PROTECTED_BRANCH_PATH
+      when: on_success
+    # All other branches like feature branches
+    - variables:
+        CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
+      when: manual
   variables:
     PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
@@ -333,14 +347,8 @@ deploy_docs:
     - rm -rf "${PAGES_CONTENT_PATH}"
     - mkdir -p "${PAGES_CONTENT_PATH}"
     - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
-    - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > "${PAGES_BASE_DIR}"/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/default/
+    - echo "/ /${PAGES_MASTER_BRANCH_PATH} 302" > "${PAGES_BASE_DIR}"/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/stable/
     - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
-  rules:
-    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
-      when: on_success
-    - when: manual
-      allow_failure: true
-
   environment:
     name: $PAGES_ENV_NAME
     action: start
@@ -350,13 +358,26 @@ deploy_docs:
 clean_docs_preview:
   extends: .docs_deployment_base
   needs: []
+  rules:
+    # Protected tags
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: never
+    # Master branch
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: never
+    # Protected branches
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+      when: never
+    # All other branches like feature branches
+    - variables:
+        CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
+      when: manual
   script:
     - echo "Removing ${PAGES_CONTENT_PATH}"
     - rm -rf "${PAGES_CONTENT_PATH}"
   environment:
     name: $PAGES_ENV_NAME
     action: stop
-  when: manual
   allow_failure: true
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
