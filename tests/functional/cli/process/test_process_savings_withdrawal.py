@@ -50,7 +50,7 @@ async def test_withdrawal_valid(
     checkers.assert_balances(
         cli_tester,
         account_name=WORKING_ACCOUNT_DATA.account.name,
-        asset_amount=working_account_balance - amount_to_deposit.amount,
+        asset_amount=working_account_balance - amount_to_deposit,
         balance="Liquid",
     )
 
@@ -100,7 +100,7 @@ async def test_withdrawal_with_memo(cli_tester: CLITester) -> None:
     checkers.assert_balances(
         cli_tester,
         account_name=WORKING_ACCOUNT_DATA.account.name,
-        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE.amount,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE,
         balance="Liquid",
     )
     result = cli_tester.show_pending_withdrawals()
