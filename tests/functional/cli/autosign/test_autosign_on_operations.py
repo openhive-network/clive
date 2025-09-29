@@ -66,7 +66,7 @@ async def test_broadcasting_autosign_operation(
 
 
 async def test_negative_autosign_failure_due_to_no_keys_in_profile(cli_tester: CLITester) -> None:
-    """Test autosigning failure when there are no keys available."""
+    """Test autosigning failure when there are no keys available and try to send operation."""
     # ARRANGE
     for alias in cli_tester.world.profile.keys.get_all_aliases():
         cli_tester.configure_key_remove(alias=alias)
@@ -82,7 +82,7 @@ async def test_negative_autosign_failure_due_to_no_keys_in_profile(cli_tester: C
 
 
 async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(cli_tester: CLITester) -> None:
-    """Test autosigning failure when there are multiple keys available."""
+    """Test autosigning failure when there are multiple keys available and try to send operation."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
@@ -201,6 +201,48 @@ async def test_dry_run_of_not_autosigned_operation_on_profile_with_multiple_keys
     # ASSERT
     assert_contains_dry_run_message(result.stdout)
     assert_contains_transaction_created_message(result.stdout)
+
+
+@pytest.mark.parametrize("autosign", [None, True])
+async def test_negative_dry_run_of_autosigned_operation_on_profile_without_keys(
+    cli_tester: CLITester,
+    *,
+    autosign: bool | None,
+) -> None:
+    """
+    Test failing of printing out dry run and transaction.
+
+    It should fail when we try to print out an autosigned transaction when there are no keys.
+    """
+    for alias in cli_tester.world.profile.keys.get_all_aliases():
+        cli_tester.configure_key_remove(alias=alias)
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLINoKeysAvailableError())):
+        cli_tester.process_transfer(
+            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, autosign=autosign, broadcast=False
+        )
+
+
+@pytest.mark.parametrize("autosign", [None, True])
+async def test_negative_dry_run_of_autosigned_operation_on_profile_with_multiple_keys(
+    cli_tester: CLITester,
+    *,
+    autosign: bool | None,
+) -> None:
+    """
+    Test failing of printing out dry run and transaction.
+
+    It should fail when we try to print out an autosigned transaction when there are multiple keys.
+    """
+    # ARRANGE
+    cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
+        cli_tester.process_transfer(
+            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, autosign=autosign, broadcast=False
+        )
 
 
 async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester, tmp_path: Path) -> None:
