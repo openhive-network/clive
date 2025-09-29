@@ -298,3 +298,25 @@ async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
     # ASSERT
     assert_transaction_file_is_unsigned(saved_transaction_path)
     assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)
+
+
+async def test_sign_with_takes_precedence_over_autosign(
+    node: tt.RawNode,
+    cli_tester: CLITester,
+) -> None:
+    """Test that using sign_with takes precedence over autosign when is not set at all (is None)."""
+    # ARRANGE
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=RECEIVER,
+        amount=AMOUNT,
+        memo=MEMO,
+    )
+
+    # ACT
+    result = cli_tester.process_transfer(
+        from_=WORKING_ACCOUNT_NAME, amount=operation.amount, to=RECEIVER, memo=MEMO, autosign=None
+    )
+
+    # ASSERT
+    assert_operations_placed_in_blockchain(node, result, operation)
