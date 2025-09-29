@@ -40,7 +40,6 @@ if TYPE_CHECKING:
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
 TO_ACCOUNT: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
-TRANSACTION_ALREADY_SIGNED_MESSAGE: Final[str] = "Your transaction is already signed."
 AUTO_SIGN_SKIPPED_WARNING_MESSAGE: Final[str] = "Your transaction is already signed. Autosign will be skipped"
 ADDITIONAL_KEY_VALUE: str = PrivateKey.create().value
 ADDITIONAL_KEY_ALIAS_NAME: Final[str] = f"{WORKING_ACCOUNT_KEY_ALIAS}_2"
@@ -65,10 +64,6 @@ def signed_transaction(cli_tester: CLITester, transaction_path: Path, tmp_path: 
     signed_transaction = tmp_path / "signed_transaction.json"
     cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
     return signed_transaction
-
-
-def assert_already_signed_transaction_message_in_output(output: str) -> None:
-    assert_output_contains(TRANSACTION_ALREADY_SIGNED_MESSAGE, output)
 
 
 def assert_auto_sign_skipped_warning_message_in_output(output: str) -> None:
@@ -117,7 +112,6 @@ async def test_autosign_already_signed_transaction(cli_tester: CLITester, signed
     result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
 
     # ASSERT
-    assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
     assert_contains_transaction_loaded_message(result.stdout)
 
@@ -140,7 +134,6 @@ async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
     result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
 
     # ASSERT
-    assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
     assert_contains_transaction_loaded_message(result.stdout)
     assert_contains_dry_run_message(result.stdout)
@@ -163,7 +156,6 @@ async def test_autosign_already_signed_transaction_with_multiple_keys_in_profile
     result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
 
     # ASSERT
-    assert_already_signed_transaction_message_in_output(result.stdout)
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
     assert_contains_transaction_loaded_message(result.stdout)
     assert_contains_dry_run_message(result.stdout)
