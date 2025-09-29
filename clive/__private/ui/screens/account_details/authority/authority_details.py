@@ -273,7 +273,7 @@ class AuthorityRole(CliveCollapsible):
         authority_role_regular = authority_role.ensure_regular
         weight_threshold = authority_role_regular.weight_threshold
         imported_weights = authority_role_regular.sum_weights_of_already_imported_keys(self.profile.keys)
-        return f"imported weights: {imported_weights}, threshold: {weight_threshold}"
+        return f"imported weights: {imported_weights}, total threshold: {weight_threshold}"
 
 
 class AuthorityItem(CliveCheckerboardTableRow):
