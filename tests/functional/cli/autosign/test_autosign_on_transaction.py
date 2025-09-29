@@ -101,7 +101,7 @@ async def test_autosign_transaction_with_different_aliases_to_the_same_key(
     assert_transaction_file_is_signed(signed_transaction)
 
 
-async def test_autosign_already_signed_transaction(cli_tester: CLITester, signed_transaction: Path) -> None:
+async def test_dry_run_autosign_is_skipped_with_warning(cli_tester: CLITester, signed_transaction: Path) -> None:
     """
     Test skipping autosigning an already signed transaction.
 
