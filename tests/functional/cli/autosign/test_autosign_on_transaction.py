@@ -62,7 +62,7 @@ def transaction_path(tmp_path: Path) -> Path:
 @pytest.fixture
 def signed_transaction(cli_tester: CLITester, transaction_path: Path, tmp_path: Path) -> Path:
     signed_transaction = tmp_path / "signed_transaction.json"
-    cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
+    cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction, broadcast=False)
     return signed_transaction
 
 
@@ -101,19 +101,62 @@ async def test_autosign_transaction_with_different_aliases_to_the_same_key(
     assert_transaction_file_is_signed(signed_transaction)
 
 
-async def test_dry_run_autosign_is_skipped_with_warning(cli_tester: CLITester, signed_transaction: Path) -> None:
+# If there will be other tests with various combinations of broadcast, save_to_file and autosign
+# we can move this to a fixture in conftest.py as we did:
+# tests/functional/cli/accounts_validation/conftest.py - process_action_selector
+@pytest.mark.parametrize(
+    ("broadcast", "save_to_file", "autosign"),
+    [
+        (True, True, True),
+        (True, False, True),
+        (False, True, True),
+        (False, False, True),
+        (True, True, None),
+        (True, False, None),
+        (False, True, None),
+        (False, False, None),
+    ],
+    ids=[
+        "broadcast and save_to_file, explicit autosign",
+        "broadcast, explicit autosign",
+        "save_to_file, explicit autosign",
+        "show, explicit autosign",
+        "broadcast and save_to_file",
+        "broadcast",
+        "save_to_file,",
+        "show",
+    ],
+)
+async def test_autosign_is_skipped_with_warning(  # noqa: PLR0913
+    cli_tester: CLITester,
+    signed_transaction: Path,
+    tmp_path: Path,
+    *,
+    broadcast: bool,
+    save_to_file: bool,
+    autosign: bool | None,
+) -> None:
     """
     Test skipping autosigning an already signed transaction.
 
-    We should only display warning info about skipping autosigning, even when there only one key and not try
-    to broadcast transaction.
+    We should only display warning info about skipping autosigning.
     """
+    # ARRANGE
+    save_transaction = tmp_path / "saved_transaction.json" if save_to_file else None
+
     # ACT
-    result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
+    result = cli_tester.process_transaction(
+        from_file=signed_transaction, broadcast=broadcast, save_file=save_transaction, autosign=autosign
+    )
 
     # ASSERT
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
-    assert_contains_transaction_loaded_message(result.stdout)
+    if not broadcast:
+        assert_contains_transaction_loaded_message(result.stdout)
+    else:
+        assert_contains_transaction_broadcasted_message(result.stdout)
+    if save_transaction:
+        assert_contains_transaction_saved_to_file_message(save_transaction, result.stdout)
 
 
 async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
