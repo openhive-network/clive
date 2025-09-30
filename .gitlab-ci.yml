@@ -88,7 +88,7 @@ default:
     PAGES_PROTECTED_BRANCH_PATH: "protected/${CI_COMMIT_REF_SLUG}"
     PAGES_MASTER_BRANCH_PATH: "stable/"
     PAGES_PREVIEW_BRANCH_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-    CURRENT_URL: $CURRENT_CONTENT_PATH
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_CONTENT_PATH}"
     PYPROJECT_DIR: "${CI_PROJECT_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
@@ -340,8 +340,6 @@ deploy_docs:
     - variables:
         CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
       when: manual
-  variables:
-    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
     - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
     - rm -rf "${PAGES_CONTENT_PATH}"
