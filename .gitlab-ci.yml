@@ -90,10 +90,10 @@ default:
     PAGES_TAGS_PATH: "tags/${CI_COMMIT_TAG}"
     PAGES_PROTECTED_BRANCH_PATH: "protected/${CI_COMMIT_REF_SLUG}"
     PAGES_PREVIEW_BRANCH_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-    PAGES_URL: "${CI_PAGES_URL}/${PAGES_CURRENT_CONTENT_PATH}"
+    PAGES_URL: "${CI_PAGES_URL}/${PAGES_CURRENT_CONTENT_PATH}"  # requires PAGES_CURRENT_CONTENT_PATH variable which is set dynamically later
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
-    PAGES_ABSOLUTE_CONTENT_PATH: "${PAGES_BASE_DIR}/${PAGES_CURRENT_CONTENT_PATH}"
+    PAGES_ABSOLUTE_CONTENT_PATH: "${PAGES_BASE_DIR}/${PAGES_CURRENT_CONTENT_PATH}"  # requires PAGES_CURRENT_CONTENT_PATH variable which is set dynamically later
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
