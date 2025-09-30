@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy import close_already_running_beekeeper
+from beekeepy.asynchronous import close_already_running_beekeeper
 from beekeepy.exceptions import FailedToDetectRunningBeekeeperError
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand

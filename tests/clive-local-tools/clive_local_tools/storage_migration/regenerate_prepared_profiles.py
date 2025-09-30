@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
-from beekeepy import AsyncBeekeeper
+from beekeepy.asynchronous import AsyncBeekeeper
 
 from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
 from clive.__private.core.commands.create_user_wallet import CreateUserWallet

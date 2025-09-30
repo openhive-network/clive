@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncWallet
+    from beekeepy.asynchronous import AsyncWallet
 
 
 @dataclass(kw_only=True)

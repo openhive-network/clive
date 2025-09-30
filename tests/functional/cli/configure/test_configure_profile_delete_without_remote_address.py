@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from beekeepy import AsyncBeekeeper
+from beekeepy.asynchronous import AsyncBeekeeper
 from beekeepy.exceptions.common import InvalidatedStateByClosingBeekeeperError
 
 from clive.__private.settings import safe_settings

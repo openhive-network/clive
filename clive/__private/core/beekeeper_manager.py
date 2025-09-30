@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from beekeepy import AsyncBeekeeper, AsyncSession
-from beekeepy import Settings as BeekeepySettings
+from beekeepy.asynchronous import AsyncBeekeeper, AsyncSession
+from beekeepy.asynchronous import InterfaceSettings as BeekeepySettings
 
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession, AsyncUnlockedWallet
+    from beekeepy.asynchronous import AsyncSession, AsyncUnlockedWallet
 
     from clive.__private.core.wallet_container import WalletContainer
 

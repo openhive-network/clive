@@ -74,7 +74,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from pathlib import Path
 
-    from beekeepy import AsyncUnlockedWallet, AsyncWallet
+    from beekeepy.asynchronous import AsyncUnlockedWallet, AsyncWallet
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource

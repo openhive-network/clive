@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncBeekeeper
+    from beekeepy.asynchronous import AsyncBeekeeper
 
 
 async def assert_wallets_locked(beekeeper: AsyncBeekeeper) -> None:

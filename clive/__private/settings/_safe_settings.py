@@ -7,8 +7,8 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Final, Literal, cast, get_args, overload
 
-from beekeepy import Settings as BeekeepySettings
-from beekeepy.handle.remote import RemoteHandleSettings
+from beekeepy.asynchronous import InterfaceSettings as BeekeepySettings
+from beekeepy.handle.remote.asynchronous import RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from inflection import underscore
 

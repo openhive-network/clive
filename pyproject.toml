@@ -23,8 +23,8 @@ dependencies = [
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
     'hiveio-schemas (==0.0.1.dev431+2255381)',
-    'hiveio-beekeepy (==0.0.1.dev430+d766238)',
-    'hiveio-wax (==0.3.10.dev898+fe053737)',
+    'hiveio-beekeepy (==0.0.1.dev433+0f27cc3)',
+    'hiveio-wax (==0.3.10.dev912+e4285150)',
 ]
 
 [project.urls]
@@ -59,7 +59,7 @@ hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
+# test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
 pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
@@ -74,7 +74,7 @@ textual-dev = "1.5.1"
 pydoclint = "0.6.6"
 types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
+# test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"

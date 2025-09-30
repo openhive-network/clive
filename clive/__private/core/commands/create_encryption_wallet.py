@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy import AsyncUnlockedWallet
+from beekeepy.asynchronous import AsyncUnlockedWallet
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.keys import PrivateKey
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
 
 @dataclass(kw_only=True)

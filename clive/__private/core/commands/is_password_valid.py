@@ -8,7 +8,7 @@ from beekeepy.exceptions import InvalidPasswordError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncBeekeeper, AsyncWallet
+    from beekeepy.asynchronous import AsyncBeekeeper, AsyncWallet
 
 
 @dataclass(kw_only=True)

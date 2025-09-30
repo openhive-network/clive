@@ -10,7 +10,7 @@ from clive.__private.core.commands.abc.command_restricted import CommandExecutio
 from clive.__private.core.commands.is_wallet_unlocked import IsWalletUnlocked
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy.asynchronous import AsyncUnlockedWallet
 
     from clive.__private.models.schemas import PublicKey
 

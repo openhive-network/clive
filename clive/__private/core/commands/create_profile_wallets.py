@@ -12,7 +12,7 @@ from clive.__private.core.wallet_container import WalletContainer
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from beekeepy import AsyncSession, AsyncUnlockedWallet
+    from beekeepy.asynchronous import AsyncSession, AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
 

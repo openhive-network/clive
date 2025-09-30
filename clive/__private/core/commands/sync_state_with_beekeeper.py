@@ -9,7 +9,7 @@ from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.wallet_container import WalletContainer
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
     from clive.__private.core.app_state import AppState, LockSource
 

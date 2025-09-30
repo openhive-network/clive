@@ -9,7 +9,7 @@ from clive.__private.core.keys.keys import PrivateKey
 from clive_local_tools.cli.exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy.asynchronous import AsyncUnlockedWallet
 
     from clive_local_tools.cli.cli_tester import CLITester
 

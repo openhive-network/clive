@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
-from beekeepy import AsyncBeekeeper
+from beekeepy.asynchronous import AsyncBeekeeper
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import (
@@ -43,7 +43,7 @@ from clive_local_tools.data.models import Keys, WalletInfo
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable, Generator, Iterator
 
-    from beekeepy import AsyncBeekeeper
+    from beekeepy.asynchronous import AsyncBeekeeper
 
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive.__private.core.profile import Profile

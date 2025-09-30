@@ -8,7 +8,7 @@ from clive.__private.core.commands.lock import Lock
 from clive.__private.core.profile import Profile
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncSession
+    from beekeepy.asynchronous import AsyncSession
 
 
 @dataclass(kw_only=True)

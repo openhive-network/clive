@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from beekeepy import AsyncBeekeeper
+from beekeepy.asynchronous import AsyncBeekeeper
 
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.save_profile import SaveProfile
