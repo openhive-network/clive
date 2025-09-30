@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
@@ -12,7 +10,13 @@ from textual.widgets._collapsible import CollapsibleTitle
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.screens.account_details.authority.common import AuthorityHeader
+from clive.__private.ui.screens.account_details.authority.common import (
+    AuthorityHeader,
+    AuthorityItemBase,
+    AuthorityRoleCollapsibleBase,
+    AuthoritySectionScrollable,
+    AuthorityTableBase,
+)
 from clive.__private.ui.screens.account_details.authority.filter_authority import (
     FilterAuthorityContainer,
     FilterAuthorityExtended,
@@ -22,13 +26,9 @@ from clive.__private.ui.widgets.buttons import (
     OneLineButton,
 )
 from clive.__private.ui.widgets.clive_basic import (
-    CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
-    CliveCheckerboardTableRow,
     CliveCollapsible,
 )
-from clive.__private.ui.widgets.no_filter_criteria_match import NoFilterCriteriaMatch
-from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -41,9 +41,6 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.authority import (
         Authority,
-        AuthorityEntryAccountRegular,
-        AuthorityEntryKeyRegular,
-        AuthorityEntryMemo,
         AuthorityRoleMemo,
         AuthorityRoleRegular,
     )
@@ -92,7 +89,7 @@ class RemoveKeyAliasButton(PrivateKeyActionButton):
         self.app.push_screen(RemoveKeyAliasDialog(*self._keys_to_remove), self._key_aliases_changed_callback)
 
 
-class AccountsAuthorities(SectionScrollable):
+class AccountsAuthorities(AuthoritySectionScrollable):
     """
     Widget for storing all AccountCollapsibles.
 
@@ -148,16 +145,6 @@ class AccountsAuthorities(SectionScrollable):
             else:
                 account_collapsible.display = False
         self._remove_no_filter_criteria_match_widget()
-
-    def _mount_no_filter_criteria_match_widget(self) -> None:
-        try:
-            self.body.query_exactly_one(NoFilterCriteriaMatch)
-        except NoMatches:
-            self.body.mount(NoFilterCriteriaMatch(items_name="authorities"))
-
-    def _remove_no_filter_criteria_match_widget(self) -> None:
-        with contextlib.suppress(NoMatches):
-            self.body.query_exactly_one(NoFilterCriteriaMatch).remove()
 
 
 class AccountCollapsible(CliveCollapsible):
@@ -216,7 +203,7 @@ class AccountCollapsible(CliveCollapsible):
         return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._authority.roles]
 
 
-class AuthorityRole(CliveCollapsible):
+class AuthorityRole(AuthorityRoleCollapsibleBase):
     def __init__(
         self,
         authority_role: AuthorityRoleRegular | AuthorityRoleMemo,
@@ -231,41 +218,11 @@ class AuthorityRole(CliveCollapsible):
         )
         super().__init__(
             AuthorityTable(authority_role),
+            authority_role=authority_role,
             title=title,
             collapsed=collapsed,
             right_hand_side_widget=right_hand_side_widget,
         )
-
-    @property
-    def authority_table(self) -> AuthorityTable:
-        return self.query_exactly_one(AuthorityTable)
-
-    def filter(self, *filter_patterns: str) -> None:
-        """
-        Update the display based on filter patterns.
-
-        Args:
-            *filter_patterns: Patterns to filter the entries in the authority.
-        """
-
-        def update_display_in_authority_table() -> None:
-            authority_table = self.authority_table
-            authority_table.filter(*filter_patterns)
-
-        if not filter_patterns:
-            self.filter_clear()
-            return
-
-        matched = self._authority_role.is_matching_pattern(*filter_patterns)
-        self.display = matched
-
-        if matched:
-            update_display_in_authority_table()
-
-    def filter_clear(self) -> None:
-        authority_table = self.authority_table
-        authority_table.filter_clear()
-        self.display = True
 
     def _get_right_hand_side_text(self) -> str | None:
         authority_role = self._authority_role
@@ -278,25 +235,8 @@ class AuthorityRole(CliveCollapsible):
         return f"imported weights: {imported_weights}, total threshold: {weight_threshold}"
 
 
-class AuthorityItem(CliveCheckerboardTableRow):
-    """
-    Class for items in the authority table.
-
-    Args:
-        entry: Object representing the authority entry.
-    """
-
-    def __init__(self, entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo) -> None:
-        self._entry = entry
-        super().__init__(*self._create_cells())
-
-    @property
-    def entry(self) -> AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo:
-        return self._entry
-
-    @property
-    def entry_value(self) -> str:
-        return self._entry.value
+class AuthorityItem(AuthorityItemBase):
+    """Class for items in the authority table."""
 
     @property
     def stored_keys(self) -> list[PublicKeyAliased]:
@@ -355,7 +295,7 @@ class AuthorityItem(CliveCheckerboardTableRow):
         return f"{aliases[0]} ({entry_value})"
 
 
-class AuthorityTable(CliveCheckerboardTable):
+class AuthorityTable(AuthorityTableBase):
     """
     A table containing all entries of a single type of authority.
 
@@ -378,26 +318,8 @@ class AuthorityTable(CliveCheckerboardTable):
             )
         )
 
-    @property
-    def authority_items(self) -> DOMQuery[AuthorityItem]:
-        return self.query(AuthorityItem)
-
     def create_static_rows(self) -> Sequence[AuthorityItem]:
         return [AuthorityItem(entry) for entry in self._authority_role.get_entries()]
-
-    def filter(self, *filter_patterns: str) -> None:
-        if not filter_patterns:
-            self.filter_clear()
-            return
-
-        for item in self.authority_items:
-            item.display = item.entry.is_matching_pattern(*filter_patterns)
-        self.update_cell_colors()
-
-    def filter_clear(self) -> None:
-        for item in self.authority_items:
-            item.display = True
-        self.update_cell_colors()
 
 
 class AuthorityDetails(TabPane, CliveWidget):
