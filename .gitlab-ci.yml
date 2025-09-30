@@ -84,16 +84,16 @@ default:
 
 .docs_variables:
   variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
+    PAGES_MASTER_BRANCH_PATH: "stable/"
     PAGES_TAGS_PATH: "tags/${CI_COMMIT_TAG}"
     PAGES_PROTECTED_BRANCH_PATH: "protected/${CI_COMMIT_REF_SLUG}"
-    PAGES_MASTER_BRANCH_PATH: "stable/"
     PAGES_PREVIEW_BRANCH_PATH: "preview/${CI_COMMIT_REF_SLUG}"
     PAGES_URL: "${CI_PAGES_URL}/${CURRENT_CONTENT_PATH}"
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
     PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
-    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
