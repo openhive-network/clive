@@ -11,11 +11,15 @@ AuthorityDetails {
     }
 
     AuthorityRole {
-      background-tint: $foreground 10%;
-      margin-bottom: 1;
+      height: auto;
 
-      &:focus-within {
-        background-tint: $foreground 20%;
+      CliveCollapsible {
+        background-tint: $foreground 10%;
+        margin-bottom: 1;
+
+        &:focus-within {
+          background-tint: $foreground 20%;
+        }
       }
     }
 
