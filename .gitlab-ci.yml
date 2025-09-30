@@ -356,23 +356,10 @@ deploy_docs:
 clean_docs_preview:
   extends: .docs_deployment_base
   needs: []
-  rules:
-    # Protected tags
-    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
-      when: never
-    # Master branch
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: never
-      # Protected branches
-    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
-      when: never
-    # All other branches like feature branches
-    - variables:
-        PAGES_CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
-      when: manual
+
   script:
-    - echo "Removing ${PAGES_ABSOLUTE_CONTENT_PATH}"
-    - rm -rf "${PAGES_ABSOLUTE_CONTENT_PATH}"
+    - echo "Removing ${PAGES_BASE_DIR}"
+    - rm -rf "${PAGES_BASE_DIR}/*"
   environment:
     name: $PAGES_ENV_NAME
     action: stop
