@@ -1,20 +1,38 @@
 from __future__ import annotations
 
+import contextlib
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal
+from textual.css.query import DOMQuery, NoMatches
 from textual.widgets import Static
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.account_details.authority.filter_authority import (
     FilterAuthority,
     FilterAuthorityExtended,
 )
+from clive.__private.ui.widgets.clive_basic.clive_checkerboard_table import (
+    CliveCheckerboardTable,
+    CliveCheckerBoardTableCell,
+    CliveCheckerboardTableRow,
+)
+from clive.__private.ui.widgets.no_filter_criteria_match import NoFilterCriteriaMatch
+from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.authority.entries import (
+        AuthorityEntryAccountRegular,
+        AuthorityEntryKeyRegular,
+        AuthorityEntryMemo,
+    )
+    from clive.__private.core.authority.roles import AuthorityRoleMemo, AuthorityRoleRegular
     from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 
 
@@ -92,3 +110,123 @@ class TopContainer(Horizontal):
         yield filter_widget
         with Container(id="button-container"):
             yield self._action_button
+
+
+class AuthoritySectionScrollable(SectionScrollable):
+    """Base scrollable with common methods for modify authority and authority details."""
+
+    def mount_no_filter_criteria_match_widget(self) -> None:
+        try:
+            self.body.query_exactly_one(NoFilterCriteriaMatch)
+        except NoMatches:
+            self.body.mount(NoFilterCriteriaMatch(items_name="authorities"))
+
+    def remove_no_filter_criteria_match_widget(self) -> None:
+        with contextlib.suppress(NoMatches):
+            self.body.query_exactly_one(NoFilterCriteriaMatch).remove()
+
+
+class AuthorityItemBase(CliveCheckerboardTableRow, AbstractClassMessagePump):
+    """
+    Base class for items for tables in modify authority and authority details screens.
+
+    Args:
+        entry: Object representing the authority entry.
+    """
+
+    def __init__(self, entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo) -> None:
+        self._entry = entry
+        super().__init__(*self._create_cells())
+
+    @abstractmethod
+    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
+        """
+        Creates row content.
+
+        Returns:
+            Created row content.
+        """
+
+    @property
+    def entry(self) -> AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo:
+        return self._entry
+
+    @property
+    def entry_value(self) -> str:
+        return self._entry.value
+
+
+class AuthorityTableBase(CliveCheckerboardTable, AbstractClassMessagePump):
+    """
+    Base class for tables in modify authority and authority details screens.
+
+    Attributes:
+        NO_CONTENT_TEXT: Text displayed when there are no entries in the authority.
+    """
+
+    NO_CONTENT_TEXT = "No entries in authority"
+
+    @property
+    def authority_items(self) -> DOMQuery[AuthorityItemBase]:
+        return self.query(AuthorityItemBase)  # type: ignore[type-abstract]
+
+    def filter(self, *filter_patterns: str) -> None:
+        if not filter_patterns:
+            self.filter_clear()
+            return
+
+        for item in self.authority_items:
+            item.display = item.entry.is_matching_pattern(*filter_patterns)
+        self.update_cell_colors()
+
+    def filter_clear(self) -> None:
+        for item in self.authority_items:
+            item.display = True
+        self.update_cell_colors()
+
+
+class AuthorityRoleBase(CliveWidget, AbstractClassMessagePump):
+    """
+    Base class for role in modify authority and authority details screens.
+
+    Args:
+        role: Authority role to display/modify.
+    """
+
+    def __init__(
+        self,
+        role: AuthorityRoleRegular | AuthorityRoleMemo,
+    ) -> None:
+        super().__init__()
+        self._role = role
+
+    @property
+    def authority_table(self) -> AuthorityTableBase:
+        return self.query_exactly_one(AuthorityTableBase)
+
+    def filter(self, *filter_patterns: str) -> None:
+        """
+        Update the display based on filter patterns.
+
+        Args:
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+
+        def update_display_in_authority_table() -> None:
+            authority_table = self.authority_table
+            authority_table.filter(*filter_patterns)
+
+        if not filter_patterns:
+            self.filter_clear()
+            return
+
+        matched = self._role.is_matching_pattern(*filter_patterns)
+        self.display = matched
+
+        if matched:
+            update_display_in_authority_table()
+
+    def filter_clear(self) -> None:
+        authority_table = self.authority_table
+        authority_table.filter_clear()
+        self.display = True
