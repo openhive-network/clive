@@ -93,7 +93,7 @@ default:
     PAGES_URL: "${CI_PAGES_URL}/${PAGES_CURRENT_CONTENT_PATH}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
-    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${PAGES_CURRENT_CONTENT_PATH}"
+    PAGES_ABSOLUTE_CONTENT_PATH: "${PAGES_BASE_DIR}/${PAGES_CURRENT_CONTENT_PATH}"
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -341,10 +341,10 @@ deploy_docs:
         PAGES_CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
       when: manual
   script:
-    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
-    - rm -rf "${PAGES_CONTENT_PATH}"
-    - mkdir -p "${PAGES_CONTENT_PATH}"
-    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "Directory used for gitlab pages publishing ${PAGES_ABSOLUTE_CONTENT_PATH}"
+    - rm -rf "${PAGES_ABSOLUTE_CONTENT_PATH}"
+    - mkdir -p "${PAGES_ABSOLUTE_CONTENT_PATH}"
+    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_ABSOLUTE_CONTENT_PATH
     - echo "/ /${PAGES_MASTER_BRANCH_PATH} 302" > "${PAGES_BASE_DIR}"/_redirects  # redirect gitlab pages url like https://clive-e34412.pages.syncad.com/ to https://clive-e34412.pages.syncad.com/stable/
     - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
   environment:
@@ -371,8 +371,8 @@ clean_docs_preview:
         PAGES_CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
       when: manual
   script:
-    - echo "Removing ${PAGES_CONTENT_PATH}"
-    - rm -rf "${PAGES_CONTENT_PATH}"
+    - echo "Removing ${PAGES_ABSOLUTE_CONTENT_PATH}"
+    - rm -rf "${PAGES_ABSOLUTE_CONTENT_PATH}"
   environment:
     name: $PAGES_ENV_NAME
     action: stop
