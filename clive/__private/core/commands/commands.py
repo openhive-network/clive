@@ -5,10 +5,14 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
-from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.data_retrieval import (
+    ALREADY_SIGNED_MODE_DEFAULT,
+    ORDER_DIRECTION_DEFAULT,
+    PROPOSAL_ORDER_DEFAULT,
+    PROPOSAL_STATUS_DEFAULT,
+)
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
@@ -47,7 +51,14 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.keys.key_manager import KeyManager
     from clive.__private.core.profile import Profile
-    from clive.__private.core.types import AlreadySignedMode, MigrationStatus, NotifyLevel
+    from clive.__private.core.types import (
+        AlreadySignedMode,
+        MigrationStatus,
+        NotifyLevel,
+        OrderDirections,
+        ProposalOrders,
+        ProposalStatuses,
+    )
     from clive.__private.core.world import World
     from clive.__private.models.schemas import (
         Account,
@@ -521,10 +532,12 @@ class Commands[WorldT: World]:
         self,
         *,
         account_name: str,
-        order: ProposalsDataRetrieval.Orders = ProposalsDataRetrieval.DEFAULT_ORDER,
-        order_direction: ProposalsDataRetrieval.OrderDirections = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION,
-        status: ProposalsDataRetrieval.Statuses = ProposalsDataRetrieval.DEFAULT_STATUS,
+        order: ProposalOrders = PROPOSAL_ORDER_DEFAULT,
+        order_direction: OrderDirections = ORDER_DIRECTION_DEFAULT,
+        status: ProposalStatuses = PROPOSAL_STATUS_DEFAULT,
     ) -> CommandWithResultWrapper[ProposalsData]:
+        from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval  # noqa: PLC0415
+
         return await self.__surround_with_exception_handlers(
             ProposalsDataRetrieval(
                 node=self._world.node,
