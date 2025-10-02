@@ -5,11 +5,16 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
+from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_WEIGHT, WEIGHT_MARK
+
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import timedelta
     from decimal import Decimal
 
+    from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.models import Asset
 
 
@@ -124,3 +129,34 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     if status.is_valid:
         return shorthand_timedelta_to_timedelta(raw)
     raise typer.BadParameter(humanize_validation_result(status))
+
+
+def public_key(raw: str) -> PublicKey:
+    from clive.__private.core.keys.keys import PublicKey, PublicKeyInvalidFormatError  # noqa: PLC0415
+
+    try:
+        parsed = PublicKey(value=raw)
+    except PublicKeyInvalidFormatError as error:
+        raise CLIPublicKeyInvalidFormatError(raw) from error
+    return parsed
+
+
+def _parse_with_weight(raw: str, default_weight: int) -> tuple[str, int]:
+    if WEIGHT_MARK in raw:
+        value, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as error:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from error
+        return value, weight
+    return raw, default_weight
+
+
+def account_with_weight(raw: str) -> AccountWithWeight:
+    account_name, weight = _parse_with_weight(raw, DEFAULT_AUTHORITY_WEIGHT)
+    return account_name, weight
+
+
+def key_with_weight(raw: str) -> KeyWithWeight:
+    public_key_raw, weight = _parse_with_weight(raw, DEFAULT_AUTHORITY_WEIGHT)
+    return public_key(public_key_raw), weight

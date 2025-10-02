@@ -114,6 +114,12 @@ force_value = typer.Option(
     ),
 )
 
+new_account_name = typer.Option(
+    None,
+    "--new-account-name",
+    help="The name of the new account.",
+)
+
 # OPERATION COMMON OPTIONS >>
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
