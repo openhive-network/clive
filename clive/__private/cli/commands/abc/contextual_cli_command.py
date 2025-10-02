@@ -64,3 +64,4 @@ class ContextualCLICommand[AsyncContextManagerT: AbstractAsyncContextManager[Any
                 await self.validate_inside_context_manager()
             await self._configure_inside_context_manager()
             await self._run()
+            await self.post_run()
