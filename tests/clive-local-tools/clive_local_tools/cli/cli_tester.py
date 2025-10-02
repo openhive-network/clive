@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from clive.__private.core.types import AlreadySignedMode
     from clive.__private.core.world import World
     from clive.__private.models.schemas import PublicKey
-    from clive_local_tools.cli.command_options import CliOptionT
+    from clive_local_tools.cli.command_options import CliOptionT, StringConvertibleOptionTypes
 
 
 class CLITester:
@@ -577,3 +577,38 @@ class CLITester:
 
     def generate_secret_phrase(self) -> Result:
         return self.__invoke_command_with_options(["generate", "secret-phrase"])
+
+    def process_claim_new_account_token(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        fee: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "claim", "new-account-token"], **extract_params(locals()))
+
+    def process_account_creation(  # noqa: PLR0913
+        self,
+        *args: StringConvertibleOptionTypes,
+        creator: str | None = None,
+        new_account_name: str | None = None,
+        fee: bool | None = None,
+        json_metadata: str | None = None,
+        owner: PublicKey | None = None,
+        active: PublicKey | None = None,
+        posting: PublicKey | None = None,
+        memo: PublicKey | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> Result:
+        named_params = locals()
+        named_params.pop("args")
+        positional_args = [str(arg) for arg in args]
+        return self.__invoke_command_with_options(
+            ["process", "account-creation", *positional_args], **extract_params(named_params)
+        )
