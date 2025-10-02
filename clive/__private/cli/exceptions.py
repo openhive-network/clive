@@ -462,3 +462,16 @@ class CLITransactionAlreadySignedError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIPublicKeyInvalidFormatError(CLIPrettyError):
+    """
+    Raise when trying to load public key in invalid format.
+
+    Args:
+        invalid_key: Key that did not pass validation and will be displayed on screen.
+    """
+
+    def __init__(self, invalid_key: str) -> None:
+        message = f"Given public key: `{invalid_key}` has an invalid format."
+        super().__init__(message, errno.EINVAL)

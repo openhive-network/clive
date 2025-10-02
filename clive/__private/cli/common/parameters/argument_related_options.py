@@ -38,6 +38,8 @@ account_name = _make_argument_related_option(options.account_name)
 
 profile_name = _make_argument_related_option(options.profile_name)
 
+new_account_name = _make_argument_related_option(options.new_account_name)
+
 name = _make_argument_related_option("--name")
 
 key = _make_argument_related_option("--key")
