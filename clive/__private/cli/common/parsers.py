@@ -5,11 +5,14 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
+from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
+
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import timedelta
     from decimal import Decimal
 
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.models.asset import Asset
 
 
@@ -124,3 +127,13 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     if status.is_valid:
         return shorthand_timedelta_to_timedelta(raw)
     raise typer.BadParameter(humanize_validation_result(status))
+
+
+def public_key(raw: str) -> PublicKey:
+    from clive.__private.core.keys.keys import PublicKey, PublicKeyInvalidFormatError  # noqa: PLC0415
+
+    try:
+        parsed = PublicKey(value=raw)
+    except PublicKeyInvalidFormatError as error:
+        raise CLIPublicKeyInvalidFormatError(raw) from error
+    return parsed

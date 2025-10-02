@@ -45,6 +45,12 @@ profile_name = typer.Option(
 
 account_name = modified_param(working_account_template, param_decls=("--account-name",))
 
+new_account_name = typer.Option(
+    ...,
+    "--new-account-name",
+    help="The name of the new account.",
+)
+
 from_account_name = modified_param(
     working_account_template,
     param_decls=("--from",),
