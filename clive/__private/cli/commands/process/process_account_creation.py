@@ -135,6 +135,12 @@ class ProcessAccountCreation(OperationCommand):
     def is_fee_given(self, *, fee: bool | None) -> bool:
         return fee is not None
 
+    @override
+    async def post_run(self) -> None:
+        if not self.profile.accounts.is_account_known(self.new_account_name):
+            print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
+            self.profile.accounts.add_known_account(self.new_account_name)
+
     def set_memo_key(self, key: PublicKey) -> None:
         self._memo_key = key
 
@@ -198,12 +204,6 @@ class ProcessAccountCreation(OperationCommand):
     @staticmethod
     def _is_authority_set(auth: Authority) -> bool:
         return bool(auth.account_auths) or bool(auth.key_auths)
-
-    async def _run(self) -> None:
-        await super()._run()
-        if not self.profile.accounts.is_account_known(self.new_account_name):
-            print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
-            self.profile.accounts.add_known_account(self.new_account_name)
 
     def _set_threshold(self, level: AuthorityLevelRegular, threshold: int) -> None:
         self._get_authority(level).weight_threshold = threshold

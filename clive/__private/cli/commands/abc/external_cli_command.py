@@ -34,6 +34,11 @@ class ExternalCLICommand(ABC):
             await self.validate()
         await self._configure()
         await self._run()
+        await self.post_run()
+
+    async def post_run(self) -> None:
+        """Performed after _run, can be overridden in subclass."""
+        return
 
     async def validate(self) -> None:
         """
