@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
@@ -14,10 +14,8 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class BuildTransaction(CommandWithResult[Transaction]):
-    DEFAULT_FORCE_UPDATE_METADATA: ClassVar[bool] = False
-
     content: TransactionConvertibleType
-    force_update_metadata: bool = DEFAULT_FORCE_UPDATE_METADATA
+    force_update_metadata: bool = False
     node: Node | None = None
     """Required only if force_update_metadata is True or transaction tapos is not set."""
 

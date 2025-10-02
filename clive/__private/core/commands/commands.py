@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
-from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
 from clive.__private.core.constants.data_retrieval import (
@@ -334,8 +333,10 @@ class Commands[WorldT: World]:
         self,
         *,
         content: TransactionConvertibleType,
-        force_update_metadata: bool = BuildTransaction.DEFAULT_FORCE_UPDATE_METADATA,
+        force_update_metadata: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
+        from clive.__private.core.commands.build_transaction import BuildTransaction  # noqa: PLC0415
+
         return await self.__surround_with_exception_handlers(
             BuildTransaction(
                 content=content,
