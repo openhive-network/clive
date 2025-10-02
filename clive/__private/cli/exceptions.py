@@ -475,3 +475,18 @@ class CLIPublicKeyInvalidFormatError(CLIPrettyError):
     def __init__(self, invalid_key: str) -> None:
         message = f"Given public key: `{invalid_key}` has an invalid format."
         super().__init__(message, errno.EINVAL)
+
+
+class CLIParsingAuthorityKeyOrAccountError(CLIPrettyError):
+    """
+    Raise when trying to parse entry that is supposed to contain public key or account name.
+
+    Args:
+        entry: Authority entry (account or key) that failed parsing.
+    """
+
+    def __init__(self, entry: str) -> None:
+        super().__init__(
+            f"Could not parse `{entry}`. It should contain public key or account name (possibly with weight)",
+            errno.EINVAL,
+        )

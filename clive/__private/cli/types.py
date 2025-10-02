@@ -11,8 +11,7 @@ if TYPE_CHECKING:
     AccountUpdateFunction = Callable[[AccountUpdate2Operation], AccountUpdate2Operation]
     AuthorityUpdateFunction = Callable[[Authority], Authority]
 
-    type AccountWithWeight = tuple[str, int]
-    type KeyWithWeight = tuple[PublicKey, int]
+    type KeyOrAccountWithWeight = tuple[str | PublicKey, int]
 
 
 AuthorityType = Literal["owner", "active", "posting"]

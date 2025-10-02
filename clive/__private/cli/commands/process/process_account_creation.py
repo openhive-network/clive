@@ -10,6 +10,7 @@ from clive.__private.core.constants.cli import (
     DEFAULT_AUTHORITY_THRESHOLD,
     DEFAULT_AUTHORITY_WEIGHT,
 )
+from clive.__private.core.keys.keys import PublicKey
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     AccountCreateOperation,
@@ -18,8 +19,7 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import AccountWithWeight, KeyWithWeight
-    from clive.__private.core.keys.keys import PublicKey
+    from clive.__private.cli.types import KeyOrAccountWithWeight
     from clive.__private.core.types import AuthorityLevelRegular
 
 
@@ -112,14 +112,14 @@ class ProcessAccountCreation(OperationCommand):
         self,
         level: AuthorityLevelRegular,
         threshold: int,
-        keys_with_weight: list[KeyWithWeight],
-        accounts_with_weight: list[AccountWithWeight],
+        entries: list[KeyOrAccountWithWeight],
     ) -> None:
         self._set_threshold(level, threshold)
-        for key, weight in keys_with_weight:
-            self._add_key_authority(level, key, weight)
-        for account_name, weight in accounts_with_weight:
-            self._add_account_authority(level, account_name, weight)
+        for key_or_account, weight in entries:
+            if isinstance(key_or_account, PublicKey):
+                self._add_key_authority(level, key_or_account, weight)
+            else:
+                self._add_account_authority(level, key_or_account, weight)
 
     @override
     async def fetch_data(self) -> None:

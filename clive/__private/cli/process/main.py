@@ -12,7 +12,8 @@ from clive.__private.cli.common.parameters import argument_related_options, modi
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
-from clive.__private.cli.common.parsers import public_key
+from clive.__private.cli.common.parsers import public_key, public_key_or_account_with_weight
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
 from clive.__private.cli.process.hive_power.delegations import delegations
@@ -34,6 +35,7 @@ from clive.__private.core.constants.cli import (
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import KeyOrAccountWithWeight
     from clive.__private.core.keys.keys import PublicKey
     from clive.__private.models import Asset
 
@@ -169,22 +171,22 @@ async def process_account_creation(  # noqa: PLR0913
         f" have default values of {DEFAULT_AUTHORITY_THRESHOLD} and {DEFAULT_AUTHORITY_WEIGHT}.",
         metavar=FOUR_PUBLIC_KEYS_METAVAR,
     ),
-    owner_option: str | None = typer.Option(
+    owner_option: list[str] | None = typer.Option(
         None,
         "--owner",
-        parser=public_key,
+        parser=public_key_or_account_with_weight,
         help="Owner public key that will be set for account.",
     ),
-    active_option: str | None = typer.Option(
+    active_option: list[str] | None = typer.Option(
         None,
         "--active",
-        parser=public_key,
+        parser=public_key_or_account_with_weight,
         help="Active public key that will be set for account.",
     ),
-    posting_option: str | None = typer.Option(
+    posting_option: list[str] | None = typer.Option(
         None,
         "--posting",
-        parser=public_key,
+        parser=public_key_or_account_with_weight,
         help="Posting public key that will be set for account.",
     ),
     memo_option: str | None = typer.Option(
@@ -203,6 +205,18 @@ async def process_account_creation(  # noqa: PLR0913
         "--json-metadata",
         help="The json metadata of the new account passed as string. Default is empty string.",
     ),
+    owner_threshold: int = typer.Option(
+        DEFAULT_AUTHORITY_THRESHOLD,
+        help="Allows to set threshold for owner authority.",
+    ),
+    active_threshold: int = typer.Option(
+        DEFAULT_AUTHORITY_THRESHOLD,
+        help="Allows to set threshold for active authority.",
+    ),
+    posting_threshold: int = typer.Option(
+        DEFAULT_AUTHORITY_THRESHOLD,
+        help="Allows to set threshold for posting authority.",
+    ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
@@ -211,24 +225,24 @@ async def process_account_creation(  # noqa: PLR0913
     """
     Simplified version of command for account creation where only 4 keys are required.
 
-    Example: clive process account-creation  "alice-$(date +%s)" --fee
+    Example:
+    clive process account-creation  "alice-$(date +%s)" --fee
     STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
     STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
     STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
     STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
+
+    clive-dev process account-creation "alice-$(date +%s)" --fee
+    --owner STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx=3
+    --active=STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
+    --posting STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx=3
+    --posting mary=2
+    --memo=STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx
+    --owner STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx=3
+    --owner STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx=4
+    --owner STM4xDsaG7wZu8gENJLC1GyVmorPGZrJePwazZsgcThWWnfkQKVbx=5
     """
     from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation  # noqa: PLC0415
-    from clive.__private.core.keys.keys import PublicKey  # noqa: PLC0415
-
-    if keys is not None:
-        owner, active, posting, memo = (cast("PublicKey", key) for key in keys)
-    else:
-        # because in typer complex tuple types are not supported
-        owner, active, posting, memo = None, None, None, None
-    owner_option_ = cast("PublicKey | None", owner_option)
-    active_option_ = cast("PublicKey | None", active_option)
-    posting_option_ = cast("PublicKey | None", posting_option)
-    memo_option_ = cast("PublicKey | None", memo_option)
 
     account_creation_command = ProcessAccountCreation(
         creator=creator,
@@ -240,10 +254,27 @@ async def process_account_creation(  # noqa: PLR0913
         save_file=save_file,
         autosign=autosign,
     )
-    account_creation_command.set_keys(
-        EnsureSingleValue[PublicKey]("owner").of(owner, owner_option_),
-        EnsureSingleValue[PublicKey]("active").of(active, active_option_),
-        EnsureSingleValue[PublicKey]("posting").of(posting, posting_option_),
-    )
-    account_creation_command.set_memo_key(EnsureSingleValue[PublicKey]("memo").of(memo, memo_option_))
+
+    if keys is not None:
+        owner, active, posting, memo = (cast("PublicKey", key) for key in keys)
+        account_creation_command.set_keys(owner, active, posting)
+        account_creation_command.set_memo_key(memo)
+    elif owner_option is None:
+        raise CLIPrettyError("Missing owner option.")
+    elif active_option is None:
+        raise CLIPrettyError("Missing active option.")
+    elif posting_option is None:
+        raise CLIPrettyError("Missing posting option.")
+    else:
+        account_creation_command.add_authority(
+            "owner", owner_threshold, cast("list[KeyOrAccountWithWeight]", owner_option)
+        )
+        account_creation_command.add_authority(
+            "active", active_threshold, cast("list[KeyOrAccountWithWeight]", active_option)
+        )
+        account_creation_command.add_authority(
+            "posting", posting_threshold, cast("list[KeyOrAccountWithWeight]", posting_option)
+        )
+        account_creation_command.set_memo_key(cast("PublicKey", memo_option))
+
     await account_creation_command.run()
