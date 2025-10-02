@@ -19,8 +19,9 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.__private.models import Asset, Transaction
+    from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.transaction import Transaction
 
 
 def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
@@ -100,7 +101,7 @@ def __validate_wax_response(response: wax.python_result) -> None:
 
 
 def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
-    from clive.__private.models import Transaction  # noqa: PLC0415
+    from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
     to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
     return to_serialize.json().encode()
@@ -133,7 +134,7 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 
 
 def deserialize_transaction(transaction: bytes) -> Transaction:
-    from clive.__private.models import Transaction  # noqa: PLC0415
+    from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)

@@ -7,7 +7,7 @@ from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.models import HpVestsBalance
+from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime

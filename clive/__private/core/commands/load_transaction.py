@@ -9,8 +9,8 @@ from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import WaxOperationFailedError
-from clive.__private.models import Transaction
 from clive.__private.models.schemas import DecodeError
+from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from pathlib import Path

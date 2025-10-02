@@ -17,7 +17,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget

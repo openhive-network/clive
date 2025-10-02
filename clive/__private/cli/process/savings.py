@@ -8,7 +8,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 
 if TYPE_CHECKING:
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 savings = CliveTyper(name="savings", help="Manage your savings.")
 

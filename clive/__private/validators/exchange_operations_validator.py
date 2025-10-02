@@ -11,7 +11,7 @@ from clive.__private.visitors.operation.potential_exchange_operations_account_co
 if TYPE_CHECKING:
     from typing import ClassVar
 
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 class ExchangeOperationsValidator(Validator):

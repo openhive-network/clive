@@ -10,8 +10,8 @@ from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.logger import logger
-from clive.__private.models import Transaction
 from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion, is_matching_model
+from clive.__private.models.transaction import Transaction
 from clive.__private.settings import safe_settings
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.service.service import PersistentStorageService

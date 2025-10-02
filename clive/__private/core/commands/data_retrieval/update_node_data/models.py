@@ -11,7 +11,7 @@ from clive.__private.models.disabled_api import DisabledAPI
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
     from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 

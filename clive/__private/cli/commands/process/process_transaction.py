@@ -16,7 +16,7 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.validators.path_validator import PathValidator
 
 if TYPE_CHECKING:
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 @dataclass(kw_only=True)

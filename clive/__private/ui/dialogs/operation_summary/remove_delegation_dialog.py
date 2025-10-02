@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node_special_assets import DELEGATION_REMOVE_ASSETS
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput

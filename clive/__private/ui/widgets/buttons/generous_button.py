@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 
 if TYPE_CHECKING:

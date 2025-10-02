@@ -7,7 +7,7 @@ from click.testing import Result
 
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
-from clive.__private.models import Transaction
+from clive.__private.models.transaction import Transaction
 
 from .cli_tester import CLITester
 from .exceptions import CLITestCommandError

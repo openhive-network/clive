@@ -9,7 +9,7 @@ from clive.__private.core.commands.abc.command import Command
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 @dataclass(kw_only=True)

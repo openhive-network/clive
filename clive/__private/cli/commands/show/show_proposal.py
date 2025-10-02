@@ -7,7 +7,7 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_comma
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)

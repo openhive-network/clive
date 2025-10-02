@@ -8,7 +8,8 @@ from beekeepy.exceptions import UnknownDecisionPathError
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import align_to_dot
-from clive.__private.models import Asset, HpVestsBalance
+from clive.__private.models.asset import Asset
+from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime

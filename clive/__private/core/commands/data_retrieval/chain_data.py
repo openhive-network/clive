@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import (
         DynamicGlobalProperties,
         FeedHistory,

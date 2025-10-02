@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
-from clive.__private.models import Transaction
 from clive.__private.models.schemas import OperationBase, convert_to_representation
+from clive.__private.models.transaction import Transaction
 
 type TransactionConvertibleType = OperationBase | Iterable[OperationBase] | Transaction
 

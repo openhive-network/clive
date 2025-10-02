@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from decimal import Decimal
 
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 
 def rename[R, **P](new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:

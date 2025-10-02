@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
 from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
-from clive.__private.models import Transaction
+from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node

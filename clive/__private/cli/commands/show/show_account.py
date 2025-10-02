@@ -19,7 +19,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarms_storage import AlarmsStorage

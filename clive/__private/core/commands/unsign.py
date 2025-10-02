@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.models import Transaction
+from clive.__private.models.transaction import Transaction
 
 
 @dataclass(kw_only=True)

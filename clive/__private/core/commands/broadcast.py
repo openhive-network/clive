@@ -8,7 +8,7 @@ from clive.exceptions import TransactionNotSignedError
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 @dataclass(kw_only=True)

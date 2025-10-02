@@ -34,7 +34,7 @@ from clive.__private.core.formatters.data_labels import (
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
 from clive.__private.core.relative_path import get_relative_or_whole_path
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult

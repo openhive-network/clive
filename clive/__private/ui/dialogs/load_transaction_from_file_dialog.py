@@ -15,7 +15,7 @@ from clive.__private.ui.dialogs.select_file_base_dialog import SelectFileBaseDia
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidator
 
 if TYPE_CHECKING:
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 class LoadTransactionFromFileDialog(SelectFileBaseDialog[bool]):

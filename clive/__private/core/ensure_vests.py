@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core import iwax
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World

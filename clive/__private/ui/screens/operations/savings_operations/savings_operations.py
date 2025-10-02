@@ -10,7 +10,7 @@ from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HE
 from clive.__private.core.constants.tui.texts import LOADING_TEXT
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,

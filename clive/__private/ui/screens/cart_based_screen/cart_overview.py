@@ -10,7 +10,7 @@ from textual.widgets import Static
 from clive.__private.core.constants.tui.tooltips import GO_TO_TRANSACTION_SUMMARY_TOOLTIP
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel

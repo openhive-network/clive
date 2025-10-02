@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Center
 
 from clive.__private.core.accounts.accounts import Account
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path

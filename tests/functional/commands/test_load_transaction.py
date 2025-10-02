@@ -6,8 +6,9 @@ import pytest
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
-from clive.__private.models import Asset, Transaction
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import HiveDateTime, TransferOperation, convert_to_representation
+from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from pathlib import Path

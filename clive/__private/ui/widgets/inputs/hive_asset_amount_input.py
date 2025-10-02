@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorHive
 from clive.__private.ui.widgets.inputs.asset_amount_base_input import AssetAmountInput
 

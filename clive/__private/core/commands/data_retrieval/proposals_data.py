@@ -16,7 +16,7 @@ from clive.__private.core.constants.data_retrieval import (
 )
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
 from clive.__private.core.types import OrderDirections, ProposalOrders, ProposalStatuses
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     import datetime

@@ -88,7 +88,6 @@ if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import AlreadySignedMode, MigrationStatus, NotifyLevel
     from clive.__private.core.world import World
-    from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
         Account,
         DynamicGlobalProperties,
@@ -96,6 +95,7 @@ if TYPE_CHECKING:
         TransactionStatus,
         Witness,
     )
+    from clive.__private.models.transaction import Transaction
     from wax.models.authority import WaxAccountAuthorityInfo
 
 

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node import Node
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import (
         Account,
         DynamicGlobalProperties,

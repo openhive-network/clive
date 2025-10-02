@@ -8,7 +8,7 @@ from clive.__private.models.schemas import TransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)

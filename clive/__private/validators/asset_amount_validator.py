@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from textual.validation import Function, ValidationResult, Validator
 
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 
 class AssetAmountValidator(Validator):

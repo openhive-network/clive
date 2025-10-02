@@ -30,7 +30,7 @@ if TYPE_CHECKING:
         AccountScheduledTransferData,
         ScheduledTransfer,
     )
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)

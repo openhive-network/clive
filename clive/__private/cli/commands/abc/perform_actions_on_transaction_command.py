@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.types import AlreadySignedMode
-    from clive.__private.models import Transaction
+    from clive.__private.models.transaction import Transaction
 
 
 class AutoSignSkippedWarningCLI(Warning):

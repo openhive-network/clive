@@ -29,8 +29,8 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.css.query import DOMQuery
 
-    from clive.__private.models import Transaction
     from clive.__private.models.schemas import OperationUnion
+    from clive.__private.models.transaction import Transaction
     from clive.__private.ui.widgets.clive_basic.clive_checkerboard_table import CellContent
 
 

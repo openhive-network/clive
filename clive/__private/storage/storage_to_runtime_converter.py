@@ -11,7 +11,7 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
     RecoveryAccountWarningListedAlarmIdentifier,
 )
 from clive.__private.core.keys import PublicKeyAliased
-from clive.__private.models import Transaction
+from clive.__private.models.transaction import Transaction
 from clive.__private.storage.current_model import ProfileStorageModel
 from clive.exceptions import CliveError
 

@@ -5,7 +5,7 @@ from typing import Final
 from textual import on
 
 from clive.__private.core.constants.tui.placeholders import KNOWN_EXCHANGE_MEMO_PLACEHOLDER
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput

@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.__private.core.formatters.humanize import SignPrefixT
-    from clive.__private.models import HpVestsBalance
+    from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 
 @dataclass(kw_only=True)

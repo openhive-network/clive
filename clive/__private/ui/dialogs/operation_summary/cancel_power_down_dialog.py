@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.node_special_assets import POWER_DOWN_REMOVE_ASSET
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
 from clive.__private.ui.dialogs.operation_summary.operation_summary_base_dialog import OperationSummaryBaseDialog
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.__private.models import HpVestsBalance
+    from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 
 class CancelPowerDownDialog(OperationSummaryBaseDialog):

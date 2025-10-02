@@ -15,7 +15,7 @@ from clive.__private.core.constants.node import (
 from clive.__private.core.shorthand_timedelta import SHORTHAND_TIMEDELTA_EXAMPLE
 
 if TYPE_CHECKING:
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 transfer_schedule = CliveTyper(name="transfer-schedule", help="Create, modify or remove recurrent transfer.")
 

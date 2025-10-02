@@ -23,7 +23,7 @@ from clive.__private.cli.process.vote_witness import vote_witness
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
 
 if TYPE_CHECKING:
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 

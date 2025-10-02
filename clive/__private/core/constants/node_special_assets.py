@@ -11,7 +11,7 @@ from clive.__private.core.constants.node import (
     VESTS_TO_REMOVE_DELEGATION,
     VESTS_TO_REMOVE_POWER_DOWN,
 )
-from clive.__private.models import Asset
+from clive.__private.models.asset import Asset
 
 SCHEDULED_TRANSFER_REMOVE_ASSETS: Final[tuple[Asset.Hive, Asset.Hbd]] = (
     Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),

@@ -10,7 +10,7 @@ from clive.__private.core.constants.node_special_assets import HIVE_FEE_TO_USE_R
 from clive.__private.models.schemas import ClaimAccountOperation
 
 if TYPE_CHECKING:
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)

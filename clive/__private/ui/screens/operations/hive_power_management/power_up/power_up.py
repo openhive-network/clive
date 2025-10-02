@@ -20,7 +20,7 @@ from clive.__private.ui.widgets.transaction_buttons import TransactionButtons
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models import Asset
+    from clive.__private.models.asset import Asset
 
 
 class PowerUp(TabPane, OperationActionBindings):
