@@ -1,26 +1,26 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.unsign import UnSign
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.models.schemas import HiveInt
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from clive.__private.core.node import Node
     from clive.__private.models.transaction import Transaction
 
 
 @dataclass(kw_only=True)
 class UpdateTransactionMetadata(Command):
-    DEFAULT_GDPO_TIME_RELATIVE_EXPIRATION: ClassVar[timedelta] = timedelta(minutes=30)
-
     transaction: Transaction
     node: Node
-    expiration: timedelta = DEFAULT_GDPO_TIME_RELATIVE_EXPIRATION
+    expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
     """Expiration relative to the gdpo time."""
 
     async def _execute(self) -> None:

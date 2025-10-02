@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
-from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
 from clive.__private.core.constants.data_retrieval import (
     ALREADY_SIGNED_MODE_DEFAULT,
     ORDER_DIRECTION_DEFAULT,
@@ -13,6 +12,7 @@ from clive.__private.core.constants.data_retrieval import (
     WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT,
     WITNESSES_SEARCH_MODE_DEFAULT,
 )
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
@@ -349,8 +349,10 @@ class Commands[WorldT: World]:
         self,
         *,
         transaction: Transaction,
-        expiration: timedelta = UpdateTransactionMetadata.DEFAULT_GDPO_TIME_RELATIVE_EXPIRATION,
+        expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT,
     ) -> CommandWrapper:
+        from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata  # noqa: PLC0415
+
         return await self.__surround_with_exception_handlers(
             UpdateTransactionMetadata(
                 transaction=transaction,
