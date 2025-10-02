@@ -15,6 +15,8 @@ ProposalOrders = Literal[
 ]
 ProposalStatuses = Literal["all", "active", "inactive", "votable", "expired"]
 
+WitnessesSearchModes = Literal["search_by_pattern", "search_top_with_voted_first"]
+
 AuthorityLevelRegular = Literal["owner", "active", "posting"]
 AuthorityLevelMemo = Literal["memo"]
 AuthorityLevel = AuthorityLevelRegular | AuthorityLevelMemo

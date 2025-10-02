@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
-from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
 from clive.__private.core.constants.data_retrieval import (
     ALREADY_SIGNED_MODE_DEFAULT,
     ORDER_DIRECTION_DEFAULT,
     PROPOSAL_ORDER_DEFAULT,
     PROPOSAL_STATUS_DEFAULT,
+    WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT,
+    WITNESSES_SEARCH_MODE_DEFAULT,
 )
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
@@ -58,6 +59,7 @@ if TYPE_CHECKING:
         OrderDirections,
         ProposalOrders,
         ProposalStatuses,
+        WitnessesSearchModes,
     )
     from clive.__private.core.world import World
     from clive.__private.models.schemas import (
@@ -514,17 +516,19 @@ class Commands[WorldT: World]:
         self,
         *,
         account_name: str,
-        mode: WitnessesDataRetrieval.Modes = WitnessesDataRetrieval.DEFAULT_MODE,
+        mode: WitnessesSearchModes = WITNESSES_SEARCH_MODE_DEFAULT,
         witness_name_pattern: str | None = None,
-        search_by_name_limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT,
+        search_by_pattern_limit: int = WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT,
     ) -> CommandWithResultWrapper[WitnessesData]:
+        from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval  # noqa: PLC0415
+
         return await self.__surround_with_exception_handlers(
             WitnessesDataRetrieval(
                 node=self._world.node,
                 account_name=account_name,
                 mode=mode,
                 witness_name_pattern=witness_name_pattern,
-                search_by_pattern_limit=search_by_name_limit,
+                search_by_pattern_limit=search_by_pattern_limit,
             )
         )
 

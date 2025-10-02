@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar
 
 from beekeepy.exceptions import UnknownDecisionPathError
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
+)
+from clive.__private.core.constants.data_retrieval import (
+    WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT,
+    WITNESSES_SEARCH_MODE_DEFAULT,
 )
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.core.formatters.humanize import (
@@ -15,6 +19,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
     humanize_votes_with_suffix,
 )
+from clive.__private.core.types import WitnessesSearchModes
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -46,7 +51,7 @@ class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
     list_witnesses_votes: ListWitnessVotes | None = None
     top_witnesses: ListWitnesses | None = None
-    witnesses_searched_by_name: ListWitnesses | None = None
+    witnesses_searched_by_pattern: ListWitnesses | None = None
 
 
 @dataclass
@@ -54,7 +59,7 @@ class SanitizedData:
     gdpo: DynamicGlobalProperties
     witnesses_votes: list[str]
     top_witnesses: list[Witness]
-    witnesses_searched_by_name: list[Witness] | None
+    witnesses_searched_by_pattern: list[Witness] | None
     """Could be None, as there is no need to download it when the order is by votes."""
 
 
@@ -70,14 +75,14 @@ class WitnessesData:
 
 @dataclass(kw_only=True)
 class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, WitnessesData]):
-    type Modes = Literal["search_by_pattern", "search_top_with_voted_first"]
+    type Modes = WitnessesSearchModes
     """
     Available modes for retrieving witnesses data.
 
     search_by_pattern:
         Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses
             (sort by_name) call.
-        Amount of witnesses is limited to the search_by_name_limit.
+        Amount of witnesses is limited to the search_by_pattern_limit.
 
     search_top_with_voted_first:
         Retrieves top witnesses with the ones voted for by the account.
@@ -90,15 +95,15 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     TOP_WITNESSES_HARD_LIMIT: ClassVar[int] = 150
 
-    DEFAULT_SEARCH_BY_NAME_LIMIT: ClassVar[int] = 50
-    DEFAULT_MODE: ClassVar[Modes] = "search_top_with_voted_first"
+    DEFAULT_SEARCH_BY_PATTERN_LIMIT: ClassVar[int] = WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT
+    DEFAULT_MODE: ClassVar[Modes] = WITNESSES_SEARCH_MODE_DEFAULT
 
     node: Node
     account_name: str
     mode: Modes = DEFAULT_MODE
     witness_name_pattern: str | None = None
     """Required only if mode is set to search_by_pattern."""
-    search_by_pattern_limit: int = DEFAULT_SEARCH_BY_NAME_LIMIT
+    search_by_pattern_limit: int = DEFAULT_SEARCH_BY_PATTERN_LIMIT
     """Doesn't matter if mode is different than search_by_pattern."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
@@ -130,13 +135,13 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
-        in_search_by_name_mode = self.mode == "search_by_pattern"
+        in_search_by_pattern_mode = self.mode == "search_by_pattern"
         return SanitizedData(
             gdpo=self.__assert_gdpo(data.gdpo),
             witnesses_votes=self.__assert_witnesses_votes(data.list_witnesses_votes),
             top_witnesses=self.__assert_list_witnesses(data.top_witnesses),
-            witnesses_searched_by_name=(
-                self.__assert_list_witnesses(data.witnesses_searched_by_name) if in_search_by_name_mode else None
+            witnesses_searched_by_pattern=(
+                self.__assert_list_witnesses(data.witnesses_searched_by_pattern) if in_search_by_pattern_mode else None
             ),
         )
 
@@ -181,13 +186,13 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         )
 
     def __get_witnesses_by_pattern(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
-        assert data.witnesses_searched_by_name is not None, "Witnesses searched by name are missing"
+        assert data.witnesses_searched_by_pattern is not None, "Witnesses searched by name are missing"
 
         # Get the processed list of top witnesses because it is needed to get the rank of the searched witnesses
         top_witnesses = self.__get_top_witnesses(data)
 
         witnesses: OrderedDict[str, WitnessData] = OrderedDict()
-        for witness in data.witnesses_searched_by_name:
+        for witness in data.witnesses_searched_by_pattern:
             if witness.owner in top_witnesses:
                 witness_data = top_witnesses[witness.owner]
             else:

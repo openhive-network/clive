@@ -28,7 +28,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
         super().__init__(paused=paused, init_update=init_update)
 
         self.__witness_pattern: str = ""
-        self.__search_by_name_limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
+        self.__search_by_pattern_limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT
         self.__mode: WitnessesDataRetrieval.Modes = WitnessesDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
@@ -40,7 +40,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
             account_name=account_name,
             mode=self.__mode,
             witness_name_pattern=self.__witness_name_pattern,
-            search_by_name_limit=self.__search_by_name_limit,
+            search_by_pattern_limit=self.__search_by_pattern_limit,
         )
 
         if wrapper.error_occurred:
@@ -57,17 +57,17 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
             self._content = result
 
     def set_mode_witnesses_by_name(
-        self, pattern: str | None = None, limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
+        self, pattern: str | None = None, limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT
     ) -> Worker[None]:
         self.__mode = "search_by_pattern"
         self.__witness_name_pattern = pattern
-        self.__search_by_name_limit = limit
+        self.__search_by_pattern_limit = limit
 
         return self.update()
 
     def set_mode_top_witnesses(self) -> Worker[None]:
         self.__mode = WitnessesDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern = None
-        self.__search_by_name_limit = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
+        self.__search_by_pattern_limit = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT
 
         return self.update()

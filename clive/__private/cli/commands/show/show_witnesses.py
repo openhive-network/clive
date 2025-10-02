@@ -29,7 +29,7 @@ class ShowWitnesses(WorldBasedCommand):
             account_name=proxy if proxy else self.account_name,
             mode=WitnessesDataRetrieval.DEFAULT_MODE,
             witness_name_pattern=None,
-            search_by_name_limit=WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT,
+            search_by_pattern_limit=WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT,
         )
         witnesses_data: WitnessesData = wrapper.result_or_raise
         start_index: int = self.page_no * self.page_size
