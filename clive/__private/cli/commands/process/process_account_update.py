@@ -9,11 +9,8 @@ from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import (
-        AccountUpdateFunction,
-        AuthorityType,
-        AuthorityUpdateFunction,
-    )
+    from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction
+    from clive.__private.core.types import AuthorityLevelRegular
     from clive.__private.models.schemas import Account
 
 
@@ -179,7 +176,7 @@ def set_memo_key(operation: AccountUpdate2Operation, key: str) -> AccountUpdate2
 
 
 def update_authority(
-    operation: AccountUpdate2Operation, attribute: AuthorityType, callback: AuthorityUpdateFunction
+    operation: AccountUpdate2Operation, attribute: AuthorityLevelRegular, callback: AuthorityUpdateFunction
 ) -> AccountUpdate2Operation:
     auth_attribute = getattr(operation, attribute)
     if not auth_attribute:

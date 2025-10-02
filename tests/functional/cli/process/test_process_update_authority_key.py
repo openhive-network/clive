@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, get_args
+from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.cli.types import AuthorityType
+from clive.__private.core.constants.authority import AUTHORITY_LEVELS_REGULAR
 from clive_local_tools.cli.checkers import assert_authority_weight, assert_is_authority, assert_is_not_authority
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA
@@ -12,6 +12,7 @@ from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA
 if TYPE_CHECKING:
     import test_tools as tt
 
+    from clive.__private.core.types import AuthorityLevelRegular
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -20,8 +21,8 @@ WEIGHT: Final[int] = 123
 MODIFIED_WEIGHT: Final[int] = 124
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_add_key(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_add_key(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -36,8 +37,8 @@ async def test_add_key(cli_tester: CLITester, authority: AuthorityType) -> None:
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.public_key, authority, WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_remove_key(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ARRANGE
     cli_tester.process_update_authority(
         authority,
@@ -60,8 +61,8 @@ async def test_remove_key(cli_tester: CLITester, authority: AuthorityType) -> No
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_modify_key(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_modify_key(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ARRANGE
     cli_tester.process_update_authority(
         authority,

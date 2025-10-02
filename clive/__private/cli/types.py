@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -9,6 +9,3 @@ if TYPE_CHECKING:
 
     AccountUpdateFunction = Callable[[AccountUpdate2Operation], AccountUpdate2Operation]
     AuthorityUpdateFunction = Callable[[Authority], Authority]
-
-
-AuthorityType = Literal["owner", "active", "posting"]

@@ -13,7 +13,8 @@ from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
-    from clive.__private.cli.types import AccountUpdateFunction, AuthorityType
+    from clive.__private.cli.types import AccountUpdateFunction
+    from clive.__private.core.types import AuthorityLevelRegular
 
 
 _authority_account_name = typer.Option(
@@ -91,7 +92,7 @@ def modify_command_common_options(
     )
 
 
-def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:  # noqa: PLR0915
+def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper:  # noqa: PLR0915
     epilog = f"Look also at the help for command update-{authority}-authority for more options."
     update = CliveTyper(
         name=f"update-{authority}-authority",

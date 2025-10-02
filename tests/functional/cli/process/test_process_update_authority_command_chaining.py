@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, get_args
+from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.cli.types import AuthorityType
+from clive.__private.core.constants.authority import AUTHORITY_LEVELS_REGULAR
 from clive_local_tools.cli.checkers import (
     assert_authority_weight,
     assert_is_authority,
@@ -17,6 +17,7 @@ from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_A
 if TYPE_CHECKING:
     import test_tools as tt
 
+    from clive.__private.core.types import AuthorityLevelRegular
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -27,8 +28,8 @@ MODIFIED_WEIGHT: Final[int] = 214
 WEIGHT_THRESHOLD: Final[int] = 2
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -51,8 +52,8 @@ async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.public_key, authority, WEIGHT)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_chaining2(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
@@ -81,8 +82,8 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
     assert_is_not_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
 
 
-@pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_chaining3(cli_tester: CLITester, authority: AuthorityType) -> None:
+@pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
+async def test_chaining3(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ACT
     cli_tester.process_update_authority(
         authority,
