@@ -1,0 +1,23 @@
+{
+  "expiration": "2025-11-03T12:04:33",
+  "operations": [
+    {
+      "type": "transfer_operation",
+      "value": {
+        "amount": {
+          "amount": "1000",
+          "nai": "@@000000021",
+          "precision": 3
+        },
+        "from": "alice",
+        "memo": "Test transfer",
+        "to": "gtg"
+      }
+    }
+  ],
+  "ref_block_num": 63520,
+  "ref_block_prefix": 1089630749,
+  "signatures": [
+    "1f2a6d6657a582fa682c96f5d8bddfe578b1238c93e13c6351440810afe1852dce6b97c98c41fc581690478d9646675f878ba08afc36f0b2833b008e729a5bd534"
+  ]
+}
