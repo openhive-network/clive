@@ -6,7 +6,7 @@ import traceback
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast, get_args
 
-from beekeepy.exceptions import CommunicationError
+import beekeepy.exceptions as bke
 from textual import on, work
 from textual._context import active_app
 from textual.app import App
@@ -431,7 +431,7 @@ class Clive(App[int]):
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             error = wrapper.error
-            if isinstance(error, CommunicationError) and error.response is None:
+            if isinstance(error, bke.CommunicationError) and error.response is None:
                 # notify watchers when node goes offline
                 self.trigger_node_watchers()
 

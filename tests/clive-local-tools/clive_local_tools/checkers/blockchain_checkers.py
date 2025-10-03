@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import beekeepy.exceptions as bke
 import pytest
-from beekeepy.exceptions import ErrorInResponseError
 from click.testing import Result
 
 from clive_local_tools.helpers import get_transaction_id_from_output
@@ -29,7 +29,7 @@ def assert_transaction_in_blockchain(
         node.wait_number_of_blocks(1)
     try:
         node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
-    except ErrorInResponseError:
+    except bke.ErrorInResponseError:
         pytest.fail(f"The transaction with {transaction_id=} couldn't be found in the blockchain.")
 
 

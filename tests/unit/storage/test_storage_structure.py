@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+import beekeepy as bk
 import pytest
-from beekeepy import AsyncBeekeeper
 
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
 from clive.__private.core.commands.save_profile import SaveProfile
@@ -14,11 +14,12 @@ from clive.__private.storage.service.service import PersistentStorageService
 if TYPE_CHECKING:
     from pathlib import Path
 
+
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
 async def _create_and_save_profile(profile_name: str) -> None:
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper:
+    async with await bk.AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper:
         result = await CreateProfileWallets(
             session=await beekeeper.session, profile_name=profile_name, password=profile_name
         ).execute_with_result()

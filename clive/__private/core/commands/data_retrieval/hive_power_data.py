@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
-from beekeepy.exceptions import UnknownDecisionPathError
+import beekeepy.exceptions as bke
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -93,7 +93,7 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 ),
                 await node.api.database_api.find_vesting_delegations(account=self.account_name),
             )
-        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
+        raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import beekeepy as bk
 import pytest
-from beekeepy import AsyncBeekeeper
 
 from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
@@ -16,10 +16,14 @@ from clive.__private.settings import safe_settings
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from beekeepy import AsyncBeekeeper
+
 
 @pytest.fixture
 async def beekeeper() -> AsyncIterator[AsyncBeekeeper]:
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
+    async with await bk.AsyncBeekeeper.factory(
+        settings=safe_settings.beekeeper.settings_local_factory()
+    ) as beekeeper_cm:
         yield beekeeper_cm
 
 
