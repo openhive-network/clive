@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 from textual import __name__ as textual_package_name
 
+import clive.__private.models.schemas as schemas_models_module
 from clive.__private.ui import __name__ as ui_package_name
 from clive_local_tools.cli.imports import get_cli_help_imports_tree
 from wax import __name__ as wax_package_name
@@ -15,3 +16,30 @@ def test_not_imported_during_cli_help(package_name: str) -> None:
 
     # ASSERT
     assert package_name not in cli_imports_tree, f"{package_name} shouldn't be imported during CLI help."
+
+
+def test_all_schemas_models_exports_are_importable() -> None:
+    """
+    Ensure all names listed in ``__all__`` are actually importable.
+
+    This is especially important because schemas models rely on lazy imports
+    (using string-based paths and alias mappings). If an alias is wrong or a module
+    path changes, it would break at runtime. This test proactively triggers all
+    exports to catch such issues.
+    """
+    # ARRANGE
+    module = schemas_models_module
+
+    # ACT
+    missing = []
+
+    for name in module.__all__:
+        try:
+            getattr(module, name)
+        except Exception:  # noqa: BLE001
+            missing.append(name)
+
+    # ASSERT
+    assert not missing, (
+        f"The following names from __all__ are missing (failed to resolve) in {module.__name__}: {missing}"
+    )
