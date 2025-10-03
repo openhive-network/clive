@@ -340,6 +340,7 @@ deploy_docs:
     - variables:
         PAGES_CURRENT_CONTENT_PATH: $PAGES_PREVIEW_BRANCH_PATH
       when: manual
+      allow_failure: true
   script:
     - echo "Directory used for gitlab pages publishing ${PAGES_ABSOLUTE_CONTENT_PATH}"
     - rm -rf "${PAGES_ABSOLUTE_CONTENT_PATH}"
