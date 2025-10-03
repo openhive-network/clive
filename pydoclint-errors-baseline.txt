@@ -289,6 +289,13 @@ clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC103: Method `AccountScheduledTransferData._receiver_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [receiver: str, scheduled_transfer: ScheduledTransfer].
     DOC201: Method `AccountScheduledTransferData._receiver_check` does not have a return section in docstring
 --------------------
+clive/__private/core/commands/perform_actions_on_transaction.py
+    DOC601: Class `PerformActionsOnTransaction`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PerformActionsOnTransaction`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [serialization_mode: SerializationMode]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `PerformActionsOnTransaction._normalize_sign_keys`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PerformActionsOnTransaction._normalize_sign_keys`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [keys: PublicKey | list[PublicKey]].
+    DOC201: Method `PerformActionsOnTransaction._normalize_sign_keys` does not have a return section in docstring
+--------------------
 clive/__private/core/commands/recover_wallets.py
     DOC501: Method `RecoverWallets._validate_recovery_attempt` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `RecoverWallets._validate_recovery_attempt` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CannotRecoverWalletsError'].
@@ -339,6 +346,227 @@ clive/__private/models/asset.py
 --------------------
 clive/__private/models/transaction.py
     DOC201: Method `Transaction.__bool__` does not have a return section in docstring
+--------------------
+clive/__private/si/base.py
+    DOC501: Method `UnlockedCliveSi._ensure_setup_called` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `UnlockedCliveSi._ensure_setup_called` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['SIContextManagerNotUsedError'].
+--------------------
+clive/__private/si/configure.py
+    DOC101: Method `ConfigureInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ConfigureInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: UnlockedCliveSi].
+--------------------
+clive/__private/si/core/base.py
+    DOC201: Method `CommandBase._run` does not have a return section in docstring
+--------------------
+clive/__private/si/core/process/authority_operations.py
+    DOC101: Function `set_threshold`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `set_threshold`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auth: Authority, threshold: int].
+    DOC201: Function `set_threshold` does not have a return section in docstring
+    DOC101: Function `add_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `add_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auth: Authority, key: str, weight: int].
+    DOC201: Function `add_key` does not have a return section in docstring
+    DOC501: Function `add_key` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `add_key` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AuthorityAlreadyExistsError'].
+    DOC101: Function `add_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `add_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str, auth: Authority, weight: int].
+    DOC201: Function `add_account` does not have a return section in docstring
+    DOC501: Function `add_account` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `add_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AuthorityAlreadyExistsError'].
+    DOC101: Function `remove_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `remove_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auth: Authority, key: str].
+    DOC201: Function `remove_key` does not have a return section in docstring
+    DOC501: Function `remove_key` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `remove_key` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AuthorityNotFoundError'].
+    DOC101: Function `remove_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `remove_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str, auth: Authority].
+    DOC201: Function `remove_account` does not have a return section in docstring
+    DOC501: Function `remove_account` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `remove_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['AuthorityNotFoundError'].
+    DOC101: Function `modify_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `modify_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [auth: Authority, key: str, weight: int].
+    DOC201: Function `modify_key` does not have a return section in docstring
+    DOC101: Function `modify_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `modify_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str, auth: Authority, weight: int].
+    DOC201: Function `modify_account` does not have a return section in docstring
+--------------------
+clive/__private/si/core/process/chaining.py
+    DOC101: Function `broadcast_transaction`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `broadcast_transaction`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [node: Node, transaction: Transaction].
+    DOC101: Function `save_transaction_to_file`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `save_transaction_to_file`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_format: Literal['json', 'bin'] | None, file_path: str | Path, serialization_mode: SerializationMode, transaction: Transaction].
+    DOC101: Method `TransactionResult.save_file`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionResult.save_file`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_format: Literal['json', 'bin'] | None, path: str | Path, serialization_mode: SerializationMode].
+    DOC601: Class `TransactionFinalizer`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `TransactionFinalizer`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [world: World]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `TransactionFinalizer.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionFinalizer.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [all_operations: list[OperationBuilder], world: World].
+    DOC101: Method `TransactionFinalizer.save_file`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionFinalizer.save_file`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file_format: Literal['json', 'bin'], path: str | Path, serialization_mode: SerializationMode].
+    DOC201: Method `TransactionFinalizer.as_transaction_object` does not have a return section in docstring
+    DOC201: Method `TransactionFinalizer._get_signing_configuration` does not have a return section in docstring
+    DOC101: Method `ChainableOperationBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ChainableOperationBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [previous_operations: list[OperationBuilder] | None, world: World].
+    DOC101: Method `ChainableOperationBuilder._all_operations`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ChainableOperationBuilder._all_operations`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: list[OperationBuilder]].
+    DOC101: Method `ChainableOperationBuilder.sign_with`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ChainableOperationBuilder.sign_with`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].
+    DOC201: Method `ChainableOperationBuilder.sign_with` does not have a return section in docstring
+    DOC201: Method `ChainableOperationBuilder.autosign` does not have a return section in docstring
+    DOC101: Function `create_transaction_result_class`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `create_transaction_result_class`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [world: World].
+    DOC201: Function `create_transaction_result_class` does not have a return section in docstring
+    DOC101: Method `SigningChain.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `SigningChain.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [all_operations: list[OperationBuilder], sign_keys: list[str], world: World].
+    DOC101: Method `SigningChain.sign_with`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `SigningChain.sign_with`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].
+    DOC201: Method `SigningChain.sign_with` does not have a return section in docstring
+    DOC201: Method `SigningChain._get_signing_configuration` does not have a return section in docstring
+    DOC201: Method `AutoSignChain._get_signing_configuration` does not have a return section in docstring
+    DOC101: Method `AuthorityUpdateChain.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityUpdateChain.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, authority_type: AuthorityLevelRegular, previous_operations: list[OperationBuilder] | None, threshold: int | None, world: World].
+    DOC201: Method `AuthorityUpdateChain._create_authority_builder` does not have a return section in docstring
+    DOC201: Method `AuthorityUpdateChain._get_authority_builder` does not have a return section in docstring
+--------------------
+clive/__private/si/core/process/process.py
+    DOC101: Method `OperationBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [world: World].
+    DOC101: Method `OperationBuilder.finalize`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationBuilder.finalize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
+    DOC201: Method `OperationBuilder.finalize` does not have a return section in docstring
+    DOC201: Method `OperationBuilder._create_operation` does not have a return section in docstring
+    DOC502: Method `OperationBuilder._resolve_key_or_alias` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC101: Method `OperationBuilder._normalize_sign_with`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationBuilder._normalize_sign_with`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [sign_with: list[str] | str | None].
+    DOC201: Method `OperationBuilder._normalize_sign_with` does not have a return section in docstring
+    DOC101: Method `TransferBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransferBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str | Asset.LiquidT, from_account: str, memo: str, to_account: str, world: World].
+    DOC201: Method `TransferBuilder._normalize_amount` does not have a return section in docstring
+    DOC101: Method `TransactionBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, force: bool, force_unsign: bool, from_file: str | Path | None, from_object: Transaction | None, world: World].
+    DOC101: Method `TransactionBuilder.finalize`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionBuilder.finalize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
+    DOC201: Method `TransactionBuilder.finalize` does not have a return section in docstring
+    DOC201: Method `TransactionBuilder._create_operation` does not have a return section in docstring
+    DOC501: Method `TransactionBuilder._create_operation` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `TransactionBuilder._create_operation` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC101: Method `AuthorityBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, authority_type: AuthorityLevelRegular, threshold: int | None, world: World].
+    DOC101: Method `AuthorityBuilder.add_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.add_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str, weight: int].
+    DOC201: Method `AuthorityBuilder.add_key` does not have a return section in docstring
+    DOC101: Method `AuthorityBuilder.add_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.add_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, weight: int].
+    DOC201: Method `AuthorityBuilder.add_account` does not have a return section in docstring
+    DOC101: Method `AuthorityBuilder.remove_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.remove_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str].
+    DOC201: Method `AuthorityBuilder.remove_key` does not have a return section in docstring
+    DOC101: Method `AuthorityBuilder.remove_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.remove_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `AuthorityBuilder.remove_account` does not have a return section in docstring
+    DOC101: Method `AuthorityBuilder.modify_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.modify_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key: str, weight: int].
+    DOC201: Method `AuthorityBuilder.modify_key` does not have a return section in docstring
+    DOC101: Method `AuthorityBuilder.modify_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `AuthorityBuilder.modify_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account: str, weight: int].
+    DOC201: Method `AuthorityBuilder.modify_account` does not have a return section in docstring
+    DOC201: Method `AuthorityBuilder._create_operation` does not have a return section in docstring
+    DOC101: Method `MultipleOperationsBuilder.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `MultipleOperationsBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [builders: list[OperationBuilder], world: World].
+    DOC501: Method `MultipleOperationsBuilder.validate` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `MultipleOperationsBuilder.validate` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CannotAddOperationToSignedTransactionError'].
+    DOC201: Method `MultipleOperationsBuilder._create_operation` does not have a return section in docstring
+    DOC501: Method `MultipleOperationsBuilder._create_operation` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `MultipleOperationsBuilder._create_operation` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC201: Method `MultipleOperationsBuilder._get_transaction_content` does not have a return section in docstring
+--------------------
+clive/__private/si/data_classes.py
+    DOC601: Class `Balances`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Balances`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [hbd_liquid: Asset.Hbd, hbd_savings: Asset.Hbd, hbd_unclaimed: Asset.Hbd, hive_liquid: Asset.Hive, hive_savings: Asset.Hive, hive_unclaimed: Asset.Hive]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `Accounts`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Accounts`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [known_accounts: list[str], tracked_accounts: list[str], working_account: str | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `Authority`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Authority`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [account_or_public_key: str, weight: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `AuthorityInfo`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `AuthorityInfo`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [authorities: list[Authority], authority_owner_account_name: str, authority_type: str, weight_threshold: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `KeyPair`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `KeyPair`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [private_key: str | None, public_key: str | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+clive/__private/si/exceptions.py
+    DOC101: Method `SIContextManagerNotUsedError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `SIContextManagerNotUsedError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [message: str].
+    DOC101: Method `PasswordRequirementsNotMetError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PasswordRequirementsNotMetError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [description: str].
+    DOC101: Method `InvalidAccountNameError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `InvalidAccountNameError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC101: Method `InvalidProfileNameError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `InvalidProfileNameError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [description: str, profile_name: str].
+    DOC101: Method `InvalidPageNumberError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `InvalidPageNumberError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [min_number: int, page_number: int].
+    DOC101: Method `InvalidPageSizeError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `InvalidPageSizeError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [min_size: int, page_size: int].
+    DOC101: Method `InvalidNumberOfKeyPairsError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `InvalidNumberOfKeyPairsError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [min_size: int, number_of_key_pairs: int].
+--------------------
+clive/__private/si/generate.py
+    DOC101: Method `GenerateInterface.random_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GenerateInterface.random_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key_pairs: int].
+    DOC201: Method `GenerateInterface.random_key` does not have a return section in docstring
+--------------------
+clive/__private/si/process.py
+    DOC101: Method `OperationsBuilderInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [all_operations: list[OperationBuilder] | None, world: World].
+    DOC101: Method `OperationsBuilderInterface.transfer`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface.transfer`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str | Asset.LiquidT, from_account: str, memo: str, to_account: str].
+    DOC201: Method `OperationsBuilderInterface.transfer` does not have a return section in docstring
+    DOC101: Method `OperationsBuilderInterface.update_owner_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface.update_owner_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int | None].
+    DOC201: Method `OperationsBuilderInterface.update_owner_authority` does not have a return section in docstring
+    DOC101: Method `OperationsBuilderInterface.update_active_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface.update_active_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int | None].
+    DOC201: Method `OperationsBuilderInterface.update_active_authority` does not have a return section in docstring
+    DOC101: Method `OperationsBuilderInterface.update_posting_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface.update_posting_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int | None].
+    DOC201: Method `OperationsBuilderInterface.update_posting_authority` does not have a return section in docstring
+    DOC101: Method `OperationsBuilderInterface._update_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationsBuilderInterface._update_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, authority_type: AuthorityLevelRegular, threshold: int | None].
+    DOC201: Method `OperationsBuilderInterface._update_authority` does not have a return section in docstring
+    DOC101: Method `ProfileOperationsInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProfileOperationsInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: UnlockedCliveSi].
+    DOC101: Method `ProfileOperationsInterface.transaction`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProfileOperationsInterface.transaction`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, force: bool, force_unsign: bool, from_file: str | Path].
+    DOC201: Method `ProfileOperationsInterface.transaction` does not have a return section in docstring
+    DOC101: Method `ProfileOperationsInterface.transaction_from_object`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProfileOperationsInterface.transaction_from_object`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, force: bool, force_unsign: bool, from_object: Transaction | None].
+    DOC201: Method `ProfileOperationsInterface.transaction_from_object` does not have a return section in docstring
+    DOC101: Method `ChainingOperationsInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ChainingOperationsInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [all_operations: list[OperationBuilder], world: World].
+--------------------
+clive/__private/si/show.py
+    DOC201: Method `ShowInterfaceNoProfile.profiles` does not have a return section in docstring
+    DOC101: Method `ShowInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: UnlockedCliveSi].
+    DOC101: Method `ShowInterface.balances`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.balances`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.balances` does not have a return section in docstring
+    DOC201: Method `ShowInterface.accounts` does not have a return section in docstring
+    DOC101: Method `ShowInterface.witnesses`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.witnesses`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, page_no: int, page_size: int].
+    DOC201: Method `ShowInterface.witnesses` does not have a return section in docstring
+    DOC101: Method `ShowInterface.owner_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.owner_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.owner_authority` does not have a return section in docstring
+    DOC101: Method `ShowInterface.active_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.active_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.active_authority` does not have a return section in docstring
+    DOC101: Method `ShowInterface.posting_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.posting_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.posting_authority` does not have a return section in docstring
+--------------------
+clive/__private/si/validators.py
+    DOC001: Function/method `validate`: Potential formatting errors in docstring. Error message: Expected a colon in 'An appropriate exception from clive.__private.si.exceptions if validation fails.'. (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `validate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Validator.validate`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Validator.validate`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: object].
 --------------------
 clive/__private/storage/service/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
