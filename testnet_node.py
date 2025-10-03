@@ -8,7 +8,7 @@ import time
 from typing import TYPE_CHECKING
 
 import test_tools as tt
-from beekeepy.interfaces import HttpUrl
+from beekeepy import interfaces as bki
 
 from clive.__private.before_launch import prepare_before_launch
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
@@ -58,7 +58,7 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
 
 
 def prepare_node() -> tt.RawNode:
-    return run_node(webserver_http_endpoint=HttpUrl.factory(port=8090))
+    return run_node(webserver_http_endpoint=bki.HttpUrl.factory(port=8090))
 
 
 async def prepare_profiles(node: tt.RawNode) -> None:

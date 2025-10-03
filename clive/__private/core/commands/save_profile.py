@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
-from beekeepy.exceptions import CommunicationError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.beekeeper_manager import WalletsNotAvailableError
 from clive.__private.core.commands.abc.command import Command, CommandError
@@ -34,5 +34,5 @@ class SaveProfile(CommandEncryption, Command):
         encryption_service = EncryptionService(WalletContainer(self.unlocked_wallet, self.unlocked_encryption_wallet))
         try:
             await self.profile.save(encryption_service)
-        except (CommunicationError, WalletsNotAvailableError) as error:
+        except (bke.CommunicationError, WalletsNotAvailableError) as error:
             raise ProfileSavingFailedError(self) from error

@@ -3,8 +3,8 @@ from __future__ import annotations
 from contextlib import ExitStack
 from typing import TYPE_CHECKING
 
+import beekeepy as bk
 import pytest
-from beekeepy import AsyncBeekeeper
 from typer.testing import CliRunner
 
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable
 
     import test_tools as tt
+    from beekeepy import AsyncBeekeeper
 
     from clive.__private.core.profile import Profile
     from clive_local_tools.cli.types import CLITesterFactory, CLITesterVariant
@@ -50,7 +51,9 @@ def logger_configuration_factory() -> Callable[[], None]:
 @pytest.fixture
 async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
     """CLI tests are remotely connecting to a locally started beekeeper by this fixture."""
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
+    async with await bk.AsyncBeekeeper.factory(
+        settings=safe_settings.beekeeper.settings_local_factory()
+    ) as beekeeper_cm:
         yield beekeeper_cm
 
 

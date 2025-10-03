@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import InvalidPasswordError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 
@@ -36,6 +36,6 @@ class IsPasswordValid(CommandWithResult[bool]):
     async def _is_password_valid(self, wallet: AsyncWallet) -> bool:
         try:
             await wallet.unlock(password=self.password)
-        except InvalidPasswordError:
+        except bke.InvalidPasswordError:
             return False
         return True

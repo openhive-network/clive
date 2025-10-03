@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy.exceptions import CommunicationError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_encryption import CommandEncryption
@@ -26,5 +26,5 @@ class Decrypt(CommandEncryption, CommandWithResult[str]):
                 to_key=encryption_key,
                 content=self.encrypted_content,
             )
-        except CommunicationError as error:
+        except bke.CommunicationError as error:
             raise CommandDecryptError(self) from error

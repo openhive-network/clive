@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Final, TypeGuard
 
-from beekeepy.exceptions import InvalidPasswordError, NotExistingKeyError, NoWalletWithSuchNameError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.recover_wallets import CannotRecoverWalletsError
 from clive.__private.core.commands.save_profile import ProfileSavingFailedError
@@ -21,9 +21,9 @@ class GeneralErrorNotificator(ErrorNotificator[Exception]):
     """
 
     SEARCHED_AND_PRINTED_MESSAGES: Final[dict[type[Exception], str]] = {
-        InvalidPasswordError: INVALID_PASSWORD_MESSAGE,
-        NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
-        NotExistingKeyError: "Key does not exist in the wallet.",
+        bke.InvalidPasswordError: INVALID_PASSWORD_MESSAGE,
+        bke.NoWalletWithSuchNameError: "Wallet with this name was not found on the beekeeper. Please try again.",
+        bke.NotExistingKeyError: "Key does not exist in the wallet.",
         ProfileEncryptionError: "Profile encryption failed which means profile cannot be saved or loaded.",
         CannotRecoverWalletsError: CannotRecoverWalletsError.MESSAGE,
         ProfileSavingFailedError: ProfileSavingFailedError.MESSAGE,

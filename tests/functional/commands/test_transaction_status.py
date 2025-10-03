@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import beekeepy.exceptions as bke
 import pytest
-from beekeepy.exceptions import ApiNotFoundError
 
 from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.logger import logger
@@ -58,7 +58,7 @@ async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -
     assert "transaction_status_api" not in init_node.config.plugin
 
     # ACT & ASSERT
-    with pytest.raises(ApiNotFoundError) as exc_info:
+    with pytest.raises(bke.ApiNotFoundError) as exc_info:
         await world.commands.find_transaction(transaction_id="deadbeef")
 
     assert expected_message in str(exc_info.value.response), "Got different error message than expected"
