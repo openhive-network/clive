@@ -325,6 +325,121 @@ clive/__private/models/asset.py
 clive/__private/models/transaction.py
     DOC201: Method `Transaction.__bool__` does not have a return section in docstring
 --------------------
+clive/__private/si/base.py
+    DOC201: Function `clive_use_unlocked_profile` does not have a return section in docstring
+    DOC101: Function `clive_unlock_and_use_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `clive_unlock_and_use_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+    DOC201: Function `clive_unlock_and_use_profile` does not have a return section in docstring
+    DOC101: Function `clive_use_new_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `clive_use_new_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+    DOC201: Function `clive_use_new_profile` does not have a return section in docstring
+    DOC201: Method `CliveSi.use_unlocked_profile` does not have a return section in docstring
+    DOC101: Method `CliveSi.unlock_and_use_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveSi.unlock_and_use_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+    DOC201: Method `CliveSi.unlock_and_use_profile` does not have a return section in docstring
+    DOC101: Method `CliveSi.use_new_profile`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CliveSi.use_new_profile`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+    DOC201: Method `CliveSi.use_new_profile` does not have a return section in docstring
+    DOC101: Method `ProfileWithUnlocking.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProfileWithUnlocking.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+    DOC101: Method `NewProfile.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NewProfile.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+--------------------
+clive/__private/si/configure.py
+    DOC101: Method `ConfigureInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ConfigureInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: ProfileBase].
+    DOC101: Method `ConfigureInterface.profile_create`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ConfigureInterface.profile_create`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [password: str, profile_name: str].
+--------------------
+clive/__private/si/core/base.py
+    DOC201: Method `CommandBase._run` does not have a return section in docstring
+    DOC201: Method `CommandBaseSync._run` does not have a return section in docstring
+--------------------
+clive/__private/si/core/process.py
+    DOC201: Method `ProcessCommandBase._create_operation` does not have a return section in docstring
+    DOC101: Method `ProcessCommandBase.finalize`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessCommandBase.finalize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool, save_file: str | Path | None, sign_with: str | None].
+    DOC201: Method `ProcessCommandBase.finalize` does not have a return section in docstring
+--------------------
+clive/__private/si/data_classes.py
+    DOC601: Class `Balances`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Balances`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [hbd_liquid: Asset.Hbd, hbd_savings: Asset.Hbd, hbd_unclaimed: Asset.Hbd, hive_liquid: Asset.Hive, hive_savings: Asset.Hive, hive_unclaimed: Asset.Hive]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `Accounts`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Accounts`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [known_accounts: list[str], tracked_accounts: list[str], working_account: str | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `Authority`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Authority`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [account_or_public_key: str, weight: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `AuthorityInfo`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `AuthorityInfo`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [authority_owner_account_name: str, authority_type: str, weight_threshold: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `KeyPair`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `KeyPair`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [private_key: str, public_key: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+clive/__private/si/generate.py
+    DOC101: Method `GenerateInterface.random_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GenerateInterface.random_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key_pairs: int].
+    DOC201: Method `GenerateInterface.random_key` does not have a return section in docstring
+    DOC101: Method `GenerateInterface.key_from_seed`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GenerateInterface.key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, only_private_key: bool, only_public_key: bool, password: str, role: AuthorityLevel].
+    DOC201: Method `GenerateInterface.key_from_seed` does not have a return section in docstring
+    DOC101: Method `GenerateInterface.public_key`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GenerateInterface.public_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [private_key: str].
+    DOC201: Method `GenerateInterface.public_key` does not have a return section in docstring
+    DOC201: Method `GenerateInterface.secret_phrase` does not have a return section in docstring
+--------------------
+clive/__private/si/process.py
+    DOC101: Method `ProcessInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: ProfileBase].
+    DOC101: Method `ProcessInterface.transfer`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.transfer`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str | Asset.LiquidT, from_account: str, memo: str, to_account: str].
+    DOC201: Method `ProcessInterface.transfer` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.transaction`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.transaction`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode, force: bool, force_unsign: bool, from_file: str | Path].
+    DOC201: Method `ProcessInterface.transaction` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.update_owner_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.update_owner_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int].
+    DOC201: Method `ProcessInterface.update_owner_authority` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.update_active_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.update_active_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int].
+    DOC201: Method `ProcessInterface.update_active_authority` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.update_posting_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.update_posting_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, threshold: int].
+    DOC201: Method `ProcessInterface.update_posting_authority` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.power_down_start`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.power_down_start`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, amount: str | Asset.LiquidT].
+    DOC201: Method `ProcessInterface.power_down_start` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.power_down_restart`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.power_down_restart`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, amount: str | Asset.LiquidT].
+    DOC201: Method `ProcessInterface.power_down_restart` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.power_down_cancel`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.power_down_cancel`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ProcessInterface.power_down_cancel` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.power_up`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.power_up`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str | Asset.LiquidT, force: bool, from_account: str, to_account: str].
+    DOC201: Method `ProcessInterface.power_up` does not have a return section in docstring
+    DOC101: Method `ProcessInterface.custom_json`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessInterface.custom_json`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authorize: str | list[str] | None, authorize_by_active: str | list[str] | None, id_: str, json: str | Path].
+    DOC201: Method `ProcessInterface.custom_json` does not have a return section in docstring
+--------------------
+clive/__private/si/show.py
+    DOC201: Method `ShowInterfaceNoProfile.profiles` does not have a return section in docstring
+    DOC101: Method `ShowInterface.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [clive_instance: ProfileBase].
+    DOC101: Method `ShowInterface.balances`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.balances`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.balances` does not have a return section in docstring
+    DOC201: Method `ShowInterface.accounts` does not have a return section in docstring
+    DOC101: Method `ShowInterface.witnesses`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.witnesses`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, page_no: int, page_size: int].
+    DOC201: Method `ShowInterface.witnesses` does not have a return section in docstring
+    DOC101: Method `ShowInterface.owner_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.owner_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.owner_authority` does not have a return section in docstring
+    DOC101: Method `ShowInterface.active_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.active_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.active_authority` does not have a return section in docstring
+    DOC101: Method `ShowInterface.posting_authority`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ShowInterface.posting_authority`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str].
+    DOC201: Method `ShowInterface.posting_authority` does not have a return section in docstring
+--------------------
 clive/__private/storage/service/service.py
     DOC502: Method `PersistentStorageService.save_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC502: Method `PersistentStorageService.load_profile` has a "Raises" section in the docstring, but there are not "raise" statements in the body
