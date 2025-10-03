@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
-from beekeepy import AsyncBeekeeper
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import (

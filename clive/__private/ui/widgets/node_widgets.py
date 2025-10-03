@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from beekeepy.interfaces import HttpUrl
+import beekeepy.interfaces as bki
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.widgets import Static
@@ -13,6 +13,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
 if TYPE_CHECKING:
+    from beekeepy.interfaces import HttpUrl
     from rich.console import RenderableType
     from textual.app import ComposeResult
 
@@ -30,7 +31,7 @@ class SelectedNodeAddress(Static):
         return f"Selected node address: {self.node_address}"
 
 
-class NodeSelector(CliveSelect[HttpUrl], CliveWidget):
+class NodeSelector(CliveSelect[bki.HttpUrl], CliveWidget):
     """Select for the node address."""
 
     def __init__(self) -> None:

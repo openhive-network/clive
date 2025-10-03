@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from typing import Final, TypeGuard
+from typing import TYPE_CHECKING, Final, TypeGuard
 
-from beekeepy.exceptions import CommunicationError, TimeoutExceededError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 
+if TYPE_CHECKING:
+    from beekeepy.exceptions import CommunicationError, TimeoutExceededError
 
-class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
+
+class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
     """
     A context manager that notifies about errors of `CommunicatorError` type.
 
@@ -24,11 +27,11 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
     }
 
     def _is_exception_to_catch(self, error: Exception) -> TypeGuard[CommunicationError]:
-        return isinstance(error, CommunicationError)
+        return isinstance(error, bke.CommunicationError)
 
     @classmethod
     def _determine_message(cls, exception: CommunicationError) -> str:
-        if isinstance(exception, TimeoutExceededError):
+        if isinstance(exception, bke.TimeoutExceededError):
             return cls._get_communication_timeout_message(exception)
 
         error_messages = exception.get_response_error_messages()

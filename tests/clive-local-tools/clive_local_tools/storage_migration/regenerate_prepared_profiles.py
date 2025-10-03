@@ -15,8 +15,8 @@ from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
+import beekeepy as bk
 import test_tools as tt
-from beekeepy import AsyncBeekeeper
 
 from clive.__private.core.commands.create_encryption_wallet import CreateEncryptionWallet
 from clive.__private.core.commands.create_user_wallet import CreateUserWallet
@@ -58,7 +58,9 @@ OPERATION: Final[TransferOperation] = TransferOperation(
 async def prepare_encryption_service() -> AsyncGenerator[EncryptionService]:
     account_name = PROFILE_NAME
     password = PROFILE_PASSWORD
-    async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper_cm:
+    async with await bk.AsyncBeekeeper.factory(
+        settings=safe_settings.beekeeper.settings_local_factory()
+    ) as beekeeper_cm:
         session = await beekeeper_cm.session
         user_wallet = await CreateUserWallet(
             session=session, profile_name=account_name, password=password

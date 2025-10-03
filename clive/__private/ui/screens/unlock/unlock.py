@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import InvalidPasswordError
+import beekeepy.exceptions as bke
 from textual import on
 from textual.containers import Horizontal
 from textual.validation import Integer
@@ -123,7 +123,7 @@ class Unlock(BaseScreen):
                     permanent=lock_after_time.should_stay_unlocked,
                     time=lock_after_time.lock_duration,
                 )
-            except InvalidPasswordError:
+            except bke.InvalidPasswordError:
                 logger.error(
                     f"Profile `{select_profile.selection_ensure}` was not unlocked "
                     "because entered password is invalid, skipping switching modes"

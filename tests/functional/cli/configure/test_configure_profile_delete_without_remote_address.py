@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import beekeepy as bk
+import beekeepy.exceptions as bke
 import pytest
-from beekeepy import AsyncBeekeeper
-from beekeepy.exceptions.common import InvalidatedStateByClosingBeekeeperError
 
 from clive.__private.settings import safe_settings
 from clive_local_tools.checkers.profile_checker import ProfileChecker
@@ -13,6 +13,8 @@ from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_NAME
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from beekeepy import AsyncBeekeeper
+
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -20,9 +22,9 @@ if TYPE_CHECKING:
 async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
     """We need to handle error on double teardown of beekeeper."""
     with pytest.raises(
-        InvalidatedStateByClosingBeekeeperError
+        bke.InvalidatedStateByClosingBeekeeperError
     ):  # we can use fixture beekeeper_local from conftest after issue #19 in beekeepey is resolved
-        async with await AsyncBeekeeper.factory(
+        async with await bk.AsyncBeekeeper.factory(
             settings=safe_settings.beekeeper.settings_local_factory()
         ) as beekeeper_cm:
             yield beekeeper_cm

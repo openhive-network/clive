@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import UnknownDecisionPathError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -70,7 +70,7 @@ class FindVestingDelegationExpirations(
             )
             dgpo = await node.api.database_api.get_dynamic_global_properties()
             return HarvestedDataRaw(vesting_delegation_expirations, dgpo)
-        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
+        raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         delegations = data.find_vesting_delegation_expirations.delegations

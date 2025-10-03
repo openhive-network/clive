@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from beekeepy import AsyncBeekeeper
+import beekeepy as bk
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import (
@@ -30,7 +30,9 @@ class BeekeeperSpawn(ExternalCLICommand):
         if not self.echo_address_only:
             print_cli("Launching beekeeper...")
 
-        async with await AsyncBeekeeper.factory(settings=safe_settings.beekeeper.settings_local_factory()) as beekeeper:
+        async with await bk.AsyncBeekeeper.factory(
+            settings=safe_settings.beekeeper.settings_local_factory()
+        ) as beekeeper:
             pid = beekeeper.detach()
 
             if self.echo_address_only:

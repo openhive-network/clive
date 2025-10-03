@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
-from beekeepy.interfaces import SuppressApiNotFound
+import beekeepy.interfaces as bki
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -209,7 +209,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_rc_accounts(self, data: FindRcAccounts | None) -> list[RcAccount]:
         assert data is not None, "Rc account data is missing..."
 
-        with SuppressApiNotFound("rc_api"):
+        with bki.SuppressApiNotFound("rc_api"):
             assert len(data.rc_accounts) == len(self.accounts), "RC accounts are missing some accounts..."
             return data.rc_accounts
         return []
@@ -217,7 +217,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_account_history_or_none(self, data: GetAccountHistory | None) -> GetAccountHistory | None:
         assert data is not None, "Account history info is missing..."
 
-        with SuppressApiNotFound("account_history_api"):
+        with bki.SuppressApiNotFound("account_history_api"):
             assert len(data.history) == 1, "Account history info malformed. Expected only one entry."
             return data
         return None

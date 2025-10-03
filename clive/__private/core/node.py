@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import CommunicationError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.settings import safe_settings
@@ -104,7 +104,7 @@ class Node(AsyncHived):
         async def online(self) -> bool:
             try:
                 await self._fetch_basic_info()
-            except CommunicationError as error:
+            except bke.CommunicationError as error:
                 if error.response is None:
                     return False
                 raise
@@ -248,7 +248,7 @@ class Node(AsyncHived):
     async def _sync_node_basic_info(self) -> None:
         try:
             self.cached._basic_info = await GetNodeBasicInfo(self).execute_with_result()
-        except CommunicationError as error:
+        except bke.CommunicationError as error:
             if error.response is None:
                 self.cached._set_offline()
             raise

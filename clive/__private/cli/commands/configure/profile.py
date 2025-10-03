@@ -3,7 +3,7 @@ from __future__ import annotations
 import errno
 from dataclasses import dataclass
 
-from beekeepy.exceptions import CommunicationError
+import beekeepy.exceptions as bke
 
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
@@ -58,7 +58,7 @@ class CreateProfile(WorldBasedCommand):
             result = (
                 await self.world.commands.create_profile_wallets(profile_name=profile.name, password=password)
             ).result_or_raise
-        except CommunicationError as error:
+        except bke.CommunicationError as error:
             if is_in_dev_mode():
                 raise
             raise CLICreatingProfileCommunicationError from error

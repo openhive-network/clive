@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from beekeepy.exceptions import NoWalletWithSuchNameError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
@@ -88,6 +88,6 @@ class Unlock(CommandPasswordSecured, CommandWithResult[UnlockWalletStatus]):
     async def _unlock_wallet(self, name: str) -> AsyncUnlockedWallet | None:
         try:
             wallet = await self.session.open_wallet(name=name)
-        except NoWalletWithSuchNameError:
+        except bke.NoWalletWithSuchNameError:
             return None
         return await wallet.unlock(password=self.password)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
-from beekeepy.exceptions import UnknownDecisionPathError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.constants.data_retrieval import (
@@ -117,7 +117,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 status=self.status,
             )
             return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
-        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
+        raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(

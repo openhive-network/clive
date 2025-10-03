@@ -5,11 +5,11 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Final, Literal, cast, get_args, overload
+from typing import TYPE_CHECKING, Final, Literal, cast, get_args, overload
 
-from beekeepy import Settings as BeekeepySettings
-from beekeepy.handle.remote import RemoteHandleSettings
-from beekeepy.interfaces import HttpUrl
+import beekeepy as bk
+import beekeepy.interfaces as bki
+import beekeepy.settings as bks
 from inflection import underscore
 
 from clive.__private.core.constants.setting_identifiers import (
@@ -44,6 +44,11 @@ from clive.__private.core.constants.setting_identifiers import (
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import get_settings
 from clive.exceptions import CliveError
+
+if TYPE_CHECKING:
+    from beekeepy import InterfaceSettings as BeekeepySettings
+    from beekeepy.handle.remote import RemoteHandleSettings
+    from beekeepy.interfaces import HttpUrl
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -240,7 +245,7 @@ class SafeSettings:
             return self.session_token is not None
 
         def settings_remote_factory(self) -> BeekeepySettings:
-            beekeepy_settings = BeekeepySettings()
+            beekeepy_settings = bk.InterfaceSettings()
 
             beekeepy_settings.working_directory = self.working_directory
             beekeepy_settings.http_endpoint = self.remote_address
@@ -320,7 +325,7 @@ class SafeSettings:
             return self._get_node_communication_retries_delay_secs()
 
         def settings_factory(self, http_endpoint: HttpUrl) -> RemoteHandleSettings:
-            remote_handle_settings = RemoteHandleSettings(http_endpoint=http_endpoint)
+            remote_handle_settings = bks.RemoteHandleSettings(http_endpoint=http_endpoint)
 
             remote_handle_settings.timeout = timedelta(seconds=self.communication_timeout_total_secs)
             remote_handle_settings.max_retries = self.communication_attempts_amount
@@ -479,7 +484,7 @@ class SafeSettings:
         self._assert_is_string(setting_name, value=value)
         value_ = cast("str", value)
         try:
-            return HttpUrl(value_)
+            return bki.HttpUrl(value_)
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 

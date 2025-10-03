@@ -4,7 +4,7 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-from beekeepy.exceptions import UnknownDecisionPathError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
@@ -132,7 +132,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 )
 
             return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
-        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
+        raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         in_search_by_pattern_mode = self.mode == "search_by_pattern"

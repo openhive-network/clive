@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy.interfaces import HttpUrl
+import beekeepy.interfaces as bki
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 
@@ -12,5 +12,5 @@ class SetNode(WorldBasedCommand):
     node_address: str
 
     async def _run(self) -> None:
-        url = HttpUrl(self.node_address)
+        url = bki.HttpUrl(self.node_address)
         self.profile._set_node_address(url)
