@@ -14,7 +14,7 @@ workflow:
 
 include:
   - project: 'hive/hive'
-    ref: 888c7b858da0da4ca12a003c97b1387d070d247a
+    ref: b574b5b4742d81892d55a99e90cc8a0cae6f2280
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
     # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
 
