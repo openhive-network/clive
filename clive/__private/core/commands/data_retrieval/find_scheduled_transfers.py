@@ -4,7 +4,7 @@ from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final, Literal, cast
 
-from beekeepy.exceptions import UnknownDecisionPathError
+import beekeepy.exceptions as bke
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -236,7 +236,7 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
                 recurrent_transfers=await node.api.database_api.find_recurrent_transfers(from_=self.account_name),
                 account_data=await node.api.database_api.find_accounts(accounts=[self.account_name]),
             )
-        raise UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
+        raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
     async def _sanitize_data(self, data: _HarvestedDataRaw) -> _SanitizedData:
         return _SanitizedData(

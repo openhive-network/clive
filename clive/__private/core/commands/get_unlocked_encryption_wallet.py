@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from beekeepy import AsyncSession, AsyncUnlockedWallet
+import beekeepy as bk
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.encryption import EncryptionService
+
+if TYPE_CHECKING:
+    from beekeepy import AsyncSession
 
 
 class MultipleEncryptionWalletsUnlockedError(CommandError):
@@ -22,7 +26,7 @@ class NoEncryptionWalletUnlockedError(CommandError):
 
 
 @dataclass(kw_only=True)
-class GetUnlockedEncryptionWallet(CommandWithResult[AsyncUnlockedWallet]):
+class GetUnlockedEncryptionWallet(CommandWithResult[bk.AsyncUnlockedWallet]):
     """
     Get the unlocked encryption wallet - the one containing encryption key managed by clive.
 

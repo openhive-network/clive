@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from beekeepy import close_already_running_beekeeper
-from beekeepy.exceptions import FailedToDetectRunningBeekeeperError
+import beekeepy as bk
+import beekeepy.exceptions as bke
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.print_cli import print_cli
@@ -16,8 +16,8 @@ class BeekeeperClose(ExternalCLICommand):
         print_cli("Closing beekeeper...")
         beekeeper_working_directory = safe_settings.beekeeper.working_directory
         try:
-            close_already_running_beekeeper(cwd=beekeeper_working_directory)
-        except FailedToDetectRunningBeekeeperError:
+            bk.close_already_running_beekeeper(cwd=beekeeper_working_directory)
+        except bke.FailedToDetectRunningBeekeeperError:
             print_cli("There was no running beekeeper.")
         else:
             print_cli("Beekeeper was closed.")

@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import TYPE_CHECKING, Final
 
-from beekeepy.interfaces import HttpUrl
+import beekeepy.interfaces as bki
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from pathlib import Path
     from typing import Self
+
+    from beekeepy.interfaces import HttpUrl
 
     from clive.__private.core.accounts.accounts import Account
     from clive.__private.core.encryption import EncryptionService
@@ -342,8 +344,8 @@ class Profile:
     @staticmethod
     def _default_node_addresses() -> list[HttpUrl]:
         return [
-            HttpUrl("api.hive.blog", protocol="https"),
-            HttpUrl("api.openhive.network", protocol="https"),
+            bki.HttpUrl("api.hive.blog", protocol="https"),
+            bki.HttpUrl("api.openhive.network", protocol="https"),
         ]
 
     @staticmethod
@@ -362,7 +364,7 @@ class Profile:
         if secret_node_address:
             return secret_node_address
         if given_node_address:
-            return HttpUrl(given_node_address)
+            return bki.HttpUrl(given_node_address)
         return self._backup_node_addresses[0]
 
     def _set_node_address(self, value: HttpUrl) -> None:
