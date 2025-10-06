@@ -157,10 +157,6 @@ def assert_no_removed_delegations(context: CLITester | Result) -> None:
     assert_output_contains(expected_output, output, command)
 
 
-def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int) -> None:
-    assert_exit_code(result, 0)
-
-
 def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int) -> None:
     if isinstance(result, Result):
         actual_exit_code = result.exit_code

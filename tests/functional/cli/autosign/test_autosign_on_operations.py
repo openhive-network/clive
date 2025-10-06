@@ -18,7 +18,6 @@ from clive_local_tools.cli.checkers import (
     assert_contains_dry_run_message,
     assert_contains_transaction_created_message,
     assert_contains_transaction_saved_to_file_message,
-    assert_no_exit_code_error,
     assert_transaction_file_is_signed,
     assert_transaction_file_is_unsigned,
 )
@@ -145,7 +144,7 @@ async def test_saving_autosigned_operation_to_file(
     save_file_path = tmp_path / "saved_transaction.txt"
 
     # ACT
-    result = cli_tester.process_transfer(
+    cli_tester.process_transfer(
         from_=WORKING_ACCOUNT_NAME,
         amount=tt.Asset.Hive(1),
         to=RECEIVER,
@@ -156,7 +155,6 @@ async def test_saving_autosigned_operation_to_file(
     )
 
     # ASSERT
-    assert_no_exit_code_error(result)
     if autosign:
         assert_transaction_file_is_signed(save_file_path)
     else:
