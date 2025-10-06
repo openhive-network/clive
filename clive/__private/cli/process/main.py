@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from enum import Enum
 from functools import partial
 from typing import TYPE_CHECKING, cast
 
@@ -27,7 +26,8 @@ from clive.__private.cli.process.vote_witness import vote_witness
 from clive.__private.core.constants.cli import (
     REQUIRED_AS_ARG_OR_OPTION,
 )
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
+from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.types import AlreadySignedMode  # noqa: TC001
 
 if TYPE_CHECKING:
     from clive.__private.core.keys.keys import PublicKey
@@ -78,17 +78,11 @@ async def transfer(  # noqa: PLR0913
     ).run()
 
 
-# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
-AlreadySignedModeEnum = Enum(  # type: ignore[misc]
-    "AlreadySignedModeEnum", {option: option for option in ALREADY_SIGNED_MODES}
-)
-
-
 @process.command(name="transaction")
 async def process_transaction(  # noqa: PLR0913
     from_file: str = typer.Option(..., help="The file to load the transaction from."),
     force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
-    already_signed_mode: AlreadySignedModeEnum = typer.Option(
+    already_signed_mode: AlreadySignedMode = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT,
         help=(
             "How to handle situations when a transaction is already signed.\n\n "
@@ -110,7 +104,7 @@ async def process_transaction(  # noqa: PLR0913
     await ProcessTransaction(
         from_file=from_file,
         force_unsign=force_unsign,
-        already_signed_mode=already_signed_mode.value,
+        already_signed_mode=already_signed_mode,
         sign_with=sign_with,
         broadcast=broadcast,
         save_file=save_file,
