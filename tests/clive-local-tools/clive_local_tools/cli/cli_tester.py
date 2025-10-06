@@ -10,7 +10,7 @@ from .chaining.update_authority import (
     UpdateOwnerAuthority,
     UpdatePostingAuthority,
 )
-from .command_options import extract_params, kwargs_to_cli_options
+from .command_options import extract_params, kwargs_to_cli_options, option_to_string
 from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
@@ -373,9 +373,15 @@ class CLITester:
         return self.__invoke_command_with_options(["show", "chain"])
 
     def __invoke_command_with_options(
-        self, command: list[str], password_stdin: str | None = None, /, **cli_options: CliOptionT
+        self,
+        command: list[str],
+        cli_positional_args: tuple[StringConvertibleOptionTypes, ...] | None = None,
+        password_stdin: str | None = None,
+        /,
+        **cli_named_args: CliOptionT,
     ) -> Result:
-        full_command = [*command, *kwargs_to_cli_options(**cli_options)]
+        positional = [option_to_string(arg) for arg in cli_positional_args] if cli_positional_args is not None else []
+        full_command = [*command, *positional, *kwargs_to_cli_options(**cli_named_args)]
         return self.invoke_raw_command(full_command, password_stdin)
 
     def process_transfer(  # noqa: PLR0913
@@ -423,7 +429,7 @@ class CLITester:
     ) -> Result:
         named_params = locals()
         named_params.pop("password_stdin")
-        return self.__invoke_command_with_options(["unlock"], password_stdin, **extract_params(named_params))
+        return self.__invoke_command_with_options(["unlock"], None, password_stdin, **extract_params(named_params))
 
     def lock(self) -> Result:
         return self.__invoke_command_with_options(["lock"], **extract_params(locals()))
@@ -468,7 +474,7 @@ class CLITester:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(
-            ["configure", "profile", "create"], password_stdin, **extract_params(named_params)
+            ["configure", "profile", "create"], None, password_stdin, **extract_params(named_params)
         )
 
     def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
@@ -564,11 +570,11 @@ class CLITester:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(
-            ["generate", "key-from-seed"], password_stdin, **extract_params(named_params)
+            ["generate", "key-from-seed"], None, password_stdin, **extract_params(named_params)
         )
 
     def generate_public_key(self, *, password_stdin: str | None = None) -> Result:
-        return self.__invoke_command_with_options(["generate", "public-key"], password_stdin)
+        return self.__invoke_command_with_options(["generate", "public-key"], None, password_stdin)
 
     def generate_random_key(self, *, key_pairs: int | None = None) -> Result:
         named_params = locals()
@@ -605,9 +611,6 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> Result:
-        named_params = locals()
-        named_params.pop("args")
-        positional_args = [str(arg) for arg in args]
         return self.__invoke_command_with_options(
-            ["process", "account-creation", *positional_args], **extract_params(named_params)
+            ["process", "account-creation"], args, **extract_params(locals(), "args")
         )
