@@ -59,10 +59,10 @@ from schemas.decoders import is_matching_model, validate_schema_field
 from schemas.errors import DecodeError, ValidationError
 from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
 from schemas.fields.basic import AccountName, PublicKey
-from schemas.fields.compound import Authority, Manabar, Price
+from schemas.fields.compound import Authority, LegacyChainProperties, Manabar, Price
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
 from schemas.fields.compound import Proposal as SchemasProposal
-from schemas.fields.hex import Sha256, Signature, TransactionId
+from schemas.fields.hex import Hex, Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.fields.integers import Uint16t, Uint32t
@@ -127,6 +127,11 @@ from schemas.operations.extensions.representation_types import (
     HF26RepresentationRecurrentTransferPairIdOperationExtension,
 )
 from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
+from schemas.operations.witness_set_properties_operation import (
+    WitnessProps,
+    WitnessPropsSerializedKey,
+    WitnessSetPropertiesOperationFactory,
+)
 from schemas.policies import (
     ExtraFieldsPolicy,
     MissingFieldsInGetConfigPolicy,
@@ -166,6 +171,8 @@ __all__ = [  # noqa: RUF022
     "HardforkProperties",
     "Version",
     "WitnessSchedule",
+    "WitnessSetPropertiesOperationFactory",
+    "WitnessProps",
     # operations
     "AccountCreateOperation",
     "AccountCreateWithDelegationOperation",
@@ -227,6 +234,7 @@ __all__ = [  # noqa: RUF022
     # basic fields
     "AccountName",
     "ChainId",
+    "Hex",
     "HiveDateTime",
     "HiveInt",
     "JsonString",
@@ -241,6 +249,7 @@ __all__ = [  # noqa: RUF022
     "ChangeRecoveryAccountRequest",
     "DeclineVotingRightsRequest",
     "HbdExchangeRate",
+    "LegacyChainProperties",
     "Manabar",
     "PriceFeed",
     "Proposal",
@@ -253,6 +262,7 @@ __all__ = [  # noqa: RUF022
     "VestingDelegationExpiration",
     "WithdrawRoute",
     "Witness",
+    "WitnessPropsSerializedKey",
     # policies
     "ExtraFieldsPolicy",
     "MissingFieldsInGetConfigPolicy",

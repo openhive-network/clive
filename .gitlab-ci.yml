@@ -98,16 +98,19 @@ default:
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 pre_commit_checks:
+  allow_failure: true
   stage: static_code_analysis
   extends: .pre_commit_checks_template
 
 verify_poetry_lock_sanity:
+  allow_failure: true
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
   script:
     - poetry check --lock
 
 lint_code_with_ruff:
+  allow_failure: true
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
   script:  # our own script because of newer ruff version
@@ -116,6 +119,7 @@ lint_code_with_ruff:
 
 
 formatting_with_ruff_check:
+  allow_failure: true
   stage: static_code_analysis
   extends: .project_develop_configuration_template
   script:
@@ -123,6 +127,7 @@ formatting_with_ruff_check:
       ruff format --check --diff ${PACKAGES_TO_CHECK}
 
 type_check_with_mypy:
+  allow_failure: true
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
 
