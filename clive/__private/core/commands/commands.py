@@ -67,6 +67,7 @@ if TYPE_CHECKING:
         Proposal,
         TransactionStatus,
         Witness,
+        WitnessSchedule,
     )
     from clive.__private.models.transaction import Transaction
     from wax.models.authority import WaxAccountAuthorityInfo
@@ -618,6 +619,13 @@ class Commands[WorldT: World]:
         return await self.__surround_with_exception_handlers(
             FindScheduledTransfers(node=self._world.node, account_name=account_name)
         )
+
+    async def get_witness_schedule(self) -> CommandWithResultWrapper[WitnessSchedule]:
+        from clive.__private.core.commands.data_retrieval.get_witness_schedule import (  # noqa: PLC0415
+            GetWitnessSchedule,
+        )
+
+        return await self.__surround_with_exception_handlers(GetWitnessSchedule(node=self._world.node))
 
     async def save_profile(self) -> NoOpWrapper | CommandWrapper:
         profile = self._world.profile
