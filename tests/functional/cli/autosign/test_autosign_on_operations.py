@@ -224,7 +224,7 @@ async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_teste
 
     # ASSERT
     assert_transaction_file_is_unsigned(saved_transaction_path)
-    assert_contains_transaction_saved_to_file_message(str(saved_transaction_path), result.stdout)
+    assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)
 
 
 async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
@@ -252,4 +252,4 @@ async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
 
     # ASSERT
     assert_transaction_file_is_unsigned(saved_transaction_path)
-    assert_contains_transaction_saved_to_file_message(str(saved_transaction_path), result.stdout)
+    assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)

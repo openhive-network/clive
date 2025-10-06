@@ -242,6 +242,6 @@ def assert_contains_transaction_loaded_message(message: str) -> None:
     assert_output_contains("Transaction was successfully loaded.", message)
 
 
-def assert_contains_transaction_saved_to_file_message(file_name: str, message: str) -> None:
+def assert_contains_transaction_saved_to_file_message(file: str | Path, message: str) -> None:
     # This message is shown when transaction was saved to file.
-    assert_output_contains(f"Transaction was saved to {file_name}", message)
+    assert_output_contains(f"Transaction was saved to {file}", message)
