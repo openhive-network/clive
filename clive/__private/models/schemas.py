@@ -44,6 +44,7 @@ __all__ = [  # noqa: RUF022
     "FindWitnesses",
     # get API responses (have unnecessary nested property which stores actual model)
     "GetAccountHistory",
+    "GetTransaction",
     # get API responses (have no unnecessary nested  properties, just the model itself)
     "Config",
     "DynamicGlobalProperties",
@@ -112,6 +113,7 @@ __all__ = [  # noqa: RUF022
     # basic fields
     "AccountName",
     "ChainId",
+    "Hex",
     "HiveDateTime",
     "HiveInt",
     "JsonString",
@@ -120,12 +122,14 @@ __all__ = [  # noqa: RUF022
     "TransactionId",
     "Uint16t",
     "Uint32t",
+    "WitnessPropsSerializedKey",
     # compound models
     "Account",
     "Authority",
     "ChangeRecoveryAccountRequest",
     "DeclineVotingRightsRequest",
     "HbdExchangeRate",
+    "LegacyChainProperties",
     "Manabar",
     "PriceFeed",
     "Proposal",
@@ -138,6 +142,7 @@ __all__ = [  # noqa: RUF022
     "VestingDelegationExpiration",
     "WithdrawRoute",
     "Witness",
+    "WitnessProps",
     # policies
     "ExtraFieldsPolicy",
     "MissingFieldsInGetConfigPolicy",
@@ -156,7 +161,7 @@ __all__ = [  # noqa: RUF022
 
 if TYPE_CHECKING:
     from schemas._preconfigured_base_model import PreconfiguredBaseModel
-    from schemas.apis.account_history_api import GetAccountHistory
+    from schemas.apis.account_history_api import GetAccountHistory, GetTransaction
     from schemas.apis.database_api import (
         FindAccounts,
         FindProposals,
@@ -198,8 +203,16 @@ if TYPE_CHECKING:
     from schemas.errors import DecodeError, ValidationError
     from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
     from schemas.fields.basic import AccountName, PublicKey
-    from schemas.fields.compound import Authority, HbdExchangeRate, Manabar, Price, Proposal
-    from schemas.fields.hex import Sha256, Signature, TransactionId
+    from schemas.fields.compound import (
+        Authority,
+        HbdExchangeRate,
+        LegacyChainProperties,
+        Manabar,
+        Price,
+        Proposal,
+        WitnessProps,
+    )
+    from schemas.fields.hex import Hex, Sha256, Signature, TransactionId
     from schemas.fields.hive_datetime import HiveDateTime
     from schemas.fields.hive_int import HiveInt
     from schemas.fields.integers import Uint16t, Uint32t
@@ -264,6 +277,7 @@ if TYPE_CHECKING:
         HF26RepresentationRecurrentTransferPairIdOperationExtension,
     )
     from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
+    from schemas.operations.witness_set_properties_operation import WitnessPropsSerializedKey
     from schemas.policies import (
         ExtraFieldsPolicy,
         MissingFieldsInGetConfigPolicy,
@@ -417,14 +431,17 @@ __getattr__ = lazy_module_factory(
     ),
     *aggregate_same_import(
         "Authority",
+        "LegacyChainProperties",
         "Manabar",
         ("Price", "PriceFeed"),
+        "WitnessProps",
         module="schemas.fields.compound",
     ),
     *aggregate_same_import(
         "Signature",
         "TransactionId",
         ("Sha256", "ChainId"),
+        "Hex",
         module="schemas.fields.hex",
     ),
     *aggregate_same_import(
@@ -455,7 +472,11 @@ __getattr__ = lazy_module_factory(
     ("schemas.base", "field"),
     ("schemas.apis.rc_api", "FindRcAccounts"),
     ("schemas.apis.transaction_status_api", "FindTransaction", "TransactionStatus"),
-    ("schemas.apis.account_history_api", "GetAccountHistory"),
+    *aggregate_same_import(
+        "GetAccountHistory",
+        "GetTransaction",
+        module="schemas.apis.account_history_api",
+    ),
     (
         "schemas.operations.extensions.representation_types",
         "HF26RepresentationRecurrentTransferPairIdOperationExtension",
@@ -472,6 +493,10 @@ __getattr__ = lazy_module_factory(
         "schemas.operations.extensions.recurrent_transfer_extensions",
         "RecurrentTransferPairId",
         "RecurrentTransferPairIdExtension",
+    ),
+    (
+        "schemas.operations.witness_set_properties_operation",
+        "WitnessPropsSerializedKey",
     ),
     ("schemas.transaction", "Transaction"),
 )

@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Callable
+from decimal import Decimal
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, cast
+from typing import TYPE_CHECKING, Any, Protocol, cast, get_args
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
-from clive.__private.core.percent_conversions import hive_percent_to_percent
+from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
+from clive.__private.models.schemas import WitnessPropsSerializedKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import HbdExchangeRate, Hex, OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
 
 
@@ -269,3 +271,46 @@ def generate_password_based_private_key(
 def suggest_brain_key() -> str:
     result = wax.suggest_brain_key()
     return result.brain_key.decode()
+
+
+def serialize_witness_set_properties(  # noqa: PLR0913
+    key: PublicKey,
+    new_signing_key: PublicKey | None = None,
+    account_creation_fee: Asset.Hive | None = None,
+    url: str | None = None,
+    hbd_exchange_rate: HbdExchangeRate | None = None,
+    maximum_block_size: int | None = None,
+    hbd_interest_rate: Decimal | None = None,
+    account_subsidy_budget: int | None = None,
+    account_subsidy_decay: int | None = None,
+) -> list[tuple[WitnessPropsSerializedKey, Hex]]:
+    wax_hbd_exchange_rate = (
+        wax.python_price(
+            base=to_python_json_asset(hbd_exchange_rate.base),
+            quote=to_python_json_asset(hbd_exchange_rate.quote),
+        )
+        if hbd_exchange_rate is not None
+        else None
+    )
+    hbd_interest_rate_ = percent_to_hive_percent(hbd_interest_rate) if hbd_interest_rate else None
+    data = wax.wax_result.python_witness_set_properties_data(
+        key=key.value.encode(),
+        new_signing_key=new_signing_key.value.encode() if new_signing_key is not None else None,
+        account_creation_fee=to_python_json_asset(account_creation_fee) if account_creation_fee is not None else None,
+        url=url.encode() if url is not None else None,
+        hbd_exchange_rate=wax_hbd_exchange_rate,
+        maximum_block_size=maximum_block_size,
+        hbd_interest_rate=hbd_interest_rate_,
+        account_subsidy_budget=account_subsidy_budget,
+        account_subsidy_decay=account_subsidy_decay,
+    )
+    result = wax.serialize_witness_set_properties(data)
+    schemas_properties_model: list[tuple[WitnessPropsSerializedKey, Hex]] = []
+
+    def append_optional_property(name: WitnessPropsSerializedKey) -> None:
+        if property_value_raw := result.get(name.encode()):
+            schemas_properties_model.append((name, property_value_raw.decode()))
+
+    for property_name in get_args(WitnessPropsSerializedKey):
+        append_optional_property(property_name)
+    return schemas_properties_model

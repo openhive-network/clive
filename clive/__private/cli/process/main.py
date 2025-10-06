@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal  # noqa: TC003
 from functools import partial
 from typing import TYPE_CHECKING, cast
 
@@ -11,6 +12,7 @@ from clive.__private.cli.common.parameters import argument_related_options, argu
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
+from clive.__private.cli.common.parsers import decimal_percent, hive_asset, public_key
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
 from clive.__private.cli.process.hive_power.delegations import delegations
@@ -219,3 +221,73 @@ async def process_account_creation(  # noqa: PLR0913
     )
     account_creation_command.set_memo_key(EnsureSingleValue[PublicKey]("memo").of(memo_, memo_option_))
     await account_creation_command.run()
+
+
+@process.command(name="update-witness")
+async def process_witness_update(  # noqa: PLR0913
+    owner: str = modified_param(
+        options.working_account_template,
+        param_decls=("--owner",),
+        help="The owner witness. (default is working account of profile)",
+    ),
+    use_active_authority: bool = typer.Option(  # noqa: FBT001
+        default=False,
+        help=(
+            "There are 3 operations for updating witness. By default is used `witness_set_properties`"
+            " and witness key is required to sign such transaction. Alterlatively (if this flag is set to true)"
+            " active authority can be used with operations `witness_update` and `feed_publish`."
+        ),
+    ),
+    account_creation_fee: str = typer.Option(
+        None,
+        parser=hive_asset,
+        help="Fee paid by creator of new account, applies also to price of new account tokens.",
+    ),
+    maximum_block_size: int | None = typer.Option(
+        None,
+        help="Block size that cannot be exceeded.",
+    ),
+    hbd_interest_rate: Decimal | None = typer.Option(
+        None,
+        help="Interest paid when hbd is in savings, in percent (0.00-100.00).",
+        parser=decimal_percent,
+    ),
+    account_subsidy_budget: int | None = typer.Option(None, help="Requires to be signed with witness key."),
+    account_subsidy_decay: int | None = typer.Option(None, help="Requires to be signed with witness key."),
+    new_signing_key: str | None = typer.Option(
+        None,
+        help="New witness public key.",
+        parser=public_key,
+    ),
+    hbd_exchange_rate: float | None = typer.Option(
+        None,
+        help="Updated price of hive/hbd used in conversions.",
+    ),
+    url: str | None = typer.Option(None, help="New witness url."),
+    sign_with: str | None = options.sign_with,
+    autosign: bool | None = options.autosign,  # noqa: FBT001
+    broadcast: bool = options.broadcast,  # noqa: FBT001
+    save_file: str | None = options.save_file,
+) -> None:
+    """Set memo key."""
+    from clive.__private.cli.commands.process.process_update_witness import ProcessUpdateWitness  # noqa: PLC0415
+
+    account_creation_fee_ = cast("Asset.Hive", account_creation_fee) if account_creation_fee is not None else None
+    new_signing_key_ = cast("PublicKey | None", new_signing_key) if new_signing_key is not None else None
+    operation = ProcessUpdateWitness(
+        owner=owner,
+        use_active_authority=use_active_authority,
+        account_creation_fee=account_creation_fee_,
+        maximum_block_size=maximum_block_size,
+        hbd_interest_rate=hbd_interest_rate,
+        account_subsidy_budget=account_subsidy_budget,
+        account_subsidy_decay=account_subsidy_decay,
+        new_signing_key=new_signing_key_,
+        hbd_exchange_rate=hbd_exchange_rate,
+        url=url,
+        sign_with=sign_with,
+        broadcast=broadcast,
+        save_file=save_file,
+        autosign=autosign,
+    )
+    await operation.run()
