@@ -19,4 +19,5 @@ WitnessesSearchModes = Literal["search_by_pattern", "search_top_with_voted_first
 
 AuthorityLevelRegular = Literal["owner", "active", "posting"]
 AuthorityLevelMemo = Literal["memo"]
-AuthorityLevel = AuthorityLevelRegular | AuthorityLevelMemo
+AuthorityLevel = Literal["owner", "active", "posting", "memo"]
+"""A combination of regular and memo levels."""
