@@ -92,7 +92,7 @@ clive/__private/cli/configure/working_account.py
 --------------------
 clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `generate_key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: AuthorityRoleEnum | None, role_option: AuthorityRoleEnum | None].
+    DOC103: Function `generate_key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: AuthorityLevel | None, role_option: AuthorityLevel | None].
     DOC101: Function `generate_random_key`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `generate_random_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [key_pairs: int, key_pairs_option: int | None].
 --------------------
