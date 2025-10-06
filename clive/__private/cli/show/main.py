@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from enum import Enum
-
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
@@ -15,12 +13,10 @@ from clive.__private.cli.show.pending import pending
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 from clive.__private.core.constants.data_retrieval import (
     ORDER_DIRECTION_DEFAULT,
-    ORDER_DIRECTIONS,
     PROPOSAL_ORDER_DEFAULT,
-    PROPOSAL_ORDERS,
     PROPOSAL_STATUS_DEFAULT,
-    PROPOSAL_STATUSES,
 )
+from clive.__private.core.types import OrderDirections, ProposalOrders, ProposalStatuses  # noqa: TC001
 
 show = CliveTyper(name="show", help="Show various data.")
 
@@ -94,18 +90,6 @@ async def show_transaction_status(
     ).run()
 
 
-# unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
-OrderDirectionsEnum = Enum(  # type: ignore[misc]
-    "OrderDirectionsEnum", {option: option for option in ORDER_DIRECTIONS}
-)
-ProposalOrdersEnum = Enum(  # type: ignore[misc]
-    "ProposalOrdersEnum", {option: option for option in PROPOSAL_ORDERS}
-)
-ProposalStatusesEnum = Enum(  # type: ignore[misc]
-    "ProposalStatusesEnum", {option: option for option in PROPOSAL_STATUSES}
-)
-
-
 @show.command(name="proxy")
 async def show_proxy(
     account_name: str = arguments.account_name,
@@ -170,15 +154,15 @@ proposals_page_no = modified_param(
 async def show_proposals(  # noqa: PLR0913
     account_name: str = arguments.account_name,
     account_name_option: str | None = argument_related_options.account_name,
-    order_by: ProposalOrdersEnum = typer.Option(
+    order_by: ProposalOrders = typer.Option(
         PROPOSAL_ORDER_DEFAULT,
         help="Proposals listing can be ordered by criteria.",
     ),
-    order_direction: OrderDirectionsEnum = typer.Option(
+    order_direction: OrderDirections = typer.Option(
         ORDER_DIRECTION_DEFAULT,
         help="Proposals listing direction.",
     ),
-    status: ProposalStatusesEnum = typer.Option(
+    status: ProposalStatuses = typer.Option(
         PROPOSAL_STATUS_DEFAULT,
         help="Proposals can be filtered by status.",
     ),
@@ -190,9 +174,9 @@ async def show_proposals(  # noqa: PLR0913
 
     await ShowProposals(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
-        order_by=order_by.value,
-        order_direction=order_direction.value,
-        status=status.value,
+        order_by=order_by,
+        order_direction=order_direction,
+        status=status,
         page_size=page_size,
         page_no=page_no,
     ).run()
