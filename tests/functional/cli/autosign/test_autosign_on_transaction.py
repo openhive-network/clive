@@ -14,7 +14,6 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.cli.checkers import (
-    assert_no_exit_code_error,
     assert_output_contains,
     assert_transaction_file_is_signed,
     assert_transaction_file_is_unsigned,
@@ -189,12 +188,11 @@ async def test_autosign_transaction_failure_due_to_multiple_keys_in_profile(
 async def test_default_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
     """Test omitting autosign when 'force-unsign' flag is passed and 'autosign' flag is not explicit set."""
     # ACT
-    result = cli_tester.process_transaction(
+    cli_tester.process_transaction(
         from_file=signed_transaction, force_unsign=True, broadcast=False, save_file=signed_transaction
     )
 
     # ASSERT
-    assert_no_exit_code_error(result)
     assert_transaction_file_is_unsigned(signed_transaction)
 
 

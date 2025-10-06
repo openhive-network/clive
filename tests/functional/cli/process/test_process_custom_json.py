@@ -57,16 +57,13 @@ async def test_authorize_posting(node: tt.RawNode, cli_tester: CLITester) -> Non
 
 
 async def test_authorize_multiple_posting(cli_tester: CLITester) -> None:
-    # ACT
-    result = cli_tester.process_custom_json(
+    # ACT & ASSERT
+    cli_tester.process_custom_json(
         broadcast=False,
         authorize=[WORKING_ACCOUNT_DATA.account.name, OTHER_ACCOUNT.name],
         id_=EXAMPLE_ID,
         json_=EXAMPLE_OBJECT,
     )
-
-    # ASSERT
-    checkers.assert_no_exit_code_error(result)
 
 
 async def test_authorize_active(node: tt.RawNode, cli_tester: CLITester) -> None:

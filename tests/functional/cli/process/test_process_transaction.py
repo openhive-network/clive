@@ -12,7 +12,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
 )
-from clive_local_tools.cli.checkers import assert_no_exit_code_error, assert_transaction_file_is_signed
+from clive_local_tools.cli.checkers import assert_transaction_file_is_signed
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
@@ -169,7 +169,7 @@ async def test_multisign_transaction(cli_tester: CLITester, tmp_path: Path) -> N
     multisigned_transaction = tmp_path / "multisig_trx.json"
 
     # ACT
-    result = cli_tester.process_transaction(
+    cli_tester.process_transaction(
         already_signed_mode="multisign",
         sign_with=ADDITIONAL_KEY_ALIAS_NAME,
         broadcast=False,
@@ -178,7 +178,6 @@ async def test_multisign_transaction(cli_tester: CLITester, tmp_path: Path) -> N
     )
 
     # ASSERT
-    assert_no_exit_code_error(result)
     assert_transaction_file_is_signed(multisigned_transaction, signatures_count=2)
 
 
@@ -190,7 +189,7 @@ async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path
     override_transaction = tmp_path / "override_trx.json"
 
     # ACT
-    result = cli_tester.process_transaction(
+    cli_tester.process_transaction(
         already_signed_mode="override",
         broadcast=False,
         sign_with=ADDITIONAL_KEY_ALIAS_NAME,
@@ -199,7 +198,6 @@ async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path
     )
 
     # ASSERT
-    assert_no_exit_code_error(result)
     assert_transaction_file_is_signed(override_transaction, signatures_count=1)
 
 

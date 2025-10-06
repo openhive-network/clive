@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.keys import PrivateKey
-from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_NAMES
 
 if TYPE_CHECKING:
@@ -25,11 +24,8 @@ BRAIN_WALLET_PHRASE_WORDS_COUNT: Final[int] = 16
     indirect=True,
 )
 async def test_command_is_working_in_environment(cli_tester_variant: CLITester) -> None:
-    # ACT
-    result = cli_tester_variant.generate_secret_phrase()
-
-    # ASSERT
-    assert_no_exit_code_error(result)
+    # ACT & ASSERT
+    cli_tester_variant.generate_secret_phrase()
 
 
 async def test_generate_secret_phrase_length(cli_tester_locked: CLITester) -> None:

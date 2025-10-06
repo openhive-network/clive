@@ -7,7 +7,6 @@ import pytest
 from clive.__private.cli.commands.configure.profile import CLIMultipleProfileVersionsError
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive_local_tools.cli.checkers import assert_no_exit_code_error
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.helpers import get_formatted_error_message
 from clive_local_tools.storage_migration import (
@@ -30,7 +29,6 @@ def _prepare_profile_files() -> None:
 async def test_show_profiles_includes_all_valid_versions(cli_tester_locked: CLITester) -> None:
     # ACT & ASSERT
     result = cli_tester_locked.show_profiles()
-    assert_no_exit_code_error(result)
     for profile_name in BLANK_PROFILES:
         assert profile_name in result.output, f"Profile {profile_name} should be listed"
 
