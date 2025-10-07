@@ -153,7 +153,7 @@ async def process_update_memo_key(  # noqa: PLR0913
 
 _new_account_name_argument = typer.Argument(
     None,
-    help=f"The name of the new profile. ({REQUIRED_AS_ARG_OR_OPTION})",
+    help=f"The name of the new account. ({REQUIRED_AS_ARG_OR_OPTION})",
 )
 
 
