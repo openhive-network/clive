@@ -139,8 +139,6 @@ async def test_save_to_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: P
 
     # ASSERT
     result = cli_tester.process_transaction(from_file=trx_path)
-
-    # ASSERT
     assert_transaction_in_blockchain(node, result)
 
 
