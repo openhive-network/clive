@@ -26,9 +26,6 @@ from clive.__private.cli.process.update_authority import get_update_authority_ty
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
 from clive.__private.core.constants.cli import (
-    DEFAULT_AUTHORITY_THRESHOLD,
-    DEFAULT_AUTHORITY_WEIGHT,
-    FOUR_PUBLIC_KEYS_METAVAR,
     REQUIRED_AS_ARG_OR_OPTION,
 )
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT, ALREADY_SIGNED_MODES
@@ -156,43 +153,44 @@ _new_account_name_argument = typer.Argument(
     help=f"The name of the new account. ({REQUIRED_AS_ARG_OR_OPTION})",
 )
 
+_owner = typer.Argument(
+    None,
+    parser=public_key,
+    help=f"Owner public key that will be set for account. ({REQUIRED_AS_ARG_OR_OPTION})",
+)
+
+_active = typer.Argument(
+    None,
+    parser=public_key,
+    help=f"Active public key that will be set for account. ({REQUIRED_AS_ARG_OR_OPTION})",
+)
+
+_posting = typer.Argument(
+    None,
+    parser=public_key,
+    help=f"Posting public key that will be set for account. ({REQUIRED_AS_ARG_OR_OPTION})",
+)
+
+_memo = typer.Argument(
+    None,
+    parser=public_key,
+    help=f"Memo public key that will be set for account. ({REQUIRED_AS_ARG_OR_OPTION})",
+)
+
 
 @process.command(name="account-creation")
 async def process_account_creation(  # noqa: PLR0913
     creator: str = modified_param(options.working_account_template, param_decls=("--creator",)),
     new_account_name: str | None = _new_account_name_argument,
     new_account_name_option: str | None = argument_related_options.new_account_name,
-    keys: list[str] | None = typer.Argument(
-        None,
-        parser=public_key,
-        help="Specify owner, active, posting and memo public keys, separated by space. Thresholds and weights"
-        f" have default values of {DEFAULT_AUTHORITY_THRESHOLD} and {DEFAULT_AUTHORITY_WEIGHT}.",
-        metavar=FOUR_PUBLIC_KEYS_METAVAR,
-    ),
-    owner_option: str | None = typer.Option(
-        None,
-        "--owner",
-        parser=public_key,
-        help="Owner public key that will be set for account.",
-    ),
-    active_option: str | None = typer.Option(
-        None,
-        "--active",
-        parser=public_key,
-        help="Active public key that will be set for account.",
-    ),
-    posting_option: str | None = typer.Option(
-        None,
-        "--posting",
-        parser=public_key,
-        help="Posting public key that will be set for account.",
-    ),
-    memo_option: str | None = typer.Option(
-        None,
-        "--memo",
-        parser=public_key,
-        help="Memo public key that will be set for account.",
-    ),
+    owner: str | None = _owner,
+    owner_option: str | None = argument_related_options.owner,
+    active: str | None = _active,
+    active_option: str | None = argument_related_options.active,
+    posting: str | None = _posting,
+    posting_option: str | None = argument_related_options.posting,
+    memo: str | None = _memo,
+    memo_option: str | None = argument_related_options.memo,
     fee: bool = typer.Option(  # noqa: FBT001
         default=False,
         help="If set to true then account creation fee will be paid, you can check it with command `clive show chain`."
@@ -212,6 +210,8 @@ async def process_account_creation(  # noqa: PLR0913
     """
     A simple account creation command that allows to create a new account with authority specified via 4 public keys.
 
+     Thresholds and weights have default values of 1 and 1.
+
     Example:
     1) positional
     clive process account-creation --fee <new-account-name> <owner-key> <active-key> <posting-key> <memo-key>
@@ -223,9 +223,10 @@ async def process_account_creation(  # noqa: PLR0913
     from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation  # noqa: PLC0415
     from clive.__private.core.keys.keys import PublicKey  # noqa: PLC0415
 
-    # Safely unpack up to four public keys (pad with None if missing)
-    public_keys = cast("list[PublicKey]", keys or [])
-    owner, active, posting, memo = (public_keys + [None] * 4)[:4]
+    owner_ = cast("PublicKey | None", owner)
+    active_ = cast("PublicKey | None", active)
+    posting_ = cast("PublicKey | None", posting)
+    memo_ = cast("PublicKey | None", memo)
 
     owner_option_ = cast("PublicKey | None", owner_option)
     active_option_ = cast("PublicKey | None", active_option)
@@ -243,9 +244,9 @@ async def process_account_creation(  # noqa: PLR0913
         autosign=autosign,
     )
     account_creation_command.set_keys(
-        EnsureSingleValue[PublicKey]("owner").of(owner, owner_option_),
-        EnsureSingleValue[PublicKey]("active").of(active, active_option_),
-        EnsureSingleValue[PublicKey]("posting").of(posting, posting_option_),
+        EnsureSingleValue[PublicKey]("owner").of(owner_, owner_option_),
+        EnsureSingleValue[PublicKey]("active").of(active_, active_option_),
+        EnsureSingleValue[PublicKey]("posting").of(posting_, posting_option_),
     )
-    account_creation_command.set_memo_key(EnsureSingleValue[PublicKey]("memo").of(memo, memo_option_))
+    account_creation_command.set_memo_key(EnsureSingleValue[PublicKey]("memo").of(memo_, memo_option_))
     await account_creation_command.run()

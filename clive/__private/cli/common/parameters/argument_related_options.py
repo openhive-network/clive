@@ -53,3 +53,11 @@ transaction_id = _make_argument_related_option("--transaction-id")
 chain_id = _make_argument_related_option("--chain-id")
 
 node_address = _make_argument_related_option("--node-address")
+
+owner = _make_argument_related_option("--owner")
+
+active = _make_argument_related_option("--active")
+
+posting = _make_argument_related_option("--posting")
+
+memo = _make_argument_related_option("--memo")
