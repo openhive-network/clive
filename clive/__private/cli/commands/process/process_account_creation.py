@@ -93,7 +93,7 @@ class ProcessAccountCreation(OperationCommand):
             print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
             self.profile.accounts.add_known_account(self.new_account_name)
 
-    def set_keys(self, owner: PublicKey, active: PublicKey, posting: PublicKey) -> None:
+    def set_keys(self, owner: PublicKey, active: PublicKey, posting: PublicKey, memo: PublicKey) -> None:
         for authority_type in ("owner", "active", "posting"):
             self._set_threshold(authority_type, DEFAULT_AUTHORITY_THRESHOLD)
             self._add_key_authority(
@@ -105,9 +105,7 @@ class ProcessAccountCreation(OperationCommand):
                 }[authority_type],
                 DEFAULT_AUTHORITY_WEIGHT,
             )
-
-    def set_memo_key(self, key: PublicKey) -> None:
-        self._memo_key = key
+        self._memo_key = memo
 
     @override
     async def validate(self) -> None:

@@ -247,6 +247,6 @@ async def process_account_creation(  # noqa: PLR0913
         EnsureSingleValue[PublicKey]("owner").of(owner_, owner_option_),
         EnsureSingleValue[PublicKey]("active").of(active_, active_option_),
         EnsureSingleValue[PublicKey]("posting").of(posting_, posting_option_),
+        EnsureSingleValue[PublicKey]("memo").of(memo_, memo_option_),
     )
-    account_creation_command.set_memo_key(EnsureSingleValue[PublicKey]("memo").of(memo_, memo_option_))
     await account_creation_command.run()
