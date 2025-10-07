@@ -12,11 +12,15 @@ from clive.__private.ui.dialogs.remove_key_alias_dialog import RemoveKeyAliasDia
 from clive.__private.ui.dialogs.save_transaction_to_file_dialog import SaveTransactionToFileDialog
 from clive.__private.ui.dialogs.switch_working_account_dialog import SwitchWorkingAccountDialog
 from clive.__private.ui.dialogs.witness_details_dialog import WitnessDetailsDialog
+from clive.__private.ui.dialogs.add_authority_entry_dialog import AddAuthorityEntryDialog
+from clive.__private.ui.dialogs.edit_authority_total_threshold_dialog import EditAuthorityTotalThresholdDialog
 
 __all__ = [
+    "AddAuthorityEntryDialog",
     "AddTrackedAccountDialog",
     "AlarmInfoDialog",
     "ConfirmInvalidateSignaturesDialog",
+    "EditAuthorityTotalThresholdDialog",
     "EditKeyAliasDialog",
     "LoadKeyFromFileDialog",
     "LoadTransactionFromFileDialog",

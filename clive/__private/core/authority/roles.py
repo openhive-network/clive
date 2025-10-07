@@ -18,7 +18,9 @@ from wax.complex_operations.role_classes.hive_authority.hive_role_memo_key impor
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import KeyManager
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.types import AuthorityLevel, AuthorityLevelMemo, AuthorityLevelRegular
+    from clive.__private.models.schemas import AccountName
 
 WaxRoleRegular = (
     HiveRoleAuthorityDefinition[Literal["owner"]]
@@ -54,6 +56,10 @@ class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](Autho
         return False
 
     @property
+    def changed(self) -> bool:
+        return self._role.changed
+
+    @property
     def ensure_memo(self) -> AuthorityEntryMemo:
         assert self.is_memo, "Invalid type of entry."
         return cast("AuthorityEntryMemo", self)
@@ -75,6 +81,9 @@ class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](Autho
         """
         return any(entry.is_matching_pattern(*patterns) for entry in self.get_entries())
 
+    def reset(self) -> None:
+        self._role.reset()
+
 
 class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
     def __init__(self, role: WaxRoleRegular) -> None:
@@ -91,6 +100,9 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
     @property
     def weight_threshold(self) -> int:
         return self._value.weight_threshold
+    
+    def has(self, account_or_key: PublicKey | AccountName, weight: int | None = None) -> bool:
+        return self.role.has(account_or_key, weight)
 
     def sum_weights_of_already_imported_keys(self, keys: KeyManager) -> int:
         """
@@ -104,6 +116,23 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
 
         """
         return self._value.sum_weights_of_already_imported_keys(keys)
+
+    def add(self, account_or_key: PublicKey | AccountName, weight: int) -> None:
+        self._role.add(account_or_key, weight)
+
+    def remove(self, account_or_key: PublicKey | AccountName) -> None:
+        self._role.remove(account_or_key)
+
+    def replace(
+        self,
+        account_or_key: PublicKey | AccountName,
+        weight: int,
+        new_account_or_key: PublicKey | AccountName | None = None,
+    ) -> None:
+        self._role.replace(account_or_key, weight, new_account_or_key)
+
+    def set_threshold(self, threshold: int) -> None:
+        self._role.set_threshold(threshold)
 
     def get_entries(self) -> list[AuthorityEntryKeyRegular | AuthorityEntryAccountRegular]:
         return self._value.get_entries()
@@ -131,6 +160,9 @@ class AuthorityRoleMemo(AuthorityRoleBase[AuthorityEntryMemo]):
     @property
     def is_memo(self) -> bool:
         return True
+
+    def set(self, public_key: PublicKey) -> None:
+        self._role.set(public_key)
 
     def get_entries(self) -> list[AuthorityEntryMemo]:
         return [self._value]

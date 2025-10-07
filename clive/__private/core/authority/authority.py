@@ -5,13 +5,17 @@ from typing import TYPE_CHECKING
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.authority.roles import AuthorityRoleMemo, AuthorityRoleRegular
 from clive.__private.core.str_utils import Matchable
+from clive.__private.core.types import AuthorityLevel
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from clive.__private.core.authority.entries import (
         AuthorityEntryAccountRegular,
         AuthorityEntryKeyRegular,
         AuthorityEntryMemo,
     )
+    from wax import IHiveChainInterface
     from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 
@@ -53,11 +57,24 @@ class Authority(AuthorityEntriesHolder, Matchable):
     @property
     def roles(self) -> list[AuthorityRoleRegular | AuthorityRoleMemo]:
         return [self.owner_role, self.active_role, self.posting_role, self.memo_role]
+    
+    def get_role_by_level(self, level: AuthorityLevel) -> AuthorityRoleRegular | AuthorityRoleMemo:
+        # TODO: CHECK IT
+        # return getattr(self._operation.roles, level)
+        return getattr(self, f"{level}_role")
+        
 
     def get_entries(
         self,
     ) -> list[AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo]:
         return [entry for role in self.roles for entry in role.get_entries()]
+
+    def finalize(self, api: IHiveChainInterface) -> Iterable[any]:
+        return self._operation.finalize(api)
+
+    def reset(self) -> None:
+        for role in self.roles:
+            role.reset()
 
     def is_matching_pattern(self, *patterns: str) -> bool:
         """
