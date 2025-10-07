@@ -22,7 +22,7 @@ working_account_template = typer.Argument(
 
 account_name = modified_param(working_account_template)
 
-profile_name = typer.Argument(..., help=f"The profile to use. ({REQUIRED_AS_ARG_OR_OPTION}")
+profile_name = typer.Argument(..., help=f"The profile to use. ({REQUIRED_AS_ARG_OR_OPTION})")
 
 owner_key = typer.Argument(
     None,
