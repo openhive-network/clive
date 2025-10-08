@@ -56,10 +56,10 @@ async def test_broadcasting_autosign_operation(
 
     # ACT
     result = cli_tester.process_transfer(
-        from_=WORKING_ACCOUNT_NAME,
+        from_=operation.from_,
         amount=operation.amount,
-        to=RECEIVER,
-        memo=MEMO,
+        to=operation.to,
+        memo=operation.memo,
     )
 
     # ASSERT
