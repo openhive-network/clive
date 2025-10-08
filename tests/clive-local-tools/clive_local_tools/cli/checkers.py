@@ -242,6 +242,14 @@ def assert_contains_transaction_loaded_message(message: str) -> None:
     assert_output_contains("Transaction was successfully loaded.", message)
 
 
-def assert_contains_transaction_saved_to_file_message(file: str | Path, message: str) -> None:
+def assert_contains_transaction_saved_to_file_message(file_path: str | Path, message: str) -> None:
     """This message is shown when transaction was saved to file."""
-    assert_output_contains(f"Transaction was saved to {file}", message)
+    prefix = "Transaction was saved to "
+    # First ensure that the expected prefix is in the message
+    assert_output_contains(prefix, message)
+
+    # Then ensure that the file path is in the message
+    _, _, rest = message.partition(prefix)
+    normalized = rest.replace("\n", "")
+
+    assert str(file_path) in normalized, f"Transaction was saved but looks like to a wrong file: {normalized}"
