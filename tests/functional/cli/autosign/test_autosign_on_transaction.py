@@ -208,9 +208,12 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_pr
     assert_contains_dry_run_message(result.stdout)
 
 
+@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
 async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
     cli_tester: CLITester,
     transaction_file_with_transfer: Path,
+    *,
+    broadcast: bool | None,
 ) -> None:
     """Test failure of autosigning when there are no keys in the profile."""
     # ARRANGE
@@ -219,12 +222,15 @@ async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
 
     # ACT $ ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLINoKeysAvailableError())):
-        cli_tester.process_transaction(from_file=transaction_file_with_transfer)
+        cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
 
 
+@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
 async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_profile(
     cli_tester: CLITester,
     transaction_file_with_transfer: Path,
+    *,
+    broadcast: bool | None,
 ) -> None:
     """Test failure of autosigning when there are multiple keys in the profile."""
     # ARRANGE
@@ -232,7 +238,7 @@ async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_pro
 
     # ACT $ ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transaction(from_file=transaction_file_with_transfer)
+        cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
 
 
 async def test_default_autosign_with_force_unsign(
