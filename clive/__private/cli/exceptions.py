@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
     from beekeepy.interfaces import HttpUrl
 
+    from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
 
 
@@ -389,6 +390,20 @@ class CLIPrivateKeyInvalidFormatError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLIKeyAliasNotFoundError(CLIPrettyError):
+    """
+    Raise when trying to use key alias that is not available.
+
+    Args:
+        key_alias: The alias of the key that is not available.
+    """
+
+    def __init__(self, key_alias: str | PublicKeyAliased) -> None:
+        alias = key_alias if isinstance(key_alias, str) else key_alias.alias
+        message = f"Given key alias '{alias}' is not available.\nUse `clive show keys` to list available aliases."
+        super().__init__(message, errno.ENOENT)
 
 
 class CLINoKeysAvailableError(CLIPrettyError):
