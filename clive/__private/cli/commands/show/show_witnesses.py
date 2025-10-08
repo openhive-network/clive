@@ -8,11 +8,11 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.table_pagination_info import add_pagination_info_to_table_if_needed
-from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_bool
+from clive.__private.si.core.show import ShowWitnesses as ShowWitnessesSi
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesData
+    from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 
 
 @dataclass(kw_only=True)
@@ -22,21 +22,9 @@ class ShowWitnesses(WorldBasedCommand):
     page_no: int
 
     async def _run(self) -> None:
-        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
-        proxy = accounts[0].proxy
-
-        wrapper = await self.world.commands.retrieve_witnesses_data(
-            account_name=proxy if proxy else self.account_name,
-            mode=WitnessesDataRetrieval.DEFAULT_MODE,
-            witness_name_pattern=None,
-            search_by_pattern_limit=WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT,
-        )
-        witnesses_data: WitnessesData = wrapper.result_or_raise
-        start_index: int = self.page_no * self.page_size
-        end_index: int = start_index + self.page_size
-        witnesses_list: list[WitnessData] = list(witnesses_data.witnesses.values())
-        witnesses_chunk: list[WitnessData] = witnesses_list[start_index:end_index]
-
+        witnesses_list_len, proxy, witnesses_chunk = await ShowWitnessesSi(
+            world=self.world, account_name=self.account_name, page_size=self.page_size, page_no=self.page_no
+        ).get_witness_chunk()
         proxy_name_message = f"`{self.account_name}`"
         if proxy:
             proxy_name_message += f" (proxy set to `{proxy}`)"
@@ -67,7 +55,7 @@ class ShowWitnesses(WorldBasedCommand):
             )
 
         add_pagination_info_to_table_if_needed(
-            table=table, page_no=self.page_no, page_size=self.page_size, all_entries=len(witnesses_list)
+            table=table, page_no=self.page_no, page_size=self.page_size, all_entries=witnesses_list_len
         )
 
         print_cli(table)
