@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import contextlib
+import importlib
+import sys
+import typing
+from typing import TYPE_CHECKING
+
 import pytest
 from textual import __name__ as textual_package_name
 
@@ -7,6 +13,10 @@ import clive.__private.models.schemas as schemas_models_module
 from clive.__private.ui import __name__ as ui_package_name
 from clive_local_tools.cli.imports import get_cli_help_imports_tree
 from wax import __name__ as wax_package_name
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from types import ModuleType
 
 
 @pytest.mark.parametrize(("package_name"), [ui_package_name, textual_package_name, wax_package_name])
@@ -42,4 +52,29 @@ def test_all_schemas_models_exports_are_importable() -> None:
     # ASSERT
     assert not missing, (
         f"The following names from __all__ are missing (failed to resolve) in {module.__name__}: {missing}"
+    )
+
+
+@contextlib.contextmanager
+def reload_module_in_type_checking_mode(module_name: str) -> Iterator[ModuleType]:
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(typing, "TYPE_CHECKING", True)
+        del sys.modules[module_name]
+        reloaded = importlib.reload(importlib.import_module(module_name))
+        yield reloaded
+        monkeypatch.setattr(typing, "TYPE_CHECKING", False)
+        del sys.modules[module_name]
+        importlib.reload(importlib.import_module(module_name))
+
+
+@pytest.mark.parametrize(("name"), schemas_models_module.__all__)
+def test_schemas_imports_runtime_match_type_checking(name: str) -> None:
+    # ACT
+    object_runtime = getattr(schemas_models_module, name)
+    with reload_module_in_type_checking_mode(schemas_models_module.__name__) as reloaded:
+        object_type = getattr(reloaded, name)
+
+    # ASSERT
+    assert object_runtime == object_type, (
+        f"Runtime `{object_runtime}` and type checking `{object_type}` objects do not match"
     )
