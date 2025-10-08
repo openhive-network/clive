@@ -11,7 +11,7 @@ from clive.__private.core.formatters.humanize import humanize_bool
 class ShowProfile(ShowAccounts):
     async def _run(self) -> None:
         self._show_profile_info()
-        self._show_accounts_info()
+        await self._show_accounts_info()
 
     def _show_profile_info(self) -> None:
         profile = self.profile
