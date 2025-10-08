@@ -64,7 +64,10 @@ async def test_broadcasting_autosign_operation(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_negative_autosign_failure_due_to_no_keys_in_profile(cli_tester: CLITester) -> None:
+@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
+async def test_negative_autosign_failure_due_to_no_keys_in_profile(
+    cli_tester: CLITester, *, broadcast: bool | None
+) -> None:
     """Test autosigning failure when there are no keys available and try to send operation."""
     # ARRANGE
     for alias in cli_tester.world.profile.keys.get_all_aliases():
@@ -77,10 +80,14 @@ async def test_negative_autosign_failure_due_to_no_keys_in_profile(cli_tester: C
             amount=tt.Asset.Hive(1),
             to=RECEIVER,
             memo=MEMO,
+            broadcast=broadcast,
         )
 
 
-async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(cli_tester: CLITester) -> None:
+@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
+async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(
+    cli_tester: CLITester, *, broadcast: bool | None
+) -> None:
     """Test autosigning failure when there are multiple keys available and try to send operation."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
@@ -88,10 +95,7 @@ async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(cli_tes
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
         cli_tester.process_transfer(
-            from_=WORKING_ACCOUNT_NAME,
-            amount=tt.Asset.Hive(1),
-            to=RECEIVER,
-            memo=MEMO,
+            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, memo=MEMO, broadcast=broadcast
         )
 
 
