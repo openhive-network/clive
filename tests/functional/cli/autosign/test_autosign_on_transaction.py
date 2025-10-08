@@ -159,7 +159,7 @@ async def test_autosign_is_skipped_with_warning(  # noqa: PLR0913
         assert_contains_transaction_saved_to_file_message(save_transaction, result.stdout)
 
 
-async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
+async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
     cli_tester: CLITester,
     signed_transaction: Path,
 ) -> None:
@@ -182,7 +182,7 @@ async def test_autosign_already_signed_transaction_with_no_keys_in_profile(
     assert_contains_dry_run_message(result.stdout)
 
 
-async def test_autosign_already_signed_transaction_with_multiple_keys_in_profile(
+async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_profile(
     cli_tester: CLITester,
     signed_transaction: Path,
 ) -> None:
