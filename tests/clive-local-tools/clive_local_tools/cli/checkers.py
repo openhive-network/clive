@@ -228,20 +228,20 @@ def assert_contains_dry_run_message(message: str) -> None:
 
 
 def assert_contains_transaction_created_message(message: str) -> None:
-    # This message is shown when operations has been created, but not broadcasted.
+    """This message is shown when transaction has been created, but not broadcasted and not loaded from a file."""
     assert_output_contains("Transaction was successfully created.", message)
 
 
 def assert_contains_transaction_broadcasted_message(message: str) -> None:
-    # This message is shown when transaction or/and operation was broadcasted.
+    """This message is shown when transaction was broadcasted."""
     assert_output_contains("Transaction was successfully broadcasted.", message)
 
 
 def assert_contains_transaction_loaded_message(message: str) -> None:
-    # This message is shown when transaction was loaded from file, and not broadcasted.
+    """This message is shown when transaction was loaded from file, but not broadcasted."""
     assert_output_contains("Transaction was successfully loaded.", message)
 
 
 def assert_contains_transaction_saved_to_file_message(file: str | Path, message: str) -> None:
-    # This message is shown when transaction was saved to file.
+    """This message is shown when transaction was saved to file."""
     assert_output_contains(f"Transaction was saved to {file}", message)
