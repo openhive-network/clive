@@ -26,7 +26,7 @@ KNOWN_EXCHANGE_NAME: Final[str] = KNOWN_EXCHANGES_NAMES[0]
 
 
 @pytest.fixture
-def transaction_with_forceable_operation_path(tmp_path: Path) -> Path:
+def transaction_file_with_forceable_operations() -> Path:
     operations = [
         TransferToSavingsOperation(
             from_=WORKING_ACCOUNT_NAME,
@@ -42,7 +42,7 @@ def transaction_with_forceable_operation_path(tmp_path: Path) -> Path:
             request_id=1,  # there is already one withdrawal pending in the block log
         ),
     ]
-    return create_transaction_file(tmp_path, operations)
+    return create_transaction_file(operations, "forceable_operations")
 
 
 def _assert_operation_to_exchange(send_operation_cb: Callable[[], None], *, force: bool) -> None:
@@ -60,12 +60,12 @@ def _assert_operation_to_exchange(send_operation_cb: Callable[[], None], *, forc
 
 @pytest.mark.parametrize("force", [True, False])
 async def test_loading_transaction(
-    cli_tester: CLITester, transaction_with_forceable_operation_path: Path, *, force: bool
+    cli_tester: CLITester, transaction_file_with_forceable_operations: Path, *, force: bool
 ) -> None:
     # ARRANGE
     def send_operation() -> None:
         cli_tester.process_transaction(
-            from_file=transaction_with_forceable_operation_path,
+            from_file=transaction_file_with_forceable_operations,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
             force=force,
         )
