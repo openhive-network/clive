@@ -46,29 +46,27 @@ def _assert_operation_error(operation_cb: Callable[[], None], expected_message: 
 
 
 @pytest.fixture
-def transaction_with_memoless_transfer_path(tmp_path: Path) -> Path:
-    operations = [
-        TransferOperation(
-            from_=WORKING_ACCOUNT_NAME,
-            to=KNOWN_EXCHANGE_NAME,
-            amount=tt.Asset.Hive(1000),
-            memo=EMPTY_MEMO_MSG,
-        )
-    ]
-    return create_transaction_file(tmp_path, operations)
+def transaction_file_with_memoless_transfer() -> Path:
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=KNOWN_EXCHANGE_NAME,
+        amount=tt.Asset.Hive(1000),
+        memo=EMPTY_MEMO_MSG,
+    )
+
+    return create_transaction_file(operation, "memoless_transfer")
 
 
 @pytest.fixture
-def transaction_with_hbd_transfer_path(tmp_path: Path) -> Path:
-    operations = [
-        TransferOperation(
-            from_=WORKING_ACCOUNT_NAME,
-            to=KNOWN_EXCHANGE_NAME,
-            amount=tt.Asset.Hbd(1000),
-            memo="HBD transfer to exchange",
-        )
-    ]
-    return create_transaction_file(tmp_path, operations)
+def transaction_file_with_hbd_transfer() -> Path:
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=KNOWN_EXCHANGE_NAME,
+        amount=tt.Asset.Hbd(1000),
+        memo="HBD transfer to exchange",
+    )
+
+    return create_transaction_file(operation, "hbd_transfer")
 
 
 @pytest.mark.parametrize("amount", [tt.Asset.Hive(10), tt.Asset.Hbd(10)])
@@ -97,7 +95,7 @@ async def test_validate_memoless_transfer_to_exchange(
 
 async def test_validate_performing_transaction_with_memoless_transfer_to_exchange(
     cli_tester: CLITester,
-    transaction_with_memoless_transfer_path: Path,
+    transaction_file_with_memoless_transfer: Path,
 ) -> None:
     """
     Verify performing transaction memoless transfer to exchange.
@@ -109,7 +107,7 @@ async def test_validate_performing_transaction_with_memoless_transfer_to_exchang
     # ARRANGE
     def operation() -> None:
         cli_tester.process_transaction(
-            from_file=transaction_with_memoless_transfer_path,
+            from_file=transaction_file_with_memoless_transfer,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 
@@ -119,7 +117,7 @@ async def test_validate_performing_transaction_with_memoless_transfer_to_exchang
 
 async def test_validate_performing_transaction_with_hbd_transfer_to_exchange(
     cli_tester: CLITester,
-    transaction_with_hbd_transfer_path: Path,
+    transaction_file_with_hbd_transfer: Path,
 ) -> None:
     """
     Verify performing transaction hbd transfer to exchange.
@@ -131,7 +129,7 @@ async def test_validate_performing_transaction_with_hbd_transfer_to_exchange(
     # ARRANGE
     def operation() -> None:
         cli_tester.process_transaction(
-            from_file=transaction_with_hbd_transfer_path,
+            from_file=transaction_file_with_hbd_transfer,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 

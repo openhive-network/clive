@@ -4,6 +4,7 @@ import re
 from typing import TYPE_CHECKING
 
 import pytest
+import test_tools as tt
 from rich.panel import Panel
 from typer import rich_utils
 
@@ -53,9 +54,16 @@ def get_formatted_error_message(error: ClickException, *, escape: bool = True) -
     return capture.get()
 
 
-def create_transaction_file(path: Path, content: TransactionConvertibleType) -> Path:
-    transaction_path = path / "trx.json"
+def create_transaction_filepath(identifier: str = "") -> Path:
+    directory = tt.context.get_current_directory()
+    identifier_postfix = f"_{identifier}" if identifier else ""
+    file_name = f"transaction{identifier_postfix}.json"
+    return directory / file_name
+
+
+def create_transaction_file(content: TransactionConvertibleType, identifier: str = "") -> Path:
+    transaction_filepath = create_transaction_filepath(identifier)
     transaction = ensure_transaction(content)
-    transaction_serialized = transaction.json()
-    transaction_path.write_text(transaction_serialized)
-    return transaction_path
+    transaction_serialized = transaction.json(indent=4)
+    transaction_filepath.write_text(transaction_serialized)
+    return transaction_filepath

@@ -12,11 +12,10 @@ from clive_local_tools.cli.checkers import (
     assert_weight_threshold,
 )
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.helpers import create_transaction_filepath
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import test_tools as tt
 
     from clive.__private.core.types import AuthorityLevelRegular
@@ -85,11 +84,9 @@ async def test_sign_after_chaining(cli_tester: CLITester, authority: AuthorityLe
 
 
 @pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
-async def test_save_file_before_chaining(
-    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
-) -> None:
+async def test_save_file_before_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ARRANGE
-    file_path = tmp_path / f"trx_update_{authority}_authority.json"
+    transaction_filepath = create_transaction_filepath()
 
     # ACT
     cli_tester.process_update_authority(
@@ -99,7 +96,7 @@ async def test_save_file_before_chaining(
     ).add_key(
         key=OTHER_ACCOUNT.public_key,
         weight=WEIGHT,
-        save_file=file_path,
+        save_file=transaction_filepath,
     ).add_account(
         account=OTHER_ACCOUNT.name,
         weight=WEIGHT,
@@ -110,18 +107,16 @@ async def test_save_file_before_chaining(
     ).fire()
 
     # ASSERT
-    assert file_path.exists(), f"file {file_path} with transaction should be created"
+    assert transaction_filepath.exists(), f"file {transaction_filepath} with transaction should be created"
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
 
 @pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
-async def test_save_file_option_after_chaining(
-    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
-) -> None:
+async def test_save_file_option_after_chaining(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ARRANGE
-    file_path = tmp_path / f"trx_update_{authority}_authority.json"
+    transaction_filepath = create_transaction_filepath()
 
     # ACT
     cli_tester.process_update_authority(
@@ -138,11 +133,11 @@ async def test_save_file_option_after_chaining(
         key=WORKING_ACCOUNT_DATA.account.public_key,
         weight=MODIFIED_WEIGHT,
         broadcast=False,
-        save_file=file_path,
+        save_file=transaction_filepath,
     ).fire()
 
     # ASSERT
-    assert file_path.exists(), f"file {file_path} with transaction should be created"
+    assert transaction_filepath.exists(), f"file {transaction_filepath} with transaction should be created"
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
@@ -225,17 +220,15 @@ async def test_sign_option_multiple_times(cli_tester: CLITester, authority: Auth
 
 
 @pytest.mark.parametrize("authority", AUTHORITY_LEVELS_REGULAR)
-async def test_save_file_option_multiple_times(
-    cli_tester: CLITester, authority: AuthorityLevelRegular, tmp_path: Path
-) -> None:
+async def test_save_file_option_multiple_times(cli_tester: CLITester, authority: AuthorityLevelRegular) -> None:
     # ARRANGE
-    first_file_path = tmp_path / "notcreated.json"
-    second_file_path = tmp_path / f"trx_update_{authority}_authority.json"
+    not_created_transaction_filepath = create_transaction_filepath("not_created")
+    created_transaction_filepath = create_transaction_filepath("created")
 
     # ACT
     cli_tester.process_update_authority(
         authority,
-        save_file=first_file_path,
+        save_file=not_created_transaction_filepath,
         threshold=WEIGHT_THRESHOLD,
     ).add_key(
         key=OTHER_ACCOUNT.public_key,
@@ -247,12 +240,16 @@ async def test_save_file_option_multiple_times(
     ).modify_key(
         key=WORKING_ACCOUNT_DATA.account.public_key,
         weight=MODIFIED_WEIGHT,
-        save_file=second_file_path,
+        save_file=created_transaction_filepath,
     ).fire()
 
     # ASSERT
-    assert not first_file_path.exists(), f"file {first_file_path} with transaction should not be created"
-    assert second_file_path.exists(), f"file {second_file_path} with transaction should be created"
+    assert not not_created_transaction_filepath.exists(), (
+        f"file {not_created_transaction_filepath} with transaction should not be created"
+    )
+    assert created_transaction_filepath.exists(), (
+        f"file {created_transaction_filepath} with transaction should be created"
+    )
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)

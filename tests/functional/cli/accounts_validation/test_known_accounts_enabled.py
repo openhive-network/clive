@@ -171,23 +171,24 @@ async def test_validation_of_creating_scheduled_transfer(
 
 
 @pytest.fixture
-def transaction_path(tmp_path: Path, receiver: str) -> Path:
-    operations = [
-        TransferOperation(
-            from_=WORKING_ACCOUNT_NAME,
-            to=receiver,
-            amount=tt.Asset.Hive(10),
-            memo="known account test",
-        )
-    ]
-    return create_transaction_file(tmp_path, operations)
+def transaction_file_with_transfer(receiver: str) -> Path:
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=receiver,
+        amount=tt.Asset.Hive(10),
+        memo="known account test",
+    )
+
+    return create_transaction_file(operation, "transfer")
 
 
 @pytest.mark.parametrize("receiver", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
-async def test_loading_transaction(cli_tester: CLITester, receiver: str, transaction_path: Path) -> None:
+async def test_loading_transaction(cli_tester: CLITester, receiver: str, transaction_file_with_transfer: Path) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_transaction(from_file=transaction_path, sign_with=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False)
+        cli_tester.process_transaction(
+            from_file=transaction_file_with_transfer, sign_with=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False
+        )
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, receiver)

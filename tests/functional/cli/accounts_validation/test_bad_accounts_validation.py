@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import json
 from contextlib import contextmanager
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
@@ -12,11 +10,13 @@ from clive.__private.cli.exceptions import CLITransactionBadAccountError
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message
+from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
+from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator
+    from pathlib import Path
 
     from clive_local_tools.cli.cli_tester import CLITester
 
@@ -29,29 +29,15 @@ EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE = get_formatted_error_message(CLITransactionB
 
 
 @pytest.fixture
-def transaction_with_bad_account_path(tmp_path: Path) -> Path:
-    transaction_with_bad_account_path = tmp_path / "trx.json"
-    transaction_with_bad_account = {
-        "ref_block_num": 601,
-        "ref_block_prefix": 2633350841,
-        "expiration": "2025-02-05T10:29:33",
-        "extensions": [],
-        "operations": [
-            {
-                "type": "transfer_operation",
-                "value": {
-                    "from": WORKING_ACCOUNT_NAME,
-                    "to": BAD_ACCOUNT,
-                    "amount": {"amount": "1000", "precision": 3, "nai": "@@000000021"},
-                    "memo": "bad account test",
-                },
-            }
-        ],
-    }
+def transaction_file_with_bad_account() -> Path:
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=BAD_ACCOUNT,
+        amount=tt.Asset.Hive(1),
+        memo="bad account test",
+    )
 
-    with Path(transaction_with_bad_account_path).open("w") as f:
-        json.dump(transaction_with_bad_account, f)
-    return transaction_with_bad_account_path
+    return create_transaction_file(operation, "with_bad_account")
 
 
 @contextmanager
@@ -197,11 +183,11 @@ async def test_validation_of_creating_scheduled_transfer(
     _assert_validation_of_bad_accounts(perform_operation)
 
 
-async def test_loading_transaction(cli_tester: CLITester, transaction_with_bad_account_path: Path) -> None:
+async def test_loading_transaction(cli_tester: CLITester, transaction_file_with_bad_account: Path) -> None:
     # ARRANGE
     def perform_operation() -> None:
         cli_tester.process_transaction(
-            from_file=transaction_with_bad_account_path, sign_with=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False
+            from_file=transaction_file_with_bad_account, sign_with=WORKING_ACCOUNT_KEY_ALIAS, broadcast=False
         )
 
     # ACT & ASSERT

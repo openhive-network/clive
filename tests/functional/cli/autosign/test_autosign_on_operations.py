@@ -24,12 +24,10 @@ from clive_local_tools.cli.checkers import (
 )
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message
+from clive_local_tools.helpers import create_transaction_filepath, get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from clive_local_tools.cli.cli_tester import CLITester
 
 import test_tools as tt
@@ -117,15 +115,10 @@ async def test_negative_usage_of_autosign_with_sign_with(cli_tester: CLITester) 
 @pytest.mark.parametrize(
     "autosign", [False, None, True], ids=["autosign disabled", "autosign by default", "autosign explicit"]
 )
-async def test_saving_autosigned_operation_to_file(
-    cli_tester: CLITester,
-    tmp_path: Path,
-    *,
-    autosign: bool,
-) -> None:
+async def test_saving_autosigned_operation_to_file(cli_tester: CLITester, *, autosign: bool) -> None:
     """Test the effect of explicitly passing the 'autosign/no-autosign' flag when saving an operation to a file."""
     # ARRANGE
-    save_file_path = tmp_path / "saved_transaction.txt"
+    transaction_filepath = create_transaction_filepath()
 
     # ACT
     result = cli_tester.process_transfer(
@@ -133,19 +126,19 @@ async def test_saving_autosigned_operation_to_file(
         amount=tt.Asset.Hive(1),
         to=RECEIVER,
         memo=MEMO,
-        save_file=save_file_path,
+        save_file=transaction_filepath,
         broadcast=False,
         autosign=autosign,
     )
 
     # ASSERT
     if autosign in [True, None]:
-        assert_transaction_file_is_signed(save_file_path)
+        assert_transaction_file_is_signed(transaction_filepath)
     else:
-        assert_transaction_file_is_unsigned(save_file_path)
+        assert_transaction_file_is_unsigned(transaction_filepath)
     assert_contains_dry_run_message(result.stdout)
     assert_contains_transaction_created_message(result.stdout)
-    assert_contains_transaction_saved_to_file_message(save_file_path, result.stdout)
+    assert_contains_transaction_saved_to_file_message(transaction_filepath, result.stdout)
 
 
 async def test_dry_run_of_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester) -> None:
@@ -229,14 +222,15 @@ async def test_negative_dry_run_of_autosigned_operation_on_profile_with_multiple
         )
 
 
-async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester, tmp_path: Path) -> None:
+async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester) -> None:
     """
     Test saving transaction to the file.
 
     We should be able to save not autosigned transaction when there are no keys.
     """
     # ARRANGE
-    saved_transaction_path = tmp_path / "saved_transaction.txt"
+    transaction_filepath = create_transaction_filepath()
+
     aliases = cli_tester.world.profile.keys.get_all_aliases()
     for alias in aliases:
         cli_tester.configure_key_remove(alias=alias)
@@ -248,25 +242,22 @@ async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_teste
         to=RECEIVER,
         autosign=False,
         broadcast=False,
-        save_file=saved_transaction_path,
+        save_file=transaction_filepath,
     )
 
     # ASSERT
-    assert_transaction_file_is_unsigned(saved_transaction_path)
-    assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)
+    assert_transaction_file_is_unsigned(transaction_filepath)
+    assert_contains_transaction_saved_to_file_message(transaction_filepath, result.stdout)
 
 
-async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
-    cli_tester: CLITester,
-    tmp_path: Path,
-) -> None:
+async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(cli_tester: CLITester) -> None:
     """
     Test saving transaction to the file.
 
     We should be able to save not autosigned transaction when there are multiple keys.
     """
     # ARRANGE
-    saved_transaction_path = tmp_path / "saved_transaction.txt"
+    transaction_filepath = create_transaction_filepath()
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
     # ACT
@@ -276,12 +267,12 @@ async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
         to=RECEIVER,
         autosign=False,
         broadcast=False,
-        save_file=saved_transaction_path,
+        save_file=transaction_filepath,
     )
 
     # ASSERT
-    assert_transaction_file_is_unsigned(saved_transaction_path)
-    assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)
+    assert_transaction_file_is_unsigned(transaction_filepath)
+    assert_contains_transaction_saved_to_file_message(transaction_filepath, result.stdout)
 
 
 async def test_negative_sign_with_takes_precedence_over_autosign(cli_tester: CLITester) -> None:

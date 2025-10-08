@@ -15,11 +15,10 @@ from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
 )
+from clive_local_tools.helpers import create_transaction_filepath
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import test_tools as tt
 
     from clive.__private.core.types import AuthorityLevel
@@ -121,9 +120,9 @@ async def test_account_creation_with_token(node: tt.RawNode, cli_tester: CLITest
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_save_to_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: Path) -> None:
+async def test_save_to_file(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
-    trx_path = tmp_path / "account_creation.json"
+    transaction_filepath = create_transaction_filepath()
 
     # ACT
     cli_tester.process_account_creation(
@@ -134,11 +133,11 @@ async def test_save_to_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: P
         memo=MEMO_KEY,
         fee=True,
         broadcast=False,
-        save_file=trx_path,
+        save_file=transaction_filepath,
     )
 
     # ASSERT
-    result = cli_tester.process_transaction(from_file=trx_path)
+    result = cli_tester.process_transaction(from_file=transaction_filepath)
     assert_transaction_in_blockchain(node, result)
 
 

@@ -24,7 +24,7 @@ from clive_local_tools.cli.checkers import (
 )
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
+from clive_local_tools.helpers import create_transaction_file, create_transaction_filepath, get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
@@ -47,58 +47,62 @@ WORKING_ACCOUNT_KEY_VALUE: str = WORKING_ACCOUNT_DATA.account.private_key
 
 
 @pytest.fixture
-def transaction_path(tmp_path: Path) -> Path:
-    operations = [
-        TransferOperation(
-            from_=WORKING_ACCOUNT_NAME,
-            to=TO_ACCOUNT,
-            amount=tt.Asset.Hive(10),
-            memo="known account test",
-        )
-    ]
-    return create_transaction_file(tmp_path, operations)
+def transaction_file_with_transfer() -> Path:
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=TO_ACCOUNT,
+        amount=tt.Asset.Hive(10),
+        memo="known account test",
+    )
+
+    return create_transaction_file(operation, "with_transfer")
 
 
 @pytest.fixture
-def signed_transaction(cli_tester: CLITester, transaction_path: Path, tmp_path: Path) -> Path:
-    signed_transaction = tmp_path / "signed_transaction.json"
-    cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction, broadcast=False)
-    return signed_transaction
+def signed_transaction_file_with_transfer(cli_tester: CLITester, transaction_file_with_transfer: Path) -> Path:
+    transaction_file_path = create_transaction_filepath("signed_with_transfer")
+    cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=transaction_file_path, broadcast=False
+    )
+    return transaction_file_path
 
 
 def assert_auto_sign_skipped_warning_message_in_output(output: str) -> None:
     assert_output_contains(AUTO_SIGN_SKIPPED_WARNING_MESSAGE, output)
 
 
-async def test_autosign_transaction(cli_tester: CLITester, transaction_path: Path, tmp_path: Path) -> None:
+async def test_autosign_transaction(cli_tester: CLITester, transaction_file_with_transfer: Path) -> None:
     """Test autosigning transaction."""
     # ARRANGE
-    signed_transaction = tmp_path / "signed_transaction.json"
+    signed_transaction_filepath = create_transaction_filepath("signed")
 
     # ACT
-    result = cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
+    result = cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=signed_transaction_filepath
+    )
 
     # ASSERT
-    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
-    assert_transaction_file_is_signed(signed_transaction)
+    assert_contains_transaction_saved_to_file_message(signed_transaction_filepath, result.stdout)
+    assert_transaction_file_is_signed(signed_transaction_filepath)
 
 
 async def test_autosign_transaction_with_different_aliases_to_the_same_key(
     cli_tester: CLITester,
-    transaction_path: Path,
-    tmp_path: Path,
+    transaction_file_with_transfer: Path,
 ) -> None:
     """Test autosigning transaction when there are different aliases to the same key in the profile."""
     # ARRANGE
-    signed_transaction = tmp_path / "signed_transaction.json"
+    signed_transaction_filepath = create_transaction_filepath("signed")
     cli_tester.configure_key_add(key=WORKING_ACCOUNT_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
     # ACT
-    result = cli_tester.process_transaction(from_file=transaction_path, save_file=signed_transaction)
+    result = cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=signed_transaction_filepath
+    )
 
     # ASSERT
-    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
-    assert_transaction_file_is_signed(signed_transaction)
+    assert_contains_transaction_saved_to_file_message(signed_transaction_filepath, result.stdout)
+    assert_transaction_file_is_signed(signed_transaction_filepath)
 
 
 # If there will be other tests with various combinations of broadcast, save_to_file and autosign
@@ -127,10 +131,9 @@ async def test_autosign_transaction_with_different_aliases_to_the_same_key(
         "show",
     ],
 )
-async def test_autosign_is_skipped_with_warning(  # noqa: PLR0913
+async def test_autosign_is_skipped_with_warning(
     cli_tester: CLITester,
-    signed_transaction: Path,
-    tmp_path: Path,
+    signed_transaction_file_with_transfer: Path,
     *,
     broadcast: bool,
     save_to_file: bool,
@@ -142,11 +145,14 @@ async def test_autosign_is_skipped_with_warning(  # noqa: PLR0913
     We should only display warning info about skipping autosigning.
     """
     # ARRANGE
-    save_transaction = tmp_path / "saved_transaction.json" if save_to_file else None
+    resaved_transaction_filepath = create_transaction_filepath("resaved") if save_to_file else None
 
     # ACT
     result = cli_tester.process_transaction(
-        from_file=signed_transaction, broadcast=broadcast, save_file=save_transaction, autosign=autosign
+        from_file=signed_transaction_file_with_transfer,
+        broadcast=broadcast,
+        save_file=resaved_transaction_filepath,
+        autosign=autosign,
     )
 
     # ASSERT
@@ -155,13 +161,13 @@ async def test_autosign_is_skipped_with_warning(  # noqa: PLR0913
         assert_contains_transaction_loaded_message(result.stdout)
     else:
         assert_contains_transaction_broadcasted_message(result.stdout)
-    if save_transaction:
-        assert_contains_transaction_saved_to_file_message(save_transaction, result.stdout)
+    if resaved_transaction_filepath:
+        assert_contains_transaction_saved_to_file_message(resaved_transaction_filepath, result.stdout)
 
 
 async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
     cli_tester: CLITester,
-    signed_transaction: Path,
+    signed_transaction_file_with_transfer: Path,
 ) -> None:
     """
     Test skipping autosigning an already signed transaction.
@@ -173,7 +179,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
         cli_tester.configure_key_remove(alias=alias)
 
     # ACT
-    result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
+    result = cli_tester.process_transaction(from_file=signed_transaction_file_with_transfer, broadcast=False)
 
     # ASSERT
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
@@ -183,7 +189,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
 
 async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_profile(
     cli_tester: CLITester,
-    signed_transaction: Path,
+    signed_transaction_file_with_transfer: Path,
 ) -> None:
     """
     Test skipping autosigning an already signed transaction.
@@ -194,7 +200,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_pr
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
     # ACT
-    result = cli_tester.process_transaction(from_file=signed_transaction, broadcast=False)
+    result = cli_tester.process_transaction(from_file=signed_transaction_file_with_transfer, broadcast=False)
 
     # ASSERT
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
@@ -204,7 +210,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_pr
 
 async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
     cli_tester: CLITester,
-    transaction_path: Path,
+    transaction_file_with_transfer: Path,
 ) -> None:
     """Test failure of autosigning when there are no keys in the profile."""
     # ARRANGE
@@ -213,12 +219,12 @@ async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
 
     # ACT $ ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLINoKeysAvailableError())):
-        cli_tester.process_transaction(from_file=transaction_path)
+        cli_tester.process_transaction(from_file=transaction_file_with_transfer)
 
 
 async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_profile(
     cli_tester: CLITester,
-    transaction_path: Path,
+    transaction_file_with_transfer: Path,
 ) -> None:
     """Test failure of autosigning when there are multiple keys in the profile."""
     # ARRANGE
@@ -226,23 +232,30 @@ async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_pro
 
     # ACT $ ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transaction(from_file=transaction_path)
+        cli_tester.process_transaction(from_file=transaction_file_with_transfer)
 
 
-async def test_default_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
+async def test_default_autosign_with_force_unsign(
+    cli_tester: CLITester, signed_transaction_file_with_transfer: Path
+) -> None:
     """Test omitting autosign when 'force-unsign' flag is passed and 'autosign' flag is not explicit set."""
     # ACT
     result = cli_tester.process_transaction(
-        from_file=signed_transaction, force_unsign=True, broadcast=False, save_file=signed_transaction
+        from_file=signed_transaction_file_with_transfer,
+        force_unsign=True,
+        broadcast=False,
+        save_file=signed_transaction_file_with_transfer,
     )
 
     # ASSERT
     assert_contains_transaction_loaded_message(result.stdout)
-    assert_contains_transaction_saved_to_file_message(signed_transaction, result.stdout)
-    assert_transaction_file_is_unsigned(signed_transaction)
+    assert_contains_transaction_saved_to_file_message(signed_transaction_file_with_transfer, result.stdout)
+    assert_transaction_file_is_unsigned(signed_transaction_file_with_transfer)
 
 
-async def test_negative_explicit_autosign_with_force_unsign(cli_tester: CLITester, signed_transaction: Path) -> None:
+async def test_negative_explicit_autosign_with_force_unsign(
+    cli_tester: CLITester, signed_transaction_file_with_transfer: Path
+) -> None:
     """Test error when passing 'autosign' with 'force-unsign' flags."""
     # ACT & ASSERT
 
@@ -251,21 +264,23 @@ async def test_negative_explicit_autosign_with_force_unsign(cli_tester: CLITeste
         match=get_formatted_error_message(CLIMutuallyExclusiveOptionsError("autosign", "force-unsign")),
     ):
         cli_tester.process_transaction(
-            from_file=signed_transaction,
+            from_file=signed_transaction_file_with_transfer,
             force_unsign=True,
             broadcast=False,
-            save_file=signed_transaction,
+            save_file=signed_transaction_file_with_transfer,
             autosign=True,
         )
 
 
 @pytest.mark.parametrize("already_signed_mode", ["override", "multisign"])
 async def test_negative_autosign_with_not_allowed_autosigned_mode(
-    cli_tester: CLITester, transaction_path: Path, already_signed_mode: AlreadySignedMode
+    cli_tester: CLITester, transaction_file_with_transfer: Path, already_signed_mode: AlreadySignedMode
 ) -> None:
     """Test autosigning failure when 'already-signed-mode' is not 'strict'."""
     # ACT & ASSERT
     with pytest.raises(
         CLITestCommandError, match=get_formatted_error_message(CLIWrongAlreadySignedModeAutoSignError())
     ):
-        cli_tester.process_transaction(from_file=transaction_path, already_signed_mode=already_signed_mode)
+        cli_tester.process_transaction(
+            from_file=transaction_file_with_transfer, already_signed_mode=already_signed_mode
+        )

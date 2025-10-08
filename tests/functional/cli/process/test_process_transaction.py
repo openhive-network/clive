@@ -16,7 +16,7 @@ from clive_local_tools.cli.checkers import assert_transaction_file_is_signed
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.cli.helpers import load_transaction_from_file
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message
+from clive_local_tools.helpers import create_transaction_filepath, get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -37,27 +37,25 @@ ADDITIONAL_KEY_VALUE: str = PrivateKey.create().value
 ADDITIONAL_KEY_ALIAS_NAME: Final[str] = f"{WORKING_ACCOUNT_KEY_ALIAS}_2"
 
 
-def trx_file(temporary_path_per_test: Path) -> Path:
-    return temporary_path_per_test / "trx.json"
-
-
-def create_signed_transaction_file(cli_tester: CLITester, tmp_path: Path) -> Path:
+@pytest.fixture
+def signed_transaction_file_with_transfer(cli_tester: CLITester) -> Path:
     """Create a signed transaction file for multisig testing."""
-    signed_transaction = tmp_path / "signed_trx.json"
+    transaction_filepath = create_transaction_filepath("signed")
     cli_tester.process_transfer(
         amount=AMOUNT_TO_TRANSFER,
         to=RECEIVER,
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         broadcast=False,
-        save_file=signed_transaction,
+        save_file=transaction_filepath,
     )
-    return signed_transaction
+    return transaction_filepath
 
 
 @pytest.mark.parametrize("json_", [EXAMPLE_OBJECT, EXAMPLE_STRING, EXAMPLE_NUMBER])
-async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: Path, json_: str) -> None:
+async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITester, json_: str) -> None:
     """Regression test for problem with parsing json field in CustomJsonOpetation saved in file."""
     # ARRANGE
+    transaction_filepath = create_transaction_filepath()
     operation = CustomJsonOperation(
         required_auths=[],
         required_posting_auths=[WORKING_ACCOUNT_DATA.account.name],
@@ -71,39 +69,36 @@ async def test_load_custom_json_from_file(node: tt.RawNode, cli_tester: CLITeste
         id_=ID,
         json_=json_,
         broadcast=False,
-        save_file=trx_file(tmp_path),
+        save_file=transaction_filepath,
         autosign=False,
     )
 
     result = cli_tester.process_transaction(
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         already_signed_mode="multisign",
-        from_file=trx_file(tmp_path),
+        from_file=transaction_filepath,
     )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_process_signed_transaction(
-    node: tt.RawNode,
-    cli_tester: CLITester,
-    tmp_path: Path,
-) -> None:
+async def test_process_signed_transaction(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check if clive process transaction loads signed transaction and broadcasts it."""
     # ARRANGE
+    transaction_filepath = create_transaction_filepath()
     cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         broadcast=False,
-        save_file=trx_file(tmp_path),
+        save_file=transaction_filepath,
     )
 
     # ACT
     result = cli_tester.process_transaction(
         already_signed_mode="multisign",
-        from_file=trx_file(tmp_path),
+        from_file=transaction_filepath,
         autosign=False,
     )
 
@@ -111,18 +106,15 @@ async def test_process_signed_transaction(
     assert_transaction_in_blockchain(node, result)
 
 
-async def test_process_unsigned_transaction(
-    node: tt.RawNode,
-    cli_tester: CLITester,
-    tmp_path: Path,
-) -> None:
+async def test_process_unsigned_transaction(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Check if clive process transactions loads unsigned transaction, signs and broadcasts it."""
     # ARRANGE
+    transaction_filepath = create_transaction_filepath()
     cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         broadcast=False,
-        save_file=trx_file(tmp_path),
+        save_file=transaction_filepath,
         autosign=False,
     )
 
@@ -130,25 +122,23 @@ async def test_process_unsigned_transaction(
     result = cli_tester.process_transaction(
         already_signed_mode="multisign",
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
-        from_file=trx_file(tmp_path),
+        from_file=transaction_filepath,
     )
 
     # ASSERT
     assert_transaction_in_blockchain(node, result)
 
 
-async def test_negative_process_transaction_in_locked(
-    cli_tester: CLITester,
-    tmp_path: Path,
-) -> None:
+async def test_negative_process_transaction_in_locked(cli_tester: CLITester) -> None:
     """Check if clive process transaction throws exception when wallet is not unlocked."""
     # ARRANGE
     message = CLINoProfileUnlockedError.MESSAGE
+    transaction_filepath = create_transaction_filepath()
     cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         broadcast=False,
-        save_file=trx_file(tmp_path),
+        save_file=transaction_filepath,
     )
     beekeeper = cli_tester.world.beekeeper_manager.beekeeper
     await (await beekeeper.session).lock_all()
@@ -159,68 +149,65 @@ async def test_negative_process_transaction_in_locked(
         cli_tester.process_transaction(
             already_signed_mode="multisign",
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
-            from_file=trx_file(tmp_path),
+            from_file=transaction_filepath,
         )
 
 
-async def test_multisign_transaction(cli_tester: CLITester, tmp_path: Path) -> None:
+async def test_multisign_transaction(cli_tester: CLITester, signed_transaction_file_with_transfer: Path) -> None:
     """Check if clive process transaction will place second signature with `already-signed-mode` set to `multisig`."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
-    signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)
-    multisigned_transaction = tmp_path / "multisig_trx.json"
+    multisigned_transaction_filepath = create_transaction_filepath("multisig_trx")
 
     # ACT
     cli_tester.process_transaction(
         already_signed_mode="multisign",
         sign_with=ADDITIONAL_KEY_ALIAS_NAME,
         broadcast=False,
-        from_file=signed_transaction,
-        save_file=multisigned_transaction,
+        from_file=signed_transaction_file_with_transfer,
+        save_file=multisigned_transaction_filepath,
     )
 
     # ASSERT
-    assert_transaction_file_is_signed(multisigned_transaction, signatures_count=2)
+    assert_transaction_file_is_signed(multisigned_transaction_filepath, signatures_count=2)
 
 
-async def test_override_signature_in_transaction(cli_tester: CLITester, tmp_path: Path) -> None:
+async def test_override_signature_in_transaction(
+    cli_tester: CLITester, signed_transaction_file_with_transfer: Path
+) -> None:
     """Check if clive process transaction will override signature with `already-signed-mode` set to `override`."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
-    signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)
-    signed_transaction_data = load_transaction_from_file(signed_transaction)
-    override_transaction = tmp_path / "override_trx.json"
+    signed_transaction_data = load_transaction_from_file(signed_transaction_file_with_transfer)
+    override_transaction_filepath = create_transaction_filepath("override")
 
     # ACT
     cli_tester.process_transaction(
         already_signed_mode="override",
         broadcast=False,
         sign_with=ADDITIONAL_KEY_ALIAS_NAME,
-        from_file=signed_transaction,
-        save_file=override_transaction,
+        from_file=signed_transaction_file_with_transfer,
+        save_file=override_transaction_filepath,
     )
-    override_transaction_data = load_transaction_from_file(override_transaction)
+    override_transaction_data = load_transaction_from_file(override_transaction_filepath)
 
     # ASSERT
     assert signed_transaction_data.signatures != override_transaction_data.signatures, (
         "Transaction signatures were not overridden."
     )
-    assert_transaction_file_is_signed(override_transaction, signatures_count=1)
+    assert_transaction_file_is_signed(override_transaction_filepath, signatures_count=1)
 
 
 @pytest.mark.parametrize("already_signed_mode", ["strict", None], ids=["explicit_strict", "default_strict"])
 async def test_negative_error_on_already_signed_transaction_during_manual_signing(
-    cli_tester: CLITester, tmp_path: Path, already_signed_mode: AlreadySignedMode | None
+    cli_tester: CLITester, already_signed_mode: AlreadySignedMode | None, signed_transaction_file_with_transfer: Path
 ) -> None:
     """Check if raises an error in explicit strict or default `already-signed-mode` during manual signing."""
-    # ARRANGE
-    signed_transaction = create_signed_transaction_file(cli_tester, tmp_path)
-
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLITransactionAlreadySignedError())):
         cli_tester.process_transaction(
             already_signed_mode=already_signed_mode,
             sign_with=ADDITIONAL_KEY_ALIAS_NAME,
             broadcast=False,
-            from_file=signed_transaction,
+            from_file=signed_transaction_file_with_transfer,
         )
