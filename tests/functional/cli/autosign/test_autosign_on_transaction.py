@@ -166,8 +166,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
     """
     Test skipping autosigning an already signed transaction.
 
-    We should only display warning info about skipping autosigning, even when there are multiple keys and not try
-    to broadcast transaction.
+    We should only display warning info about skipping autosigning, even when there are no keys.
     """
     # ARRANGE
     for alias in cli_tester.world.profile.keys.get_all_aliases():
@@ -189,8 +188,7 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_pr
     """
     Test skipping autosigning an already signed transaction.
 
-    We should only display warning info about skipping autosigning, even when there are multiple keys and not try
-    to broadcast transaction.
+    We should only display warning info about skipping autosigning, even when there are multiple keys.
     """
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
