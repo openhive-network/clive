@@ -4,6 +4,8 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import beekeepy.communication as bkc
+
 from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.cli.exceptions import (
@@ -17,7 +19,6 @@ from clive.__private.cli.exceptions import (
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.core.commands.get_wallet_names import GetWalletNames
-from clive.__private.core.url_utils import is_url_reachable
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings
 
@@ -77,7 +78,7 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
 
     async def _validate_remote_beekeeper_running(self) -> None:
         beekeeper_remote_url = self.beekeeper_remote_url
-        if beekeeper_remote_url and not await is_url_reachable(beekeeper_remote_url):
+        if beekeeper_remote_url and not await bkc.async_is_url_reachable(beekeeper_remote_url):
             raise CLIBeekeeperRemoteAddressIsNotRespondingError(beekeeper_remote_url)
 
     async def _validate_session_is_locked(self) -> None:
