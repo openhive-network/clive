@@ -9,7 +9,7 @@ from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from beekeepy import AsyncBeekeeper, AsyncSession, AsyncUnlockedWallet
-    from beekeepy import InterfaceSettings as BeekeepySettings
+    from beekeepy.settings import InterfaceSettings
 
     from clive.__private.core.wallet_container import WalletContainer
 
@@ -43,7 +43,7 @@ class BeekeeperManager:
         return bool(self._wallets)
 
     @property
-    def settings(self) -> BeekeepySettings:
+    def settings(self) -> InterfaceSettings:
         """Should be used only for modifying beekeeper settings before setup is done."""
         use_instead_for_modify = "beekeeper_manager.beekeeper.update_settings"
         use_instead_for_read = "beekeeper_manager.beekeeper.settings"
@@ -103,7 +103,7 @@ class BeekeeperManager:
     def clear_wallets(self) -> None:
         self._wallets = None
 
-    def _setup_beekeepy_settings(self) -> BeekeepySettings:
+    def _setup_beekeepy_settings(self) -> InterfaceSettings:
         return safe_settings.beekeeper.settings_factory()
 
     async def _setup(self) -> AsyncBeekeeper:

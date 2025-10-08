@@ -46,9 +46,8 @@ from clive.__private.settings._settings import get_settings
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from beekeepy import InterfaceSettings as BeekeepySettings
-    from beekeepy.handle.remote import RemoteHandleSettings
     from beekeepy.interfaces import HttpUrl
+    from beekeepy.settings import InterfaceSettings, RemoteHandleSettings
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 _AvailableLogLevelsContainer = list[_AvailableLogLevels]
@@ -244,7 +243,7 @@ class SafeSettings:
         def is_session_token_set(self) -> bool:
             return self.session_token is not None
 
-        def settings_remote_factory(self) -> BeekeepySettings:
+        def settings_remote_factory(self) -> InterfaceSettings:
             beekeepy_settings = bk.InterfaceSettings()
 
             beekeepy_settings.working_directory = self.working_directory
@@ -259,13 +258,13 @@ class SafeSettings:
 
             return beekeepy_settings
 
-        def settings_local_factory(self) -> BeekeepySettings:
+        def settings_local_factory(self) -> InterfaceSettings:
             beekeepy_settings = self.settings_remote_factory()
             beekeepy_settings.http_endpoint = None
             beekeepy_settings.use_existing_session = None
             return beekeepy_settings
 
-        def settings_factory(self) -> BeekeepySettings:
+        def settings_factory(self) -> InterfaceSettings:
             return self.settings_local_factory() if self.should_start_locally else self.settings_remote_factory()
 
         def _get_beekeeper_remote_address(self) -> HttpUrl | None:
