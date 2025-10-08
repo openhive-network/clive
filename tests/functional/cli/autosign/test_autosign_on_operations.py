@@ -97,25 +97,6 @@ async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(cli_tes
         )
 
 
-async def test_saving_autosign_operation(cli_tester: CLITester, tmp_path: Path) -> None:
-    """Test saving autosigned operation."""
-    # ARRANGE
-    signed_transaction_file = tmp_path / "signed_transaction.txt"
-
-    # ACT
-    cli_tester.process_transfer(
-        from_=WORKING_ACCOUNT_NAME,
-        amount=tt.Asset.Hive(1),
-        to=RECEIVER,
-        memo=MEMO,
-        broadcast=False,
-        save_file=signed_transaction_file,
-    )
-
-    # ASSERT
-    assert_transaction_file_is_signed(signed_transaction_file)
-
-
 async def test_negative_usage_of_autosign_with_sign_with(cli_tester: CLITester) -> None:
     """Test failure of using both 'autosign' and 'sign_with' flags."""
     # ACT & ASSERT
@@ -133,7 +114,9 @@ async def test_negative_usage_of_autosign_with_sign_with(cli_tester: CLITester) 
         )
 
 
-@pytest.mark.parametrize("autosign", [True, False])
+@pytest.mark.parametrize(
+    "autosign", [False, None, True], ids=["autosign disabled", "autosign by default", "autosign explicit"]
+)
 async def test_saving_autosigned_operation_to_file(
     cli_tester: CLITester,
     tmp_path: Path,
@@ -156,7 +139,7 @@ async def test_saving_autosigned_operation_to_file(
     )
 
     # ASSERT
-    if autosign:
+    if autosign in [True, None]:
         assert_transaction_file_is_signed(save_file_path)
     else:
         assert_transaction_file_is_unsigned(save_file_path)
