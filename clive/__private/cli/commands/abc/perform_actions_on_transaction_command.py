@@ -11,6 +11,7 @@ import rich
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
+    CLIKeyAliasNotFoundError,
     CLIMultipleKeysAutoSignError,
     CLINoKeysAvailableError,
     CLIPrettyError,
@@ -184,7 +185,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLINoKeysAvailableError
 
         if self.is_sign_with_given and self.profile.keys.is_alias_available(self.sign_with_ensure):
-            raise CLIPrettyError(f"Key `{self.sign_with}` was not found in the working account keys.", errno.ENOENT)
+            raise CLIKeyAliasNotFoundError(self.sign_with_ensure)
 
         if self.use_autosign:
             try:
