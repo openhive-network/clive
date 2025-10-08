@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.cli.exceptions import (
+    CLIKeyAliasNotFoundError,
     CLIMultipleKeysAutoSignError,
     CLIMutuallyExclusiveOptionsError,
     CLINoKeysAvailableError,
@@ -300,23 +301,13 @@ async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(
     assert_contains_transaction_saved_to_file_message(saved_transaction_path, result.stdout)
 
 
-async def test_sign_with_takes_precedence_over_autosign(
-    node: tt.RawNode,
-    cli_tester: CLITester,
-) -> None:
-    """Test that using sign_with takes precedence over autosign when is not set at all (is None)."""
+async def test_negative_sign_with_takes_precedence_over_autosign(cli_tester: CLITester) -> None:
+    """Test that using sign_with takes precedence over the default autosign."""
     # ARRANGE
-    operation = TransferOperation(
-        from_=WORKING_ACCOUNT_NAME,
-        to=RECEIVER,
-        amount=AMOUNT,
-        memo=MEMO,
-    )
+    sign_with = "non-existing"
 
-    # ACT
-    result = cli_tester.process_transfer(
-        from_=WORKING_ACCOUNT_NAME, amount=operation.amount, to=RECEIVER, memo=MEMO, autosign=None
-    )
-
-    # ASSERT
-    assert_operations_placed_in_blockchain(node, result, operation)
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIKeyAliasNotFoundError(sign_with))):
+        cli_tester.process_transfer(
+            from_=WORKING_ACCOUNT_NAME, amount=AMOUNT, to=RECEIVER, memo=MEMO, sign_with=sign_with
+        )
