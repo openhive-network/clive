@@ -21,9 +21,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
-    'hiveio-schemas (==0.0.1.dev431+2255381)',
-    'hiveio-beekeepy (==0.0.1.dev433+37e98cb)',
-    'hiveio-wax (==0.3.10.dev912+18e48647)',
+    'hiveio-schemas (==1.27.12rc0)',
+    'hiveio-beekeepy (==1.27.12rc1.dev4+a535d85)',
+    'hiveio-wax (==1.27.12rc2.dev3+c55654f2)',
 ]
 
 [project.urls]
