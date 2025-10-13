@@ -12,7 +12,7 @@ ProcessedDataT = TypeVar("ProcessedDataT")
 
 
 @dataclass(kw_only=True)
-class CommandDataRetrievalBase(Generic[HarvestedDataT, SanitizedDataT, ProcessedDataT], ABC):  # noqa: UP046
+class CommandDataRetrievalBase(ABC, Generic[HarvestedDataT, SanitizedDataT, ProcessedDataT]):  # noqa: UP046
     """
     A Command for retrieving data from an external source via an API.
 

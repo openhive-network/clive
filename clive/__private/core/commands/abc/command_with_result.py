@@ -11,7 +11,7 @@ CommandResultT = TypeVar("CommandResultT")
 
 
 @dataclass(kw_only=True)
-class CommandWithResult(Command, Generic[CommandResultT], ABC):  # noqa: UP046
+class CommandWithResult(Command, ABC, Generic[CommandResultT]):  # noqa: UP046
     """
     A command that returns a result.
 

@@ -44,7 +44,7 @@ class ResultNotAvailableError(CliveError):
 
 
 @dataclass(kw_only=True)
-class CommandWithResultWrapper(Generic[CommandResultT], ErrorHolder):  # noqa: UP046
+class CommandWithResultWrapper(ErrorHolder, Generic[CommandResultT]):  # noqa: UP046
     command: CommandWithResult[CommandResultT]
     result: CommandResultT | ResultNotAvailable
 
