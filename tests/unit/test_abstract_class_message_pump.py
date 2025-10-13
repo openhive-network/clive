@@ -50,7 +50,7 @@ def test_textual_still_errors_with_abc_inheritance() -> None:
     # ACT & ASSERT
     with pytest.raises(TypeError) as exception:
 
-        class InvalidAbstractScreen(Screen[None], ABC):  # type: ignore[misc]
+        class InvalidAbstractScreen(Screen[None], ABC):  # type: ignore[metaclass]
             pass
 
     assert str(exception.value) == expected_error_message
