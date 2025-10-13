@@ -102,6 +102,7 @@ files = [
 
 [tool.mypy]
 strict = true
+strict_equality_for_none = true
 disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
