@@ -110,4 +110,5 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
     await world.commands.sign(transaction=transaction, sign_with=wallet.public_key)
 
     # ASSERT
+    assert profile.chain_id is not None, "chain id should be retrieved from api"
     assert profile.chain_id == TESTNET_CHAIN_ID
