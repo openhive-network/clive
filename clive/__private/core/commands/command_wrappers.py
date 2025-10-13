@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, Literal
+from typing import TYPE_CHECKING, Generic
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import ResultNotAvailable
@@ -36,7 +36,7 @@ class CommandWrapper(ErrorHolder):
 
 @dataclass(kw_only=True)
 class NoOpWrapper(ErrorHolder):
-    error: Literal[None] = None
+    error: None = None
 
 
 class ResultNotAvailableError(CliveError):
