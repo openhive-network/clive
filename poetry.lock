@@ -2082,14 +2082,14 @@ idna2008 = ["idna"]
 
 [[package]]
 name = "rich"
-version = "13.9.4"
+version = "14.2.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.8.0"
 groups = ["main", "dev"]
 files = [
-    {file = "rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90"},
-    {file = "rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098"},
+    {file = "rich-14.2.0-py3-none-any.whl", hash = "sha256:76bc51fe2e57d2b1be1f96c524b890b816e334ab4c1e45888799bfaab0021edd"},
+    {file = "rich-14.2.0.tar.gz", hash = "sha256:73ff50c7c0c1c77c8243079283f4edb376f0f6442433aecb8ce7e6d0b92d1fe4"},
 ]
 
 [package.dependencies]
@@ -2186,21 +2186,21 @@ url = "hive/tests/python/hive-local-tools/test-tools"
 
 [[package]]
 name = "textual"
-version = "6.2.1"
+version = "6.3.0"
 description = "Modern Text User Interface framework"
 optional = false
-python-versions = "<4.0.0,>=3.8.1"
+python-versions = "<4.0,>=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "textual-6.2.1-py3-none-any.whl", hash = "sha256:3c7190633cd4d8bfe6049ae66808b98da91ded2edb85cef54e82bf77b03d2a54"},
-    {file = "textual-6.2.1.tar.gz", hash = "sha256:4699d8dfae43503b9c417bd2a6fb0da1c89e323fe91c4baa012f9298acaa83e1"},
+    {file = "textual-6.3.0-py3-none-any.whl", hash = "sha256:ec908b4b008662e7670af4a3e7c773847066b0950b1c50126c72fa939b514c97"},
+    {file = "textual-6.3.0.tar.gz", hash = "sha256:a89c557fa740611551dcf4f93643f33853eca488183ef5882200dde8e94315e8"},
 ]
 
 [package.dependencies]
 markdown-it-py = {version = ">=2.1.0", extras = ["linkify", "plugins"]}
 platformdirs = ">=3.6.0,<5"
 pygments = ">=2.19.2,<3.0.0"
-rich = ">=13.3.3"
+rich = ">=14.2.0"
 typing-extensions = ">=4.4.0,<5.0.0"
 
 [package.extras]
@@ -2497,4 +2497,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "f27d31980554d6539a1ebd87768c20701b4063476bafedc55a419fc54dc0f242"
+content-hash = "d43657b7db059d521e44655316efeb4d5d230983d97a109abcd897c0e24110ae"
