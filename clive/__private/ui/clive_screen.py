@@ -64,6 +64,21 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
     ) -> Callable[[Callable[P, None]], Callable[P, None]]:
         return cls._create_prevent_decorator(lambda app: app.world.profile.accounts.has_tracked_accounts, message)
 
+    def toggle_help_panel(self, *, show: bool) -> None:
+        """
+        Toggle the presence of help panel on this screen.
+
+        Args:
+            show: Whether to show the help panel.
+        """
+        query = self.query(HelpPanel)
+        is_mounted = bool(query)
+
+        if show and not is_mounted:
+            self.mount(HelpPanel())
+        else:
+            query.remove()
+
     @classmethod
     def _create_prevent_decorator(
         cls, can_run_condition: Callable[[Clive], bool], message: str
@@ -102,8 +117,7 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
     @on(Mount)
     def _synchronize_help_panel(self) -> None:
         """Synchronize the presence of help panel on newly created screens."""
-        if self.app.help_panel_mounted:
-            self.mount(HelpPanel())
+        self.toggle_help_panel(show=self.app.is_help_panel_visible)
 
     def _post_to_children(self, node: Widget, message: Message) -> None:
         """Post a message to all widgets of the screen (even grandchildren and further)."""
