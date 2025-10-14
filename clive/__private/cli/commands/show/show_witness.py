@@ -34,9 +34,10 @@ class ShowWitness(WorldBasedCommand):
         account_creation_fee: str | None = None
         if witness.props.account_creation_fee:
             account_creation_fee = witness.props.account_creation_fee.as_legacy()
-        hbd_savings_apr: str | None = None
-        if witness.props.hbd_interest_rate:
-            hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
+        assert witness.props.hbd_interest_rate is not None, (
+            "Hbd interest rate must be set in response of `find_witnesses`."
+        )  # TODO: remove after https://gitlab.syncad.com/hive/schemas/-/issues/46 is fixed
+        hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
         props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"})
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
