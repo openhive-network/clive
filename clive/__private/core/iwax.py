@@ -3,12 +3,13 @@ from __future__ import annotations
 import datetime
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, cast
+from typing import TYPE_CHECKING, Any, Protocol, cast, get_args
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
-from clive.__private.core.percent_conversions import hive_percent_to_percent
+from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
+from clive.__private.models.schemas import AccountName, WitnessPropsSerializedKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import Hex, OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
 
 
@@ -269,3 +270,54 @@ def generate_password_based_private_key(
 def suggest_brain_key() -> str:
     result = wax.suggest_brain_key()
     return result.brain_key.decode()
+
+
+def create_witness_set_properties(  # noqa: PLR0913
+    wax_interface: wax.IWaxBaseInterface,
+    owner: str,
+    key: PublicKey,
+    new_signing_key: PublicKey | None = None,
+    account_creation_fee: Asset.Hive | None = None,
+    url: str | None = None,
+    hbd_exchange_rate: Asset.Hbd | None = None,
+    maximum_block_size: int | None = None,
+    hbd_interest_rate: Decimal | None = None,
+    account_subsidy_budget: int | None = None,
+    account_subsidy_decay: int | None = None,
+) -> list[tuple[WitnessPropsSerializedKey, Hex]]:
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
+    from wax.complex_operations.witness_set_properties import (  # noqa: PLC0415
+        WitnessSetProperties,
+        WitnessSetPropertiesData,
+    )
+
+    wax_operation = WitnessSetProperties(
+        data=WitnessSetPropertiesData(
+            owner=AccountName(owner),
+            witness_signing_key=key.value,
+            new_signing_key=new_signing_key.value if new_signing_key is not None else None,
+            account_creation_fee=account_creation_fee.as_serialized_nai() if account_creation_fee is not None else None,
+            url=url,
+            hbd_exchange_rate=wax.complex_operations.witness_set_properties.HbdExchangeRate(
+                base=hbd_exchange_rate.as_serialized_nai(),
+                quote=Asset.hive(1).as_serialized_nai(),
+            )
+            if hbd_exchange_rate
+            else None,
+            maximum_block_size=maximum_block_size,
+            hbd_interest_rate=percent_to_hive_percent(hbd_interest_rate) if hbd_interest_rate else None,
+            account_subsidy_budget=account_subsidy_budget,
+            account_subsidy_decay=account_subsidy_decay,
+        )
+    )
+    first = next(iter(wax_operation.finalize(wax_interface)))
+    props = first.props
+    schemas_properties_model: list[tuple[WitnessPropsSerializedKey, Hex]] = []
+
+    def append_optional_property(name: WitnessPropsSerializedKey) -> None:
+        if property_value := props.get(name):
+            schemas_properties_model.append((name, property_value))
+
+    for property_name in get_args(WitnessPropsSerializedKey):
+        append_optional_property(property_name)
+    return schemas_properties_model
