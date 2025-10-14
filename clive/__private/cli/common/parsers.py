@@ -79,6 +79,12 @@ def voting_asset(raw: str) -> Asset.VotingT:
     return _parse_asset(raw, *get_args(Asset.VotingT))  # type: ignore[no-any-return]
 
 
+def hbd_asset(raw: str) -> Asset.Hbd:
+    from clive.__private.models.asset import Asset  # noqa: PLC0415
+
+    return _parse_asset(raw, Asset.Hbd)
+
+
 def hive_asset(raw: str) -> Asset.Hive:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
