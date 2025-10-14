@@ -504,3 +504,16 @@ class CLIAccountDoesNotExistsOnNodeError(CLIPrettyError):
     def __init__(self, account_name: str, http_endpoint: HttpUrl) -> None:
         message = f"Account `{account_name}` doesn't exist on node `{http_endpoint}`."
         super().__init__(message, errno.EINVAL)
+
+
+class CLIWitnessNotFoundError(CLIPrettyError):
+    """
+    Raise when witness was not found.
+
+    Args:
+        name: Name of witness that couldn't be found.
+    """
+
+    def __init__(self, name: str) -> None:
+        message = f"Witness `{name}` was not found."
+        super().__init__(message, errno.EINVAL)

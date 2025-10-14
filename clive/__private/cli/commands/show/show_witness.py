@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.exceptions import CLIWitnessNotFoundError
 from clive.__private.cli.print_cli import print_cli
+from clive.__private.core.commands.find_witness import WitnessNotFoundError
 from clive.__private.core.formatters.data_labels import HBD_EXCHANGE_RATE_LABEL, HBD_SAVINGS_APR_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
@@ -21,8 +23,10 @@ class ShowWitness(WorldBasedCommand):
     name: str
 
     async def _run(self) -> None:
-        wrapper = await self.world.commands.find_witness(witness_name=self.name)
-        witness = wrapper.result_or_raise
+        try:
+            witness = (await self.world.commands.find_witness(witness_name=self.name)).result_or_raise
+        except WitnessNotFoundError as err:
+            raise CLIWitnessNotFoundError(self.name) from err
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
         votes = humanize_votes_with_comma(witness.votes, gdpo)
