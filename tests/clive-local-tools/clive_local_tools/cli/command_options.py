@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import copy, deepcopy
+from decimal import Decimal
 from pathlib import Path
 
 import test_tools as tt
@@ -9,7 +10,7 @@ from clive.__private.models.schemas import PublicKey
 
 from .exceptions import UnsupportedOptionError
 
-type StringConvertibleOptionTypes = str | int | tt.Asset.AnyT | PublicKey | Path
+type StringConvertibleOptionTypes = str | int | Decimal | tt.Asset.AnyT | PublicKey | Path
 type CliOptionT = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
 
 
@@ -17,6 +18,8 @@ def option_to_string(value: StringConvertibleOptionTypes) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, int):
+        return str(value)
+    if isinstance(value, Decimal):
         return str(value)
     if isinstance(value, Path):
         return str(value)

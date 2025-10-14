@@ -12,6 +12,7 @@ from clive.__private.settings import clive_prefixed_envvar
 from clive_local_tools.testnet_block_log import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT2_DATA,
+    WITNESS_ACCOUNT,
     WORKING_ACCOUNT_DATA,
 )
 
@@ -27,3 +28,5 @@ BEEKEEPER_REMOTE_ADDRESS_ENV_NAME: Final[str] = clive_prefixed_envvar(BEEKEEPER_
 BEEKEEPER_SESSION_TOKEN_ENV_NAME: Final[str] = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
 NODE_CHAIN_ID_ENV_NAME: Final[str] = clive_prefixed_envvar(NODE_CHAIN_ID)
 SECRETS_NODE_ADDRESS_ENV_NAME: Final[str] = clive_prefixed_envvar(SECRETS_NODE_ADDRESS)
+WITNESS_ACCOUNT_PASSWORD: Final[str] = WITNESS_ACCOUNT.name
+WITNESS_ACCOUNT_KEY_ALIAS: Final[str] = f"{WITNESS_ACCOUNT.name}_key"

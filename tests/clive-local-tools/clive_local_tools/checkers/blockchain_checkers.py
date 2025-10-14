@@ -11,13 +11,24 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.models.schemas import OperationUnion
+    from clive.__private.models.schemas import GetTransaction, OperationBase, OperationUnion
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
     if isinstance(trx_id_or_result, Result):
         return get_transaction_id_from_output(trx_id_or_result.stdout)
     return trx_id_or_result
+
+
+def _get_transaction(
+    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool
+) -> GetTransaction:
+    assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
+    transaction_id = _ensure_transaction_id(trx_id_or_result)
+    return node.api.account_history.get_transaction(
+        id=transaction_id,
+        include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
+    )
 
 
 def assert_transaction_in_blockchain(
@@ -39,12 +50,7 @@ def assert_operations_placed_in_blockchain(
     *expected_operations: OperationUnion,
     wait_for_the_next_block: bool = True,
 ) -> None:
-    assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
-    transaction_id = _ensure_transaction_id(trx_id_or_result)
-    transaction = node.api.account_history.get_transaction(
-        id=transaction_id,
-        include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
-    )
+    transaction = _get_transaction(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
     operations_to_check = list(expected_operations)
 
     for operation_representation in transaction.operations:
@@ -59,3 +65,26 @@ def assert_operations_placed_in_blockchain(
         f"{transaction}."
     )
     assert not operations_to_check, message
+
+
+def assert_operation_type_in_blockchain(
+    node: tt.RawNode,
+    trx_id_or_result: str | Result,
+    *expected_types: type[OperationBase],
+    wait_for_the_next_block: bool = True,
+) -> None:
+    transaction = _get_transaction(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
+    types_to_check = list(expected_types)
+
+    for operation_representation in transaction.operations:
+        operation_type = type(operation_representation.value)
+        if operation_type in types_to_check:
+            types_to_check.remove(operation_type)
+
+    message = (
+        "Operation types missing in blockchain.\n"
+        f"Types: {types_to_check}\n"
+        "were not found in the transaction:\n"
+        f"{transaction}."
+    )
+    assert not types_to_check, message

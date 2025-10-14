@@ -14,6 +14,7 @@ from .command_options import extract_params, kwargs_to_cli_options, option_to_st
 from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
+    from decimal import Decimal
     from pathlib import Path
 
     from click.testing import Result
@@ -614,3 +615,28 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["process", "account-creation"], args, **extract_params(locals(), "args")
         )
+
+    def process_update_witness(  # noqa: PLR0913
+        self,
+        *,
+        owner: str | None = None,
+        use_witness_key: bool | None = None,
+        account_creation_fee: tt.Asset.HiveT | None = None,
+        maximum_block_size: int | None = None,
+        hbd_interest_rate: Decimal | None = None,
+        account_subsidy_budget: int | None = None,
+        account_subsidy_decay: int | None = None,
+        new_signing_key: PublicKey | None = None,
+        hbd_exchange_rate: tt.Asset.HbdT | None = None,
+        url: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> Result:
+        named_params = locals()
+        # the actual option names are `--use-witness-key/--use-active-authority`
+        if use_witness_key is False:
+            named_params.pop("use_witness_key")
+            named_params["use_active_authority"] = True
+        return self.__invoke_command_with_options(["process", "update-witness"], **extract_params(named_params))
