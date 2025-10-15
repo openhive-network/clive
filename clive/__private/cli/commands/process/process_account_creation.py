@@ -59,6 +59,10 @@ class ProcessAccountCreation(OperationCommand):
         return self._is_authority_set(self._active_authority)
 
     @property
+    def is_memo_key_set(self) -> bool:
+        return self._memo_key is not None
+
+    @property
     def is_owner_authority_set(self) -> bool:
         return self._is_authority_set(self._owner_authority)
 
@@ -70,29 +74,6 @@ class ProcessAccountCreation(OperationCommand):
     def memo_key_ensure(self) -> PublicKey:
         assert self._memo_key is not None, "Memo key must be specified by user and set with method `set_memo_key`"
         return self._memo_key
-
-    @property
-    def is_memo_key_set(self) -> bool:
-        return self._memo_key is not None
-
-    @override
-    async def fetch_data(self) -> None:
-        if self.fee:
-            wrapper = await self.world.commands.get_witness_schedule()
-            witness_schedule = wrapper.result_or_raise
-            assert witness_schedule.median_props.account_creation_fee is not None, (
-                "Account creation fee must be set in response of `get_witness_schedule`."
-            )  # TODO: remove after https://gitlab.syncad.com/hive/schemas/-/issues/46 is fixed
-            self._fee_value = witness_schedule.median_props.account_creation_fee
-            print_cli(f"Account creation fee: `{Asset.to_legacy(self._fee_value)}` will be paid.")
-        else:
-            self._fee_value = Asset.hive(0)
-
-    @override
-    async def post_run(self) -> None:
-        if not self.profile.accounts.is_account_known(self.new_account_name):
-            print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
-            self.profile.accounts.add_known_account(self.new_account_name)
 
     def set_keys(self, owner: PublicKey, active: PublicKey, posting: PublicKey) -> None:
         for authority_type in ("owner", "active", "posting"):
@@ -114,6 +95,25 @@ class ProcessAccountCreation(OperationCommand):
     async def validate(self) -> None:
         self._validate_all_authorities_are_set()
         await super().validate()
+
+    @override
+    async def fetch_data(self) -> None:
+        if self.fee:
+            wrapper = await self.world.commands.get_witness_schedule()
+            witness_schedule = wrapper.result_or_raise
+            assert witness_schedule.median_props.account_creation_fee is not None, (
+                "Account creation fee must be set in response of `get_witness_schedule`."
+            )  # TODO: remove after https://gitlab.syncad.com/hive/schemas/-/issues/46 is fixed
+            self._fee_value = witness_schedule.median_props.account_creation_fee
+            print_cli(f"Account creation fee: `{Asset.to_legacy(self._fee_value)}` will be paid.")
+        else:
+            self._fee_value = Asset.hive(0)
+
+    @override
+    async def post_run(self) -> None:
+        if not self.profile.accounts.is_account_known(self.new_account_name):
+            print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
+            self.profile.accounts.add_known_account(self.new_account_name)
 
     def _add_key_authority(self, level: AuthorityLevelRegular, key: PublicKey, weight: int) -> None:
         self._get_authority(level).key_auths.append((key.value, weight))
