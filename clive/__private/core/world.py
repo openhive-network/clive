@@ -151,8 +151,12 @@ class World:
         working_account: str | Account | None = None,
         watched_accounts: Iterable[str | Account] | None = None,
         known_accounts: Iterable[str | Account] | None = None,
+        *,
+        skip_saving: bool = False,
     ) -> None:
         profile = Profile.create(name, working_account, watched_accounts, known_accounts)
+        if skip_saving:
+            profile.skip_saving()
         await self.switch_profile(profile)
 
     async def create_new_profile_with_wallets(

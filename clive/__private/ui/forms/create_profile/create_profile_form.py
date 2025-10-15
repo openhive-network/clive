@@ -10,8 +10,7 @@ from clive.__private.ui.forms.form import ComposeFormResult, Form
 
 class CreateProfileForm(Form):
     async def initialize(self) -> None:
-        await self.world.create_new_profile("temp_name")
-        self.profile.skip_saving()
+        await self.world.create_new_profile("temp_name", skip_saving=True)
 
     async def cleanup(self) -> None:
         await self.world.switch_profile(None)
