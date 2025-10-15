@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import copy, deepcopy
 from decimal import Decimal
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 
@@ -10,11 +11,14 @@ from clive.__private.models.schemas import PublicKey
 
 from .exceptions import UnsupportedOptionError
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
 type StringConvertibleOptionTypes = str | int | Decimal | tt.Asset.AnyT | PublicKey | Path
 type CliOptionT = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
 
 
-def option_to_string(value: StringConvertibleOptionTypes) -> str:
+def stringify_parameter_value(value: StringConvertibleOptionTypes) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, int):
@@ -30,18 +34,18 @@ def option_to_string(value: StringConvertibleOptionTypes) -> str:
     raise UnsupportedOptionError(supported_type=StringConvertibleOptionTypes, actual_type=type(value))
 
 
-def kwargs_to_cli_options(**cli_options: CliOptionT) -> list[str]:
+def build_cli_options(cli_named_options: Mapping[str, CliOptionT]) -> list[str]:
     options: list[str] = []
-    for key, value in cli_options.items():
+    for key, value in cli_named_options.items():
         option_name = key.strip("_").replace("_", "-")
         if value is True:
             options.append(f"--{option_name}")
         elif value is False:
             options.append(f"--no-{option_name}")
         elif isinstance(value, list):
-            options.extend([f"--{option_name}={option_to_string(entry)}" for entry in value])
+            options.extend([f"--{option_name}={stringify_parameter_value(entry)}" for entry in value])
         elif value is not None:
-            options.append(f"--{option_name}={option_to_string(value)}")
+            options.append(f"--{option_name}={stringify_parameter_value(value)}")
     return options
 
 
