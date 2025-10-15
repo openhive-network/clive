@@ -8,6 +8,7 @@ from clive.__private.cli.beekeeper.main import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.cli.configure.main import configure
 from clive.__private.cli.generate.main import generate
 from clive.__private.cli.print_cli import print_cli
@@ -53,7 +54,7 @@ async def unlock(
     profile_name: str | None = _profile_name_unlock_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
     unlock_time_mins: int | None = typer.Option(
-        None, "--unlock-time", help="Time to unlock the profile in minutes, default is no timeout."
+        None, "--unlock-time", help=stylized_help("Time to unlock the profile in minutes.", default="no timeout")
     ),
     include_create_new_profile: bool = typer.Option(  # noqa: FBT001
         default=False,

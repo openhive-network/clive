@@ -13,6 +13,7 @@ from functools import partial
 import typer
 
 from clive.__private.cli.common.parameters.modified_param import modified_param
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.cli.common.parsers import (
     decimal_percent,
     liquid_asset,
@@ -27,13 +28,13 @@ from clive.__private.core.constants.cli import (
 
 working_account_template = typer.Option(
     PERFORM_WORKING_ACCOUNT_LOAD,  # we don't know if account_name_option is required until the profile is loaded
-    help="The account to use. (default is working account of profile)",
+    help=stylized_help("The account to use.", is_working_account_default=True),
     show_default=False,
 )
 
 working_account_list_template = typer.Option(
     [PERFORM_WORKING_ACCOUNT_LOAD],  # we don't know if account_name_option is required until the profile is loaded
-    help="List of accounts to use. (default is working account of profile)",
+    help=stylized_help("List of accounts to use.", is_working_account_default=True),
     show_default=False,
 )
 
@@ -54,13 +55,13 @@ new_account_name = typer.Option(
 from_account_name = modified_param(
     working_account_template,
     param_decls=("--from",),
-    help='The account to use as "from" argument. (default is working account of profile)',
+    help=stylized_help('The account to use as "from" argument.', is_working_account_default=True),
 )
 
 to_account_name = modified_param(
     working_account_template,
     param_decls=("--to",),
-    help='The account to use as "to" argument. (default is working account of profile)',
+    help=stylized_help('The account to use as "to" argument.', is_working_account_default=True),
 )
 
 to_account_name_required = typer.Option(

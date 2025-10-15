@@ -5,13 +5,13 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
-from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.cli.common.parameters.styling import stylized_help
 
 profile = CliveTyper(name="profile", help="Manage your Clive profile(s).")
 
 _profile_name_create_argument = typer.Argument(
     None,
-    help=f"The name of the new profile. ({REQUIRED_AS_ARG_OR_OPTION})",
+    help=stylized_help("The name of the new profile.", required_as_arg_or_option=True),
 )
 
 
@@ -35,7 +35,8 @@ async def create_profile(
 
 
 _profile_name_delete_argument = modified_param(
-    _profile_name_create_argument, help=f"The name of the profile to delete. ({REQUIRED_AS_ARG_OR_OPTION})"
+    _profile_name_create_argument,
+    help=stylized_help("The name of the profile to delete.", required_as_arg_or_option=True),
 )
 
 

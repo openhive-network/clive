@@ -12,6 +12,7 @@ from clive.__private.cli.common.parameters import argument_related_options, argu
 from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.cli.common.parsers import decimal_percent, hbd_asset, hive_asset, public_key
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
@@ -25,9 +26,6 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
-from clive.__private.core.constants.cli import (
-    REQUIRED_AS_ARG_OR_OPTION,
-)
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.types import AlreadySignedMode  # noqa: TC001
 
@@ -145,7 +143,7 @@ async def process_update_memo_key(  # noqa: PLR0913
 
 _new_account_name_argument = typer.Argument(
     None,
-    help=f"The name of the new account. ({REQUIRED_AS_ARG_OR_OPTION})",
+    help=stylized_help("The name of the new account.", required_as_arg_or_option=True),
 )
 
 
@@ -170,7 +168,7 @@ async def process_account_creation(  # noqa: PLR0913
     json_metadata: str = typer.Option(
         "",
         "--json-metadata",
-        help="The json metadata of the new account passed as string. Default is empty string.",
+        help=stylized_help("The json metadata of the new account passed as string.", default="empty string"),
         show_default=True,
     ),
     sign_with: str | None = options.sign_with,
@@ -227,7 +225,7 @@ async def process_account_creation(  # noqa: PLR0913
 async def process_witness_update(  # noqa: PLR0913
     witness_name: str = modified_param(
         options.working_account_template,
-        help="Witness account name, aka owner in the operation. (default is working account of profile).",
+        help=stylized_help("Witness account name, aka owner in the operation.", is_working_account_default=True),
     ),
     use_witness_key: bool = typer.Option(  # noqa: FBT001
         True,  # noqa: FBT003

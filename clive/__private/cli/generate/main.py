@@ -8,7 +8,7 @@ from clive.__private.cli.common.parameters.argument_related_options import (
     account_name as account_name_argument_related_option,
 )
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
-from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.core.types import AuthorityLevel
 
 generate = CliveTyper(name="generate", help="Commands for generating things (e.g. keys).")
@@ -16,12 +16,14 @@ generate = CliveTyper(name="generate", help="Commands for generating things (e.g
 
 _account_name_argument = typer.Argument(
     None,
-    help=(f"Account for which key is derived, this is not working account of profile. ({REQUIRED_AS_ARG_OR_OPTION})"),
+    help=stylized_help(
+        "Account for which key is derived, this is not working account of profile.", required_as_arg_or_option=True
+    ),
 )
 
 _role_argument = typer.Argument(
     None,
-    help=(f"Role for which key is derived. ({REQUIRED_AS_ARG_OR_OPTION})"),
+    help=stylized_help("Role for which key is derived.", required_as_arg_or_option=True),
 )
 
 

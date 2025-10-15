@@ -5,13 +5,16 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
-from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.cli.common.parameters.styling import stylized_help
 
 key = CliveTyper(name="key", help="Manage your key(s).")
 
+
 _key_argument = typer.Argument(
     None,
-    help=f"The key to import. This can be a path to a file or a key itself ({REQUIRED_AS_ARG_OR_OPTION}).",
+    help=stylized_help(
+        "The key to import. This can be a path to a file or a key itself.", required_as_arg_or_option=True
+    ),
 )
 
 
@@ -37,7 +40,9 @@ async def add_key(
     ).run()
 
 
-_alias_remove_argument = typer.Argument(None, help=f"The key alias to remove ({REQUIRED_AS_ARG_OR_OPTION}).")
+_alias_remove_argument = typer.Argument(
+    None, help=stylized_help("The key alias to remove.", required_as_arg_or_option=True)
+)
 
 
 @key.command(name="remove")

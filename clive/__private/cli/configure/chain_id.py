@@ -5,13 +5,13 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
-from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
+from clive.__private.cli.common.parameters.styling import stylized_help
 
 chain_id = CliveTyper(name="chain-id", help="Manage the chain ID for the profile.")
 
 _chain_id_argument = typer.Argument(
     None,
-    help=(f"The chain ID to use when signing the transaction. ({REQUIRED_AS_ARG_OR_OPTION})"),
+    help=stylized_help("The chain ID to use when signing the transaction.", required_as_arg_or_option=True),
 )
 
 

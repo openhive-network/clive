@@ -9,8 +9,8 @@ from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
 from clive.__private.cli.common.parameters.modified_param import modified_param
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.cli.show.pending import pending
-from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 from clive.__private.core.constants.data_retrieval import (
     ORDER_DIRECTION_DEFAULT,
     PROPOSAL_ORDER_DEFAULT,
@@ -74,7 +74,9 @@ async def show_node() -> None:
     await ShowNode().run()
 
 
-_transaction_id_argument = typer.Argument(None, help=f"Hash of the transaction ({REQUIRED_AS_ARG_OR_OPTION}).")
+_transaction_id_argument = typer.Argument(
+    None, help=stylized_help("Hash of the transaction.", required_as_arg_or_option=True)
+)
 
 
 @show.command(name="transaction-status")
@@ -128,7 +130,7 @@ async def show_witnesses(
     ).run()
 
 
-_witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS_ARG_OR_OPTION})")
+_witness_name_argument = typer.Argument(None, help=stylized_help("Witness name.", required_as_arg_or_option=True))
 
 
 @show.command(name="witness")
@@ -184,7 +186,7 @@ async def show_proposals(  # noqa: PLR0913
 
 _proposal_id_argument = typer.Argument(
     None,
-    help=f"Identifier of chosen proposal. ({REQUIRED_AS_ARG_OR_OPTION})",
+    help=stylized_help("Identifier of chosen proposal.", required_as_arg_or_option=True),
 )
 
 
