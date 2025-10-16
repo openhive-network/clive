@@ -25,19 +25,19 @@ account_name = modified_param(working_account_template)
 
 profile_name = typer.Argument(..., help=stylized_help("The profile to use.", required_as_arg_or_option=True))
 
-owner_key = typer.Argument(
+owner = typer.Argument(
     None,
     parser=public_key,
     help=stylized_help("Owner public key that will be set for account.", required_as_arg_or_option=True),
 )
 
-active_key = typer.Argument(
+active = typer.Argument(
     None,
     parser=public_key,
     help=stylized_help("Active public key that will be set for account.", required_as_arg_or_option=True),
 )
 
-posting_key = typer.Argument(
+posting = typer.Argument(
     None,
     parser=public_key,
     help=stylized_help("Posting public key that will be set for account.", required_as_arg_or_option=True),
