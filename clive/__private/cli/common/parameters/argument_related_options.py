@@ -54,10 +54,10 @@ chain_id = _make_argument_related_option("--chain-id")
 
 node_address = _make_argument_related_option("--node-address")
 
-owner_key = _make_argument_related_option(argument_to_option(arguments.owner_key, "--owner"))
+owner = _make_argument_related_option(argument_to_option(arguments.owner, "--owner"))
 
-active_key = _make_argument_related_option(argument_to_option(arguments.active_key, "--active"))
+active = _make_argument_related_option(argument_to_option(arguments.active, "--active"))
 
-posting_key = _make_argument_related_option(argument_to_option(arguments.posting_key, "--posting"))
+posting = _make_argument_related_option(argument_to_option(arguments.posting, "--posting"))
 
 memo_key = _make_argument_related_option(argument_to_option(arguments.memo_key, "--memo"))
