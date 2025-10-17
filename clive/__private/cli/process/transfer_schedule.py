@@ -62,7 +62,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     pair_id: int = _pair_id_value,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
@@ -98,7 +98,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
@@ -134,7 +134,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Remove an existing recurrent transfer."""

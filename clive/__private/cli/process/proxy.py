@@ -14,7 +14,7 @@ async def process_proxy_set(  # noqa: PLR0913
     proxy: str = typer.Option(..., help="Name of new proxy account."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Set a proxy or change an existing proxy."""
@@ -35,7 +35,7 @@ async def process_proxy_clear(
     account_name: str = options.account_name,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Remove a proxy."""

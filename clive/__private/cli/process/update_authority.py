@@ -234,7 +234,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
         ),
         sign_with: str | None = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
-        broadcast: bool = options.broadcast,  # noqa: FBT001
+        broadcast: bool | None = options.broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
     ) -> None:
         """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""

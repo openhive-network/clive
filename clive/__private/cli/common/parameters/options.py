@@ -127,7 +127,7 @@ _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COM
 
 sign_with = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
 broadcast = _operation_common_option(
-    typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
+    typer.Option(default=None, help="Whether broadcast the transaction. (i.e. dry-run)")
 )
 save_file = _operation_common_option(
     typer.Option(

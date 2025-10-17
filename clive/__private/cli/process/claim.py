@@ -25,7 +25,7 @@ async def process_claim_new_account_token(  # noqa: PLR0913
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Obtain account creation token, pay either with HIVE or RC."""

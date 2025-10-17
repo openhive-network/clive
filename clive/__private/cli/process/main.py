@@ -59,7 +59,7 @@ async def transfer(  # noqa: PLR0913
     memo: str = options.memo_value,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Transfer some funds to another account."""
@@ -94,7 +94,7 @@ async def process_transaction(  # noqa: PLR0913
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
@@ -123,7 +123,7 @@ async def process_update_memo_key(  # noqa: PLR0913
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Set memo key."""
@@ -173,7 +173,7 @@ async def process_account_creation(  # noqa: PLR0913
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """
@@ -265,7 +265,7 @@ async def process_witness_update(  # noqa: PLR0913
     url: str | None = typer.Option(None, help="New witness url."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Update witness properties with witness update, feed publish or witness set properties operation."""

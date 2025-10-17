@@ -26,7 +26,7 @@ async def process_delegations_set(  # noqa: PLR0913
     amount: str = options.voting_amount,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
@@ -53,7 +53,7 @@ async def process_delegations_remove(  # noqa: PLR0913
     delegatee: str = _delegatee_account_name,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""

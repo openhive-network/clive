@@ -33,7 +33,7 @@ async def process_custom_json(  # noqa: PLR0913
     ),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
+    broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
     """Send custom json operation, json can be provided as string or file."""
