@@ -25,8 +25,7 @@ async def first_script() -> None:
             to_account="gtg",
             amount="1.000 HIVE",
             memo="Test transfer",
-            broadcast=False,
-        )
+        ).finalize(broadcast=False)
 
         profiles = await clive.show.profiles()
 

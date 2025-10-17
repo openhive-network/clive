@@ -17,9 +17,7 @@ async def first_script() -> None:
                 to_account="mary",
                 amount="1.000 HIVE",
                 memo=f"Test transfer{i}",
-                sign_with="STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
-                broadcast=True,
-            )
+            ).finalize(broadcast=True, sign_with="STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW")
         t2 = time.time()
         after_balances = await clive.show.balances("alice")
 

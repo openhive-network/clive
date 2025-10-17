@@ -22,21 +22,13 @@ AuthorityAction = Literal["add-account", "add-key", "remove-account", "remove-ke
 
 
 class ProcessCommandBase(ABC):
-    def __init__(
-        self,
-        world: World,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
-    ) -> None:
+    def __init__(self, world: World) -> None:
         super().__init__()
         self.world = world
-        self.sign_with = sign_with
-        self.save_file = save_file
-        self._broadcast = broadcast
-        self._autosign = autosign
+        self._sign_with: str | None = None
+        self._save_file: str | Path | None = None
+        self._broadcast: bool = False
+        self._autosign: bool | None = None
 
     @abstractmethod
     async def _create_operation(self) -> OperationUnion:
@@ -46,7 +38,7 @@ class ProcessCommandBase(ABC):
         return await self._create_operation()
 
     async def validate(self) -> None:
-        if self._broadcast and not self.sign_with:
+        if self._broadcast and not self._sign_with:
             raise CLITransactionNotSignedError  # zduplikowana funkcjonalnosć, do poprawy
 
     async def _run(self) -> Transaction:
@@ -54,15 +46,26 @@ class ProcessCommandBase(ABC):
         return (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
-                sign_key=PublicKey(value=self.sign_with) if self.sign_with else None,
+                sign_key=PublicKey(value=self._sign_with) if self._sign_with else None,
                 autosign=bool(self._autosign),
-                save_file_path=Path(self.save_file) if self.save_file else None,
+                save_file_path=Path(self._save_file) if self._save_file else None,
                 broadcast=self._broadcast,
             )
         ).result_or_raise
 
-    async def run(self) -> Transaction:
-        await self.validate()
+    async def finalize(
+        self,
+        sign_with: str | None = None,
+        save_file: str | Path | None = None,
+        *,
+        broadcast: bool = True,
+        autosign: bool | None = None,
+    ) -> Transaction:
+        """Finalize the operation with specified signing and broadcasting options."""
+        self._sign_with = sign_with
+        self._save_file = save_file
+        self._broadcast = broadcast
+        self._autosign = autosign
         return await self._run()
 
 
@@ -73,21 +76,9 @@ class ProcessTransfer(ProcessCommandBase):
         from_account: str,
         to: str,
         amount: str | Asset.LiquidT,
-        memo: str,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
+        memo: str = "",
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.from_account = from_account
         self.to = to
         self.amount = amount
@@ -111,22 +102,11 @@ class ProcessTransaction(ProcessCommandBase):
         world: World,
         from_file: str | Path,
         already_signed_mode: AlreadySignedMode,
-        sign_with: str | None,
-        save_file: str | Path | None,
         *,
         force_unsign: bool,
         force: bool,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.from_file = from_file
         self.force_unsign = force_unsign
         self.already_signed_mode = already_signed_mode
@@ -143,23 +123,12 @@ class ProcessAuthority(ProcessCommandBase):
         authority_type: AuthorityLevelRegular,
         account_name: str,
         threshold: int,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.authority_type = authority_type
         self.account_name = account_name
         self.threshold = threshold
+        self.actions: list[tuple[AuthorityAction, dict[str, any]]] = []
 
     def add_key(
         self,
@@ -167,24 +136,24 @@ class ProcessAuthority(ProcessCommandBase):
         key: str | PublicKey,
         weight: int,
     ) -> Self:
-        raise Exception(f"Not implemented yet {key}, {weight}")  # noqa: TRY002
+        self.actions.append(("add-key", {"key": key, "weight": weight}))
         return self
 
     def add_account(
         self,
         *,
-        account: str | Account,
+        account_name: str,
         weight: int,
     ) -> Self:
-        raise Exception(f"Not implemented yet {account}, {weight}")  # noqa: TRY002
-        return self
+        # Tymczasowo rzuć wyjątek zgodnie z oczekiwaniem z przykładu
+        raise Exception(f"Not implemented yet {account_name}, {weight}")  # noqa: TRY002
 
     def remove_key(
         self,
         *,
         key: str | PublicKey,
     ) -> Self:
-        raise Exception(f"Not implemented yet {key}")  # noqa: TRY002
+        self.actions.append(("remove-key", {"key": key}))
         return self
 
     def remove_account(
@@ -192,7 +161,7 @@ class ProcessAuthority(ProcessCommandBase):
         *,
         account: str | Account,
     ) -> Self:
-        raise Exception(f"Not implemented yet {account}")  # noqa: TRY002
+        self.actions.append(("remove-account", {"account": account}))
         return self
 
     def modify_key(
@@ -201,7 +170,7 @@ class ProcessAuthority(ProcessCommandBase):
         key: str | PublicKey,
         weight: int,
     ) -> Self:
-        raise Exception(f"Not implemented yet {key}, {weight}")  # noqa: TRY002
+        self.actions.append(("modify-key", {"key": key, "weight": weight}))
         return self
 
     def modify_account(
@@ -210,14 +179,12 @@ class ProcessAuthority(ProcessCommandBase):
         account: str | Account,
         weight: int,
     ) -> Self:
-        raise Exception(f"Not implemented yet {account}, {weight}")  # noqa: TRY002
+        self.actions.append(("modify-account", {"account": account, "weight": weight}))
         return self
 
-    async def fire(self) -> Transaction:
-        return await self.run()
-
     async def _create_operation(self) -> TransferOperation:
-        raise NotImplementedError("This will be implemented in future.")
+        # Tymczasowa implementacja - w przyszłości będzie używać odpowiedniej operacji authority
+        raise NotImplementedError("Authority operations not yet fully implemented")
 
 
 class ProcessPowerDownStart(ProcessCommandBase):
@@ -226,20 +193,8 @@ class ProcessPowerDownStart(ProcessCommandBase):
         world: World,
         account_name: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.account_name = account_name
         self.amount = amount
 
@@ -253,20 +208,8 @@ class ProcessPowerDownRestart(ProcessCommandBase):
         world: World,
         account_name: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.account_name = account_name
         self.amount = amount
 
@@ -279,20 +222,8 @@ class ProcessPowerDownCancel(ProcessCommandBase):
         self,
         world: World,
         account_name: str,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.account_name = account_name
 
     async def _create_operation(self) -> TransferOperation:
@@ -306,21 +237,10 @@ class ProcessPowerUp(ProcessCommandBase):
         from_account: str,
         to_account: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None,
-        save_file: str | Path | None,
         *,
         force: bool,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        )
-        self.world = world
+        super().__init__(world)
         self.from_account = from_account
         self.to_account = to_account
         self.amount = amount
@@ -338,19 +258,8 @@ class ProcessCustomJson(ProcessCommandBase):
         json: str | Path,
         authorize: str | list[str] | None,
         authorize_by_active: str | list[str] | None,
-        sign_with: str | None,
-        save_file: str | Path | None,
-        *,
-        broadcast: bool,
-        autosign: bool | None,
     ) -> None:
-        super().__init__(
-            world=world,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast if broadcast is not None else True,
-            autosign=autosign,
-        )
+        super().__init__(world)
         self.id_ = id_
         self.json = json
         self.authorize = authorize

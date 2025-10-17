@@ -29,65 +29,44 @@ class ProcessInterface:
     def __init__(self, clive_instance: ProfileBase) -> None:
         self.clive = clive_instance
 
-    async def transfer(  # noqa: PLR0913
+    def transfer(  # noqa: PLR0913
         self,
         from_account: str,
         to_account: str,
         amount: str | Asset.LiquidT,
         memo: str = "",
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
-        *,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> Transaction:
+    ) -> ProcessTransfer:
         """Transfer funds between accounts."""
-        return await ProcessTransfer(
+        return ProcessTransfer(
             world=self.clive.world,
             from_account=from_account,
             to=to_account,
             amount=amount,
             memo=memo,
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-        ).run()
+        )
 
-    async def transaction(  # noqa: PLR0913
+    def transaction(  # noqa: PLR0913
         self,
         from_file: str | Path,
         *,
         force_unsign: bool,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
-        sign_with: str | None = None,
-        broadcast: bool = True,
-        save_file: str | Path | None = None,
-        autosign: bool | None = None,
         force: bool = False,
-    ) -> Transaction:
+    ) -> ProcessTransaction:
         """Process a transaction from a file."""
-        return await ProcessTransaction(
+        return ProcessTransaction(
             world=self.clive.world,
             from_file=from_file,
             force_unsign=force_unsign,
             already_signed_mode=already_signed_mode,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
             force=force,
-            autosign=autosign,
-        ).run()
+        )
 
     def update_owner_authority(  # noqa: PLR0913
         self,
         account_name: str,
         *,
         threshold: int,
-        sign_with: str | None = None,
-        broadcast: bool = True,
-        save_file: str | Path | None = None,
-        autosign: bool | None = None,
     ) -> ProcessAuthority:
         """Update owner authority for an account."""
         return ProcessAuthority(
@@ -95,21 +74,13 @@ class ProcessInterface:
             authority_type="owner",
             account_name=account_name,
             threshold=threshold,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
         )
 
     def update_active_authority(  # noqa: PLR0913
         self,
         account_name: str,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
         *,
         threshold: int,
-        broadcast: bool = True,
-        autosign: bool | None = None,
     ) -> ProcessAuthority:
         """Update active authority for an account."""
         return ProcessAuthority(
@@ -117,21 +88,13 @@ class ProcessInterface:
             authority_type="active",
             account_name=account_name,
             threshold=threshold,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
         )
 
     def update_posting_authority(  # noqa: PLR0913
         self,
         account_name: str,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
         *,
         threshold: int,
-        broadcast: bool = True,
-        autosign: bool | None = None,
     ) -> ProcessAuthority:
         """Update posting authority for an account."""
         return ProcessAuthority(
@@ -139,119 +102,71 @@ class ProcessInterface:
             authority_type="posting",
             account_name=account_name,
             threshold=threshold,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
         )
 
-    async def process_power_down_start(  # noqa: PLR0913
+    def power_down_start(  # noqa: PLR0913
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
-        *,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> None:
+    ) -> ProcessPowerDownStart:
         """Start power down for an account."""
-        await ProcessPowerDownStart(
+        return ProcessPowerDownStart(
             world=self.clive.world,
             account_name=account_name,
             amount=amount,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
-        ).run()
+        )
 
-    async def process_power_down_restart(  # noqa: PLR0913
+    def power_down_restart(  # noqa: PLR0913
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
-        *,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> None:
+    ) -> ProcessPowerDownRestart:
         """Restart power down for an account."""
-        await ProcessPowerDownRestart(
+        return ProcessPowerDownRestart(
             world=self.clive.world,
             account_name=account_name,
             amount=amount,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
-        ).run()
+        )
 
-    async def process_power_down_cancel(
+    def power_down_cancel(
         self,
         account_name: str,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
-        *,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> None:
+    ) -> ProcessPowerDownCancel:
         """Cancel power down for an account."""
-        await ProcessPowerDownCancel(
+        return ProcessPowerDownCancel(
             world=self.clive.world,
             account_name=account_name,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
-        ).run()
+        )
 
-    async def process_power_up(  # noqa: PLR0913
+    def power_up(  # noqa: PLR0913
         self,
         from_account: str,
         to_account: str,
         amount: str | Asset.LiquidT,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
         *,
         force: bool,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> None:
+    ) -> ProcessPowerUp:
         """Power up (stake) funds from one account to another."""
-        await ProcessPowerUp(
+        return ProcessPowerUp(
             world=self.clive.world,
             from_account=from_account,
             to_account=to_account,
             amount=amount,
             force=force,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
-        ).run()
+        )
 
-    async def process_custom_json(  # noqa: PLR0913
+    def custom_json(  # noqa: PLR0913
         self,
         id_: str,
         json: str | Path,
         authorize: str | list[str] | None = None,
         authorize_by_active: str | list[str] | None = None,
-        sign_with: str | None = None,
-        save_file: str | Path | None = None,
-        *,
-        broadcast: bool = True,
-        autosign: bool | None = None,
-    ) -> None:
+    ) -> ProcessCustomJson:
         """Process a custom JSON operation."""
-        await ProcessCustomJson(
+        return ProcessCustomJson(
             world=self.clive.world,
             id_=id_,
             json=json,
             authorize=authorize,
             authorize_by_active=authorize_by_active,
-            sign_with=sign_with,
-            broadcast=broadcast,
-            save_file=save_file,
-            autosign=autosign,
-        ).run()
+        )
