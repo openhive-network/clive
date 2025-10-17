@@ -4,7 +4,7 @@ import errno
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 import rich
 
@@ -62,7 +62,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file: str | Path | None = None
-    broadcast: bool = False
+    broadcast: bool | None = None
 
     @property
     def is_sign_with_given(self) -> bool:
@@ -95,8 +95,28 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         return self.use_autosign or self.is_sign_with_given
 
     @property
+    def is_save_file_given(self) -> bool:
+        return self.save_file is not None
+
+    @property
     def save_file_path(self) -> Path | None:
-        return Path(self.save_file) if self.save_file is not None else None
+        return Path(cast("str | Path", self.save_file)) if self.is_save_file_given else None
+
+    @property
+    def is_broadcast_given(self) -> bool:
+        return self.broadcast is not None
+
+    @property
+    def is_broadcast_explicitly_requested(self) -> bool:
+        return self.broadcast is True
+
+    @property
+    def should_broadcast(self) -> bool:
+        if self.is_broadcast_given:
+            return cast("bool", self.broadcast)
+
+        # Broadcast by default if not saving to file and not forcing unsign
+        return not self.is_save_file_given and not self.force_unsign
 
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
@@ -135,7 +155,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
-                    broadcast=self.broadcast,
+                    broadcast=self.should_broadcast,
                     autosign=self.use_autosign,
                 )
             ).result_or_raise
@@ -151,7 +171,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
-        if self.broadcast and (not self.is_sign_with_given and not self.use_autosign):
+        if self.should_broadcast and (not self.is_sign_with_given and not self.use_autosign):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
@@ -203,13 +223,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         rich.print_json(transaction_json)
 
     def _print_dry_run_message_if_needed(self) -> None:
-        if not self.broadcast:
+        if not self.should_broadcast:
             print_cli("[Performing dry run, because --broadcast is not set.]\n")
 
     def _print_transaction_success_message(self) -> None:
         print_cli(
             "Transaction was successfully"
-            f" {'broadcasted' if self.broadcast else self._get_transaction_created_message()}."
+            f" {'broadcasted' if self.should_broadcast else self._get_transaction_created_message()}."
         )
 
     def _print_saved_to_file_message_if_needed(self) -> None:

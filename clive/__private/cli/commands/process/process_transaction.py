@@ -91,7 +91,9 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             "If you want to remove the signature and show or save the unsigned transaction, "
             "add the '--no-broadcast' option."
         )
-        self._validate_mutually_exclusive(broadcast=self.broadcast, force_unsign=self.force_unsign, details=details)
+        self._validate_mutually_exclusive(
+            broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
+        )
 
     def _validate_signed_transaction(self) -> None:
         if self.already_signed_mode == "strict" and self.is_sign_with_given:
