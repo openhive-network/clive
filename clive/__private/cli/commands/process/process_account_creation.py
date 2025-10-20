@@ -18,6 +18,7 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.types import AuthorityLevel, AuthorityLevelRegular
 
@@ -122,9 +123,9 @@ class ProcessAccountCreation(OperationCommand):
         return Authority(weight_threshold=DEFAULT_AUTHORITY_THRESHOLD, account_auths=[], key_auths=[])
 
     @override
-    async def _create_operation(self) -> AccountCreateOperation | CreateClaimedAccountOperation:
-        if self.fee:
-            return AccountCreateOperation(
+    async def _create_operations(self) -> ComposeTransaction:
+        yield (
+            AccountCreateOperation(
                 fee=self.fee_value_ensure,
                 creator=self.creator,
                 new_account_name=self.new_account_name,
@@ -134,14 +135,16 @@ class ProcessAccountCreation(OperationCommand):
                 posting=self._posting_authority,
                 memo_key=self.memo_key_ensure.value,
             )
-        return CreateClaimedAccountOperation(
-            creator=self.creator,
-            new_account_name=self.new_account_name,
-            json_metadata=self.json_metadata,
-            owner=self._owner_authority,
-            active=self._active_authority,
-            posting=self._posting_authority,
-            memo_key=self.memo_key_ensure.value,
+            if self.fee
+            else CreateClaimedAccountOperation(
+                creator=self.creator,
+                new_account_name=self.new_account_name,
+                json_metadata=self.json_metadata,
+                owner=self._owner_authority,
+                active=self._active_authority,
+                posting=self._posting_authority,
+                memo_key=self.memo_key_ensure.value,
+            )
         )
 
     def _get_authority(self, level: AuthorityLevelRegular) -> Authority:

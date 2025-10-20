@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import errno
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 from clive.__private.models.schemas import UpdateProposalVotesOperation
+
+if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
 
 
 @dataclass(kw_only=True)
@@ -15,9 +19,9 @@ class ProcessVoteProposal(OperationCommand):
     proposal_ids: list[int]
     approve: bool
 
-    async def _create_operation(self) -> UpdateProposalVotesOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         self.proposal_ids.sort()
-        return UpdateProposalVotesOperation(
+        yield UpdateProposalVotesOperation(
             voter=self.account_name,
             proposal_ids=self.proposal_ids,
             approve=self.approve,

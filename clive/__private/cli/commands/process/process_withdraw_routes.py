@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import WithdrawRoutesZeroPercentError
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
+
+if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
 
 
 @dataclass(kw_only=True)
@@ -21,8 +25,8 @@ class ProcessWithdrawRoutes(OperationCommand):
         await self._validate_percent()
         await super().validate()
 
-    async def _create_operation(self) -> SetWithdrawVestingRouteOperation:
-        return SetWithdrawVestingRouteOperation(
+    async def _create_operations(self) -> ComposeTransaction:
+        yield SetWithdrawVestingRouteOperation(
             from_account=self.from_account,
             to_account=self.to_account,
             percent=percent_to_hive_percent(self.percent),

@@ -7,6 +7,7 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models.schemas import TransferToVestingOperation
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.models.asset import Asset
 
 
@@ -16,8 +17,8 @@ class ProcessPowerUp(OperationCommand):
     to_account: str
     amount: Asset.Hive
 
-    async def _create_operation(self) -> TransferToVestingOperation:
-        return TransferToVestingOperation(
+    async def _create_operations(self) -> ComposeTransaction:
+        yield TransferToVestingOperation(
             from_=self.from_account,
             to=self.to_account,
             amount=self.amount,

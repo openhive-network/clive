@@ -9,7 +9,7 @@ from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction
+    from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction, ComposeTransaction
     from clive.__private.core.types import AuthorityLevelRegular
     from clive.__private.models.schemas import Account
 
@@ -45,14 +45,14 @@ class ProcessAccountUpdate(OperationCommand):
             raise NoChangesTransactionError
         await super().validate()
 
-    async def _create_operation(self) -> AccountUpdate2Operation:
+    async def _create_operations(self) -> ComposeTransaction:
         previous_state = self.__create_operation_from_stored_state(self._account)
         modified_state = deepcopy(previous_state)
 
         for callback in self._callbacks:
             modified_state = callback(modified_state)
 
-        return self.__skip_untouched_fields(previous_state, modified_state)
+        yield self.__skip_untouched_fields(previous_state, modified_state)
 
     def add_callback(self, callback: AccountUpdateFunction) -> None:
         self._callbacks.append(callback)

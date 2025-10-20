@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
-from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
+from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWitnessNotFoundError
 from clive.__private.core import iwax
 from clive.__private.core.commands.find_witness import WitnessNotFoundError
@@ -23,8 +23,7 @@ from clive.__private.models.schemas import (
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from clive.__private.core.ensure_transaction import TransactionConvertibleType
-    from clive.__private.models.schemas import OperationBase
+    from clive.__private.cli.types import ComposeTransaction
 
 
 class RequiresWitnessSetPropertiesOperationError(CLIPrettyError):
@@ -45,7 +44,7 @@ class RequiresWitnessSetPropertiesOperationError(CLIPrettyError):
 
 
 @dataclass(kw_only=True)
-class ProcessUpdateWitness(PerformActionsOnTransactionCommand):
+class ProcessUpdateWitness(OperationCommand):
     owner: str
     use_witness_key: bool
     account_creation_fee: Asset.Hive | None
@@ -76,22 +75,17 @@ class ProcessUpdateWitness(PerformActionsOnTransactionCommand):
             raise CLIWitnessNotFoundError(self.owner) from err
 
     @override
-    async def _get_transaction_content(self) -> TransactionConvertibleType:
-        operations: list[OperationBase] = []
+    async def _create_operations(self) -> ComposeTransaction:
         if self._needs_feed_publish_operation:
-            operations.append(self._create_feed_publish_operation())
+            yield self._create_feed_publish_operation()
         if self._needs_witness_update_operation:
-            operations.append(self._create_witness_update_operation())
+            yield self._create_witness_update_operation()
         if self._needs_witness_set_properties_operation:
-            operations.append(self._create_witness_set_properties_operation())
-        if not bool(operations):
-            raise CLIPrettyError("Transaction with no changes to authority cannot be created.")
-        return operations
+            yield self._create_witness_set_properties_operation()
 
     @override
     async def validate(self) -> None:
         self._validate_requirements_for_witness_set_propertues_operation()
-        self._validate_if_broadcasting_signed_transaction()
         self._validate_not_empty()
         await super().validate()
 

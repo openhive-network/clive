@@ -26,6 +26,7 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
         AccountScheduledTransferData,
         ScheduledTransfer,
@@ -121,11 +122,11 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
         if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_MAX_LIFETIME:
             raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
 
-    async def _create_operation(self) -> RecurrentTransferOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         assert self.repeat is not None, "Value of repeat is None."
         assert self.memo is not None, "Value of memo is None."
         assert self.amount is not None, "Value of amount is None."
-        return RecurrentTransferOperation(
+        yield RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
@@ -181,8 +182,8 @@ class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
 
 @dataclass(kw_only=True)
 class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
-    async def _create_operation(self) -> RecurrentTransferOperation:
-        return RecurrentTransferOperation(
+    async def _create_operations(self) -> ComposeTransaction:
+        yield RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=SCHEDULED_TRANSFER_REMOVE_ASSETS[0].copy(),

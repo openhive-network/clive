@@ -10,6 +10,7 @@ from clive.__private.core.constants.node_special_assets import HIVE_FEE_TO_USE_R
 from clive.__private.models.schemas import ClaimAccountOperation
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.models.asset import Asset
 
 
@@ -19,12 +20,12 @@ class ProcessClaimNewAccountToken(OperationCommand):
     fee: Asset.Hive | None
     """None means RC will be used instead of payment in Hive"""
 
-    async def _create_operation(self) -> ClaimAccountOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         if self.fee == HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION_ASSET:
             raise CLIClaimAccountTokenZeroFeeError
         fee = self.fee if self.fee is not None else HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION_ASSET.copy()
 
-        return ClaimAccountOperation(creator=self.creator, fee=fee)
+        yield ClaimAccountOperation(creator=self.creator, fee=fee)
 
 
 class CLIClaimAccountTokenZeroFeeError(CLIPrettyError):

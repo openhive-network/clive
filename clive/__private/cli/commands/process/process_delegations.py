@@ -10,6 +10,7 @@ from clive.__private.core.ensure_vests import ensure_vests_async
 from clive.__private.models.schemas import DelegateVestingSharesOperation
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.models.asset import Asset
 
 
@@ -23,10 +24,10 @@ class ProcessDelegations(OperationCommand):
         await self._validate_amount()
         await super().validate()
 
-    async def _create_operation(self) -> DelegateVestingSharesOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         vesting_shares = await ensure_vests_async(self.amount, self.world)
 
-        return DelegateVestingSharesOperation(
+        yield DelegateVestingSharesOperation(
             delegator=self.delegator,
             delegatee=self.delegatee,
             vesting_shares=vesting_shares,

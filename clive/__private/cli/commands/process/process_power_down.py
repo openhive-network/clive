@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import PowerDownInProgressError
@@ -9,16 +10,19 @@ from clive.__private.core.ensure_vests import ensure_vests_async
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import WithdrawVestingOperation
 
+if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
+
 
 @dataclass(kw_only=True)
 class ProcessPowerDown(OperationCommand):
     account_name: str
     amount: Asset.VotingT
 
-    async def _create_operation(self) -> WithdrawVestingOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         vesting_shares = await ensure_vests_async(self.amount, self.world)
 
-        return WithdrawVestingOperation(
+        yield WithdrawVestingOperation(
             account=self.account_name,
             vesting_shares=vesting_shares,
         )

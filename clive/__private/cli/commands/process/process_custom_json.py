@@ -3,12 +3,16 @@ from __future__ import annotations
 import errno
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 from clive.__private.models.schemas import CustomJsonOperation, JsonString
 from clive.__private.validators.json_validator import JsonValidator
+
+if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
 
 
 @dataclass(kw_only=True)
@@ -18,9 +22,9 @@ class ProcessCustomJson(OperationCommand):
     authorize: list[str]
     json_or_path: str
 
-    async def _create_operation(self) -> CustomJsonOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         json_ = self.ensure_json_from_json_string_or_path(self.json_or_path)
-        return CustomJsonOperation(
+        yield CustomJsonOperation(
             id_=self.id_,
             json_=JsonString(json_),
             required_auths=self.authorize_by_active,

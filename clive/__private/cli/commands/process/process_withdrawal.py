@@ -7,6 +7,7 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models.schemas import TransferFromSavingsOperation
 
 if TYPE_CHECKING:
+    from clive.__private.cli.types import ComposeTransaction
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.__private.models.asset import Asset
 
@@ -19,13 +20,13 @@ class ProcessWithdrawal(OperationCommand):
     amount: Asset.LiquidT
     memo: str
 
-    async def _create_operation(self) -> TransferFromSavingsOperation:
+    async def _create_operations(self) -> ComposeTransaction:
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_savings_data(account_name=self.profile.accounts.working.name)
             savings_data: SavingsData = wrapper.result_or_raise
             self.request_id = savings_data.create_request_id()
 
-        return TransferFromSavingsOperation(
+        yield TransferFromSavingsOperation(
             from_=self.from_account,
             request_id=self.request_id,
             to=self.to_account,

@@ -12,7 +12,8 @@ clive/__private/cli/commands/abc/external_cli_command.py
     DOC103: Method `ExternalCLICommand._supply_with_correct_default_for_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [profile: Profile].
 --------------------
 clive/__private/cli/commands/abc/operation_command.py
-    DOC201: Method `OperationCommand._create_operation` does not have a return section in docstring
+    DOC201: Method `OperationCommand._create_operations` does not have a return section in docstring
+    DOC402: Method `OperationCommand._create_operations` has "yield" statements, but the docstring does not have a "Yields" section
 --------------------
 clive/__private/cli/commands/abc/perform_actions_on_transaction_command.py
     DOC201: Method `PerformActionsOnTransactionCommand._get_transaction_content` does not have a return section in docstring
