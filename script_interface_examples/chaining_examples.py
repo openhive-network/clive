@@ -21,7 +21,7 @@ async def first_script() -> None:
             to_account="gtg",
             amount="1.000 HIVE",
             memo="Test transfer",
-        ).finalize(sign_with="STM5iuVuYcsZmCzXHJT9VbVvHATPa28cLMrf5zKEkzqKc73e22Jtr")
+        ).finalize(sign_with="STM5iuVuYcsZmCzXHJT9VbVvHATPa28cLMrf5zKEkzqKc73e22Jtr", broadcast=False)
 
         # Transfer without signing, just create the transfer
         transfer2 = await clive.process.transfer(
@@ -29,7 +29,7 @@ async def first_script() -> None:
             to_account="gtg",
             amount="1.000 HIVE",
             memo="Test transfer",
-        ).finalize()
+        ).finalize(broadcast=False)
 
         # Transfer with autosign
         transfer3 = await clive.process.transfer(
@@ -37,7 +37,7 @@ async def first_script() -> None:
             to_account="gtg",
             amount="1.000 HIVE",
             memo="Test transfer",
-        ).finalize(autosign=True)
+        ).finalize(autosign=True, broadcast=False)
 
         # Transfer with autosign and save to file
         transfer4 = (
@@ -46,7 +46,7 @@ async def first_script() -> None:
                 to_account="gtg",
                 amount="1.000 HIVE",
                 memo="Test transfer",
-            ).finalize(autosign=True, save_file="/workspace/clive_workspace/clive/script_interface_examples/transfer.json")
+            ).finalize(autosign=True, save_file="/workspace/clive_workspace/clive/script_interface_examples/transfer.json", broadcast=False)
         )
 
         # Transfer with sign and broadcast, should fail due to missing active authority
@@ -70,7 +70,7 @@ async def first_script() -> None:
             update_authority = await clive.process.update_active_authority(
                 account_name="alice",
                 threshold=1,
-            ).add_account(account_name="gtg", weight=1).finalize()
+            ).add_account(account_name="gtg", weight=1).finalize(broadcast=False)
         except Exception as e:
             assert "Not implemented yet gtg, 1" in str(e)
 
@@ -81,10 +81,17 @@ async def first_script() -> None:
                 to_account="g",
                 amount="1.000 HIVE",
                 memo="Test transfer",
-            ).finalize()
+            ).finalize(broadcast=False)
         except Exception as e:
             assert "Expected `str` of length >= 3" in str(e)
 
+        # update_authority = await clive.process.update_active_authority(account_name="alice",threshold=1,).add_key(key="STM5iuVuYcsZmCzXHJT9VbVvHATPa28cLMrf5zKEkzqKc73e22Jtr", weight=1).finalize(broadcast=False)
+        transfer7 = (
+            await clive.process.transaction(
+                from_file="/workspace/clive_workspace/clive/script_interface_examples/transfer.json",
+                force_unsign=False,
+            ).finalize(autosign=True, broadcast=False)
+        )
 
 if __name__ == "__main__":
     asyncio.run(first_script())

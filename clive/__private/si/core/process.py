@@ -112,6 +112,38 @@ class ProcessTransaction(ProcessCommandBase):
         self.already_signed_mode = already_signed_mode
         self.force = force
 
+    async def _run(
+        self,
+        *,
+        sign_with: str | None = None,
+        save_file: str | Path | None = None,
+        broadcast: bool = False,
+        autosign: bool | None = None,
+    ) -> Transaction:
+        from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
+        transaction = ProcessTransaction(
+            from_file=self.from_file,
+            force_unsign=self.force_unsign,
+            already_signed_mode=self.already_signed_mode,
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=save_file,
+            force=self.force,
+            autosign=autosign
+        )
+        await transaction.validate()
+
+        await self.validate(broadcast=broadcast, sign_with=sign_with)
+        return (
+            await self.world.commands.perform_actions_on_transaction(
+                content= await transaction.get_transaction(),
+                sign_key=PublicKey(value=sign_with) if sign_with else None,
+                autosign=bool(autosign),
+                save_file_path=Path(save_file) if save_file else None,
+                broadcast=broadcast,
+            )
+        ).result_or_raise
+
     async def _create_operation(self) -> TransferOperation:
         raise NotImplementedError("This will be implemented in future.")
 
