@@ -241,6 +241,7 @@ async def test_save_file_option_multiple_times(cli_tester: CLITester, authority:
         key=WORKING_ACCOUNT_DATA.account.public_key,
         weight=MODIFIED_WEIGHT,
         save_file=created_transaction_filepath,
+        broadcast=True,
     ).fire()
 
     # ASSERT
