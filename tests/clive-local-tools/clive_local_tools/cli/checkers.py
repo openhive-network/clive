@@ -224,7 +224,7 @@ def assert_transaction_file_is_unsigned(file_path: Path) -> None:
 
 
 def assert_contains_dry_run_message(message: str) -> None:
-    assert_output_contains("Performing dry run, because --broadcast is not set.", message)
+    assert_output_contains("[Performing dry run, because no broadcast or save to file was requested.]", message)
 
 
 def assert_contains_transaction_created_message(message: str) -> None:

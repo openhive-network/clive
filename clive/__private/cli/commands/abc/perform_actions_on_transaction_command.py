@@ -223,8 +223,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         rich.print_json(transaction_json)
 
     def _print_dry_run_message_if_needed(self) -> None:
-        if not self.should_broadcast:
-            print_cli("[Performing dry run, because --broadcast is not set.]\n")
+        if not self.should_broadcast and not self.is_save_file_given:
+            print_cli("[Performing dry run, because no broadcast or save to file was requested.]\n")
 
     def _print_transaction_success_message(self) -> None:
         print_cli(
