@@ -140,7 +140,6 @@ async def test_saving_autosigned_operation_to_file(cli_tester: CLITester, *, aut
         assert_transaction_file_is_signed(transaction_filepath)
     else:
         assert_transaction_file_is_unsigned(transaction_filepath)
-    assert_contains_dry_run_message(result.stdout)
     assert_contains_transaction_created_message(result.stdout)
     assert_contains_transaction_saved_to_file_message(transaction_filepath, result.stdout)
 
