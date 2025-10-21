@@ -67,6 +67,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     broadcast: bool | None = None
     _transaction: Transaction | None = None
 
+    @abstractmethod
+    async def _get_transaction_content(self) -> TransactionConvertibleType:
+        """Get the transaction content to be processed into a transaction."""
+
     @property
     def is_sign_with_given(self) -> bool:
         return self.sign_with is not None
@@ -140,10 +144,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     @property
     def is_transaction_signed(self) -> bool:
         return self.transaction.is_signed
-
-    @abstractmethod
-    async def _get_transaction_content(self) -> TransactionConvertibleType:
-        """Get the transaction content to be processed."""
 
     async def validate(self) -> None:
         self.validate_all_mutually_exclusive_options()
