@@ -51,21 +51,6 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         return self._loaded_transaction
 
     async def validate(self) -> None:
-        """
-        Validate given options before taking any action.
-
-        User may:
-        1. Load already signed transaction:
-         - broadcast it right away (no need to specify sign_key and password)
-         - save it to file in the same or different format (.bin/.json),
-           as it is (signed - sign_key and password required) or remove its signature (force-unsign)
-        2. Load unsigned transaction:
-          - broadcast it (but sign_key and password must be provided)
-          - save it to file in the same or different format (in .bin/.json format):
-            * if sign_key is provided, it will be signed and saved
-            * if sign_key is not provided, it will be saved as unsigned.
-
-        """
         self.validate_all_mutually_exclusive_options()
         self._validate_already_signed_mode()
         if await self._is_transaction_already_signed():
