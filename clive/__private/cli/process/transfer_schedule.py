@@ -58,7 +58,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     amount: str = options.liquid_amount,
     repeat: int = _repeat_value,
     frequency: timedelta = _frequency_value,
-    memo: str = options.memo,
+    memo: str = options.memo_text,
     pair_id: int = _pair_id_value,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
@@ -94,7 +94,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     amount: str = options.liquid_amount_optional,
     repeat: int | None = _repeat_value_optional,
     frequency: timedelta | None = _frequency_value_optional,
-    memo: str | None = options.memo_optional,
+    memo: str | None = options.memo_text_optional,
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001

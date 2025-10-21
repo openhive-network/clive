@@ -93,12 +93,12 @@ percent = typer.Option(
     help="Percent (0.00-100.00)",
 )
 
-memo = typer.Option(
+memo_text = typer.Option(
     "",
     "--memo",
     help="The memo to attach to the transfer.",
 )
-memo_optional = modified_param(memo, default=None)
+memo_text_optional = modified_param(memo_text, default=None)
 
 page_size = typer.Option(
     10,

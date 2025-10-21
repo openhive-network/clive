@@ -56,7 +56,7 @@ async def transfer(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to: str = typer.Option(..., help="The account to transfer to."),
     amount: str = options.liquid_amount,
-    memo: str = options.memo,
+    memo: str = options.memo_text,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
