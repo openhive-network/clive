@@ -62,7 +62,7 @@ class ProcessInterface:
             force=force,
         )
 
-    def update_owner_authority(  # noqa: PLR0913
+    def update_owner_authority(
         self,
         account_name: str,
         *,
@@ -76,7 +76,7 @@ class ProcessInterface:
             threshold=threshold,
         )
 
-    def update_active_authority(  # noqa: PLR0913
+    def update_active_authority(
         self,
         account_name: str,
         *,
@@ -90,7 +90,7 @@ class ProcessInterface:
             threshold=threshold,
         )
 
-    def update_posting_authority(  # noqa: PLR0913
+    def update_posting_authority(
         self,
         account_name: str,
         *,

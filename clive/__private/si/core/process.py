@@ -1,16 +1,27 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Self, cast
 
+from clive.__private.cli.commands.process.process_account_update import (
+    ProcessAccountUpdate,
+    add_account,
+    add_key,
+    modify_account,
+    modify_key,
+    remove_account,
+    remove_key,
+    set_threshold,
+    update_authority,
+)
 from clive.__private.cli.exceptions import CLITransactionNotSignedError
 from clive.__private.core.keys.keys import PublicKey
 from clive.__private.models.asset import Asset
 from schemas.operations.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.core.accounts.accounts import Account
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.types import AlreadySignedMode, AuthorityLevelRegular
     from clive.__private.core.world import World
@@ -149,7 +160,7 @@ class ProcessTransaction(ProcessCommandBase):
 
 
 class ProcessAuthority(ProcessCommandBase):
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         world: World,
         authority_type: AuthorityLevelRegular,
@@ -160,15 +171,23 @@ class ProcessAuthority(ProcessCommandBase):
         self.authority_type = authority_type
         self.account_name = account_name
         self.threshold = threshold
-        self.actions: list[tuple[AuthorityAction, dict[str, any]]] = []
+        self.process_account_update = ProcessAccountUpdate(account_name=account_name)
+        self._set_threshold()
+
+    def _set_threshold(self) -> None:
+        set_threshold_function = partial(set_threshold, threshold=self.threshold)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=set_threshold_function)
+        self.process_account_update.add_callback(update_function)
 
     def add_key(
         self,
         *,
-        key: str | PublicKey,
+        key: str,
         weight: int,
     ) -> Self:
-        self.actions.append(("add-key", {"key": key, "weight": weight}))
+        add_key_function = partial(add_key, key=key, weight=weight)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=add_key_function)
+        self.process_account_update.add_callback(update_function)
         return self
 
     def add_account(
@@ -177,46 +196,74 @@ class ProcessAuthority(ProcessCommandBase):
         account_name: str,
         weight: int,
     ) -> Self:
-        # Tymczasowo rzuć wyjątek zgodnie z oczekiwaniem z przykładu
-        raise Exception(f"Not implemented yet {account_name}, {weight}")  # noqa: TRY002
+        add_account_function = partial(add_account, account=account_name, weight=weight)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=add_account_function)
+        self.process_account_update.add_callback(update_function)
+        return self
 
     def remove_key(
         self,
         *,
-        key: str | PublicKey,
+        key: str,
     ) -> Self:
-        self.actions.append(("remove-key", {"key": key}))
+        remove_key_function = partial(remove_key, key=key)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=remove_key_function)
+        self.process_account_update.add_callback(update_function)
         return self
 
     def remove_account(
         self,
         *,
-        account: str | Account,
+        account: str,
     ) -> Self:
-        self.actions.append(("remove-account", {"account": account}))
+        remove_account_function = partial(remove_account, account=account)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=remove_account_function)
+        self.process_account_update.add_callback(update_function)
         return self
 
     def modify_key(
         self,
         *,
-        key: str | PublicKey,
+        key: str,
         weight: int,
     ) -> Self:
-        self.actions.append(("modify-key", {"key": key, "weight": weight}))
+        modify_key_function = partial(modify_key, key=key, weight=weight)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=modify_key_function)
+        self.process_account_update.add_callback(update_function)
         return self
 
     def modify_account(
         self,
         *,
-        account: str | Account,
+        account: str,
         weight: int,
     ) -> Self:
-        self.actions.append(("modify-account", {"account": account, "weight": weight}))
+        modify_account_function = partial(modify_account, account=account, weight=weight)
+        update_function = partial(update_authority, attribute=self.authority_type, callback=modify_account_function)
+        self.process_account_update.add_callback(update_function)
         return self
 
+    async def _run(
+        self,
+        *,
+        sign_with: str | None = None,
+        save_file: str | Path | None = None,
+        broadcast: bool = False,
+        autosign: bool | None = None,
+    ) -> Transaction:
+        self.process_account_update.modify_common_options(
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=str(save_file) if save_file else None,
+            autosign=autosign,
+        )
+
+        await self.validate(broadcast=broadcast, sign_with=sign_with)
+        await self.process_account_update.run()
+        return await self.process_account_update.get_transaction()
+
     async def _create_operation(self) -> TransferOperation:
-        # Tymczasowa implementacja - w przyszłości będzie używać odpowiedniej operacji authority
-        raise NotImplementedError("Authority operations not yet fully implemented")
+        raise NotImplementedError("Unused method.")
 
 
 class ProcessPowerDownStart(ProcessCommandBase):
