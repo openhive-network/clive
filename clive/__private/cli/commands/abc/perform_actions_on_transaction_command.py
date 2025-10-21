@@ -163,13 +163,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
-        if self.is_transaction_signed:
-            self._validate_signed_mode()
-        else:
-            self._validate_if_broadcasting_signed_transaction()
+        self._validate_manual_sign_not_allowed_in_strict_already_signed_mode()
+        self._validate_if_broadcasting_signed_transaction()
         await self._validate_bad_accounts()
-        if self.profile.should_enable_known_accounts:
-            await self._validate_unknown_accounts()
+        await self._validate_unknown_accounts()
         await self._validate_operations_to_exchange()
         await self._validate_keys_availability()
         await super().validate_inside_context_manager()
@@ -220,8 +217,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
             raise CLIWrongAlreadySignedModeAutoSignError
 
-    def _validate_signed_mode(self) -> None:
-        if self.already_signed_mode == "strict" and self.is_sign_with_given:
+    def _validate_manual_sign_not_allowed_in_strict_already_signed_mode(self) -> None:
+        if self.is_transaction_signed and self.already_signed_mode == "strict" and self.is_sign_with_given:
             raise CLITransactionAlreadySignedError
 
     def _validate_save_file_path(self) -> None:
@@ -231,10 +228,16 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_broadcasting_signed_transaction(self) -> None:
+        if self.is_transaction_signed:
+            return
+
         if self.should_broadcast and (not self.is_sign_with_given and not self.use_autosign):
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
+        if not self.profile.should_enable_known_accounts:
+            return
+
         unknown_accounts = self.transaction.get_unknown_accounts(self.profile.accounts.known)
         if unknown_accounts:
             raise CLITransactionUnknownAccountError(*unknown_accounts)
