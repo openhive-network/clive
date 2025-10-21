@@ -111,6 +111,10 @@ def assert_output_contains(expected_output: str, output: str, command: str | Non
         assert expected_output in output, f"expected `{expected_output}` in output:\n{output}"
 
 
+def assert_output_does_not_contain(part: str, output: str) -> None:
+    assert part not in output, f"Unexpected occurrence of `{part}` in output:\n{output}"
+
+
 def assert_no_delegations(context: CLITester | Result) -> None:
     output = _get_output(context, CLITester.show_hive_power)
     expected_output = "no delegations"
@@ -242,6 +246,11 @@ def assert_contains_transaction_created_message(message: str) -> None:
 def assert_contains_transaction_broadcasted_message(message: str) -> None:
     """This message is shown when transaction was broadcasted."""
     assert_output_contains(TRANSACTION_BROADCASTED_MESSAGE, message)
+
+
+def assert_does_not_contain_transaction_broadcasted_message(message: str) -> None:
+    """This message is shown when transaction was broadcasted."""
+    assert_output_does_not_contain(TRANSACTION_BROADCASTED_MESSAGE, message)
 
 
 def assert_contains_transaction_loaded_message(message: str) -> None:
