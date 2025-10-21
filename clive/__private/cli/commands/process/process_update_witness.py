@@ -169,8 +169,7 @@ class ProcessUpdateWitness(OperationCommand):
         )
 
     def _create_witness_set_properties_operation(self) -> WitnessSetPropertiesOperation:
-        schemas_props = iwax.create_witness_set_properties(
-            wax_interface=self.world.wax_interface,
+        wax_operation_wrapper = iwax.WitnessSetPropertiesWrapper.create(
             owner=self.owner,
             key=PublicKey(value=self.witness_ensure.signing_key),
             new_signing_key=self.new_signing_key,
@@ -182,7 +181,4 @@ class ProcessUpdateWitness(OperationCommand):
             account_subsidy_budget=self.account_subsidy_budget,
             account_subsidy_decay=self.account_subsidy_decay,
         )
-        return WitnessSetPropertiesOperation(
-            owner=AccountName(self.owner),
-            props=schemas_props,
-        )
+        return wax_operation_wrapper.to_schemas(self.world.wax_interface)
