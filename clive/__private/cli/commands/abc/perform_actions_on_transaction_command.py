@@ -65,6 +65,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool | None = None
+    _transaction: Transaction | None = None
 
     @property
     def is_sign_with_given(self) -> bool:
@@ -95,7 +96,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             # force_unsign removes signatures and no signing happens when given
             return False
 
-        if await self._is_transaction_already_signed():
+        if self.is_transaction_signed:
             if self.use_autosign:
                 # autosign is about to be skipped when transaction is already signed
                 return False
@@ -129,12 +130,20 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         # Broadcast by default if not saving to file and not forcing unsign
         return not self.is_save_file_given and not self.force_unsign
 
+    @property
+    def transaction(self) -> Transaction:
+        assert self._transaction is not None, (
+            "Transaction not available yet. Is available after entering context manager."
+        )
+        return self._transaction
+
+    @property
+    def is_transaction_signed(self) -> bool:
+        return self.transaction.is_signed
+
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
-
-    async def get_transaction(self) -> Transaction:
-        return ensure_transaction(await self._get_transaction_content())
 
     async def validate(self) -> None:
         self.validate_all_mutually_exclusive_options()
@@ -154,7 +163,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
-        if await self._is_transaction_already_signed():
+        if self.is_transaction_signed:
             self._validate_signed_mode()
         else:
             self._validate_if_broadcasting_signed_transaction()
@@ -165,13 +174,18 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         await self._validate_keys_availability()
         await super().validate_inside_context_manager()
 
+    async def _hook_after_fetching_data(self) -> None:
+        if self._transaction is None:
+            self._transaction = await self._get_transaction()
+        await super()._hook_after_fetching_data()
+
     async def _run(self) -> None:
         self._print_dry_run_message_if_needed()
 
         with typer_echo_warnings(AutoSignSkippedWarning, AutoSignSkippedWarningCLI()):
             transaction = (
                 await self.world.commands.perform_actions_on_transaction(
-                    content=await self._get_transaction_content(),
+                    content=self.transaction,
                     sign_key=self.sign_key,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
@@ -184,6 +198,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._print_transaction(transaction.with_hash())
         self._print_transaction_success_message()
         self._print_saved_to_file_message_if_needed()
+
+    async def _get_transaction(self) -> Transaction:
+        # transaction can be created only after applying dynamic defaults for working accounts
+        # and after required data is fetched
+        return ensure_transaction(await self._get_transaction_content())
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         details = (
@@ -216,21 +235,18 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             raise CLITransactionNotSignedError
 
     async def _validate_unknown_accounts(self) -> None:
-        transaction_ensured = await self.get_transaction()
-        unknown_accounts = transaction_ensured.get_unknown_accounts(self.profile.accounts.known)
+        unknown_accounts = self.transaction.get_unknown_accounts(self.profile.accounts.known)
         if unknown_accounts:
             raise CLITransactionUnknownAccountError(*unknown_accounts)
 
     async def _validate_bad_accounts(self) -> None:
-        transaction_ensured = await self.get_transaction()
-        bad_accounts = transaction_ensured.get_bad_accounts(self.profile.accounts.get_bad_accounts())
+        bad_accounts = self.transaction.get_bad_accounts(self.profile.accounts.get_bad_accounts())
         if bad_accounts:
             raise CLITransactionBadAccountError(*bad_accounts)
 
     async def _validate_operations_to_exchange(self) -> None:
-        transaction_ensured = await self.get_transaction()
         exchange_operation_validator = ExchangeOperationsValidatorCli(
-            transaction=transaction_ensured,
+            transaction=self.transaction,
             should_validate_for_unsafe_exchange_operations=not self.force,
         )
         for exchange in self.world.known_exchanges:
@@ -276,6 +292,3 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _print_saved_to_file_message_if_needed(self) -> None:
         if self.save_file is not None:
             print_cli(f"Transaction was saved to {self.save_file}")
-
-    async def _is_transaction_already_signed(self) -> bool:
-        return False

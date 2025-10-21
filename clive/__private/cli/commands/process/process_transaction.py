@@ -20,17 +20,10 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ProcessTransaction(PerformActionsOnTransactionCommand):
     from_file: str | Path
-    _loaded_transaction: Transaction | None = None
 
     @property
     def from_file_path(self) -> Path:
         return Path(self.from_file)
-
-    @property
-    async def __loaded_transaction(self) -> Transaction:
-        if self._loaded_transaction is None:
-            self._loaded_transaction = await self.__load_transaction()
-        return self._loaded_transaction
 
     async def validate(self) -> None:
         self._validate_from_file_argument()
@@ -43,14 +36,11 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
                 f"Can't load transaction from file: {humanize_validation_result(result)}", errno.EINVAL
             )
 
-    async def _is_transaction_already_signed(self) -> bool:
-        return (await self.__loaded_transaction).is_signed
-
     async def _get_transaction_content(self) -> Transaction:
-        return await self.__loaded_transaction
+        return await self._load_transaction()
+
+    async def _load_transaction(self) -> Transaction:
+        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
 
     def _get_transaction_created_message(self) -> str:
         return "loaded"
-
-    async def __load_transaction(self) -> Transaction:
-        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
