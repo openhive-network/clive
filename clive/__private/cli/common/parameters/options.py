@@ -102,18 +102,21 @@ memo_value_optional = modified_param(memo_value, default=None)
 
 page_size = typer.Option(
     10,
+    "--page-size",
     min=PAGE_SIZE_OPTION_MINIMAL_VALUE,
     help="The number of entries presented on a single page.",
 )
 
 page_no = typer.Option(
     0,
+    "--page-no",
     min=PAGE_NUMBER_OPTION_MINIMAL_VALUE,
     help="Page number to display, considering the given page size.",
 )
 
 force_value = typer.Option(
-    default=False,
+    False,  # noqa: FBT003
+    "--force/--no-force",
     help=(
         "This flag is required when performing operations to exchange accounts.\n"
         "Some operations are not handled by exchanges.\n"
@@ -128,7 +131,8 @@ _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COM
 sign_with = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
 broadcast = _operation_common_option(
     typer.Option(
-        default=None,
+        None,
+        "--broadcast/--no-broadcast",
         help=stylized_help(
             "Whether to broadcast the transaction.\n\n"
             "Use --no-broadcast to perform a dry run and just show the transaction without sending it.",
@@ -139,12 +143,14 @@ broadcast = _operation_common_option(
 save_file = _operation_common_option(
     typer.Option(
         None,
+        "--save-file",
         help="The file to save the transaction to (format is determined by file extension - .bin or .json).",
     )
 )
 autosign = _operation_common_option(
     typer.Option(
-        default=None,
+        None,
+        "--autosign/--no-autosign",
         help=(
             "Whether to sign the transaction automatically, using single key from the profile as default one"
             " (if there are multiple keys, it will raise an error)."
