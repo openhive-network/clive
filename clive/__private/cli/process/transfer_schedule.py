@@ -58,13 +58,13 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     amount: str = options.liquid_amount,
     repeat: int = _repeat_value,
     frequency: timedelta = _frequency_value,
-    memo: str = options.memo_value,
+    memo: str = options.memo,
     pair_id: int = _pair_id_value,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
-    force: bool = options.force_value,  # noqa: FBT001
+    force: bool = options.force,  # noqa: FBT001
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
@@ -94,13 +94,13 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     amount: str = options.liquid_amount_optional,
     repeat: int | None = _repeat_value_optional,
     frequency: timedelta | None = _frequency_value_optional,
-    memo: str | None = options.memo_value_optional,
+    memo: str | None = options.memo_optional,
     pair_id: int | None = _pair_id_value_none,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
-    force: bool = options.force_value,  # noqa: FBT001
+    force: bool = options.force,  # noqa: FBT001
 ) -> None:
     """
     Modify an existing recurrent transfer.

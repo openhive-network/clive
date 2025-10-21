@@ -18,12 +18,12 @@ async def process_deposit(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
-    memo: str = options.memo_value,
+    memo: str = options.memo,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
-    force: bool = options.force_value,  # noqa: FBT001
+    force: bool = options.force,  # noqa: FBT001
 ) -> None:
     """Immediately deposit funds to savings account."""
     from clive.__private.cli.commands.process.process_deposit import ProcessDeposit  # noqa: PLC0415
@@ -48,7 +48,7 @@ async def process_withdrawal(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name,
     amount: str = options.liquid_amount,
-    memo: str = options.memo_value,
+    memo: str = options.memo,
     request_id: int | None = typer.Option(
         None,
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
@@ -57,7 +57,7 @@ async def process_withdrawal(  # noqa: PLR0913
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
-    force: bool = options.force_value,  # noqa: FBT001
+    force: bool = options.force,  # noqa: FBT001
 ) -> None:
     """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
     from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal  # noqa: PLC0415

@@ -93,12 +93,12 @@ percent = typer.Option(
     help="Percent (0.00-100.00)",
 )
 
-memo_value = typer.Option(
+memo = typer.Option(
     "",
     "--memo",
     help="The memo to attach to the transfer.",
 )
-memo_value_optional = modified_param(memo_value, default=None)
+memo_optional = modified_param(memo, default=None)
 
 page_size = typer.Option(
     10,
@@ -114,7 +114,7 @@ page_no = typer.Option(
     help="Page number to display, considering the given page size.",
 )
 
-force_value = typer.Option(
+force = typer.Option(
     False,  # noqa: FBT003
     "--force/--no-force",
     help=(

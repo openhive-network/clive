@@ -56,7 +56,7 @@ async def transfer(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to: str = typer.Option(..., help="The account to transfer to."),
     amount: str = options.liquid_amount,
-    memo: str = options.memo_value,
+    memo: str = options.memo,
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
@@ -96,7 +96,7 @@ async def process_transaction(  # noqa: PLR0913
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
-    force: bool = options.force_value,  # noqa: FBT001
+    force: bool = options.force,  # noqa: FBT001
 ) -> None:
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
