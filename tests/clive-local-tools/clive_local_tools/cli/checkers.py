@@ -8,6 +8,13 @@ from click.testing import Result
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.models.transaction import Transaction
+from clive_local_tools.data.constants import (
+    DRY_RUN_MESSAGE,
+    TRANSACTION_BROADCASTED_MESSAGE,
+    TRANSACTION_CREATED_MESSAGE,
+    TRANSACTION_LOADED_MESSAGE,
+    TRANSACTION_SAVED_MESSAGE_PREFIX,
+)
 
 from .cli_tester import CLITester
 from .exceptions import CLITestCommandError
@@ -224,27 +231,27 @@ def assert_transaction_file_is_unsigned(file_path: Path) -> None:
 
 
 def assert_contains_dry_run_message(message: str) -> None:
-    assert_output_contains("[Performing dry run, because no broadcast or save to file was requested.]", message)
+    assert_output_contains(DRY_RUN_MESSAGE, message)
 
 
 def assert_contains_transaction_created_message(message: str) -> None:
     """This message is shown when transaction has been created, but not broadcasted and not loaded from a file."""
-    assert_output_contains("Transaction was successfully created.", message)
+    assert_output_contains(TRANSACTION_CREATED_MESSAGE, message)
 
 
 def assert_contains_transaction_broadcasted_message(message: str) -> None:
     """This message is shown when transaction was broadcasted."""
-    assert_output_contains("Transaction was successfully broadcasted.", message)
+    assert_output_contains(TRANSACTION_BROADCASTED_MESSAGE, message)
 
 
 def assert_contains_transaction_loaded_message(message: str) -> None:
     """This message is shown when transaction was loaded from file, but not broadcasted."""
-    assert_output_contains("Transaction was successfully loaded.", message)
+    assert_output_contains(TRANSACTION_LOADED_MESSAGE, message)
 
 
 def assert_contains_transaction_saved_to_file_message(file_path: str | Path, message: str) -> None:
     """This message is shown when transaction was saved to file."""
-    prefix = "Transaction was saved to "
+    prefix = TRANSACTION_SAVED_MESSAGE_PREFIX
     # First ensure that the expected prefix is in the message
     assert_output_contains(prefix, message)
 

@@ -47,3 +47,9 @@ KNOWN_ACCOUNT_NAMES: Final[list[str]] = [
     ALT_WORKING_ACCOUNT2_NAME,
     *KNOWN_EXCHANGES_NAMES,
 ]
+
+DRY_RUN_MESSAGE: Final[str] = "[Performing dry run, because no broadcast or save to file was requested.]"
+TRANSACTION_CREATED_MESSAGE: Final[str] = "Transaction was successfully created."
+TRANSACTION_LOADED_MESSAGE: Final[str] = "Transaction was successfully loaded."
+TRANSACTION_BROADCASTED_MESSAGE: Final[str] = "Transaction was successfully broadcasted."
+TRANSACTION_SAVED_MESSAGE_PREFIX: Final[str] = "Transaction was saved to "
