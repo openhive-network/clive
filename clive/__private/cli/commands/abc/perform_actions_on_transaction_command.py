@@ -15,10 +15,12 @@ from clive.__private.cli.exceptions import (
     CLIMultipleKeysAutoSignError,
     CLINoKeysAvailableError,
     CLIPrettyError,
+    CLITransactionAlreadySignedError,
     CLITransactionBadAccountError,
     CLITransactionNotSignedError,
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
+    CLIWrongAlreadySignedModeAutoSignError,
 )
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.warnings import typer_echo_warnings
@@ -92,6 +94,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if self.force_unsign:
             # force_unsign removes signatures and no signing happens when given
             return False
+
+        if await self._is_transaction_already_signed():
+            if self.use_autosign:
+                # autosign is about to be skipped when transaction is already signed
+                return False
+
+            # signing happens in different already_signed_mode than strict when sign_with is given
+            return self.is_sign_with_given and self.already_signed_mode != "strict"
+
         return self.use_autosign or self.is_sign_with_given
 
     @property
@@ -127,16 +138,26 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def validate(self) -> None:
         self.validate_all_mutually_exclusive_options()
+        self._validate_already_signed_mode()
         self._validate_save_file_path()
         await super().validate()
 
     def validate_all_mutually_exclusive_options(self) -> None:
         self._validate_mutually_exclusive(
+            autosign=self.is_autosign_explicitly_requested, force_unsign=self.force_unsign
+        )
+        self._validate_mutually_exclusive(sign_with=self.is_sign_with_given, force_unsign=self.force_unsign)
+        self._validate_mutually_exclusive(
             autosign=self.is_autosign_explicitly_requested, sign_with=self.is_sign_with_given
         )
+        self._validate_if_broadcast_is_used_without_force_unsign()
         super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
+        if await self._is_transaction_already_signed():
+            self._validate_signed_mode()
+        else:
+            self._validate_if_broadcasting_signed_transaction()
         await self._validate_bad_accounts()
         if self.profile.should_enable_known_accounts:
             await self._validate_unknown_accounts()
@@ -163,6 +184,26 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._print_transaction(transaction.with_hash())
         self._print_transaction_success_message()
         self._print_saved_to_file_message_if_needed()
+
+    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
+        details = (
+            "\n"
+            "If you want to broadcast the transaction, don't remove the signature - "
+            "remove the '--force-unsign' option.\n"
+            "If you want to remove the signature and show or save the unsigned transaction, "
+            "add the '--no-broadcast' option."
+        )
+        self._validate_mutually_exclusive(
+            broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
+        )
+
+    def _validate_already_signed_mode(self) -> None:
+        if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
+            raise CLIWrongAlreadySignedModeAutoSignError
+
+    def _validate_signed_mode(self) -> None:
+        if self.already_signed_mode == "strict" and self.is_sign_with_given:
+            raise CLITransactionAlreadySignedError
 
     def _validate_save_file_path(self) -> None:
         if self.save_file:
@@ -235,3 +276,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     def _print_saved_to_file_message_if_needed(self) -> None:
         if self.save_file is not None:
             print_cli(f"Transaction was saved to {self.save_file}")
+
+    async def _is_transaction_already_signed(self) -> bool:
+        return False

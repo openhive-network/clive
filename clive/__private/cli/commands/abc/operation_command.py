@@ -23,7 +23,3 @@ class OperationCommand(PerformActionsOnTransactionCommand, ABC):
 
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         return [operation async for operation in self._create_operations()]
-
-    async def validate(self) -> None:
-        self._validate_if_broadcasting_signed_transaction()
-        await super().validate()

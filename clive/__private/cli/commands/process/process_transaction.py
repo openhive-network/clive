@@ -8,8 +8,6 @@ from typing import TYPE_CHECKING
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.cli.exceptions import (
     CLIPrettyError,
-    CLITransactionAlreadySignedError,
-    CLIWrongAlreadySignedModeAutoSignError,
 )
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
@@ -29,60 +27,14 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         return Path(self.from_file)
 
     @property
-    async def should_be_signed(self) -> bool:
-        if self.force_unsign:
-            # force_unsign removes signatures and no signing happens when given
-            return False
-
-        if await self._is_transaction_already_signed():
-            if self.use_autosign:
-                # autosign is be skipped when transaction is already signed
-                return False
-
-            # signing happens in different already_signed_mode than strict when sign_with is given
-            return self.is_sign_with_given and self.already_signed_mode != "strict"
-
-        return await super().should_be_signed
-
-    @property
     async def __loaded_transaction(self) -> Transaction:
         if self._loaded_transaction is None:
             self._loaded_transaction = await self.__load_transaction()
         return self._loaded_transaction
 
     async def validate(self) -> None:
-        self.validate_all_mutually_exclusive_options()
-        self._validate_already_signed_mode()
-        if await self._is_transaction_already_signed():
-            self._validate_signed_transaction()
-        else:
-            self._validate_if_broadcasting_signed_transaction()
         self._validate_from_file_argument()
         await super().validate()
-
-    def validate_all_mutually_exclusive_options(self) -> None:
-        self._validate_mutually_exclusive(
-            autosign=self.is_autosign_explicitly_requested, force_unsign=self.force_unsign
-        )
-        self._validate_mutually_exclusive(sign_with=self.is_sign_with_given, force_unsign=self.force_unsign)
-        self._validate_if_broadcast_is_used_without_force_unsign()
-        super().validate_all_mutually_exclusive_options()
-
-    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
-        details = (
-            "\n"
-            "If you want to broadcast the transaction, don't remove the signature - "
-            "remove the '--force-unsign' option.\n"
-            "If you want to remove the signature and show or save the unsigned transaction, "
-            "add the '--no-broadcast' option."
-        )
-        self._validate_mutually_exclusive(
-            broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
-        )
-
-    def _validate_signed_transaction(self) -> None:
-        if self.already_signed_mode == "strict" and self.is_sign_with_given:
-            raise CLITransactionAlreadySignedError
 
     def _validate_from_file_argument(self) -> None:
         result = PathValidator(mode="is_file").validate(str(self.from_file))
@@ -90,10 +42,6 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             raise CLIPrettyError(
                 f"Can't load transaction from file: {humanize_validation_result(result)}", errno.EINVAL
             )
-
-    def _validate_already_signed_mode(self) -> None:
-        if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
-            raise CLIWrongAlreadySignedModeAutoSignError
 
     async def _is_transaction_already_signed(self) -> bool:
         return (await self.__loaded_transaction).is_signed
