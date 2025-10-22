@@ -7,8 +7,9 @@ from textual.message import Message
 from textual.widgets import Static, TabPane
 from textual.widgets._collapsible import CollapsibleTitle
 
+from clive.__private.models.schemas import AccountUpdate2Operation
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog
+from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveKeyAliasDialog, StartAuthorityModificationAgainDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.account_details.authority.common import (
     AuthorityHeader,
@@ -21,6 +22,7 @@ from clive.__private.ui.screens.account_details.authority.filter_authority impor
     FilterAuthorityContainer,
     FilterAuthorityExtended,
 )
+from clive.__private.ui.screens.account_details.authority.modify_authority import ModifyAuthority
 from clive.__private.ui.widgets.buttons import (
     CliveButton,
     OneLineButton,
@@ -218,7 +220,7 @@ class AuthorityRole(AuthorityRoleCollapsibleBase):
         )
         super().__init__(
             AuthorityTable(authority_role),
-            authority_role=authority_role,
+            role=authority_role,
             title=title,
             collapsed=collapsed,
             right_hand_side_widget=right_hand_side_widget,
@@ -378,6 +380,35 @@ class AuthorityDetails(TabPane, CliveWidget):
     @on(FilterAuthorityExtended.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
         self._update_input_suggestions()
+
+    @on(CliveButton.Pressed, "#modify-button")
+    def _go_to_modify_authority(self) -> None:
+        def start_authority_modification_again_callback(result: bool | None) -> None:  # noqa: FBT001
+            if result is None:
+                return
+
+            if result:
+                for operation in self.profile.transaction.operations_models:
+                    if isinstance(operation, AccountUpdate2Operation):
+                        self.profile.transaction.remove_operation(operation)
+                self.app.push_screen(ModifyAuthority())
+
+        if self.profile.accounts.working_or_none is None:
+            self.app.notify(
+                "No working account selected, can't proceed to authority modification screen.", severity="error"
+            )
+            return
+
+        working_account_name = self.profile.accounts.working.name
+        if any(
+            isinstance(operation, AccountUpdate2Operation) and operation.account == working_account_name
+            for operation in self.profile.transaction.operations_models
+        ):
+            self.app.push_screen(
+                StartAuthorityModificationAgainDialog(working_account_name), start_authority_modification_again_callback
+            )
+        else:
+            self.app.push_screen(ModifyAuthority())
 
     def _filter_account_authorities(self, *filter_patterns: str) -> None:
         self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
