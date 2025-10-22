@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Self, cast
+from typing import Any, Literal, Self, cast
 
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.str_utils import Matchable, is_text_matching_pattern
+
+AuthorityEntryKind = Literal["account", "key"]
 
 
 class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
@@ -18,15 +20,19 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
 
     @property
     def is_weighted(self) -> bool:
-        return False
+        return isinstance(self, AuthorityWeightedEntryBase)
 
     @property
     def is_key(self) -> bool:
-        return False
+        return isinstance(self, AuthorityEntryKeyBase)
+
+    @property
+    def is_key_regular(self) -> bool:
+        return isinstance(self, AuthorityEntryKeyRegular)
 
     @property
     def is_account(self) -> bool:
-        return False
+        return isinstance(self, AuthorityEntryAccountRegular)
 
     @property
     def ensure_weighted(self) -> AuthorityWeightedEntryBase:
@@ -39,9 +45,19 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
         return cast("AuthorityEntryKeyBase", self)
 
     @property
+    def ensure_key_regular(self) -> AuthorityEntryKeyRegular:
+        assert self.is_key_regular, "Invalid type of entry."
+        return cast("AuthorityEntryKeyRegular", self)
+
+    @property
     def ensure_account(self) -> AuthorityEntryAccountRegular:
         assert self.is_account, "Invalid type of entry."
         return cast("AuthorityEntryAccountRegular", self)
+
+    @property
+    def ensure_regular(self) -> AuthorityEntryAccountRegular | AuthorityEntryKeyRegular:
+        assert self.is_account or self.is_key_regular, "Invalid type of entry."
+        return cast("AuthorityEntryAccountRegular | AuthorityEntryKeyRegular", self)
 
     def get_entries(self) -> list[Self]:
         return [self]
@@ -59,15 +75,15 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
         """
         return is_text_matching_pattern(self.value, *patterns)
 
+    @staticmethod
+    def determine_entry_type(value: str) -> AuthorityEntryKind:
+        return "key" if value.startswith("STM") else "account"
+
 
 class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
     def __init__(self, value: str, weight: int) -> None:
         super().__init__(value)
         self._weight = weight
-
-    @property
-    def is_weighted(self) -> bool:
-        return True
 
     @property
     def weight(self) -> int:
@@ -80,10 +96,6 @@ class AuthorityEntryKeyBase(AuthorityEntryBase, ABC):
 
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(self._public_key.value, *args, **kwargs)
-
-    @property
-    def is_key(self) -> bool:
-        return True
 
     @property
     def public_key(self) -> PublicKey:
@@ -101,10 +113,6 @@ class AuthorityEntryAccountRegular(AuthorityWeightedEntryBase):
 
     def __init__(self, account_name: str, weight: int) -> None:
         super().__init__(account_name, weight)
-
-    @property
-    def is_account(self) -> bool:
-        return True
 
 
 class AuthorityEntryKeyRegular(AuthorityEntryKeyBase, AuthorityWeightedEntryBase):
