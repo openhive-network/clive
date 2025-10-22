@@ -21,6 +21,7 @@ from clive.__private.ui.screens.account_details.authority.filter_authority impor
     FilterAuthorityContainer,
     FilterAuthorityExtended,
 )
+from clive.__private.ui.screens.account_details.authority.modify_authority import ModifyAuthority
 from clive.__private.ui.widgets.buttons import (
     CliveButton,
     OneLineButton,
@@ -218,7 +219,7 @@ class AuthorityRole(AuthorityRoleCollapsibleBase):
         )
         super().__init__(
             AuthorityTable(authority_role),
-            authority_role=authority_role,
+            role=authority_role,
             title=title,
             collapsed=collapsed,
             right_hand_side_widget=right_hand_side_widget,
@@ -378,6 +379,16 @@ class AuthorityDetails(TabPane, CliveWidget):
     @on(FilterAuthorityExtended.SelectedAccountsChanged)
     def _handle_selected_accounts_changed(self) -> None:
         self._update_input_suggestions()
+
+    @on(CliveButton.Pressed, "#modify-button")
+    def _go_to_modify_authority(self) -> None:
+        if self.profile.accounts.working_or_none is None:
+            self.app.notify(
+                "No working account selected, can't proceed to authority modification screen.", severity="error"
+            )
+            return
+
+        self.app.push_screen(ModifyAuthority())
 
     def _filter_account_authorities(self, *filter_patterns: str) -> None:
         self.account_authorities.filter(self.filter_authority.selected_options, *filter_patterns)
