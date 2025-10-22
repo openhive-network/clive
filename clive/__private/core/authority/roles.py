@@ -54,6 +54,10 @@ class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](Autho
         return False
 
     @property
+    def is_changed(self) -> bool:
+        return self._role.changed
+
+    @property
     def ensure_memo(self) -> AuthorityEntryMemo:
         assert self.is_memo, "Invalid type of entry."
         return cast("AuthorityEntryMemo", self)
@@ -81,6 +85,10 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
         super().__init__(role)
 
     @property
+    def is_null_authority(self) -> bool:
+        return self.role.is_null_authority
+
+    @property
     def role(self) -> WaxRoleRegular:
         return cast("WaxRoleRegular", super().role)
 
@@ -91,6 +99,34 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
     @property
     def weight_threshold(self) -> int:
         return self._value.weight_threshold
+
+    def add(self, account_or_key: str, weight: int) -> None:
+        self.role.add(account_or_key, weight)
+        self._value.update_value(self.role.value)
+
+    def remove(self, account_or_key: str) -> None:
+        self.role.remove(account_or_key)
+        self._value.update_value(self.role.value)
+
+    def replace(
+        self,
+        account_or_key: str,
+        weight: int,
+        new_account_or_key: str | None = None,
+    ) -> None:
+        self.role.replace(account_or_key, weight, new_account_or_key)
+        self._value.update_value(self.role.value)
+
+    def set_threshold(self, threshold: int) -> None:
+        self.role.set_threshold(threshold)
+        self._value.update_value(self.role.value)
+
+    def has(self, account_or_key: str, weight: int | None = None) -> bool:
+        return self.role.has(account_or_key, weight)
+
+    def reset(self) -> None:
+        self._role.reset()
+        self._value.update_value(self.role.value)
 
     def sum_weights_of_already_imported_keys(self, keys: KeyManager) -> int:
         """
@@ -121,6 +157,10 @@ class AuthorityRoleMemo(AuthorityRoleBase[AuthorityEntryMemo]):
         return cast("WaxRoleMemo", super().role)
 
     @property
+    def entry(self) -> AuthorityEntryMemo:
+        return self.get_entries()[0]
+
+    @property
     def level(self) -> AuthorityLevelMemo:
         return cast("AuthorityLevelMemo", super().level)
 
@@ -131,6 +171,14 @@ class AuthorityRoleMemo(AuthorityRoleBase[AuthorityEntryMemo]):
     @property
     def is_memo(self) -> bool:
         return True
+
+    def set(self, public_key: str) -> None:
+        self.role.set(public_key)
+        self._value.update_value(self.role.value)
+
+    def reset(self) -> None:
+        self._role.reset()
+        self._value.update_value(self.role.value)
 
     def get_entries(self) -> list[AuthorityEntryMemo]:
         return [self._value]
