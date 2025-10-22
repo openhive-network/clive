@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal, cast, override
 
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.authority.entries import (
@@ -48,6 +48,10 @@ class AuthorityRoleBase(AuthorityEntriesHolder, Matchable, ABC):
     @property
     def is_memo(self) -> bool:
         return False
+
+    @property
+    def is_changed(self) -> bool:
+        return self._role.changed
 
     @property
     def ensure_memo(self) -> AuthorityRoleMemo:
@@ -106,6 +110,29 @@ class AuthorityRoleRegular(AuthorityRoleBase):
         """
         return any(entry_wrapper_object.is_matching_pattern(*patterns) for entry_wrapper_object in self.get_entries())
 
+    def add(self, account_or_key: str, weight: int) -> None:
+        self.role.add(account_or_key, weight)
+
+    def remove(self, account_or_key: str) -> None:
+        self.role.remove(account_or_key)
+
+    def replace(
+        self,
+        account_or_key: str,
+        weight: int,
+        new_account_or_key: str | None = None,
+    ) -> None:
+        self.role.replace(account_or_key, weight, new_account_or_key)
+
+    def set_threshold(self, threshold: int) -> None:
+        self.role.set_threshold(threshold)
+
+    def has(self, account_or_key: str, weight: int | None = None) -> bool:
+        return self.role.has(account_or_key, weight)
+
+    def reset(self) -> None:
+        self._role.reset()
+
     def sum_weights_of_already_imported_keys(self, keys: KeyManager) -> int:
         """
         Sum weights for keys that are present in the key manager.
@@ -119,6 +146,10 @@ class AuthorityRoleRegular(AuthorityRoleBase):
         """
         entries = self.key_entries
         return sum(entry.weight for entry in entries if entry.public_key in keys)
+
+    @property
+    def is_null_authority(self) -> bool:
+        return self.role.is_null_authority
 
     @property
     def role(self) -> WaxRoleRegular:
@@ -139,6 +170,10 @@ class AuthorityRoleMemo(AuthorityRoleBase):
         return cast("WaxRoleMemo", super().role)
 
     @property
+    def entry(self) -> AuthorityEntryMemo:
+        return AuthorityEntryMemo(self.role.value)
+
+    @property
     def level(self) -> AuthorityLevelMemo:
         return cast("AuthorityLevelMemo", super().level)
 
@@ -150,5 +185,12 @@ class AuthorityRoleMemo(AuthorityRoleBase):
     def is_memo(self) -> bool:
         return True
 
+    def set(self, public_key: str) -> None:
+        self.role.set(public_key)
+
+    def reset(self) -> None:
+        self._role.reset()
+
+    @override
     def get_entries(self) -> list[AuthorityEntryMemo]:
-        return [AuthorityEntryMemo(self.role.value)]
+        return [self.entry]
