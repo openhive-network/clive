@@ -75,3 +75,6 @@ class AuthorityCompoundRegular(Matchable):
         """
         entries = self.key_entries
         return sum(entry.weight for entry in entries if entry.public_key in keys)
+
+    def update_value(self, new_authority_value: WaxAuthority) -> None:
+        self._authority = new_authority_value

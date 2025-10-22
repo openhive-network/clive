@@ -59,6 +59,9 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
         """
         return is_text_matching_pattern(self.value, *patterns)
 
+    def update_value(self, new_value: str) -> None:
+        self._value = new_value
+
 
 class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
     def __init__(self, value: str, weight: int) -> None:
@@ -72,6 +75,9 @@ class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
     @property
     def weight(self) -> int:
         return self._weight
+
+    def update_weight(self, new_weight: int) -> None:
+        self._weight = new_weight
 
 
 class AuthorityEntryKeyBase(AuthorityEntryBase, ABC):
