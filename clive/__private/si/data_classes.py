@@ -47,6 +47,7 @@ class AuthorityInfo:
     weight_threshold: int
     authorities: list[Authority]
 
+
 @dataclass
 class KeyPair:
     """Key pair (private/public)."""

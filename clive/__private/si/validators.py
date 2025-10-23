@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 from typing import Final
-from __private.core.keys.keys import PrivateKey
-from clive.__private.si.exceptions import InvalidAccountNameError, InvalidAuthorityLevelError, InvalidNumberOfKeyPairsError, InvalidPageNumberError, InvalidPageSizeError, InvalidPasswordLengthError, InvalidProfileNameError
-from clive.__private.models.schemas import AccountName, is_matching_model
 
-class ProfileNameValidator():
+from clive.__private.models.schemas import AccountName, is_matching_model
+from clive.__private.si.exceptions import (
+    InvalidAccountNameError,
+    InvalidAuthorityLevelError,
+    InvalidNumberOfKeyPairsError,
+    InvalidPageNumberError,
+    InvalidPageSizeError,
+    InvalidPasswordLengthError,
+    InvalidProfileNameError,
+)
+
+
+class ProfileNameValidator:
     MIN_LENGTH: Final[int] = 3
     MAX_LENGTH: Final[int] = 22
     ALLOWED_SPECIAL_CHARS: Final[list[str]] = ["_", "-", ".", "@"]
@@ -35,7 +44,7 @@ class ProfileNameValidator():
         return value not in Profile.list_profiles()
 
 
-class SetPasswordValidator():
+class SetPasswordValidator:
     MIN_LENGTH: Final[int] = 8
     MAX_LENGTH: Final[int] = 64
 
@@ -43,16 +52,17 @@ class SetPasswordValidator():
         if len(value) < self.MIN_LENGTH or len(value) > self.MAX_LENGTH:
             raise InvalidPasswordLengthError(self.MIN_LENGTH, self.MAX_LENGTH, len(value))
 
-class AccountNameValidator():
+
+class AccountNameValidator:
     def __init__(self) -> None:
         super().__init__()
 
     def validate(self, value: str) -> None:
         if not is_matching_model(value, AccountName):
             raise InvalidAccountNameError(value)
-        
 
-class PageNumberValidator():
+
+class PageNumberValidator:
     MIN_NUMBER: Final[int] = 0
 
     def __init__(self) -> None:
@@ -62,7 +72,8 @@ class PageNumberValidator():
         if value < self.MIN_NUMBER:
             raise InvalidPageNumberError(value, self.MIN_NUMBER)
 
-class PageSizeValidator():
+
+class PageSizeValidator:
     MIN_SIZE: Final[int] = 0
 
     def __init__(self) -> None:
@@ -72,7 +83,8 @@ class PageSizeValidator():
         if value < self.MIN_SIZE:
             raise InvalidPageSizeError(value, self.MIN_SIZE)
 
-class KeyPairsNumberValidator():
+
+class KeyPairsNumberValidator:
     MIN_NUMBER: Final[int] = 1
 
     def __init__(self) -> None:
@@ -83,7 +95,7 @@ class KeyPairsNumberValidator():
             raise InvalidNumberOfKeyPairsError(value)
 
 
-class AuthorityLevelValidator():
+class AuthorityLevelValidator:
     VALID_AUTHORITY_LEVELS: Final[list[str]] = ["owner", "active", "posting", "memo"]
 
     def __init__(self) -> None:

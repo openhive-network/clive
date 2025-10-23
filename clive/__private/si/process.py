@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.types import AlreadySignedMode
     from clive.__private.models.asset import Asset
-    from clive.__private.models.transaction import Transaction
     from clive.__private.si.base import ProfileBase
 
 
@@ -29,7 +28,7 @@ class ProcessInterface:
     def __init__(self, clive_instance: ProfileBase) -> None:
         self.clive = clive_instance
 
-    def transfer(  # noqa: PLR0913
+    def transfer(
         self,
         from_account: str,
         to_account: str,
@@ -45,7 +44,7 @@ class ProcessInterface:
             memo=memo,
         )
 
-    def transaction(  # noqa: PLR0913
+    def transaction(
         self,
         from_file: str | Path,
         *,
@@ -104,7 +103,7 @@ class ProcessInterface:
             threshold=threshold,
         )
 
-    def power_down_start(  # noqa: PLR0913
+    def power_down_start(
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
@@ -116,7 +115,7 @@ class ProcessInterface:
             amount=amount,
         )
 
-    def power_down_restart(  # noqa: PLR0913
+    def power_down_restart(
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
@@ -138,7 +137,7 @@ class ProcessInterface:
             account_name=account_name,
         )
 
-    def power_up(  # noqa: PLR0913
+    def power_up(
         self,
         from_account: str,
         to_account: str,
@@ -155,7 +154,7 @@ class ProcessInterface:
             force=force,
         )
 
-    def custom_json(  # noqa: PLR0913
+    def custom_json(
         self,
         id_: str,
         json: str | Path,

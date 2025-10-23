@@ -6,7 +6,7 @@ from clive.__private.si.core.show import ShowAccounts, ShowAuthority, ShowBalanc
 
 if TYPE_CHECKING:
     from clive.__private.si.base import ProfileBase
-    from clive.__private.si.data_classes import Accounts, Authority, AuthorityInfo, Balances, Witness
+    from clive.__private.si.data_classes import Accounts, AuthorityInfo, Balances, Witness
 
 
 class ShowInterfaceNoProfile:

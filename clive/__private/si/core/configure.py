@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
-from clive.__private.si.validators import ProfileNameValidator, SetPasswordValidator
 from clive.__private.si.core.base import CommandBase
+from clive.__private.si.validators import ProfileNameValidator, SetPasswordValidator
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
+
 
 class ProfileCreate(CommandBase[None]):
     def __init__(self, world: World, profile_name: str, password: str) -> None:

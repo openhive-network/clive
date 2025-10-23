@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.si.validators import AccountNameValidator, PageNumberValidator, PageSizeValidator
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessData,
@@ -12,6 +11,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
 from clive.__private.core.profile import Profile
 from clive.__private.si.core.base import CommandBase
 from clive.__private.si.data_classes import Accounts, Authority, AuthorityInfo, Balances, Witness
+from clive.__private.si.validators import AccountNameValidator, PageNumberValidator, PageSizeValidator
 
 if TYPE_CHECKING:
     from clive.__private.core.types import AuthorityLevelRegular
@@ -33,7 +33,7 @@ class ShowBalances(CommandBase[Balances]):
 
     def validate(self):
         AccountNameValidator().validate(self.account_name)
-        
+
     async def _run(self) -> Balances:
         account = TrackedAccount(name=self.account_name)
         await self.world.commands.update_node_data(accounts=[account])
@@ -67,7 +67,7 @@ class ShowWitnesses(CommandBase[list[Witness]]):
         self.account_name = account_name
         self.page_size = page_size
         self.page_no = page_no
-    
+
     def validate(self):
         AccountNameValidator().validate(self.account_name)
         PageSizeValidator().validate(self.page_size)
@@ -130,8 +130,7 @@ class ShowAuthority(CommandBase[AuthorityInfo]):
             authority_owner_account_name=account.name,
             authority_type=self.authority,
             weight_threshold=account[self.authority].weight_threshold,
-            authorities=authorities
+            authorities=authorities,
         )
-
 
         return authority_info

@@ -2,11 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.si.exceptions import InvalidPrivateKeyError
 from clive.__private.core import iwax
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.si.core.base import CommandBaseSync
-from clive.__private.si.validators import AccountNameValidator, AuthorityLevelValidator, KeyPairsNumberValidator, SetPasswordValidator
+from clive.__private.si.exceptions import InvalidPrivateKeyError
+from clive.__private.si.validators import (
+    AccountNameValidator,
+    AuthorityLevelValidator,
+    KeyPairsNumberValidator,
+    SetPasswordValidator,
+)
+
 if TYPE_CHECKING:
     from clive.__private.core.types import AuthorityLevel
 from clive.__private.si.data_classes import KeyPair
@@ -48,7 +54,9 @@ class GenerateKeyFromSeed(CommandBaseSync[KeyPair]):
         AccountNameValidator().validate(self.account_name)
         SetPasswordValidator().validate(self.password)
         AuthorityLevelValidator().validate(self.role)
-        assert not (self.only_private_key and self.only_public_key), "Cannot set both only_private_key and only_public_key to True."
+        assert not (self.only_private_key and self.only_public_key), (
+            "Cannot set both only_private_key and only_public_key to True."
+        )
 
     def _run(self) -> KeyPair:
         private_key = PrivateKey.create_from_seed(seed=self.password, account_name=self.account_name, role=self.role)
