@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
+from beekeepy._communication.url import HttpUrl
+from beekeepy._remote_handle.settings import RemoteHandleSettings
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import (
@@ -20,6 +22,7 @@ from clive.__private.before_launch import (
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
+from clive.__private.core.commands.data_retrieval.async_hived.async_handle import AsyncHived
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_DIRECTORY, LOG_LEVEL_1ST_PARTY, LOG_LEVELS
 from clive.__private.core.world import World
@@ -263,3 +266,23 @@ def beekeeper_session_token_env_context_factory(
 @pytest.fixture
 def node_address_env_context_factory(generic_env_context_factory: GenericEnvContextFactory) -> EnvContextFactory:
     return generic_env_context_factory(SECRETS_NODE_ADDRESS_ENV_NAME)
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--hived-http-endpoint", action="store", type=str, help="specifies http_endpoint of reference node"
+    )
+
+
+@pytest.fixture
+def hived_http_endpoint(request: pytest.FixtureRequest) -> HttpUrl:
+    raw_url = request.config.getoption("--hived-http-endpoint")
+    assert raw_url is not None
+    assert isinstance(raw_url, str)
+    return HttpUrl(raw_url)
+
+
+@pytest.fixture
+async def async_node(hived_http_endpoint: HttpUrl) -> AsyncIterator[AsyncHived]:
+    async with AsyncHived(settings=RemoteHandleSettings(http_endpoint=hived_http_endpoint)) as hived:
+        yield hived

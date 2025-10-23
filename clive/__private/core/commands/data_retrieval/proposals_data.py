@@ -21,10 +21,10 @@ from clive.__private.models.asset import Asset
 if TYPE_CHECKING:
     import datetime
 
+    from clive.__private.core.commands.data_retrieval.async_hived.api.database_api.common import DatabaseApiCommons
     from clive.__private.core.node import Node
     from clive.__private.models.schemas import DynamicGlobalProperties, ListProposals, ListProposalVotes
     from clive.__private.models.schemas import Proposal as SchemasProposal
-    from wax.helpy import DatabaseApiCommons
 
 
 @dataclass
