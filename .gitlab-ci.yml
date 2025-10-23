@@ -229,7 +229,7 @@ testing_clive:
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(
-      --ignore tests/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py --ignore tests/unit/test_command_execution_times.py
+      --ignore tests/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py --ignore tests/unit/test_command_execution_times.py --ignore tests/async_hived
       -v
       )
     - !reference [.run-pytest, script]
@@ -276,6 +276,26 @@ testing_password_private_key_logging:
   script:
     - cd "${CI_PROJECT_DIR}/tests"
     - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
+
+test_async_hived:
+  stage: tests
+  extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
+    HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
+    PYTEST_JUNIT_REPORT: "$CI_PROJECT_DIR/report.xml"
+  script:
+    - echo -e "${TXT_BLUE}Launching async hived tests...${TXT_CLEAR}"
+    - export PYTEST_ARGS=(
+      --ignore tests/tui --ignore tests/functional --ignore tests/unit --hived-http-endpoint ${HIVED_HTTP_ENDPOINT}
+      -v
+      )
+    - !reference [ .run-pytest, script ]
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $CI_PROJECT_DIR/report.xml
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
