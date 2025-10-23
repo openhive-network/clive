@@ -40,6 +40,7 @@ class ProcessCommandBase(ABC):
         self._save_file: str | Path | None = None
         self._broadcast: bool = False
         self._autosign: bool | None = None
+        self._force_save_format: Literal["json", "bin"] | None = None
 
     @abstractmethod
     async def _create_operation(self) -> OperationUnion:
@@ -61,6 +62,7 @@ class ProcessCommandBase(ABC):
                 autosign=bool(self._autosign),
                 save_file_path=Path(self._save_file) if self._save_file else None,
                 broadcast=self._broadcast,
+                force_save_format=self._force_save_format,
             )
         ).result_or_raise
 
@@ -71,12 +73,14 @@ class ProcessCommandBase(ABC):
         *,
         broadcast: bool = True,
         autosign: bool | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
         """Finalize the operation with specified signing and broadcasting options."""
         self._sign_with = sign_with
         self._save_file = save_file
         self._broadcast = broadcast
         self._autosign = autosign
+        self._force_save_format = force_save_format
         return await self._run()
 
 
@@ -113,6 +117,7 @@ class ProcessTransaction(ProcessCommandBase):
         world: World,
         from_file: str | Path,
         already_signed_mode: AlreadySignedMode,
+        force_save_format: Literal["json", "bin"] | None = None,
         *,
         force_unsign: bool,
         force: bool,
@@ -122,6 +127,7 @@ class ProcessTransaction(ProcessCommandBase):
         self.force_unsign = force_unsign
         self.already_signed_mode = already_signed_mode
         self.force = force
+        self.force_save_format = force_save_format
 
     async def _run(
         self,
@@ -130,6 +136,7 @@ class ProcessTransaction(ProcessCommandBase):
         save_file: str | Path | None = None,
         broadcast: bool = False,
         autosign: bool | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
         from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
 
@@ -142,6 +149,7 @@ class ProcessTransaction(ProcessCommandBase):
             save_file=save_file,
             force=self.force,
             autosign=autosign,
+            force_save_format=force_save_format,
         )
         await transaction.validate()
 
@@ -251,12 +259,14 @@ class ProcessAuthority(ProcessCommandBase):
         save_file: str | Path | None = None,
         broadcast: bool = False,
         autosign: bool | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
         self.process_account_update.modify_common_options(
             sign_with=sign_with,
             broadcast=broadcast,
             save_file=str(save_file) if save_file else None,
             autosign=autosign,
+            force_save_format=force_save_format,
         )
 
         await self.validate(broadcast=broadcast, sign_with=sign_with)
