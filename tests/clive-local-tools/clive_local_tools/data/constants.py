@@ -11,9 +11,15 @@ from clive.__private.core.constants.setting_identifiers import (
 from clive.__private.settings import clive_prefixed_envvar
 from clive_local_tools.testnet_block_log import (
     ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT1_NAME,
     ALT_WORKING_ACCOUNT2_DATA,
+    ALT_WORKING_ACCOUNT2_NAME,
+    EMPTY_ACCOUNT,
+    KNOWN_EXCHANGES_NAMES,
+    WATCHED_ACCOUNTS_NAMES,
     WITNESS_ACCOUNT,
     WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
 )
 
 TESTNET_CHAIN_ID: Final[str] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
@@ -30,3 +36,14 @@ NODE_CHAIN_ID_ENV_NAME: Final[str] = clive_prefixed_envvar(NODE_CHAIN_ID)
 SECRETS_NODE_ADDRESS_ENV_NAME: Final[str] = clive_prefixed_envvar(SECRETS_NODE_ADDRESS)
 WITNESS_ACCOUNT_PASSWORD: Final[str] = WITNESS_ACCOUNT.name
 WITNESS_ACCOUNT_KEY_ALIAS: Final[str] = f"{WITNESS_ACCOUNT.name}_key"
+
+UNKNOWN_ACCOUNT_NAME: Final[str] = "null"
+
+KNOWN_ACCOUNT_NAMES: Final[list[str]] = [
+    EMPTY_ACCOUNT.name,
+    *WATCHED_ACCOUNTS_NAMES,
+    WORKING_ACCOUNT_NAME,
+    ALT_WORKING_ACCOUNT1_NAME,
+    ALT_WORKING_ACCOUNT2_NAME,
+    *KNOWN_EXCHANGES_NAMES,
+]

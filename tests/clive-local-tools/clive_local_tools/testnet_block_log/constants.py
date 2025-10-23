@@ -58,17 +58,6 @@ ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
     vests=tt.Asset.Test(122_000),  # in hive power
 )
 
-UNKNOWN_ACCOUNT: Final[str] = "null"
-
 KNOWN_EXCHANGES_NAMES: Final[list[str]] = [exchange.name for exchange in KnownExchanges()]
-
-KNOWN_ACCOUNTS: Final[list[str]] = [
-    EMPTY_ACCOUNT.name,
-    *WATCHED_ACCOUNTS_NAMES,
-    WORKING_ACCOUNT_NAME,
-    ALT_WORKING_ACCOUNT1_NAME,
-    ALT_WORKING_ACCOUNT2_NAME,
-    *KNOWN_EXCHANGES_NAMES,
-]
 
 WITNESS_ACCOUNT: Final[tt.Account] = WITNESSES[0]

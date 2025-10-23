@@ -8,9 +8,9 @@ import test_tools as tt
 from clive.__private.cli.exceptions import CLITransactionUnknownAccountError
 from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.data.constants import KNOWN_ACCOUNT_NAMES, UNKNOWN_ACCOUNT_NAME, WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
-from clive_local_tools.testnet_block_log.constants import KNOWN_ACCOUNTS, UNKNOWN_ACCOUNT, WORKING_ACCOUNT_NAME
+from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -21,13 +21,13 @@ if TYPE_CHECKING:
     from .conftest import ActionSelector
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
-KNOWN_ACCOUNT: Final[str] = KNOWN_ACCOUNTS[0]
+KNOWN_ACCOUNT: Final[str] = KNOWN_ACCOUNT_NAMES[0]
 EXPECTED_UNKNOWN_ACCOUNT_ERROR_MSG: Final[str] = get_formatted_error_message(
-    CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT)
+    CLITransactionUnknownAccountError(UNKNOWN_ACCOUNT_NAME)
 )
 
 
-VALIDATION_RECEIVERS: Final[list[str]] = [UNKNOWN_ACCOUNT, KNOWN_ACCOUNT]
+VALIDATION_RECEIVERS: Final[list[str]] = [UNKNOWN_ACCOUNT_NAME, KNOWN_ACCOUNT]
 VALIDATION_IDS: Final[list[str]] = ["unknown_account", "known_account"]
 
 
@@ -37,7 +37,7 @@ def _assert_operation_to_unknown_account_fails(perform_operation_cb: Callable[[]
 
 
 def _assert_validation_of_known_accounts(perform_operation_cb: Callable[[], None], receiver: str) -> None:
-    if receiver == UNKNOWN_ACCOUNT:
+    if receiver == UNKNOWN_ACCOUNT_NAME:
         _assert_operation_to_unknown_account_fails(perform_operation_cb)
     else:
         perform_operation_cb()

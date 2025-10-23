@@ -16,6 +16,7 @@ from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
+    KNOWN_ACCOUNT_NAMES,
     WITNESS_ACCOUNT_KEY_ALIAS,
     WITNESS_ACCOUNT_PASSWORD,
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -24,7 +25,6 @@ from clive_local_tools.data.constants import (
 from clive_local_tools.testnet_block_log import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
-    KNOWN_ACCOUNTS,
     WATCHED_ACCOUNTS_NAMES,
     WITNESS_ACCOUNT,
     WORKING_ACCOUNT_DATA,
@@ -79,7 +79,7 @@ async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
         password=WORKING_ACCOUNT_PASSWORD,
         working_account=WORKING_ACCOUNT_NAME,
         watched_accounts=WATCHED_ACCOUNTS_NAMES,
-        known_accounts=KNOWN_ACCOUNTS,
+        known_accounts=KNOWN_ACCOUNT_NAMES,
     )
     await world_cli.commands.sync_state_with_beekeeper()
     world_cli.profile.keys.add_to_import(

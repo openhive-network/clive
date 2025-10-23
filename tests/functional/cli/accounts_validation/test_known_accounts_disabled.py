@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.testnet_block_log.constants import UNKNOWN_ACCOUNT
+from clive_local_tools.data.constants import UNKNOWN_ACCOUNT_NAME, WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -24,4 +23,6 @@ async def test_no_trasaction_validation_to_unknown_account(cli_tester: CLITester
     cli_tester.configure_known_account_disable()
 
     # ACT & ASSERT
-    cli_tester.process_delegations_set(delegatee=UNKNOWN_ACCOUNT, amount=amount, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_delegations_set(
+        delegatee=UNKNOWN_ACCOUNT_NAME, amount=amount, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )

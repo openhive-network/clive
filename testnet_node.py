@@ -18,6 +18,7 @@ from clive.__private.run_tui import run_tui
 from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    KNOWN_ACCOUNT_NAMES,
     TESTNET_CHAIN_ID,
     WITNESS_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -26,7 +27,6 @@ from clive_local_tools.testnet_block_log import run_node
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
-    KNOWN_ACCOUNTS,
     WITNESS_ACCOUNT,
     WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_NAME,
@@ -72,21 +72,21 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     await _create_profile_with_wallet(
         profile_name=WORKING_ACCOUNT_NAME,
         working_account_name=WORKING_ACCOUNT_NAME,
-        known_accounts=KNOWN_ACCOUNTS,
+        known_accounts=KNOWN_ACCOUNT_NAMES,
         private_key=WORKING_ACCOUNT_DATA.account.private_key,
         key_alias=WORKING_ACCOUNT_KEY_ALIAS,
     )
     await _create_profile_with_wallet(
         profile_name=ALT_WORKING_ACCOUNT1_NAME,
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
-        known_accounts=KNOWN_ACCOUNTS,
+        known_accounts=KNOWN_ACCOUNT_NAMES,
         private_key=ALT_WORKING_ACCOUNT1_DATA.account.private_key,
         key_alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     )
     await _create_profile_with_wallet(
         profile_name="witness",
         working_account_name=WITNESS_ACCOUNT.name,
-        known_accounts=KNOWN_ACCOUNTS,
+        known_accounts=KNOWN_ACCOUNT_NAMES,
         private_key=WITNESS_ACCOUNT.private_key,
         key_alias=WITNESS_ACCOUNT_KEY_ALIAS,
     )
