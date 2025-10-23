@@ -45,7 +45,7 @@ class AuthorityInfo:
     authority_owner_account_name: str
     authority_type: str
     weight_threshold: int
-
+    authorities: list[Authority]
 
 @dataclass
 class KeyPair:

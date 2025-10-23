@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.si.exceptions import InvalidPrivateKeyError
 from clive.__private.core import iwax
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.si.core.base import CommandBaseSync
-
+from clive.__private.si.validators import AccountNameValidator, AuthorityLevelValidator, KeyPairsNumberValidator, SetPasswordValidator
 if TYPE_CHECKING:
     from clive.__private.core.types import AuthorityLevel
 from clive.__private.si.data_classes import KeyPair
@@ -14,6 +15,9 @@ from clive.__private.si.data_classes import KeyPair
 class GenerateRandomKey(CommandBaseSync[list[KeyPair]]):
     def __init__(self, key_pairs: int) -> None:
         self.key_pairs = key_pairs
+
+    def validate(self):
+        KeyPairsNumberValidator().validate(self.key_pairs)
 
     def _run(self) -> list[KeyPair]:
         key_pairs_list = []
@@ -40,15 +44,28 @@ class GenerateKeyFromSeed(CommandBaseSync[KeyPair]):
         self.only_private_key = only_private_key
         self.only_public_key = only_public_key
 
+    def validate(self):
+        AccountNameValidator().validate(self.account_name)
+        SetPasswordValidator().validate(self.password)
+        AuthorityLevelValidator().validate(self.role)
+        assert not (self.only_private_key and self.only_public_key), "Cannot set both only_private_key and only_public_key to True."
+
     def _run(self) -> KeyPair:
         private_key = PrivateKey.create_from_seed(seed=self.password, account_name=self.account_name, role=self.role)
         public_key = private_key.calculate_public_key()
-        return KeyPair(private_key=private_key.value, public_key=public_key.value)
+        return KeyPair(
+            private_key=private_key.value if not self.only_public_key else None,
+            public_key=public_key.value if not self.only_private_key else None,
+        )
 
 
 class GeneratePublicKey(CommandBaseSync[str]):
     def __init__(self, private_key: str) -> None:
         self.private_key = private_key
+
+    def validate(self) -> None:
+        if not PrivateKey.is_valid(value=self.private_key):
+            raise InvalidPrivateKeyError(self.private_key)
 
     def _run(self) -> str:
         private_key = PrivateKey(value=self.private_key)

@@ -49,7 +49,7 @@ class ShowInterface(ShowInterfaceNoProfile):
             world=self.clive.world, account_name=account_name, page_size=page_size, page_no=page_no
         ).run()
 
-    async def owner_authority(self, account_name: str) -> tuple[AuthorityInfo, list[Authority]]:
+    async def owner_authority(self, account_name: str) -> AuthorityInfo:
         """Show owner authority for an account."""
         return await ShowAuthority(
             world=self.clive.world,
@@ -57,7 +57,7 @@ class ShowInterface(ShowInterfaceNoProfile):
             authority="owner",
         ).run()
 
-    async def active_authority(self, account_name: str) -> tuple[AuthorityInfo, list[Authority]]:
+    async def active_authority(self, account_name: str) -> AuthorityInfo:
         """Show active authority for an account."""
         return await ShowAuthority(
             world=self.clive.world,
@@ -65,7 +65,7 @@ class ShowInterface(ShowInterfaceNoProfile):
             authority="active",
         ).run()
 
-    async def posting_authority(self, account_name: str) -> tuple[AuthorityInfo, list[Authority]]:
+    async def posting_authority(self, account_name: str) -> AuthorityInfo:
         """Show posting authority for an account."""
         return await ShowAuthority(
             world=self.clive.world,

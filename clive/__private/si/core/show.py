@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.si.validators import AccountNameValidator, PageNumberValidator, PageSizeValidator
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessData,
@@ -30,6 +31,9 @@ class ShowBalances(CommandBase[Balances]):
         self.world = world
         self.account_name = account_name
 
+    def validate(self):
+        AccountNameValidator().validate(self.account_name)
+        
     async def _run(self) -> Balances:
         account = TrackedAccount(name=self.account_name)
         await self.world.commands.update_node_data(accounts=[account])
@@ -63,6 +67,11 @@ class ShowWitnesses(CommandBase[list[Witness]]):
         self.account_name = account_name
         self.page_size = page_size
         self.page_no = page_no
+    
+    def validate(self):
+        AccountNameValidator().validate(self.account_name)
+        PageSizeValidator().validate(self.page_size)
+        PageNumberValidator().validate(self.page_no)
 
     async def _run(self) -> list[Witness]:
         witnesses_list_len, proxy, witnesses_chunk = await self.get_witness_chunk()
@@ -100,22 +109,29 @@ class ShowWitnesses(CommandBase[list[Witness]]):
         return len(witnesses_list), proxy, witnesses_chunk
 
 
-class ShowAuthority(CommandBase[tuple[AuthorityInfo, list[Authority]]]):
+class ShowAuthority(CommandBase[AuthorityInfo]):
     def __init__(self, world: World, account_name: str, authority: AuthorityLevelRegular) -> None:
         self.world = world
         self.account_name = account_name
         self.authority = authority
 
-    async def _run(self) -> tuple[AuthorityInfo, list[Authority]]:
+    def validate(self):
+        AccountNameValidator().validate(self.account_name)
+
+    async def _run(self) -> AuthorityInfo:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         account = accounts[0]
-        authority_info = AuthorityInfo(
-            authority_owner_account_name=account.name,
-            authority_type=self.authority,
-            weight_threshold=account[self.authority].weight_threshold,
-        )
+
         authorities = []
         for auth, weight in [*account[self.authority].key_auths, *account[self.authority].account_auths]:
             authorities.append(Authority(account_or_public_key=auth, weight=weight))
 
-        return authority_info, authorities
+        authority_info = AuthorityInfo(
+            authority_owner_account_name=account.name,
+            authority_type=self.authority,
+            weight_threshold=account[self.authority].weight_threshold,
+            authorities=authorities
+        )
+
+
+        return authority_info
