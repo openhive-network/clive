@@ -48,7 +48,7 @@ class ProcessInterface:
         self,
         from_file: str | Path,
         *,
-        force_unsign: bool,
+        force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force: bool = False,
     ) -> ProcessTransaction:
