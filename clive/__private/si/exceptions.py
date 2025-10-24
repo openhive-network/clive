@@ -6,9 +6,9 @@ from __future__ import annotations
 class InvalidPasswordLengthError(Exception):
     """Raised when the provided password length is invalid."""
 
-    def __init__(self, min_length: int, max_length: int, current_length: int) -> None:
+    def __init__(self, current_length: int, description: str) -> None:
         super().__init__(
-            f"Invalid password length: Current: {current_length}. Must be between {min_length} and {max_length} characters."
+            f"Invalid password length: Current: {current_length}. {description}"
         )
 
 

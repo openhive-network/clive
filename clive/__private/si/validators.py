@@ -15,42 +15,18 @@ from clive.__private.si.exceptions import (
 
 
 class ProfileNameValidator:
-    MIN_LENGTH: Final[int] = 3
-    MAX_LENGTH: Final[int] = 22
-    ALLOWED_SPECIAL_CHARS: Final[list[str]] = ["_", "-", ".", "@"]
-
-    ALLOWED_LENGHT_FAILURE_DESCRIPTION: Final[str] = (
-        f"""Profile name must be between {MIN_LENGTH} and {MAX_LENGTH} characters long."""
-    )
-    ALLOWED_CHARACTERS_FAILURE_DESCRIPTION: Final[str] = (
-        f"""Only alphanumeric characters and '{ALLOWED_SPECIAL_CHARS}' are allowed."""
-    )
-    PROFILE_ALREADY_EXISTS_FAILURE_DESCRIPTION: Final[str] = "Profile with this name already exists."
-
     def validate(self, value: str) -> None:
-        if len(value) < self.MIN_LENGTH or len(value) > self.MAX_LENGTH:
-            raise InvalidProfileNameError(value, self.ALLOWED_LENGHT_FAILURE_DESCRIPTION)
-        if not self._validate_allowed_characters(value):
-            raise InvalidProfileNameError(value, self.ALLOWED_CHARACTERS_FAILURE_DESCRIPTION)
-        if not self._validate_profile_already_exists(value):
-            raise InvalidProfileNameError(value, self.PROFILE_ALREADY_EXISTS_FAILURE_DESCRIPTION)
-
-    def _validate_allowed_characters(self, value: str) -> bool:
-        return all(char.isalnum() or char in self.ALLOWED_SPECIAL_CHARS for char in value)
-
-    def _validate_profile_already_exists(self, value: str) -> bool:
-        from clive.__private.core.profile import Profile  # noqa: PLC0415
-
-        return value not in Profile.list_profiles()
-
+        from clive.__private.validators.profile_name_validator import ProfileNameValidator
+        validation_result = ProfileNameValidator().validate(value)
+        if not validation_result.is_valid:
+            raise InvalidProfileNameError(value, "".join(validation_result.failure_descriptions))
 
 class SetPasswordValidator:
-    MIN_LENGTH: Final[int] = 8
-    MAX_LENGTH: Final[int] = 64
-
     def validate(self, value: str) -> None:
-        if len(value) < self.MIN_LENGTH or len(value) > self.MAX_LENGTH:
-            raise InvalidPasswordLengthError(self.MIN_LENGTH, self.MAX_LENGTH, len(value))
+        from clive.__private.validators.set_password_validator import SetPasswordValidator
+        validation_result = SetPasswordValidator().validate(value)
+        if not validation_result.is_valid:
+            raise InvalidPasswordLengthError(len(value), "".join(validation_result.failure_descriptions))
 
 
 class AccountNameValidator:
@@ -58,7 +34,9 @@ class AccountNameValidator:
         super().__init__()
 
     def validate(self, value: str) -> None:
-        if not is_matching_model(value, AccountName):
+        from clive.__private.validators.account_name_validator import AccountNameValidator
+        validation_result = AccountNameValidator().validate(value)
+        if not validation_result.is_valid:
             raise InvalidAccountNameError(value)
 
 
