@@ -44,6 +44,7 @@ __all__ = [  # noqa: RUF022
     "FindWitnesses",
     # get API responses (have unnecessary nested property which stores actual model)
     "GetAccountHistory",
+    "GetTransaction",
     # get API responses (have no unnecessary nested  properties, just the model itself)
     "Config",
     "DynamicGlobalProperties",
@@ -159,7 +160,7 @@ __all__ = [  # noqa: RUF022
 
 if TYPE_CHECKING:
     from schemas._preconfigured_base_model import PreconfiguredBaseModel
-    from schemas.apis.account_history_api import GetAccountHistory
+    from schemas.apis.account_history_api import GetAccountHistory, GetTransaction
     from schemas.apis.database_api import (
         FindAccounts,
         FindProposals,
@@ -470,6 +471,7 @@ __getattr__ = lazy_module_factory(
     ("schemas.apis.transaction_status_api", "FindTransaction", "TransactionStatus"),
     *aggregate_same_import(
         "GetAccountHistory",
+        "GetTransaction",
         module="schemas.apis.account_history_api",
     ),
     (
