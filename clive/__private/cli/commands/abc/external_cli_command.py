@@ -72,6 +72,10 @@ class ExternalCLICommand(ABC):
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}
         return cls(**sanitized)
 
+    @classmethod
+    def is_option_given(cls, value: object) -> bool:
+        return value is not None
+
     def read_interactive(self, prompt: str, *, hide_input: bool = True) -> str:
         """
         Read input in interactive mode.

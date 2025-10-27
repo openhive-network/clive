@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from clive.__private.cli.types import ComposeTransaction
 
 
-class RequiresWitnessSetPropertiesOperationError(CLIPrettyError):
+class CLIRequiresWitnessSetPropertiesOperationError(CLIPrettyError):
     """
     Raised when operation must be signed with active authority but signing with witness key is requested.
 
@@ -103,42 +103,44 @@ class ProcessUpdateWitness(OperationCommand):
             )
 
     def _validate_requirements_for_witness_set_propertues_operation(self) -> None:
-        if self.use_active_authority and self.account_subsidy_budget is not None:
-            raise RequiresWitnessSetPropertiesOperationError("account-subsidy-budget")
-        if self.use_active_authority and self.account_subsidy_decay is not None:
-            raise RequiresWitnessSetPropertiesOperationError("account-subsidy-decay")
+        if self.use_active_authority and self.is_option_given(self.account_subsidy_budget):
+            raise CLIRequiresWitnessSetPropertiesOperationError("account-subsidy-budget")
+        if self.use_active_authority and self.is_option_given(self.account_subsidy_decay):
+            raise CLIRequiresWitnessSetPropertiesOperationError("account-subsidy-decay")
 
     @property
     def _needs_feed_publish_operation(self) -> bool:
-        return self.use_active_authority and self.hbd_exchange_rate is not None
+        return self.use_active_authority and self.is_option_given(self.hbd_exchange_rate)
 
     @property
     def _needs_witness_set_properties_operation(self) -> bool:
-        are_witness_set_properties_options_required: bool = (
-            self.account_creation_fee is not None
-            or self.maximum_block_size is not None
-            or self.hbd_interest_rate is not None
-            or self.new_signing_key is not None
-            or self.url is not None
-            or self.hbd_exchange_rate is not None
-            or self.account_subsidy_budget is not None
-            or self.account_subsidy_decay is not None
-        )
-        return self.use_witness_key and are_witness_set_properties_options_required
+        properties = [
+            self.account_creation_fee,
+            self.maximum_block_size,
+            self.hbd_interest_rate,
+            self.new_signing_key,
+            self.url,
+            self.hbd_exchange_rate,
+            self.account_subsidy_budget,
+            self.account_subsidy_decay,
+        ]
+        is_witness_set_properties_option_given = any(self.is_option_given(prop) for prop in properties)
+        return self.use_witness_key and is_witness_set_properties_option_given
 
     @property
     def _needs_witness_update_operation(self) -> bool:
-        are_witness_update_options_required: bool = (
-            self.account_creation_fee is not None
-            or self.maximum_block_size is not None
-            or self.hbd_interest_rate is not None
-            or self.new_signing_key is not None
-            or self.url is not None
-        )
-        return self.use_active_authority and are_witness_update_options_required
+        properties = [
+            self.account_creation_fee,
+            self.maximum_block_size,
+            self.hbd_interest_rate,
+            self.new_signing_key,
+            self.url,
+        ]
+        is_witness_update_option_given = any(self.is_option_given(prop) for prop in properties)
+        return self.use_active_authority and is_witness_update_option_given
 
     def _create_feed_publish_operation(self) -> FeedPublishOperation:
-        assert self.hbd_exchange_rate is not None, (
+        assert self.hbd_exchange_rate is not None, (  # we already checked this option was given
             "Feed publish should be created only if command requires changing hbd_exchange_rate"
         )
         return FeedPublishOperation(
