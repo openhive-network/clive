@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
-from clive.__private.si.core.process import (
-    ProcessAuthority,
-    ProcessCustomJson,
-    ProcessPowerDownCancel,
-    ProcessPowerDownRestart,
-    ProcessPowerDownStart,
-    ProcessPowerUp,
-    ProcessTransaction,
-    ProcessTransfer,
+from clive.__private.si.chaining import (
+    AuthorityChain,
+    CustomJsonChain,
+    PowerDownCancelChain,
+    PowerDownRestartChain,
+    PowerDownStartChain,
+    PowerUpChain,
+    TransactionChain,
+    TransferChain,
 )
 
 if TYPE_CHECKING:
@@ -34,12 +34,12 @@ class ProcessInterface:
         to_account: str,
         amount: str | Asset.LiquidT,
         memo: str = "",
-    ) -> ProcessTransfer:
+    ) -> TransferChain:
         """Transfer funds between accounts."""
-        return ProcessTransfer(
+        return TransferChain(
             world=self.clive.world,
             from_account=from_account,
-            to=to_account,
+            to_account=to_account,
             amount=amount,
             memo=memo,
         )
@@ -51,9 +51,9 @@ class ProcessInterface:
         force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force: bool = False,
-    ) -> ProcessTransaction:
+    ) -> TransactionChain:
         """Process a transaction from a file."""
-        return ProcessTransaction(
+        return TransactionChain(
             world=self.clive.world,
             from_file=from_file,
             force_unsign=force_unsign,
@@ -66,9 +66,9 @@ class ProcessInterface:
         account_name: str,
         *,
         threshold: int,
-    ) -> ProcessAuthority:
+    ) -> AuthorityChain:
         """Update owner authority for an account."""
-        return ProcessAuthority(
+        return AuthorityChain(
             world=self.clive.world,
             authority_type="owner",
             account_name=account_name,
@@ -80,9 +80,9 @@ class ProcessInterface:
         account_name: str,
         *,
         threshold: int,
-    ) -> ProcessAuthority:
+    ) -> AuthorityChain:
         """Update active authority for an account."""
-        return ProcessAuthority(
+        return AuthorityChain(
             world=self.clive.world,
             authority_type="active",
             account_name=account_name,
@@ -94,9 +94,9 @@ class ProcessInterface:
         account_name: str,
         *,
         threshold: int,
-    ) -> ProcessAuthority:
+    ) -> AuthorityChain:
         """Update posting authority for an account."""
-        return ProcessAuthority(
+        return AuthorityChain(
             world=self.clive.world,
             authority_type="posting",
             account_name=account_name,
@@ -107,9 +107,9 @@ class ProcessInterface:
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-    ) -> ProcessPowerDownStart:
+    ) -> PowerDownStartChain:
         """Start power down for an account."""
-        return ProcessPowerDownStart(
+        return PowerDownStartChain(
             world=self.clive.world,
             account_name=account_name,
             amount=amount,
@@ -119,9 +119,9 @@ class ProcessInterface:
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-    ) -> ProcessPowerDownRestart:
+    ) -> PowerDownRestartChain:
         """Restart power down for an account."""
-        return ProcessPowerDownRestart(
+        return PowerDownRestartChain(
             world=self.clive.world,
             account_name=account_name,
             amount=amount,
@@ -130,9 +130,9 @@ class ProcessInterface:
     def power_down_cancel(
         self,
         account_name: str,
-    ) -> ProcessPowerDownCancel:
+    ) -> PowerDownCancelChain:
         """Cancel power down for an account."""
-        return ProcessPowerDownCancel(
+        return PowerDownCancelChain(
             world=self.clive.world,
             account_name=account_name,
         )
@@ -144,9 +144,9 @@ class ProcessInterface:
         amount: str | Asset.LiquidT,
         *,
         force: bool,
-    ) -> ProcessPowerUp:
+    ) -> PowerUpChain:
         """Power up (stake) funds from one account to another."""
-        return ProcessPowerUp(
+        return PowerUpChain(
             world=self.clive.world,
             from_account=from_account,
             to_account=to_account,
@@ -160,9 +160,9 @@ class ProcessInterface:
         json: str | Path,
         authorize: str | list[str] | None = None,
         authorize_by_active: str | list[str] | None = None,
-    ) -> ProcessCustomJson:
+    ) -> CustomJsonChain:
         """Process a custom JSON operation."""
-        return ProcessCustomJson(
+        return CustomJsonChain(
             world=self.clive.world,
             id_=id_,
             json=json,

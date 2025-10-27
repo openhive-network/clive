@@ -129,15 +129,16 @@ class ProcessTransaction(ProcessCommandBase):
         self.force = force
         self.force_save_format = force_save_format
 
-    async def _run(
+    async def finalize(
         self,
-        *,
         sign_with: str | None = None,
         save_file: str | Path | None = None,
-        broadcast: bool = False,
+        *,
+        broadcast: bool = True,
         autosign: bool | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
+        """Finalize the operation with specified signing and broadcasting options."""
         from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
 
         transaction = ProcessTransaction(
@@ -153,7 +154,7 @@ class ProcessTransaction(ProcessCommandBase):
         )
         await transaction.validate()
 
-        await self.validate(broadcast=broadcast, sign_with=sign_with)
+        await self.validate()
         return (
             await self.world.commands.perform_actions_on_transaction(
                 content=await transaction.get_transaction(),
@@ -163,6 +164,23 @@ class ProcessTransaction(ProcessCommandBase):
                 broadcast=broadcast,
             )
         ).result_or_raise
+
+    async def _run(
+        self,
+        *,
+        sign_with: str | None = None,
+        save_file: str | Path | None = None,
+        broadcast: bool = False,
+        autosign: bool | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
+    ) -> Transaction:
+        return await self.finalize(
+            sign_with=sign_with,
+            save_file=save_file,
+            broadcast=broadcast,
+            autosign=autosign,
+            force_save_format=force_save_format,
+        )
 
     async def _create_operation(self) -> TransferOperation:
         raise NotImplementedError("This will be implemented in future.")
@@ -252,6 +270,28 @@ class ProcessAuthority(ProcessCommandBase):
         self.process_account_update.add_callback(update_function)
         return self
 
+    async def finalize(
+        self,
+        sign_with: str | None = None,
+        save_file: str | Path | None = None,
+        *,
+        broadcast: bool = True,
+        autosign: bool | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
+    ) -> Transaction:
+        """Finalize the operation with specified signing and broadcasting options."""
+        self.process_account_update.modify_common_options(
+            sign_with=sign_with,
+            broadcast=broadcast,
+            save_file=str(save_file) if save_file else None,
+            autosign=autosign,
+            force_save_format=force_save_format,
+        )
+
+        await self.validate()
+        await self.process_account_update.run()
+        return await self.process_account_update.get_transaction()
+
     async def _run(
         self,
         *,
@@ -261,17 +301,13 @@ class ProcessAuthority(ProcessCommandBase):
         autosign: bool | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
-        self.process_account_update.modify_common_options(
+        return await self.finalize(
             sign_with=sign_with,
+            save_file=save_file,
             broadcast=broadcast,
-            save_file=str(save_file) if save_file else None,
             autosign=autosign,
             force_save_format=force_save_format,
         )
-
-        await self.validate(broadcast=broadcast, sign_with=sign_with)
-        await self.process_account_update.run()
-        return await self.process_account_update.get_transaction()
 
     async def _create_operation(self) -> TransferOperation:
         raise NotImplementedError("Unused method.")
