@@ -282,8 +282,8 @@ class WitnessSetPropertiesWrapper:
     def create(  # noqa: PLR0913
         cls,
         owner: str,
-        key: PublicKey,
-        new_signing_key: PublicKey | None = None,
+        key: str | PublicKey,
+        new_signing_key: str | PublicKey | None = None,
         account_creation_fee: Asset.Hive | None = None,
         url: str | None = None,
         hbd_exchange_rate: Asset.Hbd | None = None,
@@ -292,18 +292,22 @@ class WitnessSetPropertiesWrapper:
         account_subsidy_budget: int | None = None,
         account_subsidy_decay: int | None = None,
     ) -> Self:
+        from clive.__private.core.keys import PublicKey  # noqa: PLC0415
         from clive.__private.models.asset import Asset  # noqa: PLC0415
         from wax.complex_operations.witness_set_properties import (  # noqa: PLC0415
             WitnessSetProperties,
             WitnessSetPropertiesData,
         )
 
+        def key_string(input_key: str | PublicKey) -> str:
+            return input_key.value if isinstance(input_key, PublicKey) else input_key
+
         return cls(
             WitnessSetProperties(
                 data=WitnessSetPropertiesData(
                     owner=AccountName(owner),
-                    witness_signing_key=key.value,
-                    new_signing_key=new_signing_key.value if new_signing_key is not None else None,
+                    witness_signing_key=key_string(key),
+                    new_signing_key=key_string(new_signing_key) if new_signing_key is not None else None,
                     account_creation_fee=account_creation_fee.as_serialized_nai()
                     if account_creation_fee is not None
                     else None,
