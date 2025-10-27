@@ -325,7 +325,9 @@ class WitnessSetPropertiesWrapper:
     def to_schemas(self, wax_interface: wax.IWaxBaseInterface) -> SchemasWitnessSetPropertiesOperation:
         first = next(iter(self._operation.finalize(wax_interface)))
         props = self._props_to_schemas(first.props)
-        return SchemasWitnessSetPropertiesOperation(owner=self._operation.owner, props=props)
+        schemas_operation = SchemasWitnessSetPropertiesOperation(owner=self._operation.owner, props=props)
+        validate_operation(schemas_operation)
+        return schemas_operation
 
     def _props_to_schemas(self, wax_props: dict[str, str]) -> list[tuple[WitnessPropsSerializedKey, Hex]]:
         schemas_properties_model: list[tuple[WitnessPropsSerializedKey, Hex]] = []
