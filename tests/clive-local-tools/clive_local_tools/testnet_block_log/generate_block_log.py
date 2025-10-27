@@ -62,9 +62,9 @@ def create_witnesses(wallet: tt.Wallet) -> None:
 
     with wallet.in_single_transaction():
         for witness in WITNESSES:
-            wallet.api.transfer("initminer", witness.name, tt.Asset.Test(10_000).as_nai(), "memo")
-            wallet.api.transfer_to_vesting("initminer", witness.name, tt.Asset.Test(10_000).as_nai())
-            wallet.api.transfer("initminer", witness.name, tt.Asset.Tbd(10_000).as_nai(), memo="memo")
+            wallet.api.transfer("initminer", witness.name, tt.Asset.Test(10_000), "memo")
+            wallet.api.transfer_to_vesting("initminer", witness.name, tt.Asset.Test(10_000))
+            wallet.api.transfer("initminer", witness.name, tt.Asset.Tbd(10_000), memo="memo")
 
     with wallet.in_single_transaction():
         for witness in WITNESSES:
@@ -73,7 +73,7 @@ def create_witnesses(wallet: tt.Wallet) -> None:
                 "https://" + witness.name,
                 witness.public_key,
                 {
-                    "account_creation_fee": tt.Asset.Test(3).as_nai(),
+                    "account_creation_fee": tt.Asset.Test(3),
                     "maximum_block_size": 65536,
                     "hbd_interest_rate": 0,
                 },
@@ -100,7 +100,7 @@ def create_proposals(wallet: tt.Wallet) -> None:
                 witness.name,
                 tt.Time.from_now(months=start_month, minutes=1),
                 tt.Time.from_now(months=end_month, minutes=1),
-                tt.Asset.Tbd(daily_pay).as_nai(),
+                tt.Asset.Tbd(daily_pay),
                 permlink,
                 f"{permlink}",
             )
@@ -110,21 +110,21 @@ def create_working_accounts(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating working accounts...")
     wallet.create_account(
         WORKING_ACCOUNT_DATA.account.name,
-        hives=WORKING_ACCOUNT_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=WORKING_ACCOUNT_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=WORKING_ACCOUNT_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hives=WORKING_ACCOUNT_DATA.hives_liquid,
+        vests=WORKING_ACCOUNT_DATA.vests,
+        hbds=WORKING_ACCOUNT_DATA.hbds_liquid,
     )
     wallet.create_account(
         ALT_WORKING_ACCOUNT1_DATA.account.name,
-        hives=ALT_WORKING_ACCOUNT1_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=ALT_WORKING_ACCOUNT1_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=ALT_WORKING_ACCOUNT1_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hives=ALT_WORKING_ACCOUNT1_DATA.hives_liquid,
+        vests=ALT_WORKING_ACCOUNT1_DATA.vests,
+        hbds=ALT_WORKING_ACCOUNT1_DATA.hbds_liquid,
     )
     wallet.create_account(
         ALT_WORKING_ACCOUNT2_DATA.account.name,
-        hives=ALT_WORKING_ACCOUNT2_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=ALT_WORKING_ACCOUNT2_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=ALT_WORKING_ACCOUNT2_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hives=ALT_WORKING_ACCOUNT2_DATA.hives_liquid,
+        vests=ALT_WORKING_ACCOUNT2_DATA.vests,
+        hbds=ALT_WORKING_ACCOUNT2_DATA.hbds_liquid,
     )
 
 
@@ -136,14 +136,14 @@ def prepare_savings(wallet: tt.Wallet) -> None:
             wallet.api.transfer_to_savings(
                 CREATOR_ACCOUNT.name,
                 data.account.name,
-                data.hives_savings.as_nai(),
+                data.hives_savings,
                 "Supplying HIVE savings",
             )
         if data.hbds_savings > 0:
             wallet.api.transfer_to_savings(
                 CREATOR_ACCOUNT.name,
                 data.account.name,
-                data.hbds_savings.as_nai(),
+                data.hbds_savings,
                 "Supplying HBD savings",
             )
         if data.hives_savings_withdrawal > 0:
@@ -151,7 +151,7 @@ def prepare_savings(wallet: tt.Wallet) -> None:
                 data.account.name,
                 0,
                 CREATOR_ACCOUNT.name,
-                data.hives_savings_withdrawal.as_nai(),
+                data.hives_savings_withdrawal,
                 "Withdrawing HIVE savings",
             )
         if data.hbds_savings_withdrawal > 0:
@@ -159,7 +159,7 @@ def prepare_savings(wallet: tt.Wallet) -> None:
                 data.account.name,
                 0,
                 CREATOR_ACCOUNT.name,
-                data.hbds_savings_withdrawal.as_nai(),
+                data.hbds_savings_withdrawal,
                 "Withdrawing HBD savings",
             )
 
@@ -169,9 +169,9 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
     for data in WATCHED_ACCOUNTS_DATA:
         wallet.create_account(
             data.account.name,
-            hives=data.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=data.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=data.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hives=data.hives_liquid,
+            vests=data.vests,
+            hbds=data.hbds_liquid,
         )
 
 
