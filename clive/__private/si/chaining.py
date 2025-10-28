@@ -116,15 +116,15 @@ class BroadcastAndSaveTransactionResult():
 
 #######################################################################################################################################
 
-class GetTransactionResult:
+class GetTransactionResult(Transaction):
     """Result after getting a transaction."""
-    def __init__(self, transaction: Transaction, world: World) -> None:
-        self.transaction = transaction
-        self.__world = world
+
+    def _get_world(self) -> World:
+        raise NotImplementedError()
 
     async def broadcast(self) -> GetTransactionAndBroadcastResult:
         """Broadcast the transaction to the blockchain."""
-        transaction = await broadcast_transaction(node=self.__world.node, transaction=self.transaction)
+        transaction = await broadcast_transaction(node=self._get_world().node, transaction=self)
         return GetTransactionAndBroadcastResult(transaction=transaction, broadcast_status=BroadcastResult(status=True))
 
     async def save_to(
@@ -134,8 +134,8 @@ class GetTransactionResult:
         force_save_format: Literal["json", "bin"] | None = None,
     ) -> GetTransactionAndSaveTransactionResult:
         """Save the transaction to a file."""
-        await save_transaction_to_file(transaction=self.transaction, file_path=Path(path), force_save_format=force_save_format)
-        return GetTransactionAndSaveTransactionResult(status=SaveToStatus(status=True), transaction=self.transaction, world=self.__world)
+        await save_transaction_to_file(transaction=self, file_path=Path(path), force_save_format=force_save_format)
+        return GetTransactionAndSaveTransactionResult(status=SaveToStatus(status=True), transaction=self, world=self._get_world())
 
 class GetTransactionAndSaveTransactionResult():
     def __init__(self, status: SaveToStatus, transaction: Transaction, world: World) -> None:
@@ -291,6 +291,13 @@ class SigningMixin:
         return FinalizingChain(self.world, self._processor, sign_method="sign_with", sign_key=key)
 
 
+def get_transaction_result_cls(world: World) -> type[GetTransactionResult]:
+    class GetTransactionResultImplementation(GetTransactionResult):
+        def _get_world(self) -> World:
+            return world
+    return GetTransactionResultImplementation
+
+
 class FinalizingChain:
     """Handles finalizing commands (group 4)."""
     
@@ -325,12 +332,11 @@ class FinalizingChain:
         )
         return SaveToResult(transaction=transaction, status=SaveToStatus(status=True), world=self.world)
 
-
     async def get_transaction(self) -> GetTransactionResult:
         """Get the transaction without broadcasting or saving."""
         transaction = await self._finalize(broadcast=False)
-        return GetTransactionResult(transaction=transaction, world=self.world)
-    
+        return get_transaction_result_cls(world=self.world)(**transaction.dict())
+
     async def _finalize(
         self,
         *,
