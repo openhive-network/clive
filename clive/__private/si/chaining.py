@@ -18,9 +18,14 @@ Key constraints:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from importlib.resources import path
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Self
+from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
+from clive.__private.core.commands.broadcast import Broadcast
+from clive.__private.core.commands.save_transaction import SaveTransaction
+from clive.__private.core.world import World
+from clive.__private.models.transaction import Transaction
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.si.core.process import (
     ProcessAuthority,
@@ -32,6 +37,114 @@ from clive.__private.si.core.process import (
     ProcessTransaction,
     ProcessTransfer,
 )
+
+async def broadcast_transaction(
+    node: Any,
+    transaction: Transaction,
+) -> Transaction:
+    """Broadcast the transaction to the blockchain."""
+    return await Broadcast(node=node, transaction=transaction).execute()
+
+async def save_transaction_to_file(
+    transaction: Transaction,
+    file_path: str | Path,
+    force_save_format: Literal["json", "bin"] | None = None,
+) -> Transaction:
+    """Save the transaction to a file."""
+    return await SaveTransaction(
+        transaction=transaction, file_path=file_path, force_format=force_save_format
+    ).execute()
+
+class BroadcastResult:
+    """Result after broadcasting a transaction."""
+    
+    def __init__(
+        self,
+        broadcast_status: bool,
+        transaction: Transaction,
+    ) -> None:
+        self.broadcast_status = broadcast_status
+        self.__transaction = transaction
+    
+    async def get_transaction(self) -> BroadcastAndGetTransactionResult:
+        """Get the transaction object."""
+        return cast(BroadcastAndGetTransactionResult, self.__transaction)
+
+    async def save_to(
+        self,
+        file_path: str | Path,
+        force_save_format: Literal["json", "bin"] | None = None,
+    ) -> BroadcastAndSaveTransactionResult:
+        """Save the transaction to a file."""
+        await save_transaction_to_file(transaction=self.__transaction, file_path=file_path, force_save_format=force_save_format)
+        return BroadcastAndSaveTransactionResult(SaveToResult(status=True), self.__transaction)
+
+class SaveToResult:
+    def __init__(self, status: bool) -> None:
+        self.status = status
+
+class BroadcastAndGetTransactionResult(Transaction):
+    async def save_to(
+        self,
+        file_path: str | Path,
+        force_save_format: Literal["json", "bin"] | None = None,
+    ) -> SaveToResult:
+        """Save the transaction to a file."""
+        await save_transaction_to_file(transaction=self, file_path=file_path, force_save_format=force_save_format)
+        return SaveToResult(status=True)
+
+
+class BroadcastAndSaveTransactionResult():
+    def __init__(
+        self,
+        save_transaction_status: SaveToResult,
+        transaction: Transaction,
+    ) -> None:
+        self.__save_transaction_status = save_transaction_status
+        self.__transaction = transaction
+
+    async def get_transaction(
+        self,
+    ) -> Transaction:
+        """Get the transaction object."""
+        return self.__transaction
+
+
+#######################################################################################################################################
+
+class GetTransactionResult:
+    """Result after getting a transaction."""
+    
+    def __init__(self, transaction: Transaction) -> None:
+        self.transaction = transaction
+    
+    def broadcast(self) -> BroadcastResult:
+        """Broadcast the transaction to the blockchain."""
+        return BroadcastResult(self.transaction, None, "no_sign")
+    
+    def save_to(
+        self,
+        path: str | Path,
+        *,
+        force_save_format: Literal["json", "bin"] | None = None,
+    ) -> SaveToResult:
+        """Save the transaction to a file."""
+        return SaveToResult(self.transaction)
+
+
+class SaveToResult:
+    """Result after saving a transaction to file."""
+    
+    def __init__(self, transaction: Transaction) -> None:
+        self.transaction = transaction
+    
+    def broadcast(self) -> BroadcastResult:
+        """Broadcast the transaction to the blockchain."""
+        return BroadcastResult(self.transaction, None, "no_sign")
+    
+    def get_transaction(self) -> GetTransactionResult:
+        """Get the transaction object."""
+        return GetTransactionResult(self.transaction)
 
 if TYPE_CHECKING:
     from clive.__private.core.types import AlreadySignedMode, AuthorityLevelRegular
@@ -134,10 +247,11 @@ class FinalizingChain:
         self._sign_method = sign_method
         self._sign_key = sign_key
     
-    async def broadcast(self) -> Transaction:
+    async def broadcast(self) -> BroadcastResult:
         """Broadcast the transaction to the blockchain."""
-        return await self._finalize(broadcast=True)
-    
+        transaction = await self._finalize(broadcast=True)
+        return BroadcastResult(broadcast_status=True, transaction=transaction)
+
     async def save_file(
         self,
         path: str | Path,

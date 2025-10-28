@@ -50,8 +50,9 @@ class ProcessCommandBase(ABC):
         return await self._create_operation()
 
     async def validate(self) -> None:
-        if self._broadcast and not self._sign_with:
-            raise CLITransactionNotSignedError  # zduplikowana funkcjonalnosć, do poprawy
+        pass
+        # if self._broadcast and not self._sign_with:
+        #     raise CLITransactionNotSignedError  # zduplikowana funkcjonalnosć, do poprawy
 
     async def _run(self) -> Transaction:
         await self.validate()
