@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
-from clive.__private.cli.commands.process.process_update_witness import RequiresWitnessSetPropertiesOperationError
+from clive.__private.cli.commands.process.process_update_witness import CLIRequiresWitnessSetPropertiesOperationError
 from clive.__private.core.keys.keys import PrivateKey, PublicKey
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.schemas import (
@@ -135,7 +135,7 @@ async def test_negative_account_subsidy_with_active_authority(
     # ACT & ASSERT
     with pytest.raises(
         CLITestCommandError,
-        match=get_formatted_error_message(RequiresWitnessSetPropertiesOperationError("account-subsidy-budget")),
+        match=get_formatted_error_message(CLIRequiresWitnessSetPropertiesOperationError("account-subsidy-budget")),
     ):
         cli_tester_unlocked_with_witness_profile.process_update_witness(
             use_witness_key=False, account_subsidy_budget=account_subsidy_budget

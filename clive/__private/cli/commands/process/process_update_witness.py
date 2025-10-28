@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from clive.__private.cli.types import ComposeTransaction
 
 
-class RequiresWitnessSetPropertiesOperationError(CLIPrettyError):
+class CLIRequiresWitnessSetPropertiesOperationError(CLIPrettyError):
     """
     Raised when operation must be signed with active authority but signing with witness key is requested.
 
@@ -104,9 +104,9 @@ class ProcessUpdateWitness(OperationCommand):
 
     def _validate_requirements_for_witness_set_propertues_operation(self) -> None:
         if self.use_active_authority and self.is_option_given(self.account_subsidy_budget):
-            raise RequiresWitnessSetPropertiesOperationError("account-subsidy-budget")
+            raise CLIRequiresWitnessSetPropertiesOperationError("account-subsidy-budget")
         if self.use_active_authority and self.is_option_given(self.account_subsidy_decay):
-            raise RequiresWitnessSetPropertiesOperationError("account-subsidy-decay")
+            raise CLIRequiresWitnessSetPropertiesOperationError("account-subsidy-decay")
 
     @property
     def _needs_feed_publish_operation(self) -> bool:
