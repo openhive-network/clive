@@ -56,6 +56,8 @@ from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from wax.exceptions.chain_errors import AuthorityCannotBeSatisfiedError, HiveMaxAuthorityMembershipExceededError
 from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
 
+from __private.core.commands.data_retrieval.update_node_data.clive_authority_data_provider import CliveAuthorityDataProviderWithTransactionData
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -543,6 +545,7 @@ class ModifyAuthority(BaseScreen, OperationActionBindings):
         super().__init__()
         working_account = self.profile.accounts.working
         self._authority = deepcopy(working_account.data.authority)
+        self._authority.sync_operation_with_transaction(self.profile.transaction)
         self.set_reactive(self.__class__.subtitle, f"for the {working_account.name} account")  # type: ignore[arg-type]
 
     def create_main_panel(self) -> ComposeResult:

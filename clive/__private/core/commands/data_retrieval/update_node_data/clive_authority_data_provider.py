@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from schemas.operations import AccountUpdate2Operation
 from wax._private.models.hive_date_time import HiveDateTime
 from wax.interfaces import IAuthorityDataProvider
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAuthority
@@ -9,6 +10,8 @@ from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAut
 if TYPE_CHECKING:
     from clive.__private.models.schemas import Account, Authority
     from wax.models.basic import AccountName
+    from clive.__private.core.commands.data_retrieval.update_node_data import NodeData
+    from clive.__private.models.transaction import Transaction
 
 
 class CliveAuthorityDataProvider(IAuthorityDataProvider):
@@ -64,3 +67,33 @@ class CliveAuthorityDataProvider(IAuthorityDataProvider):
             last_owner_update=HiveDateTime(self._account_data.last_owner_update),
             previous_owner_update=HiveDateTime(self._account_data.previous_owner_update),
         )
+    
+
+class CliveAuthorityDataProviderWithTransactionData(IAuthorityDataProvider):
+    """
+    Provides authority data for Hive accounts using the wax interface and transaction from profile.
+
+    Args:
+        account_data: account data from profile (from database api call)
+        transaction: transaction from profile with possible account_update2 operations that will fill authority data
+    """
+
+    def __init__(self, account_data: NodeData, transaction: Transaction) -> None:
+        self._account_data = account_data
+        self._transaction = transaction
+
+
+    async def get_hive_authority_data(self, name: AccountName) -> WaxAccountAuthorityInfo:
+        assert name == self._account_data.authority.name, (
+            f"You provided account data for the wrong account got `{self._account_data.name}` expected `{name}`."
+        )
+
+        # extract operations from transaction - filter only acount update2, extract modified authorities from it
+        account_update2_operations: list[AccountUpdate2Operation] | None = None
+        account_update2_operations = [operation for operation in self._transaction.operations_models if isinstance(operation, AccountUpdate2Operation)]
+        if not account_update2_operations:
+            # no account update2 operations in transaction - skip filling
+            ...
+        else:
+            ...
+
