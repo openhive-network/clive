@@ -69,10 +69,11 @@ class ProcessUpdateWitness(OperationCommand):
 
     @override
     async def fetch_data(self) -> None:
-        try:
-            self._witness = (await self.world.commands.find_witness(witness_name=self.owner)).result_or_raise
-        except WitnessNotFoundError as err:
-            raise CLIWitnessNotFoundError(self.owner) from err
+        if self._needs_witness_update_operation or self._needs_witness_set_properties_operation:
+            try:
+                self._witness = (await self.world.commands.find_witness(witness_name=self.owner)).result_or_raise
+            except WitnessNotFoundError as err:
+                raise CLIWitnessNotFoundError(self.owner) from err
 
     @override
     async def _create_operations(self) -> ComposeTransaction:
