@@ -3,14 +3,13 @@ from __future__ import annotations
 import datetime
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, Self, cast, get_args
+from typing import TYPE_CHECKING, Any, Protocol, Self, cast
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
-from clive.__private.models.schemas import AccountName, WitnessPropsSerializedKey
-from clive.__private.models.schemas import WitnessSetPropertiesOperation as SchemasWitnessSetPropertiesOperation
+from clive.__private.models.schemas import AccountName
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -18,7 +17,8 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import Hex, OperationUnion, PriceFeed
+    from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import WitnessSetPropertiesOperation as SchemasWitnessSetPropertiesOperation
     from clive.__private.models.transaction import Transaction
     from wax.complex_operations.witness_set_properties import WitnessSetProperties as WaxWitnessSetProperties
 
@@ -326,20 +326,18 @@ class WitnessSetPropertiesWrapper:
             )
         )
 
-    def to_schemas(self, wax_interface: wax.IWaxBaseInterface) -> SchemasWitnessSetPropertiesOperation:
-        first = next(iter(self._operation.finalize(wax_interface)))
-        props = self._props_to_schemas(first.props)
-        schemas_operation = SchemasWitnessSetPropertiesOperation(owner=self._operation.owner, props=props)
+    async def to_schemas(self, wax_interface: wax.IHiveChainInterface) -> SchemasWitnessSetPropertiesOperation:
+        from clive.__private.models.schemas import WitnessSetPropertiesOperation  # noqa: PLC0415
+        from clive.__private.models.transaction import Transaction  # noqa: PLC0415
+
+        wax_transaction = await wax_interface.create_transaction()
+        proto_operations = list(self._operation.finalize(wax_interface))
+        assert len(proto_operations) == 1, "A single proto operation was expected from wax WitnessSetProperties"
+        wax_transaction.push_operation(proto_operations[0])
+        transaction = Transaction.parse_raw(wax_transaction.to_api_json())
+        schemas_operation = transaction.operations[0].value
+        assert isinstance(schemas_operation, WitnessSetPropertiesOperation), (
+            "Expected WitnessSetPropertiesOperation from wax operation conversion"
+        )
         validate_operation(schemas_operation)
         return schemas_operation
-
-    def _props_to_schemas(self, wax_props: dict[str, str]) -> list[tuple[WitnessPropsSerializedKey, Hex]]:
-        schemas_properties_model: list[tuple[WitnessPropsSerializedKey, Hex]] = []
-
-        def append_optional_property(name: WitnessPropsSerializedKey) -> None:
-            if property_value := wax_props.get(name):
-                schemas_properties_model.append((name, property_value))
-
-        for property_name in get_args(WitnessPropsSerializedKey):
-            append_optional_property(property_name)
-        return schemas_properties_model
