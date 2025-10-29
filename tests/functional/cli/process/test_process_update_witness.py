@@ -59,7 +59,7 @@ async def test_setting_witness_property(  # noqa: PLR0913
 ) -> None:
     # ARRANGE
     cli_tester = cli_tester_unlocked_with_witness_profile
-    owner = cli_tester.world.profile.accounts.working.name
+    witness_name = cli_tester.world.profile.accounts.working.name
     properties = {property_name: property_value}
 
     # ACT
@@ -67,7 +67,7 @@ async def test_setting_witness_property(  # noqa: PLR0913
 
     # ASSERT
     assert_operation_type_in_blockchain(node, result, operation_type)
-    witness = (await cli_tester.world.commands.find_witness(witness_name=owner)).result_or_raise
+    witness = (await cli_tester.world.commands.find_witness(witness_name=witness_name)).result_or_raise
     assert_witness_property(property_name, property_value, witness)
 
 
@@ -75,56 +75,50 @@ async def test_two_operations_in_transaction(
     node: tt.RawNode, cli_tester_unlocked_with_witness_profile: CLITester
 ) -> None:
     # ARRANGE
+    cli_tester = cli_tester_unlocked_with_witness_profile
     operations: list[type[OperationBase]] = [WitnessUpdateOperation, FeedPublishOperation]
     hbd_exchange_rate = Asset.hbd("0.3456")
     hbd_interest_rate = Decimal("65.43")
-    owner = cli_tester_unlocked_with_witness_profile.world.profile.accounts.working.name
+    witness_name = cli_tester.world.profile.accounts.working.name
 
     # ACT
-    result = cli_tester_unlocked_with_witness_profile.process_update_witness(
+    result = cli_tester.process_update_witness(
         use_witness_key=False, hbd_exchange_rate=hbd_exchange_rate, hbd_interest_rate=hbd_interest_rate
     )
 
     # ASSERT
     assert_operation_type_in_blockchain(node, result, *operations)
-    witness = (
-        await cli_tester_unlocked_with_witness_profile.world.commands.find_witness(witness_name=owner)
-    ).result_or_raise
+    witness = (await cli_tester.world.commands.find_witness(witness_name=witness_name)).result_or_raise
     assert witness.hbd_exchange_rate.base == hbd_exchange_rate, (
-        f"Witness '{owner}' hbd exchange rate should change after command witness-update,"
+        f"Witness '{witness_name}' hbd exchange rate should change after command witness-update,"
         f" expected: `{hbd_exchange_rate}`, actual: `{witness.hbd_exchange_rate.base}`"
     )
     assert witness.hbd_exchange_rate.quote == Asset.hive(1), "hbd exchange rate should be given as price of 1 hive"
     assert percent_to_hive_percent(hbd_interest_rate) == witness.props.hbd_interest_rate, (
-        f"Witness '{owner}' hbd interest rate should change after command witness-update,"
+        f"Witness '{witness_name}' hbd interest rate should change after command witness-update,"
         f" expected: `{percent_to_hive_percent(hbd_interest_rate)}`, actual: `{witness.props.hbd_interest_rate}`"
     )
 
 
 async def test_using_updated_witness_key(node: tt.RawNode, cli_tester_unlocked_with_witness_profile: CLITester) -> None:
     # ARRANGE
+    cli_tester = cli_tester_unlocked_with_witness_profile
     operation = WitnessSetPropertiesOperation
     account_subsidy_decay = 6543
     alias = "updated_signing_key"
     new_private_signing_key = PrivateKey.create()
-    cli_tester_unlocked_with_witness_profile.process_update_witness(
-        new_signing_key=new_private_signing_key.calculate_public_key().value
-    )
-    cli_tester_unlocked_with_witness_profile.configure_key_add(key=new_private_signing_key.value, alias=alias)
-    owner = cli_tester_unlocked_with_witness_profile.world.profile.accounts.working.name
+    cli_tester.process_update_witness(new_signing_key=new_private_signing_key.calculate_public_key().value)
+    cli_tester.configure_key_add(key=new_private_signing_key.value, alias=alias)
+    witness_name = cli_tester.world.profile.accounts.working.name
 
     # ACT
-    result = cli_tester_unlocked_with_witness_profile.process_update_witness(
-        account_subsidy_decay=account_subsidy_decay, sign_with=alias
-    )
+    result = cli_tester.process_update_witness(account_subsidy_decay=account_subsidy_decay, sign_with=alias)
 
     # ASSERT
     assert_operation_type_in_blockchain(node, result, operation)
-    witness = (
-        await cli_tester_unlocked_with_witness_profile.world.commands.find_witness(witness_name=owner)
-    ).result_or_raise
+    witness = (await cli_tester.world.commands.find_witness(witness_name=witness_name)).result_or_raise
     assert account_subsidy_decay == witness.props.account_subsidy_decay, (
-        f"Witness '{owner}' account subsidy decay should change after command witness-update,"
+        f"Witness '{witness_name}' account subsidy decay should change after command witness-update,"
         f" expected: `{account_subsidy_decay}`, actual: `{witness.props.account_subsidy_decay}`"
     )
 
