@@ -73,7 +73,15 @@ async def interface_presentation() -> str:
             from_file="/workspace/clive_workspace/clive/script_interface_examples/transfer.json", already_signed_mode="override"
         ).autosign().broadcast()
 
-        update_authority = await clive.process.update_active_authority(
-            account_name="alice",
-            threshold=2,
-        ).add_account(account_name="bob", weight=1).add_key(key="STM5iuVuYcsZmCzXHJT9VbVvHATPa28cLMrf5zKEkzqKc73e22Jtr", weight=1).no_sign().get_transaction()
+        update_authority = (
+            await clive.process.update_active_authority(
+                account_name="alice",
+                threshold=2,
+            )
+            .add_account(account_name="bob", weight=1)
+            .add_key(
+                key="STM5iuVuYcsZmCzXHJT9VbVvHATPa28cLMrf5zKEkzqKc73e22Jtr", weight=1
+            )
+            .no_sign()
+            .get_transaction()
+        )
