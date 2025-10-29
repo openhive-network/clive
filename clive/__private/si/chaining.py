@@ -7,7 +7,7 @@ The interface is organized into 4 groups of commands that must be called in sequ
 1. Main commands (e.g., transfer, transaction, update_authority)
 2. Sub-commands (optional, command-specific, e.g., add_key for update_authority)
 3. Signing commands (no_sign, autosign, sign_with)
-4. Finalizing commands (broadcast, save_file, get_transaction)
+4. Finalizing commands (broadcast, save_to, get_transaction)
 
 Key constraints:
 - Groups must be called in order (group 2 can be skipped)
@@ -318,7 +318,7 @@ class FinalizingChain:
         transaction = await self._finalize(broadcast=True)
         return BroadcastResult(broadcast_status=True, transaction=transaction)
 
-    async def save_file(
+    async def save_to(
         self,
         path: str | Path,
         *,
@@ -326,7 +326,7 @@ class FinalizingChain:
     ) -> SaveToResult:
         """Save the transaction to a file."""
         transaction =  await self._finalize(
-            save_file=path,
+            save_to=path,
             force_save_format=force_save_format,
             broadcast=False,
         )
@@ -341,7 +341,7 @@ class FinalizingChain:
         self,
         *,
         broadcast: bool = False,
-        save_file: str | Path | None = None,
+        save_to: str | Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
     ) -> Transaction:
         """Internal method to finalize the transaction."""
@@ -350,7 +350,7 @@ class FinalizingChain:
         
         return await self._processor.finalize(
             sign_with=sign_with,
-            save_file=save_file,
+            save_to=save_to,
             broadcast=broadcast,
             autosign=autosign,
             force_save_format=force_save_format,
