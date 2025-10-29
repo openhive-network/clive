@@ -103,7 +103,7 @@ async def test_two_operations_in_transaction(
 
 async def test_using_updated_witness_key(node: tt.RawNode, cli_tester_unlocked_with_witness_profile: CLITester) -> None:
     # ARRANGE
-    operations: list[type[OperationBase]] = [WitnessSetPropertiesOperation]
+    operation = WitnessSetPropertiesOperation
     account_subsidy_decay = 6543
     alias = "updated_signing_key"
     new_private_signing_key = PrivateKey.create()
@@ -119,7 +119,7 @@ async def test_using_updated_witness_key(node: tt.RawNode, cli_tester_unlocked_w
     )
 
     # ASSERT
-    assert_operation_type_in_blockchain(node, result, *operations)
+    assert_operation_type_in_blockchain(node, result, operation)
     witness = (
         await cli_tester_unlocked_with_witness_profile.world.commands.find_witness(witness_name=owner)
     ).result_or_raise
