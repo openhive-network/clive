@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from clive.__private.core.authority.authority import Authority
-from clive.__private.core.authority.authority_compound_regular import AuthorityCompoundRegular
 from clive.__private.core.authority.entries import (
     AuthorityEntryAccountRegular,
     AuthorityEntryBase,
@@ -22,8 +21,6 @@ __all__ = [  # noqa: RUF022
     "AuthorityRoleBase",
     "AuthorityRoleRegular",
     "AuthorityRoleMemo",
-    # compound
-    "AuthorityCompoundRegular",
     # entries
     "AuthorityEntryBase",
     "AuthorityWeightedEntryBase",
