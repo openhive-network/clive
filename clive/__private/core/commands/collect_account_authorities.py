@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class CollectAccountAuthorities(CommandWithResult[WaxAccountAuthorityInfo]):
+class CollectAccountAuthorities(CommandWithResult[WaxAccountAuthorityInfo | list[WaxAccountAuthorityInfo]]):
     wax_interface: IHiveChainInterface
     account: str
 
