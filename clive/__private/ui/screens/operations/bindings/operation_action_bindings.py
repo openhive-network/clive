@@ -45,6 +45,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             be added to the cart multiple times.
         POP_SCREEN_AFTER_ADDING_OPERATION_TO_CART: Whether current screen should be popped after adding
             operation to cart.
+        SHOW_INVALID_OPERATION_WARNING_NOTIFICATION: Whether invalid operation notification should be displayed.
 
     Args:
         *args: Additional positional arguments.
@@ -57,6 +58,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
     POP_SCREEN_AFTER_ADDING_OPERATION_TO_CART: ClassVar[bool] = False
+    SHOW_INVALID_OPERATION_WARNING_NOTIFICATION: ClassVar[bool] = True
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -224,7 +226,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     def _can_proceed_operation(self) -> bool:
         if not self.create_operation() and not self.create_operations():
-            self.notify(INVALID_OPERATION_WARNING, severity="warning")
+            if self.SHOW_INVALID_OPERATION_WARNING_NOTIFICATION:
+                self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return False
         return True
 
