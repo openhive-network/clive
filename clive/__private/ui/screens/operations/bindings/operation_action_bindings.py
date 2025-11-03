@@ -43,6 +43,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         BINDINGS: A list of predefined bindings for operations.
         ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: Whether operation with the same data can
             be added to the cart multiple times.
+        POP_SCREEN_AFTER_ADDING_OPERATION_TO_CART: Whether current screen should be popped after adding
+            operation to cart.
 
     Args:
         *args: Additional positional arguments.
@@ -54,6 +56,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         CLIVE_PREDEFINED_BINDINGS.operations.finalize_transaction.create(show=False),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
+    POP_SCREEN_AFTER_ADDING_OPERATION_TO_CART: ClassVar[bool] = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -206,6 +209,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         self.profile.transaction_file_path = None
         if self.profile.should_enable_known_accounts:
             self._add_account_to_known_after_action()
+        if self.POP_SCREEN_AFTER_ADDING_OPERATION_TO_CART:
+            self.app.pop_screen()
+            return
         self._clear_inputs()
         self._actions_after_clearing_inputs()
 
