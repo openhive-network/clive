@@ -517,3 +517,18 @@ class CLIWitnessNotFoundError(CLIPrettyError):
     def __init__(self, name: str) -> None:
         message = f"Witness `{name}` was not found."
         super().__init__(message, errno.EINVAL)
+
+
+class CLIParsingAuthorityKeyOrAccountError(CLIPrettyError):
+    """
+    Raise when trying to parse entry that is supposed to contain public key or account name.
+
+    Args:
+        entry: Authority entry (account or key) that failed parsing.
+    """
+
+    def __init__(self, entry: str) -> None:
+        super().__init__(
+            f"Could not parse `{entry}`. It should contain public key or account name (possibly with weight)",
+            errno.EINVAL,
+        )

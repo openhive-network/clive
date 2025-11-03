@@ -5,13 +5,15 @@ from typing import TYPE_CHECKING, get_args
 
 import typer
 
-from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
+from clive.__private.cli.exceptions import CLIParsingAuthorityKeyOrAccountError, CLIPublicKeyInvalidFormatError
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_WEIGHT, WEIGHT_MARK
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import timedelta
     from decimal import Decimal
 
+    from clive.__private.cli.types import KeyOrAccountWithWeight
     from clive.__private.core.keys.keys import PublicKey
     from clive.__private.models.asset import Asset
 
@@ -143,3 +145,26 @@ def public_key(raw: str) -> PublicKey:
     except PublicKeyInvalidFormatError as error:
         raise CLIPublicKeyInvalidFormatError(raw) from error
     return parsed
+
+
+def _parse_with_weight(raw: str, default_weight: int) -> tuple[str, int]:
+    if WEIGHT_MARK in raw:
+        value, weight_str = raw.split(WEIGHT_MARK, 1)
+        try:
+            weight = int(weight_str)
+        except ValueError as error:
+            raise typer.BadParameter(f"Weight must be an integer, got: {weight_str}") from error
+        return value, weight
+    return raw, default_weight
+
+
+def public_key_or_account_with_weight(raw: str) -> KeyOrAccountWithWeight:
+    raw, weight = _parse_with_weight(raw, DEFAULT_AUTHORITY_WEIGHT)
+    if len(raw) <= 15:  #  noqa: PLR2004 TODO: perform better validation here maybe there is regex in schemas for this
+        return raw, weight
+    try:
+        from clive.__private.core.keys.keys import PublicKey, PublicKeyInvalidFormatError  # noqa: PLC0415
+
+        return PublicKey(value=raw), weight
+    except PublicKeyInvalidFormatError as error:
+        raise CLIParsingAuthorityKeyOrAccountError(raw) from error
