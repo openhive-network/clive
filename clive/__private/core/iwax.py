@@ -9,7 +9,7 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
-from clive.__private.models.schemas import AccountName, WitnessPropsSerializedKey
+from clive.__private.models.schemas import AccountName, Hex, Identifier, WitnessPropsSerializedKey
 from clive.__private.models.schemas import WitnessSetPropertiesOperation as SchemasWitnessSetPropertiesOperation
 from clive.exceptions import CliveError
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import Hex, OperationUnion, PriceFeed
+    from clive.__private.models.schemas import OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
     from wax.complex_operations.witness_set_properties import WitnessSetProperties as WaxWitnessSetProperties
 
@@ -101,12 +101,12 @@ def __validate_wax_response(response: wax.python_result) -> None:
         raise WaxOperationFailedError(response.exception_message.decode())
 
 
-def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
+def __as_binary_json(item: OperationUnion | Transaction) -> str:
     from clive.__private.models.schemas import convert_to_representation  # noqa: PLC0415
     from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
     to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
-    return to_serialize.json().encode()
+    return to_serialize.json()
 
 
 def validate_transaction(transaction: Transaction) -> None:
@@ -117,8 +117,10 @@ def validate_operation(operation: OperationUnion) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 
-def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
-    result = wax.calculate_sig_digest(__as_binary_json(transaction), chain_id.encode())
+def calculate_sig_digest(transaction: Transaction, chain_id: str | Hex) -> str:
+    result = wax.calculate_sig_digest(
+        __as_binary_json(transaction), str(chain_id) if isinstance(chain_id, Hex) else chain_id
+    )
     __validate_wax_response(result)
     return result.result.decode()
 
@@ -138,15 +140,15 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 def deserialize_transaction(transaction: bytes) -> Transaction:
     from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
-    result = wax.deserialize_transaction(transaction)
+    result = wax.deserialize_transaction(transaction.decode())
     __validate_wax_response(result)
     return Transaction.parse_raw(result.result.decode())
 
 
-def calculate_public_key(wif: str) -> PublicKey:
-    from clive.__private.core.keys import PublicKey  # noqa: PLC0415
+def calculate_public_key(wif: str | PrivateKey) -> PublicKey:
+    from clive.__private.core.keys import PrivateKey, PublicKey  # noqa: PLC0415
 
-    result = wax.calculate_public_key(wif.encode())
+    result = wax.calculate_public_key(str(wif) if isinstance(wif, PrivateKey) else wif)
     __validate_wax_response(result)
     return PublicKey(value=result.result.decode())
 
@@ -184,8 +186,8 @@ def general_asset(asset_num: int, amount: int) -> Asset.AnyT:
     return from_python_json_asset(wax.general_asset(asset_num=asset_num, amount=amount))
 
 
-def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
-    return wax.get_tapos_data(block_id.encode())
+def get_tapos_data(block_id: str | Identifier) -> wax.python_ref_block_data:
+    return wax.get_tapos_data(str(block_id) if isinstance(block_id, Identifier) else block_id)
 
 
 @cast_hiveint_args
@@ -265,7 +267,7 @@ def generate_password_based_private_key(
 ) -> PrivateKey:
     from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
-    result = wax.generate_password_based_private_key(account_name.encode(), role.encode(), password.encode())
+    result = wax.generate_password_based_private_key(account_name, role, password)
     return PrivateKey(value=result.wif_private_key.decode())
 
 

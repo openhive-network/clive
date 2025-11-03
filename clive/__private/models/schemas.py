@@ -115,6 +115,7 @@ __all__ = [  # noqa: RUF022
     "Hex",
     "HiveDateTime",
     "HiveInt",
+    "Identifier",
     "JsonString",
     "PublicKey",
     "Signature",
@@ -209,7 +210,7 @@ if TYPE_CHECKING:
         Price,
         Proposal,
     )
-    from schemas.fields.hex import Hex, Sha256, Signature, TransactionId
+    from schemas.fields.hex import Hex, Identifier, Sha256, Signature, TransactionId
     from schemas.fields.hive_datetime import HiveDateTime
     from schemas.fields.hive_int import HiveInt
     from schemas.fields.integers import Uint16t, Uint32t
@@ -438,6 +439,7 @@ __getattr__ = lazy_module_factory(
         "TransactionId",
         ("Sha256", "ChainId"),
         "Hex",
+        "Identifier",
         module="schemas.fields.hex",
     ),
     *aggregate_same_import(
