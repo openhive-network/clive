@@ -724,13 +724,13 @@ reference = "gitlab-schemas"
 
 [[package]]
 name = "hiveio-wax"
-version = "1.27.12rc4.dev24+12516cd3"
+version = "1.27.12rc4.dev15+f6c9cedf"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_wax-1.27.12rc4.dev24+12516cd3-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:66fb50e1ba550c568267a72d80a9cbc25fcab347cd133ec5289c6326e63bd10b"},
+    {file = "hiveio_wax-1.27.12rc4.dev15+f6c9cedf-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:b7f700d99fdc5bf15673eb478377b990f0d77ad18b46ec36816b7b8c2017e3be"},
 ]
 
 [package.dependencies]
@@ -2211,7 +2211,7 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-hiveio-wax = "1.27.12rc4.dev24+12516cd3"
+hiveio-wax = "1.27.12rc4.dev15+f6c9cedf"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 
@@ -2553,4 +2553,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "135a52819454adbd697a3a89e398045c8092106acaacdc1cb9869b09f9b0d539"
+content-hash = "9416c239b909abe2913b2b6dc273bc7eaeb1f9e7b51b1408d144884f849ae1e8"

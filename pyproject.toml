@@ -23,7 +23,7 @@ dependencies = [
     "pathvalidate (==3.3.1)",
     'hiveio-schemas (==1.27.12rc0)',
     'hiveio-beekeepy (==1.27.12rc1.dev5+843b775)',
-    'hiveio-wax (==1.27.12rc4.dev24+12516cd3)',
+    'hiveio-wax (==1.27.12rc4.dev15+f6c9cedf)',
 ]
 
 [project.urls]
