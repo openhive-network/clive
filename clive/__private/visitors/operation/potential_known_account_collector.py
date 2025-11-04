@@ -25,3 +25,7 @@ class PotentialKnownAccountCollector(FinancialOperationsAccountCollector):
     def visit_account_witness_proxy_operation(self, operation: schemas.AccountWitnessProxyOperation) -> None:
         if operation.proxy != CANCEL_PROXY_VALUE:
             self.accounts.add(operation.proxy)
+
+    @override
+    def visit_change_recovery_account_operation(self, operation: schemas.ChangeRecoveryAccountOperation) -> None:
+        self.accounts.add(operation.new_recovery_account)

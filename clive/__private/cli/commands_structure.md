@@ -77,6 +77,7 @@ flowchart LR
         ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
 
         Process --> ProcessCustomJson(custom-json)
+        Process --> ProcessChangeRecoveryAccount(change-recovery-account)
     end
 
     subgraph Presentation[Commands related to the presentation of the data]
