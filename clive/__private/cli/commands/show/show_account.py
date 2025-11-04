@@ -68,6 +68,7 @@ class ShowAccount(WorldBasedCommand):
         general_info_table.add_row("Account update", humanize_datetime(self._account_data.last_account_update))
         general_info_table.add_row("Number of new account token", str(self._account_data.pending_claimed_accounts))
         general_info_table.add_row("Number of alarms", str(len(self._account_alarms.harmful_alarms)))
+        general_info_table.add_row("Recovery account", self._create_recovery_account_text())
         return general_info_table
 
     def _create_balance_table(self) -> Table:
@@ -127,3 +128,10 @@ class ShowAccount(WorldBasedCommand):
             humanize_manabar_regeneration_time(downvote.full_regeneration),
         )
         return manabar_stats_table
+
+    def _create_recovery_account_text(self) -> str:
+        text = f"{self._account_data.recovery_account}"
+        alarm = self._account_alarms.changing_recovery_account_in_progress
+        if alarm.is_active:
+            text += f" (change to {alarm.alarm_data_ensure.new_recovery_account} in progress)"
+        return text
