@@ -116,6 +116,7 @@ flowchart LR
         Show --> ShowNewAccountToken[new-account-token]
 
         Show --> ShowPending(pending)
+        ShowPending --> ShowPendingChangeRecoveryAccount[change-recovery-account]
         ShowPending --> ShowPendingPowerDown[power-down]
         ShowPending --> ShowPendingPowerUps[power-ups]
         ShowPending --> ShowPendingRemovedDelegations[removed-delegations]

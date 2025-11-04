@@ -236,6 +236,8 @@ clive/__private/cli/show/pending.py
     DOC103: Function `show_pending_power_down`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_pending_removed_delegations`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_pending_removed_delegations`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+    DOC101: Function `show_pending_change_recovery_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `show_pending_change_recovery_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
 clive/__private/core/_async.py
     DOC101: Function `asyncio_run`: Docstring contains fewer arguments than in function signature.

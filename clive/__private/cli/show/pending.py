@@ -55,3 +55,22 @@ async def show_pending_removed_delegations(
     await ShowPendingRemovedDelegations(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
+
+
+@pending.command(name="change-recovery-account")
+async def show_pending_change_recovery_account(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """
+    The change of the recovery account takes effect after the 30-day delay.
+
+    During this period you can cancel change by sending another operation with previous recovery account name.
+    """
+    from clive.__private.cli.commands.show.show_pending_change_recovery_account import (  # noqa: PLC0415
+        ShowPendingChangeRecoveryAccount,
+    )
+
+    await ShowPendingChangeRecoveryAccount(
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
+    ).run()
