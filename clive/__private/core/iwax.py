@@ -146,9 +146,9 @@ def deserialize_transaction(transaction: bytes) -> Transaction:
 
 
 def calculate_public_key(wif: str | PrivateKey) -> PublicKey:
-    from clive.__private.core.keys import PrivateKey, PublicKey  # noqa: PLC0415
+    from clive.__private.core.keys import PublicKey  # noqa: PLC0415
 
-    result = wax.calculate_public_key(str(wif) if isinstance(wif, PrivateKey) else wif)
+    result = wax.calculate_public_key(wif if isinstance(wif, str) else wif.value)
     __validate_wax_response(result)
     return PublicKey(value=result.result.decode())
 
