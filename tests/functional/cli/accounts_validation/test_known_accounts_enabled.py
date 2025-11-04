@@ -170,6 +170,18 @@ async def test_validation_of_creating_scheduled_transfer(
     _assert_validation_of_known_accounts(perform_operation, receiver)
 
 
+@pytest.mark.parametrize("new_recovery_account", VALIDATION_RECEIVERS, ids=VALIDATION_IDS)
+async def test_validation_of_change_recovery_account(
+    cli_tester: CLITester, new_recovery_account: str, process_action_selector: ActionSelector
+) -> None:
+    # ARRANGE
+    def perform_operation() -> None:
+        cli_tester.process_change_recovery_account(new_recovery_account=new_recovery_account, **process_action_selector)
+
+    # ACT & ASSERT
+    _assert_validation_of_known_accounts(perform_operation, new_recovery_account)
+
+
 @pytest.fixture
 def transaction_file_with_transfer(receiver: str) -> Path:
     operation = TransferOperation(

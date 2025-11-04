@@ -645,3 +645,15 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "change-recovery-account"], account_name=account_name
         )
+
+    def process_change_recovery_account(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        new_recovery_account: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "change-recovery-account"], **extract_params(locals()))

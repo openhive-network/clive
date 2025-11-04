@@ -183,6 +183,17 @@ async def test_validation_of_creating_scheduled_transfer(
     _assert_validation_of_bad_accounts(perform_operation)
 
 
+async def test_validation_of_change_recovery_account(
+    cli_tester: CLITester, process_action_selector: ActionSelector
+) -> None:
+    # ARRANGE
+    def perform_operation() -> None:
+        cli_tester.process_change_recovery_account(new_recovery_account=BAD_ACCOUNT, **process_action_selector)
+
+    # ACT & ASSERT
+    _assert_validation_of_bad_accounts(perform_operation)
+
+
 async def test_loading_transaction(cli_tester: CLITester, transaction_file_with_bad_account: Path) -> None:
     # ARRANGE
     def perform_operation() -> None:
