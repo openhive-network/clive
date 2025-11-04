@@ -345,6 +345,17 @@ class Clive(App[int]):
     async def action_switch_node(self) -> None:
         self.show_switch_node_address_dialog()
 
+    async def does_account_exist_in_node(self, account_name: str) -> bool:
+        wrapper = await self.world.commands.does_account_exists_in_node(account_name=account_name)
+        if wrapper.error_occurred:
+            self.notify(f"Failed to check if account {account_name} exists in the node.", severity="warning")
+            return False
+
+        if not wrapper.result_or_raise:
+            self.notify(f"Account {account_name} does not exist in the node.", severity="warning")
+            return False
+        return True
+
     def show_switch_node_address_dialog(self) -> None:
         if self.current_mode == "unlock":
             return

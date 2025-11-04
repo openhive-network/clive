@@ -62,13 +62,7 @@ class AddAccountContainer(Horizontal, CliveWidget):
             return False
 
         account_name = self._account_input.value_or_error
-        wrapper = await self.commands.does_account_exists_in_node(account_name=account_name)
-        if wrapper.error_occurred:
-            self.notify(f"Failed to check if account {account_name} exists in the node.", severity="warning")
-            return False
-
-        if not wrapper.result_or_raise:
-            self.notify(f"Account {account_name} does not exist in the node.", severity="warning")
+        if not await self.app.does_account_exist_in_node(account_name=account_name):
             return False
 
         if self._accounts_type == "tracked_accounts":
