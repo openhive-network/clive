@@ -5,6 +5,10 @@ from typing import TYPE_CHECKING
 import pytest
 from click.testing import Result
 
+from clive.__private.cli.commands.show.show_pending_change_recovery_account import (
+    NO_PENDING_ACCOUNT_RECOVERY_MESSAGE,
+    ShowPendingChangeRecoveryAccount,
+)
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.models.transaction import Transaction
@@ -165,6 +169,22 @@ def assert_no_removed_delegations(context: CLITester | Result) -> None:
     output = _get_output(context, CLITester.show_pending_removed_delegations)
     expected_output = "no removed delegations"
     command = "show pending removed-delegations"
+    assert_output_contains(expected_output, output, command)
+
+
+def assert_pending_change_recovery_account(
+    context: CLITester | Result, account_to_recover: str, new_recovery_account_name: str
+) -> None:
+    output = _get_output(context, CLITester.show_pending_change_recovery_account)
+    command = "show pending change-recovery-account"
+    assert_output_contains(ShowPendingChangeRecoveryAccount._format_table_title(account_to_recover), output, command)
+    assert_output_contains(new_recovery_account_name, output, command)
+
+
+def assert_no_pending_change_recovery_account(context: CLITester | Result) -> None:
+    output = _get_output(context, CLITester.show_pending_change_recovery_account)
+    expected_output = NO_PENDING_ACCOUNT_RECOVERY_MESSAGE
+    command = "show pending change-recovery-account"
     assert_output_contains(expected_output, output, command)
 
 

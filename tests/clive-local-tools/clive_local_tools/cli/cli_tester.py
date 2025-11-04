@@ -640,3 +640,8 @@ class CLITester:
             named_params.pop("use_witness_key")
             named_params["use_active_authority"] = True
         return self.__invoke_command_with_options(["process", "update-witness"], **extract_params(named_params))
+
+    def show_pending_change_recovery_account(self, *, account_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(
+            ["show", "pending", "change-recovery-account"], account_name=account_name
+        )
