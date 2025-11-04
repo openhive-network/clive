@@ -10,6 +10,7 @@ from clive.__private.core.constants.cli import (
     DEFAULT_AUTHORITY_THRESHOLD,
     DEFAULT_AUTHORITY_WEIGHT,
 )
+from clive.__private.core.keys.keys import PublicKey
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     AccountCreateOperation,
@@ -18,8 +19,7 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import ComposeTransaction
-    from clive.__private.core.keys.keys import PublicKey
+    from clive.__private.cli.types import ComposeTransaction, KeyOrAccountWithWeight
     from clive.__private.core.types import AuthorityLevel, AuthorityLevelRegular
 
 
@@ -94,6 +94,19 @@ class ProcessAccountCreation(OperationCommand):
             print_cli(f"Adding account `{self.new_account_name}` to known accounts.")
             self.profile.accounts.add_known_account(self.new_account_name)
 
+    def add_authority(
+        self,
+        level: AuthorityLevelRegular,
+        threshold: int,
+        entries: list[KeyOrAccountWithWeight],
+    ) -> None:
+        self._set_threshold(level, threshold)
+        for key_or_account, weight in entries:
+            if isinstance(key_or_account, PublicKey):
+                self._add_key_authority(level, key_or_account, weight)
+            else:
+                self._add_account_authority(level, key_or_account, weight)
+
     def set_keys(self, owner: PublicKey, active: PublicKey, posting: PublicKey) -> None:
         for authority_type in ("owner", "active", "posting"):
             self._set_threshold(authority_type, DEFAULT_AUTHORITY_THRESHOLD)
@@ -114,6 +127,9 @@ class ProcessAccountCreation(OperationCommand):
     async def validate(self) -> None:
         self._validate_all_authorities_are_set()
         await super().validate()
+
+    def _add_account_authority(self, level: AuthorityLevelRegular, account_name: str, weight: int) -> None:
+        self._get_authority(level).account_auths.append((account_name, weight))
 
     def _add_key_authority(self, level: AuthorityLevelRegular, key: PublicKey, weight: int) -> None:
         self._get_authority(level).key_auths.append((key.value, weight))
