@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataWithEndDate
 from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
-from clive.__private.core.constants.alarm_descriptions import (
+from clive.__private.core.constants.alarms import (
     GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION,
 )
 from clive.__private.core.date_utils import is_null_date

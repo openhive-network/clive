@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, ClassVar
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataWithStartAndEndDate
 from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
-from clive.__private.core.constants.alarm_descriptions import CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION
+from clive.__private.core.constants.alarms import CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION
 from clive.__private.core.constants.node import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
 
 if TYPE_CHECKING:

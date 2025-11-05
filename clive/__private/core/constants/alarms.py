@@ -27,3 +27,5 @@ CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION: Final[str] = (
     "`change_recovery_account_operation` allows a user to update their recovery account.\n"
     "Only a recovery account may create a request account recovery in case of compromised the owner authority."
 )
+
+WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}

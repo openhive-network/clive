@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataNeverExpiresWithoutAction
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
-from clive.__private.core.constants.alarm_descriptions import RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
+from clive.__private.core.constants.alarms import (
+    RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION,
+    WARNING_RECOVERY_ACCOUNTS,
+)
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
@@ -29,13 +32,11 @@ class RecoveryAccountWarningListedAlarmIdentifier(AlarmIdentifier):
 class RecoveryAccountWarningListed(
     Alarm[RecoveryAccountWarningListedAlarmIdentifier, RecoveryAccountWarningListedAlarmData]
 ):
-    WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
-
     ALARM_DESCRIPTION = RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
     FIX_ALARM_INFO = f"You should change it to account other than \\{list(WARNING_RECOVERY_ACCOUNTS)}"
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        if data.recovery_account not in self.WARNING_RECOVERY_ACCOUNTS:
+        if data.recovery_account not in WARNING_RECOVERY_ACCOUNTS:
             self.disable_alarm()
             return
 

@@ -531,3 +531,16 @@ class CLINoChangesTransactionError(CLIPrettyError):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+class CLIChangingRecoveryAccountToWarningAccountError(CLIPrettyError):
+    """
+    Raise when changing recovery account would cause warning.
+
+    Args:
+        name: Name of account that would cause warning if set to recovery account.
+    """
+
+    def __init__(self, name: str) -> None:
+        message = f"Account `{name}` can't be used as recovery account because it would cause alarm."
+        super().__init__(message, errno.EINVAL)
