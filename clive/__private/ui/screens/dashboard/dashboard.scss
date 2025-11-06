@@ -120,10 +120,6 @@ Dashboard {
     grid-size: 3;
     height: 3;
 
-    Static {
-      text-align: center;
-    }
-
     DynamicLabel {
       align: center middle;
       width: 1fr;
@@ -131,20 +127,23 @@ Dashboard {
 
     BalanceStatsButton OneLineButton {
       width: 1fr;
+      text-align: right;
     }
 
     .title {
-      background: $primary-darken-3;
-      color: $text;
+      margin-left: 2;
+      text-align: center;
     }
 
-    .token-hive {
-      margin-left: 2;
+    .liquid {
+      background: $primary-darken-3;
+    }
+
+    .savings {
       background: $primary-darken-1;
     }
 
-    .token-hbd {
-      margin-left: 2;
+    .stake {
       background: $primary-lighten-2;
     }
   }

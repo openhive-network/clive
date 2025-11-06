@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from textual import on
 from textual.binding import Binding
@@ -27,12 +27,12 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.account_details import AccountDetails
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.operations import Operations, Savings
+from clive.__private.ui.screens.operations.hive_power_management.hive_power_management import HivePowerManagement
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,
 )
-from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 
@@ -130,8 +130,8 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
     def __init__(
         self,
         account: TrackedAccount,
-        balance_type: Literal["liquid", "savings"],
-        asset_type: type[Asset.LiquidT],
+        balance_type: Literal["liquid", "savings", "stake"],
+        asset_type: type[Asset.AnyT],
         classes: str | None = None,
         variant: CliveButtonVariant = "grey-lighten",
     ) -> None:
@@ -150,35 +150,64 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
 
         if balance_type == "savings":
             self.tooltip = f"Perform transfer from savings as {self._account.name}"
-        else:
+        elif balance_type == "liquid":
             self.tooltip = f"Choose liquid operation to perform as {self._account.name}"
+        else:
+            self.tooltip = f"Choose stake operation to perform as {self._account.name}"
 
     def _update_asset_value(self) -> str:
-        asset_value = self._get_account_asset_value()
-        return Asset.pretty_amount(asset_value)
+        def generate_liquid_hive_button_text() -> str:
+            return f"{Asset.pretty_amount(self._account.data.hive_balance)} {Asset.get_symbol(Asset.Hive)}"
 
-    def _get_account_asset_value(self) -> Asset.LiquidT:
-        asset_symbol = Asset.get_symbol(self._asset_type).lower()
-        asset_name = f"{asset_symbol}_{self._balance_type}"
+        def align_to_dot_from_right(*, target_text: str, center_to: str) -> str:
+            dot_position_in_modified_string = target_text.find(".")
+            dot_position_in_center_to_string = center_to.find(".")
 
-        asset_name_to_value: dict[str, Asset.LiquidT] = {
+            characters_after_dot_in_target_string = len(target_text) - dot_position_in_modified_string
+            characters_after_dot_in_center_to_string = len(center_to) - dot_position_in_center_to_string
+
+            if characters_after_dot_in_center_to_string > characters_after_dot_in_target_string:
+                spaces_to_add = characters_after_dot_in_center_to_string - characters_after_dot_in_target_string
+                return target_text + " " * spaces_to_add
+            return target_text
+
+        asset_symbol = Asset.get_symbol(self._asset_type)
+        asset_value = self._get_account_asset_value(asset_symbol)
+        if self._balance_type == "stake" and asset_symbol == Asset.get_symbol(Asset.Hive):
+            return align_to_dot_from_right(
+                target_text=f"{Asset.pretty_amount(asset_value)} HP", center_to=generate_liquid_hive_button_text()
+            )
+
+        return f"{Asset.pretty_amount(asset_value)} {asset_symbol}"
+
+    def _get_account_asset_value(self, asset_symbol: str) -> Asset.AnyT:
+        asset_name = f"{asset_symbol.lower()}_{self._balance_type}"
+        asset_name_to_value: dict[str, Asset.AnyT] = {
             "hive_liquid": self._account.data.hive_balance,
             "hive_savings": self._account.data.hive_savings,
             "hbd_liquid": self._account.data.hbd_balance,
             "hbd_savings": self._account.data.hbd_savings,
+            "hive_stake": self._account.data.owned_hp_balance.hp_balance,
+            "vests_stake": self._account.data.owned_hp_balance.vests_balance,
         }
-
         return asset_name_to_value[asset_name]
 
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     @on(OneLineButton.Pressed, ".balance-button")
     def push_balance_screen(self) -> None:
         if self._balance_type == "liquid":
-            self.app.push_screen(LiquidNavigationDialog(self._account, asset_type=self._asset_type))
+            liquid_asset_type = cast("type[Asset.Hive | Asset.Hbd]", self._asset_type)
+            self.app.push_screen(LiquidNavigationDialog(self._account, asset_type=liquid_asset_type))
             return
 
-        auto_switch_working_account(self, self._account)
-        self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))
+        if self._balance_type == "savings":
+            liquid_asset_type = cast("type[Asset.Hive | Asset.Hbd]", self._asset_type)
+            auto_switch_working_account(self, self._account)
+            self.app.push_screen(Savings("transfer-tab", "from-savings", liquid_asset_type))
+
+        elif self._balance_type == "stake":
+            auto_switch_working_account(self, self._account)
+            self.app.push_screen(HivePowerManagement())
 
 
 class RemoveTrackedAccountButton(OneLineButtonUnfocusable, CliveWidget):
@@ -206,15 +235,15 @@ class RemoveTrackedAccountButton(OneLineButtonUnfocusable, CliveWidget):
 
 class BalanceStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
-        yield Static("", classes="empty")
-        yield EllipsedStatic("LIQUID", classes="title")
-        yield EllipsedStatic("SAVINGS", classes="title")
-        yield Static("HIVE", classes="token-hive")
+        yield Static("LIQUID", classes="liquid title")
         yield BalanceStatsButton(self._account, "liquid", Asset.Hive)
-        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-darken")
-        yield Static("HBD", classes="token-hbd")
         yield BalanceStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-darken")
+        yield Static("SAVINGS", classes="savings title")
+        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-darken")
         yield BalanceStatsButton(self._account, "savings", Asset.Hbd)
+        yield Static("STAKE", classes="stake title")
+        yield BalanceStatsButton(self._account, "stake", Asset.Hive)
+        yield BalanceStatsButton(self._account, "stake", Asset.Vests, variant="grey-darken")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
