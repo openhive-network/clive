@@ -58,6 +58,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         node: The node used for transaction broadcasting.
         unlocked_wallet: Required if the transaction needs to be signed.
         sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+        sign_keys: Multiple private keys to sign the transaction with (for multi-signature).
+            Cannot be used with sign_key or autosign.
         autosign: Whether to automatically sign the transaction.
         already_signed_mode: How to handle already signed transactions.
         force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
@@ -76,8 +78,9 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     app_state: AppState
     node: Node
     unlocked_wallet: AsyncUnlockedWallet | None = None
-    """Required if transaction needs to be signed - when sign_key is provided."""
+    """Required if transaction needs to be signed - when sign_key/sign_keys is provided."""
     sign_key: PublicKey | None = None
+    sign_keys: list[PublicKey] | None = None
     autosign: bool = False
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """
@@ -87,14 +90,25 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     chain_id: str | None = None
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
+    serialization_mode: Literal["legacy", "hf26"] | None = None
     broadcast: bool = False
 
     async def _execute(self) -> None:
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
-        if not self.force_unsign and (self.sign_key or self.autosign):
-            assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"
-            assert not (self.sign_key and self.autosign), "only one of sign_key and autosign can be provided"
+        # First, unsign if requested (removes existing signatures)
+        if self.force_unsign:
+            transaction = await UnSign(transaction=transaction).execute_with_result()
+
+        # Then, sign with new signatures if requested
+        if self.sign_key or self.sign_keys or self.autosign:
+            assert self.unlocked_wallet is not None, (
+                "wallet is required when sign_key/sign_keys or autosign is provided"
+            )
+
+            # Validate that only one signing method is used
+            signing_methods = [self.sign_key is not None, self.sign_keys is not None, self.autosign]
+            assert sum(signing_methods) == 1, "only one of sign_key, sign_keys, or autosign can be provided"
 
             if self.autosign:
                 try:
@@ -116,13 +130,23 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                     chain_id=self.chain_id or await self.node.chain_id,
                     already_signed_mode=self.already_signed_mode,
                 ).execute_with_result()
-
-        if self.force_unsign:
-            transaction = await UnSign(transaction=transaction).execute_with_result()
+            elif self.sign_keys:
+                # Sign with multiple keys in order, using multisign mode
+                for key in self.sign_keys:
+                    transaction = await Sign(
+                        unlocked_wallet=self.unlocked_wallet,
+                        transaction=transaction,
+                        key=key,
+                        chain_id=self.chain_id or await self.node.chain_id,
+                        already_signed_mode="multisign",
+                    ).execute_with_result()
 
         if path := self.save_file_path:
             await SaveTransaction(
-                transaction=transaction, file_path=path, force_format=self.force_save_format
+                transaction=transaction,
+                file_path=path,
+                force_format=self.force_save_format,
+                serialization_mode=self.serialization_mode,
             ).execute()
 
         if self.broadcast:

@@ -4,7 +4,7 @@ import errno
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 import rich
 
@@ -63,6 +63,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool = False
+    force_save_format: Literal["json", "bin"] | None = None
+    serialization_mode: Literal["legacy", "hf26"] | None = None
 
     @property
     def is_sign_with_given(self) -> bool:
@@ -135,6 +137,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
+                    force_save_format=self.force_save_format,
+                    serialization_mode=self.serialization_mode,
                     broadcast=self.broadcast,
                     autosign=self.use_autosign,
                 )

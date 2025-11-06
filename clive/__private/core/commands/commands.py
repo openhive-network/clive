@@ -301,12 +301,14 @@ class Commands[WorldT: World]:
         *,
         content: TransactionConvertibleType,
         sign_key: PublicKey | None = None,
+        sign_keys: list[PublicKey] | None = None,
         autosign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
         chain_id: str | None = None,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
+        serialization_mode: Literal["legacy", "hf26"] | None = None,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.perform_actions_on_transaction import (  # noqa: PLC0415
@@ -318,13 +320,17 @@ class Commands[WorldT: World]:
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key or autosign else None,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet
+                if sign_key or sign_keys or autosign
+                else None,
                 sign_key=sign_key,
+                sign_keys=sign_keys,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
+                serialization_mode=serialization_mode,
                 broadcast=broadcast,
                 autosign=autosign,
             )
