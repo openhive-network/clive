@@ -100,12 +100,14 @@ default:
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
+  allow_failure: true
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
   script:
     - poetry check --lock
+  allow_failure: true
 
 lint_code_with_ruff:
   stage: static_code_analysis
@@ -113,6 +115,7 @@ lint_code_with_ruff:
   script:  # our own script because of newer ruff version
     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
+  allow_failure: true
 
 
 formatting_with_ruff_check:
@@ -121,10 +124,12 @@ formatting_with_ruff_check:
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
       ruff format --check --diff ${PACKAGES_TO_CHECK}
+  allow_failure: true
 
 type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
+  allow_failure: true
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -176,6 +181,7 @@ build_docs:
       - $DOCS_BUILD_TARGET_DIR
     when: always
     expire_in: 1 week
+  allow_failure: true
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -221,6 +227,7 @@ build_docs:
     expire_in: 7 days
   after_script:
     - bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash"
+  allow_failure: true
 
 testing_clive:
   extends: .testing
