@@ -21,12 +21,13 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ProcessTransaction(PerformActionsOnTransactionCommand):
-    from_file: str | Path
-    _loaded_transaction: Transaction | None = None
+    from_file: str | Path | None = None
+    loaded_transaction: Transaction | None = None
 
     @property
     def from_file_path(self) -> Path:
-        return Path(self.from_file)
+        assert self.from_file is not None, "from_file must be set"
+        return Path(self.from_file) if isinstance(self.from_file, str) else self.from_file
 
     @property
     async def should_be_signed(self) -> bool:
@@ -46,9 +47,9 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
     @property
     async def __loaded_transaction(self) -> Transaction:
-        if self._loaded_transaction is None:
-            self._loaded_transaction = await self.__load_transaction()
-        return self._loaded_transaction
+        if self.loaded_transaction is None:
+            self.loaded_transaction = await self.__load_transaction()
+        return self.loaded_transaction
 
     async def validate(self) -> None:
         """
@@ -72,7 +73,8 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             self._validate_signed_transaction()
         else:
             self._validate_if_broadcasting_signed_transaction()
-        self._validate_from_file_argument()
+        if self.from_file is not None:
+            self._validate_from_file_argument()
         await super().validate()
 
     def validate_all_mutually_exclusive_options(self) -> None:
