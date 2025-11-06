@@ -109,6 +109,10 @@ disallow_untyped_decorators = false
 module = ["test_tools.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["script_interface_examples.*"]
+ignore_errors = true
+
 
 [tool.ruff]
 line-length = 120
@@ -161,6 +165,12 @@ convention = "google"
     "S106", # Possible hardcoded password assigned to argument: "{}"; in tests this is not a security issue
     "S602", # Check for method calls that initiate a subprocess with a shell.; in tests this is not a security issue
     "S605", # Checks for calls that start a process with a shell, providing guidance on whether the usage is safe or not; in tests this is not a security issue
+]
+"script_interface_examples/**" = [
+    "ALL",  # Disable all ruff checks for script interface examples
+]
+"clive/__private/si/validators.py" = [
+    "PLC0415",  # Import at top level - validators use lazy imports to avoid circular dependencies
 ]
 
 
