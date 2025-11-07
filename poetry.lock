@@ -236,6 +236,31 @@ files = [
 extras = ["regex"]
 
 [[package]]
+name = "beekeepy"
+version = "0.0.1.dev429+8a918a3"
+description = "All in one package for beekeeper interaction via Python interface."
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["dev", "embeddedtestnet"]
+files = [
+    {file = "beekeepy-0.0.1.dev429+8a918a3-py3-none-any.whl", hash = "sha256:860d1abd367f189a9e191de98699d9024fa2bccf750ce55636546dce197ce60e"},
+]
+
+[package.dependencies]
+aiohttp = "3.11.15"
+httpx = {version = "0.23.3", extras = ["http2"]}
+loguru = "0.7.2"
+psutil = "7.0.0"
+python-dateutil = "2.8.2"
+requests = "2.32.3"
+schemas = "0.0.1.dev430+47552ae"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+reference = "gitlab-beekeepy"
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -402,6 +427,25 @@ files = [
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
 markers = {main = "sys_platform == \"win32\" or platform_system == \"Windows\"", dev = "sys_platform == \"win32\" or platform_system == \"Windows\"", embeddedtestnet = "sys_platform == \"win32\""}
+
+[[package]]
+name = "database-api"
+version = "1.27.12rc2.dev86+bda8d9d49"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["dev", "embeddedtestnet"]
+files = [
+    {file = "database_api-1.27.12rc2.dev86+bda8d9d49-py3-none-any.whl", hash = "sha256:7cd2fc60477392259971c61cec37be964e5d6ac0020d948fe1403faedbb02e3e"},
+]
+
+[package.dependencies]
+beekeepy = "0.0.1.dev429+8a918a3"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
 
 [[package]]
 name = "distlib"
@@ -628,7 +672,7 @@ version = "1.27.12rc1.dev5+843b775"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
-groups = ["main", "dev", "embeddedtestnet"]
+groups = ["main"]
 files = [
     {file = "hiveio_beekeepy-1.27.12rc1.dev5+843b775-py3-none-any.whl", hash = "sha256:616919490118b360d7b63d8b876b16e79635c36a63b5742ae62036de8f60a014"},
 ]
@@ -652,7 +696,7 @@ version = "1.27.12rc4.dev16+b487bd9a1"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
-groups = ["main", "dev", "embeddedtestnet"]
+groups = ["main"]
 files = [
     {file = "hiveio_database_api-1.27.12rc4.dev16+b487bd9a1-py3-none-any.whl", hash = "sha256:e31fd8c1646b49bc3d2c05b6d4c0a606bc369214e13b4eaa20a913e1b6c1a465"},
 ]
@@ -671,7 +715,7 @@ version = "1.27.12rc4.dev16+b487bd9a1"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
-groups = ["main", "dev", "embeddedtestnet"]
+groups = ["main"]
 files = [
     {file = "hiveio_network_broadcast_api-1.27.12rc4.dev16+b487bd9a1-py3-none-any.whl", hash = "sha256:7c9c6b9a32b92433425abcbdae2d159383d457547d67d799d97d410954390084"},
 ]
@@ -690,7 +734,7 @@ version = "1.27.12rc0"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.12,<4.0"
-groups = ["main", "dev", "embeddedtestnet"]
+groups = ["main"]
 files = [
     {file = "hiveio_schemas-1.27.12rc0-py3-none-any.whl", hash = "sha256:c8f4bb1d93d2e1ea5139d20c647ad1ff0e41ff2eca03f184d47a536cd0f24a6f"},
 ]
@@ -709,7 +753,7 @@ version = "1.27.12rc2.dev7+daf5a82a"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
-groups = ["main", "dev", "embeddedtestnet"]
+groups = ["main"]
 files = [
     {file = "hiveio_wax-1.27.12rc2.dev7+daf5a82a-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:567b4b4f2d3091a9ea99488cb82215d2634d6d462e51c416af1cbf2aaeca7ab4"},
 ]
@@ -1558,6 +1602,25 @@ files = [
 ]
 
 [[package]]
+name = "network-broadcast-api"
+version = "1.27.12rc2.dev86+bda8d9d49"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["dev", "embeddedtestnet"]
+files = [
+    {file = "network_broadcast_api-1.27.12rc2.dev86+bda8d9d49-py3-none-any.whl", hash = "sha256:c0a314ab2539a36bab5f8cde580b6b6ed3ae541fc496df4692e32ebd7ec0ce4d"},
+]
+
+[package.dependencies]
+beekeepy = "0.0.1.dev429+8a918a3"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
 name = "nodeenv"
 version = "1.9.1"
 description = "Node.js virtual environment builder"
@@ -2144,6 +2207,25 @@ files = [
 ]
 
 [[package]]
+name = "schemas"
+version = "0.0.1.dev430+47552ae"
+description = "Tools for checking if message fits expected format"
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["dev", "embeddedtestnet"]
+files = [
+    {file = "schemas-0.0.1.dev430+47552ae-py3-none-any.whl", hash = "sha256:7215c87bee4f3c8dc082a8e935a03ce646683bf779ecca19b172240007d1140a"},
+]
+
+[package.dependencies]
+msgspec = "0.18.6"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
+reference = "gitlab-schemas"
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 description = "Tool to Detect Surrounding Shell"
@@ -2191,9 +2273,9 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-hiveio-wax = "1.27.12rc2.dev7+daf5a82a"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
+wax = "0.3.10.dev896+7fc5c927"
 
 [package.source]
 type = "directory"
@@ -2411,6 +2493,31 @@ files = [
 
 [package.extras]
 watchmedo = ["PyYAML (>=3.10)"]
+
+[[package]]
+name = "wax"
+version = "0.3.10.dev896+7fc5c927"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["dev", "embeddedtestnet"]
+files = [
+    {file = "wax-0.3.10.dev896+7fc5c927-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:8cd1b8a9a1c2868da1a2cd647ff8f3135a69e3d453f9501bcc16934228d26133"},
+]
+
+[package.dependencies]
+database-api = "1.27.12rc2.dev86+bda8d9d49"
+httpx = {version = "0.23.3", extras = ["http2"]}
+loguru = "0.7.2"
+network-broadcast-api = "1.27.12rc2.dev86+bda8d9d49"
+protobuf = "4.24.4"
+python-dateutil = "2.8.2"
+requests = "2.32.3"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple"
+reference = "gitlab-wax"
 
 [[package]]
 name = "win32-setctime"

@@ -4,7 +4,7 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import beekeepy.communication as bkc
+from beekeepy._communication.is_url_reachable import async_is_url_reachable
 
 from clive.__private.cli.cli_world import CLIWorld
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
@@ -79,7 +79,7 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
 
     async def _validate_remote_beekeeper_running(self) -> None:
         beekeeper_remote_url = self.beekeeper_remote_url
-        if beekeeper_remote_url and not await bkc.async_is_url_reachable(beekeeper_remote_url):
+        if beekeeper_remote_url and not await async_is_url_reachable(beekeeper_remote_url):
             raise CLIBeekeeperRemoteAddressIsNotRespondingError(beekeeper_remote_url)
 
     async def _validate_session_is_locked(self) -> None:
