@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
-from clive.__private.si.core.process import (
+from clive.__private.si.core.process.process import (
     ProcessAuthority,
     ProcessCommandBase,
     ProcessCustomJson,
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
     from clive.__private.models.transaction import Transaction
     from clive.__private.si.base import ProfileBase
-    from clive.__private.si.core.process import ProcessCommandBase
+    from clive.__private.si.core.process.process import ProcessCommandBase
 
 
 class ProcessInterfaceBase:

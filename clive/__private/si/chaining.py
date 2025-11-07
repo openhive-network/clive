@@ -41,7 +41,7 @@ from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.world import World
 from clive.__private.models.transaction import Transaction
-from clive.__private.si.core.process import (
+from clive.__private.si.core.process.process import (
     ProcessAuthority,
     ProcessCommandBase,
     ProcessCustomJson,
