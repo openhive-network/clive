@@ -316,9 +316,9 @@ class ProcessAuthority(ProcessCommandBase):
     def remove_account(
         self,
         *,
-        account_name: str,
+        account: str,
     ) -> Self:
-        remove_account_function = partial(remove_account, account=account_name)
+        remove_account_function = partial(remove_account, account=account)
         self._add_authority_callback(remove_account_function)
         return self
 

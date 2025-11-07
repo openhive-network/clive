@@ -101,7 +101,7 @@ async def process_transaction(  # noqa: PLR0913
     force: bool = options.force_value,  # noqa: FBT001
 ) -> None:
     """Process a transaction from file."""
-    from clive.__private.cli.commands.process.process_transaction import ProcessTransaction  # noqa: PLC0415
+    from clive.__private.si.core.process.process_transaction import ProcessTransaction  # noqa: PLC0415
 
     await ProcessTransaction(
         from_file=from_file,
