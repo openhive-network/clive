@@ -130,98 +130,20 @@ class ChainInvalidSubcommandError(ChainError):
     """Raised when a sub-command is used with incompatible main command."""
 
 
-class BaseChain(ABC):
-    """Base class for all chaining interfaces."""
-
-    def __init__(self, world: World, operation_builders: list[ProcessCommandBase] | None = None) -> None:
-        self.world = world
-        self._operation_builder: ProcessCommandBase | None = None
-        self.main_command_type: str | None = None
-        self._operation_builders: list[ProcessCommandBase] = operation_builders or []
-
-    @abstractmethod
-    def _create_processor(self) -> ProcessCommandBase:
-        """Create the appropriate operation builder for this chain."""
-
-    @property
-    def process(self) -> ProcessInterfaceBase:
-        """Return ProcessInterface to add another operation to the chain."""
-        from clive.__private.si.process import ProcessInterfaceChaining  # noqa: PLC0415
-
-        assert self._operation_builder is not None, "Operation builder must be set before chaining"
-
-        return ProcessInterfaceChaining(
-            world=self.world, operation_builders=[*self._operation_builders, self._operation_builder]
-        )
-
-
-async def _finalize_operation_builders(  # noqa: PLR0913
-    world: World,
-    operation_builders: list[ProcessCommandBase],
-    sign_with: list[str],
-    save_file: str | Path | None,
-    file_format: Literal["json", "bin"] | None = None,
-    serialization_mode: Literal["legacy", "hf26"] | None = None,
-    *,
-    broadcast: bool,
-    autosign: bool,
-) -> Transaction:
-    """Helper function to finalize single or multiple operation builders.
-
-    Args:
-        world: World instance
-        operation_builders: List of ProcessCommandBase instances that build operations
-        sign_with: List of keys to sign with (if any)
-        save_file: File path to save to (if any)
-        file_format: File format for saving (json or bin)
-        serialization_mode: Serialization mode (legacy or hf26)
-        broadcast: Whether to broadcast
-        autosign: Whether to auto-sign
-
-    Returns:
-        Finalized transaction
-    """
-    if len(operation_builders) == 1:
-        # Single operation - use existing finalize method
-        return await operation_builders[0].finalize(
-            sign_with=sign_with,
-            save_file=save_file,
-            broadcast=broadcast,
-            autosign=autosign,
-            file_format=file_format,
-            serialization_mode=serialization_mode,
-        )
-    # Multiple operations - create operations and combine
-
-    multi_processor = ProcessMultipleOperations(
-        world=world,
-        operation_builders=operation_builders,
-    )
-    return await multi_processor.finalize(
-        sign_with=sign_with,
-        save_file=save_file,
-        broadcast=broadcast,
-        autosign=autosign,
-        file_format=file_format,
-        serialization_mode=serialization_mode,
-    )
-
-
-class FinalizingMixin:
-    """Mixin providing signing and finalizing commands."""
+class _FinalizingBase:
+    """Base class for finalizing chains - contains common finalization methods."""
 
     # These attributes are provided by BaseChain
     world: World
     _operation_builder: ProcessCommandBase | None
     _operation_builders: list[ProcessCommandBase]
 
-    def autosign(self) -> AutoSignChain:
-        """Configure transaction to be auto-signed. Does NOT allow chaining with sign_with()."""
-        return AutoSignChain(self.world, self._get_all_operation_builders())
+    def __init__(self, world: World, operation_builders: list[ProcessCommandBase]) -> None:
+        self.world = world
+        self._operation_builders = operation_builders
 
-    def sign_with(self, key: str) -> SignWithChain:
-        """Configure transaction to be signed with specific key. Can be chained for multiple signatures."""
-        return SignWithChain(self.world, self._get_all_operation_builders(), sign_keys=[key])
+    def _get_sign_params(self) -> tuple[list[str], bool]:
+        return [], False
 
     def _get_all_operation_builders(self) -> list[ProcessCommandBase]:
         """Get all operation builders including existing operations and current operation builder."""
@@ -229,70 +151,9 @@ class FinalizingMixin:
         return [*self._operation_builders, self._operation_builder]
 
     async def broadcast(self) -> None:
-        """Broadcast the transaction to the blockchain without signing."""
-        await _finalize_operation_builders(
-            world=self.world,
-            operation_builders=self._get_all_operation_builders(),
-            sign_with=[],
-            save_file=None,
-            broadcast=True,
-            autosign=False,
-        )
-
-    async def save_file(
-        self,
-        path: str | Path,
-        file_format: Literal["json", "bin"] = "json",
-        serialization_mode: Literal["legacy", "hf26"] = "hf26",
-    ) -> None:
-        """Save the transaction to a file without signing."""
-        await _finalize_operation_builders(
-            world=self.world,
-            operation_builders=self._get_all_operation_builders(),
-            sign_with=[],
-            save_file=path,
-            file_format=file_format,
-            serialization_mode=serialization_mode,
-            broadcast=False,
-            autosign=False,
-        )
-
-    async def as_transaction_object(self) -> GetTransactionResult:
-        """Get the transaction without signing, broadcasting or saving."""
-        transaction = await _finalize_operation_builders(
-            world=self.world,
-            operation_builders=self._get_all_operation_builders(),
-            sign_with=[],
-            save_file=None,
-            broadcast=False,
-            autosign=False,
-        )
-        return as_transaction_object_result_cls(world=self.world)(**transaction.dict())
-
-
-def as_transaction_object_result_cls(world: World) -> type[GetTransactionResult]:
-    class GetTransactionResultImplementation(GetTransactionResult):
-        def _get_world(self) -> World:
-            return world
-
-    return GetTransactionResultImplementation
-
-
-class _FinalizingBase:
-    """Base class for finalizing chains - contains common finalization methods."""
-
-    def __init__(self, world: World, operation_builders: list[ProcessCommandBase]) -> None:
-        self.world = world
-        self._operation_builders = operation_builders
-
-    def _get_sign_params(self) -> tuple[list[str], bool]:
-        """Override in subclasses to provide signing parameters."""
-        raise NotImplementedError
-
-    async def broadcast(self) -> None:
         """Broadcast the transaction to the blockchain."""
         sign_with, autosign = self._get_sign_params()
-        await _finalize_operation_builders(
+        await self._finalize_operation_builders(
             world=self.world,
             operation_builders=self._operation_builders,
             sign_with=sign_with,
@@ -309,7 +170,7 @@ class _FinalizingBase:
     ) -> None:
         """Save the transaction to a file."""
         sign_with, autosign = self._get_sign_params()
-        await _finalize_operation_builders(
+        await self._finalize_operation_builders(
             world=self.world,
             operation_builders=self._operation_builders,
             sign_with=sign_with,
@@ -323,7 +184,7 @@ class _FinalizingBase:
     async def as_transaction_object(self) -> GetTransactionResult:
         """Get the transaction without broadcasting or saving."""
         sign_with, autosign = self._get_sign_params()
-        transaction = await _finalize_operation_builders(
+        transaction = await self._finalize_operation_builders(
             world=self.world,
             operation_builders=self._operation_builders,
             sign_with=sign_with,
@@ -332,6 +193,99 @@ class _FinalizingBase:
             autosign=autosign,
         )
         return as_transaction_object_result_cls(world=self.world)(**transaction.dict())
+
+    def sign_with(self, key: str) -> SignWithChain:
+        """Configure transaction to be signed with specific key. Can be chained for multiple signatures."""
+        return SignWithChain(self.world, self._get_all_operation_builders(), sign_keys=[key])
+
+
+    async def _finalize_operation_builders(  # noqa: PLR0913
+        self,
+        world: World,
+        operation_builders: list[ProcessCommandBase],
+        sign_with: list[str],
+        save_file: str | Path | None,
+        file_format: Literal["json", "bin"] | None = None,
+        serialization_mode: Literal["legacy", "hf26"] | None = None,
+        *,
+        broadcast: bool,
+        autosign: bool,
+    ) -> Transaction:
+        """Helper function to finalize single or multiple operation builders.
+
+        Args:
+            world: World instance
+            operation_builders: List of ProcessCommandBase instances that build operations
+            sign_with: List of aliases of keys to sign with (if any)
+            save_file: File path to save to (if any)
+            file_format: File format for saving (json or bin)
+            serialization_mode: Serialization mode (legacy or hf26)
+            broadcast: Whether to broadcast
+            autosign: Whether to auto-sign
+
+        Returns:
+            Finalized transaction
+        """
+        if len(operation_builders) == 1:
+            # Single operation - use existing finalize method
+            return await operation_builders[0].finalize(
+                sign_with=sign_with,
+                save_file=save_file,
+                broadcast=broadcast,
+                autosign=autosign,
+                file_format=file_format,
+                serialization_mode=serialization_mode,
+            )
+        # Multiple operations - create operations and combine
+
+        multi_processor = ProcessMultipleOperations(
+            world=world,
+            operation_builders=operation_builders,
+        )
+        return await multi_processor.finalize(
+            sign_with=sign_with,
+            save_file=save_file,
+            broadcast=broadcast,
+            autosign=autosign,
+            file_format=file_format,
+            serialization_mode=serialization_mode,
+        )
+
+
+class BaseChain(_FinalizingBase):
+    """Base class for all chaining interfaces."""
+
+    def __init__(self, world: World, operation_builders: list[ProcessCommandBase] | None = None) -> None:
+        self.world = world
+        self._operation_builder: ProcessCommandBase | None = None
+        self.main_command_type: str | None = None
+        self._operation_builders: list[ProcessCommandBase] = operation_builders or []
+
+    def _create_processor(self) -> ProcessCommandBase:
+        """Create the appropriate operation builder for this chain."""
+
+    @property
+    def process(self) -> ProcessInterfaceBase:
+        """Return ProcessInterface to add another operation to the chain."""
+        from clive.__private.si.process import ProcessInterfaceChaining  # noqa: PLC0415
+
+        assert self._operation_builder is not None, "Operation builder must be set before chaining"
+
+        return ProcessInterfaceChaining(
+            world=self.world, operation_builders=[*self._operation_builders, self._operation_builder]
+        )
+
+    def autosign(self) -> AutoSignChain:
+        """Configure transaction to be auto-signed. Does NOT allow chaining with sign_with()."""
+        return AutoSignChain(self.world, self._get_all_operation_builders())
+
+
+def as_transaction_object_result_cls(world: World) -> type[GetTransactionResult]:
+    class GetTransactionResultImplementation(GetTransactionResult):
+        def _get_world(self) -> World:
+            return world
+
+    return GetTransactionResultImplementation
 
 
 class SignWithChain(_FinalizingBase):
@@ -364,73 +318,7 @@ class AutoSignChain(_FinalizingBase):
         return [], True
 
 
-class TransferChain(FinalizingMixin, BaseChain):
-    """Chain interface for transfer operations."""
-
-    def __init__(  # noqa: PLR0913
-        self,
-        world: World,
-        from_account: str,
-        to_account: str,
-        amount: str | Asset.LiquidT,
-        memo: str = "",
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "transfer"
-        self._from_account = from_account
-        self._to_account = to_account
-        self._amount = amount
-        self._memo = memo
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessTransfer:
-        """Create ProcessTransfer instance."""
-        return ProcessTransfer(
-            world=self.world,
-            from_account=self._from_account,
-            to=self._to_account,
-            amount=self._amount,
-            memo=self._memo,
-        )
-
-
-class TransactionChain(FinalizingMixin, BaseChain):
-    """Chain interface for transaction operations."""
-
-    def __init__(  # noqa: PLR0913
-        self,
-        world: World,
-        already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
-        from_file: str | Path | None = None,
-        from_object: Transaction | None = None,
-        *,
-        force_unsign: bool = False,
-        force: bool = False,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "transaction"
-        self._from_file = from_file
-        self._from_object = from_object
-        self._force_unsign = force_unsign
-        self._already_signed_mode = already_signed_mode
-        self._force = force
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessTransaction:
-        """Create ProcessTransaction instance."""
-        return ProcessTransaction(
-            world=self.world,
-            from_file=self._from_file,
-            from_object=self._from_object,
-            force_unsign=self._force_unsign,
-            already_signed_mode=self._already_signed_mode,
-            force=self._force,
-        )
-
-
-class AuthorityChain(FinalizingMixin, BaseChain):
+class AuthorityChain(BaseChain):
     """Chain interface for authority update operations."""
 
     def __init__(
@@ -478,11 +366,11 @@ class AuthorityChain(FinalizingMixin, BaseChain):
         self._operation_builder.remove_key(key=key)
         return self
 
-    def remove_account(self, *, account: str) -> Self:
+    def remove_account(self, *, account_name: str) -> Self:
         """Remove an account from the authority (sub-command)."""
         self._validate_sub_command()
         assert isinstance(self._operation_builder, ProcessAuthority), "Operation builder must be ProcessAuthority"
-        self._operation_builder.remove_account(account=account)
+        self._operation_builder.remove_account(account_name=account_name)
         return self
 
     def modify_key(self, *, key: str, weight: int) -> Self:
@@ -504,137 +392,3 @@ class AuthorityChain(FinalizingMixin, BaseChain):
         if self.main_command_type != "authority":
             raise ChainInvalidSubcommandError("Authority sub-commands can only be used with authority operations")
 
-
-class PowerDownStartChain(FinalizingMixin, BaseChain):
-    """Chain interface for power down start operations."""
-
-    def __init__(
-        self,
-        world: World,
-        account_name: str,
-        amount: str | Asset.LiquidT,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "power_down_start"
-        self._account_name = account_name
-        self._amount = amount
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessPowerDownStart:
-        """Create ProcessPowerDownStart instance."""
-        return ProcessPowerDownStart(
-            world=self.world,
-            account_name=self._account_name,
-            amount=self._amount,
-        )
-
-
-class PowerDownRestartChain(FinalizingMixin, BaseChain):
-    """Chain interface for power down restart operations."""
-
-    def __init__(
-        self,
-        world: World,
-        account_name: str,
-        amount: str | Asset.LiquidT,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "power_down_restart"
-        self._account_name = account_name
-        self._amount = amount
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessPowerDownRestart:
-        """Create ProcessPowerDownRestart instance."""
-        return ProcessPowerDownRestart(
-            world=self.world,
-            account_name=self._account_name,
-            amount=self._amount,
-        )
-
-
-class PowerDownCancelChain(FinalizingMixin, BaseChain):
-    """Chain interface for power down cancel operations."""
-
-    def __init__(
-        self,
-        world: World,
-        account_name: str,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "power_down_cancel"
-        self._account_name = account_name
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessPowerDownCancel:
-        """Create ProcessPowerDownCancel instance."""
-        return ProcessPowerDownCancel(
-            world=self.world,
-            account_name=self._account_name,
-        )
-
-
-class PowerUpChain(FinalizingMixin, BaseChain):
-    """Chain interface for power up operations."""
-
-    def __init__(  # noqa: PLR0913
-        self,
-        world: World,
-        from_account: str,
-        to_account: str,
-        amount: str | Asset.LiquidT,
-        *,
-        force: bool,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "power_up"
-        self._from_account = from_account
-        self._to_account = to_account
-        self._amount = amount
-        self._force = force
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessPowerUp:
-        """Create ProcessPowerUp instance."""
-        return ProcessPowerUp(
-            world=self.world,
-            from_account=self._from_account,
-            to_account=self._to_account,
-            amount=self._amount,
-            force=self._force,
-        )
-
-
-class CustomJsonChain(FinalizingMixin, BaseChain):
-    """Chain interface for custom JSON operations."""
-
-    def __init__(  # noqa: PLR0913
-        self,
-        world: World,
-        id_: str,
-        json: str | Path,
-        authorize: str | list[str] | None = None,
-        authorize_by_active: str | list[str] | None = None,
-        operation_builders: list[ProcessCommandBase] | None = None,
-    ) -> None:
-        super().__init__(world, operation_builders)
-        self.main_command_type = "custom_json"
-        self._id = id_
-        self._json = json
-        self._authorize = authorize
-        self._authorize_by_active = authorize_by_active
-        self._operation_builder = self._create_processor()
-
-    def _create_processor(self) -> ProcessCustomJson:
-        """Create ProcessCustomJson instance."""
-        return ProcessCustomJson(
-            world=self.world,
-            id_=self._id,
-            json=self._json,
-            authorize=self._authorize,
-            authorize_by_active=self._authorize_by_active,
-        )

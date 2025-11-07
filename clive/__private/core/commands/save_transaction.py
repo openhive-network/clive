@@ -32,7 +32,7 @@ class SaveTransaction(Command):
         serialized = self.transaction.json(
             order="sorted",
             indent=4,
-            serialization_mode=self.serialization_mode if self.serialization_mode else "hf26",
+            # serialization_mode=self.serialization_mode if self.serialization_mode else "hf26",
         )
         self.file_path.write_text(serialized)
 

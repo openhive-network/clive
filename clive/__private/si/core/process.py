@@ -87,7 +87,7 @@ class ProcessCommandBase(ABC):
             return (
                 await self.world.commands.perform_actions_on_transaction(
                     content=content,
-                    sign_keys=[PublicKey(value=key) for key in sign_keys],
+                    sign_keys=[self.world.profile.keys.get_from_alias(key) for key in sign_keys],
                     save_file_path=Path(save_file) if save_file else None,
                     force_save_format=file_format,
                     serialization_mode=serialization_mode,
@@ -99,7 +99,7 @@ class ProcessCommandBase(ABC):
         return (
             await self.world.commands.perform_actions_on_transaction(
                 content=content,
-                sign_key=PublicKey(value=sign_keys[0]) if sign_keys else None,
+                sign_key=self.world.profile.keys.get_from_alias(sign_keys[0]) if sign_keys else None,
                 autosign=bool(autosign),
                 save_file_path=Path(save_file) if save_file else None,
                 force_save_format=file_format,
@@ -288,9 +288,9 @@ class ProcessAuthority(ProcessCommandBase):
     def remove_account(
         self,
         *,
-        account: str,
+        account_name: str,
     ) -> Self:
-        remove_account_function = partial(remove_account, account=account)
+        remove_account_function = partial(remove_account, account=account_name)
         self._add_authority_callback(remove_account_function)
         return self
 

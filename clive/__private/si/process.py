@@ -3,15 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.si.core.process import (
+    ProcessAuthority,
+    ProcessCommandBase,
+    ProcessCustomJson,
+    ProcessMultipleOperations,
+    ProcessPowerDownCancel,
+    ProcessPowerDownRestart,
+    ProcessPowerDownStart,
+    ProcessPowerUp,
+    ProcessTransaction,
+    ProcessTransfer,
+)
 from clive.__private.si.chaining import (
     AuthorityChain,
-    CustomJsonChain,
-    PowerDownCancelChain,
-    PowerDownRestartChain,
-    PowerDownStartChain,
-    PowerUpChain,
-    TransactionChain,
-    TransferChain,
+    BaseChain,
 )
 
 if TYPE_CHECKING:
@@ -38,16 +44,17 @@ class ProcessInterfaceBase:
         to_account: str,
         amount: str | Asset.LiquidT,
         memo: str = "",
-    ) -> TransferChain:
+    ) -> BaseChain:
         """Transfer funds between accounts."""
-        return TransferChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessTransfer(
             world=self.world,
             from_account=from_account,
-            to_account=to_account,
+            to=to_account,
             amount=amount,
             memo=memo,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def update_owner_authority(
         self,
@@ -98,38 +105,41 @@ class ProcessInterfaceBase:
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-    ) -> PowerDownStartChain:
+    ) -> BaseChain:
         """Start power down for an account."""
-        return PowerDownStartChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessPowerDownStart(
             world=self.world,
             account_name=account_name,
             amount=amount,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def power_down_restart(
         self,
         account_name: str,
         amount: str | Asset.LiquidT,
-    ) -> PowerDownRestartChain:
+    ) -> BaseChain:
         """Restart power down for an account."""
-        return PowerDownRestartChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessPowerDownRestart(
             world=self.world,
             account_name=account_name,
             amount=amount,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def power_down_cancel(
         self,
         account_name: str,
-    ) -> PowerDownCancelChain:
+    ) -> BaseChain:
         """Cancel power down for an account."""
-        return PowerDownCancelChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessPowerDownCancel(
             world=self.world,
             account_name=account_name,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def power_up(
         self,
@@ -138,16 +148,17 @@ class ProcessInterfaceBase:
         amount: str | Asset.LiquidT,
         *,
         force: bool,
-    ) -> PowerUpChain:
+    ) -> BaseChain:
         """Power up (stake) funds from one account to another."""
-        return PowerUpChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessPowerUp(
             world=self.world,
             from_account=from_account,
             to_account=to_account,
             amount=amount,
             force=force,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def custom_json(
         self,
@@ -155,16 +166,17 @@ class ProcessInterfaceBase:
         json: str | Path,
         authorize: str | list[str] | None = None,
         authorize_by_active: str | list[str] | None = None,
-    ) -> CustomJsonChain:
+    ) -> BaseChain:
         """Process a custom JSON operation."""
-        return CustomJsonChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessCustomJson(
             world=self.world,
             id_=id_,
             json=json,
             authorize=authorize,
             authorize_by_active=authorize_by_active,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
 
 class ProcessInterface(ProcessInterfaceBase):
@@ -181,16 +193,17 @@ class ProcessInterface(ProcessInterfaceBase):
         force_unsign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force: bool = False,
-    ) -> TransactionChain:
+    ) -> BaseChain:
         """Process a transaction from a file. Can only be used at the start of a chain."""
-        return TransactionChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessTransaction(
             world=self.world,
             from_file=from_file,
             force_unsign=force_unsign,
             already_signed_mode=already_signed_mode,
             force=force,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
     def transaction_from_object(
         self,
@@ -199,16 +212,18 @@ class ProcessInterface(ProcessInterfaceBase):
         force_unsign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force: bool = False,
-    ) -> TransactionChain:
+    ) -> BaseChain:
         """Process a transaction from an object. Can only be used at the start of a chain."""
-        return TransactionChain(
+        base_chain = BaseChain(world=self.world, operation_builders=self._operation_builders)
+        base_chain._operation_builder = ProcessTransaction(
             world=self.world,
+            from_file=None,
             from_object=from_object,
             force_unsign=force_unsign,
             already_signed_mode=already_signed_mode,
             force=force,
-            operation_builders=self._operation_builders,
         )
+        return base_chain
 
 
 class ProcessInterfaceChaining(ProcessInterfaceBase):
