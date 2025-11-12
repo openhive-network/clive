@@ -322,7 +322,7 @@ if TYPE_CHECKING:
     WithdrawRoute = WithdrawVestingRoutesFundament
     Witness = WitnessesFundament
 
-__getattr__ = lazy_module_factory(
+lazy_getattr = lazy_module_factory(
     globals(),
     *aggregate_same_import(
         "FindAccounts",
@@ -497,3 +497,6 @@ __getattr__ = lazy_module_factory(
     ),
     ("schemas.transaction", "Transaction"),
 )
+
+if not TYPE_CHECKING:
+    __getattr__ = lazy_getattr
