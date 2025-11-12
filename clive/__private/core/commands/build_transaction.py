@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
 from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
@@ -21,6 +22,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
 
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
+        iwax.validate_transaction(transaction)
 
         if not transaction.is_tapos_set or self.force_update_metadata:
             assert self.node is not None, "node is required so that transaction metadata can be updated"
