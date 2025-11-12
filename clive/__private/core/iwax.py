@@ -338,6 +338,4 @@ class WaxOperationWrapper:
         assert len(proto_operations) == 1, "A single proto operation was expected when finalizing"
         wax_transaction.push_operation(proto_operations[0])
         schemas_transaction = Transaction.parse_raw(wax_transaction.to_api_json())
-        schemas_operation = schemas_transaction.operations[0].value
-        validate_operation(schemas_operation)
-        return schemas_operation
+        return schemas_transaction.operations[0].value
