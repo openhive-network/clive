@@ -9,7 +9,7 @@ import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
-from clive.__private.models.schemas import AccountName
+from clive.__private.models.schemas import AccountName, OperationUnion
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -17,10 +17,9 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import OperationUnion, PriceFeed
-    from clive.__private.models.schemas import WitnessSetPropertiesOperation as SchemasWitnessSetPropertiesOperation
+    from clive.__private.models.schemas import PriceFeed
     from clive.__private.models.transaction import Transaction
-    from wax.complex_operations.witness_set_properties import WitnessSetProperties as WaxWitnessSetProperties
+    from wax._private.operation_base import OperationBase as WaxOperationBase
 
 
 def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
@@ -274,9 +273,13 @@ def suggest_brain_key() -> str:
     return result.brain_key.decode()
 
 
-class WitnessSetPropertiesWrapper:
-    def __init__(self, operation: WaxWitnessSetProperties) -> None:
-        self._operation = operation
+class WaxOperationWrapper:
+    def __init__(self, wax_operation: WaxOperationBase) -> None:
+        self._wax_operation = wax_operation
+
+    @property
+    def wax_operation(self) -> WaxOperationBase:
+        return self._wax_operation
 
     @classmethod
     def create(  # noqa: PLR0913
@@ -295,6 +298,7 @@ class WitnessSetPropertiesWrapper:
         from clive.__private.core.keys import PublicKey  # noqa: PLC0415
         from clive.__private.models.asset import Asset  # noqa: PLC0415
         from wax.complex_operations.witness_set_properties import (  # noqa: PLC0415
+            HbdExchangeRate,
             WitnessSetProperties,
             WitnessSetPropertiesData,
         )
@@ -312,7 +316,7 @@ class WitnessSetPropertiesWrapper:
                     if account_creation_fee is not None
                     else None,
                     url=url,
-                    hbd_exchange_rate=wax.complex_operations.witness_set_properties.HbdExchangeRate(
+                    hbd_exchange_rate=HbdExchangeRate(
                         base=hbd_exchange_rate.as_serialized_nai(),
                         quote=Asset.hive(1).as_serialized_nai(),
                     )
@@ -326,18 +330,14 @@ class WitnessSetPropertiesWrapper:
             )
         )
 
-    async def to_schemas(self, wax_interface: wax.IHiveChainInterface) -> SchemasWitnessSetPropertiesOperation:
-        from clive.__private.models.schemas import WitnessSetPropertiesOperation  # noqa: PLC0415
+    async def to_schemas(self, wax_interface: wax.IHiveChainInterface) -> OperationUnion:
         from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
         wax_transaction = await wax_interface.create_transaction()
-        proto_operations = list(self._operation.finalize(wax_interface))
-        assert len(proto_operations) == 1, "A single proto operation was expected from wax WitnessSetProperties"
+        proto_operations = list(self.wax_operation.finalize(wax_interface))
+        assert len(proto_operations) == 1, "A single proto operation was expected when finalizing"
         wax_transaction.push_operation(proto_operations[0])
-        transaction = Transaction.parse_raw(wax_transaction.to_api_json())
-        schemas_operation = transaction.operations[0].value
-        assert isinstance(schemas_operation, WitnessSetPropertiesOperation), (
-            "Expected WitnessSetPropertiesOperation from wax operation conversion"
-        )
+        schemas_transaction = Transaction.parse_raw(wax_transaction.to_api_json())
+        schemas_operation = schemas_transaction.operations[0].value
         validate_operation(schemas_operation)
         return schemas_operation
