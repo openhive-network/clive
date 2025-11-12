@@ -8,6 +8,11 @@ from __private.si.base import clive_use_unlocked_profile
 3. Dodano przykład na pakowanie dodatkowych operacji do transakcji
 4. Dodano przykład na możliwość zrobienia multisignu, wzorowany na mechaniźmie z cli
 5. Ograniczenie występowania po sobie method finalizujących (broadcast, save_fie, as_transaction_object)
+6. Możliwość łańcuchowego sign()
+7. Zmiana działania ładowania transakcji:
+    - jeżeli załadowana transakcja jest już podpisana to można ją podpisać kolejnym kluczem (z opcją multisign), nadpisać podpis albo broadcastować z istniejącym podpisem
+    - jeżeli załadowana transakcja nie jest podpisana to można ją podpisać jednym lub wieloma kluczami oraz można dodać do niej kolejne operacje przed finalizacją
+8. Do opcji "save_file" dodano dwa arguemnty: file_format (json/bin) oraz serialization_mode (hf26/hf25)
 """
 
 
@@ -32,14 +37,14 @@ async def interface_presentation() -> str:
             memo="Test transfer",
         ).broadcast()
 
-        transfer = (
+        (
             await clive.process.transfer(
                 from_account="alice",
                 to_account="gtg",
                 amount="1.000 HIVE",
                 memo="Test transfer",
             )
-            .sign_with("alice")
+            .sign_with("alice_alias")
             .broadcast()
         )
 
@@ -51,14 +56,22 @@ async def interface_presentation() -> str:
                 amount="1.000 HIVE",
                 memo="Test transfer",
             )
-            .sign_with("alice")
+            .sign_with("alice_alias")
             .as_transaction_object()
         )
         await (
             clive.process.transaction_from_object(from_object=transfer_transaction, already_signed_mode="multisign")
-            .sign_with("bob")
+            .sign_with("bob_alias")
             .broadcast()
         )
+
+        transfer = await clive.process.transfer(
+                from_account="alice",
+                to_account="gtg",
+                amount="1.000 HIVE",
+                memo="Test transfer",
+            ).sign_with("alice_alias").sign_with("bob_alias").as_transaction_object()
+        
 
         ### Wszystkie opcje finalizujące
         await (
@@ -69,7 +82,7 @@ async def interface_presentation() -> str:
                 memo="Test transfer",
             )
             .autosign()
-            .save_file(path="transfer1.json")
+            .save_file(path="transfer1.json", file_format="json", serialization_mode="hf26")
         )
 
         await (
@@ -115,11 +128,11 @@ async def interface_presentation() -> str:
                 amount="1.000 HIVE",
                 memo="Test transfer",
             )
-            .sign_with("alice")
+            .sign_with("alice_alias")
             .as_transaction_object()
         )
         await (
-            clive.process.transaction_from_object(from_object=transfer_transaction)
+            clive.process.transaction_from_object(from_object=transfer_transaction, force_unsign=True)
             .process.update_active_authority(account_name="alice", threshold=2)
             .autosign()
             .broadcast()
@@ -136,6 +149,6 @@ async def interface_presentation() -> str:
                 account_name="alice",
                 threshold=2,
             )
-            .sign_with("alice")
+            .sign_with("alice_alias")
             .save_file("transfer_and_update_active_authority2.json")
         )
