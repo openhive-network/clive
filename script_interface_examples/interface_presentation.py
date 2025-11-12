@@ -12,6 +12,7 @@ from __private.si.base import clive_use_unlocked_profile
 7. Zmiana działania ładowania transakcji:
     - jeżeli załadowana transakcja jest już podpisana to można ją podpisać kolejnym kluczem (z opcją multisign), nadpisać podpis albo broadcastować z istniejącym podpisem
     - jeżeli załadowana transakcja nie jest podpisana to można ją podpisać jednym lub wieloma kluczami oraz można dodać do niej kolejne operacje przed finalizacją
+    - jeżeli załadowana transakcja nie posiada któregoś z taposów to zostaną one uzupełnione podczas finalizacji (nie wiem czy to jest dobre rozwiązanie)
 8. Do opcji "save_file" dodano dwa arguemnty: file_format (json/bin) oraz serialization_mode (hf26/hf25)
 """
 
@@ -65,6 +66,7 @@ async def interface_presentation() -> str:
             .broadcast()
         )
 
+        # Podpisywanie wielokrotne, na łańcuchu
         transfer = await clive.process.transfer(
                 from_account="alice",
                 to_account="gtg",
