@@ -77,26 +77,32 @@ class AuthorityRoleBase(AuthorityEntriesHolder, Matchable, ABC):
 
 
 class AuthorityRoleRegular(AuthorityRoleBase):
+    def __init__(self, role: WaxRole) -> None:
+        super().__init__(role)
+        self._account_entries = [
+            AuthorityEntryAccountRegular(account, weight) for account, weight in self.authority.account_auths.items()
+        ]
+
+        self._key_entries = [AuthorityEntryKeyRegular(key, weight) for key, weight in self.authority.key_auths.items()]
+
     @property
     def authority(self) -> WaxAuthority:
         return self.role.value
 
     @property
     def account_entries(self) -> list[AuthorityEntryAccountRegular]:
-        return [
-            AuthorityEntryAccountRegular(account, weight) for account, weight in self.authority.account_auths.items()
-        ]
+        return self._account_entries
 
     @property
     def key_entries(self) -> list[AuthorityEntryKeyRegular]:
-        return [AuthorityEntryKeyRegular(key, weight) for key, weight in self.authority.key_auths.items()]
+        return self._key_entries
 
     @property
     def all_entries(self) -> list[AuthorityEntryAccountRegular | AuthorityEntryKeyRegular]:
         return self.get_entries()
 
     def get_entries(self) -> list[AuthorityEntryAccountRegular | AuthorityEntryKeyRegular]:
-        return self.account_entries + self.key_entries
+        return self._account_entries + self._key_entries
 
     def is_matching_pattern(self, *patterns: str) -> bool:
         """
@@ -165,6 +171,10 @@ class AuthorityRoleRegular(AuthorityRoleBase):
 
 
 class AuthorityRoleMemo(AuthorityRoleBase):
+    def __init__(self, role: WaxRole) -> None:
+        super().__init__(role)
+        self._memo_entry = AuthorityEntryMemo(self.role.value)
+
     @property
     def role(self) -> WaxRoleMemo:
         return cast("WaxRoleMemo", super().role)
@@ -192,4 +202,4 @@ class AuthorityRoleMemo(AuthorityRoleBase):
         self._role.reset()
 
     def get_entries(self) -> list[AuthorityEntryMemo]:
-        return [AuthorityEntryMemo(self.role.value)]
+        return [self._memo_entry]
