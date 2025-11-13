@@ -6,6 +6,7 @@ from typing import Any, Literal, Self, cast
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.str_utils import Matchable, is_text_matching_pattern
+from clive.__private.logger import logger
 
 AuthorityEntryKind = Literal["account", "key"]
 
@@ -13,10 +14,16 @@ AuthorityEntryKind = Literal["account", "key"]
 class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
     def __init__(self, value: str) -> None:
         self._value = value
+        self._initial_value = value
+        logger.debug(f"AUTHORITY ENTRY BASE CLASS OBJECT CREATED WITH VALUE: {value}.")
 
     @property
     def value(self) -> str:
         return self._value
+    
+    @property
+    def initial_value(self) -> int:
+        return self._initial_value
 
     @property
     def is_weighted(self) -> bool:
@@ -44,6 +51,10 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
     def ensure_account(self) -> AuthorityEntryAccountRegular:
         assert self.is_account, "Invalid type of entry."
         return cast("AuthorityEntryAccountRegular", self)
+    
+    def restore(self) -> None:
+        """Restores entry to its initial values."""
+        self._value = self._initial_value
 
     def get_entries(self) -> list[Self]:
         return [self]
@@ -73,6 +84,7 @@ class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
     def __init__(self, value: str, weight: int) -> None:
         super().__init__(value)
         self._weight = weight
+        self._initial_weight = weight
 
     @property
     def is_weighted(self) -> bool:
@@ -81,6 +93,14 @@ class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
     @property
     def weight(self) -> int:
         return self._weight
+    
+    @property
+    def initial_weight(self) -> int:
+        return self._initial_weight
+    
+    def restore(self) -> None:
+        self._value = self._initial_value
+        self._weight = self._initial_weight
 
     def update_weight(self, new_weight: int) -> None:
         self._weight = new_weight

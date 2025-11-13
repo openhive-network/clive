@@ -147,7 +147,6 @@ class ModifyAuthorityItem(AuthorityItemBase):
     ) -> None:
         self._is_new = is_new
         super().__init__(entry)
-        self._original_entry = deepcopy(entry)
         self._already_modified = False
 
     @property
@@ -204,8 +203,6 @@ class ModifyAuthorityItem(AuthorityItemBase):
         """
 
         entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular
-        initial_value: str
-        initial_weight: int
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         cells = [
@@ -245,41 +242,36 @@ class ModifyAuthorityItem(AuthorityItemBase):
         if isinstance(self._entry, (AuthorityEntryKeyRegular, AuthorityEntryAccountRegular)):
             if self._already_modified and not self._is_new:
                 self.post_message(
-                    self.RequestRestoreOrRemoval(
-                        entry=self._entry,
-                        initial_value=self._original_entry.value,
-                        initial_weight=self._original_entry.ensure_weighted.weight,
-                    )
+                    self.RequestRestoreOrRemoval(entry=self._entry)
                 )
             else:
                 self.post_message(self.RequestEntryRemoval(entry=self._entry))
 
-    async def handle_after_item_removal(self) -> None:
+    async def handle_after_item_removal(self, initial_value_of_entry: str | None = None, initial_weight_of_entry: int | None = None) -> None:
         """Handle removal of single entry - modify its content of completely remove it."""
         if self._is_new:
             await self.remove()
         else:
-            await self.refresh_content_cells(original_values=True)
+            await self.refresh_content_cells(value=initial_value_of_entry, weight=initial_weight_of_entry)
             self._apply_strikethrough_to_content_cells()
             self._disable_buttons_within_row()
 
     async def handle_after_item_restore(self) -> None:
         """Handle restore of single entry - restore its content to original value."""
-        self._entry.update_value(self._original_entry.value)
-        self._entry.ensure_weighted.update_weight(self._original_entry.ensure_weighted.weight)
+        # self._entry.update_value(self._original_entry.value)
+        # self._entry.ensure_weighted.update_weight(self._original_entry.ensure_weighted.weight)
+        # self._entry.restore()
         await self.refresh_content_cells()
         self._already_modified = False
 
-    async def refresh_content_cells(self, *, original_values: bool = False, apply_prefix: bool = False) -> None:
+    async def refresh_content_cells(self, *, value: str | None = None, weight: int | None = None, apply_prefix: bool = False) -> None:
         prefix = self.NEW_PREFIX if self._is_new else self.MODIFIED_PREFIX
         value_text = (
-            f"{prefix if apply_prefix else ''}{self._original_entry.value if original_values else self._entry.value}"
+            f"{prefix if apply_prefix else ''}{value if value else self._entry.value}"
         )
         await self.value_cell.update_content(value_text)
         if self._entry.is_weighted:
-            weight_text = str(
-                self._original_entry.ensure_weighted.weight if original_values else self._entry.ensure_weighted.weight
-            )
+            weight_text = str(weight if weight else self._entry.ensure_weighted.weight)
             await self.weight_cell.update_content(weight_text)
 
     def toggle_already_modified(self) -> None:
@@ -405,6 +397,8 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
                     return
 
         entry_to_edit = event.entry
+        from clive.__private.logger import logger
+        logger.debug(f"ENTRY ID WHILE EDITING {id(entry_to_edit)}")
         entry_to_edit_value = entry_to_edit.value
 
         if isinstance(self._role, AuthorityRoleMemo):
@@ -463,7 +457,9 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
                         await item.handle_after_item_restore()
                     else:
                         self.app.notify(f"Entry {entry_to_remove_or_restore.value} was removed from {role_level} role.")
-                        await item.handle_after_item_removal()
+                        initial_value_of_entry = entry_to_remove_or_restore.initial_value
+                        initial_weight_of_entry = entry_to_remove_or_restore.initial_weight
+                        await item.handle_after_item_removal(initial_value_of_entry, initial_weight_of_entry)
                     break
 
         if not isinstance(self._role, AuthorityRoleRegular):
@@ -473,8 +469,6 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
             RestoreOrRemoveEntryDialog(
                 role=self._role,
                 current_entry=entry_to_remove_or_restore,
-                initial_value=event.initial_value,
-                initial_weight=event.initial_weight,
             ),
             restore_or_remove_entry_callback,
         )

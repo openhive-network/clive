@@ -55,14 +55,10 @@ class RestoreOrRemoveEntryDialog(CliveActionDialog[bool | None]):
         self,
         role: AuthorityRoleRegular,
         current_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular,
-        initial_value: str,
-        initial_weight: int,
     ) -> None:
         super().__init__("Restore or remove entry")
         self._role = role
         self._current_entry = current_entry
-        self._initial_value = initial_value
-        self._initial_weight = initial_weight
 
     def create_dialog_content(self) -> ComposeResult:
         with Section():
@@ -74,8 +70,14 @@ class RestoreOrRemoveEntryDialog(CliveActionDialog[bool | None]):
         yield CancelOneLineButton()
 
     async def _perform_confirmation(self) -> bool:
+        from clive.__private.logger import logger
+
         value_to_replace = self._current_entry.value
-        self._role.replace(value_to_replace, self._initial_weight, self._initial_value)
+        initial_value = self._current_entry.initial_value
+        initial_weight = self._current_entry.weight
+        logger.debug(f"ENTRY ID WHILE RESTORING{id(self._current_entry)}")
+        self._current_entry.restore()
+        self._role.replace(value_to_replace, initial_weight, initial_value)
         return True
 
     def _perform_removal(self) -> None:
