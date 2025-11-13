@@ -7,7 +7,10 @@ import test_tools as tt
 
 from clive.__private.cli.exceptions import CLIMutuallyExclusiveOptionsError
 from clive.__private.models.schemas import TransferOperation
-from clive_local_tools.checkers.blockchain_checkers import assert_transaction_in_blockchain
+from clive_local_tools.checkers.blockchain_checkers import (
+    assert_transaction_in_blockchain,
+    assert_transaction_not_in_blockchain,
+)
 from clive_local_tools.cli.checkers import (
     assert_contains_dry_run_message,
     assert_contains_transaction_broadcasted_message,
@@ -49,7 +52,7 @@ def test_broadcasts_by_default_when_no_special_flags(node: tt.RawNode, cli_teste
     assert_transaction_in_blockchain(node, result)
 
 
-def test_does_not_broadcast_when_saving_to_file(cli_tester: CLITester) -> None:
+def test_does_not_broadcast_when_saving_to_file(node: tt.RawNode, cli_tester: CLITester) -> None:
     """Should not broadcast by default when transaction is being saved to a file."""
     # ARRANGE
     transaction_file_path = create_transaction_filepath()
@@ -61,6 +64,7 @@ def test_does_not_broadcast_when_saving_to_file(cli_tester: CLITester) -> None:
     assert transaction_file_path.exists(), "Transaction file should be created."
     assert_contains_transaction_saved_to_file_message(transaction_file_path, result.output)
     assert_does_not_contain_transaction_broadcasted_message(result.output)
+    assert_transaction_not_in_blockchain(node, result)
 
 
 def test_broadcasts_when_explicitly_requested_even_with_save_file(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -91,7 +95,7 @@ def test_broadcasts_transaction_from_file_by_default_when_no_special_flags(
 
 
 def test_does_not_broadcast_when_force_unsign_is_used(
-    cli_tester: CLITester, transaction_file_with_transfer: Path
+    node: tt.RawNode, cli_tester: CLITester, transaction_file_with_transfer: Path
 ) -> None:
     """Should not broadcast when --force-unsign is enabled."""
     # ACT
@@ -100,6 +104,7 @@ def test_does_not_broadcast_when_force_unsign_is_used(
     # ASSERT
     assert_contains_dry_run_message(result.output)
     assert_does_not_contain_transaction_broadcasted_message(result.output)
+    assert_transaction_not_in_blockchain(node, result)
 
 
 def test_negative_does_not_broadcast_when_explicitly_required_with_force_unsign(

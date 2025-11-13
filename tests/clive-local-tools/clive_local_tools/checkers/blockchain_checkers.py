@@ -38,17 +38,36 @@ def _get_transaction(
     )
 
 
-def assert_transaction_in_blockchain(
+def _is_transaction_in_blockchain(
     node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
-) -> None:
+) -> bool:
+    """Return True if transaction is found in the blockchain, False otherwise."""
     transaction_id = _ensure_transaction_id(trx_id_or_result)
     if wait_for_the_next_block:
         # Wait for transaction be available in block
         node.wait_number_of_blocks(1)
+
     try:
         node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
     except bke.ErrorInResponseError:
+        return False
+    return True
+
+
+def assert_transaction_in_blockchain(
+    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+) -> None:
+    if not _is_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block):
+        transaction_id = _ensure_transaction_id(trx_id_or_result)
         pytest.fail(f"The transaction with {transaction_id=} couldn't be found in the blockchain.")
+
+
+def assert_transaction_not_in_blockchain(
+    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+) -> None:
+    if _is_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block):
+        transaction_id = _ensure_transaction_id(trx_id_or_result)
+        pytest.fail(f"The transaction with {transaction_id=} was unexpectedly found in the blockchain.")
 
 
 def assert_operations_placed_in_blockchain(
