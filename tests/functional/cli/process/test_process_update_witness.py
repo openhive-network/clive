@@ -57,6 +57,7 @@ async def test_setting_witness_property(  # noqa: PLR0913
     property_value: str | int | Decimal | Asset.LiquidT,
     operation_type: type[OperationBase],
 ) -> None:
+    """Test setting witness properties with witness-key or active-key."""
     # ARRANGE
     cli_tester = cli_tester_unlocked_with_witness_profile
     witness_name = cli_tester.world.profile.accounts.working.name
@@ -74,6 +75,7 @@ async def test_setting_witness_property(  # noqa: PLR0913
 async def test_two_operations_in_transaction(
     node: tt.RawNode, cli_tester_unlocked_with_witness_profile: CLITester
 ) -> None:
+    """Test sending two operations (WitnessUpdateOperation and FeedPublishOperation) in one transaction."""
     # ARRANGE
     cli_tester = cli_tester_unlocked_with_witness_profile
     operations: list[type[OperationBase]] = [WitnessUpdateOperation, FeedPublishOperation]
@@ -101,6 +103,7 @@ async def test_two_operations_in_transaction(
 
 
 async def test_using_updated_witness_key(node: tt.RawNode, cli_tester_unlocked_with_witness_profile: CLITester) -> None:
+    """Test modification of witness key and using it to sign new transaction."""
     # ARRANGE
     cli_tester = cli_tester_unlocked_with_witness_profile
     operation = WitnessSetPropertiesOperation
