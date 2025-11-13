@@ -12,6 +12,7 @@ from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
+    from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import GetTransaction, OperationBase, OperationUnion, Witness
 
 
@@ -92,7 +93,7 @@ def assert_operation_type_in_blockchain(
 
 
 def assert_witness_property(
-    property_name: str, property_value: str | int | Decimal | tt.Asset, witness: Witness
+    property_name: str, property_value: str | int | Decimal | Asset.LiquidT, witness: Witness
 ) -> None:
     """Assert that given proparty has expected value in the witness object obtained by api call to blockchain."""
     message = f"Witness property '{property_name}' does not have expected value."

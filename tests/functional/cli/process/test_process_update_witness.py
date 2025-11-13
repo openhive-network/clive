@@ -4,11 +4,11 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Final
 
 import pytest
-import test_tools as tt
 
 from clive.__private.cli.commands.process.process_update_witness import CLIRequiresWitnessSetPropertiesOperationError
 from clive.__private.core.keys.keys import PrivateKey, PublicKey
 from clive.__private.core.percent_conversions import percent_to_hive_percent
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     FeedPublishOperation,
     OperationBase,
@@ -20,6 +20,8 @@ from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.helpers import get_formatted_error_message
 
 if TYPE_CHECKING:
+    import test_tools as tt
+
     from clive_local_tools.cli.cli_tester import CLITester
 
 NEW_SIGNING_KEY: Final[PublicKey] = PublicKey(
@@ -30,16 +32,16 @@ NEW_SIGNING_KEY: Final[PublicKey] = PublicKey(
 @pytest.mark.parametrize(
     ("use_witness_key", "property_name", "property_value", "operation_type"),
     [
-        (True, "account_creation_fee", tt.Asset.Hive(3.456), WitnessSetPropertiesOperation),
-        (False, "account_creation_fee", tt.Asset.Hive(3.456), WitnessUpdateOperation),
+        (True, "account_creation_fee", Asset.hive("3.456"), WitnessSetPropertiesOperation),
+        (False, "account_creation_fee", Asset.hive("3.456"), WitnessUpdateOperation),
         (True, "maximum_block_size", 1_048_576, WitnessSetPropertiesOperation),
         (False, "maximum_block_size", 1_048_576, WitnessUpdateOperation),
         (True, "hbd_interest_rate", Decimal("54.32"), WitnessSetPropertiesOperation),
         (False, "hbd_interest_rate", Decimal("54.32"), WitnessUpdateOperation),
         (True, "new_signing_key", NEW_SIGNING_KEY.value, WitnessSetPropertiesOperation),
         (False, "new_signing_key", NEW_SIGNING_KEY.value, WitnessUpdateOperation),
-        (True, "hbd_exchange_rate", tt.Asset.Hbd(0.234), WitnessSetPropertiesOperation),
-        (False, "hbd_exchange_rate", tt.Asset.Hbd(0.234), FeedPublishOperation),
+        (True, "hbd_exchange_rate", Asset.hbd("0.234"), WitnessSetPropertiesOperation),
+        (False, "hbd_exchange_rate", Asset.hbd("0.234"), FeedPublishOperation),
         (True, "url", "example.com", WitnessSetPropertiesOperation),
         (False, "url", "example.com", WitnessUpdateOperation),
         (True, "account_subsidy_budget", 1234, WitnessSetPropertiesOperation),
@@ -51,7 +53,7 @@ async def test_setting_witness_property(  # noqa: PLR0913
     cli_tester_unlocked_with_witness_profile: CLITester,
     use_witness_key: bool,  # noqa: FBT001
     property_name: str,
-    property_value: str | int | Decimal | tt.Asset,
+    property_value: str | int | Decimal | Asset.LiquidT,
     operation_type: type[OperationBase],
 ) -> None:
     """Test setting all witness properties, signing by witness-key or active-key."""
@@ -76,7 +78,7 @@ async def test_two_operations_in_transaction(
     # ARRANGE
     cli_tester = cli_tester_unlocked_with_witness_profile
     operations: list[type[OperationBase]] = [WitnessUpdateOperation, FeedPublishOperation]
-    hbd_exchange_rate = tt.Asset.Hbd(0.3456)
+    hbd_exchange_rate = Asset.hbd("0.3456")
     hbd_interest_rate = Decimal("65.43")
     witness_name = cli_tester.world.profile.accounts.working.name
 
@@ -92,7 +94,7 @@ async def test_two_operations_in_transaction(
         f"Witness '{witness_name}' hbd exchange rate should change after command witness-update,"
         f" expected: `{hbd_exchange_rate}`, actual: `{witness.hbd_exchange_rate.base}`"
     )
-    assert witness.hbd_exchange_rate.quote == tt.Asset.Hive(1), "hbd exchange rate should be given as price of 1 hive"
+    assert witness.hbd_exchange_rate.quote == Asset.hive(1), "hbd exchange rate should be given as price of 1 hive"
     assert percent_to_hive_percent(hbd_interest_rate) == witness.props.hbd_interest_rate, (
         f"Witness '{witness_name}' hbd interest rate should change after command witness-update,"
         f" expected: `{percent_to_hive_percent(hbd_interest_rate)}`, actual: `{witness.props.hbd_interest_rate}`"
