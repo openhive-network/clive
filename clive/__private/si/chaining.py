@@ -155,7 +155,7 @@ class _FinalizingBase:
         sign_with, autosign = self._get_sign_params()
         await self._finalize_operation_builders(
             world=self.world,
-            operation_builders=self._operation_builders,
+            operation_builders=self._get_all_operation_builders(),
             sign_with=sign_with,
             save_file=None,
             broadcast=True,
