@@ -2,30 +2,16 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final, cast, override
+from typing import TYPE_CHECKING, cast, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction, ComposeTransaction
     from clive.__private.core.types import AuthorityLevelRegular
     from clive.__private.models.schemas import Account
-
-
-class NoChangesTransactionError(CLIPrettyError):
-    """
-    Raised when trying to create a transaction with no changes to authority.
-
-    Attributes:
-        MESSAGE: A message displayed to user when this error occurs.
-    """
-
-    MESSAGE: Final[str] = "Transaction with no changes to authority cannot be created."
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
 
 
 @dataclass(kw_only=True)
@@ -42,7 +28,7 @@ class ProcessAccountUpdate(OperationCommand):
     @override
     async def validate(self) -> None:
         if len(self._callbacks) == 0:
-            raise NoChangesTransactionError
+            raise CLINoChangesTransactionError
         await super().validate()
 
     async def _create_operations(self) -> ComposeTransaction:

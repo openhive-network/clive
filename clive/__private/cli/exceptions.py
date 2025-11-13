@@ -517,3 +517,17 @@ class CLIWitnessNotFoundError(CLIPrettyError):
     def __init__(self, name: str) -> None:
         message = f"Witness `{name}` was not found."
         super().__init__(message, errno.EINVAL)
+
+
+class CLINoChangesTransactionError(CLIPrettyError):
+    """
+    Raised when trying to create a transaction with no operations.
+
+    Attributes:
+        MESSAGE: A message displayed to user when this error occurs.
+    """
+
+    MESSAGE: Final[str] = "Transaction with no operations cannot be created."
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)

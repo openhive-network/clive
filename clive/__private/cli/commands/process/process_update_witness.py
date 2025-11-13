@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.cli.exceptions import CLIPrettyError, CLIWitnessNotFoundError
+from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError, CLIWitnessNotFoundError
 from clive.__private.core import iwax
 from clive.__private.core.commands.find_witness import WitnessNotFoundError
 from clive.__private.core.keys.keys import PublicKey
@@ -99,9 +99,7 @@ class ProcessUpdateWitness(OperationCommand):
             ]
         )
         if not is_operation_required:
-            raise CLIPrettyError(
-                "Transaction with no changes to witness cannot be created. Use '--help' flag to display help."
-            )
+            raise CLINoChangesTransactionError
 
     def _validate_requirements_for_witness_set_propertues_operation(self) -> None:
         if self.use_active_authority and self.is_option_given(self.account_subsidy_budget):
