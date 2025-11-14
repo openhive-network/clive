@@ -46,7 +46,7 @@ class WaxOperationWrapper:
         )
 
         def key_string(input_key: str | PublicKey) -> str:
-            return PublicKey(value=input_key).value if isinstance(input_key, str) else input_key.value
+            return PublicKey.create(input_key).value
 
         return cls(
             WitnessSetProperties(

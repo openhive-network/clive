@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, overload
 
@@ -123,6 +124,23 @@ class PublicKey(Key):
 
     def __hash__(self) -> int:
         return super().__hash__()
+
+    @staticmethod
+    @overload
+    def create(value: str) -> PublicKey: ...
+
+    @staticmethod
+    @overload
+    def create[T: PublicKey](value: T) -> T: ...
+
+    @staticmethod
+    @overload
+    def create(value: str | PublicKey, with_alias: str) -> PublicKeyAliased: ...
+
+    @staticmethod
+    def create(value: str | PublicKey, with_alias: str = "") -> PublicKey | PublicKeyAliased:
+        public_key = PublicKey(value=value) if isinstance(value, str) else deepcopy(value)
+        return public_key.with_alias(with_alias) if with_alias else public_key
 
     @staticmethod
     def validate(key: str) -> None:
