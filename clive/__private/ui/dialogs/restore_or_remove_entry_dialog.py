@@ -32,8 +32,6 @@ class RestoreOrRemoveEntryDialog(CliveActionDialog[bool | None]):
     Args:
         role: Role that will be edited.
         current_entry: Entry that will is about to be removed or restored.
-        initial_value: Initial value of current entry.
-        initial_weight: Initial weight of current entry.
     """
 
     DEFAULT_CSS = """
@@ -55,14 +53,10 @@ class RestoreOrRemoveEntryDialog(CliveActionDialog[bool | None]):
         self,
         role: AuthorityRoleRegular,
         current_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular,
-        initial_value: str,
-        initial_weight: int,
     ) -> None:
         super().__init__("Restore or remove entry")
         self._role = role
         self._current_entry = current_entry
-        self._initial_value = initial_value
-        self._initial_weight = initial_weight
 
     def create_dialog_content(self) -> ComposeResult:
         with Section():
@@ -75,7 +69,9 @@ class RestoreOrRemoveEntryDialog(CliveActionDialog[bool | None]):
 
     async def _perform_confirmation(self) -> bool:
         value_to_replace = self._current_entry.value
-        self._role.replace(value_to_replace, self._initial_weight, self._initial_value)
+        initial_value = self._current_entry.initial_value
+        initial_weight = self._current_entry.weight
+        self._role.replace(value_to_replace, initial_weight, initial_value)
         return True
 
     def _perform_removal(self) -> None:

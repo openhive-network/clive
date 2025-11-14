@@ -101,9 +101,15 @@ class EditRegularEntryDialog(CliveActionDialog[AuthorityEntryAccountRegular | Au
         new_entry: AuthorityEntryAccountRegular | AuthorityEntryKeyRegular | None = None
 
         weight_input_value = int(self.weight_input.value_raw)
+        previous_entry_value = self._current_entry.value
+        previous_entry_weight = self._current_entry.weight
         if authority_entry_input.holds_account_name:
-            new_entry = AuthorityEntryAccountRegular(authority_entry_input_value, weight_input_value)
+            new_entry = AuthorityEntryAccountRegular(
+                authority_entry_input_value, weight_input_value, previous_entry_value, previous_entry_weight
+            )
         else:
-            new_entry = AuthorityEntryKeyRegular(authority_entry_input_value, weight_input_value)
+            new_entry = AuthorityEntryKeyRegular(
+                authority_entry_input_value, weight_input_value, previous_entry_value, previous_entry_weight
+            )
 
         self.dismiss(result=new_entry)
