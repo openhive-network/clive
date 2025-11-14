@@ -79,4 +79,4 @@ def test_different_alias_private_key() -> None:
 
 def test_comparing_public_key_to_other_public_key_raw() -> None:
     # ACT & ASSERT
-    assert PrivateKey.create().calculate_public_key().value != PUBLIC_KEY
+    assert PrivateKey.generate().calculate_public_key().value != PUBLIC_KEY

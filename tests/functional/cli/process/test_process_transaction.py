@@ -33,7 +33,7 @@ EXAMPLE_STRING: Final[str] = '"somestring"'
 EXAMPLE_NUMBER: Final[str] = "123456.789"
 ID: Final[str] = "test-custom-json-some-id"
 RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
-ADDITIONAL_KEY_VALUE: str = PrivateKey.create().value
+ADDITIONAL_KEY_VALUE: str = PrivateKey.generate().value
 ADDITIONAL_KEY_ALIAS_NAME: Final[str] = f"{WORKING_ACCOUNT_KEY_ALIAS}_2"
 
 

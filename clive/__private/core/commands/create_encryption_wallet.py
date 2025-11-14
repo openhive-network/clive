@@ -24,6 +24,6 @@ class CreateEncryptionWallet(CommandWithResult[bk.AsyncUnlockedWallet]):
             name=EncryptionService.get_encryption_wallet_name(self.profile_name), password=self.password
         )
         await unlocked_encryption_wallet.import_key(
-            private_key=PrivateKey.create_from_seed(self.password, account_name=self.profile_name).value
+            private_key=PrivateKey.generate_from_seed(self.password, account_name=self.profile_name).value
         )
         self._result = unlocked_encryption_wallet

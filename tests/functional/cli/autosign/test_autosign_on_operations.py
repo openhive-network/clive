@@ -35,7 +35,7 @@ import test_tools as tt
 RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(1)
 MEMO: Final[str] = "test-process-transfer-autosign-single-key"
-ADDITIONAL_KEY_VALUE: str = PrivateKey.create().value
+ADDITIONAL_KEY_VALUE: str = PrivateKey.generate().value
 ADDITIONAL_KEY_ALIAS_NAME: Final[str] = f"{WORKING_ACCOUNT_KEY_ALIAS}_2"
 
 

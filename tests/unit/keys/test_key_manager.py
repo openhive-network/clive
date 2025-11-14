@@ -61,14 +61,14 @@ async def test_key_manager_contains(
 @pytest.mark.parametrize(
     "compare_key",
     [
-        PrivateKey.create().value,
-        PrivateKey.create().calculate_public_key().value,
-        PrivateKey.create(),
-        PrivateKey.create().calculate_public_key(),
+        PrivateKey.generate().value,
+        PrivateKey.generate().calculate_public_key().value,
+        PrivateKey.generate(),
+        PrivateKey.generate().calculate_public_key(),
         IMPORTED_PRIVATE_KEY.with_alias("different"),
         IMPORTED_PUBLIC_KEY.with_alias("different"),
-        PrivateKey.create(with_alias=IMPORTED_KEY_ALIAS),
-        PrivateKey.create(with_alias=IMPORTED_KEY_ALIAS).calculate_public_key(),
+        PrivateKey.generate(with_alias=IMPORTED_KEY_ALIAS),
+        PrivateKey.generate(with_alias=IMPORTED_KEY_ALIAS).calculate_public_key(),
     ],
     ids=[
         "private_key_string",

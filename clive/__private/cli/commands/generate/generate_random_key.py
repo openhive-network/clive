@@ -13,6 +13,6 @@ class GenerateRandomKey(ExternalCLICommand):
 
     async def _run(self) -> None:
         for _ in range(self.key_pairs):
-            private_key = PrivateKey.create()
+            private_key = PrivateKey.generate()
             print_cli(private_key.value)
             print_cli(private_key.calculate_public_key().value)

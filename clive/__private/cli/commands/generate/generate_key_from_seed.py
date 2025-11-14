@@ -27,7 +27,7 @@ class GenerateKeyFromSeed(ExternalCLICommand):
             self.read_interactive("Enter seed (like as secret phrase)") if self.is_interactive else self.read_piped()
         )
 
-        private_key = PrivateKey.create_from_seed(password, self.account_name, role=self.role)
+        private_key = PrivateKey.generate_from_seed(password, self.account_name, role=self.role)
         if self.only_public_key:
             print_cli(private_key.calculate_public_key().value)
         elif self.only_private_key:

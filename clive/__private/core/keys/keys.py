@@ -209,29 +209,29 @@ class PrivateKey(Key):
 
     @staticmethod
     @overload
-    def create() -> PrivateKey: ...
+    def generate() -> PrivateKey: ...
 
     @staticmethod
     @overload
-    def create(*, with_alias: str) -> PrivateKeyAliased: ...
+    def generate(*, with_alias: str) -> PrivateKeyAliased: ...
 
     @staticmethod
-    def create(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
+    def generate(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
         private_key = iwax.generate_private_key()
         return private_key.with_alias(with_alias) if with_alias else private_key
 
     @staticmethod
     @overload
-    def create_from_seed(seed: str, account_name: str, *, role: AuthorityLevel = "memo") -> PrivateKey: ...
+    def generate_from_seed(seed: str, account_name: str, *, role: AuthorityLevel = "memo") -> PrivateKey: ...
 
     @staticmethod
     @overload
-    def create_from_seed(
+    def generate_from_seed(
         seed: str, account_name: str, *, role: AuthorityLevel = "memo", with_alias: str = ""
     ) -> PrivateKeyAliased: ...
 
     @staticmethod
-    def create_from_seed(
+    def generate_from_seed(
         seed: str, account_name: str, *, role: AuthorityLevel = "memo", with_alias: str = ""
     ) -> PrivateKey | PrivateKeyAliased:
         private_key = iwax.generate_password_based_private_key(seed, role, account_name)

@@ -33,7 +33,7 @@ WEIGHT_THRESHOLD: Final[int] = 2
 
 
 def create_public_key_for_role(new_account_name: str = NEW_ACCOUNT_NAME, *, role: AuthorityLevel) -> PublicKey:
-    private_key = PrivateKey.create_from_seed("seed", new_account_name, role=role)
+    private_key = PrivateKey.generate_from_seed("seed", new_account_name, role=role)
     return private_key.calculate_public_key().value
 
 

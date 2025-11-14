@@ -35,7 +35,7 @@ class Keys:
 
     def generate_key_pair(self, *, alias: str | None = None) -> KeysPair:
         alias = f"key-{len(self.pairs)}" if alias is None else alias
-        private_key = PrivateKeyAliased.create(with_alias=alias)
+        private_key = PrivateKeyAliased.generate(with_alias=alias)
         public_key = private_key.calculate_public_key()
 
         return Keys.KeysPair(public_key, private_key)

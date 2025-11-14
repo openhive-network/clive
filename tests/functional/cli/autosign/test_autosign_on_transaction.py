@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
 TO_ACCOUNT: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
 AUTO_SIGN_SKIPPED_WARNING_MESSAGE: Final[str] = "Your transaction is already signed. Autosign will be skipped"
-ADDITIONAL_KEY_VALUE: str = PrivateKey.create().value
+ADDITIONAL_KEY_VALUE: str = PrivateKey.generate().value
 ADDITIONAL_KEY_ALIAS_NAME: Final[str] = f"{WORKING_ACCOUNT_KEY_ALIAS}_2"
 WORKING_ACCOUNT_KEY_VALUE: str = WORKING_ACCOUNT_DATA.account.private_key
 

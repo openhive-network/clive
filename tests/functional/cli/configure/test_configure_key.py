@@ -26,7 +26,7 @@ async def assert_key_exists(wallet: AsyncUnlockedWallet, private_key: PrivateKey
 async def test_configure_key_add(cli_tester: CLITester) -> None:
     """Check clive configure key add command."""
     # ARRANGE
-    pk = PrivateKey.create()
+    pk = PrivateKey.generate()
     unlocked_wallet = cli_tester.world.beekeeper_manager.user_wallet
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
 
@@ -42,7 +42,7 @@ async def test_negative_configure_key_add_in_locked(
 ) -> None:
     """Check if clive configure add_key command throws exception when wallet is locked."""
     # ARRANGE
-    pk = PrivateKey.create()
+    pk = PrivateKey.generate()
     message = CLINoProfileUnlockedError.MESSAGE
 
     # ACT & ASSERT
@@ -54,7 +54,7 @@ async def test_negative_configure_key_add_in_locked(
 async def test_configure_key_remove(cli_tester: CLITester, *, from_beekeeper: bool) -> None:
     """Check clive configure key remove command."""
     # ARRANGE
-    pk = PrivateKey.create()
+    pk = PrivateKey.generate()
     unlocked_wallet = cli_tester.world.beekeeper_manager.user_wallet
     await assert_key_exists(unlocked_wallet, pk, should_exists=False)
     cli_tester.configure_key_add(key=pk.value, alias="key")

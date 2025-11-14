@@ -109,7 +109,7 @@ async def test_using_updated_witness_key(node: tt.RawNode, cli_tester_unlocked_w
     operation = WitnessSetPropertiesOperation
     account_subsidy_decay = 6543
     alias = "updated_signing_key"
-    new_private_signing_key = PrivateKey.create()
+    new_private_signing_key = PrivateKey.generate()
     cli_tester.process_update_witness(new_signing_key=new_private_signing_key.calculate_public_key().value)
     cli_tester.configure_key_add(key=new_private_signing_key.value, alias=alias)
     witness_name = cli_tester.world.profile.accounts.working.name
