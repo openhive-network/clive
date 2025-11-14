@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError, CLIWitnessNotFoundError
-from clive.__private.core import iwax
 from clive.__private.core.commands.find_witness import WitnessNotFoundError
 from clive.__private.core.keys.keys import PublicKey
 from clive.__private.core.percent_conversions import percent_to_hive_percent
+from clive.__private.core.wax_operation_wrapper import WaxOperationWrapper
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import (
     AccountName,
@@ -169,7 +169,7 @@ class ProcessUpdateWitness(OperationCommand):
         )
 
     def _create_witness_set_properties_operation(self) -> WitnessSetPropertiesOperation:
-        wax_operation_wrapper = iwax.WitnessSetPropertiesWrapper.create(
+        wrapper = WaxOperationWrapper.create_witness_set_properties(
             owner=self.owner,
             key=PublicKey(value=self.witness_ensure.signing_key),
             new_signing_key=self.new_signing_key,
@@ -181,4 +181,4 @@ class ProcessUpdateWitness(OperationCommand):
             account_subsidy_budget=self.account_subsidy_budget,
             account_subsidy_decay=self.account_subsidy_decay,
         )
-        return wax_operation_wrapper.to_schemas(self.world.wax_interface)
+        return wrapper.to_schemas(self.world.wax_interface, WitnessSetPropertiesOperation)

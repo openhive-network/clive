@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 
 class CliveError(Exception):
@@ -43,3 +43,19 @@ class RequestIdError(CliveError):
 
 class ProfileNotLoadedError(CliveError):
     """Raise when profile is requested and was not loaded."""
+
+
+class WrongTypeError(CliveError):
+    """
+    Raised when the type of the value is not the expected one.
+
+    Args:
+        expected_type: Expected type.
+        actual_type: Actual type.
+    """
+
+    def __init__(self, expected_type: type[Any], actual_type: type[Any]) -> None:
+        self.expected_type = expected_type
+        self.actual_type = actual_type
+        self.message = f"Expected type {expected_type}, got {actual_type}"
+        super().__init__(self.message)

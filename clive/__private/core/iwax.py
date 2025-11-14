@@ -3,14 +3,12 @@ from __future__ import annotations
 import datetime
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, Self, cast, get_args
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
-from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
-from clive.__private.models.schemas import AccountName, WitnessPropsSerializedKey
-from clive.__private.models.schemas import WitnessSetPropertiesOperation as SchemasWitnessSetPropertiesOperation
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -18,9 +16,8 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import Hex, OperationUnion, PriceFeed
+    from clive.__private.models.schemas import OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
-    from wax.complex_operations.witness_set_properties import WitnessSetProperties as WaxWitnessSetProperties
 
 
 def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
@@ -272,72 +269,3 @@ def generate_password_based_private_key(
 def suggest_brain_key() -> str:
     result = wax.suggest_brain_key()
     return result.brain_key.decode()
-
-
-class WitnessSetPropertiesWrapper:
-    def __init__(self, operation: WaxWitnessSetProperties) -> None:
-        self._operation = operation
-
-    @classmethod
-    def create(  # noqa: PLR0913
-        cls,
-        owner: str,
-        key: str | PublicKey,
-        new_signing_key: str | PublicKey | None = None,
-        account_creation_fee: Asset.Hive | None = None,
-        url: str | None = None,
-        hbd_exchange_rate: Asset.Hbd | None = None,
-        maximum_block_size: int | None = None,
-        hbd_interest_rate: Decimal | None = None,
-        account_subsidy_budget: int | None = None,
-        account_subsidy_decay: int | None = None,
-    ) -> Self:
-        from clive.__private.core.keys import PublicKey  # noqa: PLC0415
-        from clive.__private.models.asset import Asset  # noqa: PLC0415
-        from wax.complex_operations.witness_set_properties import (  # noqa: PLC0415
-            WitnessSetProperties,
-            WitnessSetPropertiesData,
-        )
-
-        def key_string(input_key: str | PublicKey) -> str:
-            return input_key.value if isinstance(input_key, PublicKey) else input_key
-
-        return cls(
-            WitnessSetProperties(
-                data=WitnessSetPropertiesData(
-                    owner=AccountName(owner),
-                    witness_signing_key=key_string(key),
-                    new_signing_key=key_string(new_signing_key) if new_signing_key is not None else None,
-                    account_creation_fee=account_creation_fee.as_serialized_nai()
-                    if account_creation_fee is not None
-                    else None,
-                    url=url,
-                    hbd_exchange_rate=wax.complex_operations.witness_set_properties.HbdExchangeRate(
-                        base=hbd_exchange_rate.as_serialized_nai(),
-                        quote=Asset.hive(1).as_serialized_nai(),
-                    )
-                    if hbd_exchange_rate
-                    else None,
-                    maximum_block_size=maximum_block_size,
-                    hbd_interest_rate=percent_to_hive_percent(hbd_interest_rate) if hbd_interest_rate else None,
-                    account_subsidy_budget=account_subsidy_budget,
-                    account_subsidy_decay=account_subsidy_decay,
-                )
-            )
-        )
-
-    def to_schemas(self, wax_interface: wax.IWaxBaseInterface) -> SchemasWitnessSetPropertiesOperation:
-        first = next(iter(self._operation.finalize(wax_interface)))
-        props = self._props_to_schemas(first.props)
-        return SchemasWitnessSetPropertiesOperation(owner=self._operation.owner, props=props)
-
-    def _props_to_schemas(self, wax_props: dict[str, str]) -> list[tuple[WitnessPropsSerializedKey, Hex]]:
-        schemas_properties_model: list[tuple[WitnessPropsSerializedKey, Hex]] = []
-
-        def append_optional_property(name: WitnessPropsSerializedKey) -> None:
-            if property_value := wax_props.get(name):
-                schemas_properties_model.append((name, property_value))
-
-        for property_name in get_args(WitnessPropsSerializedKey):
-            append_optional_property(property_name)
-        return schemas_properties_model
