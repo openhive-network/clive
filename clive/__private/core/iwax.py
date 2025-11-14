@@ -3,14 +3,14 @@ from __future__ import annotations
 import datetime
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Protocol, Self, cast
+from typing import TYPE_CHECKING, Any, Protocol, Self, TypeVar, cast, overload
 
 import wax
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent, percent_to_hive_percent
 from clive.__private.models.schemas import AccountName, OperationUnion
-from clive.exceptions import CliveError
+from clive.exceptions import CliveError, WrongTypeError
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -273,13 +273,12 @@ def suggest_brain_key() -> str:
     return result.brain_key.decode()
 
 
+OperationExpectType = TypeVar("OperationExpectType", bound=OperationUnion)
+
+
 class WaxOperationWrapper:
     def __init__(self, wax_operation: WaxOperationBase) -> None:
         self._wax_operation = wax_operation
-
-    @property
-    def wax_operation(self) -> WaxOperationBase:
-        return self._wax_operation
 
     @classmethod
     def create(  # noqa: PLR0913
@@ -330,12 +329,32 @@ class WaxOperationWrapper:
             )
         )
 
-    async def to_schemas(self, wax_interface: wax.IHiveChainInterface) -> OperationUnion:
+    @overload
+    def to_schemas(
+        self, wax_interface: wax.IHiveChainInterface, expect_type: type[OperationExpectType]
+    ) -> OperationExpectType: ...
+
+    @overload
+    def to_schemas(self, wax_interface: wax.IHiveChainInterface, expect_type: None = None) -> OperationUnion: ...
+
+    def to_schemas(
+        self, wax_interface: wax.IHiveChainInterface, expect_type: type[OperationExpectType] | None = None
+    ) -> OperationExpectType:
         from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
-        wax_transaction = await wax_interface.create_transaction()
-        proto_operations = list(self.wax_operation.finalize(wax_interface))
+        # Create and populate transaction
+        # Unfortunately, tapos has to be set during wax tx initialization
+        wax_transaction = wax_interface.create_transaction_with_tapos("0")
+
+        proto_operations = list(self._wax_operation.finalize(wax_interface))
         assert len(proto_operations) == 1, "A single proto operation was expected when finalizing"
         wax_transaction.push_operation(proto_operations[0])
+
+        # Convert transaction to schemas format used by clive
         schemas_transaction = Transaction.parse_raw(wax_transaction.to_api_json())
-        return schemas_transaction.operations[0].value
+        schemas_operation = schemas_transaction.operations_models[0]
+
+        if expect_type and not isinstance(schemas_operation, expect_type):
+            raise WrongTypeError(expect_type, type(schemas_operation))
+
+        return schemas_operation  # type: ignore[return-value]

@@ -748,3 +748,7 @@ clive/__private/visitors/operation/operation_visitor.py
     DOC101: Method `OperationVisitor._default_visit`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationVisitor._default_visit`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [operation: schemas.OperationUnion].
 --------------------
+clive/exceptions.py
+    DOC101: Method `WrongTypeError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `WrongTypeError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [actual_type: type[Any], expected_type: type[Any]].
+--------------------

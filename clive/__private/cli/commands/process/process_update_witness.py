@@ -82,7 +82,7 @@ class ProcessUpdateWitness(OperationCommand):
         if self._needs_witness_update_operation:
             yield self._create_witness_update_operation()
         if self._needs_witness_set_properties_operation:
-            yield await self._create_witness_set_properties_operation()
+            yield self._create_witness_set_properties_operation()
 
     @override
     async def validate(self) -> None:
@@ -169,7 +169,7 @@ class ProcessUpdateWitness(OperationCommand):
             ),
         )
 
-    async def _create_witness_set_properties_operation(self) -> WitnessSetPropertiesOperation:
+    def _create_witness_set_properties_operation(self) -> WitnessSetPropertiesOperation:
         wrapper = iwax.WaxOperationWrapper.create(
             owner=self.owner,
             key=PublicKey(value=self.witness_ensure.signing_key),
@@ -182,8 +182,4 @@ class ProcessUpdateWitness(OperationCommand):
             account_subsidy_budget=self.account_subsidy_budget,
             account_subsidy_decay=self.account_subsidy_decay,
         )
-        schemas_operation = await wrapper.to_schemas(self.world.wax_interface)
-        assert isinstance(schemas_operation, WitnessSetPropertiesOperation), (
-            "Expected WitnessSetPropertiesOperation from wax operation conversion"
-        )
-        return schemas_operation
+        return wrapper.to_schemas(self.world.wax_interface, WitnessSetPropertiesOperation)
