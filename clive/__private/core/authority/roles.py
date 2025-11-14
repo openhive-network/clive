@@ -9,6 +9,7 @@ from clive.__private.core.authority.entries import (
     AuthorityEntryKeyRegular,
     AuthorityEntryMemo,
 )
+from clive.__private.core.authority.exceptions import EntryNotFoundError
 from clive.__private.core.str_utils import Matchable
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     HiveRoleAuthorityDefinition,
@@ -103,6 +104,12 @@ class AuthorityRoleRegular(AuthorityRoleBase):
 
     def get_entries(self) -> list[AuthorityEntryAccountRegular | AuthorityEntryKeyRegular]:
         return self._account_entries + self._key_entries
+
+    def get_entry(self, value: str) -> AuthorityEntryAccountRegular | AuthorityEntryKeyRegular:
+        for entry in self.all_entries:
+            if entry.value == value:
+                return entry
+        raise EntryNotFoundError(value)
 
     def is_matching_pattern(self, *patterns: str) -> bool:
         """

@@ -407,7 +407,7 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
             )
         elif isinstance(self._role, AuthorityRoleRegular) and not isinstance(entry_to_edit, AuthorityEntryMemo):
             self.app.push_screen(
-                EditRegularEntryDialog(role=self._role, current_entry=entry_to_edit), edit_entry_callback
+                EditRegularEntryDialog(self._role, entry_to_edit), edit_entry_callback
             )
 
     @on(ModifyAuthorityItem.RequestEntryRemoval)
