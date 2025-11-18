@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, override
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli
-from clive.__private.core.constants.cli import (
+from clive.__private.core.constants.authority import (
     DEFAULT_AUTHORITY_THRESHOLD,
     DEFAULT_AUTHORITY_WEIGHT,
 )
