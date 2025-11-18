@@ -7,3 +7,6 @@ from clive.__private.core.types import AuthorityLevel, AuthorityLevelRegular
 AUTHORITY_LEVELS_REGULAR: Final[tuple[AuthorityLevelRegular, ...]] = get_args(AuthorityLevelRegular)
 
 AUTHORITY_LEVELS: Final[tuple[AuthorityLevel, ...]] = get_args(AuthorityLevel)
+
+DEFAULT_AUTHORITY_THRESHOLD: Final[int] = 1
+DEFAULT_AUTHORITY_WEIGHT: Final[int] = 1

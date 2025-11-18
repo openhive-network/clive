@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_THRESHOLD, DEFAULT_AUTHORITY_WEIGHT
+from clive.__private.core.constants.authority import DEFAULT_AUTHORITY_THRESHOLD, DEFAULT_AUTHORITY_WEIGHT
 from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.models.schemas import (
     AccountCreateOperation,
