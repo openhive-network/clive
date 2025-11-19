@@ -46,7 +46,9 @@ class AlarmsStorage:
     def is_alarms_data_available(self) -> bool:
         return self._is_updated
 
-    def _get_or_create_alarm(self, alarms: list[AnyAlarm], alarm_cls: type[AnyAlarm]) -> AnyAlarm:
+    def _get_or_create_alarm[SpecificAlarmT: AnyAlarm](
+        self, alarms: list[AnyAlarm], alarm_cls: type[SpecificAlarmT]
+    ) -> SpecificAlarmT:
         for alarm in alarms:
             if isinstance(alarm, alarm_cls):
                 return alarm

@@ -8,7 +8,6 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.accounts.accounts import TrackedAccount
-from clive.__private.core.alarms.specific_alarms import ChangingRecoveryAccountInProgress
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_timedelta,
@@ -16,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.specific_alarms.changing_recover_account_in_progress import (
+        ChangingRecoveryAccountInProgress,
         ChangingRecoveryAccountInProgressAlarmData,
     )
 
@@ -34,9 +34,6 @@ class ShowPendingChangeRecoveryAccount(WorldBasedCommand):
         await self.world.commands.update_alarms_data(accounts=[account])
 
         alarm = account.alarms.changing_recovery_account_in_progress
-        assert isinstance(alarm, ChangingRecoveryAccountInProgress), (
-            "Field changing_recovery_account_in_progress should be of type ChangingRecoveryAccountInProgress"
-        )
         self._alarm = alarm
 
     async def _run(self) -> None:
