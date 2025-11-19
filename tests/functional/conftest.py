@@ -41,7 +41,7 @@ def logger_configuration_factory() -> Callable[[], None]:
 
 @pytest.fixture
 async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
-    """Tests are remotely connecting to a locally started beekeeper by this fixture."""
+    """CLI tests are remotely connecting to a locally started beekeeper by this fixture."""
     async with await bk.AsyncBeekeeper.factory(
         settings=safe_settings.beekeeper.settings_local_factory()
     ) as beekeeper_cm:
@@ -49,7 +49,7 @@ async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
 
 
 @pytest.fixture
-async def world_with_remote_beekeeper(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
+async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
     token = await (await beekeeper_local.session).token
 
     world = World()
@@ -60,33 +60,32 @@ async def world_with_remote_beekeeper(beekeeper_local: AsyncBeekeeper) -> AsyncG
 
 
 @pytest.fixture
-async def _prepare_profile_and_setup_wallet(world_with_remote_beekeeper: World) -> Profile:
+async def prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
     """Prepare profile and wallets using remote beekeeper."""
-    world = world_with_remote_beekeeper
-    await world.create_new_profile_with_wallets(
+    await world_cli.create_new_profile_with_wallets(
         name=WORKING_ACCOUNT_NAME,
         password=WORKING_ACCOUNT_PASSWORD,
         working_account=WORKING_ACCOUNT_NAME,
         watched_accounts=WATCHED_ACCOUNTS_NAMES,
         known_accounts=KNOWN_ACCOUNT_NAMES,
     )
-    await world.commands.sync_state_with_beekeeper()
-    world.profile.keys.add_to_import(
+    await world_cli.commands.sync_state_with_beekeeper()
+    world_cli.profile.keys.add_to_import(
         PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
     )
-    await world.commands.sync_data_with_beekeeper()
-    await world.commands.save_profile()  # required for saving imported keys aliases
-    return world.profile
+    await world_cli.commands.sync_data_with_beekeeper()
+    await world_cli.commands.save_profile()  # required for saving imported keys aliases
+    return world_cli.profile
 
 
 @pytest.fixture
 async def node(
     node_address_env_context_factory: EnvContextFactory,
-    world_with_remote_beekeeper: World,
-    _prepare_profile_and_setup_wallet: Profile,
+    world_cli: World,
+    prepare_profile_with_wallet_cli: Profile,  # noqa: ARG001
 ) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
-    await world_with_remote_beekeeper.set_address(node.http_endpoint)
+    await world_cli.set_address(node.http_endpoint)
     address = str(node.http_endpoint)
     with node_address_env_context_factory(address):
         yield node
