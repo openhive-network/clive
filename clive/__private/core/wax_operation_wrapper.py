@@ -87,13 +87,12 @@ class WaxOperationWrapper:
 
         # We must specify tapos now, this will be changed with resolving issue https://gitlab.syncad.com/hive/wax/-/issues/128
         wax_transaction = wax_interface.create_transaction_with_tapos("0")
-
-        proto_operations = list(self._wax_operation.finalize(wax_interface))
-        assert len(proto_operations) == 1, "A single proto operation was expected when finalizing"
-        wax_transaction.push_operation(proto_operations[0])
+        wax_transaction.push_operation(self._wax_operation)
 
         schemas_transaction = Transaction.parse_raw(wax_transaction.to_api_json())
-        schemas_operation = schemas_transaction.operations_models[0]
+        schemas_operations = schemas_transaction.operations_models
+        assert len(schemas_operations) == 1, "A single operation was expected"
+        schemas_operation = schemas_operations[0]
 
         if expect_type and not isinstance(schemas_operation, expect_type):
             raise WrongTypeError(expect_type, type(schemas_operation))
