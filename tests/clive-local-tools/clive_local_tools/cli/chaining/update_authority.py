@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from clive.__private.cli.clive_typer import CliveTyper
     from clive.__private.models.schemas import PublicKey
-    from clive_local_tools.cli.command_options import CliOptionT, StringConvertibleOptionTypes
+    from clive_local_tools.cli.command_options import CLIArgumentValue, CLIOptionValue
 
 
 class UpdateAuthority(ChainedCommand):
@@ -100,8 +100,8 @@ class UpdateOwnerAuthority(UpdateAuthority):
         typer: CliveTyper,
         runner: CliRunner,
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
     ) -> None:
         command = ["process", "update-owner-authority"]
         super().__init__(
@@ -115,8 +115,8 @@ class UpdateActiveAuthority(UpdateAuthority):
         typer: CliveTyper,
         runner: CliRunner,
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
     ) -> None:
         command = ["process", "update-active-authority"]
         super().__init__(
@@ -130,8 +130,8 @@ class UpdatePostingAuthority(UpdateAuthority):
         typer: CliveTyper,
         runner: CliRunner,
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
     ) -> None:
         command = ["process", "update-posting-authority"]
         super().__init__(
