@@ -60,13 +60,13 @@ class AuthorityHeader(Horizontal):
 class AuthoritySectionScrollable(SectionScrollable):
     """Base scrollable with common methods for modify authority and authority details."""
 
-    def _mount_no_filter_criteria_match_widget(self) -> None:
+    def mount_no_filter_criteria_match_widget(self) -> None:
         try:
             self.body.query_exactly_one(NoFilterCriteriaMatch)
         except NoMatches:
             self.body.mount(NoFilterCriteriaMatch(items_name="authorities"))
 
-    def _remove_no_filter_criteria_match_widget(self) -> None:
+    def remove_no_filter_criteria_match_widget(self) -> None:
         with contextlib.suppress(NoMatches):
             self.body.query_exactly_one(NoFilterCriteriaMatch).remove()
 

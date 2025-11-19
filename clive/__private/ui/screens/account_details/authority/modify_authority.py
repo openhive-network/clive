@@ -456,23 +456,24 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
             self.modify_total_threshold.edit_button_visible = not new_collapsed_value
 
 
-class WorkingAccountAuthorityScrollable(AuthoritySectionScrollable, CliveWidget):
-    """Custom section scrollable to display and modify authority of working account."""
+class WorkingAccountAuthority(CliveWidget):
+    """Display and modify authority of working account."""
 
-    def __init__(self) -> None:
-        super().__init__("Modify working account authority")
+    def __init__(self, authority: Authority) -> None:
+        super().__init__()
+        self._authority = authority
+
+    @property
+    def authority_section_scrollable(self) -> AuthoritySectionScrollable:
+        return self.query_exactly_one(AuthoritySectionScrollable)
 
     @property
     def role_collapsibles(self) -> DOMQuery[ModifyRole]:
-        return self.body.query(ModifyRole)
+        return self.query(ModifyRole)
 
-    async def build(self, authority: Authority) -> None:
-        await self.body.mount_all([ModifyRole(role) for role in authority.roles])
-
-    async def rebuild(self, authority: Authority) -> None:
-        with self.app.batch_update():
-            await self.body.query("*").remove()
-            await self.build(authority)
+    def compose(self) -> ComposeResult:
+        with AuthoritySectionScrollable("Modify working account authority"):
+            yield from [ModifyRole(role) for role in self._authority.roles]
 
     def filter(self, *filter_patterns: str) -> None:
         """
@@ -491,10 +492,10 @@ class WorkingAccountAuthorityScrollable(AuthoritySectionScrollable, CliveWidget)
 
         is_any_role_collapsible_displayed = any(collapsible.display for collapsible in role_collapsibles)
         if is_any_role_collapsible_displayed:
-            self._remove_no_filter_criteria_match_widget()
+            self.authority_section_scrollable.remove_no_filter_criteria_match_widget()
             return
 
-        self._mount_no_filter_criteria_match_widget()
+        self.authority_section_scrollable.mount_no_filter_criteria_match_widget()
 
     def filter_clear(self) -> None:
         role_collapsibles = list(self.role_collapsibles)
@@ -502,7 +503,7 @@ class WorkingAccountAuthorityScrollable(AuthoritySectionScrollable, CliveWidget)
         for role_collapsible in role_collapsibles:
             role_collapsible.filter_clear()
             role_collapsible.display = True
-        self._remove_no_filter_criteria_match_widget()
+        self.authority_section_scrollable.remove_no_filter_criteria_match_widget()
 
 
 class ModifyAuthority(BaseScreen, OperationActionBindings):
@@ -523,7 +524,7 @@ class ModifyAuthority(BaseScreen, OperationActionBindings):
     def create_main_panel(self) -> ComposeResult:
         restore_button = CliveButton(label="Restore all changes", variant="error", id_="restore-button")
         yield FilterAuthorityContainer(action_button=restore_button)
-        yield WorkingAccountAuthorityScrollable()
+        yield WorkingAccountAuthority(self._authority)
         yield TransactionButtonsPanel()
 
     @property
@@ -531,29 +532,28 @@ class ModifyAuthority(BaseScreen, OperationActionBindings):
         return self.query_exactly_one(FilterAuthority)
 
     @property
-    def working_account_authority_scrollable(self) -> WorkingAccountAuthorityScrollable:
-        return self.query_exactly_one(WorkingAccountAuthorityScrollable)
+    def working_account_authorities(self) -> WorkingAccountAuthority:
+        return self.query_exactly_one(WorkingAccountAuthority)
 
     @on(Mount)
     async def build_modify_working_account_authority_widget(self) -> None:
-        await self.working_account_authority_scrollable.build(self._authority)
         self._update_input_suggestions()
 
     @on(CliveButton.Pressed, "#restore-button")
     async def restore_all_changes(self) -> None:
         self._authority.reset()
         self.filter_authority.apply_default_filter()
-        await self.working_account_authority_scrollable.rebuild(self._authority)
+        await self.working_account_authorities.recompose()
 
     @on(FilterAuthority.AuthorityFilterReady)
     def _apply_authority_filter(self) -> None:
         authority_filter_input = self.filter_authority.authority_filter_input
         filter_pattern = authority_filter_input.value_or_error
-        self.working_account_authority_scrollable.filter(filter_pattern)
+        self.working_account_authorities.filter(filter_pattern)
 
     @on(FilterAuthority.Cleared)
     def _handle_filter_cleared(self) -> None:
-        self.working_account_authority_scrollable.filter_clear()
+        self.working_account_authorities.filter_clear()
 
     @on(CliveInput.Submitted)
     async def _prevent_adding_to_cart_while_filtering(self, event: CliveInput.Submitted) -> None:

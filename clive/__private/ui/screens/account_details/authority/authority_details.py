@@ -133,10 +133,10 @@ class AccountsAuthorities(AuthoritySectionScrollable):
 
         is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
         if is_any_account_collapsible_displayed:
-            self._remove_no_filter_criteria_match_widget()
+            self.remove_no_filter_criteria_match_widget()
             return
 
-        self._mount_no_filter_criteria_match_widget()
+        self.mount_no_filter_criteria_match_widget()
 
     def filter_clear(self) -> None:
         account_collapsibles = list(self.account_collapsibles)
@@ -146,7 +146,7 @@ class AccountsAuthorities(AuthoritySectionScrollable):
                 account_collapsible.filter_clear()
             else:
                 account_collapsible.display = False
-        self._remove_no_filter_criteria_match_widget()
+        self.remove_no_filter_criteria_match_widget()
 
 
 class AccountCollapsible(CliveCollapsible):
