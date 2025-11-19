@@ -26,6 +26,7 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
+from clive.__private.core.constants.cli import DEFAULT_AUTHORITY_THRESHOLD, DEFAULT_AUTHORITY_WEIGHT
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.types import AlreadySignedMode  # noqa: TC001
 
@@ -176,18 +177,6 @@ async def process_account_creation(  # noqa: PLR0913
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """
-    A simple account creation command that allows to create a new account with authority specified via 4 public keys.
-
-    Thresholds and weights have default values of 1 and 1.
-
-    Example:
-    1) positional
-    clive process account-creation --fee <new-account-name> <owner-key> <active-key> <posting-key> <memo-key>
-    2) named options
-    clive process account-creation --fee --new-account-name <new-account-name> --owner <owner-key> \
---active <active-key> --posting <posting-key> --memo <memo-key>
-    """
     # indentation matters in docstring as this is displayed to user as help for cli commands
     from clive.__private.cli.commands.process.process_account_creation import ProcessAccountCreation  # noqa: PLC0415
     from clive.__private.core.keys.keys import PublicKey  # noqa: PLC0415
@@ -220,6 +209,20 @@ async def process_account_creation(  # noqa: PLR0913
     )
     await account_creation_command.run()
 
+process_account_creation.__doc__ = (
+    f"""
+    A simple account creation command that allows to create a new account with authority specified via 4 public keys.
+
+    Thresholds and weights have default values of {DEFAULT_AUTHORITY_THRESHOLD} and {DEFAULT_AUTHORITY_WEIGHT}.
+
+    Example:
+    1) positional
+    clive process account-creation --fee <new-account-name> <owner-key> <active-key> <posting-key> <memo-key>
+    2) named options
+    clive process account-creation --fee --new-account-name <new-account-name> --owner <owner-key> \
+--active <active-key> --posting <posting-key> --memo <memo-key>
+    """
+)
 
 @process.command(name="update-witness")
 async def process_witness_update(  # noqa: PLR0913
