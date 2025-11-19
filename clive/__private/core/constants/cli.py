@@ -6,7 +6,7 @@ HELP_FLAGS: Final[tuple[str, ...]] = ("-h", "--help")
 
 PERFORM_WORKING_ACCOUNT_LOAD: Final[str] = "PERFORM_WORKING_ACCOUNT_LOAD"
 
-REQUIRED_AS_ARG_OR_OPTION: Final[str] = "required as argument or option"
+REQUIRED_AS_ARG_OR_OPTION: Final[str] = "[required as argument or option]"
 
 LOOK_INTO_ARGUMENT_OPTION_HELP: Final[str] = (
     "For more help look into argument description. This option takes precedence over positional argument."
