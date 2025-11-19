@@ -37,5 +37,5 @@ def _append_required_as_arg_or_option(help_message: str) -> str:
     from rich.text import Text  # noqa: PLC0415
     from typer.rich_utils import STYLE_REQUIRED_LONG  # noqa: PLC0415
 
-    postfix = Text(f"[{REQUIRED_AS_ARG_OR_OPTION}]", style=STYLE_REQUIRED_LONG)
+    postfix = Text(REQUIRED_AS_ARG_OR_OPTION, style=STYLE_REQUIRED_LONG)
     return f"{help_message} {postfix.markup}"
