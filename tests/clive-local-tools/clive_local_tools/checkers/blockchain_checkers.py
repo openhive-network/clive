@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 
 import beekeepy.exceptions as bke
 import pytest
-from click.testing import Result
 
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import HbdExchangeRate
+from clive_local_tools.cli.result_wrapper import CLITestResult
 from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
@@ -21,14 +21,14 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import GetTransaction, OperationBase, OperationUnion, Witness
 
 
-def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
-    if isinstance(trx_id_or_result, Result):
+def _ensure_transaction_id(trx_id_or_result: CLITestResult | str) -> str:
+    if isinstance(trx_id_or_result, CLITestResult):
         return get_transaction_id_from_output(trx_id_or_result.stdout)
     return trx_id_or_result
 
 
 def _get_transaction(
-    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool
+    node: tt.RawNode, trx_id_or_result: str | CLITestResult, *, wait_for_the_next_block: bool
 ) -> GetTransaction:
     assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
     transaction_id = _ensure_transaction_id(trx_id_or_result)
@@ -39,7 +39,7 @@ def _get_transaction(
 
 
 def _is_transaction_in_blockchain(
-    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+    node: tt.RawNode, trx_id_or_result: str | CLITestResult, *, wait_for_the_next_block: bool = True
 ) -> bool:
     """Return True if transaction is found in the blockchain, False otherwise."""
     transaction_id = _ensure_transaction_id(trx_id_or_result)
@@ -55,7 +55,7 @@ def _is_transaction_in_blockchain(
 
 
 def assert_transaction_in_blockchain(
-    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+    node: tt.RawNode, trx_id_or_result: str | CLITestResult, *, wait_for_the_next_block: bool = True
 ) -> None:
     if not _is_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block):
         transaction_id = _ensure_transaction_id(trx_id_or_result)
@@ -63,7 +63,7 @@ def assert_transaction_in_blockchain(
 
 
 def assert_transaction_not_in_blockchain(
-    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+    node: tt.RawNode, trx_id_or_result: str | CLITestResult, *, wait_for_the_next_block: bool = True
 ) -> None:
     if _is_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block):
         transaction_id = _ensure_transaction_id(trx_id_or_result)
@@ -72,7 +72,7 @@ def assert_transaction_not_in_blockchain(
 
 def assert_operations_placed_in_blockchain(
     node: tt.RawNode,
-    trx_id_or_result: str | Result,
+    trx_id_or_result: str | CLITestResult,
     *expected_operations: OperationUnion,
     wait_for_the_next_block: bool = True,
 ) -> None:
@@ -95,7 +95,7 @@ def assert_operations_placed_in_blockchain(
 
 def assert_operation_type_in_blockchain(
     node: tt.RawNode,
-    trx_id_or_result: str | Result,
+    trx_id_or_result: str | CLITestResult,
     *expected_types: type[OperationBase],
     wait_for_the_next_block: bool = True,
 ) -> None:

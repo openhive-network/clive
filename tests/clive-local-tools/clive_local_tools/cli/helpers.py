@@ -8,10 +8,10 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from click.testing import Result
+    from clive_local_tools.cli.result_wrapper import CLITestResult
 
 
-def get_transaction_id_from_result(result: Result) -> str:
+def get_transaction_id_from_result(result: CLITestResult) -> str:
     return get_transaction_id_from_output(result.stdout)
 
 

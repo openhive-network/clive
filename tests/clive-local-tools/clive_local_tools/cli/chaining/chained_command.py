@@ -6,9 +6,9 @@ import test_tools as tt
 
 from clive_local_tools.cli.command_options import kwargs_to_cli_options
 from clive_local_tools.cli.exceptions import CLITestCommandError
+from clive_local_tools.cli.result_wrapper import CLITestResult
 
 if TYPE_CHECKING:
-    from click.testing import Result
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
@@ -26,11 +26,11 @@ class ChainedCommand:
         self.__full_command.append(next_command)
         self.__full_command.extend(kwargs_to_cli_options(**cli_options))
 
-    def fire(self) -> Result:
+    def fire(self) -> CLITestResult:
         assert self.__was_invoked is False, f"Command '{self.__full_command}' was already invoked."
         self.__was_invoked = True
         tt.logger.info(f"Executing command {self.__full_command}.")
         result = self.__runner.invoke(self.__typer, self.__full_command)
         if result.exit_code != 0:
             raise CLITestCommandError(self.__full_command, result.exit_code, result.stdout, result)
-        return result
+        return CLITestResult(result, self.__full_command)

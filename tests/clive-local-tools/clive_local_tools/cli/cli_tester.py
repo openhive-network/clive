@@ -12,12 +12,12 @@ from .chaining.update_authority import (
 )
 from .command_options import extract_params, kwargs_to_cli_options, option_to_string
 from .exceptions import CLITestCommandError
+from .result_wrapper import CLITestResult
 
 if TYPE_CHECKING:
     from decimal import Decimal
     from pathlib import Path
 
-    from click.testing import Result
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
@@ -37,14 +37,15 @@ class CLITester:
     def world(self) -> World:
         return self.__world
 
-    def invoke_raw_command(self, command: list[str], password_stdin: str | None = None) -> Result:
+    def invoke_raw_command(self, command: list[str], password_stdin: str | None = None) -> CLITestResult:
         tt.logger.info(f"Executing command {command}.")
-        result = self.__runner.invoke(self.__typer, command, password_stdin)
-        if result.exit_code != 0:
-            raise CLITestCommandError(command, result.exit_code, result.stdout, result)
-        return result
+        click_result = self.__runner.invoke(self.__typer, command, password_stdin)
+        result_wrapper = CLITestResult(click_result, command, password_stdin)
+        if click_result.exit_code != 0:
+            raise CLITestCommandError(command, click_result.exit_code, click_result.stdout, click_result)
+        return result_wrapper
 
-    def show_authority(self, authority: AuthorityLevelRegular, *, account_name: str | None = None) -> Result:
+    def show_authority(self, authority: AuthorityLevelRegular, *, account_name: str | None = None) -> CLITestResult:
         match authority:
             case "owner":
                 return self.show_owner_authority(account_name=account_name)
@@ -82,28 +83,28 @@ class CLITester:
             case _:
                 raise ValueError(f"Unknown authority type: '{authority}'")
 
-    def show_owner_authority(self, *, account_name: str | None = None) -> Result:
+    def show_owner_authority(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "owner-authority"], account_name=account_name)
 
-    def show_active_authority(self, *, account_name: str | None = None) -> Result:
+    def show_active_authority(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "active-authority"], account_name=account_name)
 
-    def show_posting_authority(self, *, account_name: str | None = None) -> Result:
+    def show_posting_authority(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "posting-authority"], account_name=account_name)
 
-    def show_memo_key(self, *, account_name: str | None = None) -> Result:
+    def show_memo_key(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "memo-key"], account_name=account_name)
 
-    def show_pending_withdrawals(self, *, account_name: str | None = None) -> Result:
+    def show_pending_withdrawals(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "pending", "withdrawals"], account_name=account_name)
 
-    def show_balances(self, *, account_name: str | None = None) -> Result:
+    def show_balances(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "balances"], account_name=account_name)
 
-    def show_account(self, *, account_name: str | None = None) -> Result:
+    def show_account(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "account"], account_name=account_name)
 
-    def show_accounts(self) -> Result:
+    def show_accounts(self) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "accounts"])
 
     def process_update_owner_authority(  # noqa: PLR0913
@@ -163,7 +164,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "update-memo-key"],
             **extract_params(locals()),
@@ -181,7 +182,7 @@ class CLITester:
         from_: str | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "savings", "deposit"],
             **extract_params(locals()),
@@ -200,7 +201,7 @@ class CLITester:
         from_: str | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal"],
             **extract_params(locals()),
@@ -215,7 +216,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal-cancel"],
             **extract_params(locals()),
@@ -232,7 +233,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "custom-json"],
             **extract_params(locals()),
@@ -249,22 +250,22 @@ class CLITester:
         save_file: Path | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "transaction"],
             **extract_params(locals()),
         )
 
-    def show_hive_power(self, *, account_name: str | None = None) -> Result:
+    def show_hive_power(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "hive-power"], **extract_params(locals()))
 
-    def show_pending_power_down(self, *, account_name: str | None = None) -> Result:
+    def show_pending_power_down(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "pending", "power-down"], **extract_params(locals()))
 
-    def show_pending_power_ups(self, *, account_name: str | None = None) -> Result:
+    def show_pending_power_ups(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "pending", "power-ups"], **extract_params(locals()))
 
-    def show_pending_removed_delegations(self, *, account_name: str | None = None) -> Result:
+    def show_pending_removed_delegations(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["show", "pending", "removed-delegations"], **extract_params(locals())
         )
@@ -280,7 +281,7 @@ class CLITester:
         save_file: Path | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
     def process_power_down_start(  # noqa: PLR0913
@@ -292,7 +293,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "power-down", "start"], **extract_params(locals()))
 
     def process_power_down_restart(  # noqa: PLR0913
@@ -304,7 +305,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "power-down", "restart"], **extract_params(locals()))
 
     def process_power_down_cancel(
@@ -314,7 +315,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "power-down", "cancel"], **extract_params(locals()))
 
     def process_delegations_set(  # noqa: PLR0913
@@ -328,7 +329,7 @@ class CLITester:
         save_file: Path | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
     def process_delegations_remove(  # noqa: PLR0913
@@ -340,7 +341,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
 
     def process_withdraw_routes_set(  # noqa: PLR0913
@@ -355,7 +356,7 @@ class CLITester:
         save_file: Path | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
     def process_withdraw_routes_remove(  # noqa: PLR0913
@@ -367,10 +368,10 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "remove"], **extract_params(locals()))
 
-    def show_chain(self) -> Result:
+    def show_chain(self) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "chain"])
 
     def __invoke_command_with_options(
@@ -380,7 +381,7 @@ class CLITester:
         password_stdin: str | None = None,
         /,
         **cli_named_args: CliOptionT,
-    ) -> Result:
+    ) -> CLITestResult:
         positional = [option_to_string(arg) for arg in cli_positional_args] if cli_positional_args is not None else []
         full_command = [*command, *positional, *kwargs_to_cli_options(**cli_named_args)]
         return self.invoke_raw_command(full_command, password_stdin)
@@ -396,7 +397,7 @@ class CLITester:
         memo: str | None = None,
         autosign: bool | None = None,
         amount: tt.Asset.HiveT | tt.Asset.HbdT,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "transfer"], **extract_params(locals()))
 
     def configure_key_add(
@@ -404,7 +405,7 @@ class CLITester:
         *,
         key: str,
         alias: str | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "key", "add"], **extract_params(locals()))
 
     def configure_key_remove(
@@ -412,14 +413,14 @@ class CLITester:
         *,
         alias: str,
         from_beekeeper: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
 
     def configure_node_set(
         self,
         *,
         node_address: str,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "node", "set"], **extract_params(locals()))
 
     def unlock(
@@ -427,43 +428,43 @@ class CLITester:
         *,
         profile_name: str | None = None,
         password_stdin: str | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(["unlock"], None, password_stdin, **extract_params(named_params))
 
-    def lock(self) -> Result:
+    def lock(self) -> CLITestResult:
         return self.__invoke_command_with_options(["lock"], **extract_params(locals()))
 
-    def configure_working_account_switch(self, *, account_name: str) -> Result:
+    def configure_working_account_switch(self, *, account_name: str) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["configure", "working-account", "switch"], **extract_params(locals())
         )
 
-    def configure_tracked_account_add(self, *, account_name: str) -> Result:
+    def configure_tracked_account_add(self, *, account_name: str) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "tracked-account", "add"], **extract_params(locals()))
 
-    def configure_tracked_account_remove(self, *, account_name: str) -> Result:
+    def configure_tracked_account_remove(self, *, account_name: str) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["configure", "tracked-account", "remove"], **extract_params(locals())
         )
 
-    def show_profile(self) -> Result:
+    def show_profile(self) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "profile"], **extract_params(locals()))
 
-    def show_profiles(self) -> Result:
+    def show_profiles(self) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "profiles"], **extract_params(locals()))
 
-    def configure_known_account_add(self, *, account_name: str) -> Result:
+    def configure_known_account_add(self, *, account_name: str) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "known-account", "add"], **extract_params(locals()))
 
-    def configure_known_account_remove(self, *, account_name: str) -> Result:
+    def configure_known_account_remove(self, *, account_name: str) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "known-account", "remove"], **extract_params(locals()))
 
-    def configure_known_account_enable(self) -> Result:
+    def configure_known_account_enable(self) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "known-account", "enable"], **extract_params(locals()))
 
-    def configure_known_account_disable(self) -> Result:
+    def configure_known_account_disable(self) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "known-account", "disable"], **extract_params(locals()))
 
     def configure_profile_create(
@@ -471,14 +472,14 @@ class CLITester:
         *,
         profile_name: str | None = None,
         password_stdin: str | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(
             ["configure", "profile", "create"], None, password_stdin, **extract_params(named_params)
         )
 
-    def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> Result:
+    def configure_profile_delete(self, *, profile_name: str, force: bool | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["configure", "profile", "delete"], **extract_params(locals()))
 
     def process_proxy_set(  # noqa: PLR0913
@@ -490,7 +491,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "proxy", "set"], **extract_params(locals()))
 
     def process_proxy_clear(
@@ -501,7 +502,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "proxy", "clear"], **extract_params(locals()))
 
     def process_transfer_schedule_create(  # noqa: PLR0913
@@ -519,7 +520,7 @@ class CLITester:
         memo: str | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "create"], **extract_params(locals())
         )
@@ -539,7 +540,7 @@ class CLITester:
         memo: str | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "modify"], **extract_params(locals())
         )
@@ -554,7 +555,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "transfer-schedule", "remove"], **extract_params(locals())
         )
@@ -567,21 +568,21 @@ class CLITester:
         only_private_key: bool | None = None,
         only_public_key: bool | None = None,
         password_stdin: str | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         named_params = locals()
         named_params.pop("password_stdin")
         return self.__invoke_command_with_options(
             ["generate", "key-from-seed"], None, password_stdin, **extract_params(named_params)
         )
 
-    def generate_public_key(self, *, password_stdin: str | None = None) -> Result:
+    def generate_public_key(self, *, password_stdin: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["generate", "public-key"], None, password_stdin)
 
-    def generate_random_key(self, *, key_pairs: int | None = None) -> Result:
+    def generate_random_key(self, *, key_pairs: int | None = None) -> CLITestResult:
         named_params = locals()
         return self.__invoke_command_with_options(["generate", "random-key"], **extract_params(named_params))
 
-    def generate_secret_phrase(self) -> Result:
+    def generate_secret_phrase(self) -> CLITestResult:
         return self.__invoke_command_with_options(["generate", "secret-phrase"])
 
     def process_claim_new_account_token(  # noqa: PLR0913
@@ -593,7 +594,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "claim", "new-account-token"], **extract_params(locals()))
 
     def process_account_creation(  # noqa: PLR0913
@@ -611,7 +612,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "account-creation"], args, **extract_params(locals(), "args")
         )
@@ -633,7 +634,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         named_params = locals()
         # the actual option names are `--use-witness-key/--use-active-authority`
         if use_witness_key is False:
@@ -641,7 +642,7 @@ class CLITester:
             named_params["use_active_authority"] = True
         return self.__invoke_command_with_options(["process", "update-witness"], **extract_params(named_params))
 
-    def show_pending_change_recovery_account(self, *, account_name: str | None = None) -> Result:
+    def show_pending_change_recovery_account(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["show", "pending", "change-recovery-account"], account_name=account_name
         )
@@ -655,5 +656,5 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
         autosign: bool | None = None,
-    ) -> Result:
+    ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "change-recovery-account"], **extract_params(locals()))
