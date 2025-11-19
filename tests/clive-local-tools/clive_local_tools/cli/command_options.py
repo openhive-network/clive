@@ -14,11 +14,12 @@ from .exceptions import UnsupportedOptionError
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-type StringConvertibleOptionTypes = str | int | Decimal | tt.Asset.AnyT | PublicKey | Path
-type CliOptionT = bool | StringConvertibleOptionTypes | list[StringConvertibleOptionTypes] | None
+type CLIParameterValue = str | int | Decimal | tt.Asset.AnyT | PublicKey | Path
+type CLIArgumentValue = CLIParameterValue
+type CLIOptionValue = bool | CLIParameterValue | list[CLIParameterValue] | None
 
 
-def stringify_parameter_value(value: StringConvertibleOptionTypes) -> str:
+def stringify_parameter_value(value: CLIParameterValue) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, int):
@@ -31,10 +32,10 @@ def stringify_parameter_value(value: StringConvertibleOptionTypes) -> str:
         return value.as_legacy()
     if isinstance(value, PublicKey):
         return str(value)
-    raise UnsupportedOptionError(supported_type=StringConvertibleOptionTypes, actual_type=type(value))
+    raise UnsupportedOptionError(supported_type=CLIParameterValue, actual_type=type(value))
 
 
-def build_cli_options(cli_named_options: Mapping[str, CliOptionT]) -> list[str]:
+def build_cli_options(cli_named_options: Mapping[str, CLIOptionValue]) -> list[str]:
     options: list[str] = []
     for key, value in cli_named_options.items():
         option_name = key.strip("_").replace("_", "-")
@@ -49,7 +50,7 @@ def build_cli_options(cli_named_options: Mapping[str, CliOptionT]) -> list[str]:
     return options
 
 
-def extract_params(params: dict[str, CliOptionT], *param_names_to_drop: str) -> dict[str, CliOptionT]:
+def extract_params(params: dict[str, CLIOptionValue], *param_names_to_drop: str) -> dict[str, CLIOptionValue]:
     # TODO: this should be CLITester instancemethod, not global function
     # deepcopy on self is not possible as it causes CLITester to be copied but it can't be because of Beekeeper
     copied_params = copy(params)

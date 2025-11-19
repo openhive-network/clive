@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from clive.__private.core.types import AlreadySignedMode, AuthorityLevelRegular
     from clive.__private.core.world import World
     from clive.__private.models.schemas import PublicKey
-    from clive_local_tools.cli.command_options import CliOptionT, StringConvertibleOptionTypes
+    from clive_local_tools.cli.command_options import CLIArgumentValue, CLIOptionValue
 
 
 class CLITester:
@@ -404,8 +404,8 @@ class CLITester:
         self,
         command: list[str],
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
         password_stdin: str | None = None,
     ) -> Result:
         positional = (
@@ -658,7 +658,7 @@ class CLITester:
 
     def process_account_creation(  # noqa: PLR0913
         self,
-        *args: StringConvertibleOptionTypes,
+        *args: CLIArgumentValue,
         creator: str | None = None,
         new_account_name: str | None = None,
         fee: bool | None = None,

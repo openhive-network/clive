@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
-    from clive_local_tools.cli.command_options import CliOptionT, StringConvertibleOptionTypes
+    from clive_local_tools.cli.command_options import CLIArgumentValue, CLIOptionValue
 
 
 class ChainedCommand:
@@ -24,8 +24,8 @@ class ChainedCommand:
         runner: CliRunner,
         command: list[str],
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
     ) -> None:
         self.__typer = typer
         self.__runner = runner
@@ -40,8 +40,8 @@ class ChainedCommand:
         self,
         next_command: str,
         *,
-        cli_positional_args: Iterable[StringConvertibleOptionTypes] | None = None,
-        cli_named_options: Mapping[str, CliOptionT] | None = None,
+        cli_positional_args: Iterable[CLIArgumentValue] | None = None,
+        cli_named_options: Mapping[str, CLIOptionValue] | None = None,
     ) -> None:
         self.__full_command.append(next_command)
 
