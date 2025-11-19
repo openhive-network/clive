@@ -262,6 +262,15 @@ testing_cli:
     - export PYTEST_ARGS=(tests/functional/cli -v)
     - !reference [.run-pytest, script]
 
+testing_si:
+  extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
+  script:
+    - echo -e "${TXT_BLUE}Launching script interface tests...${TXT_CLEAR}"
+    - export PYTEST_ARGS=(tests/functional/si -v)
+    - !reference [.run-pytest, script]
+
 testing_password_private_key_logging:
   stage: tests
   needs:
