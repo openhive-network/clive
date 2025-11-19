@@ -60,28 +60,27 @@ def assert_pending_withrawals(
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
 
 
-def get_authority_output(context: CLITester | CLITestResult, authority: AuthorityLevelRegular) -> str:
-    result = context.show_authority(authority) if isinstance(context, CLITester) else context
-    return result.output
+def get_authority_result(context: CLITester | CLITestResult, authority: AuthorityLevelRegular) -> CLITestResult:
+    return context.show_authority(authority) if isinstance(context, CLITester) else context
 
 
 def assert_is_authority(
     context: CLITester | CLITestResult, entry: str | PublicKey, authority: AuthorityLevelRegular
 ) -> None:
-    output = get_authority_output(context, authority)
-    table = output.split("\n")[2:]
+    result = get_authority_result(context, authority)
+    table = result.output.split("\n")[2:]
     assert any(str(entry) in line for line in table), (
-        f"no {entry} entry in show {authority}-authority output:\n{output}"
+        f"no {entry} entry in show {authority}-authority output:\n{result.output}"
     )
 
 
 def assert_is_not_authority(
     context: CLITester | CLITestResult, entry: str | PublicKey, authority: AuthorityLevelRegular
 ) -> None:
-    output = get_authority_output(context, authority)
-    table = output.split("\n")[2:]
+    result = get_authority_result(context, authority)
+    table = result.output.split("\n")[2:]
     assert not any(str(entry) in line for line in table), (
-        f"there is {entry} entry in show {authority}-authority output:\n{output}"
+        f"there is {entry} entry in show {authority}-authority output:\n{result.output}"
     )
 
 
@@ -91,7 +90,8 @@ def assert_authority_weight(
     authority: AuthorityLevelRegular,
     weight: int,
 ) -> None:
-    output = get_authority_output(context, authority)
+    result = get_authority_result(context, authority)
+    output = result.output
     assert any(str(entry) in line and f"{weight}" in line for line in output.split("\n")), (
         f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
     )
@@ -100,24 +100,24 @@ def assert_authority_weight(
 def assert_weight_threshold(
     context: CLITester | CLITestResult, authority: AuthorityLevelRegular, threshold: int
 ) -> None:
-    output = get_authority_output(context, authority)
+    result = get_authority_result(context, authority)
     expected_output = f"weight threshold is {threshold}"
-    command = f"show {authority}-authority"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_memo_key(context: CLITester | CLITestResult, memo_key: PublicKey) -> None:
     result = context.show_memo_key() if isinstance(context, CLITester) else context
-    output = result.output
     expected_output = str(memo_key)
-    command = "show memo-key"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
-def assert_output_contains(expected_output: str, output: str, command: str | None = None) -> None:
-    if command:
+def assert_output_contains(expected_output: str, context: CLITestResult | str) -> None:
+    if isinstance(context, CLITestResult):
+        output = context.output
+        command = context.command
         assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
     else:
+        output = context
         assert expected_output in output, f"expected `{expected_output}` in output:\n{output}"
 
 
@@ -126,16 +126,16 @@ def assert_output_does_not_contain(part: str, output: str) -> None:
 
 
 def assert_no_delegations(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_hive_power)
+    result = _get_result(context, CLITester.show_hive_power)
     expected_output = "no delegations"
-    command = "show hive-power"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_withdraw_routes(
     context: CLITester | CLITestResult, to: str, percent: int, *, auto_vest: bool = False
 ) -> None:
-    output = _get_output(context, CLITester.show_hive_power)
+    result = _get_result(context, CLITester.show_hive_power)
+    output = result.output
     expected_output = str(percent)
     assert any(
         to in line and expected_output in line and humanize_bool(auto_vest) in line for line in output.split("\n")
@@ -144,24 +144,21 @@ def assert_withdraw_routes(
 
 
 def assert_no_withdraw_routes(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_hive_power)
+    result = _get_result(context, CLITester.show_hive_power)
     expected_output = "no withdraw routes"
-    command = "show hive-power"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_no_pending_power_down(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_pending_power_down)
+    result = _get_result(context, CLITester.show_pending_power_down)
     expected_output = "no pending power down"
-    command = "show pending power-down"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_no_pending_power_ups(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_pending_power_ups)
+    result = _get_result(context, CLITester.show_pending_power_ups)
     expected_output = "no pending power ups"
-    command = "show pending power-ups"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_pending_removed_delegations(context: CLITester | CLITestResult, asset: tt.Asset.VestT) -> None:
@@ -169,31 +166,28 @@ def assert_pending_removed_delegations(context: CLITester | CLITestResult, asset
     output = result.output
     expected_output = asset.as_legacy()
     assert any(expected_output in line for line in output.split("\n")), (
-        f"no entry for `{expected_output}` in show pending removed-delegations output:\n{output}"
+        f"no entry for `{expected_output}` in command `{result.command}` output:\n{output}"
     )
 
 
 def assert_no_removed_delegations(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_pending_removed_delegations)
+    result = _get_result(context, CLITester.show_pending_removed_delegations)
     expected_output = "no removed delegations"
-    command = "show pending removed-delegations"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_pending_change_recovery_account(
     context: CLITester | CLITestResult, account_to_recover: str, new_recovery_account_name: str
 ) -> None:
-    output = _get_output(context, CLITester.show_pending_change_recovery_account)
-    command = "show pending change-recovery-account"
-    assert_output_contains(ShowPendingChangeRecoveryAccount._format_table_title(account_to_recover), output, command)
-    assert_output_contains(new_recovery_account_name, output, command)
+    result = _get_result(context, CLITester.show_pending_change_recovery_account)
+    assert_output_contains(ShowPendingChangeRecoveryAccount._format_table_title(account_to_recover), result)
+    assert_output_contains(new_recovery_account_name, result)
 
 
 def assert_no_pending_change_recovery_account(context: CLITester | CLITestResult) -> None:
-    output = _get_output(context, CLITester.show_pending_change_recovery_account)
+    result = _get_result(context, CLITester.show_pending_change_recovery_account)
     expected_output = NO_PENDING_ACCOUNT_RECOVERY_MESSAGE
-    command = "show pending change-recovery-account"
-    assert_output_contains(expected_output, output, command)
+    assert_output_contains(expected_output, result)
 
 
 def assert_exit_code(
@@ -220,26 +214,26 @@ def assert_exit_code(
 
 
 def assert_show_balances_title(context: CLITester | CLITestResult, account_name: str) -> None:
-    output = _get_output(context, CLITester.show_balances)
+    result = _get_result(context, CLITester.show_balances)
     expected_output = f"Balances of `{account_name}` account"
-    assert_output_contains(expected_output, output, "show balances")
+    assert_output_contains(expected_output, result)
 
 
-def _get_output(
+def _get_result(
     context: CLITester | CLITestResult, function: Callable[[CLITester], CLITestResult] | None = None
-) -> str:
+) -> CLITestResult:
     if isinstance(context, CLITester):
         assert function, "`function` must be provided when `context` is `CLITester`"
         result = function(context)
     else:
         result = context
-    return result.output
+    return result
 
 
 def assert_unlocked_profile(context: CLITester | CLITestResult, profile_name: str) -> None:
-    output = _get_output(context, CLITester.show_profile)
+    result = _get_result(context, CLITester.show_profile)
     expected_output = f"Profile name: {profile_name}"
-    assert_output_contains(expected_output, output, "show profile")
+    assert_output_contains(expected_output, result)
 
 
 def assert_locked_profile(cli_tester: CLITester) -> None:
