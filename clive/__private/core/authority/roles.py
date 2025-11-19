@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import TYPE_CHECKING, Literal, cast
 
-from clive.__private.core.authority.authority_compound_regular import AuthorityCompoundRegular
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.authority.entries import (
     AuthorityEntryAccountRegular,
@@ -19,6 +18,7 @@ from wax.complex_operations.role_classes.hive_authority.hive_role_memo_key impor
 if TYPE_CHECKING:
     from clive.__private.core.keys import KeyManager
     from clive.__private.core.types import AuthorityLevel, AuthorityLevelMemo, AuthorityLevelRegular
+    from wax.models.authority import WaxAuthority
 
 WaxRoleRegular = (
     HiveRoleAuthorityDefinition[Literal["owner"]]
@@ -29,13 +29,9 @@ WaxRoleMemo = HiveRoleMemoKeyDefinition
 WaxRole = WaxRoleRegular | WaxRoleMemo
 
 
-class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](AuthorityEntriesHolder, Matchable, ABC):
+class AuthorityRoleBase(AuthorityEntriesHolder, Matchable, ABC):
     def __init__(self, role: WaxRole) -> None:
         self._role = role
-        self._value: T = self._create_value()
-
-    @abstractmethod
-    def _create_value(self) -> T: ...
 
     @property
     def role(self) -> WaxRole:
@@ -54,14 +50,14 @@ class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](Autho
         return False
 
     @property
-    def ensure_memo(self) -> AuthorityEntryMemo:
+    def ensure_memo(self) -> AuthorityRoleMemo:
         assert self.is_memo, "Invalid type of entry."
-        return cast("AuthorityEntryMemo", self)
+        return cast("AuthorityRoleMemo", self)
 
     @property
-    def ensure_regular(self) -> AuthorityCompoundRegular:
+    def ensure_regular(self) -> AuthorityRoleRegular:
         assert not self.is_memo, "Invalid type of entry."
-        return cast("AuthorityCompoundRegular", self)
+        return cast("AuthorityRoleRegular", self)
 
     def is_matching_pattern(self, *patterns: str) -> bool:
         """
@@ -76,9 +72,10 @@ class AuthorityRoleBase[T: (AuthorityCompoundRegular, AuthorityEntryMemo)](Autho
         return any(entry.is_matching_pattern(*patterns) for entry in self.get_entries())
 
 
-class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
-    def __init__(self, role: WaxRoleRegular) -> None:
-        super().__init__(role)
+class AuthorityRoleRegular(AuthorityRoleBase):
+    @property
+    def authority(self) -> WaxAuthority:
+        return self.role.value
 
     @property
     def role(self) -> WaxRoleRegular:
@@ -90,7 +87,36 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
 
     @property
     def weight_threshold(self) -> int:
-        return self._value.weight_threshold
+        return self.authority.weight_threshold
+
+    @property
+    def account_entries(self) -> list[AuthorityEntryAccountRegular]:
+        return [
+            AuthorityEntryAccountRegular(account, weight) for account, weight in self.authority.account_auths.items()
+        ]
+
+    @property
+    def key_entries(self) -> list[AuthorityEntryKeyRegular]:
+        return [AuthorityEntryKeyRegular(key, weight) for key, weight in self.authority.key_auths.items()]
+
+    @property
+    def all_entries(self) -> list[AuthorityEntryAccountRegular | AuthorityEntryKeyRegular]:
+        return self.get_entries()
+
+    def get_entries(self) -> list[AuthorityEntryAccountRegular | AuthorityEntryKeyRegular]:
+        return self.account_entries + self.key_entries
+
+    def is_matching_pattern(self, *patterns: str) -> bool:
+        """
+        Checks if any entry matches given pattern.
+
+        Args:
+            *patterns: Patterns to match against authority entries.
+
+        Returns:
+            True if any entry matches the pattern, False otherwise.
+        """
+        return any(entry_wrapper_object.is_matching_pattern(*patterns) for entry_wrapper_object in self.get_entries())
 
     def sum_weights_of_already_imported_keys(self, keys: KeyManager) -> int:
         """
@@ -103,19 +129,11 @@ class AuthorityRoleRegular(AuthorityRoleBase[AuthorityCompoundRegular]):
             Sum of weights for keys that are present in the key manager and this wrapper object.
 
         """
-        return self._value.sum_weights_of_already_imported_keys(keys)
-
-    def get_entries(self) -> list[AuthorityEntryKeyRegular | AuthorityEntryAccountRegular]:
-        return self._value.get_entries()
-
-    def _create_value(self) -> AuthorityCompoundRegular:
-        return AuthorityCompoundRegular(self.role.value)
+        entries = self.key_entries
+        return sum(entry.weight for entry in entries if entry.public_key in keys)
 
 
-class AuthorityRoleMemo(AuthorityRoleBase[AuthorityEntryMemo]):
-    def __init__(self, role: HiveRoleMemoKeyDefinition) -> None:
-        super().__init__(role)
-
+class AuthorityRoleMemo(AuthorityRoleBase):
     @property
     def role(self) -> WaxRoleMemo:
         return cast("WaxRoleMemo", super().role)
@@ -133,7 +151,4 @@ class AuthorityRoleMemo(AuthorityRoleBase[AuthorityEntryMemo]):
         return True
 
     def get_entries(self) -> list[AuthorityEntryMemo]:
-        return [self._value]
-
-    def _create_value(self) -> AuthorityEntryMemo:
-        return AuthorityEntryMemo(self.role.value)
+        return [AuthorityEntryMemo(self.role.value)]
