@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from clive.__private.cli.exceptions import CLIChangingRecoveryAccountToWarningAccountError
+from clive.__private.cli.exceptions import CLIChangeRecoveryAccountValidationError
 from clive.__private.core.constants.alarms import WARNING_RECOVERY_ACCOUNTS
 from clive.__private.models.schemas import ChangeRecoveryAccountOperation
+from clive.__private.validators.change_recovery_account_validator import ChangeRecoveryAccountValidator
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.checkers import assert_no_pending_change_recovery_account
 from clive_local_tools.cli.exceptions import CLITestCommandError
@@ -63,9 +64,12 @@ async def test_cancel_change_recovery_account(node: tt.RawNode, cli_tester: CLIT
 
 @pytest.mark.parametrize("warning_account", WARNING_RECOVERY_ACCOUNTS)
 async def test_negative_change_to_warning_account(cli_tester: CLITester, warning_account: str) -> None:
+    # ARRANGE
+    reason = ChangeRecoveryAccountValidator.WARNING_RECOVERY_ACCOUNT_FAILURE_DESCRIPTION
+    expected_error_message = get_formatted_error_message(
+        CLIChangeRecoveryAccountValidationError(warning_account, reason)
+    )
+
     # ACT & ASSERT
-    with pytest.raises(
-        CLITestCommandError,
-        match=get_formatted_error_message(CLIChangingRecoveryAccountToWarningAccountError(warning_account)),
-    ):
+    with pytest.raises(CLITestCommandError, match=expected_error_message):
         cli_tester.process_change_recovery_account(new_recovery_account=warning_account)

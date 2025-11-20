@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.cli.exceptions import CLIChangingRecoveryAccountToWarningAccountError
-from clive.__private.core.constants.alarms import WARNING_RECOVERY_ACCOUNTS
+from clive.__private.cli.exceptions import CLIChangeRecoveryAccountValidationError
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.models.schemas import ChangeRecoveryAccountOperation
+from clive.__private.validators.change_recovery_account_validator import ChangeRecoveryAccountValidator
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import ComposeTransaction
@@ -24,6 +25,11 @@ class ProcessChangeRecoveryAccount(OperationCommand):
         )
 
     async def validate(self) -> None:
-        if self.new_recovery_account in WARNING_RECOVERY_ACCOUNTS:
-            raise CLIChangingRecoveryAccountToWarningAccountError(self.new_recovery_account)
+        new_recovery_account = self.new_recovery_account
+        validation_result = ChangeRecoveryAccountValidator().validate(new_recovery_account)
+        if not validation_result.is_valid:
+            raise CLIChangeRecoveryAccountValidationError(
+                new_recovery_account, humanize_validation_result(validation_result)
+            )
+
         await super().validate()
