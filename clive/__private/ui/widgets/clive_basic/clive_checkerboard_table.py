@@ -392,7 +392,7 @@ class CliveCheckerboardTable(CliveWidget):
         rows = self._create_table_rows(content)
 
         if not rows:
-            return [self._get_no_content_available_widget()]
+            return [self.get_no_content_available_widget()]
 
         if self._title is None:
             return [self._header, *rows]
@@ -422,7 +422,7 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidStaticDefinedError
         return []
 
-    def _get_no_content_available_widget(self) -> Widget:
+    def get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
     def check_if_should_be_updated(self, content: ContentT) -> bool:  # noqa: ARG002
