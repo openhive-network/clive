@@ -30,7 +30,8 @@ class ChainedCommand:
         assert self.__was_invoked is False, f"Command '{self.__full_command}' was already invoked."
         self.__was_invoked = True
         tt.logger.info(f"Executing command {self.__full_command}.")
-        result = self.__runner.invoke(self.__typer, self.__full_command)
-        if result.exit_code != 0:
-            raise CLITestCommandError(self.__full_command, result.exit_code, result.stdout, result)
-        return CLITestResult(result, self.__full_command)
+        click_result = self.__runner.invoke(self.__typer, self.__full_command)
+        result = CLITestResult(click_result, self.__full_command)
+        if click_result.exit_code != 0:
+            raise CLITestCommandError(result)
+        return result

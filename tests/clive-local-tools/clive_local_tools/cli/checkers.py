@@ -189,20 +189,18 @@ def assert_no_pending_change_recovery_account(context: CLITester | CLITestResult
 
 
 def assert_exit_code(
-    result: CLITestResult | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int
+    context: CLITestResult | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int
 ) -> None:
-    if isinstance(result, CLITestResult):
+    if isinstance(context, CLITestResult):
+        result = context
         actual_exit_code = result.exit_code
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n{result.info}"
-    elif isinstance(result, pytest.ExceptionInfo):
-        click_result = result.value.click_result
-        actual_exit_code = click_result.exit_code
-        message = (
-            f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n"
-            f"Output:\n{click_result.output}"
-        )
+    elif isinstance(context, pytest.ExceptionInfo):
+        result = context.value.result
+        actual_exit_code = result.exit_code
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n{result.info}"
     else:
-        actual_exit_code = result
+        actual_exit_code = context
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
 
     assert actual_exit_code == expected_exit_code, message

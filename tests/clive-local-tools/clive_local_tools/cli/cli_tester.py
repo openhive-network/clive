@@ -42,7 +42,7 @@ class CLITester:
         click_result = self.__runner.invoke(self.__typer, command, password_stdin)
         result_wrapper = CLITestResult(click_result, command, password_stdin)
         if click_result.exit_code != 0:
-            raise CLITestCommandError(command, click_result.exit_code, click_result.stdout, click_result)
+            raise CLITestCommandError(result_wrapper)
         return result_wrapper
 
     def show_authority(self, authority: AuthorityLevelRegular, *, account_name: str | None = None) -> CLITestResult:

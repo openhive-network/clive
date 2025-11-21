@@ -1,32 +1,19 @@
 from __future__ import annotations
 
-import traceback
 from typing import TYPE_CHECKING, TypeAlias, get_args
 
 import test_tools as tt
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
-    from click.testing import Result
+    from clive_local_tools.cli.result_wrapper import CLITestResult
 
 
 class CLITestCommandError(AssertionError):
-    def __init__(self, command: list[str], exit_code: int, stdout: str, click_result: Result) -> None:
-        message = f"Command {command} failed because of {exit_code=}.\n\nOutput:\n{stdout}"
-        if click_result.exception:
-            assert click_result.exc_info is not None, "exc_info should be set when exception is set."
-            tb: TracebackType = click_result.exc_info[2]
-            tb_formatted = "".join(traceback.format_tb(tb))
-            message += f"\nException:\n{click_result.exception!r}\n\nTraceback:\n{tb_formatted}"
-
+    def __init__(self, result: CLITestResult) -> None:
+        message = f"Command failed\n\n{result.info}"
         tt.logger.error(message)
         super().__init__(message)
-
-        self.command = command
-        self.exit_code = exit_code
-        self.stdout = stdout
-        self.click_result = click_result
+        self.result = result
 
 
 class UnsupportedOptionError(Exception):
