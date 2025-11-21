@@ -26,6 +26,7 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
+from clive.__private.cli.process.voting_rights import voting_rights
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.types import AlreadySignedMode  # noqa: TC001
 
@@ -49,6 +50,7 @@ process.add_typer(power_up)
 process.add_typer(withdraw_routes)
 process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
+process.add_typer(voting_rights)
 
 
 @process.command(name="transfer")

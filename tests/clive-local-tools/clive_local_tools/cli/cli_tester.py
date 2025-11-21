@@ -658,3 +658,27 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "change-recovery-account"], **extract_params(locals()))
+
+    def process_voting_rights_decline(
+        self,
+        *,
+        account_name: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "voting-rights", "decline"], **extract_params(locals()))
+
+    def process_voting_rights_cancel_decline(
+        self,
+        *,
+        account_name: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "voting-rights", "cancel-decline"], **extract_params(locals())
+        )

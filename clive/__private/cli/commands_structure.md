@@ -78,6 +78,10 @@ flowchart LR
 
         Process --> ProcessCustomJson(custom-json)
         Process --> ProcessChangeRecoveryAccount(change-recovery-account)
+
+        Process --> ProcessVotingRights(voting-rights)
+        ProcessVotingRights --> ProcessVotingRightsDecline[decline]
+        ProcessVotingRights --> ProcessVotingRightsCancelDecline[cancel-decline]
     end
 
     subgraph Presentation[Commands related to the presentation of the data]

@@ -197,6 +197,12 @@ clive/__private/cli/process/vote_witness.py
     DOC101: Function `process_vote_witness_remove`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_vote_witness_remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None, witness_name: str].
 --------------------
+clive/__private/cli/process/voting_rights.py
+    DOC101: Function `process_voting_rights_decline`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_voting_rights_decline`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool, save_file: str | None, sign_with: str | None].
+    DOC101: Function `process_voting_rights_cancel_decline`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_voting_rights_cancel_decline`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool, save_file: str | None, sign_with: str | None].
+--------------------
 clive/__private/cli/show/main.py
     DOC101: Function `show_balances`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_balances`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
