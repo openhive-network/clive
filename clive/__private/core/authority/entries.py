@@ -25,15 +25,19 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
 
     @property
     def is_weighted(self) -> bool:
-        return False
+        return isinstance(self, AuthorityWeightedEntryBase)
 
     @property
     def is_key(self) -> bool:
-        return False
+        return isinstance(self, AuthorityEntryKeyBase)
+
+    @property
+    def is_key_regular(self) -> bool:
+        return isinstance(self, AuthorityEntryKeyRegular)
 
     @property
     def is_account(self) -> bool:
-        return False
+        return isinstance(self, AuthorityEntryAccountRegular)
 
     @property
     def ensure_weighted(self) -> AuthorityWeightedEntryBase:
@@ -46,9 +50,19 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
         return cast("AuthorityEntryKeyBase", self)
 
     @property
+    def ensure_key_regular(self) -> AuthorityEntryKeyRegular:
+        assert self.is_key_regular, "Invalid type of entry."
+        return cast("AuthorityEntryKeyRegular", self)
+
+    @property
     def ensure_account(self) -> AuthorityEntryAccountRegular:
         assert self.is_account, "Invalid type of entry."
         return cast("AuthorityEntryAccountRegular", self)
+
+    @property
+    def ensure_regular(self) -> AuthorityEntryAccountRegular | AuthorityEntryKeyRegular:
+        assert self.is_account or self.is_key_regular, "Invalid type of entry."
+        return cast("AuthorityEntryAccountRegular | AuthorityEntryKeyRegular", self)
 
     def get_entries(self) -> list[Self]:
         return [self]
@@ -80,10 +94,6 @@ class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):
         self._initial_weight = initial_weight if initial_weight else weight
 
     @property
-    def is_weighted(self) -> bool:
-        return True
-
-    @property
     def weight(self) -> int:
         return self._weight
 
@@ -98,10 +108,6 @@ class AuthorityEntryKeyBase(AuthorityEntryBase, ABC):
 
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(self._public_key.value, *args, **kwargs)
-
-    @property
-    def is_key(self) -> bool:
-        return True
 
     @property
     def public_key(self) -> PublicKey:
@@ -123,10 +129,6 @@ class AuthorityEntryAccountRegular(AuthorityWeightedEntryBase):
         self, account_name: str, weight: int, initial_account_name: str | None = None, initial_weight: int | None = None
     ) -> None:
         super().__init__(account_name, weight, initial_account_name, initial_weight)
-
-    @property
-    def is_account(self) -> bool:
-        return True
 
 
 class AuthorityEntryKeyRegular(AuthorityEntryKeyBase, AuthorityWeightedEntryBase):

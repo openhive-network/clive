@@ -12,7 +12,6 @@ from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Label
 
-from clive.__private.core.authority import Authority, AuthorityRoleMemo, AuthorityRoleRegular
 from clive.__private.core.authority.entries import (
     AuthorityEntryAccountRegular,
     AuthorityEntryKeyRegular,
@@ -62,6 +61,7 @@ if TYPE_CHECKING:
     from textual.css.query import DOMQuery
     from textual.widget import Widget
 
+    from clive.__private.core.authority import Authority, AuthorityRoleMemo, AuthorityRoleRegular
     from clive.__private.models.schemas import AccountUpdate2Operation
 
 
@@ -421,19 +421,22 @@ class ModifyRole(AuthorityRoleCollapsibleBase):
         """
 
         async def edit_entry_callback(
-            entry_with_new_values: AuthorityEntryAccountRegular | AuthorityEntryKeyRegular | AuthorityEntryMemo | None,
+            edited_entry: AuthorityEntryAccountRegular | AuthorityEntryKeyRegular | AuthorityEntryMemo | None,
         ) -> None:
-            if entry_with_new_values is None:
+            if edited_entry is None:
                 return
 
-            await self.authority_table.edit_entry(entry_to_edit, entry_with_new_values)
+            await self.authority_table.edit_entry(entry_to_edit, edited_entry)
 
         entry_to_edit = event.entry
 
-        if isinstance(self._role, AuthorityRoleMemo):
-            self.app.push_screen(EditMemoEntryDialog(self._role), edit_entry_callback)
-        elif isinstance(self._role, AuthorityRoleRegular) and not isinstance(entry_to_edit, AuthorityEntryMemo):
-            self.app.push_screen(EditRegularEntryDialog(self._role, entry_to_edit), edit_entry_callback)
+        if self._role.is_memo:
+            self.app.push_screen(EditMemoEntryDialog(self._role.ensure_memo), edit_entry_callback)
+            return
+
+        self.app.push_screen(
+            EditRegularEntryDialog(self._role.ensure_regular, entry_to_edit.ensure_regular), edit_entry_callback
+        )
 
     @on(ModifyAuthorityItem.RequestEntryRemoval)
     async def remove_entry(self, event: ModifyAuthorityItem.RequestEntryRemoval) -> None:

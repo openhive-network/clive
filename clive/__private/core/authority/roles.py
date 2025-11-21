@@ -48,11 +48,11 @@ class AuthorityRoleBase(AuthorityEntriesHolder, Matchable, ABC):
 
     @property
     def is_memo(self) -> bool:
-        return False
+        return isinstance(self, AuthorityRoleMemo)
 
     @property
     def is_regular(self) -> bool:
-        return False
+        return isinstance(self, AuthorityRoleRegular)
 
     @property
     def is_changed(self) -> bool:
@@ -89,10 +89,6 @@ class AuthorityRoleRegular(AuthorityRoleBase):
     @property
     def role(self) -> WaxRoleRegular:
         return cast("WaxRoleRegular", super().role)
-
-    @property
-    def is_regular(self) -> bool:
-        return True
 
     @property
     def level(self) -> AuthorityLevelRegular:
@@ -195,10 +191,6 @@ class AuthorityRoleMemo(AuthorityRoleBase):
     @property
     def level_display(self) -> str:
         return "memo key"
-
-    @property
-    def is_memo(self) -> bool:
-        return True
 
     def set(self, public_key: str) -> None:
         self.role.set(public_key)
