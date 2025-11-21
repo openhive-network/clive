@@ -11,9 +11,11 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.print_cli import print_cli
+from clive.__private.cli.styling import colorize_error
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
     humanize_asset,
+    humanize_bool,
     humanize_datetime,
     humanize_hive_power_with_comma,
     humanize_manabar_regeneration_time,
@@ -61,6 +63,7 @@ class ShowAccount(WorldBasedCommand):
         general_info_table.add_column("", justify="right", style="green", no_wrap=True)
 
         account_type = self._get_account_type_name()
+        has_voting_rights = self._account_data.has_voting_rights
 
         if account_type:
             general_info_table.add_row("Account type", account_type)
@@ -69,6 +72,8 @@ class ShowAccount(WorldBasedCommand):
         general_info_table.add_row("Number of new account token", str(self._account_data.pending_claimed_accounts))
         general_info_table.add_row("Number of alarms", str(len(self._account_alarms.harmful_alarms)))
         general_info_table.add_row("Recovery account", self._create_recovery_account_text())
+        if not has_voting_rights:
+            general_info_table.add_row("Voting rights", colorize_error(humanize_bool(has_voting_rights)))
         return general_info_table
 
     def _create_balance_table(self) -> Table:

@@ -154,6 +154,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                     if info.rc
                     else DisabledAPI(missing_api="rc_api")
                 ),
+                has_voting_rights=info.core.can_vote,
             )
 
         return gdpo

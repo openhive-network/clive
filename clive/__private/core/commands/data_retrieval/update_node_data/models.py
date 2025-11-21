@@ -56,6 +56,7 @@ class NodeData:
     vote_manabar: Manabar
     downvote_manabar: Manabar
     rc_manabar: Manabar | DisabledAPI
+    has_voting_rights: bool
 
     @property
     def is_rc_api_missing(self) -> bool:
