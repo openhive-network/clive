@@ -682,3 +682,8 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["process", "voting-rights", "cancel-decline"], **extract_params(locals())
         )
+
+    def show_pending_decline_voting_rights(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["show", "pending", "decline-voting-rights"], account_name=account_name
+        )

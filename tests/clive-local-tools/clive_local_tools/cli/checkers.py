@@ -8,6 +8,10 @@ from clive.__private.cli.commands.show.show_pending_change_recovery_account impo
     NO_PENDING_ACCOUNT_RECOVERY_MESSAGE,
     ShowPendingChangeRecoveryAccount,
 )
+from clive.__private.cli.commands.show.show_pending_decline_voting_rights import (
+    NO_PENDING_DECLINE_VOTING_RIGHTS_MESSAGE,
+    ShowPendingDeclineVotingRights,
+)
 from clive.__private.cli.exceptions import CLINoProfileUnlockedError
 from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.models.transaction import Transaction
@@ -185,6 +189,18 @@ def assert_pending_change_recovery_account(
 def assert_no_pending_change_recovery_account(context: CLITester | CLITestResult) -> None:
     result = _get_result(context, CLITester.show_pending_change_recovery_account)
     expected_output = NO_PENDING_ACCOUNT_RECOVERY_MESSAGE
+    assert_output_contains(expected_output, result)
+
+
+def assert_pending_decline_voting_rights(context: CLITester | CLITestResult, account: str) -> None:
+    result = _get_result(context, CLITester.show_pending_decline_voting_rights)
+    assert_output_contains(ShowPendingDeclineVotingRights._format_table_title(account), result)
+    assert_output_contains(account, result)
+
+
+def assert_no_pending_decline_voting_rights(context: CLITester | CLITestResult) -> None:
+    result = _get_result(context, CLITester.show_pending_decline_voting_rights)
+    expected_output = NO_PENDING_DECLINE_VOTING_RIGHTS_MESSAGE
     assert_output_contains(expected_output, result)
 
 

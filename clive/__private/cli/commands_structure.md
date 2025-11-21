@@ -126,6 +126,7 @@ flowchart LR
         ShowPending --> ShowPendingPowerUps[power-ups]
         ShowPending --> ShowPendingRemovedDelegations[removed-delegations]
         ShowPending --> ShowPendingTransferFromSavings[withdrawals]
+        ShowPending --> ShowPendingDeclineVotingRights[decline-voting-rights]
 
         Show --> ShowTransferSchedule[transfer-schedule]
 

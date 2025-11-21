@@ -74,3 +74,18 @@ async def show_pending_change_recovery_account(
     await ShowPendingChangeRecoveryAccount(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
+
+
+@pending.command(name="decline-voting-rights")
+async def show_pending_decline_voting_rights(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """List pending requests to decline voting rights for content, witnesses, and proposals."""
+    from clive.__private.cli.commands.show.show_pending_decline_voting_rights import (  # noqa: PLC0415
+        ShowPendingDeclineVotingRights,
+    )
+
+    await ShowPendingDeclineVotingRights(
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
+    ).run()
