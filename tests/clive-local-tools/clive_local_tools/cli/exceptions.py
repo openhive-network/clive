@@ -12,13 +12,13 @@ if TYPE_CHECKING:
 
 
 class CLITestCommandError(AssertionError):
-    def __init__(self, command: list[str], exit_code: int, stdout: str, result: Result) -> None:
+    def __init__(self, command: list[str], exit_code: int, stdout: str, click_result: Result) -> None:
         message = f"Command {command} failed because of {exit_code=}.\n\nOutput:\n{stdout}"
-        if result.exception:
-            assert result.exc_info is not None, "exc_info should be set when exception is set."
-            tb: TracebackType = result.exc_info[2]
+        if click_result.exception:
+            assert click_result.exc_info is not None, "exc_info should be set when exception is set."
+            tb: TracebackType = click_result.exc_info[2]
             tb_formatted = "".join(traceback.format_tb(tb))
-            message += f"\nException:\n{result.exception!r}\n\nTraceback:\n{tb_formatted}"
+            message += f"\nException:\n{click_result.exception!r}\n\nTraceback:\n{tb_formatted}"
 
         tt.logger.error(message)
         super().__init__(message)
@@ -26,7 +26,7 @@ class CLITestCommandError(AssertionError):
         self.command = command
         self.exit_code = exit_code
         self.stdout = stdout
-        self.result = result
+        self.click_result = click_result
 
 
 class UnsupportedOptionError(Exception):

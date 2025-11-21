@@ -42,11 +42,11 @@ def assert_balances(
 ) -> None:
     result = context.show_balances(account_name=account_name) if isinstance(context, CLITester) else context
     output = result.output
-    assert account_name in output, f"no balances of {account_name} account in balances output: {output}"
+    assert account_name in output, f"no balances of {account_name} account in balances\n{result.info}"
     assert any(
         asset_amount.token() in line and asset_amount.pretty_amount() in line and balance in line
         for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()}  in balances output:\n{output}"
+    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in balances\n{result.info}"
 
 
 def assert_pending_withrawals(
@@ -57,7 +57,7 @@ def assert_pending_withrawals(
     assert any(
         account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
         for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
+    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals\n{result.info}"
 
 
 def get_authority_result(context: CLITester | CLITestResult, authority: AuthorityLevelRegular) -> CLITestResult:
@@ -69,9 +69,7 @@ def assert_is_authority(
 ) -> None:
     result = get_authority_result(context, authority)
     table = result.output.split("\n")[2:]
-    assert any(str(entry) in line for line in table), (
-        f"no {entry} entry in show {authority}-authority output:\n{result.output}"
-    )
+    assert any(str(entry) in line for line in table), f"no {entry} entry in show {authority}-authority\n{result.info}"
 
 
 def assert_is_not_authority(
@@ -80,7 +78,7 @@ def assert_is_not_authority(
     result = get_authority_result(context, authority)
     table = result.output.split("\n")[2:]
     assert not any(str(entry) in line for line in table), (
-        f"there is {entry} entry in show {authority}-authority output:\n{result.output}"
+        f"there is {entry} entry in show {authority}-authority\n{result.info}"
     )
 
 
@@ -93,7 +91,7 @@ def assert_authority_weight(
     result = get_authority_result(context, authority)
     output = result.output
     assert any(str(entry) in line and f"{weight}" in line for line in output.split("\n")), (
-        f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
+        f"no {entry} entry with weight {weight} in show {authority}-authority\n{result.info}"
     )
 
 
@@ -113,9 +111,9 @@ def assert_memo_key(context: CLITester | CLITestResult, memo_key: PublicKey) -> 
 
 def assert_output_contains(expected_output: str, context: CLITestResult | str) -> None:
     if isinstance(context, CLITestResult):
-        output = context.output
-        command = context.command
-        assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
+        result = context
+        output = result.output
+        assert expected_output in output, f"expected `{expected_output}` in output, result info\n{result.info}"
     else:
         output = context
         assert expected_output in output, f"expected `{expected_output}` in output:\n{output}"
@@ -140,7 +138,7 @@ def assert_withdraw_routes(
     assert any(
         to in line and expected_output in line and humanize_bool(auto_vest) in line for line in output.split("\n")
     ), f"no withdraw route for `{to}` with percent `{expected_output}`"
-    f" and `{auto_vest=}`in show hive-power output:\n{output}"
+    f" and `{auto_vest=}`in show hive-power\n{result.info}"
 
 
 def assert_no_withdraw_routes(context: CLITester | CLITestResult) -> None:
@@ -166,7 +164,7 @@ def assert_pending_removed_delegations(context: CLITester | CLITestResult, asset
     output = result.output
     expected_output = asset.as_legacy()
     assert any(expected_output in line for line in output.split("\n")), (
-        f"no entry for `{expected_output}` in command `{result.command}` output:\n{output}"
+        f"no entry for `{expected_output}` in pending delegations\n{result.info}"
     )
 
 
@@ -195,16 +193,13 @@ def assert_exit_code(
 ) -> None:
     if isinstance(result, CLITestResult):
         actual_exit_code = result.exit_code
-        message = (
-            f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n"
-            f"Output:\n{result.output}"
-        )
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n{result.info}"
     elif isinstance(result, pytest.ExceptionInfo):
-        command_result = result.value.result
-        actual_exit_code = command_result.exit_code
+        click_result = result.value.click_result
+        actual_exit_code = click_result.exit_code
         message = (
             f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n"
-            f"Output:\n{command_result.output}"
+            f"Output:\n{click_result.output}"
         )
     else:
         actual_exit_code = result

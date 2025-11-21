@@ -19,7 +19,7 @@ class CLITestResult:
 
     @property
     def info(self) -> str:
-        f"The exit code of the command `{self.command}` was: {self.exit_code}.\nOutput:\n{self.output}"
+        return f"The exit code of the command `{self.command}` was: {self.exit_code}.\nOutput:\n{self.output}"
 
     @property
     def output(self) -> str:
