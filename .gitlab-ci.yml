@@ -281,20 +281,11 @@ test_async_hived:
   stage: tests
   extends: .testing
   variables:
-    PYTEST_TIMEOUT_MINUTES: 10
-    PYTEST_JUNIT_REPORT: "$CI_PROJECT_DIR/report.xml"
+    PYTEST_TIMEOUT_MINUTES: 5
   script:
     - echo -e "${TXT_BLUE}Launching async hived tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(
-      --ignore tests/tui --ignore tests/functional --ignore tests/unit
-      -v
-      )
+    - export PYTEST_ARGS=(tests/async_hived -v)
     - !reference [ .run-pytest, script ]
-  artifacts:
-    when: always
-    expire_in: 1 week
-    reports:
-      junit: $CI_PROJECT_DIR/report.xml
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
