@@ -282,12 +282,11 @@ test_async_hived:
   extends: .testing
   variables:
     PYTEST_TIMEOUT_MINUTES: 10
-    HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
     PYTEST_JUNIT_REPORT: "$CI_PROJECT_DIR/report.xml"
   script:
     - echo -e "${TXT_BLUE}Launching async hived tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(
-      --ignore tests/tui --ignore tests/functional --ignore tests/unit --hived-http-endpoint ${HIVED_HTTP_ENDPOINT}
+      --ignore tests/tui --ignore tests/functional --ignore tests/unit
       -v
       )
     - !reference [ .run-pytest, script ]
