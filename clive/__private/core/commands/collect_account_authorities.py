@@ -11,9 +11,13 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class CollectAccountAuthorities(CommandWithResult[WaxAccountAuthorityInfo | list[WaxAccountAuthorityInfo]]):
+class CollectAccountAuthorities(CommandWithResult[list[WaxAccountAuthorityInfo]]):
     wax_interface: IHiveChainInterface
     account: str
 
     async def _execute(self) -> None:
-        self._result = await self.wax_interface.collect_account_authorities(self.account)
+        wax_result = await self.wax_interface.collect_account_authorities(self.account)
+        if isinstance(wax_result, WaxAccountAuthorityInfo):
+            self._result = [wax_result]
+        else:
+            self._result = wax_result

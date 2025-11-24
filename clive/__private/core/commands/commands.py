@@ -669,7 +669,7 @@ class Commands[WorldT: World]:
 
     async def collect_account_authorities(
         self, *, account_name: str
-    ) -> CommandWithResultWrapper[WaxAccountAuthorityInfo | list[WaxAccountAuthorityInfo]]:
+    ) -> CommandWithResultWrapper[list[WaxAccountAuthorityInfo]]:
         from clive.__private.core.commands.collect_account_authorities import CollectAccountAuthorities  # noqa: PLC0415
 
         return await self.__surround_with_exception_handlers(
