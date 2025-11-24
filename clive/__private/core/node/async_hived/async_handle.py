@@ -9,8 +9,8 @@ from beekeepy.handle.remote import (
     RemoteHandleSettings,
 )
 
-from clive.__private.core.commands.data_retrieval.async_hived.api.api_collection import HivedAsyncApiCollection
-from clive.__private.core.commands.data_retrieval.async_hived.common_helpers import HiveHandleCommonHelpers
+from clive.__private.core.node.async_hived.api.api_collection import HivedAsyncApiCollection
+from clive.__private.core.node.async_hived.common_helpers import HiveHandleCommonHelpers
 from wax.helpy._interfaces.time import Time
 from wax.helpy.exceptions import BlockWaitTimeoutError
 

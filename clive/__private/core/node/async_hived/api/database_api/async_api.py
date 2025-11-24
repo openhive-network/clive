@@ -5,7 +5,7 @@ from typing import Literal
 
 from beekeepy.handle.remote import AbstractAsyncApi
 
-from clive.__private.core.commands.data_retrieval.async_hived.api.database_api.common import DatabaseApiCommons
+from clive.__private.core.node.async_hived.api.database_api.common import DatabaseApiCommons
 from schemas.apis import database_api
 from schemas.transaction import Transaction
 from wax.helpy._interfaces.asset import Hf26Asset

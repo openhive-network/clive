@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from beekeepy.settings import RemoteHandleSettings
 
-from clive.__private.core.commands.data_retrieval.async_hived.async_handle import AsyncHived
+from clive.__private.core.node.async_hived.async_handle import AsyncHived
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator

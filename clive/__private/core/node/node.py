@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 
 import beekeepy.exceptions as bke
 
-from clive.__private.core.commands.data_retrieval.async_hived.async_handle import AsyncHived
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
+from clive.__private.core.node.async_hived.async_handle import AsyncHived
 from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:

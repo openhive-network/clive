@@ -6,7 +6,7 @@ import pytest
 from beekeepy.exceptions import CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.async_hived.async_handle import AsyncHived
+    from clive.__private.core.node.async_hived.async_handle import AsyncHived
 
 
 async def test_async_batch_node(async_node: AsyncHived) -> None:

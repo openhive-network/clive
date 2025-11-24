@@ -162,7 +162,7 @@ convention = "google"
     "S602", # Check for method calls that initiate a subprocess with a shell.; in tests this is not a security issue
     "S605", # Checks for calls that start a process with a shell, providing guidance on whether the usage is safe or not; in tests this is not a security issue
 ]
-"clive/__private/core/commands/data_retrieval/async_hived/**" = [
+"clive/__private/core/node/async_hived/**" = [
     "TC001", # Models the hived responses cannot be placed under TYPE_CHECKING
     "PLR0913", # Too many arguments in function definition; too restrictive
     "FBT001", # json_rpc api is accepting just positional arguments
