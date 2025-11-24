@@ -422,6 +422,21 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidStaticDefinedError
         return []
 
+    def add_row(self, row_to_add: CliveCheckerboardTableRow) -> None:
+        is_no_content_available_mounted = bool(self.query(NoContentAvailable))
+        if is_no_content_available_mounted:
+            self.rows.remove()
+            self.mount(self._header)
+        self.mount(row_to_add)
+
+    async def remove_row(self, row_index: int) -> None:
+        assert 0 <= row_index < len(self.rows), "Row index out of range."
+        row_to_remove = self.rows[row_index]
+        await row_to_remove.remove()
+        if len(self.rows) == 0:
+            self._header.remove()
+            self.mount(self._get_no_content_available_widget())
+
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
