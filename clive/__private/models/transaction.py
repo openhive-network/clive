@@ -5,6 +5,8 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.models.schemas import (
+    AccountUpdate2Operation,
+    AccountUpdateOperation,
     HiveDateTime,
     OperationRepresentationUnion,
     OperationUnion,
@@ -142,6 +144,36 @@ class Transaction(SchemasTransaction):
         visitor = PotentialKnownAccountCollector()
         self.accept(visitor)
         return visitor.get_unknown_accounts(already_known_accounts)
+
+    def has_authority_update_operation(self, account_name: str) -> bool:
+        """
+        Check if the transaction contains any operation that modifies authority.
+
+        Args:
+            account_name: Name of the account to check for authority modification.
+
+        Returns:
+            True if any of operations are present in transaction, False otherwise.
+        """
+        return any(
+            isinstance(operation, (AccountUpdate2Operation, AccountUpdateOperation))
+            and operation.account == account_name
+            for operation in self.operations_models
+        )
+
+    def remove_authority_update_operations(self, account_name: str) -> None:
+        """
+        Remove all operations that modify authority for the given account.
+
+        Args:
+            account_name: Name of the account whose authority modification operations should be removed.
+        """
+        for operation in self.operations_models:
+            if (
+                isinstance(operation, (AccountUpdate2Operation, AccountUpdateOperation))
+                and operation.account == account_name
+            ):
+                self.remove_operation(operation)
 
 
 class TransactionWithHash(Transaction, kw_only=True):
