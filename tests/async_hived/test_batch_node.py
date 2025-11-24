@@ -21,6 +21,13 @@ async def test_async_batch_node(async_node: AsyncHived) -> None:
     assert dynamic_properties.head_block_number > 0, "Head block number should be higher than 0"
 
 
+async def test_async_batch_node_error_response(async_node: AsyncHived) -> None:
+    # ACT & ASSERT
+    with pytest.raises(CommunicationError, match="Invalid cast"):
+        async with await async_node.batch() as node:
+            await node.api.database.find_accounts(accounts=123)
+
+
 async def test_async_batch_node_error_response_delayed(async_node: AsyncHived) -> None:
     # ACT
     async with await async_node.batch(delay_error_on_data_access=True) as node:
