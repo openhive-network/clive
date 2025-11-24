@@ -284,7 +284,7 @@ test_async_hived:
     PYTEST_TIMEOUT_MINUTES: 5
   script:
     - echo -e "${TXT_BLUE}Launching async hived tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/async_hived -v)
+    - export PYTEST_ARGS=(tests/unit/async_hived -v)
     - !reference [ .run-pytest, script ]
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
