@@ -1,0 +1,115 @@
+ModifyAuthority {
+  TransactionButtonsPanel {
+    dock: bottom;
+    content-align: right middle;
+    border-top: $primary outer;
+    background: $primary-background;
+    padding-bottom: 2;
+    height: auto;
+
+    #transaction-buttons {
+      align: right middle;
+      height: auto;
+
+      FinalizeTransactionButton {
+        margin-left: 1;
+      }
+    }
+  }
+
+  TopContainer {
+    margin-left: 1;
+    padding-right: 1; /* workaround for a bug in textual with margins */
+    #button-container {
+      width: auto;
+
+      CliveButton {
+        min-width: 25;
+      }
+    }
+
+    FilterAuthority {
+      AuthorityFilterInput {
+        width: 8fr;
+      }
+    }
+  }
+
+  WorkingAccountAuthority {
+    margin: 1 0 0 1;
+
+    ModifyRole {
+      height: auto;
+
+      CliveCollapsible {
+        margin-bottom: 1;
+
+        ThresholdLabel {
+          margin-right: 1;
+        }
+
+        #right-button-container {
+          margin-bottom: 1;
+          height: auto;
+
+          CliveButton {
+            min-width: 20;
+          }
+        }
+      }
+    }
+
+    ModifyAuthorityTable {
+      CliveCheckerboardTableRow {
+        #action-buttons {
+          height: auto;
+
+          CliveButton {
+            min-width: 50%;
+          }
+        }
+
+        #edit-memo-button {
+          width: 1fr;
+        }
+      }
+
+      CliveCheckerBoardTableCell {
+        height: auto;
+
+        Static {
+          height: auto;
+        }
+      }
+
+      .striked-text {
+        text-style: strike;
+      }
+
+      .key-or-account {
+        width: 10fr;
+      }
+
+      .memo-key {
+        width: 11fr;
+      }
+
+      .weight {
+        width: 1fr;
+      }
+
+      .action {
+        width: 2fr;
+      }
+    }
+
+    ModifyTotalThreshold {
+      align-horizontal: right;
+      height: auto;
+
+      EditOneLineButton {
+        min-width: 20;
+      }
+    }
+  }
+}
