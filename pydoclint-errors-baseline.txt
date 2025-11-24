@@ -302,7 +302,7 @@ clive/__private/core/error_handlers/abc/error_notificator.py
 clive/__private/core/known_exchanges.py
     DOC502: Method `KnownExchanges.get_entity_by_account_name` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
-clive/__private/core/node.py
+clive/__private/core/node/node.py
     DOC101: Method `Node._set_address`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `Node._set_address`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [address: HttpUrl].
 --------------------
