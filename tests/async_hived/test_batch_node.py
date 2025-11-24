@@ -10,17 +10,22 @@ if TYPE_CHECKING:
 
 
 async def test_async_batch_node(async_node: AsyncHived) -> None:
+    # ACT
     async with await async_node.batch() as node:
         dynamic_properties = await node.api.database.get_dynamic_global_properties()
         config = await node.api.database.get_config()
 
-    assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
-    assert len(config.dict()) != 0, "Config should not be empty"
+    # ASSERT
+    assert dynamic_properties.dict(), "Dynamic global properties should not be empty"
+    assert config.dict(), "Config should not be empty"
+    assert dynamic_properties.head_block_number > 0, "Head block number should be higher than 0"
 
 
 async def test_async_batch_node_error_response_delayed(async_node: AsyncHived) -> None:
+    # ACT
     async with await async_node.batch(delay_error_on_data_access=True) as node:
         response = await node.api.database.find_accounts(accounts=123)
 
+    # ASSERT
     with pytest.raises(CommunicationError, match="Invalid cast"):
         _ = response.accounts[0].name
