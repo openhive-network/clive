@@ -422,6 +422,47 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidStaticDefinedError
         return []
 
+    async def add_row(self, row_to_add: CliveCheckerboardTableRow) -> None:
+        """
+        Adds a row to the table. If no content widget is mounted, it will be removed and header will be mounted.
+
+        Args:
+            row_to_add: Row to add to the table.
+        """
+        has_rows_with_content = not bool(self.query(NoContentAvailable))
+
+        with self.app.batch_update():
+            if has_rows_with_content:
+                await self.mount(row_to_add)
+            else:
+                await self.rows.remove()  # remove the special "no content" row
+                await self.mount_all((self._header, row_to_add))
+
+            self.update_cell_colors()
+
+    async def remove_row(self, row_index: int) -> None:
+        """
+        Removes a row from the table. If no rows are left, no content widget will be mounted.
+
+        Args:
+            row_index: Index of the row to remove.
+        """
+        rows = self.rows
+
+        assert 0 <= row_index < len(rows), "Row index out of range."
+
+        is_last_row = len(rows) == 1
+        row_to_remove = rows[row_index]
+
+        with self.app.batch_update():
+            await row_to_remove.remove()
+
+            if is_last_row:
+                await self._header.remove()
+                await self.mount(self._get_no_content_available_widget())
+            else:
+                self.update_cell_colors()
+
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
