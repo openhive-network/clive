@@ -13,36 +13,36 @@ from clive.__private.core.keys import PrivateKey
 from clive.__private.core.formatters.case import underscore
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from typing import Callable, Awaitable, Any
 
 @dataclass(kw_only=True)
 class Call(WorldBasedCommand):
     api_name: str
     function_name: str
     api_params: list[str]
+    async def _hook_before_entering_context_manager(self) -> None:
+        pass
 
     async def _run(self) -> None:
         if "help" in self.api_params:
             print_cli("Help option detected")
             return
-        method=self._get_jsonrpc_method()
-        params = self._get_jsonrpc_params()
-        data = build_json_rpc_call(method=method, params=params)
-        communicator = AioHttpCommunicator(settings=CommunicationSettings())
-        url = self.world.node.http_endpoint
-        response = await communicator.async_post(url, data)
-        print_cli(response)
+        awaitable=self._get_awaitable()
+        params_dict = self._parse_api_params()
+        response = await awaitable(**params_dict)
+        print_cli(response.json())
 
-    def _get_jsonrpc_params(self) -> str:
-        params_dict: dict[str, str] = {}
+    def _parse_api_params(self) -> dict[str, Any]:
+        params_dict: dict[str, Any] = {}
         for param in self.api_params:
-            param_name, param_value = param.split("=", 1) if "=" in param else (param, "true")
+            param_name, param_value = param.split("=", 1) if "=" in param else (param, True)
             arg_name_underscore = underscore(param_name)
             params_dict[arg_name_underscore] = param_value
-        params_string = ", ".join(f'"{key}": "{value}"' for key, value in params_dict.items())
-        return "{" + params_string + "}"
+        return params_dict
     
-    def _get_jsonrpc_method(self) -> str:
-        api_name_underscore = underscore(self.api_name)
-        function_name_underscore = underscore(self.function_name)
-        return f"{api_name_underscore}.{function_name_underscore}"
+    def _get_awaitable(self) -> Awaitable:
+        api_name = underscore(self.api_name).removesuffix("_api")
+        function_name = underscore(self.function_name)  
+        api = getattr(self.world.node.api, api_name)
+        method = getattr(api, function_name)
+        return method
