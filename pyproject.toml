@@ -24,6 +24,19 @@ dependencies = [
     'hiveio-schemas (==1.28.0)',
     'hiveio-beekeepy (==1.28.0)',
     'hiveio-wax (==1.27.12rc4.dev39+bd40f689)',
+    'hiveio-database-api (==1.28.2.dev15+42d819556)',
+    'hiveio-network-broadcast-api (==1.28.2.dev15+42d819556)',
+    'hiveio-rc-api (==1.28.2.dev15+42d819556)',
+    'hiveio-follow-api (==1.28.2.dev15+42d819556)',
+    'hiveio-search-api (==1.28.2.dev15+42d819556)',
+    'hiveio-transaction-status-api (==1.28.2.dev15+42d819556)',
+    'hiveio-reputation-api (==1.28.2.dev15+42d819556)',
+    'hiveio-account-history-api (==1.28.2.dev15+42d819556)',
+    'hiveio-market-history-api (==1.28.2.dev15+42d819556)',
+    'hiveio-condenser-api (==1.28.2.dev15+42d819556)',
+    'hiveio-account-by-key-api (==1.28.2.dev15+42d819556)',
+    'hiveio-block-api (==1.28.2.dev15+42d819556)',
+    'hiveio-debug-node-api (==1.28.2.dev15+42d819556)',
 ]
 
 [project.urls]
@@ -55,6 +68,18 @@ poetry-plugin-freeze = { version = "1.2.0" }
 hiveio-schemas = { source = "gitlab-schemas" }
 hiveio-wax = { source = "gitlab-wax" }
 hiveio-beekeepy = { source = "gitlab-beekeepy" }
+hiveio-database-api = { source = "gitlab-hive" }
+hiveio-network-broadcast-api = { source = "gitlab-hive" }
+hiveio-rc-api = { source = "gitlab-hive" }
+hiveio-follow-api = { source = "gitlab-hive" }
+hiveio-search-api = { source = "gitlab-hive" }
+hiveio-transaction-status-api = { source = "gitlab-hive" }
+hiveio-reputation-api = { source = "gitlab-hive" }
+hiveio-account-history-api = { source = "gitlab-hive" }
+hiveio-market-history-api = { source = "gitlab-hive" }
+hiveio-condenser-api  = { source = "gitlab-hive" }
+hiveio-account-by-key-api  = { source = "gitlab-hive" }
+hiveio-block-api = { source = "gitlab-hive" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
@@ -74,6 +99,7 @@ pydoclint = "0.6.6"
 types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
+hiveio-debug-node-api  = { source = "gitlab-hive" }
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"

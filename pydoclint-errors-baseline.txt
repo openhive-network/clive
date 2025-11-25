@@ -4,6 +4,12 @@ clive/__private/cli/beekeeper/main.py
     DOC101: Function `create_session`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `create_session`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [echo_token_only: bool].
 --------------------
+clive/__private/cli/call/main.py
+    DOC101: Function `call_api`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `call_api`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [api_name: str, ctx: typer.Context, method_name: str, params: str].
+    DOC501: Function `call_api` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `call_api` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.Exit'].
+--------------------
 clive/__private/cli/commands/abc/contextual_cli_command.py
     DOC201: Method `ContextualCLICommand._create_context_manager_instance` does not have a return section in docstring
 --------------------

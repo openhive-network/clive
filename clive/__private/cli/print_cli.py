@@ -42,3 +42,7 @@ def print_error(message: str, *, prefix: bool = True, console: Console | None = 
     prefix_ = "[b]Error:[/] " if prefix else ""
     full_message = colorize_error(prefix_ + message)
     print_cli(full_message, console=console)
+
+def print_json(message: str, *, console: Console | None = None) -> None:
+    console_ = Console() if console is None else console
+    console_.print_json(message)

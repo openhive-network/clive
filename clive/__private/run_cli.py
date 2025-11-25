@@ -6,14 +6,14 @@ import sys
 from clive.__private.core.constants.cli import HELP_FLAGS
 
 
-def _should_show_help() -> bool:
+def should_show_help() -> bool:
     return bool(set(sys.argv) & set(HELP_FLAGS))
 
 
 def run_cli() -> None:
     from clive.__private.cli.main import cli  # noqa: PLC0415
 
-    if not _should_show_help():
+    if not should_show_help():
         from clive.__private.before_launch import prepare_before_launch  # noqa: PLC0415
         from clive.__private.cli.error_handlers import register_error_handlers  # noqa: PLC0415
 
