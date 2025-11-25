@@ -5,10 +5,10 @@ import inflection
 
 def underscore(string: str) -> str:
     """
-    Convert string from CamelCase to snake_case.
+    Convert string from CamelCase or kebab-case to snake_case.
 
     Args:
-        string: The input string in CamelCase format.
+        string: The input string in CamelCase or kebab-case format.
 
     Returns:
         The converted string in snake_case format.

@@ -9,6 +9,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.call.main import call
 from clive.__private.cli.configure.main import configure
 from clive.__private.cli.generate.main import generate
 from clive.__private.cli.print_cli import print_cli
@@ -26,6 +27,7 @@ cli.add_typer(show)
 cli.add_typer(process)
 cli.add_typer(beekeeper)
 cli.add_typer(generate)
+cli.add_typer(call)
 
 
 @cli.callback(invoke_without_command=True)
