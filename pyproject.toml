@@ -22,8 +22,8 @@ dependencies = [
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
     'hiveio-schemas (==1.28.0)',
-    'hiveio-beekeepy (==1.28.0)',
-    'hiveio-wax (==1.27.12rc4.dev39+bd40f689)',
+    'hiveio-beekeepy (==1.28.1.dev2+8d14ac8)',
+    'hiveio-wax (==1.28.4rc1.dev31+b3cc32af)',
 ]
 
 [project.urls]
