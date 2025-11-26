@@ -205,43 +205,6 @@ class ModifyAuthorityItem(AuthorityItemBase):
     def is_new(self) -> bool:
         return self._is_new
 
-    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
-        cells = [
-            CliveCheckerBoardTableCell(
-                f"{NEW_PREFIX if self.is_new else ''}{self._entry.value}",
-                classes="key-or-account" if self._entry.is_weighted else "memo-key",
-                id_="value-cell",
-            )
-        ]
-
-        if self._entry.is_weighted:
-            cells.append(
-                CliveCheckerBoardTableCell(str(self._entry.ensure_weighted.weight), classes="weight", id_="weight-cell")
-            )
-            last_cell_content: Widget = Horizontal(
-                EditOneLineButton(),
-                RemoveOneLineButton(),
-                id="action-buttons",
-            )
-        else:
-            last_cell_content = EditOneLineButton(label="Change", id_="edit-memo-button")
-
-        cells.append(
-            CliveCheckerBoardTableCell(
-                last_cell_content,
-                classes="action",
-            )
-        )
-        return cells
-
-    @on(EditOneLineButton.Pressed)
-    def request_entry_edit(self) -> None:
-        self.post_message(self.RequestEntryEdit(entry=self.entry))
-
-    @on(RemoveOneLineButton.Pressed)
-    def request_entry_removal(self) -> None:
-        self.post_message(self.RequestEntryRemoval(entry=self.entry.ensure_regular))
-
     def strikethrough(self) -> None:
         """Strikethrough content of cells in this row, disable buttons and mark it as removed."""
         self.is_removed = True
@@ -265,6 +228,55 @@ class ModifyAuthorityItem(AuthorityItemBase):
         if not self.is_new:
             self.is_modified = self._is_entry_changed(new_entry)
         self.entry = new_entry
+
+    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
+        return [
+            self._create_value_cell(),
+            *self._maybe_create_weight_cell(),
+            self._create_action_cell(),
+        ]
+
+    def _create_value_cell(self) -> CliveCheckerBoardTableCell:
+        entry = self._entry
+        classes = "key-or-account" if entry.is_weighted else "memo-key"
+        return CliveCheckerBoardTableCell(entry.value, classes=classes, id_="value-cell")
+
+    def _maybe_create_weight_cell(self) -> list[CliveCheckerBoardTableCell]:
+        entry = self._entry
+        if not entry.is_weighted:
+            return []
+
+        return [
+            CliveCheckerBoardTableCell(
+                str(entry.ensure_weighted.weight),
+                classes="weight",
+                id_="weight-cell",
+            )
+        ]
+
+    def _create_action_cell(self) -> CliveCheckerBoardTableCell:
+        if self._entry.is_weighted:
+            content: Widget = Horizontal(
+                EditOneLineButton(),
+                RemoveOneLineButton(),
+                id="action-buttons",
+            )
+        else:
+            content = EditOneLineButton(label="Change", id_="edit-memo-button")
+
+        return CliveCheckerBoardTableCell(content, classes="action")
+
+    @on(Mount)
+    async def _set_initial_prefix(self) -> None:
+        await self._update_value_cell(self.entry.value)
+
+    @on(EditOneLineButton.Pressed)
+    def _request_entry_edit(self) -> None:
+        self.post_message(self.RequestEntryEdit(entry=self.entry))
+
+    @on(RemoveOneLineButton.Pressed)
+    def _request_entry_removal(self) -> None:
+        self.post_message(self.RequestEntryRemoval(entry=self.entry.ensure_regular))
 
     async def _watch_entry(
         self, new_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo
