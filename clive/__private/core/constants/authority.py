@@ -10,5 +10,3 @@ AUTHORITY_LEVELS: Final[tuple[AuthorityLevel, ...]] = get_args(AuthorityLevel)
 
 DEFAULT_AUTHORITY_THRESHOLD: Final[int] = 1
 DEFAULT_AUTHORITY_WEIGHT: Final[int] = 1
-
-MODIFIED_PREFIX: Final[str] = "*(modified) "

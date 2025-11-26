@@ -12,7 +12,6 @@ from textual.message import Message
 from textual.reactive import reactive, var
 from textual.widgets import Label
 
-from clive.__private.core.constants.authority import MODIFIED_PREFIX
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
     AddAuthorityEntryDialog,
@@ -65,6 +64,9 @@ if TYPE_CHECKING:
     )
     from clive.__private.models.schemas import AccountUpdate2Operation
 
+NEW_PREFIX: Final[str] = "(new) "
+MODIFIED_PREFIX: Final[str] = "*(modified) "
+
 
 class TransactionButtonsPanel(Horizontal):
     def compose(self) -> ComposeResult:
@@ -95,9 +97,9 @@ class ThresholdLabel(Label):
         return self._generate_threshold_text()
 
     def _generate_threshold_text(self) -> str:
-        return f"{
-            MODIFIED_PREFIX if self.threshold_value != self._initial_threshold_value else ''
-        }authority total threshold: {self.threshold_value}"
+        is_changed = self.threshold_value != self._initial_threshold_value
+        prefix = MODIFIED_PREFIX if is_changed else ""
+        return f"{prefix}authority total threshold: {self.threshold_value}"
 
 
 class ModifyTotalThreshold(Horizontal):
@@ -143,7 +145,6 @@ class ModifyAuthorityItem(AuthorityItemBase):
     Class for items in the modify authority table.
 
     Attributes:
-        NEW_PREFIX: Prefix added when item is a new entry.
         entry: Object representing the authority entry.
         is_modified: Flag indicating if the item is modified.
         is_removed: Flag indicating if the item is removed.
@@ -153,8 +154,6 @@ class ModifyAuthorityItem(AuthorityItemBase):
         is_new: Flag to mark that this item is newly added.
 
     """
-
-    NEW_PREFIX: Final[str] = "(new) "
 
     entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo = var(None, init=False)  # type: ignore[assignment]
 
@@ -209,7 +208,7 @@ class ModifyAuthorityItem(AuthorityItemBase):
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         cells = [
             CliveCheckerBoardTableCell(
-                f"{self.NEW_PREFIX if self.is_new else ''}{self._entry.value}",
+                f"{NEW_PREFIX if self.is_new else ''}{self._entry.value}",
                 classes="key-or-account" if self._entry.is_weighted else "memo-key",
                 id_="value-cell",
             )
@@ -236,7 +235,7 @@ class ModifyAuthorityItem(AuthorityItemBase):
         return cells
 
     @on(EditOneLineButton.Pressed)
-    def edit_entry(self) -> None:
+    def request_entry_edit(self) -> None:
         self.post_message(self.RequestEntryEdit(entry=self.entry))
 
     @on(RemoveOneLineButton.Pressed)
@@ -245,8 +244,9 @@ class ModifyAuthorityItem(AuthorityItemBase):
 
     def strikethrough(self) -> None:
         """Strikethrough content of cells in this row, disable buttons and mark it as removed."""
-        self.entry = self._original_entry
         self.is_removed = True
+        self.is_modified = False
+        self.entry = self._original_entry
 
     def squash(self, new_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular) -> None:
         """
@@ -256,29 +256,46 @@ class ModifyAuthorityItem(AuthorityItemBase):
             new_entry: New entry to squash with removed one.
         """
         self.is_removed = False
-        self.is_modified = False
-        if self._original_entry.ensure_weighted.weight != new_entry.ensure_weighted.weight:
-            self.entry = new_entry
-            self.is_modified = True
+        self.is_modified = self._is_entry_changed(new_entry)
+        self.entry = new_entry
+
+    def edit_entry(
+        self, new_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo
+    ) -> None:
+        if not self.is_new:
+            self.is_modified = self._is_entry_changed(new_entry)
+        self.entry = new_entry
 
     async def _watch_entry(
         self, new_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo
     ) -> None:
         self._entry = new_entry
-        await self.value_cell.update_content(f"{self.NEW_PREFIX if self.is_new else ''}{new_entry.value}")
+        await self._update_value_cell(new_entry.value)
         if new_entry.is_weighted:
             await self.weight_cell.update_content(str(new_entry.ensure_weighted.weight))
-
-    async def _watch_is_modified(self, is_modified: bool) -> None:  # noqa: FBT001
-        current_content = self.value_cell.content
-        new_content = f"{MODIFIED_PREFIX}{current_content}" if is_modified else current_content
-        await self.value_cell.update_content(new_content)
 
     def _watch_is_removed(self, is_removed: bool) -> None:  # noqa: FBT001
         striked_text_class_name = "striked-text"
         self.value_cell.set_class(is_removed, striked_text_class_name)
         self.weight_cell.set_class(is_removed, striked_text_class_name)
         self.disabled = is_removed
+
+    async def _update_value_cell(self, value: str) -> None:
+        await self.value_cell.update_content(self._prefixed(value))
+
+    def _prefixed(self, value: str) -> str:
+        if self.is_new:
+            return f"{NEW_PREFIX}{value}"
+        if self.is_modified:
+            return f"{MODIFIED_PREFIX}{value}"
+        return value
+
+    def _is_entry_changed(
+        self, new_entry: AuthorityEntryKeyRegular | AuthorityEntryAccountRegular | AuthorityEntryMemo
+    ) -> bool:
+        if new_entry.is_weighted:
+            return self._original_entry.ensure_weighted.weight != new_entry.ensure_weighted.weight
+        return self._original_entry.value != new_entry.value
 
 
 class ModifyAuthorityTable(AuthorityTableBase):
@@ -316,9 +333,7 @@ class ModifyAuthorityTable(AuthorityTableBase):
     ) -> None:
         for item in self.modify_authority_items:
             if item.entry.value == entry_to_edit.value:
-                item.entry = edited_entry
-                if not item.is_new:
-                    item.is_modified = True
+                item.edit_entry(edited_entry)
                 self.app.notify("Entry modified successfully.")
                 return
 
