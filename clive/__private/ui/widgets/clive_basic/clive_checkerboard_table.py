@@ -20,7 +20,7 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
     from textual.app import ComposeResult
     from textual.css.query import DOMQuery
@@ -422,20 +422,34 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidStaticDefinedError
         return []
 
-    def add_row(self, row_to_add: CliveCheckerboardTableRow) -> None:
-        is_no_content_available_mounted = bool(self.query(NoContentAvailable))
-        if is_no_content_available_mounted:
-            self.rows.remove()
-            self.mount(self._header)
-        self.mount(row_to_add)
+    async def add_row(self, row_to_add: CliveCheckerboardTableRow) -> None:
+        has_rows_with_content = not bool(self.query(NoContentAvailable))
+
+        with self.app.batch_update():
+            if has_rows_with_content:
+                await self.mount(row_to_add)
+            else:
+                await self.rows.remove()  # remove the special "no content" row
+                await self.mount_all((self._header, row_to_add))
+
+            self.update_cell_colors()
 
     async def remove_row(self, row_index: int) -> None:
-        assert 0 <= row_index < len(self.rows), "Row index out of range."
-        row_to_remove = self.rows[row_index]
-        await row_to_remove.remove()
-        if len(self.rows) == 0:
-            self._header.remove()
-            self.mount(self._get_no_content_available_widget())
+        rows = self.rows
+
+        assert 0 <= row_index < len(rows), "Row index out of range."
+
+        is_last_row = len(rows) == 1
+        row_to_remove = rows[row_index]
+
+        with self.app.batch_update():
+            await row_to_remove.remove()
+
+            if is_last_row:
+                await self._header.remove()
+                await self.mount(self._get_no_content_available_widget())
+            else:
+                self.update_cell_colors()
 
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
@@ -467,8 +481,10 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return True
 
-    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
-        for row_index, row in enumerate(rows):
+    def _set_evenness_styles(self, rows: Iterable[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
+        displayed_rows = [row for row in rows if row.display]
+
+        for row_index, row in enumerate(displayed_rows):
             for cell_index, cell in enumerate(row.cells):
                 if not isinstance(cell, CliveCheckerBoardTableCell):
                     continue
@@ -489,18 +505,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     def update_cell_colors(self) -> None:
         """Update background colors according to the actual displayed rows."""
-        displayed_rows = [row for row in self.rows if row.display]
-
-        for row_index, row in enumerate(displayed_rows):
-            for cell_index, cell in enumerate(row.cells):
-                should_be_even = (row_index + cell_index) % 2 == 0
-
-                if should_be_even:
-                    cell.remove_class(CLIVE_ODD_COLUMN_CLASS_NAME)
-                    cell.add_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
-                else:
-                    cell.remove_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
-                    cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
+        self._set_evenness_styles(self.rows)
 
     def update_previous_state(self, content: ContentT) -> None:  # noqa: ARG002
         """

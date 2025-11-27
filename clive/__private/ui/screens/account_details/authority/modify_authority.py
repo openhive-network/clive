@@ -308,7 +308,7 @@ class ModifyAuthorityTable(AuthorityTableBase):
     def create_static_rows(self) -> Sequence[ModifyAuthorityItem]:
         return [ModifyAuthorityItem(entry) for entry in self._role.get_entries()]
 
-    def add_entry(
+    async def add_entry(
         self,
         new_entry: AuthorityEntryRegular | AuthorityEntryMemo,
     ) -> None:
@@ -317,8 +317,7 @@ class ModifyAuthorityTable(AuthorityTableBase):
                 item.squash(new_entry.ensure_regular)
                 return
 
-        self.add_row(ModifyAuthorityItem(new_entry, is_new=True))
-        self.update_cell_colors()
+        await self.add_row(ModifyAuthorityItem(new_entry, is_new=True))
 
     def edit_entry(
         self,
@@ -375,11 +374,11 @@ class ModifyRole(AuthorityRoleBase):
 
     @on(AddOneLineButton.Pressed)
     def add_entry(self) -> None:
-        def add_entry_callback(new_entry: AuthorityEntryRegular | None) -> None:
+        async def add_entry_callback(new_entry: AuthorityEntryRegular | None) -> None:
             if new_entry is None:
                 return
 
-            self.authority_table.add_entry(new_entry)
+            await self.authority_table.add_entry(new_entry)
             self.notify(f"{new_entry.value} was added to {role.level} role")
 
         role = self._role.ensure_regular
