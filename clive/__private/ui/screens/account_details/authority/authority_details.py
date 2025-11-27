@@ -90,151 +90,6 @@ class RemoveKeyAliasButton(PrivateKeyActionButton):
         self.app.push_screen(RemoveKeyAliasDialog(*self._keys_to_remove), self._key_aliases_changed_callback)
 
 
-class AccountsAuthorities(AuthoritySectionScrollable):
-    """
-    Widget for storing all AccountCollapsibles.
-
-    Args:
-        initial_account: The account that is initially selected in the filter.
-    """
-
-    def __init__(self, initial_account: TrackedAccount) -> None:
-        super().__init__("Authority roles")
-        self._initial_account = initial_account
-
-    @property
-    def account_collapsibles(self) -> DOMQuery[AccountCollapsible]:
-        return self.body.query(AccountCollapsible)
-
-    async def build(self, authorities: list[Authority]) -> None:
-        await self.body.mount_all([AccountCollapsible(authority) for authority in authorities])
-
-    async def rebuild(self, authorities: list[Authority]) -> None:
-        with self.app.batch_update():
-            await self.body.query("*").remove()
-            await self.build(authorities)
-
-    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
-        """
-        Update the display based on filter patterns and selected accounts in filter.
-
-        This method updates each collapsible representing account inside the body of this widget. Also handles
-        NoFilterCriteriaMatch widget.
-
-        Args:
-            selected_accounts_in_filter: Accounts selected in the filter.
-            *filter_patterns: Patterns to filter the entries in the authority.
-        """
-        account_collapsibles = list(self.account_collapsibles)
-
-        for account_collapsible in account_collapsibles:
-            account_collapsible.filter(selected_accounts_in_filter, *filter_patterns)
-
-        is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
-        if is_any_account_collapsible_displayed:
-            self.remove_no_filter_criteria_match_widget()
-            return
-
-        self.mount_no_filter_criteria_match_widget()
-
-    def filter_clear(self) -> None:
-        account_collapsibles = list(self.account_collapsibles)
-
-        for account_collapsible in account_collapsibles:
-            if account_collapsible.authority_owner == self._initial_account.name:
-                account_collapsible.filter_clear()
-            else:
-                account_collapsible.display = False
-        self.remove_no_filter_criteria_match_widget()
-
-
-class AccountCollapsible(CliveCollapsible):
-    def __init__(
-        self,
-        authority: Authority,
-        *,
-        collapsed: bool = False,
-    ) -> None:
-        self._authority = authority
-        super().__init__(
-            *self._create_widgets_to_mount(collapsed=collapsed),
-            title=authority.account,
-            collapsed=collapsed,
-        )
-
-    @property
-    def authority_owner(self) -> str:
-        return self._authority.account
-
-    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
-        """
-        Update the display based on accounts selected in filter and filter patterns.
-
-        Args:
-            selected_accounts_in_filter: Accounts selected in the filter.
-            *filter_patterns: Patterns to filter the entries in the authority.
-        """
-
-        def update_display_of_authority_roles() -> None:
-            """Update the display of authority role widgets within this widget."""
-            for authority_role in self.query(AuthorityRole):
-                authority_role.filter(*filter_patterns)
-
-        if self._authority.account not in selected_accounts_in_filter:
-            self.display = False
-            return
-
-        if not filter_patterns:
-            self.filter_clear()
-            return
-
-        if self._authority.is_matching_pattern(*filter_patterns):
-            self.display = True
-            update_display_of_authority_roles()
-            return
-        self.display = False
-
-    def filter_clear(self) -> None:
-        """Clear any filters applied to this widget and its children."""
-        for authority_role in self.query(AuthorityRole):
-            authority_role.filter_clear()
-        self.display = True
-
-    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityRole]:
-        return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._authority.roles]
-
-
-class AuthorityRole(AuthorityRoleBase):
-    def __init__(
-        self,
-        authority_role: AuthorityRoleRegular | AuthorityRoleMemo,
-        *,
-        title: str,
-        collapsed: bool = False,
-    ) -> None:
-        super().__init__(role=authority_role)
-        self._title = title
-        self._collapsed = collapsed
-
-    def compose(self) -> ComposeResult:
-        with self._create_collapsible(title=self._title, collapsed=self._collapsed):
-            yield AuthorityTable(self._role)
-
-    def _create_collapsible(self, *, title: str, collapsed: bool) -> CliveCollapsible:
-        right_hand_side_text = self._get_right_hand_side_text()
-        return CliveCollapsible(right_hand_side_content=right_hand_side_text, title=title, collapsed=collapsed)
-
-    def _get_right_hand_side_text(self) -> str | None:
-        authority_role = self._role
-        if authority_role.is_memo:
-            return None
-
-        authority_role_regular = authority_role.ensure_regular
-        weight_threshold = authority_role_regular.weight_threshold
-        imported_weights = authority_role_regular.sum_weights_of_already_imported_keys(self.profile.keys)
-        return f"imported weights: {imported_weights}, total threshold: {weight_threshold}"
-
-
 class AuthorityItem(AuthorityItemBase):
     """Class for items in the authority table."""
 
@@ -318,6 +173,151 @@ class AuthorityTable(AuthorityTableBase):
 
     def create_static_rows(self) -> Sequence[AuthorityItem]:
         return [AuthorityItem(entry) for entry in self._authority_role.get_entries()]
+
+
+class AuthorityRole(AuthorityRoleBase):
+    def __init__(
+        self,
+        authority_role: AuthorityRoleRegular | AuthorityRoleMemo,
+        *,
+        title: str,
+        collapsed: bool = False,
+    ) -> None:
+        super().__init__(role=authority_role)
+        self._title = title
+        self._collapsed = collapsed
+
+    def compose(self) -> ComposeResult:
+        with self._create_collapsible(title=self._title, collapsed=self._collapsed):
+            yield AuthorityTable(self._role)
+
+    def _create_collapsible(self, *, title: str, collapsed: bool) -> CliveCollapsible:
+        right_hand_side_text = self._get_right_hand_side_text()
+        return CliveCollapsible(right_hand_side_content=right_hand_side_text, title=title, collapsed=collapsed)
+
+    def _get_right_hand_side_text(self) -> str | None:
+        authority_role = self._role
+        if authority_role.is_memo:
+            return None
+
+        authority_role_regular = authority_role.ensure_regular
+        weight_threshold = authority_role_regular.weight_threshold
+        imported_weights = authority_role_regular.sum_weights_of_already_imported_keys(self.profile.keys)
+        return f"imported weights: {imported_weights}, total threshold: {weight_threshold}"
+
+
+class AccountCollapsible(CliveCollapsible):
+    def __init__(
+        self,
+        authority: Authority,
+        *,
+        collapsed: bool = False,
+    ) -> None:
+        self._authority = authority
+        super().__init__(
+            *self._create_widgets_to_mount(collapsed=collapsed),
+            title=authority.account,
+            collapsed=collapsed,
+        )
+
+    @property
+    def authority_owner(self) -> str:
+        return self._authority.account
+
+    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+        """
+        Update the display based on accounts selected in filter and filter patterns.
+
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+
+        def update_display_of_authority_roles() -> None:
+            """Update the display of authority role widgets within this widget."""
+            for authority_role in self.query(AuthorityRole):
+                authority_role.filter(*filter_patterns)
+
+        if self._authority.account not in selected_accounts_in_filter:
+            self.display = False
+            return
+
+        if not filter_patterns:
+            self.filter_clear()
+            return
+
+        if self._authority.is_matching_pattern(*filter_patterns):
+            self.display = True
+            update_display_of_authority_roles()
+            return
+        self.display = False
+
+    def filter_clear(self) -> None:
+        """Clear any filters applied to this widget and its children."""
+        for authority_role in self.query(AuthorityRole):
+            authority_role.filter_clear()
+        self.display = True
+
+    def _create_widgets_to_mount(self, *, collapsed: bool) -> list[AuthorityRole]:
+        return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._authority.roles]
+
+
+class AccountsAuthorities(AuthoritySectionScrollable):
+    """
+    Widget for storing all AccountCollapsibles.
+
+    Args:
+        initial_account: The account that is initially selected in the filter.
+    """
+
+    def __init__(self, initial_account: TrackedAccount) -> None:
+        super().__init__("Authority roles")
+        self._initial_account = initial_account
+
+    @property
+    def account_collapsibles(self) -> DOMQuery[AccountCollapsible]:
+        return self.body.query(AccountCollapsible)
+
+    async def build(self, authorities: list[Authority]) -> None:
+        await self.body.mount_all([AccountCollapsible(authority) for authority in authorities])
+
+    async def rebuild(self, authorities: list[Authority]) -> None:
+        with self.app.batch_update():
+            await self.body.query("*").remove()
+            await self.build(authorities)
+
+    def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
+        """
+        Update the display based on filter patterns and selected accounts in filter.
+
+        This method updates each collapsible representing account inside the body of this widget. Also handles
+        NoFilterCriteriaMatch widget.
+
+        Args:
+            selected_accounts_in_filter: Accounts selected in the filter.
+            *filter_patterns: Patterns to filter the entries in the authority.
+        """
+        account_collapsibles = list(self.account_collapsibles)
+
+        for account_collapsible in account_collapsibles:
+            account_collapsible.filter(selected_accounts_in_filter, *filter_patterns)
+
+        is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
+        if is_any_account_collapsible_displayed:
+            self.remove_no_filter_criteria_match_widget()
+            return
+
+        self.mount_no_filter_criteria_match_widget()
+
+    def filter_clear(self) -> None:
+        account_collapsibles = list(self.account_collapsibles)
+
+        for account_collapsible in account_collapsibles:
+            if account_collapsible.authority_owner == self._initial_account.name:
+                account_collapsible.filter_clear()
+            else:
+                account_collapsible.display = False
+        self.remove_no_filter_criteria_match_widget()
 
 
 class AuthorityDetails(TabPane, CliveWidget):
