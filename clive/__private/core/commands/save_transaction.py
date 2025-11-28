@@ -17,6 +17,7 @@ class SaveTransaction(Command):
     transaction: Transaction
     file_path: Path
     force_format: Literal["json", "bin"] | None = None
+    serialization_mode: Literal["legacy", "hf26"] | None = None
     """If not provided, the format will be determined by the file extension automatically."""
 
     async def _execute(self) -> None:
@@ -28,7 +29,11 @@ class SaveTransaction(Command):
             self.__save_as_binary() if self.__should_save_as_binary() else self.__save_as_json()
 
     def __save_as_json(self) -> None:
-        serialized = self.transaction.json(order="sorted", indent=4)
+        serialized = self.transaction.json(
+            order="sorted",
+            indent=4,
+            serialization_mode=self.serialization_mode if self.serialization_mode else "hf26",
+        )
         self.file_path.write_text(serialized)
 
     def __save_as_binary(self) -> None:

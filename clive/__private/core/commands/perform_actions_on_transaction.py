@@ -88,6 +88,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     chain_id: str | None = None
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
+    serialization_mode: Literal["legacy", "hf26"] | None = None
     broadcast: bool = False
 
     async def _execute(self) -> None:
@@ -133,7 +134,10 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
 
         if path := self.save_file_path:
             await SaveTransaction(
-                transaction=transaction, file_path=path, force_format=self.force_save_format
+                transaction=transaction,
+                file_path=path,
+                force_format=self.force_save_format,
+                serialization_mode=self.serialization_mode,
             ).execute()
 
         if self.broadcast:

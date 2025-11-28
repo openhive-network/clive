@@ -307,6 +307,7 @@ class Commands[WorldT: World]:
         chain_id: str | None = None,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
+        serialization_mode: Literal["legacy", "hf26"] | None = None,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.perform_actions_on_transaction import (  # noqa: PLC0415
@@ -327,6 +328,7 @@ class Commands[WorldT: World]:
                 chain_id=chain_id,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
+                serialization_mode=serialization_mode,
                 broadcast=broadcast,
                 autosign=autosign,
             )
