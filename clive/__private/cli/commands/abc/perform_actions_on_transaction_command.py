@@ -92,7 +92,9 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     @property
     def use_autosign(self) -> bool:
-        return self.is_autosign_explicitly_requested or (self.autosign is None and not self.is_sign_with_given)
+        return self.is_autosign_explicitly_requested or (
+            self.autosign is None and not self.is_sign_with_given and not self.force_unsign
+        )
 
     @property
     async def should_be_signed(self) -> bool:
@@ -183,7 +185,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             transaction = (
                 await self.world.commands.perform_actions_on_transaction(
                     content=self.transaction,
-                    sign_key=self.sign_key,
+                    sign_keys=self.sign_key,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
