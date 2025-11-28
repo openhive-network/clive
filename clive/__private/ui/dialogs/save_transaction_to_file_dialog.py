@@ -90,7 +90,7 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
 
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
-            sign_key=self._sign_key,
+            sign_keys=self._sign_key,
             force_unsign=not should_be_signed,
             save_file_path=file_path,
             force_save_format="bin" if save_as_binary else "json",
