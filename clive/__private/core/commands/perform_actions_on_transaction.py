@@ -14,7 +14,7 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.unsign import UnSign
-from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT, DEFAULT_SERIALIZATION_MODE
 from clive.__private.core.keys import PublicKey
 from clive.__private.models.transaction import Transaction
 
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.types import SerializationMode
 
 
 if TYPE_CHECKING:
@@ -92,6 +93,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     chain_id: str | None = None
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
+    serialization_mode: SerializationMode = DEFAULT_SERIALIZATION_MODE
     broadcast: bool = False
 
     async def _execute(self) -> None:
@@ -135,7 +137,10 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
 
         if path := self.save_file_path:
             await SaveTransaction(
-                transaction=transaction, file_path=path, force_format=self.force_save_format
+                transaction=transaction,
+                file_path=path,
+                force_format=self.force_save_format,
+                serialization_mode=self.serialization_mode,
             ).execute()
 
         if self.broadcast:
