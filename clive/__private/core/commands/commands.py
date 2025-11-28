@@ -6,6 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
 from clive.__private.core.constants.data_retrieval import (
     ALREADY_SIGNED_MODE_DEFAULT,
+    DEFAULT_SERIALIZATION_MODE,
     ORDER_DIRECTION_DEFAULT,
     PROPOSAL_ORDER_DEFAULT,
     PROPOSAL_STATUS_DEFAULT,
@@ -58,6 +59,7 @@ if TYPE_CHECKING:
         OrderDirections,
         ProposalOrders,
         ProposalStatuses,
+        SerializationMode,
         WitnessesSearchModes,
     )
     from clive.__private.core.world import World
@@ -307,6 +309,7 @@ class Commands[WorldT: World]:
         chain_id: str | None = None,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
+        serialization_mode: SerializationMode = DEFAULT_SERIALIZATION_MODE,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.perform_actions_on_transaction import (  # noqa: PLC0415
@@ -327,6 +330,7 @@ class Commands[WorldT: World]:
                 chain_id=chain_id,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
+                serialization_mode=serialization_mode,
                 broadcast=broadcast,
                 autosign=autosign,
             )

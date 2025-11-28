@@ -7,6 +7,7 @@ from clive.__private.core.types import (
     OrderDirections,
     ProposalOrders,
     ProposalStatuses,
+    SerializationMode,
     WitnessesSearchModes,
 )
 
@@ -24,3 +25,6 @@ WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT: Final[int] = 50
 
 ALREADY_SIGNED_MODES: Final[tuple[AlreadySignedMode, ...]] = get_args(AlreadySignedMode)
 ALREADY_SIGNED_MODE_DEFAULT: Final[AlreadySignedMode] = "strict"
+
+SERIALIZATION_MODES: Final[tuple[SerializationMode, ...]] = get_args(SerializationMode)
+DEFAULT_SERIALIZATION_MODE: Final[SerializationMode] = "hf26"
