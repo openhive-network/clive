@@ -128,7 +128,7 @@ def assert_output_does_not_contain(part: str, output: str) -> None:
 
 
 def assert_no_delegations(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_hive_power)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_hive_power())
     expected_output = "no delegations"
     assert_output_contains(expected_output, result)
 
@@ -136,7 +136,7 @@ def assert_no_delegations(context: CLITester | CLITestResult) -> None:
 def assert_withdraw_routes(
     context: CLITester | CLITestResult, to: str, percent: int, *, auto_vest: bool = False
 ) -> None:
-    result = _get_result(context, CLITester.show_hive_power)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_hive_power())
     output = result.output
     expected_output = str(percent)
     assert any(
@@ -146,19 +146,19 @@ def assert_withdraw_routes(
 
 
 def assert_no_withdraw_routes(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_hive_power)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_hive_power())
     expected_output = "no withdraw routes"
     assert_output_contains(expected_output, result)
 
 
 def assert_no_pending_power_down(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_pending_power_down)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_power_down())
     expected_output = "no pending power down"
     assert_output_contains(expected_output, result)
 
 
 def assert_no_pending_power_ups(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_pending_power_ups)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_power_ups())
     expected_output = "no pending power ups"
     assert_output_contains(expected_output, result)
 
@@ -173,7 +173,7 @@ def assert_pending_removed_delegations(context: CLITester | CLITestResult, asset
 
 
 def assert_no_removed_delegations(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_pending_removed_delegations)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_removed_delegations())
     expected_output = "no removed delegations"
     assert_output_contains(expected_output, result)
 
@@ -181,25 +181,25 @@ def assert_no_removed_delegations(context: CLITester | CLITestResult) -> None:
 def assert_pending_change_recovery_account(
     context: CLITester | CLITestResult, account_to_recover: str, new_recovery_account_name: str
 ) -> None:
-    result = _get_result(context, CLITester.show_pending_change_recovery_account)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_change_recovery_account())
     assert_output_contains(ShowPendingChangeRecoveryAccount._format_table_title(account_to_recover), result)
     assert_output_contains(new_recovery_account_name, result)
 
 
 def assert_no_pending_change_recovery_account(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_pending_change_recovery_account)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_change_recovery_account())
     expected_output = NO_PENDING_ACCOUNT_RECOVERY_MESSAGE
     assert_output_contains(expected_output, result)
 
 
 def assert_pending_decline_voting_rights(context: CLITester | CLITestResult, account: str) -> None:
-    result = _get_result(context, CLITester.show_pending_decline_voting_rights)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_decline_voting_rights())
     assert_output_contains(ShowPendingDeclineVotingRights._format_table_title(account), result)
     assert_output_contains(account, result)
 
 
 def assert_no_pending_decline_voting_rights(context: CLITester | CLITestResult) -> None:
-    result = _get_result(context, CLITester.show_pending_decline_voting_rights)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_pending_decline_voting_rights())
     expected_output = NO_PENDING_DECLINE_VOTING_RIGHTS_MESSAGE
     assert_output_contains(expected_output, result)
 
@@ -223,7 +223,7 @@ def assert_exit_code(
 
 
 def assert_show_balances_title(context: CLITester | CLITestResult, account_name: str) -> None:
-    result = _get_result(context, CLITester.show_balances)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_balances())
     expected_output = f"Balances of `{account_name}` account"
     assert_output_contains(expected_output, result)
 
@@ -240,7 +240,7 @@ def _get_result(
 
 
 def assert_unlocked_profile(context: CLITester | CLITestResult, profile_name: str) -> None:
-    result = _get_result(context, CLITester.show_profile)
+    result = _get_result(context, lambda cli_tester: cli_tester.show_profile())
     expected_output = f"Profile name: {profile_name}"
     assert_output_contains(expected_output, result)
 
