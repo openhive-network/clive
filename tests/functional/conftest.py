@@ -49,7 +49,7 @@ async def beekeeper_local() -> AsyncGenerator[AsyncBeekeeper]:
 
 
 @pytest.fixture
-async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
+async def session_token_world(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
     token = await (await beekeeper_local.session).token
 
     world = World()
@@ -60,30 +60,32 @@ async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
 
 
 @pytest.fixture
-async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
+async def _prepare_profile_and_setup_wallet(session_token_world: World) -> Profile:
     """Prepare profile and wallets using remote beekeeper."""
-    await world_cli.create_new_profile_with_wallets(
+    await session_token_world.create_new_profile_with_wallets(
         name=WORKING_ACCOUNT_NAME,
         password=WORKING_ACCOUNT_PASSWORD,
         working_account=WORKING_ACCOUNT_NAME,
         watched_accounts=WATCHED_ACCOUNTS_NAMES,
         known_accounts=KNOWN_ACCOUNT_NAMES,
     )
-    await world_cli.commands.sync_state_with_beekeeper()
-    world_cli.profile.keys.add_to_import(
+    await session_token_world.commands.sync_state_with_beekeeper()
+    session_token_world.profile.keys.add_to_import(
         PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
     )
-    await world_cli.commands.sync_data_with_beekeeper()
-    await world_cli.commands.save_profile()  # required for saving imported keys aliases
-    return world_cli.profile
+    await session_token_world.commands.sync_data_with_beekeeper()
+    await session_token_world.commands.save_profile()  # required for saving imported keys aliases
+    return session_token_world.profile
 
 
 @pytest.fixture
 async def node(
-    node_address_env_context_factory: EnvContextFactory, world_cli: World, _prepare_profile_with_wallet_cli: Profile
+    node_address_env_context_factory: EnvContextFactory,
+    session_token_world: World,
+    _prepare_profile_and_setup_wallet: Profile,
 ) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
-    await world_cli.set_address(node.http_endpoint)
+    await session_token_world.set_address(node.http_endpoint)
     address = str(node.http_endpoint)
     with node_address_env_context_factory(address):
         yield node
