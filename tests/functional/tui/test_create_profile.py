@@ -38,7 +38,8 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
     from clive_local_tools.tui.types import ClivePilot
-    from tests.tui.conftest import NodeWithWallet
+
+    from .conftest import NodeWithWallet
 
 
 PROFILE_NAME: Final[str] = "master"
