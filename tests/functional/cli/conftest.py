@@ -38,7 +38,7 @@ def _cli_tester_factory(
     beekeeper_session_token_env_context_factory: EnvContextFactory,
     beekeeper_local: AsyncBeekeeper,
     node: tt.RawNode,  # noqa: ARG001
-    world_cli: World,
+    world_with_remote_beekeeper: World,
 ) -> CLITesterFactory:
     """Factory that creates cli_tester depending on desired variant."""
 
@@ -56,7 +56,7 @@ def _cli_tester_factory(
             stack.enter_context(beekeeper_remote_address_env_context_factory(address))
             stack.enter_context(beekeeper_session_token_env_context_factory(token))
 
-            return CLITester(cli, runner, world_cli)
+            return CLITester(cli, runner, world_with_remote_beekeeper)
 
         with ExitStack() as stack:
             cli_tester = await create_cli_tester_unlocked(stack)
