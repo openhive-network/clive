@@ -300,7 +300,7 @@ class Commands[WorldT: World]:
         self,
         *,
         content: TransactionConvertibleType,
-        sign_key: PublicKey | None = None,
+        sign_keys: PublicKey | list[PublicKey] | None = None,
         autosign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
@@ -318,8 +318,10 @@ class Commands[WorldT: World]:
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key or autosign else None,
-                sign_key=sign_key,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet
+                if sign_keys is not None or autosign
+                else None,
+                sign_keys=sign_keys,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,
