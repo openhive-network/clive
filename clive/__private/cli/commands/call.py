@@ -5,11 +5,14 @@ from dataclasses import dataclass, field
 
 import msgspec
 
+from beekeepy.communication import AioHttpCommunicator
+from beekeepy.communication import Callbacks, CommunicationSettings
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
-from clive.__private.cli.print_cli import print_json
+from clive.__private.cli.print_cli import print_json, print_cli
 from clive.__private.core.formatters.case import camelize
 from clive.__private.models.schemas import CustomJsonOperation, JsonString
+from beekeepy._utilities.build_json_rpc_call import build_json_rpc_call
 
 
 @dataclass(kw_only=True)
@@ -20,22 +23,19 @@ class Call(WorldBasedCommand):
     _json_params: list | dict = field(init=False)
 
     async def _run(self) -> None:
-        api_name = self.api_name
-        api_client_module_name = f"{self.api_name}.{self.api_name}_client"
-        api_class_name = f"{camelize(self.api_name)}"
-        client_module = importlib.import_module(api_client_module_name)
-        api_class = getattr(client_module, api_class_name)
 
-        class ApiCollection:
-            def __init__(self) -> None:
-                setattr(self, api_name, api_class)
 
-        extended_chain = self.world.wax_interface.extends(ApiCollection)
-        awaitable = getattr(getattr(extended_chain.api, api_name), self.method_name)
-        # we don't support condenser_api
-        result = await awaitable(**self._get_keyword_params())
-
-        print_json(msgspec.json.encode(result).decode())
+        url = self.world.node.http_endpoint
+        endpoint = f"{self.api_name}.{self.method_name}"
+        data = build_json_rpc_call(
+            method=endpoint,
+            params=self.params,
+            id_=0,
+        )
+        communicator = AioHttpCommunicator(settings=CommunicationSettings())
+        response = await communicator.async_post(url, data)
+        breakpoint()
+        print_cli(response)
 
     async def _hook_before_entering_context_manager(self) -> None:
         """Overrides WorldBasedCommand implementation so this command prints only raw json."""
