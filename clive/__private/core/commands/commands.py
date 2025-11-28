@@ -12,7 +12,7 @@ from clive.__private.core.constants.data_retrieval import (
     WITNESSES_SEARCH_MODE_DEFAULT,
 )
 from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
-from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT, DEFAULT_SERIALIZATION_MODE
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
@@ -58,6 +58,7 @@ if TYPE_CHECKING:
         OrderDirections,
         ProposalOrders,
         ProposalStatuses,
+        SerializationMode,
         WitnessesSearchModes,
     )
     from clive.__private.core.world import World
@@ -307,6 +308,7 @@ class Commands[WorldT: World]:
         chain_id: str | None = None,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
+        serialization_mode: SerializationMode = DEFAULT_SERIALIZATION_MODE,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.perform_actions_on_transaction import (  # noqa: PLC0415
@@ -327,6 +329,7 @@ class Commands[WorldT: World]:
                 chain_id=chain_id,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
+                serialization_mode=serialization_mode,
                 broadcast=broadcast,
                 autosign=autosign,
             )
