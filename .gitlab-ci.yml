@@ -323,6 +323,7 @@ deploy_wheel_to_pypi:
     paths: [ public ]
   tags:  # has to be a single runner or cache should be shared between multiple runners
     - data-cache-storage
+    - hive-builder-9
 
 deploy_docs:
   pages: true
