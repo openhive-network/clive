@@ -8,153 +8,133 @@ sub-commands or/and options.
 The main command is `clive` and it has sub-commands like `clive configure` or `clive show`. The sub-commands can have
 sub-commands as well.
 
-In the diagram below, all commands that can be run are enclosed in rectangles, while subcommands that require an
-additional command are contained in rectangles with rounded corners. (i.e. only the top-down leafs are runnable
-commands, the rest are sub-commands)
+In the tree below, you can see all the commands and sub-commands that `clive` has:
 
-```mermaid
-flowchart LR
-    Clive[clive] --> Configuration
-    Clive --> Presentation
-    Clive --> Processing
-    Clive --> BeekeeperRelated
-
-    subgraph BeekeeperRelated[Beekeeper related commands]
-        Beekeeper(beekeeper) --> BeekeeperSpawn[spawn]
-        Beekeeper --> BeekeeperClose[close]
-        Beekeeper --> BeekeeperInfo[info]
-    end
-
-   subgraph Processing[Commands related to performing certain actions]
-        Process(process) --> ProcessTransfer[transfer]
-
-        Process --> ProcessTransferSchedule[transfer-schedule]
-        ProcessTransferSchedule --> ProcessTransferScheduleCreate[create]
-        ProcessTransferSchedule --> ProcessTransferScheduleModify[modify]
-        ProcessTransferSchedule --> ProcessTransferScheduleRemove[remove]
-
-        Process --> ProcessTransaction[transaction]
-
-        Process --> ProcessSavings(savings)
-        ProcessSavings --> ProcessSavingsDeposit[deposit]
-        ProcessSavings --> ProcessSavingsWithdrawal[withdrawal]
-        ProcessSavings --> ProcessSavingsWithdrawalCancel[withdrawal-cancel]
-        Process --> ProcessProxy[proxy]
-        ProcessProxy --> ProcessProxySet[set]
-        ProcessProxy --> ProcessProxyClear[clear]
-
-        Process --> ProcessUpdateAuthority["update-[owner|active|posting]-authority"]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityAddAccount[add-account]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityAddKey[add-key]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityModifyAccount[modify-account]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityModifyKey[modify-key]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityRemoveAccount[remove-account]
-        ProcessUpdateAuthority --> ProcessUpdateAuthorityRemoveKey[remove-key]
-
-        Process --> ProcessUpdateMemoKey[update-memo-key]
-
-        Process --> ProcessPowerUp[power-up]
-        Process --> ProcessPowerDown(power-down)
-        ProcessPowerDown --> ProcessPowerDownStart[start]
-        ProcessPowerDown --> ProcessPowerDownRestart[restart]
-        ProcessPowerDown --> ProcessPowerDownCancel[cancel]
-        Process --> ProcessWithdrawRoutes(withdraw-routes)
-        ProcessWithdrawRoutes --> ProcessWithdrawRoutesSet[set]
-        ProcessWithdrawRoutes --> ProcessWithdrawRoutesRemove[remove]
-        Process --> ProcessDelegations(delegations)
-        ProcessDelegations --> ProcessDelegationsSet[set]
-        ProcessDelegations --> ProcessDelegationsRemove[remove]
-
-        Process --> ProcessClaim(claim)
-        ProcessClaim --> ProcessClaimNewAccountToken[new-account-token]
-
-        Process --> ProcessVoteWitness(vote-witness)
-        ProcessVoteWitness --> ProcessVoteWitnessAdd[add]
-        ProcessVoteWitness --> ProcessVoteWitnessRemove[remove]
-
-        Process --> ProcessVoteProposal(vote-proposal)
-        ProcessVoteProposal --> ProcessVoteProposalAdd[add]
-        ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
-
-        Process --> ProcessCustomJson(custom-json)
-        Process --> ProcessChangeRecoveryAccount(change-recovery-account)
-
-        Process --> ProcessVotingRights(voting-rights)
-        ProcessVotingRights --> ProcessVotingRightsDecline[decline]
-        ProcessVotingRights --> ProcessVotingRightsCancelDecline[cancel-decline]
-    end
-
-    subgraph Presentation[Commands related to the presentation of the data]
-        Show(show) --> ShowProfiles[profiles]
-
-        Show --> ShowProfile[profile]
-
-        Show --> ShowNode[node]
-
-        Show --> ShowAccount[account]
-
-        Show --> ShowAccounts[accounts]
-
-        Show --> ShowKeys[keys]
-
-        Show --> ShowBalances[balances]
-
-        Show --> ShowTransactionStatus[transaction-status]
-
-        Show --> ShowChain[chain]
-
-        Show --> ShowProxy[proxy]
-
-        Show --> ShowWitnesses[witnesses]
-        ShowWitnesses ~~~|"witnesses:<br>- show witnesses the account votes for<br>- possible to list also proxy votes"| ShowWitnesses
-
-        Show --> ShowWitness[witness]
-        ShowWitness ~~~|"witness:<br>- show details of chosen witness"| ShowWitness
-
-        Show --> ShowProposals[proposals]
-
-        Show --> ShowProposal[proposal]
-        ShowProposal ~~~|"proposal:<br>- show details of chosen proposal"| ShowProposal
-
-        Show --> ShowHivePower[hive-power]
-
-        Show --> ShowNewAccountToken[new-account-token]
-
-        Show --> ShowPending(pending)
-        ShowPending --> ShowPendingChangeRecoveryAccount[change-recovery-account]
-        ShowPending --> ShowPendingPowerDown[power-down]
-        ShowPending --> ShowPendingPowerUps[power-ups]
-        ShowPending --> ShowPendingRemovedDelegations[removed-delegations]
-        ShowPending --> ShowPendingTransferFromSavings[withdrawals]
-        ShowPending --> ShowPendingDeclineVotingRights[decline-voting-rights]
-
-        Show --> ShowTransferSchedule[transfer-schedule]
-
-        Show --> ShowAuthority["[owner|active|posting]-authority"]
-        Show --> ShowMemoKey[memo-key]
-    end
-
-    subgraph Configuration[Configuration related commands]
-        Configure(configure) --> ConfigureProfile(profile)
-        ConfigureProfile --> CreateProfile[create]
-        ConfigureProfile --> DeleteProfile[delete]
-
-        Configure --> ConfigureTrackedAccount(tracked-account)
-        ConfigureTrackedAccount --> AddTrackedAccount[add]
-        ConfigureTrackedAccount --> RemoveTrackedAccount[remove]
-
-        Configure --> ConfigureWorkingAccount(working-account)
-        ConfigureWorkingAccount --> SwitchWorkingAccount[switch]
-
-        Configure --> ConfigureKey(key)
-        ConfigureKey --> AddKey[add]
-        ConfigureKey --> RemoveKey[remove]
-
-        Configure --> ConfigureNode(node)
-        ConfigureNode --> SetNode[set]
-
-        Configure --> ConfigureChainId(chain-id)
-        ConfigureChainId --> SetChainId[set]
-        ConfigureChainId --> UnsetChainId[unset]
-    end
+```
+clive
+├── configure
+│ ├── chain-id
+│ │ ├── set
+│ │ └── unset
+│ ├── key
+│ │ ├── add
+│ │ └── remove
+│ ├── known-account
+│ │ ├── add
+│ │ ├── disable
+│ │ ├── enable
+│ │ └── remove
+│ ├── node
+│ │ └── set
+│ ├── profile
+│ │ ├── create
+│ │ └── delete
+│ ├── tracked-account
+│ │ ├── add
+│ │ └── remove
+│ └── working-account
+│ └── switch
+├── show
+│ ├── active-authority
+│ ├── account
+│ ├── accounts
+│ ├── balances
+│ ├── chain
+│ ├── hive-power
+│ ├── keys
+│ ├── memo-key
+│ ├── node
+│ ├── new-account-token
+│ ├── owner-authority
+│ ├── pending
+│ │ ├── change-recovery-account
+│ │ ├── decline-voting-rights
+│ │ ├── power-down
+│ │ ├── power-ups
+│ │ ├── removed-delegations
+│ │ └── withdrawals
+│ ├── posting-authority
+│ ├── profile
+│ ├── profiles
+│ ├── proposals
+│ ├── proposal
+│ ├── proxy
+│ ├── transaction-status
+│ ├── transfer-schedule
+│ ├── witnesses
+│ └── witness
+├── process
+│ ├── account-creation
+│ ├── change-recovery-account
+│ ├── claim
+│ │ └── new-account-token
+│ ├── custom-json
+│ ├── delegations
+│ │ ├── remove
+│ │ └── set
+│ ├── power-down
+│ │ ├── cancel
+│ │ ├── restart
+│ │ └── start
+│ ├── power-up
+│ ├── proxy
+│ │ ├── clear
+│ │ └── set
+│ ├── savings
+│ │ ├── deposit
+│ │ ├── withdrawal
+│ │ └── withdrawal-cancel
+│ ├── transaction
+│ ├── transfer
+│ ├── transfer-schedule
+│ │ ├── create
+│ │ ├── modify
+│ │ └── remove
+│ ├── update-active-authority
+│ │ ├── add-account
+│ │ ├── add-key
+│ │ ├── modify-account
+│ │ ├── modify-key
+│ │ ├── remove-account
+│ │ └── remove-key
+│ ├── update-memo-key
+│ ├── update-owner-authority
+│ │ ├── add-account
+│ │ ├── add-key
+│ │ ├── modify-account
+│ │ ├── modify-key
+│ │ ├── remove-account
+│ │ └── remove-key
+│ ├── update-posting-authority
+│ │ ├── add-account
+│ │ ├── add-key
+│ │ ├── modify-account
+│ │ ├── modify-key
+│ │ ├── remove-account
+│ │ └── remove-key
+│ ├── update-witness
+│ ├── vote-proposal
+│ │ ├── add
+│ │ └── remove
+│ ├── vote-witness
+│ │ ├── add
+│ │ └── remove
+│ ├── voting-rights
+│ │ ├── cancel-decline
+│ │ └── decline
+│ └── withdraw-routes
+│ ├── remove
+│ └── set
+├── generate
+│ ├── key-from-seed
+│ ├── public-key
+│ ├── random-key
+│ └── secret-phrase
+├── beekeeper
+│ ├── close
+│ ├── create-session
+│ ├── info
+│ └── spawn
+├── lock
+└── unlock
 ```
