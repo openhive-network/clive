@@ -44,4 +44,5 @@ Quickly find what you're looking for depending on your use case by looking at th
 
 1. [Home](index.md)
 2. [Development](development.md)
-3. [Reference](reference.md)
+3. [CLI commands structure](cli_commands_structure.md)
+4. [Reference](reference.md)

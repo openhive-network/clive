@@ -1,9 +1,15 @@
+---
+hide:
+    - toc
+    - navigation
+---
+
 ## Commands Structure
 
 The commands have been designed in a sub-command structure.
 
-:grey_question: In any time it's possible to use the `-h`/`--help` flag to get help about the current command, related
-sub-commands or/and options.
+In any time it's possible to use the `-h`/`--help` flag to get help about the current command, related sub-commands
+or/and options.
 
 The main command is `clive` and it has sub-commands like `clive configure` or `clive show`. The sub-commands can have
 sub-commands as well.

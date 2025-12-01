@@ -68,4 +68,5 @@ extra_css:
 nav:
   - Home: index.md
   - Development: development.md
+  - CLI commands structure: cli_commands_structure.md
   - Reference: reference.md
