@@ -1,4 +1,7 @@
-hide: - navigation
+---
+hide:
+    - navigation
+---
 
 ## Introduction
 

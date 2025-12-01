@@ -1,3 +1,6 @@
-hide: - navigation
+---
+hide:
+    - navigation
+---
 
 ::: clive
