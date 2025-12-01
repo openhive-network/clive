@@ -33,6 +33,9 @@ Using `start_clive.sh` will start the TUI application, while `start_clive_cli.sh
 
 # Using the CLI environment
 
+For a full overview of all available commands and sub-commands, see the
+[Clive CLI commands structure](./clive/__private/cli/commands_structure.md).
+
 You can simply invoke the TUI application by running the `clive` command with no arguments. If you want to use the CLI
 mode, pass an argument or subcommand to the `clive` command like `--help` or `show profile`.
 
