@@ -322,22 +322,9 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
     Returns:
         A human-readable data representing the hive power.
     """
-    symbol = "HP" if show_symbol else ""
-
-    if not use_short_form:
-        return f"{value.pretty_amount()} {symbol}".rstrip()
-
-    formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
-
-    if "Byte" in formatted_string:
-        return f"{value.pretty_amount()} {symbol}".rstrip()
-
-    format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
-    matched = format_fix_regex.match(formatted_string)
-    assert matched is not None, "Given string does not match regex"
-    new_value = matched[1]
-    unit = matched[2]
-    return f"{new_value}{unit} {symbol}".upper().rstrip()
+    hive_symbol = Asset.get_symbol(Asset.Hive)
+    result = humanize_asset(value, show_symbol=show_symbol, use_short_form=use_short_form)
+    return result.replace(hive_symbol, "HP")
 
 
 def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
@@ -649,7 +636,13 @@ def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
 
-def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
+def humanize_asset(
+    asset: Asset.AnyT,
+    *,
+    show_symbol: bool = True,
+    sign_prefix: SignPrefixT = "",
+    use_short_form: bool = False,
+) -> str:
     """
     Generate pretty formatted asset.
 
@@ -657,6 +650,7 @@ def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: 
         asset: An asset to be formatted.
         show_symbol: Whether to show the asset symbol.
         sign_prefix: A prefix to be added to the asset amount.
+        use_short_form: Whether to use short form for the asset amount.
 
     Example:
         >>> asset = Asset.Hive(1035.401)
@@ -670,12 +664,28 @@ def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: 
     Returns:
         A human-readable data representing the asset amount with an optional symbol.
     """
-    pretty_asset = Asset.pretty_amount(asset)
-    asset_symbol = Asset.get_symbol(asset)
-    if sign_prefix and int(asset.amount) != 0:
-        # To not allow display + or - if balance is equal to zero.
-        return f"{sign_prefix}{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
-    return f"{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
+
+    def apply_prefix(amount_str: str) -> str:
+        return f"{sign_prefix}{amount_str}" if sign_prefix and int(asset.amount) != 0 else amount_str
+
+    pretty_amount = asset.pretty_amount()
+    asset_symbol = Asset.get_symbol(asset) if show_symbol else ""
+
+    if not use_short_form:
+        return f"{apply_prefix(pretty_amount)} {asset_symbol}".rstrip()
+
+    formatted_amount = humanize.naturalsize(pretty_amount, binary=False)
+
+    if "Byte" in formatted_amount:
+        return f"{apply_prefix(pretty_amount)} {asset_symbol}".rstrip()
+
+    format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
+    matched = format_fix_regex.match(formatted_amount)
+    assert matched is not None, "Given string does not match regex"
+    new_amount = matched[1]
+    unit = matched[2]
+
+    return f"{apply_prefix(new_amount)}{unit} {asset_symbol}".upper().rstrip()
 
 
 def humanize_bool(value: bool) -> str:  # noqa: FBT001
