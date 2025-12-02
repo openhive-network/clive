@@ -24,6 +24,7 @@ dependencies = [
     'hiveio-schemas (>=1.28.2,<2.0.0)',
     'hiveio-beekeepy (>=1.28.6,<2.0.0)',
     'hiveio-wax (>=2.0.0,<3.0.0)',
+    'hiveio-api (>=1.28.5,<2.0.0)',
 ]
 
 [project.urls]
