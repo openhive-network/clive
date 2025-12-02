@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from json import JSONDecodeError, loads
 from typing import TYPE_CHECKING
 
 import pytest
@@ -304,3 +305,11 @@ def assert_contains_transaction_saved_to_file_message(file_path: str | Path, mes
     normalized = rest.replace("\n", "")
 
     assert str(file_path) in normalized, f"Transaction was saved but looks like to a wrong file: {normalized}"
+
+
+def assert_result_contains_valid_json(result: CLITestResult) -> None:
+    """Asserts that the provided content is valid JSON."""
+    try:
+        loads(result.output)
+    except JSONDecodeError:
+        pytest.fail(f"Expected valid JSON content.\n{result.info}")

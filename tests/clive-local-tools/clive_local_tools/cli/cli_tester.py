@@ -687,3 +687,10 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
+
+    def call(
+        self,
+        *args: StringConvertibleOptionTypes,
+        node_address: str | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["call"], args, **extract_params(locals(), "args"))
