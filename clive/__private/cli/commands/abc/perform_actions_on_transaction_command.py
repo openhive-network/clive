@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
 
-import rich
-
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
@@ -22,7 +20,7 @@ from clive.__private.cli.exceptions import (
     CLITransactionUnknownAccountError,
     CLIWrongAlreadySignedModeAutoSignError,
 )
-from clive.__private.cli.print_cli import print_cli
+from clive.__private.cli.print_cli import print_cli, print_json
 from clive.__private.cli.warnings import typer_echo_warnings
 from clive.__private.core.commands.perform_actions_on_transaction import AutoSignSkippedWarning
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
@@ -280,7 +278,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         transaction_json = transaction.json(order="sorted")
         message = self._get_transaction_created_message().capitalize()
         print_cli(f"{message} transaction:")
-        rich.print_json(transaction_json)
+        print_json(transaction_json)
 
     def _print_dry_run_message_if_needed(self) -> None:
         if not self.should_broadcast and not self.is_save_file_given:
