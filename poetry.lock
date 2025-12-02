@@ -623,14 +623,52 @@ hpack = ">=4.1,<5"
 hyperframe = ">=6.1,<7"
 
 [[package]]
+name = "hiveio-account-by-key-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_account_by_key_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:916e9ab5e2a28d57cce4b7327ffd0dc13e1fb652b0c4f5a674d4705b98024031"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-account-history-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_account_history_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:df561b90e6c45116cc21c6f87a5bea709bd9a3355e01e48ee8f225f3346749a0"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
 name = "hiveio-beekeepy"
-version = "1.28.1.dev2+8d14ac8"
+version = "1.28.0"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_beekeepy-1.28.1.dev2+8d14ac8-py3-none-any.whl", hash = "sha256:992dfcdb5dec50a0899afb357321ee81799d0933e81939826abf356c223a2239"},
+    {file = "hiveio_beekeepy-1.28.0-py3-none-any.whl", hash = "sha256:f2f16db1ef66484fb1a22aef92efea9cc309fd971d3982621f9bc9b4bab9189f"},
 ]
 
 [package.dependencies]
@@ -647,18 +685,94 @@ url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
 reference = "gitlab-beekeepy"
 
 [[package]]
+name = "hiveio-block-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_block_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:cf7d8586fb6ef7069f833fc230321eb5e1f28ca339270be1f0a7b9e327211a54"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
 name = "hiveio-database-api"
-version = "1.28.2.dev34+02dd6ba54"
+version = "1.28.2.dev15+42d819556"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_database_api-1.28.2.dev34+02dd6ba54-py3-none-any.whl", hash = "sha256:dd5c89474cea445843ca1e7b2a9d0d5e82e55c6384cccf30c9f88de897f51337"},
+    {file = "hiveio_database_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:dfb795557df8f452b3170c2f31f2b53062fd8f5858a2fc5ca9ab6b4fcb923658"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = "1.28.1.dev2+8d14ac8"
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-debug-node-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_debug_node_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:afd5c12b63c7cfbd3d5ed2fce6512bca03b590d1dcf6c9c9e416984cd780df8f"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-follow-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_follow_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:4f07854dd0af7bae1a93aca6ea071c922b64462cf9747b495003840b6d0cc050"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-market-history-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_market_history_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:5a1920f7268f048dcb90f7666412b7c7b9e584ba7981ff8de41feea80bccfe3e"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
 
 [package.source]
 type = "legacy"
@@ -667,17 +781,17 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-network-broadcast-api"
-version = "1.28.2.dev34+02dd6ba54"
+version = "1.28.2.dev15+42d819556"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_network_broadcast_api-1.28.2.dev34+02dd6ba54-py3-none-any.whl", hash = "sha256:f14cacdc582e64dc6335ba0e290d21e8a5ab6fdda9012a2cf3d83a9e84724c0c"},
+    {file = "hiveio_network_broadcast_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:e7d4b814f46693b011519c4502b6c77cd7b6263af951b04a7e10be5c3bfabb08"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = "1.28.1.dev2+8d14ac8"
+hiveio-beekeepy = "1.28.0"
 
 [package.source]
 type = "legacy"
@@ -686,17 +800,36 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-rc-api"
-version = "1.28.2.dev34+02dd6ba54"
+version = "1.28.2.dev15+42d819556"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_rc_api-1.28.2.dev34+02dd6ba54-py3-none-any.whl", hash = "sha256:98d6e51d0efbde733476d74aec15d15146b955b6176012c3e9bcfb36466b452b"},
+    {file = "hiveio_rc_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:676c3a6095c1f6712b5e80eab43bee054e19f5c5460a7e6eecfefc76695073f7"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = "1.28.1.dev2+8d14ac8"
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-reputation-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_reputation_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:fe84df40700dc5f92dec7616d1d3c71e694dd635b7c8d599a3f72b95b32a3503"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
 
 [package.source]
 type = "legacy"
@@ -723,20 +856,58 @@ url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
 reference = "gitlab-schemas"
 
 [[package]]
+name = "hiveio-search-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_search_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:589c9f956546bb7785c9c32974944420969906a8d48df74298a53abed50efcf1"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-transaction-status-api"
+version = "1.28.2.dev15+42d819556"
+description = ""
+optional = false
+python-versions = ">=3.12,<4.0"
+groups = ["main"]
+files = [
+    {file = "hiveio_transaction_status_api-1.28.2.dev15+42d819556-py3-none-any.whl", hash = "sha256:04bdb409977c3104cce998092326ac42ef58401130060dab7ead285f7f8ed3e5"},
+]
+
+[package.dependencies]
+hiveio-beekeepy = "1.28.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
 name = "hiveio-wax"
-version = "1.28.4rc1.dev31+b3cc32af"
+version = "1.27.12rc4.dev39+bd40f689"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_wax-1.28.4rc1.dev31+b3cc32af-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:891f3691846d7cb711fbfd75e0b17173c3f52a25ef5958f6ebef0084196289cc"},
+    {file = "hiveio_wax-1.27.12rc4.dev39+bd40f689-cp312-cp312-manylinux_2_39_x86_64.whl", hash = "sha256:d956d3845c9cdf077f6cff492425a9e7cdfba3ad130f17ac3a3b0bba3a06b1bf"},
 ]
 
 [package.dependencies]
-hiveio-database-api = "1.28.2.dev34+02dd6ba54"
-hiveio-network-broadcast-api = "1.28.2.dev34+02dd6ba54"
-hiveio-rc-api = "1.28.2.dev34+02dd6ba54"
+hiveio-database-api = "1.28.2.dev15+42d819556"
+hiveio-network-broadcast-api = "1.28.2.dev15+42d819556"
+hiveio-rc-api = "1.28.2.dev15+42d819556"
 httpx = {version = "0.23.3", extras = ["http2"]}
 loguru = "0.7.2"
 protobuf = "4.24.4"
@@ -2211,7 +2382,7 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-hiveio-wax = "1.28.4rc1.dev31+b3cc32af"
+hiveio-wax = "1.27.12rc4.dev39+bd40f689"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 
@@ -2553,4 +2724,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "0baecf306afb0ddc9f23ae7f07c483d9db8b58373a708d7a7b271832df6b42a1"
+content-hash = "38bcd0d7697d36639116144156d6084e93cdaec10fcb202424193d751a43a2c9"
