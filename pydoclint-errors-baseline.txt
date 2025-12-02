@@ -100,6 +100,8 @@ clive/__private/cli/generate/main.py
 clive/__private/cli/main.py
     DOC101: Function `unlock`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `unlock`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [include_create_new_profile: bool, profile_name: str | None, profile_name_option: str | None, unlock_time_mins: int | None].
+    DOC101: Function `call_api`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `call_api`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [api_name: str, method_name: str, node_address: str | None, params: str].
 --------------------
 clive/__private/cli/process/claim.py
     DOC101: Function `process_claim_new_account_token`: Docstring contains fewer arguments than in function signature.
