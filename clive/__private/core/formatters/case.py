@@ -5,10 +5,10 @@ import inflection
 
 def underscore(string: str) -> str:
     """
-    Convert string from CamelCase to snake_case.
+    Convert string from CamelCase or kebab-case to snake_case.
 
     Args:
-        string: The input string in CamelCase format.
+        string: The input string in CamelCase or kebab-case format.
 
     Returns:
         The converted string in snake_case format.
@@ -33,3 +33,16 @@ def dasherize(string: str) -> str:
         The converted string.
     """
     return inflection.dasherize(string)
+
+
+def camelize(string: str) -> str:
+    """
+    Convert strings to CamelCase.
+
+    Args:
+        string: The input string in snake_case or pascalCase format.
+
+    Returns:
+        The converted string in CamelCase format.
+    """
+    return inflection.camelize(string)
