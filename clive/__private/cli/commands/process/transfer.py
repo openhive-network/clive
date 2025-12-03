@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models.schemas import TransferOperation
 
@@ -12,16 +13,15 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class Transfer(OperationCommand):
+class Transfer(OperationCommand, MemoCommand):
     from_account: str
     to: str
     amount: Asset.LiquidT
-    memo: str
 
     async def _create_operations(self) -> ComposeTransaction:
         yield TransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
-            memo=self.memo,
+            memo=self.ensure_memo,
         )
