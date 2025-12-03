@@ -545,3 +545,16 @@ class CLIChangeRecoveryAccountValidationError(CLIPrettyError):
     def __init__(self, name: str, reason: str) -> None:
         message = f"Account `{name}` can't be used. Reason: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class CLIPrivateKeyInMemoValidationError(CLIPrettyError):
+    """
+    Raise when memo validation detects a private key.
+
+    Args:
+        reason: Description of the validation failure.
+    """
+
+    def __init__(self, reason: str) -> None:
+        message = f"Memo validation failed: {reason}"
+        super().__init__(message, errno.EINVAL)

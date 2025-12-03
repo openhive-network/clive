@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import (
     ProcessTransferScheduleAlreadyExistsError,
@@ -69,6 +70,7 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
 
     async def fetch_data(self) -> None:
+        await super().fetch_data()
         self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
 
     async def fetch_scheduled_transfers_for_current_account(self) -> AccountScheduledTransferData:
@@ -95,9 +97,8 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
 
 
 @dataclass(kw_only=True)
-class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon):
+class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon, MemoCommand):
     amount: Asset.LiquidT | None
-    memo: str | None
     frequency: timedelta | None
     repeat: int | None
 
@@ -124,13 +125,12 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
 
     async def _create_operations(self) -> ComposeTransaction:
         assert self.repeat is not None, "Value of repeat is None."
-        assert self.memo is not None, "Value of memo is None."
         assert self.amount is not None, "Value of amount is None."
         yield RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
-            memo=self.memo,
+            memo=self.ensure_memo,
             recurrence=timedelta_to_int_hours(self.frequency_ensure),
             executions=self.repeat,
             extensions=self._create_recurrent_transfer_pair_id_extension(),
@@ -140,7 +140,6 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
 @dataclass(kw_only=True)
 class ProcessTransferScheduleCreate(_ProcessTransferScheduleCreateModifyCommon):
     amount: Asset.LiquidT
-    memo: str
     frequency: timedelta
     repeat: int
 
@@ -157,7 +156,7 @@ class ProcessTransferScheduleCreate(_ProcessTransferScheduleCreateModifyCommon):
 @dataclass(kw_only=True)
 class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
     async def fetch_data(self) -> None:
-        self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
+        await super().fetch_data()
         if self.scheduled_transfer:
             self.amount = self.amount if self.amount is not None else self.scheduled_transfer.amount
             self.repeat = self.repeat if self.repeat is not None else self.scheduled_transfer.remaining_executions

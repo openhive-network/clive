@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models.schemas import TransferFromSavingsOperation
 
@@ -13,12 +14,11 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class ProcessWithdrawal(OperationCommand):
+class ProcessWithdrawal(OperationCommand, MemoCommand):
     from_account: str
     request_id: int | None
     to_account: str
     amount: Asset.LiquidT
-    memo: str
 
     async def _create_operations(self) -> ComposeTransaction:
         if self.request_id is None:
@@ -31,5 +31,5 @@ class ProcessWithdrawal(OperationCommand):
             request_id=self.request_id,
             to=self.to_account,
             amount=self.amount,
-            memo=self.memo,
+            memo=self.ensure_memo,
         )
