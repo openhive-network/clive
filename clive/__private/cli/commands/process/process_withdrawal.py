@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models.schemas import TransferFromSavingsOperation
 
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class ProcessWithdrawal(OperationCommand):
+class ProcessWithdrawal(OperationCommand, MemoCommand):
     from_account: str
     request_id: int | None
     to_account: str
@@ -25,6 +26,8 @@ class ProcessWithdrawal(OperationCommand):
             wrapper = await self.world.commands.retrieve_savings_data(account_name=self.profile.accounts.working.name)
             savings_data: SavingsData = wrapper.result_or_raise
             self.request_id = savings_data.create_request_id()
+
+        await self.validate_memo(self.memo)
 
         yield TransferFromSavingsOperation(
             from_=self.from_account,

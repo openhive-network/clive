@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import (
     ProcessTransferScheduleAlreadyExistsError,
@@ -95,7 +96,7 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
 
 
 @dataclass(kw_only=True)
-class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon):
+class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon, MemoCommand):
     amount: Asset.LiquidT | None
     memo: str | None
     frequency: timedelta | None
@@ -126,6 +127,7 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon)
         assert self.repeat is not None, "Value of repeat is None."
         assert self.memo is not None, "Value of memo is None."
         assert self.amount is not None, "Value of amount is None."
+        await self.validate_memo(self.memo)
         yield RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
