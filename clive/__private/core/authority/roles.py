@@ -11,6 +11,7 @@ from clive.__private.core.authority.entries import (
     AuthorityEntryRegular,
 )
 from clive.__private.core.authority.exceptions import AuthorityEntryNotFoundError
+from clive.__private.core.keys.keys import PublicKey
 from clive.__private.core.str_utils import Matchable
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     HiveRoleAuthorityDefinition,
@@ -140,25 +141,29 @@ class AuthorityRoleRegular(AuthorityRoleBase):
         """
         return any(entry_wrapper_object.is_matching_pattern(*patterns) for entry_wrapper_object in self.get_entries())
 
-    def add(self, account_or_key: str, weight: int) -> None:
-        self.role.add(account_or_key, weight)
+    def add(self, account_or_key: str | PublicKey, weight: int) -> None:
+        self.role.add(self._normalize_account_or_key(account_or_key), weight)
 
-    def remove(self, account_or_key: str) -> None:
-        self.role.remove(account_or_key)
+    def remove(self, account_or_key: str | PublicKey) -> None:
+        self.role.remove(self._normalize_account_or_key(account_or_key))
 
     def replace(
         self,
-        account_or_key: str,
+        account_or_key: str | PublicKey,
         weight: int,
-        new_account_or_key: str | None = None,
+        new_account_or_key: str | PublicKey | None = None,
     ) -> None:
-        self.role.replace(account_or_key, weight, new_account_or_key)
+        self.role.replace(
+            self._normalize_account_or_key(account_or_key),
+            weight,
+            self._normalize_account_or_key(new_account_or_key) if new_account_or_key else None,
+        )
 
     def set_threshold(self, threshold: int) -> None:
         self.role.set_threshold(threshold)
 
-    def has(self, account_or_key: str, weight: int | None = None) -> bool:
-        return self.role.has(account_or_key, weight)
+    def has(self, account_or_key: str | PublicKey, weight: int | None = None) -> bool:
+        return self.role.has(self._normalize_account_or_key(account_or_key), weight)
 
     def reset(self) -> None:
         self._role.reset()
@@ -176,6 +181,19 @@ class AuthorityRoleRegular(AuthorityRoleBase):
         """
         entries = self.key_entries
         return sum(entry.weight for entry in entries if entry.public_key in keys)
+
+    def _normalize_account_or_key(self, key_or_account: str | PublicKey) -> str:
+        from clive.__private.core.authority.authority import Authority  # noqa: PLC0415
+
+        if isinstance(key_or_account, PublicKey):
+            return key_or_account.value
+
+        entry_type = Authority.determine_entry_type(key_or_account)
+        if entry_type == "account":
+            return key_or_account
+
+        key_converted = PublicKey.create(key_or_account)
+        return key_converted.value
 
 
 class AuthorityRoleMemo(AuthorityRoleBase):
@@ -195,8 +213,8 @@ class AuthorityRoleMemo(AuthorityRoleBase):
     def level_display(self) -> str:
         return "memo key"
 
-    def set(self, public_key: str) -> None:
-        self.role.set(public_key)
+    def set(self, public_key: str | PublicKey) -> None:
+        self.role.set(PublicKey.create(public_key).value)
 
     def reset(self) -> None:
         self._role.reset()
