@@ -46,7 +46,7 @@ Example usage:
 
     # Query operations (no profile needed)
     clive = CliveSi()
-    witnesses = await clive.show.witnesses("bob")
+    profiles = await clive.show.profiles()
     ```
 """
 
