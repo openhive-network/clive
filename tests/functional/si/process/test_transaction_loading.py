@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive_local_tools.helpers import create_transaction_filepath
+
 from .constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     AMOUNT,
@@ -22,15 +24,10 @@ if TYPE_CHECKING:
     from clive.__private.si.base import UnlockedCliveSi
 
 
-async def test_transaction_from_file_multisign(
-    clive_si_with_two_keys_profile: UnlockedCliveSi,
-    tmp_path: Path,
-) -> None:
+async def test_transaction_from_file_multisign(clive_si_with_two_keys_profile: UnlockedCliveSi) -> None:
     """Test loading transaction from file and adding another signature."""
     # ARRANGE
-    files_dir = tmp_path / "transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / "transfer_to_multisign.json"
+    file_path = create_transaction_filepath()
 
     # Create and save first transaction with one signature
     await (
