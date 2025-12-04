@@ -11,6 +11,7 @@ from clive.__private.core.authority.entries import (
     AuthorityEntryRegular,
 )
 from clive.__private.core.authority.exceptions import AuthorityEntryNotFoundError
+from clive.__private.core.keys.keys import PublicKey
 from clive.__private.core.str_utils import Matchable
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     HiveRoleAuthorityDefinition,
@@ -68,6 +69,12 @@ class AuthorityRoleBase(AuthorityEntriesHolder, Matchable, ABC):
     def ensure_regular(self) -> AuthorityRoleRegular:
         assert self.is_regular, "Invalid type of entry."
         return cast("AuthorityRoleRegular", self)
+
+    @staticmethod
+    def ensure_string(value_to_ensure: str | PublicKey) -> str:
+        if isinstance(value_to_ensure, PublicKey):
+            return value_to_ensure.value
+        return value_to_ensure
 
     def is_matching_pattern(self, *patterns: str) -> bool:
         """
@@ -140,25 +147,29 @@ class AuthorityRoleRegular(AuthorityRoleBase):
         """
         return any(entry_wrapper_object.is_matching_pattern(*patterns) for entry_wrapper_object in self.get_entries())
 
-    def add(self, account_or_key: str, weight: int) -> None:
-        self.role.add(account_or_key, weight)
+    def add(self, account_or_key: str | PublicKey, weight: int) -> None:
+        self.role.add(self.ensure_string(account_or_key), weight)
 
-    def remove(self, account_or_key: str) -> None:
-        self.role.remove(account_or_key)
+    def remove(self, account_or_key: str | PublicKey) -> None:
+        self.role.remove(self.ensure_string(account_or_key))
 
     def replace(
         self,
-        account_or_key: str,
+        account_or_key: str | PublicKey,
         weight: int,
-        new_account_or_key: str | None = None,
+        new_account_or_key: str | PublicKey | None = None,
     ) -> None:
-        self.role.replace(account_or_key, weight, new_account_or_key)
+        self.role.replace(
+            self.ensure_string(account_or_key),
+            weight,
+            self.ensure_string(new_account_or_key) if new_account_or_key else None,
+        )
 
     def set_threshold(self, threshold: int) -> None:
         self.role.set_threshold(threshold)
 
-    def has(self, account_or_key: str, weight: int | None = None) -> bool:
-        return self.role.has(account_or_key, weight)
+    def has(self, account_or_key: str | PublicKey, weight: int | None = None) -> bool:
+        return self.role.has(self.ensure_string(account_or_key), weight)
 
     def reset(self) -> None:
         self._role.reset()
@@ -195,8 +206,8 @@ class AuthorityRoleMemo(AuthorityRoleBase):
     def level_display(self) -> str:
         return "memo key"
 
-    def set(self, public_key: str) -> None:
-        self.role.set(public_key)
+    def set(self, public_key: str | PublicKey) -> None:
+        self.role.set(self.ensure_string(public_key))
 
     def reset(self) -> None:
         self._role.reset()
