@@ -237,15 +237,15 @@ class Call(WorldBasedCommand):
         api_class_name = get_api_class_name(self.api_name)
         try:
             importlib.import_module(self.api_name)
-        except ModuleNotFoundError as err:
+        except Exception as err:
             raise CLIApiPackageNotFoundError(self.api_name) from err
         try:
             client_module = importlib.import_module(api_client_module_name)
-        except ModuleNotFoundError as err:
+        except Exception as err:
             raise CLIApiClientModuleNotFoundError(api_client_module_name, self.api_name) from err
         try:
             api_class = getattr(client_module, api_class_name)
-        except ModuleNotFoundError as err:
+        except Exception as err:
             raise CLIApiClassDefinitionNotFoundError(api_class_name, self.api_name) from err
         self._api_class = api_class
 
