@@ -276,7 +276,7 @@ class TransactionSummary(BaseScreen):
 
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
-            sign_key=sign_key,
+            sign_keys=sign_key,
             broadcast=True,
         )
         if wrapper.error_occurred:

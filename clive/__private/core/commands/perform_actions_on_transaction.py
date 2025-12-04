@@ -14,20 +14,24 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.unsign import UnSign
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.data_retrieval import (
+    ALREADY_SIGNED_MODE_DEFAULT,
+    DEFAULT_SERIALIZATION_MODE,
+)
+from clive.__private.core.keys import PublicKey
 from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.types import SerializationMode
 
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
-    from clive.__private.core.keys import PublicKey
     from clive.__private.core.node import Node
     from clive.__private.core.types import AlreadySignedMode
 
@@ -57,10 +61,11 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         app_state: The app state.
         node: The node used for transaction broadcasting.
         unlocked_wallet: Required if the transaction needs to be signed.
-        sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+        sign_keys: Single key or list of keys to sign the transaction with.
+            If a list with multiple keys, uses multisign mode. Cannot be used with autosign.
         autosign: Whether to automatically sign the transaction.
         already_signed_mode: How to handle already signed transactions.
-        force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
+        force_unsign: Whether to remove the signature from the transaction. Even when sign_keys is provided.
         chain_id: The chain ID to use when signing the transaction. If not provided, the one from the profile and
             then from the node get_config api will be used as fallback.
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
@@ -76,8 +81,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     app_state: AppState
     node: Node
     unlocked_wallet: AsyncUnlockedWallet | None = None
-    """Required if transaction needs to be signed - when sign_key is provided."""
-    sign_key: PublicKey | None = None
+    """Required if transaction needs to be signed - when sign_keys is provided."""
+    sign_keys: PublicKey | list[PublicKey] | None = None
     autosign: bool = False
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """
@@ -87,14 +92,22 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     chain_id: str | None = None
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
+    serialization_mode: SerializationMode = DEFAULT_SERIALIZATION_MODE
     broadcast: bool = False
 
     async def _execute(self) -> None:
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
-        if not self.force_unsign and (self.sign_key or self.autosign):
-            assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"
-            assert not (self.sign_key and self.autosign), "only one of sign_key and autosign can be provided"
+        # First, unsign if requested (removes existing signatures)
+        if self.force_unsign:
+            transaction = await UnSign(transaction=transaction).execute_with_result()
+
+        # Then, sign with new signatures if requested
+        if self.sign_keys is not None or self.autosign:
+            assert self.unlocked_wallet is not None, "wallet is required when sign_keys or autosign is provided"
+
+            # Validate that only one signing method is used
+            assert not (self.sign_keys is not None and self.autosign), "sign_keys and autosign cannot be used together"
 
             if self.autosign:
                 try:
@@ -108,21 +121,27 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                 except TransactionAlreadySignedAutoSignError:
                     # We don't want to raise an error if the transaction is already signed, just skip the signing step.
                     warnings.warn(AutoSignSkippedWarning(), stacklevel=1)
-            elif self.sign_key:
-                transaction = await Sign(
-                    unlocked_wallet=self.unlocked_wallet,
-                    transaction=transaction,
-                    key=self.sign_key,
-                    chain_id=self.chain_id or await self.node.chain_id,
-                    already_signed_mode=self.already_signed_mode,
-                ).execute_with_result()
+            elif self.sign_keys is not None:
+                # Normalize to list
+                keys_to_sign = [self.sign_keys] if isinstance(self.sign_keys, PublicKey) else self.sign_keys
 
-        if self.force_unsign:
-            transaction = await UnSign(transaction=transaction).execute_with_result()
+                # Sign with key(s) - use multisign mode if multiple keys
+                already_signed_mode = "multisign" if len(keys_to_sign) > 1 else self.already_signed_mode
+                for key in keys_to_sign:
+                    transaction = await Sign(
+                        unlocked_wallet=self.unlocked_wallet,
+                        transaction=transaction,
+                        key=key,
+                        chain_id=self.chain_id or await self.node.chain_id,
+                        already_signed_mode=already_signed_mode,
+                    ).execute_with_result()
 
         if path := self.save_file_path:
             await SaveTransaction(
-                transaction=transaction, file_path=path, force_format=self.force_save_format
+                transaction=transaction,
+                file_path=path,
+                force_format=self.force_save_format,
+                serialization_mode=self.serialization_mode,
             ).execute()
 
         if self.broadcast:
