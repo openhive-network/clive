@@ -48,6 +48,7 @@ from clive.__private.ui.widgets.clive_basic.clive_collapsible import CliveCollap
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from wax.exceptions.chain_errors import AuthorityCannotBeSatisfiedError, HiveMaxAuthorityMembershipExceededError
 from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
+from wax.exceptions.wax_error import WaxAssertionError
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -601,7 +602,7 @@ class ModifyAuthority(BaseScreen, OperationActionBindings):
         ) as error:
             self.notify(str(error), severity="warning")
             return None
-        except RuntimeError:  # connected issue https://gitlab.syncad.com/hive/wax/-/issues/131
+        except WaxAssertionError:  # connected issue https://gitlab.syncad.com/hive/wax/-/issues/141
             self.notify(
                 "Something went wrong during operation creation, please check if all "
                 "added or edited values are correct.",
