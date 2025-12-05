@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 import test_tools as tt
 
+from clive.__private.models.schemas import ValidationError
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from schemas.operations.transfer_operation import TransferOperation
 
@@ -97,8 +98,7 @@ async def test_transfer_sign_and_broadcast_separately(
 
     # ASSERT
     transaction_id = transaction.with_hash().transaction_id
-    operation = transaction.operations[0].value
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, transaction_id, *transaction.operations_models)
 
 
 async def test_transfer_double_in_one_transaction(
@@ -204,7 +204,7 @@ async def test_transfer_validation_error(
     invalid_account = "ab"
 
     # ACT & ASSERT
-    with pytest.raises(Exception, match=r"(length|validation)"):
+    with pytest.raises(ValidationError, match="length"):
         await clive_si.process.transfer(
             from_account=WORKING_ACCOUNT_NAME,
             to_account=invalid_account,
