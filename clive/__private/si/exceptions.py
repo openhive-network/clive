@@ -5,6 +5,13 @@ from __future__ import annotations
 from typing import Final
 
 
+class SIContextManagerNotUsedError(Exception):
+    """Raised when UnlockedCliveSi is used without async context manager."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 class PasswordRequirementsNotMetError(Exception):
     """Raised when the provided password does not meet the requirements."""
 

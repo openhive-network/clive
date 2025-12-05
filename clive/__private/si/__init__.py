@@ -7,15 +7,22 @@ It allows developers to write Python scripts that perform blockchain operations.
 Main classes:
     CliveSi - Interface for read-only operations (no profile needed)
     UnlockedCliveSi - Full interface with unlocked profile for all operations
+                      MUST be used as async context manager
 
 Factory function:
     clive_use_unlocked_profile() - Convenient way to get UnlockedCliveSi instance
+
+IMPORTANT: UnlockedCliveSi and clive_use_unlocked_profile() MUST be used as async context managers.
+The context manager handles:
+- Profile loading from the unlocked beekeeper wallet on entry
+- Profile saving to storage on exit
+- Proper cleanup of all resources
 
 Example usage:
     ```python
     from clive.__private.si.base import UnlockedCliveSi, clive_use_unlocked_profile
 
-    # Basic transfer
+    # Basic transfer - ALWAYS use async with
     async with clive_use_unlocked_profile() as clive:
         await clive.process.transfer(
             from_account="alice",
@@ -24,7 +31,7 @@ Example usage:
             memo="Payment"
         ).broadcast()
 
-    # Or directly:
+    # Or directly - ALWAYS use async with
     async with UnlockedCliveSi() as clive:
         await clive.process.transfer(
             from_account="alice",
@@ -44,7 +51,7 @@ Example usage:
             amount="2.000 HIVE",
         ).sign_with("5J...").broadcast()
 
-    # Query operations (no profile needed)
+    # Query operations (no profile needed, context manager optional)
     clive = CliveSi()
     profiles = await clive.show.profiles()
     ```

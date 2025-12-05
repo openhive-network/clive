@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.si.core.configure import ProfileLoad
-
 if TYPE_CHECKING:
     from clive.__private.si.base import UnlockedCliveSi
 
@@ -15,5 +13,10 @@ class ConfigureInterface:
         self.clive = clive_instance
 
     async def profile_load(self) -> None:
-        """Load an existing profile."""
-        await ProfileLoad(self.clive._world).run()
+        """
+        Reload the currently unlocked profile from storage.
+
+        This method is rarely needed as SIWorld automatically loads the unlocked profile during setup.
+        Use this only if you need to refresh the profile state after external changes.
+        """
+        await self.clive._world.load_profile_based_on_beekepeer()
