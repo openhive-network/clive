@@ -7,13 +7,12 @@ from typing import TYPE_CHECKING, Literal
 
 import pytest
 
+from clive_local_tools.helpers import create_transaction_filepath
 from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_DATA, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import test_tools as tt
 
     from clive.__private.si.base import UnlockedCliveSi
@@ -80,7 +79,6 @@ async def test_broadcast_on_object(
 )
 async def test_save_to_file(
     clive_si: UnlockedCliveSi,
-    tmp_path: Path,
     file_format: Literal["json", "bin"],
     serialization_mode: Literal["legacy", "hf26"],
     *,
@@ -88,9 +86,7 @@ async def test_save_to_file(
 ) -> None:
     """Test saving transaction to file with different formats and serialization modes."""
     # ARRANGE
-    files_dir = tmp_path / "saved_transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / f"test_{file_format}_{serialization_mode}.{file_format}"
+    file_path = create_transaction_filepath()
 
     # ACT
     if on_object:

@@ -7,6 +7,7 @@ import test_tools as tt
 
 from clive.__private.models.schemas import ValidationError
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
+from clive_local_tools.helpers import create_transaction_filepath
 from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import (
@@ -22,8 +23,6 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from clive.__private.si.base import UnlockedCliveSi
 
 
@@ -176,13 +175,10 @@ async def test_transfer_triple_in_one_transaction(
 
 async def test_transfer_save_to_file(
     clive_si: UnlockedCliveSi,
-    tmp_path: Path,
 ) -> None:
     """Test saving transfer transaction to file."""
     # ARRANGE
-    files_dir = tmp_path / "transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / "transfer.json"
+    file_path = create_transaction_filepath()
 
     # ACT
     await clive_si.process.transfer(

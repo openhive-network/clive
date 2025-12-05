@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive_local_tools.helpers import create_transaction_filepath
 from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import (
@@ -18,8 +19,6 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import test_tools as tt
 
     from clive.__private.si.base import UnlockedCliveSi
@@ -27,13 +26,10 @@ if TYPE_CHECKING:
 
 async def test_transaction_from_file_multisign(
     clive_si_with_two_keys_profile: UnlockedCliveSi,
-    tmp_path: Path,
 ) -> None:
     """Test loading transaction from file and adding another signature."""
     # ARRANGE
-    files_dir = tmp_path / "transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / "transfer_to_multisign.json"
+    file_path = create_transaction_filepath()
 
     # Create and save first transaction with one signature
     await (
@@ -64,13 +60,10 @@ async def test_transaction_from_file_multisign(
 
 async def test_transaction_from_file_add_operation(
     clive_si: UnlockedCliveSi,
-    tmp_path: Path,
 ) -> None:
     """Test loading transaction from file and adding another operation."""
     # ARRANGE
-    files_dir = tmp_path / "transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / "transfer_base.json"
+    file_path = create_transaction_filepath()
 
     # Save first transaction
     await clive_si.process.transfer(
@@ -208,13 +201,10 @@ async def test_transaction_from_object_add_operation(
 
 async def test_transaction_from_file_with_add_transfer_original_tapos(
     clive_si: UnlockedCliveSi,
-    tmp_path: Path,
 ) -> None:
     """Test loading transaction from file and adding another operation. - verification of original TAPOS preserved."""
     # ARRANGE
-    files_dir = tmp_path / "transactions"
-    files_dir.mkdir(parents=True, exist_ok=True)
-    file_path = files_dir / "transfer_base.json"
+    file_path = create_transaction_filepath()
 
     # Save first transaction
     transfer_transaction = (
@@ -255,10 +245,9 @@ async def test_transaction_from_file_with_add_transfer_original_tapos(
 async def test_broadcast_signed_transaction_from_file_with_strict_mode(
     clive_si: UnlockedCliveSi,
     node: tt.RawNode,
-    tmp_path: Path,
 ) -> None:
     """Test broadcasting a signed transaction loaded from file with strict mode (no additional signing)."""
-    file_path = tmp_path / "signed_transfer.json"
+    file_path = create_transaction_filepath()
     expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create and save signed transaction
@@ -284,10 +273,9 @@ async def test_broadcast_signed_transaction_from_file_with_strict_mode(
 async def test_broadcast_transaction_from_file_with_signature_override(
     clive_si_with_two_keys_profile: UnlockedCliveSi,
     node: tt.RawNode,
-    tmp_path: Path,
 ) -> None:
     """Test broadcasting a transaction where original signature is overridden."""
-    file_path = tmp_path / "transfer_to_override.json"
+    file_path = create_transaction_filepath()
     expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create and save transaction with signature
