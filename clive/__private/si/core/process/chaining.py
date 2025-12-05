@@ -361,7 +361,7 @@ class AuthorityUpdateChain(ChainableOperationBuilder):
         world: World,
         authority_type: AuthorityLevelRegular,
         account_name: str,
-        threshold: int,
+        threshold: int | None,
         previous_operations: list[OperationBuilder] | None = None,
     ) -> None:
         super().__init__(world, previous_operations)

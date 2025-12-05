@@ -277,15 +277,16 @@ class AuthorityBuilder(OperationBuilder):
         world: World,
         authority_type: AuthorityLevelRegular,
         account_name: str,
-        threshold: int,
+        threshold: int | None = None,
     ) -> None:
         super().__init__(world)
         self.authority_type = authority_type
         self.account_name = account_name
         self.threshold = threshold
         self._callbacks: list[Callable[[Authority], Authority]] = []
-        # Add threshold callback immediately
-        self._callbacks.append(partial(authority_operations.set_threshold, threshold=threshold))
+        # Add threshold callback only if threshold is provided
+        if threshold is not None:
+            self._callbacks.append(partial(authority_operations.set_threshold, threshold=threshold))
 
     def add_key(self, *, key: str, weight: int) -> Self:
         """Add a key with specified weight to the authority."""

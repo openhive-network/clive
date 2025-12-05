@@ -63,7 +63,7 @@ class OperationsBuilderInterface:
         self,
         authority_type: AuthorityLevelRegular,
         account_name: str,
-        threshold: int,
+        threshold: int | None,
     ) -> AuthorityUpdateChain:
         """Common method for updating authority."""
         return AuthorityUpdateChain(
@@ -78,7 +78,7 @@ class OperationsBuilderInterface:
         self,
         account_name: str,
         *,
-        threshold: int,
+        threshold: int | None = None,
     ) -> AuthorityUpdateChain:
         """Update owner authority for an account."""
         return self._update_authority("owner", account_name, threshold)
@@ -87,7 +87,7 @@ class OperationsBuilderInterface:
         self,
         account_name: str,
         *,
-        threshold: int,
+        threshold: int | None = None,
     ) -> AuthorityUpdateChain:
         """Update active authority for an account."""
         return self._update_authority("active", account_name, threshold)
@@ -96,7 +96,7 @@ class OperationsBuilderInterface:
         self,
         account_name: str,
         *,
-        threshold: int,
+        threshold: int | None = None,
     ) -> AuthorityUpdateChain:
         """Update posting authority for an account."""
         return self._update_authority("posting", account_name, threshold)
