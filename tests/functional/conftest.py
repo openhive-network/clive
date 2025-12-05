@@ -10,13 +10,11 @@ from clive.__private.core.world import World
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive_local_tools.data.constants import (
-    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     KNOWN_ACCOUNT_NAMES,
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.testnet_block_log import (
-    ALT_WORKING_ACCOUNT1_DATA,
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_NAME,
@@ -62,7 +60,7 @@ async def world_cli(beekeeper_local: AsyncBeekeeper) -> AsyncGenerator[World]:
 
 
 @pytest.fixture
-async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
+async def prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
     """Prepare profile and wallets using remote beekeeper."""
     await world_cli.create_new_profile_with_wallets(
         name=WORKING_ACCOUNT_NAME,
@@ -75,32 +73,6 @@ async def _prepare_profile_with_wallet_cli(world_cli: World) -> Profile:
     world_cli.profile.keys.add_to_import(
         PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
     )
-    await world_cli.commands.sync_data_with_beekeeper()
-    await world_cli.commands.save_profile()  # required for saving imported keys aliases
-    return world_cli.profile
-
-
-@pytest.fixture
-async def _prepare_profile_with_wallet_cli_two_keys(world_cli: World) -> Profile:
-    """Prepare profile and wallets using remote beekeeper."""
-    await world_cli.create_new_profile_with_wallets(
-        name=WORKING_ACCOUNT_NAME,
-        password=WORKING_ACCOUNT_PASSWORD,
-        working_account=WORKING_ACCOUNT_NAME,
-        watched_accounts=WATCHED_ACCOUNTS_NAMES,
-        known_accounts=KNOWN_ACCOUNT_NAMES,
-    )
-    await world_cli.commands.sync_state_with_beekeeper()
-    world_cli.profile.keys.add_to_import(
-        PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
-    )
-
-    world_cli.profile.keys.add_to_import(
-        PrivateKeyAliased(
-            value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
-        )
-    )
-
     await world_cli.commands.sync_data_with_beekeeper()
     await world_cli.commands.save_profile()  # required for saving imported keys aliases
     return world_cli.profile
@@ -108,20 +80,9 @@ async def _prepare_profile_with_wallet_cli_two_keys(world_cli: World) -> Profile
 
 @pytest.fixture
 async def node(
-    node_address_env_context_factory: EnvContextFactory, world_cli: World, _prepare_profile_with_wallet_cli: Profile
-) -> AsyncGenerator[tt.RawNode]:
-    node = run_node()
-    await world_cli.set_address(node.http_endpoint)
-    address = str(node.http_endpoint)
-    with node_address_env_context_factory(address):
-        yield node
-
-
-@pytest.fixture
-async def node_two_keys_profile(
     node_address_env_context_factory: EnvContextFactory,
     world_cli: World,
-    _prepare_profile_with_wallet_cli_two_keys: Profile,
+    prepare_profile_with_wallet_cli: Profile,  # noqa: ARG001
 ) -> AsyncGenerator[tt.RawNode]:
     node = run_node()
     await world_cli.set_address(node.http_endpoint)
