@@ -111,9 +111,6 @@ def build_account_update_operation(
 
     # Get the authority we're modifying
     authority = getattr(operation, authority_type)
-    if authority is None:
-        # If authority doesn't exist, create a default one
-        authority = Authority(weight_threshold=1, account_auths=[], key_auths=[])
 
     # Apply all callbacks to modify the authority
     for callback in callbacks:
