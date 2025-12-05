@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.authority.authority import Authority
 from schemas.operations.account_update2_operation import AccountUpdate2Operation
 
 from .constants import AMOUNT, MEMO, RECEIVER, TEST_KEY, WORKING_ACCOUNT_NAME
@@ -61,6 +62,7 @@ async def test_authority_update_add_and_remove_key(
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
     assert isinstance(operation, AccountUpdate2Operation)
+    assert isinstance(operation.active, Authority)
     assert operation.active.weight_threshold == expected_weight_threshold
 
 

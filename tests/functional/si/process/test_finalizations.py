@@ -6,6 +6,7 @@ import json
 from typing import TYPE_CHECKING, Literal
 
 import pytest
+
 from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_DATA, WORKING_ACCOUNT_NAME

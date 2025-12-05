@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
-from schemas.operations.transfer_operation import TransferOperation
 
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
+from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import (
     AMOUNT,
