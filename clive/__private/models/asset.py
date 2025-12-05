@@ -249,12 +249,21 @@ class Asset:
 
     @staticmethod
     def is_hive(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        if isinstance(asset, type):
+            return issubclass(asset, Asset.Hive)
+
         return isinstance(asset, Asset.Hive)
 
     @staticmethod
     def is_hbd(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        if isinstance(asset, type):
+            return issubclass(asset, Asset.Hbd)
+
         return isinstance(asset, Asset.Hbd)
 
     @staticmethod
     def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        if isinstance(asset, type):
+            return issubclass(asset, Asset.Vests)
+
         return isinstance(asset, Asset.Vests)
