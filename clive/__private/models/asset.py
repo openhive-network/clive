@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeAlias, TypeVar, cast, get_args
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -77,6 +77,7 @@ class Asset:
     LiquidT: TypeAlias = Hive | Hbd  # noqa: UP040  # used in isinstance check
     VotingT: TypeAlias = Hive | Vests  # noqa: UP040  # used in isinstance check
     AnyT: TypeAlias = Hive | Hbd | Vests  # noqa: UP040  # used in isinstance check
+    LIQUID_TYPES: ClassVar[tuple[type[AssetHive], type[AssetHbd]]] = get_args(LiquidT)
 
     @classmethod
     def hive(cls, amount: AssetAmount) -> Asset.Hive:
@@ -125,6 +126,11 @@ class Asset:
             An instance of Vests asset with the specified amount.
         """
         return cls.__create(Asset.Vests, amount)
+
+    @classmethod
+    def ensure_liquid_type(cls, asset_type: type[Asset.AnyT]) -> type[Asset.LiquidT]:
+        assert asset_type in cls.LIQUID_TYPES, f"Asset is not liquid type, given type is {asset_type}"
+        return cast("type[Asset.LiquidT]", asset_type)
 
     @classmethod
     def __create(cls, asset: type[AssetExplicitT], amount: AssetAmount) -> AssetExplicitT:
