@@ -99,6 +99,44 @@ async def test_transaction_from_file_add_operation(
     assert operation_1.to == SECOND_RECEIVER
 
 
+async def test_broadcast_transaction_from_file_add_operation(
+    clive_si: UnlockedCliveSi,
+    node: tt.RawNode,
+) -> None:
+    """Test loading transaction from file, adding another operation and broadcasting."""
+    # ARRANGE
+    file_path = create_transaction_filepath()
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT - AMOUNT2
+
+    # Save first transaction
+    await clive_si.process.transfer(
+        from_account=WORKING_ACCOUNT_NAME,
+        to_account=RECEIVER,
+        amount=AMOUNT,
+        memo=MEMO,
+    ).save_file(path=file_path)
+
+    # ACT - Load from file, add second operation and broadcast
+    await (
+        clive_si.process.transaction(
+            from_file=file_path,
+            force_unsign=True,
+        )
+        .process.transfer(
+            from_account=WORKING_ACCOUNT_NAME,
+            to_account=SECOND_RECEIVER,
+            amount=AMOUNT2,
+            memo=MEMO2,
+        )
+        .autosign()
+        .broadcast()
+    )
+
+    # ASSERT
+    balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    assert balance_after == expected_balance_after
+
+
 async def test_transaction_from_object_multisign(
     clive_si_with_two_keys_profile: UnlockedCliveSi,
 ) -> None:
@@ -364,27 +402,30 @@ async def test_broadcast_transaction_from_object_with_signature_override_same_ke
     expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create transaction with signature
-    transaction = await (
+    transaction_1 = await (
         clive_si_with_two_keys_profile.process.transfer(
             from_account=WORKING_ACCOUNT_NAME,
             to_account=RECEIVER,
             amount=AMOUNT,
             memo=MEMO,
         )
-        .sign_with(key=WORKING_ACCOUNT_KEY_ALIAS)
+        .sign_with(key=ALT_WORKING_ACCOUNT1_KEY_ALIAS)
         .as_transaction_object()
     )
-
+    signature_1 = transaction_1.signatures
     # Load from object and override signature with same key
-    await (
+    transaction2 = await (
         clive_si_with_two_keys_profile.process.transaction_from_object(
-            from_object=transaction,
+            from_object=transaction_1,
             already_signed_mode="override",
         )
         .sign_with(key=WORKING_ACCOUNT_KEY_ALIAS)
-        .broadcast()
+        .as_transaction_object()
     )
-
+    await transaction2.broadcast()
     # Verify transaction was broadcasted successfully
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
     assert balance_after == expected_balance_after
+
+    # Verify that transaction has overridden signature
+    assert signature_1 != transaction2.signatures

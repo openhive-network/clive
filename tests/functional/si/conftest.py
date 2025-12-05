@@ -12,7 +12,6 @@ from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_DATA
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
-    from pathlib import Path
 
     import test_tools as tt
     from beekeepy import AsyncBeekeeper
@@ -62,11 +61,3 @@ async def clive_si_with_two_keys_profile(
 ) -> UnlockedCliveSi:
     """Will return unlocked clive script interface."""
     return clive_si
-
-
-@pytest.fixture
-def transactions_dir(tmp_path: Path) -> Path:
-    """Create and return a directory for test transaction files."""
-    dir_path = tmp_path / "transactions"
-    dir_path.mkdir(parents=True, exist_ok=True)
-    return dir_path
