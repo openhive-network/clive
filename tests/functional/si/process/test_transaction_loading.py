@@ -10,6 +10,7 @@ from .constants import (
     MEMO2,
     RECEIVER,
     SECOND_RECEIVER,
+    WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_NAME,
 )
@@ -248,7 +249,7 @@ async def test_broadcast_signed_transaction_from_file_with_strict_mode(
 ) -> None:
     """Test broadcasting a signed transaction loaded from file with strict mode (no additional signing)."""
     file_path = tmp_path / "signed_transfer.json"
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create and save signed transaction
     await (
@@ -267,7 +268,7 @@ async def test_broadcast_signed_transaction_from_file_with_strict_mode(
 
     # Verify transaction was broadcasted successfully
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_broadcast_transaction_from_file_with_signature_override(
@@ -277,7 +278,7 @@ async def test_broadcast_transaction_from_file_with_signature_override(
 ) -> None:
     """Test broadcasting a transaction where original signature is overridden."""
     file_path = tmp_path / "transfer_to_override.json"
-    balance_before = node_two_keys_profile.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create and save transaction with signature
     await (
@@ -300,7 +301,7 @@ async def test_broadcast_transaction_from_file_with_signature_override(
 
     # Verify transaction was broadcasted successfully
     balance_after = node_two_keys_profile.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_broadcast_signed_transaction_from_object_with_strict_mode(
@@ -308,7 +309,7 @@ async def test_broadcast_signed_transaction_from_object_with_strict_mode(
     node: tt.RawNode,
 ) -> None:
     """Test broadcasting a signed transaction loaded from object with strict mode (no additional signing)."""
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create signed transaction
     transaction = await (
@@ -327,7 +328,7 @@ async def test_broadcast_signed_transaction_from_object_with_strict_mode(
 
     # Verify transaction was broadcasted successfully
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_broadcast_unsigned_transaction_from_object_with_signing(
@@ -335,7 +336,7 @@ async def test_broadcast_unsigned_transaction_from_object_with_signing(
     node: tt.RawNode,
 ) -> None:
     """Test broadcasting an unsigned transaction loaded from object by signing it."""
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create unsigned transaction
     transaction = await clive_si.process.transfer(
@@ -354,7 +355,7 @@ async def test_broadcast_unsigned_transaction_from_object_with_signing(
 
     # Verify transaction was broadcasted successfully
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_broadcast_transaction_from_object_with_signature_override_same_key(
@@ -362,7 +363,7 @@ async def test_broadcast_transaction_from_object_with_signature_override_same_ke
     node_two_keys_profile: tt.RawNode,
 ) -> None:
     """Test broadcasting a transaction from object where original signature is overridden."""
-    balance_before = node_two_keys_profile.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # Create transaction with signature
     transaction = await (
@@ -388,4 +389,4 @@ async def test_broadcast_transaction_from_object_with_signature_override_same_ke
 
     # Verify transaction was broadcasted successfully
     balance_after = node_two_keys_profile.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after

@@ -7,7 +7,11 @@ from typing import Final
 import test_tools as tt
 
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_NAME
+from clive_local_tools.testnet_block_log.constants import (
+    WATCHED_ACCOUNTS_DATA,
+    WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
+)
 
 # Test accounts
 RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
@@ -37,6 +41,7 @@ __all__ = [
     "TEST_KEY",
     "TEST_KEY2",
     "WATCHED_ACCOUNTS_DATA",
+    "WORKING_ACCOUNT_DATA",
     "WORKING_ACCOUNT_KEY_ALIAS",
     "WORKING_ACCOUNT_NAME",
 ]

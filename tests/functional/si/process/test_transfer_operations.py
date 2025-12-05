@@ -14,6 +14,7 @@ from .constants import (
     MEMO2,
     RECEIVER,
     SECOND_RECEIVER,
+    WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_KEY_ALIAS,
     WORKING_ACCOUNT_NAME,
 )
@@ -30,7 +31,7 @@ async def test_transfer_simple(
 ) -> None:
     """Test simple transfer operation with autosign and broadcast."""
     # ARRANGE
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # ACT
     await (
@@ -46,7 +47,7 @@ async def test_transfer_simple(
 
     # ASSERT
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_transfer_as_transaction_object(
