@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal
 
 import pytest
 
-from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_NAME
+from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_DATA, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -23,7 +23,7 @@ async def test_broadcast(
 ) -> None:
     """Test broadcasting a transfer transaction with autosign."""
     # ARRANGE
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # ACT
     await (
@@ -39,7 +39,7 @@ async def test_broadcast(
 
     # ASSERT
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 async def test_broadcast_on_object(
@@ -48,7 +48,7 @@ async def test_broadcast_on_object(
 ) -> None:
     """Test broadcasting a transfer transaction with autosign."""
     # ARRANGE
-    balance_before = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
+    expected_balance_after = WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT
 
     # ACT
     transfer_transaction = await (
@@ -64,7 +64,7 @@ async def test_broadcast_on_object(
     await transfer_transaction.broadcast()
     # ASSERT
     balance_after = node.api.wallet_bridge.get_account(WORKING_ACCOUNT_NAME).balance  # type: ignore[union-attr]
-    assert balance_after == balance_before - AMOUNT
+    assert balance_after == expected_balance_after
 
 
 @pytest.mark.parametrize("on_object", [True, False], ids=["on_object", "direct"])
