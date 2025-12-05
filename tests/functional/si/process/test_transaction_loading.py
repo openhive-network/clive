@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from schemas.operations.transfer_operation import TransferOperation
+
 from .constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     AMOUNT,
@@ -96,8 +98,12 @@ async def test_transaction_from_file_add_operation(
     # ASSERT
     expected_operations_count = 2
     assert len(combined_transaction.operations) == expected_operations_count
-    assert combined_transaction.operations[0].value.to == RECEIVER  # type: ignore[union-attr]
-    assert combined_transaction.operations[1].value.to == SECOND_RECEIVER  # type: ignore[union-attr]
+    operation_0 = combined_transaction.operations[0].value
+    operation_1 = combined_transaction.operations[1].value
+    assert isinstance(operation_0, TransferOperation)
+    assert isinstance(operation_1, TransferOperation)
+    assert operation_0.to == RECEIVER
+    assert operation_1.to == SECOND_RECEIVER
 
 
 async def test_transaction_from_object_multisign(
@@ -192,8 +198,12 @@ async def test_transaction_from_object_add_operation(
     # ASSERT
     expected_operations_count = 2
     assert len(combined_transaction.operations) == expected_operations_count
-    assert combined_transaction.operations[0].value.to == RECEIVER  # type: ignore[union-attr]
-    assert combined_transaction.operations[1].value.to == SECOND_RECEIVER  # type: ignore[union-attr]
+    operation_0 = combined_transaction.operations[0].value
+    operation_1 = combined_transaction.operations[1].value
+    assert isinstance(operation_0, TransferOperation)
+    assert isinstance(operation_1, TransferOperation)
+    assert operation_0.to == RECEIVER
+    assert operation_1.to == SECOND_RECEIVER
 
 
 async def test_transaction_from_file_with_add_transfer_original_tapos(

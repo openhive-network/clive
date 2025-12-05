@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from schemas.operations.account_update2_operation import AccountUpdate2Operation
+
 from .constants import AMOUNT, MEMO, RECEIVER, TEST_KEY, WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
@@ -28,9 +30,10 @@ async def test_authority_update_add_key(
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.account == WORKING_ACCOUNT_NAME  # type: ignore[union-attr]
-    assert operation.active is not None  # type: ignore[union-attr]
-    assert operation.active.weight_threshold == 1  # type: ignore[union-attr]
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.account == WORKING_ACCOUNT_NAME
+    assert operation.active is not None
+    assert operation.active.weight_threshold == 1
 
 
 async def test_authority_update_add_and_remove_key(
@@ -57,7 +60,8 @@ async def test_authority_update_add_and_remove_key(
     expected_weight_threshold = 2
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.active.weight_threshold == expected_weight_threshold  # type: ignore[union-attr]
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.active.weight_threshold == expected_weight_threshold
 
 
 async def test_authority_update_modify_account(
@@ -80,7 +84,8 @@ async def test_authority_update_modify_account(
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.active is not None  # type: ignore[union-attr]
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.active is not None
 
 
 async def test_authority_update_modify_key(
@@ -128,7 +133,8 @@ async def test_authority_update_posting(
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.posting is not None  # type: ignore[union-attr]
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.posting is not None
 
 
 async def test_authority_update_owner(
@@ -151,7 +157,8 @@ async def test_authority_update_owner(
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.owner is not None  # type: ignore[union-attr]
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.owner is not None
 
 
 async def test_authority_with_transfer_in_one_transaction(

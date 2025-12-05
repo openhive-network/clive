@@ -6,6 +6,7 @@ import json
 from typing import TYPE_CHECKING, Literal
 
 import pytest
+from schemas.operations.transfer_operation import TransferOperation
 
 from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_DATA, WORKING_ACCOUNT_NAME
 
@@ -140,7 +141,8 @@ async def test_as_transaction_object(clive_si: UnlockedCliveSi) -> None:
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.from_ == WORKING_ACCOUNT_NAME  # type: ignore[union-attr]
-    assert operation.to == RECEIVER  # type: ignore[union-attr]
-    assert operation.amount == AMOUNT  # type: ignore[union-attr]
-    assert operation.memo == MEMO  # type: ignore[union-attr]
+    assert isinstance(operation, TransferOperation)
+    assert operation.from_ == WORKING_ACCOUNT_NAME
+    assert operation.to == RECEIVER
+    assert operation.amount == AMOUNT
+    assert operation.memo == MEMO

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
+from schemas.operations.transfer_operation import TransferOperation
 
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 
@@ -65,10 +66,11 @@ async def test_transfer_as_transaction_object(
     # ASSERT
     assert len(transaction.operations) == 1
     operation = transaction.operations[0].value
-    assert operation.from_ == WORKING_ACCOUNT_NAME  # type: ignore[union-attr]
-    assert operation.to == RECEIVER  # type: ignore[union-attr]
-    assert operation.amount == AMOUNT  # type: ignore[union-attr]
-    assert operation.memo == MEMO  # type: ignore[union-attr]
+    assert isinstance(operation, TransferOperation)
+    assert operation.from_ == WORKING_ACCOUNT_NAME
+    assert operation.to == RECEIVER
+    assert operation.amount == AMOUNT
+    assert operation.memo == MEMO
 
 
 async def test_transfer_sign_and_broadcast_separately(
@@ -123,8 +125,12 @@ async def test_transfer_double_in_one_transaction(
     # ASSERT
     expected_operations_count = 2
     assert len(transaction.operations) == expected_operations_count
-    assert transaction.operations[0].value.to == RECEIVER  # type: ignore[union-attr]
-    assert transaction.operations[1].value.to == SECOND_RECEIVER  # type: ignore[union-attr]
+    operation_0 = transaction.operations[0].value
+    operation_1 = transaction.operations[1].value
+    assert isinstance(operation_0, TransferOperation)
+    assert isinstance(operation_1, TransferOperation)
+    assert operation_0.to == RECEIVER
+    assert operation_1.to == SECOND_RECEIVER
 
 
 async def test_transfer_triple_in_one_transaction(
@@ -157,9 +163,15 @@ async def test_transfer_triple_in_one_transaction(
     # ASSERT
     expected_operations_count = 3
     assert len(transaction.operations) == expected_operations_count
-    assert transaction.operations[0].value.to == RECEIVER  # type: ignore[union-attr]
-    assert transaction.operations[1].value.to == SECOND_RECEIVER  # type: ignore[union-attr]
-    assert transaction.operations[2].value.to == RECEIVER  # type: ignore[union-attr]
+    operation_0 = transaction.operations[0].value
+    operation_1 = transaction.operations[1].value
+    operation_2 = transaction.operations[2].value
+    assert isinstance(operation_0, TransferOperation)
+    assert isinstance(operation_1, TransferOperation)
+    assert isinstance(operation_2, TransferOperation)
+    assert operation_0.to == RECEIVER
+    assert operation_1.to == SECOND_RECEIVER
+    assert operation_2.to == RECEIVER
 
 
 async def test_transfer_save_to_file(
