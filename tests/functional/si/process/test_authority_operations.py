@@ -189,3 +189,108 @@ async def test_authority_with_transfer_in_one_transaction(
     # ASSERT
     expected_operations_count = 2
     assert len(transaction.operations) == expected_operations_count
+
+
+async def test_authority_update_add_key_without_threshold(
+    clive_si: UnlockedCliveSi,
+) -> None:
+    """Test updating active authority by adding a key without changing threshold."""
+    # ACT
+    transaction = (
+        await clive_si.process.update_active_authority(
+            account_name=WORKING_ACCOUNT_NAME,
+        )
+        .add_key(
+            key=TEST_KEY,
+            weight=1,
+        )
+        .as_transaction_object()
+    )
+
+    # ASSERT
+    assert len(transaction.operations) == 1
+    operation = transaction.operations[0].value
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.account == WORKING_ACCOUNT_NAME
+    assert operation.active is not None
+    # Threshold should remain unchanged from the original account authority
+    assert operation.active.weight_threshold == 1
+
+
+async def test_authority_update_modify_key_without_threshold(
+    clive_si: UnlockedCliveSi,
+) -> None:
+    """Test modifying an existing key weight without changing threshold."""
+    # ACT
+    transaction = (
+        await clive_si.process.update_active_authority(
+            account_name=WORKING_ACCOUNT_NAME,
+        )
+        .add_key(
+            key=TEST_KEY,
+            weight=1,
+        )
+        .modify_key(
+            key=TEST_KEY,
+            weight=3,
+        )
+        .as_transaction_object()
+    )
+
+    # ASSERT
+    assert len(transaction.operations) == 1
+    operation = transaction.operations[0].value
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.active is not None
+    # Threshold should remain unchanged
+    assert operation.active.weight_threshold == 1
+
+
+async def test_authority_update_posting_without_threshold(
+    clive_si: UnlockedCliveSi,
+) -> None:
+    """Test updating posting authority without setting threshold."""
+    # ACT
+    transaction = (
+        await clive_si.process.update_posting_authority(
+            account_name=WORKING_ACCOUNT_NAME,
+        )
+        .add_key(
+            key=TEST_KEY,
+            weight=1,
+        )
+        .as_transaction_object()
+    )
+
+    # ASSERT
+    assert len(transaction.operations) == 1
+    operation = transaction.operations[0].value
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.posting is not None
+    # Threshold should remain unchanged from original
+    assert operation.posting.weight_threshold == 1
+
+
+async def test_authority_update_owner_without_threshold(
+    clive_si: UnlockedCliveSi,
+) -> None:
+    """Test updating owner authority without setting threshold."""
+    # ACT
+    transaction = (
+        await clive_si.process.update_owner_authority(
+            account_name=WORKING_ACCOUNT_NAME,
+        )
+        .add_key(
+            key=TEST_KEY,
+            weight=1,
+        )
+        .as_transaction_object()
+    )
+
+    # ASSERT
+    assert len(transaction.operations) == 1
+    operation = transaction.operations[0].value
+    assert isinstance(operation, AccountUpdate2Operation)
+    assert operation.owner is not None
+    # Threshold should remain unchanged from original
+    assert operation.owner.weight_threshold == 1
