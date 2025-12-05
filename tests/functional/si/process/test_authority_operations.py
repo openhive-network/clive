@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.authority.authority import Authority
+from clive.__private.models.schemas import Authority
 from schemas.operations.account_update2_operation import AccountUpdate2Operation
 
 from .constants import AMOUNT, MEMO, RECEIVER, TEST_KEY, WORKING_ACCOUNT_NAME
