@@ -19,8 +19,6 @@ from clive.__private.before_launch import (
 )
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
-from clive.__private.core.commands.create_profile_wallets import CreateProfileWallets
-from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_DIRECTORY, LOG_LEVEL_1ST_PARTY, LOG_LEVELS
 from clive.__private.core.world import World
 from clive.__private.logger import logger
@@ -36,8 +34,6 @@ from clive_local_tools.data.constants import (
     SECRETS_NODE_ADDRESS_ENV_NAME,
     TESTNET_CHAIN_ID,
 )
-from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
-from clive_local_tools.data.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Callable, Generator, Iterator
@@ -46,7 +42,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive.__private.core.profile import Profile
-    from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory, SetupWalletsFactory, Wallets
+    from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory
 
 
 @pytest.fixture(autouse=True)
@@ -176,54 +172,6 @@ async def init_node_extra_apis(
 @pytest.fixture
 def beekeeper(world: World) -> AsyncBeekeeper:
     return world.beekeeper_manager.beekeeper
-
-
-@pytest.fixture
-def setup_wallets(world: World) -> SetupWalletsFactory:
-    @wraps(setup_wallets)
-    async def __setup_wallets(count: int, *, import_keys: bool = True, keys_per_wallet: int = 1) -> Wallets:
-        wallets = [
-            WalletInfo(name=generate_wallet_name(i), password=generate_wallet_password(i), keys=Keys(keys_per_wallet))
-            for i in range(count)
-        ]
-        for wallet in wallets:
-            await CreateProfileWallets(
-                app_state=world.app_state,
-                session=world.beekeeper_manager.session,
-                profile_name=wallet.name,
-                password=wallet.password,
-            ).execute()
-
-            if import_keys:
-                for pairs in wallet.keys.pairs:
-                    await ImportKey(
-                        unlocked_wallet=world.beekeeper_manager.user_wallet,
-                        key_to_import=pairs.private_key,
-                    ).execute()
-        return wallets
-
-    return __setup_wallets
-
-
-@pytest.fixture
-async def wallet(setup_wallets: SetupWalletsFactory) -> WalletInfo:
-    """Will return beekeeper created wallet with 1 key-pair already imported."""
-    wallets = await setup_wallets(1, import_keys=True, keys_per_wallet=1)
-    return wallets[0]
-
-
-@pytest.fixture
-async def wallet_key_to_import(setup_wallets: SetupWalletsFactory) -> WalletInfo:
-    """Will return beekeeper created wallet with 1 key-pair ready to import."""
-    wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=1)
-    return wallets[0]
-
-
-@pytest.fixture
-async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
-    """Will return beekeeper created wallet with no keys available."""
-    wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)
-    return wallets[0]
 
 
 @pytest.fixture

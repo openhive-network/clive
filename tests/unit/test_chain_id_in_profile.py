@@ -5,14 +5,13 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
+from clive.__private.core.keys import PrivateKey
 from clive.__private.core.profile import InvalidChainIdError, Profile
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import TransferOperation, convert_to_representation
 from clive.__private.models.transaction import Transaction
 from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
-from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
-from clive_local_tools.data.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -89,8 +88,8 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
 ) -> None:
     # ARRANGE
     # any transaction so we could sign it, and hope that chain id will be retrieved from the node api
-    wallet = WalletInfo(name=generate_wallet_name(), password=generate_wallet_password(), keys=Keys(1))
-    await world.commands.import_key(key_to_import=wallet.private_key)
+    private_key = PrivateKey.generate(with_alias="dummy-alias")
+    await world.commands.import_key(key_to_import=private_key)
     transaction = Transaction(
         operations=[
             convert_to_representation(
@@ -107,7 +106,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
 
     # ACT
     # chain id should be retrieved from api when needed for the first time and set in profile
-    await world.commands.sign(transaction=transaction, sign_with=wallet.public_key)
+    await world.commands.sign(transaction=transaction, sign_with=private_key.calculate_public_key())
 
     # ASSERT
     assert profile.chain_id is not None, "chain id should be retrieved from api"
