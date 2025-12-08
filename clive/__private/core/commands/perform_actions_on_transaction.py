@@ -14,7 +14,7 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.unsign import UnSign
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.keys import PublicKey
 from clive.__private.models.transaction import Transaction
 
