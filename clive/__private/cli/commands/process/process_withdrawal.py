@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from clive.__private.cli.commands.abc.memo_command import MemoCommand
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
@@ -20,12 +20,16 @@ class ProcessWithdrawal(OperationCommand, MemoCommand):
     to_account: str
     amount: Asset.LiquidT
 
-    async def _create_operations(self) -> ComposeTransaction:
+    @override
+    async def fetch_data(self) -> None:
+        await super().fetch_data()
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_savings_data(account_name=self.profile.accounts.working.name)
             savings_data: SavingsData = wrapper.result_or_raise
             self.request_id = savings_data.create_request_id()
 
+    async def _create_operations(self) -> ComposeTransaction:
+        assert self.request_id is not None, "request_id should be set at this point"
         yield TransferFromSavingsOperation(
             from_=self.from_account,
             request_id=self.request_id,
