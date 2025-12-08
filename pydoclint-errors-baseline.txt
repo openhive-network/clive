@@ -22,6 +22,10 @@ clive/__private/cli/commands/beekeeper/beekeeper_spawn.py
     DOC501: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError'].
 --------------------
+clive/__private/cli/commands/process/process_claim_rewards.py
+    DOC601: Class `ProcessClaimRewards`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ProcessClaimRewards`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [account_name: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC101: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [scheduled_transfer: ScheduledTransfer].
@@ -104,6 +108,8 @@ clive/__private/cli/main.py
 clive/__private/cli/process/claim.py
     DOC101: Function `process_claim_new_account_token`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_claim_new_account_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool | None, creator: str, fee: str | None, save_file: str | None, sign_with: str | None].
+    DOC101: Function `process_claim_rewards`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_claim_rewards`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None].
 --------------------
 clive/__private/cli/process/custom_operations/custom_json.py
     DOC101: Function `process_custom_json`: Docstring contains fewer arguments than in function signature.
