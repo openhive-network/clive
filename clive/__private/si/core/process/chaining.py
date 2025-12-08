@@ -37,7 +37,7 @@ from typing import TYPE_CHECKING, Literal, Self
 
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save_transaction import SaveTransaction
-from clive.__private.core.constants.data_retrieval import DEFAULT_SERIALIZATION_MODE
+from clive.__private.core.constants.transaction import DEFAULT_SERIALIZATION_MODE
 from clive.__private.core.world import World
 from clive.__private.models.transaction import Transaction
 from clive.__private.si.core.process.process import (

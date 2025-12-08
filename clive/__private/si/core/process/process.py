@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
 from clive.__private.core.commands.load_transaction import LoadTransaction
-from clive.__private.core.constants.data_retrieval import DEFAULT_SERIALIZATION_MODE
+from clive.__private.core.constants.transaction import DEFAULT_SERIALIZATION_MODE
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.keys.keys import PublicKey
 from clive.__private.models.asset import Asset
