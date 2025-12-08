@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
 
 BLOCK_LOG_WITH_CONFIG_DIRECTORY: Final[Path] = Path(__file__).parent / "block_log_with_config"
-EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = tt.Time.days(1)
+EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_CASHOUT: Final[timedelta] = tt.Time.days(1)
 
 
 WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [generate_witness_name(i) for i in range(60)]]

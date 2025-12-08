@@ -188,6 +188,26 @@ def create_known_exchange_accounts(wallet: tt.Wallet) -> None:
         )
 
 
+def create_comment_and_vote(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating comment...")
+    wallet.api.post_comment(
+        WORKING_ACCOUNT_DATA.account.name,
+        "test-comment-permlink",
+        "",
+        "meta",
+        "Test Comment Title",
+        "This is the body of the test comment.",
+        "{}",
+    )
+    tt.logger.info("Creating vote...")
+    wallet.api.vote(
+        WORKING_ACCOUNT_DATA.account.name,
+        WORKING_ACCOUNT_DATA.account.name,
+        "test-comment-permlink",
+        100,
+    )
+
+
 def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
@@ -217,6 +237,7 @@ def main() -> None:
     prepare_votes_for_witnesses(wallet)
     create_empty_account(wallet)
     create_known_exchange_accounts(wallet)
+    create_comment_and_vote(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)
