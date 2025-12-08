@@ -11,5 +11,6 @@
   "initial_vesting": {
     "hive_amount": 10000000000,
     "vests_per_hive": 1800
-  }
+  },
+  "hive_cashout_window_seconds": 1
 }
