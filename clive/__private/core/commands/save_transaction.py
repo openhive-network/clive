@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
-from clive.__private.core.constants.data_retrieval import DEFAULT_SERIALIZATION_MODE
+from clive.__private.core.constants.transaction import DEFAULT_SERIALIZATION_MODE
 
 if TYPE_CHECKING:
     from pathlib import Path
