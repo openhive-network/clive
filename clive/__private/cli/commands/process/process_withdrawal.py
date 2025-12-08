@@ -20,15 +20,22 @@ class ProcessWithdrawal(OperationCommand, MemoCommand):
     to_account: str
     amount: Asset.LiquidT
 
-    async def _create_operations(self) -> ComposeTransaction:
+    @property
+    def request_id_ensure(self) -> int:
+        assert self.request_id is not None, "request_id should be set at this point"
+        return self.request_id
+
+    async def fetch_data(self) -> None:
+        await super().fetch_data()
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_savings_data(account_name=self.profile.accounts.working.name)
             savings_data: SavingsData = wrapper.result_or_raise
             self.request_id = savings_data.create_request_id()
 
+    async def _create_operations(self) -> ComposeTransaction:
         yield TransferFromSavingsOperation(
             from_=self.from_account,
-            request_id=self.request_id,
+            request_id=self.request_id_ensure,
             to=self.to_account,
             amount=self.amount,
             memo=self.ensure_memo,
