@@ -27,7 +27,7 @@ from clive.__private.cli.process.update_authority import get_update_authority_ty
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
 from clive.__private.cli.process.voting_rights import voting_rights
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.types import AlreadySignedMode  # noqa: TC001
 
 if TYPE_CHECKING:

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper, NoOpWrapper
 from clive.__private.core.constants.data_retrieval import (
-    ALREADY_SIGNED_MODE_DEFAULT,
     ORDER_DIRECTION_DEFAULT,
     PROPOSAL_ORDER_DEFAULT,
     PROPOSAL_STATUS_DEFAULT,
@@ -13,6 +12,7 @@ from clive.__private.core.constants.data_retrieval import (
     WITNESSES_SEARCH_MODE_DEFAULT,
 )
 from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,

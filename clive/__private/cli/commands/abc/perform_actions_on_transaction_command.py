@@ -25,7 +25,7 @@ from clive.__private.cli.exceptions import (
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.warnings import typer_echo_warnings
 from clive.__private.core.commands.perform_actions_on_transaction import AutoSignSkippedWarning
-from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.transaction import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import MultipleKeysFoundError
