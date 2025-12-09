@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from clive.__private.si.base import clive_use_unlocked_profile
+from clive.si import clive_use_unlocked_profile
 
 """
 STEPS BEFORE RUNNING THIS SCRIPT:
