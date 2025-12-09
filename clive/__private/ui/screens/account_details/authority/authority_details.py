@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
+from textual.events import Mount
 from textual.message import Message
 from textual.widgets import Static, TabPane
-from textual.widgets._collapsible import CollapsibleTitle
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import NewKeyAliasDialog, RemoveAuthorityUpdateOperationsDialog, RemoveKeyAliasDialog
@@ -262,29 +262,31 @@ class AccountCollapsible(CliveCollapsible):
         return [AuthorityRole(role, title=role.level_display, collapsed=collapsed) for role in self._authority.roles]
 
 
-class AccountsAuthorities(AuthoritySectionScrollable):
+class AccountsAuthorities(CliveWidget):
     """
     Widget for storing all AccountCollapsibles.
 
     Args:
         initial_account: The account that is initially selected in the filter.
+        authorities: Authorities to display.
     """
 
-    def __init__(self, initial_account: TrackedAccount) -> None:
-        super().__init__("Authority roles")
+    def __init__(self, initial_account: TrackedAccount, authorities: list[Authority]) -> None:
+        super().__init__()
         self._initial_account = initial_account
+        self._authorities = authorities
 
     @property
     def account_collapsibles(self) -> DOMQuery[AccountCollapsible]:
-        return self.body.query(AccountCollapsible)
+        return self.query(AccountCollapsible)
 
-    async def build(self, authorities: list[Authority]) -> None:
-        await self.body.mount_all([AccountCollapsible(authority) for authority in authorities])
+    @property
+    def authority_section_scrollable(self) -> AuthoritySectionScrollable:
+        return self.query_exactly_one(AuthoritySectionScrollable)
 
-    async def rebuild(self, authorities: list[Authority]) -> None:
-        with self.app.batch_update():
-            await self.body.query("*").remove()
-            await self.build(authorities)
+    def compose(self) -> ComposeResult:
+        with AuthoritySectionScrollable("Authority roles"):
+            yield from [AccountCollapsible(authority) for authority in self._authorities]
 
     def filter(self, selected_accounts_in_filter: list[str], *filter_patterns: str) -> None:
         """
@@ -302,12 +304,14 @@ class AccountsAuthorities(AuthoritySectionScrollable):
         for account_collapsible in account_collapsibles:
             account_collapsible.filter(selected_accounts_in_filter, *filter_patterns)
 
+        authority_section_scrollable = self.authority_section_scrollable
+
         is_any_account_collapsible_displayed = any(collapsible.display for collapsible in account_collapsibles)
         if is_any_account_collapsible_displayed:
-            self.remove_no_filter_criteria_match_widget()
+            authority_section_scrollable.remove_no_filter_criteria_match_widget()
             return
 
-        self.mount_no_filter_criteria_match_widget()
+        authority_section_scrollable.mount_no_filter_criteria_match_widget()
 
     def filter_clear(self) -> None:
         account_collapsibles = list(self.account_collapsibles)
@@ -317,7 +321,7 @@ class AccountsAuthorities(AuthoritySectionScrollable):
                 account_collapsible.filter_clear()
             else:
                 account_collapsible.display = False
-        self.remove_no_filter_criteria_match_widget()
+        self.authority_section_scrollable.remove_no_filter_criteria_match_widget()
 
 
 class AuthorityDetails(TabPane, CliveWidget):
@@ -338,14 +342,14 @@ class AuthorityDetails(TabPane, CliveWidget):
     def filter_authority(self) -> FilterAuthorityExtended:
         return self.query_exactly_one(FilterAuthorityExtended)
 
-    async def on_mount(self) -> None:
-        self._update_input_suggestions()
-        await self.account_authorities.build(self._authorities)
-        self._filter_account_authorities()
-
     def compose(self) -> ComposeResult:
         yield TopContainer(action_button=ModifyButton(), account=self._account)
-        yield AccountsAuthorities(self._account)
+        yield AccountsAuthorities(self._account, self._authorities)
+
+    @on(Mount)
+    def update_input_suggestions_and_filter_account_authorities(self) -> None:
+        self._update_input_suggestions()
+        self._filter_account_authorities()
 
     @on(FilterAuthorityExtended.AuthorityFilterReady)
     def _apply_authority_filter(self) -> None:
@@ -363,8 +367,8 @@ class AuthorityDetails(TabPane, CliveWidget):
         self._filter_account_authorities(*all_patterns)
 
     @on(PrivateKeyActionButton.KeyAliasesChanged)
-    async def _rebuild_after_key_aliases_changed(self) -> None:
-        await self._rebuild_account_authorities()
+    async def _recompose_after_key_aliases_changed(self) -> None:
+        await self.account_authorities.recompose()
         self._apply_authority_filter()
 
     @on(FilterAuthorityExtended.Cleared)
@@ -416,7 +420,3 @@ class AuthorityDetails(TabPane, CliveWidget):
         input_suggestions.update(self.profile.keys.get_all_aliases())
         filter_authority.authority_filter_input.clear_suggestions()
         filter_authority.authority_filter_input.add_suggestion(*input_suggestions)
-
-    async def _rebuild_account_authorities(self) -> None:
-        with self.app.batch_update():
-            await self.account_authorities.rebuild(self._authorities)

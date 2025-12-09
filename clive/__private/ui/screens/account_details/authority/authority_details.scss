@@ -1,58 +1,62 @@
 AuthorityDetails {
   AccountsAuthorities {
-    margin-top: 1;
+    height: 1fr;
 
-    SectionBody {
-      padding: 1 1 0 1;
-    }
+    AuthoritySectionScrollable {
+      margin-top: 1;
 
-    AccountCollapsible {
-      margin-bottom: 1;
-    }
-
-    AuthorityRole {
-      height: auto;
-
-      CliveCollapsible {
-        background-tint: $foreground 10%;
-        margin-bottom: 1;
-
-        &:focus-within {
-          background-tint: $foreground 20%;
-        }
+      SectionBody {
+        padding: 1 1 0 1;
       }
-    }
 
-    AuthorityTable {
-      margin-right: 1;
+      AccountCollapsible {
+        margin-bottom: 1;
+      }
 
-      AuthorityItem,
-      MemoItem {
-        content-align: center middle;
+      AuthorityRole {
+        height: auto;
 
-        CliveCheckerBoardTableCell {
-          height: auto;
+        CliveCollapsible {
+          background-tint: $foreground 10%;
+          margin-bottom: 1;
 
-          Static {
-            height: auto;
+          &:focus-within {
+            background-tint: $foreground 20%;
           }
         }
       }
 
-      .key-or-account {
-        width: 12fr;
-      }
+      AuthorityTable {
+        margin-right: 1;
 
-      .memo-key {
-        width: 13fr;
-      }
+        AuthorityItem,
+        MemoItem {
+          content-align: center middle;
 
-      .weight {
-        width: 1fr;
-      }
+          CliveCheckerBoardTableCell {
+            height: auto;
 
-      .action {
-        width: 2fr;
+            Static {
+              height: auto;
+            }
+          }
+        }
+
+        .key-or-account {
+          width: 12fr;
+        }
+
+        .memo-key {
+          width: 13fr;
+        }
+
+        .weight {
+          width: 1fr;
+        }
+
+        .action {
+          width: 2fr;
+        }
       }
     }
   }
