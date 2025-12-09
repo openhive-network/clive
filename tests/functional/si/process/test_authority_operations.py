@@ -11,7 +11,7 @@ from .constants import AMOUNT, MEMO, RECEIVER, TEST_KEY, WORKING_ACCOUNT_NAME
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.si.base import UnlockedCliveSi
+    from clive.si import UnlockedCliveSi
 
 
 async def test_authority_update_add_key(

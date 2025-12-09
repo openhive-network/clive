@@ -15,7 +15,7 @@ from .constants import AMOUNT, MEMO, RECEIVER, WORKING_ACCOUNT_DATA, WORKING_ACC
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.si.base import UnlockedCliveSi
+    from clive.si import UnlockedCliveSi
 
 
 async def test_broadcast(

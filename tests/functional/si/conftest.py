@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.si.base import UnlockedCliveSi
+from clive.si import UnlockedCliveSi
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS
 from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_DATA
 

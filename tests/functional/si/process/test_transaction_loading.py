@@ -21,7 +21,7 @@ from .constants import (
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.si.base import UnlockedCliveSi
+    from clive.si import UnlockedCliveSi
 
 
 async def test_transaction_from_file_multisign(

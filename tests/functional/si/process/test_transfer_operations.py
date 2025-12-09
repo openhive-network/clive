@@ -23,7 +23,7 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.si.base import UnlockedCliveSi
+    from clive.si import UnlockedCliveSi
 
 
 async def test_transfer_simple(
