@@ -420,13 +420,3 @@ class AuthorityDetails(TabPane, CliveWidget):
     async def _rebuild_account_authorities(self) -> None:
         with self.app.batch_update():
             await self.account_authorities.rebuild(self._authorities)
-
-            # somehow after mounting widgets inside account authorities body scroll is moved down, so focus
-            # first mounted account collapsible title (and move the scroll by it) then refocus previously
-            # focused widget.
-            previously_focused = self.app.focused
-            all_account_collapsible_titles = self.query(CollapsibleTitle)
-            if all_account_collapsible_titles:
-                all_account_collapsible_titles.first().focus()
-                if previously_focused:
-                    previously_focused.focus()
