@@ -430,6 +430,9 @@ clive/__private/si/core/process/chaining.py
 clive/__private/si/core/process/process.py
     DOC101: Method `OperationBuilder.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [world: World].
+    DOC201: Method `OperationBuilder._run` does not have a return section in docstring
+    DOC501: Method `OperationBuilder._run` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `OperationBuilder._run` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
     DOC101: Method `OperationBuilder.run`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationBuilder.run`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
     DOC201: Method `OperationBuilder.run` does not have a return section in docstring

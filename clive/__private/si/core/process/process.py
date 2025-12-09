@@ -11,6 +11,7 @@ from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.keys.keys import PublicKey
 from clive.__private.models.asset import Asset
 from clive.__private.models.transaction import Transaction
+from clive.__private.si.core.base import CommandBase
 from clive.__private.si.core.process import authority_operations
 from clive.__private.si.exceptions import MissingFromFileOrFromObjectError
 from clive.__private.si.validators import (
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import AccountUpdate2Operation, Authority, OperationUnion
 
 
-class OperationBuilder(ABC):
+class OperationBuilder(CommandBase[Transaction], ABC):
     """
     Abstract base class for building individual blockchain operations.
 
@@ -55,8 +56,9 @@ class OperationBuilder(ABC):
         self._broadcast: bool = False
         self._autosign: bool | None = None
 
-    async def validate(self) -> None:  # noqa: B027
-        """Validate the process command configuration. Override in subclasses as needed."""
+    async def _run(self) -> Transaction:
+        """Not used - OperationBuilder uses run() with parameters instead."""
+        raise NotImplementedError("OperationBuilder uses run() with parameters, not _run()")
 
     async def run(  # noqa: PLR0913
         self,
