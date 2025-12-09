@@ -218,8 +218,8 @@ class TransactionFinalizer:
             Finalized transaction
         """
         if len(builders) == 1:
-            # Single operation - use existing finalize method
-            return await builders[0].finalize(
+            # Single operation - use existing run method
+            return await builders[0].run(
                 sign_with=sign_with,
                 save_file=save_file,
                 broadcast=broadcast,
@@ -233,7 +233,7 @@ class TransactionFinalizer:
             world=world,
             builders=builders,
         )
-        return await multi_builder.finalize(
+        return await multi_builder.run(
             sign_with=sign_with,
             save_file=save_file,
             broadcast=broadcast,

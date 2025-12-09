@@ -58,7 +58,7 @@ class OperationBuilder(ABC):
     async def validate(self) -> None:  # noqa: B027
         """Validate the process command configuration. Override in subclasses as needed."""
 
-    async def finalize(  # noqa: PLR0913
+    async def run(  # noqa: PLR0913
         self,
         sign_with: list[str] | str | None = None,
         save_file: str | Path | None = None,
@@ -70,7 +70,7 @@ class OperationBuilder(ABC):
         force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode | None = None,
     ) -> Transaction:
-        """Finalize the operation with specified signing and broadcasting options."""
+        """Execute the operation with specified signing and broadcasting options."""
         sign_keys = self._normalize_sign_with(sign_with)
 
         # Set instance variables so they're available in _get_transaction_content()
@@ -225,7 +225,7 @@ class TransactionBuilder(OperationBuilder):
                     value=str(self.from_file),
                 )
 
-    async def finalize(  # noqa: PLR0913
+    async def run(  # noqa: PLR0913
         self,
         sign_with: list[str] | str | None = None,
         save_file: str | Path | None = None,
@@ -237,9 +237,9 @@ class TransactionBuilder(OperationBuilder):
         force_unsign: bool | None = None,
         already_signed_mode: AlreadySignedMode | None = None,
     ) -> Transaction:
-        """Finalize the operation with specified signing and broadcasting options."""
+        """Execute the operation with specified signing and broadcasting options."""
         # Use instance values if parameters not provided
-        return await super().finalize(
+        return await super().run(
             sign_with=sign_with,
             save_file=save_file,
             file_format=file_format,
