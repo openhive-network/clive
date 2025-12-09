@@ -430,9 +430,9 @@ clive/__private/si/core/process/chaining.py
 clive/__private/si/core/process/process.py
     DOC101: Method `OperationBuilder.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `OperationBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [world: World].
-    DOC101: Method `OperationBuilder.finalize`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `OperationBuilder.finalize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
-    DOC201: Method `OperationBuilder.finalize` does not have a return section in docstring
+    DOC101: Method `OperationBuilder.run`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OperationBuilder.run`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
+    DOC201: Method `OperationBuilder.run` does not have a return section in docstring
     DOC201: Method `OperationBuilder._create_operation` does not have a return section in docstring
     DOC502: Method `OperationBuilder._resolve_key_or_alias` has a "Raises" section in the docstring, but there are not "raise" statements in the body
     DOC101: Method `OperationBuilder._normalize_sign_with`: Docstring contains fewer arguments than in function signature.
@@ -443,9 +443,9 @@ clive/__private/si/core/process/process.py
     DOC201: Method `TransferBuilder._normalize_amount` does not have a return section in docstring
     DOC101: Method `TransactionBuilder.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `TransactionBuilder.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, force: bool, force_unsign: bool, from_file: str | Path | None, from_object: Transaction | None, world: World].
-    DOC101: Method `TransactionBuilder.finalize`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `TransactionBuilder.finalize`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
-    DOC201: Method `TransactionBuilder.finalize` does not have a return section in docstring
+    DOC101: Method `TransactionBuilder.run`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `TransactionBuilder.run`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [already_signed_mode: AlreadySignedMode | None, autosign: bool | None, broadcast: bool, file_format: Literal['json', 'bin'] | None, force_unsign: bool | None, save_file: str | Path | None, serialization_mode: SerializationMode, sign_with: list[str] | str | None].
+    DOC201: Method `TransactionBuilder.run` does not have a return section in docstring
     DOC201: Method `TransactionBuilder._create_operation` does not have a return section in docstring
     DOC501: Method `TransactionBuilder._create_operation` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `TransactionBuilder._create_operation` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
