@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.authority.entries import AuthorityEntryBase
+from clive.__private.core.authority.authority import Authority
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.validators.authority_entry_validator import AuthorityEntryValidator
 
@@ -72,5 +72,5 @@ class AuthorityEntryRegularInput(TextInput):
 
     @property
     def holds_account_name(self) -> bool:
-        entry_type = AuthorityEntryBase.determine_entry_type(self.input.value)
+        entry_type = Authority.determine_entry_type(self.input.value)
         return entry_type == "account"

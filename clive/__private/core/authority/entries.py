@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Literal, Self, cast
+from typing import Any, Self, cast
 
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.str_utils import Matchable, is_text_matching_pattern
-
-AuthorityEntryKind = Literal["account", "key"]
 
 
 class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
@@ -74,10 +72,6 @@ class AuthorityEntryBase(AuthorityEntriesHolder, Matchable, ABC):
 
         """
         return is_text_matching_pattern(self.value, *patterns)
-
-    @staticmethod
-    def determine_entry_type(value: str) -> AuthorityEntryKind:
-        return "key" if value.startswith("STM") else "account"
 
 
 class AuthorityWeightedEntryBase(AuthorityEntryBase, ABC):

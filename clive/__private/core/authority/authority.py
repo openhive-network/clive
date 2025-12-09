@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.authority.authority_entries_holder import AuthorityEntriesHolder
 from clive.__private.core.authority.roles import AuthorityRoleMemo, AuthorityRoleRegular
@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     )
     from wax import IHiveChainInterface
     from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
+
+AuthorityEntryKind = Literal["account", "key"]
 
 
 class Authority(AuthorityEntriesHolder, Matchable):
@@ -84,3 +86,7 @@ class Authority(AuthorityEntriesHolder, Matchable):
     def to_schemas(self, api: IHiveChainInterface) -> AccountUpdate2Operation:
         operation_wrapper = WaxOperationWrapper(self._operation)
         return operation_wrapper.to_schemas(wax_interface=api, expect_type=AccountUpdate2Operation)
+
+    @staticmethod
+    def determine_entry_type(value: str) -> AuthorityEntryKind:
+        return "key" if value.startswith("STM") else "account"
