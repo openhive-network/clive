@@ -54,7 +54,7 @@ class CliveSi:
 
     Example:
         async with CliveSi() as clive:
-            witnesses = await clive.show.witnesses("bob")
+            profiles = await clive.show.profiles()
     """
 
     def __init__(self) -> None:

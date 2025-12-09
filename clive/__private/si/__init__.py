@@ -52,7 +52,7 @@ Example usage:
 
     # Query operations (no profile needed) - ALSO use async with
     async with CliveSi() as clive:
-        witnesses = await clive.show.witnesses("bob")
+        profiles = await clive.show.profiles()
     ```
 """
 
