@@ -6,7 +6,19 @@ from typing import TYPE_CHECKING, cast, override
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError
-from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
+from clive.__private.core.operations.authority_operations import (
+    AuthorityAlreadyExistsError,
+    AuthorityNotFoundError,
+    add_account as _add_account,
+    add_key as _add_key,
+    is_on_auths_list,
+    modify_account as _modify_account,
+    modify_key as _modify_key,
+    remove_account as _remove_account,
+    remove_key as _remove_key,
+    set_threshold as _set_threshold,
+)
+from clive.__private.models.schemas import AccountUpdate2Operation, Authority, PublicKey
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction, ComposeTransaction
@@ -95,65 +107,66 @@ class ProcessAccountUpdate(OperationCommand):
         )
 
 
-def is_on_auths_list[T: (AccountName, PublicKey)](authority_entry: T, authorities: list[tuple[T, HiveInt]]) -> bool:
-    """
-    Check if the authority entry is on the hive-like authorities list.
-
-    Args:
-        authority_entry: Authority entry.
-        authorities: Hive-like format of authority entries and their weights.
-
-    Returns:
-        True if the authority entry is found, False otherwise.
-    """
-    return any(authority_entry == entry for entry, _ in authorities)
+# Wrapper functions that convert core exceptions to CLI-friendly errors
 
 
 def add_account(auth: Authority, account: str, weight: int) -> Authority:
-    if is_on_auths_list(account, auth.account_auths):
-        raise CLIPrettyError(f"Account {account} is current account authority")
-    account_weight_tuple = (AccountName(account), HiveInt(weight))
-    auth.account_auths.append(account_weight_tuple)
-    return auth
+    """Add an account to the authority."""
+    try:
+        return _add_account(auth, account, weight)
+    except AuthorityAlreadyExistsError:
+        raise CLIPrettyError(f"Account {account} is current account authority") from None
 
 
 def add_key(auth: Authority, key: str, weight: int) -> Authority:
-    if is_on_auths_list(key, auth.key_auths):
-        raise CLIPrettyError(f"Key {key} is current key authority")
-    key_weight_tuple = (PublicKey(key), HiveInt(weight))
-    auth.key_auths.append(key_weight_tuple)
-    return auth
+    """Add a key to the authority."""
+    try:
+        return _add_key(auth, key, weight)
+    except AuthorityAlreadyExistsError:
+        raise CLIPrettyError(f"Key {key} is current key authority") from None
 
 
 def remove_account(auth: Authority, account: str) -> Authority:
-    if not is_on_auths_list(account, auth.account_auths):
-        raise CLIPrettyError(f"Account {account} is not current account authority")
-    auth.account_auths = [
-        account_weight_tuple for account_weight_tuple in auth.account_auths if account_weight_tuple[0] != account
-    ]
-    return auth
+    """Remove an account from the authority."""
+    try:
+        return _remove_account(auth, account)
+    except AuthorityNotFoundError:
+        raise CLIPrettyError(f"Account {account} is not current account authority") from None
 
 
 def remove_key(auth: Authority, key: str) -> Authority:
-    if not is_on_auths_list(PublicKey(key), auth.key_auths):
-        raise CLIPrettyError(f"Key {key} is not current key authority")
-    auth.key_auths = [key_weight_tuple for key_weight_tuple in auth.key_auths if key_weight_tuple[0] != key]
-    return auth
+    """Remove a key from the authority."""
+    try:
+        return _remove_key(auth, key)
+    except AuthorityNotFoundError:
+        raise CLIPrettyError(f"Key {key} is not current key authority") from None
 
 
 def modify_account(auth: Authority, account: str, weight: int) -> Authority:
-    auth = remove_account(auth, account)
-    return add_account(auth, account, weight)
+    """Modify the weight of an account in the authority."""
+    try:
+        return _modify_account(auth, account, weight)
+    except (AuthorityAlreadyExistsError, AuthorityNotFoundError) as e:
+        # Re-raise as CLIPrettyError with appropriate message
+        if isinstance(e, AuthorityNotFoundError):
+            raise CLIPrettyError(f"Account {account} is not current account authority") from None
+        raise CLIPrettyError(f"Account {account} is current account authority") from None
 
 
 def modify_key(auth: Authority, key: str, weight: int) -> Authority:
-    auth = remove_key(auth, key)
-    return add_key(auth, key, weight)
+    """Modify the weight of a key in the authority."""
+    try:
+        return _modify_key(auth, key, weight)
+    except (AuthorityAlreadyExistsError, AuthorityNotFoundError) as e:
+        # Re-raise as CLIPrettyError with appropriate message
+        if isinstance(e, AuthorityNotFoundError):
+            raise CLIPrettyError(f"Key {key} is not current key authority") from None
+        raise CLIPrettyError(f"Key {key} is current key authority") from None
 
 
 def set_threshold(auth: Authority, threshold: int) -> Authority:
-    auth.weight_threshold = HiveInt(threshold)
-    return auth
+    """Set the weight threshold for an authority."""
+    return _set_threshold(auth, threshold)
 
 
 def set_memo_key(operation: AccountUpdate2Operation, key: str) -> AccountUpdate2Operation:
