@@ -463,6 +463,27 @@ class CliveCheckerboardTable(CliveWidget):
             else:
                 self.update_cell_colors()
 
+    def filter(self, attribute_of_item_to_compare_with_filter: str, *filter_patterns: str) -> None:
+        """
+        Manages display of rows - when row matches to filter pattern method hide it.
+
+        Args:
+            attribute_of_item_to_compare_with_filter: attribute that will be compared with filter.
+            *filter_patterns: patterns used to filter rows.
+        """
+        if not filter_patterns:
+            self.filter_clear()
+            return
+
+        for row in self.rows:
+            row.display = getattr(row, attribute_of_item_to_compare_with_filter).is_matching_pattern(*filter_patterns)
+        self.update_cell_colors()
+
+    def filter_clear(self) -> None:
+        for row in self.rows:
+            row.display = True
+        self.update_cell_colors()
+
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
