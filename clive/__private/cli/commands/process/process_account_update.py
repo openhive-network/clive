@@ -9,13 +9,26 @@ from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPret
 from clive.__private.core.operations.authority_operations import (
     AuthorityAlreadyExistsError,
     AuthorityNotFoundError,
+)
+from clive.__private.core.operations.authority_operations import (
     add_account as _add_account,
+)
+from clive.__private.core.operations.authority_operations import (
     add_key as _add_key,
-    is_on_auths_list,
+)
+from clive.__private.core.operations.authority_operations import (
     modify_account as _modify_account,
+)
+from clive.__private.core.operations.authority_operations import (
     modify_key as _modify_key,
+)
+from clive.__private.core.operations.authority_operations import (
     remove_account as _remove_account,
+)
+from clive.__private.core.operations.authority_operations import (
     remove_key as _remove_key,
+)
+from clive.__private.core.operations.authority_operations import (
     set_threshold as _set_threshold,
 )
 from clive.__private.models.schemas import AccountUpdate2Operation, Authority, PublicKey

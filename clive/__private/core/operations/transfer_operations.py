@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import cast
 
 from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import TransferOperation
-
-if TYPE_CHECKING:
-    pass
 
 
 def create_transfer_operation(
@@ -41,7 +38,7 @@ def create_transfer_operation(
 def _normalize_amount(amount: str | Asset.LiquidT) -> Asset.LiquidT:
     """Convert amount to proper Asset.LiquidT type."""
     converted_amount = Asset.from_legacy(amount) if isinstance(amount, str) else amount
-    assert not Asset.is_vests(
-        converted_amount
-    ), f"Invalid asset type. Given: {type(converted_amount)}, Needs: {Asset.LiquidT}"
+    assert not Asset.is_vests(converted_amount), (
+        f"Invalid asset type. Given: {type(converted_amount)}, Needs: {Asset.LiquidT}"
+    )
     return cast("Asset.LiquidT", converted_amount)

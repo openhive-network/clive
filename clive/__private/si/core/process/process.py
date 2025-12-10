@@ -10,8 +10,6 @@ from clive.__private.core.constants.transaction import DEFAULT_SERIALIZATION_MOD
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.keys.keys import PublicKey
 from clive.__private.core.operations.transfer_operations import create_transfer_operation
-from clive.__private.models.asset import Asset
-from clive.__private.models.schemas import TransferOperation
 from clive.__private.models.transaction import Transaction
 from clive.__private.si.core.base import CommandBase
 from clive.__private.si.core.process import authority_operations
@@ -29,7 +27,8 @@ if TYPE_CHECKING:
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.types import AlreadySignedMode, AuthorityLevelRegular, SerializationMode
     from clive.__private.core.world import World
-    from clive.__private.models.schemas import AccountUpdate2Operation, Authority, OperationUnion
+    from clive.__private.models.asset import Asset
+    from clive.__private.models.schemas import AccountUpdate2Operation, Authority, OperationUnion, TransferOperation
 
 
 class OperationBuilder(CommandBase[Transaction], ABC):
