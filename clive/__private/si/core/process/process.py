@@ -9,7 +9,9 @@ from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.constants.transaction import DEFAULT_SERIALIZATION_MODE
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.keys.keys import PublicKey
+from clive.__private.core.operations.transfer_operations import create_transfer_operation
 from clive.__private.models.asset import Asset
+from clive.__private.models.schemas import TransferOperation
 from clive.__private.models.transaction import Transaction
 from clive.__private.si.core.base import CommandBase
 from clive.__private.si.core.process import authority_operations
@@ -20,7 +22,6 @@ from clive.__private.si.validators import (
     SignedTransactionValidator,
 )
 from clive.__private.validators.path_validator import PathValidator
-from schemas.operations.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -167,18 +168,12 @@ class TransferBuilder(OperationBuilder):
         self.memo = memo
 
     async def _create_operation(self) -> TransferOperation:
-        return TransferOperation(
-            from_=self.from_account,
-            to=self.to_account,
-            amount=self._normalize_amount(),
+        return create_transfer_operation(
+            from_account=self.from_account,
+            to_account=self.to_account,
+            amount=self.amount,
             memo=self.memo,
         )
-
-    def _normalize_amount(self) -> Asset.LiquidT:
-        """Convert amount to proper Asset.LiquidT type."""
-        amount = Asset.from_legacy(self.amount) if isinstance(self.amount, str) else self.amount
-        assert not Asset.is_vests(amount), f"Invalid asset type. Given: {type(amount)}, Needs: {Asset.LiquidT}"
-        return cast("Asset.LiquidT", amount)
 
 
 class TransactionBuilder(OperationBuilder):
