@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from textual.containers import Container, Horizontal
 from textual.css.query import DOMQuery, NoMatches
@@ -155,20 +155,6 @@ class AuthorityTableBase(CliveCheckerboardTable, AbstractClassMessagePump):
     def authority_items(self) -> DOMQuery[AuthorityItemBase]:
         return self.query(AuthorityItemBase)  # type: ignore[type-abstract]
 
-    def filter(self, *filter_patterns: str) -> None:
-        if not filter_patterns:
-            self.filter_clear()
-            return
-
-        for item in self.authority_items:
-            item.display = item.entry.is_matching_pattern(*filter_patterns)
-        self.update_cell_colors()
-
-    def filter_clear(self) -> None:
-        for item in self.authority_items:
-            item.display = True
-        self.update_cell_colors()
-
 
 class AuthorityRoleBase(CliveWidget, AbstractClassMessagePump):
     """
@@ -198,8 +184,7 @@ class AuthorityRoleBase(CliveWidget, AbstractClassMessagePump):
         """
 
         def update_display_in_authority_table() -> None:
-            authority_table = self.authority_table
-            authority_table.filter(*filter_patterns)
+            self.authority_table.filter(lambda row: cast("AuthorityItemBase", row).entry, *filter_patterns)
 
         if not filter_patterns:
             self.filter_clear()
@@ -212,8 +197,7 @@ class AuthorityRoleBase(CliveWidget, AbstractClassMessagePump):
             update_display_in_authority_table()
 
     def filter_clear(self) -> None:
-        authority_table = self.authority_table
-        authority_table.filter_clear()
+        self.authority_table.filter_clear()
         self.display = True
 
 

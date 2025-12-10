@@ -20,11 +20,13 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from textual.app import ComposeResult
     from textual.css.query import DOMQuery
     from textual.visual import VisualType
+
+    from clive.__private.core.str_utils import Matchable
 
 ContentT = TypeVar("ContentT", bound=Any)
 
@@ -462,6 +464,27 @@ class CliveCheckerboardTable(CliveWidget):
                 await self.mount(self._get_no_content_available_widget())
             else:
                 self.update_cell_colors()
+
+    def filter(self, get_matchable: Callable[[CliveCheckerboardTableRow], Matchable], *filter_patterns: str) -> None:
+        """
+        Manage display of rows - hide rows that don't match the filter patterns.
+
+        Args:
+            get_matchable: Callback that extracts the Matchable object from a row for pattern comparison.
+            *filter_patterns: Patterns used to filter rows.
+        """
+        if not filter_patterns:
+            self.filter_clear()
+            return
+
+        for row in self.rows:
+            row.display = get_matchable(row).is_matching_pattern(*filter_patterns)
+        self.update_cell_colors()
+
+    def filter_clear(self) -> None:
+        for row in self.rows:
+            row.display = True
+        self.update_cell_colors()
 
     def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
