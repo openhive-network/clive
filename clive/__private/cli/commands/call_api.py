@@ -172,6 +172,12 @@ class CallAPI(WorldBasedCommand):
         ) as err:
             raise CLINoNodeAddressError(str(err)) from err
 
+    async def validate(self) -> None:
+        self._validate_api_name()
+        self._validate_api_method_name()
+        self._validate_api_call_params()
+        await super().validate()
+
     async def _run(self) -> None:
         collection_type = self._build_extended_api_collection()
         extended_chain = self._get_extended_chain(collection_type)
@@ -183,45 +189,6 @@ class CallAPI(WorldBasedCommand):
         result = await api_method_awaitable(**self._get_keyword_params())
 
         print_json(msgspec.json.encode(result).decode())
-
-    def _print_launching_beekeeper(self) -> None:
-        """Overrides WorldBasedCommand implementation so this command prints only raw json."""
-        return
-
-    async def validate(self) -> None:
-        self._validate_api_name()
-        self._validate_api_method_name()
-        self._validate_api_call_params()
-        await super().validate()
-
-    def _validate_api_name(self) -> None:
-        api_client_module_name = get_api_client_module_path(self.api_name)
-        api_class_name = get_api_class_name(self.api_name)
-        try:
-            importlib.import_module(self.api_name)
-        except Exception as err:
-            raise CLIApiPackageNotFoundError(self.api_name) from err
-        try:
-            client_module = importlib.import_module(api_client_module_name)
-        except Exception as err:
-            raise CLIApiClientModuleNotFoundError(api_client_module_name, self.api_name) from err
-        try:
-            api_class = getattr(client_module, api_class_name)
-        except Exception as err:
-            raise CLIApiClassDefinitionNotFoundError(api_class_name, self.api_name) from err
-        self._api_class = api_class
-
-    def _validate_api_method_name(self) -> None:
-        if not hasattr(self._api_class, self.method_name):
-            raise CLIMethodNotFoundError(self.method_name, self.api_name)
-
-    def _validate_api_call_params(self) -> None:
-        try:
-            self._parsed_params = JsonString(self.params).value
-        except (DecodeError, ValidationError) as err:
-            raise CLIParamNotAJSONContainerError(self.params) from err
-        if not isinstance(self._parsed_params, (list, dict)):
-            raise CLIParamNotAJSONContainerError(self.params)
 
     def _build_extended_api_collection(self) -> type:
         api_name = self.api_name
@@ -255,3 +222,36 @@ class CallAPI(WorldBasedCommand):
 
     def _get_keyword_params(self) -> dict[str, Any]:
         return self._parsed_params if isinstance(self._parsed_params, dict) else {}
+
+    def _print_launching_beekeeper(self) -> None:
+        """Overrides WorldBasedCommand implementation so this command prints only raw json."""
+        return
+
+    def _validate_api_call_params(self) -> None:
+        try:
+            self._parsed_params = JsonString(self.params).value
+        except (DecodeError, ValidationError) as err:
+            raise CLIParamNotAJSONContainerError(self.params) from err
+        if not isinstance(self._parsed_params, (list, dict)):
+            raise CLIParamNotAJSONContainerError(self.params)
+
+    def _validate_api_method_name(self) -> None:
+        if not hasattr(self._api_class, self.method_name):
+            raise CLIMethodNotFoundError(self.method_name, self.api_name)
+
+    def _validate_api_name(self) -> None:
+        api_client_module_name = get_api_client_module_path(self.api_name)
+        api_class_name = get_api_class_name(self.api_name)
+        try:
+            importlib.import_module(self.api_name)
+        except Exception as err:
+            raise CLIApiPackageNotFoundError(self.api_name) from err
+        try:
+            client_module = importlib.import_module(api_client_module_name)
+        except Exception as err:
+            raise CLIApiClientModuleNotFoundError(api_client_module_name, self.api_name) from err
+        try:
+            api_class = getattr(client_module, api_class_name)
+        except Exception as err:
+            raise CLIApiClassDefinitionNotFoundError(api_class_name, self.api_name) from err
+        self._api_class = api_class
