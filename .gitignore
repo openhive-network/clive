@@ -201,6 +201,7 @@ pyrightconfig.json
 # Custom
 logs/
 **/generated*
+.claude/
 
 # To ignore symbolic link to this binary
 beekeeper
