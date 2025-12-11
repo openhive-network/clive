@@ -7,6 +7,7 @@ from clive.__private.core.authority.roles import AuthorityRoleMemo, AuthorityRol
 from clive.__private.core.str_utils import Matchable
 from clive.__private.core.wax_operation_wrapper import WaxOperationWrapper
 from clive.__private.models.schemas import AccountUpdate2Operation
+from wax.models.authority import WaxAuthorities
 
 if TYPE_CHECKING:
     from clive.__private.core.authority.entries import (
@@ -57,6 +58,10 @@ class Authority(AuthorityEntriesHolder, Matchable):
         return self._memo_role
 
     @property
+    def memo_key(self) -> str:
+        return self.memo_role.entry.value
+
+    @property
     def roles(self) -> list[AuthorityRoleRegular | AuthorityRoleMemo]:
         return [self.owner_role, self.active_role, self.posting_role, self.memo_role]
 
@@ -80,6 +85,19 @@ class Authority(AuthorityEntriesHolder, Matchable):
             True if any role matches the pattern, False otherwise.
         """
         return any(role.is_matching_pattern(*patterns) for role in self.roles)
+
+    @property
+    def wax_authorities(self) -> WaxAuthorities:
+        """
+        Convert authority data back to wax-compatible WaxAuthorities format.
+
+        Includes regular (owner, active, and posting) authorities (excludes memo).
+        """
+        return WaxAuthorities(
+            owner=self.operation.categories.hive.authorities.owner.value,
+            active=self.operation.categories.hive.authorities.active.value,
+            posting=self.operation.categories.hive.authorities.posting.value,
+        )
 
     def to_schemas(self, api: IHiveChainInterface) -> AccountUpdate2Operation:
         operation_wrapper = WaxOperationWrapper(self._operation)
