@@ -12,14 +12,17 @@ REGISTRY_URL="registry.gitlab.syncad.com/hive/clive"
 
 # >>> EDIT THESE VARIABLES
 
-#    HIVED_SOURCE_IMAGE could be get from prepare_mainnet_hived_image or prepare_testnet_hived_image job like: https://gitlab.syncad.com/hive/clive/-/jobs/787089#L342 Depends if building testnet - can be base_instance or testnet-base_instance
-HIVED_SOURCE_IMAGE="registry.gitlab.syncad.com/hive/hive/testnet-base_instance:8a42333b"
+#    Depends if building testnet. HIVED_SOURCE_IMAGE could be get from prepare_mainnet_hived_image or prepare_testnet_hived_image job like: https://gitlab.syncad.com/hive/clive/-/jobs/2300417#L195
+HIVED_SOURCE_IMAGE="registry.gitlab.syncad.com/hive/hive/testnet:42d81955"
 
-#    BASE_IMAGE is the image on which clive image will be built. Depends if building testnet - can be either https://gitlab.syncad.com/hive/clive/container_registry/682 or https://gitlab.syncad.com/hive/clive/container_registry/684
-BASE_IMAGE="registry.gitlab.syncad.com/hive/clive/clive-testnet-base-image@sha256:d38883407b5860a89e7491b1de4153c516dc5ae87ca9988fba0ed0400e97f98f"
+#    PYTHON_INSTALLER_IMAGE is the image that will be used for installing the python application
+PYTHON_INSTALLER_IMAGE="registry.gitlab.syncad.com/hive/common-ci-configuration/python_development@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
+
+#     Depends if building testnet. BASE_IMAGE is the image on which clive image will be built.
+BASE_IMAGE="registry.gitlab.syncad.com/hive/common-ci-configuration/python_development@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
 
 #   CLIVE_VERSION is the version of clive which will be available in the image, Clive won't be built from sources but .whl file will be used to install it.
-CLIVE_VERSION="1.27.5.21"
+CLIVE_VERSION="1.28.1.1"
 
 BUILD_TESTNET=1
 # <<<
@@ -32,6 +35,7 @@ BUILD_ARGS=(
   "${SRC_DIR}"
   "${REGISTRY_URL}"
   "--hived-source-image=${HIVED_SOURCE_IMAGE}"
+  "--python-installer-image=${PYTHON_INSTALLER_IMAGE}"
   "--base-image=${BASE_IMAGE}"
   "--clive-version=${CLIVE_VERSION}"
 )
