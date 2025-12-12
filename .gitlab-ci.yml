@@ -145,11 +145,15 @@ prepare_mainnet_hived_image:
   extends: .common_prepare_hived_image
   variables:
     HIVE_NETWORK_TYPE: mainnet
+  tags:
+    - build-mainnet
 
 prepare_testnet_hived_image:
   extends: .common_prepare_hived_image
   variables:
     HIVE_NETWORK_TYPE: testnet
+  tags:
+    - build-testnet
 
 build_wheel:
   extends: .build_wheel_template
