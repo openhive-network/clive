@@ -429,6 +429,7 @@ clean_docs_preview:
     - when: never
   variables:
     GIT_DEPTH: 0
+    PYTHON_INSTALLER_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BASE_IMAGE: $CLIVE_BASE_IMAGE
     BUILD_INSTANCE_ARGS: ""
 
@@ -442,6 +443,7 @@ clean_docs_preview:
       "${CI_PROJECT_DIR}"
       "${CI_REGISTRY_IMAGE}"
       --hived-source-image=${HIVED_IMAGE_NAME}
+      --python-installer-image=${PYTHON_INSTALLER_IMAGE}
       --base-image=${BASE_IMAGE}
       --clive-version=${WHEEL_BUILD_VERSION}
       ${BUILD_INSTANCE_ARGS}
@@ -518,11 +520,13 @@ build_and_publish_tagged_image:
 
   variables:
     GIT_DEPTH: 0
+    PYTHON_INSTALLER_IMAGE: $CLIVE_TESTNET_BASE_IMAGE
     BASE_IMAGE: $CLIVE_BASE_IMAGE
 
   script:
     - scripts/ci-helpers/build_and_publish_instance.sh
         --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}"
+        --build-instance-arg="--python-installer-image=${PYTHON_INSTALLER_IMAGE}"
         --build-instance-arg="--base-image=${BASE_IMAGE}"
         --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
     # TODO eliminate it once https://gitlab.syncad.com/hive/clive/-/merge_requests/565 is done
