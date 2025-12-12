@@ -10,6 +10,7 @@ from clive.__private.core.formatters.data_labels import (
     CURRENT_INFLATION_RATE_LABEL,
     HBD_PRINT_RATE_LABEL,
     HBD_SAVINGS_APR_LABEL,
+    HP_VEST_APR_LABEL,
     MEDIAN_HIVE_PRICE_LABEL,
     PARTICIPATION_COUNT_LABEL,
     VEST_HIVE_RATIO_LABEL,
@@ -39,7 +40,7 @@ class ShowChain(WorldBasedCommand):
 
         financial_data = data.get_aligned_financial_data()
         table.add_row(HBD_SAVINGS_APR_LABEL, financial_data.pretty_hbd_savings_apr)
-        table.add_row("VESTS APR", financial_data.pretty_vests_apr)
+        table.add_row(HP_VEST_APR_LABEL, financial_data.pretty_vests_apr)
         table.add_row(HBD_PRINT_RATE_LABEL, data.get_hbd_print_rate())
         table.add_row(CURRENT_INFLATION_RATE_LABEL, financial_data.pretty_current_inflation_rate)
         table.add_row(MEDIAN_HIVE_PRICE_LABEL, data.get_median_hive_price())

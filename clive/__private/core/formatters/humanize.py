@@ -441,7 +441,7 @@ def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = F
         >>> humanize_hp_vests_apr(Decimal("2.94"))
         "2.94 %"
         >>> humanize_hp_vests_apr(Decimal("2.94"), with_label=True))
-        "HP/VESTS APR: 2.94 %"
+        "HP (VESTS) APR: 2.94 %"
 
     Returns:
         A human-readable data representing the APR value with an optional label.
