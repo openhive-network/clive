@@ -1,7 +1,7 @@
 # syntax=registry.gitlab.syncad.com/hive/common-ci-configuration/dockerfile:1.5
 ARG HIVED_IMAGE
 
-ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04
+ARG BASE_IMAGE
 
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
