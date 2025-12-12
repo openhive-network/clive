@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib
-import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
@@ -146,10 +145,10 @@ def test_negative_call_locked_without_node_address(cli_tester_variant: CLITester
     # ARRANGE
     api_name = "database_api"
     method_name = "get_dynamic_global_properties"
-    pattern = get_formatted_error_message(CLINoNodeAddressError(original_message))
+    expected_error = get_formatted_error_message(CLINoNodeAddressError(original_message))
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=pattern):
+    with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester_variant.call(api_name, method_name)
 
 
@@ -157,17 +156,21 @@ def test_negative_invalid_api_name(cli_tester: CLITester) -> None:
     # ARRANGE
     invalid_api_name = "database-api"
     method_name = "get-dynamic-global-properties"
+    expected_error = get_formatted_error_message(CLIApiPackageNotFoundError(invalid_api_name))
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=str(CLIApiPackageNotFoundError(invalid_api_name))):
+    with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester.call(invalid_api_name, method_name)
 
 
 def test_negative_invalid_method_name(cli_tester: CLITester) -> None:
-    # ACT & ASSERT
+    # ARRANGE
     api_name = "database_api"
     invalid_method_name = "get-dynamic-global-properties"
-    with pytest.raises(CLITestCommandError, match=str(CLIMethodNotFoundError(invalid_method_name, api_name))):
+    expected_error = get_formatted_error_message(CLIMethodNotFoundError(invalid_method_name, api_name))
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester.call(api_name, invalid_method_name)
 
 
@@ -175,10 +178,10 @@ def test_negative_invalid_params_decode(cli_tester: CLITester) -> None:
     """Params are not valid json."""
     # ARRANGE
     raw_params = "{"  # invalid json
-    pattern = re.escape(str(CLIParamNotAJSONContainerError(raw_params)))
+    expected_error = get_formatted_error_message(CLIParamNotAJSONContainerError(raw_params))
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=pattern):
+    with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester.call("database_api", "get_dynamic_global_properties", raw_params)
 
 
@@ -186,8 +189,8 @@ def test_negative_invalid_params_format(cli_tester: CLITester) -> None:
     """Params are valid json but we expect dict or list."""
     # ARRANGE
     raw_params = '""'  # valid json but not a container
-    pattern = re.escape(str(CLIParamNotAJSONContainerError(raw_params)))
+    expected_error = get_formatted_error_message(CLIParamNotAJSONContainerError(raw_params))
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=pattern):
+    with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester.call("database_api", "get_dynamic_global_properties", raw_params)
