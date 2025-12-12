@@ -529,8 +529,6 @@ build_and_publish_tagged_image:
         --build-instance-arg="--python-installer-image=${PYTHON_INSTALLER_IMAGE}"
         --build-instance-arg="--base-image=${BASE_IMAGE}"
         --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
-    # TODO eliminate it once https://gitlab.syncad.com/hive/clive/-/merge_requests/565 is done
-    - echo DOCKERHUB_IMAGE_NAME="hiveio/${CI_PROJECT_NAME}:$CI_COMMIT_TAG" >> docker_image_name.env
   artifacts:
     reports:
       dotenv: docker_image_name.env
