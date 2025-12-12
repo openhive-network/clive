@@ -21,7 +21,6 @@ from clive.__private.core.formatters.humanize import (
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
-from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarms_storage import AlarmsStorage
@@ -77,28 +76,37 @@ class ShowAccount(WorldBasedCommand):
         return general_info_table
 
     def _create_balance_table(self) -> Table:
-        balances_table = Table(title="The balances")
-        hive_symbol = Asset.get_symbol(Asset.Hive)
-        hbd_symbol = Asset.get_symbol(Asset.Hbd)
-        hp_symbol = "HP"
+        balances_table = Table(title="The balances", show_header=False)
         balances_table.add_column("", justify="left", style="cyan", no_wrap=True)
-        balances_table.add_column(hbd_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hive_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hp_symbol, justify="right", style="green", no_wrap=True)
+        balances_table.add_column("", justify="right", style="green", no_wrap=True)
+        balances_table.add_column("", justify="right", style="green", no_wrap=True)
 
         humanize_asset_no_symbol = partial(humanize_asset, show_symbol=False)
 
+        # Get raw amounts for HBD and HIVE to calculate padding
+        hbd_liquid = humanize_asset_no_symbol(self._account_data.hbd_balance)
+        hbd_savings = humanize_asset_no_symbol(self._account_data.hbd_savings)
+        hive_liquid = humanize_asset_no_symbol(self._account_data.hive_balance)
+        hive_savings = humanize_asset_no_symbol(self._account_data.hive_savings)
+
+        # Find max width before decimal for alignment
+        hbd_max_width = max(len(hbd_liquid.split(".")[0]), len(hbd_savings.split(".")[0]))
+        hive_max_width = max(len(hive_liquid.split(".")[0]), len(hive_savings.split(".")[0]))
+
         balances_table.add_row(
             "Liquid",
-            humanize_asset_no_symbol(self._account_data.hbd_balance),
-            humanize_asset_no_symbol(self._account_data.hive_balance),
-            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=False),
+            f"{hbd_liquid.split('.')[0]:>{hbd_max_width}}.{hbd_liquid.split('.')[1]} HBD",
+            f"{hive_liquid.split('.')[0]:>{hive_max_width}}.{hive_liquid.split('.')[1]} HIVE",
         )
         balances_table.add_row(
             "Savings",
-            humanize_asset_no_symbol(self._account_data.hbd_savings),
-            humanize_asset_no_symbol(self._account_data.hive_savings),
-            "---",
+            f"{hbd_savings.split('.')[0]:>{hbd_max_width}}.{hbd_savings.split('.')[1]} HBD",
+            f"{hive_savings.split('.')[0]:>{hive_max_width}}.{hive_savings.split('.')[1]} HIVE",
+        )
+        balances_table.add_row(
+            "Stake",
+            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=True),
+            humanize_asset(self._account_data.owned_hp_balance.vests_balance),
         )
         return balances_table
 
