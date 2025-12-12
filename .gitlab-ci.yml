@@ -49,8 +49,8 @@ variables:
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-XXX (defined in hive/scripts/ci-helpers/ci_image_tag_vars.yml)
   CI_BASE_IMAGE_TAG: "${TEST_IMAGE_TAG}"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04
-  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:e4797f961fd6c6a843d100b1838422f3b674430af408664286c1b6a6b23baafa"
+  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04-1
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04-1
   CLIVE_BASE_IMAGE_TAG: "@sha256:28f515d0cda87b9372b48f70b9d48468bc074ad9b54940827f2eebf49fd8521f"
