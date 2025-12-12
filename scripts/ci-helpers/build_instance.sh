@@ -15,6 +15,7 @@ SRCROOTDIR=""
 IMAGE_TAG_PREFIX=""
 
 HIVED_IMAGE=""
+PYTHON_INSTALLER_IMAGE=""
 BASE_IMAGE=""
 
 CLIVE_VERSION=""
@@ -30,6 +31,7 @@ print_help () {
     echo "  - produced testnet image will be named: registry.gitlab.syncad.com/hive/clive:testnet-<image_tag>"
     echo "OPTIONS:"
     echo "  --hived-source-image=image_name     Allows to specify image name containing a prebuilt hived"
+    echo "  --python-installer-image=image_name Allows to specify image being used as python installer"
     echo "  --base-image=image_name             Allows to specify an image name being use as a base of the one to be built"
     echo "  --clive-version=version             Allows to specify a version of clive to be installed in the image"
     echo "  --embedded-testnet                  Allows to build a clive image having embedded a hived testnet inside (ready for immediate sanboxing run)"
@@ -42,6 +44,10 @@ while [ $# -gt 0 ]; do
     --hived-source-image=*)
       HIVED_IMAGE="${1#*=}"
       echo "Specified Hived source image: ${HIVED_IMAGE}"
+      ;;
+    --python-installer-image=*)
+      PYTHON_INSTALLER_IMAGE="${1#*=}"
+      echo "Specified python installer image: ${PYTHON_INSTALLER_IMAGE}"
       ;;
     --base-image=*)
       BASE_IMAGE="${1#*=}"
@@ -85,6 +91,7 @@ _TST_SRCDIR=${SRCROOTDIR:?"Missing arg #2 to specify source directory"}
 _TST_REGISTRY=${REGISTRY:?"Missing arg #3 to specify target container registry"}
 
 _TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source for binaries of hived"}
+_TST_PYTHON_INSTALLER_IMAGE=${PYTHON_INSTALLER_IMAGE:?"Missing --python-installer-image to specify python installer image"}
 _TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
 _TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
 
@@ -134,6 +141,7 @@ fi
 
 docker buildx build --target="${DOCKER_TARGET}" \
   --build-arg CI_REGISTRY_IMAGE="$REGISTRY" \
+  --build-arg PYTHON_INSTALLER_IMAGE="${PYTHON_INSTALLER_IMAGE}" \
   --build-arg BASE_IMAGE="${BASE_IMAGE}" \
   --build-arg HIVED_IMAGE="${HIVED_IMAGE}" \
   --build-arg CLIVE_VERSION="${CLIVE_VERSION}" \

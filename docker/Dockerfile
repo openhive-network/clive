@@ -1,6 +1,8 @@
 # syntax=registry.gitlab.syncad.com/hive/common-ci-configuration/dockerfile:1.5
 ARG HIVED_IMAGE
 
+ARG PYTHON_INSTALLER_IMAGE
+
 ARG BASE_IMAGE
 
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
@@ -49,7 +51,7 @@ WORKDIR /clive
 # crucial for proper display
 ENV COLORTERM=truecolor
 
-FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04 AS python_installer
+FROM $PYTHON_INSTALLER_IMAGE AS python_installer
 
 ARG CLIVE_VERSION
 ENV CLIVE_VERSION=${CLIVE_VERSION}
