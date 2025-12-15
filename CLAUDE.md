@@ -283,6 +283,24 @@ TUI test patterns (`tests/functional/tui/`):
 -   Tests modify settings to use test directories, not user's actual Clive data
 -   The `clive-local-tools` package provides test helpers and checkers
 
+### Useful Commands
+
+#### GitLab CLI (glab)
+
+```bash
+# Find MR for a branch
+glab mr list --source-branch=<branch>
+
+# Add comment to MR
+glab mr note <MR_NUMBER> --message "..."
+
+# Get pipeline job details
+glab api "projects/hive%2Fclive/pipelines/<ID>/jobs"
+
+# Get job logs
+glab api "projects/hive%2Fclive/jobs/<ID>/trace"
+```
+
 ### CI Environment
 
 Tests run in CI with:
