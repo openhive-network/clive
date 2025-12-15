@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from functools import partial
 from typing import TYPE_CHECKING
 
 from rich.columns import Columns
@@ -14,6 +13,7 @@ from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.styling import colorize_error
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
+    align_to_dot,
     humanize_asset,
     humanize_bool,
     humanize_datetime,
@@ -81,21 +81,23 @@ class ShowAccount(WorldBasedCommand):
         balances_table.add_column(justify="right", style="green", no_wrap=True)
         balances_table.add_column(justify="right", style="green", no_wrap=True)
 
-        balances_table.add_row(
-            "Liquid",
-            f"{humanize_asset(self._account_data.hbd_balance)}",
-            f"{humanize_asset(self._account_data.hive_balance)}",
-        )
-        balances_table.add_row(
-            "Savings",
-            f"{humanize_asset(self._account_data.hbd_savings)}",
-            f"{humanize_asset(self._account_data.hive_savings)}",
-        )
-        balances_table.add_row(
-            "Stake",
-            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=True),
-            humanize_asset(self._account_data.owned_hp_balance.vests_balance),
-        )
+        # Get all balance values as strings
+        hbd_liquid = humanize_asset(self._account_data.hbd_balance)
+        hbd_savings = humanize_asset(self._account_data.hbd_savings)
+        hp_stake = humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=True)
+
+        hive_liquid = humanize_asset(self._account_data.hive_balance)
+        hive_savings = humanize_asset(self._account_data.hive_savings)
+        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance)
+
+        # Align decimal points within each column
+        col2_aligned = align_to_dot(hbd_liquid, hbd_savings, hp_stake)
+        col3_aligned = align_to_dot(hive_liquid, hive_savings, vests_stake)
+
+        balances_table.add_row("Liquid", col2_aligned[0], col3_aligned[0])
+        balances_table.add_row("Savings", col2_aligned[1], col3_aligned[1])
+        balances_table.add_row("Stake", col2_aligned[2], col3_aligned[2])
+
         return balances_table
 
     def _create_manabar_stats_table(self) -> Table:
