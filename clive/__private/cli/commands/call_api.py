@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import errno
 import importlib
+import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
-
-import msgspec
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
@@ -127,6 +126,25 @@ class CLIParamNotAJSONContainerError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
+def dump_struct(obj: object) -> object:
+    # msgspec.Struct objects have __struct_fields__
+    if hasattr(obj, "__struct_fields__"):
+        return {field: dump_struct(getattr(obj, field)) for field in obj.__struct_fields__}
+
+    # containers
+    if isinstance(obj, list):
+        return [dump_struct(v) for v in obj]
+
+    if isinstance(obj, tuple):
+        return tuple(dump_struct(v) for v in obj)
+
+    if isinstance(obj, dict):
+        return {k: dump_struct(v) for k, v in obj.items()}
+
+    # primitives
+    return obj
+
+
 @dataclass(kw_only=True)
 class CallAPI(WorldBasedCommand):
     api_name: str
@@ -178,7 +196,8 @@ class CallAPI(WorldBasedCommand):
         # currently we don't support condenser_api
         result = await api_method_awaitable(**self._get_keyword_params())
 
-        print_json(msgspec.json.encode(result).decode())
+        as_dict = dump_struct(result)
+        print_json(json.dumps(as_dict))
 
     def _build_extended_api_collection(self) -> type:
         api_name = self.api_name
