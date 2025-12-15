@@ -50,7 +50,7 @@ class Settings:
 
         The environment variable
         ```bash
-        CLIVE__FIRST_GROUP__NESTED_GROUP__SOME_KEY=124
+        CLIVE_FIRST_GROUP__NESTED_GROUP__SOME_KEY=124
         ```
         would override the setting in the file.
 
