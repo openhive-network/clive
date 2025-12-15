@@ -22,6 +22,17 @@ This project uses **gitlab.syncad.com**, NOT gitlab.com.
 -   Repository: https://gitlab.syncad.com/hive/clive
 -   Use `glab api "projects/hive%2Fclive/..."` for API calls
 
+## Claude Code Commands
+
+Available slash commands for development workflows:
+
+| Command        | Description                                                   |
+| -------------- | ------------------------------------------------------------- |
+| `/smoke`       | Run smoke test                                                |
+| `/lint`        | Run all pre-commit hooks                                      |
+| `/test <args>` | Run pytest with shortcuts: `unit`, `cli`, `tui`, `functional` |
+| `/reflection`  | Analyze and improve Claude Code configuration                 |
+
 ## Essential Commands
 
 ### Installation and Setup
@@ -67,23 +78,10 @@ mypy clive/ tests/
 
 ### Testing
 
+Use `/smoke`, `/lint`, and `/test` slash commands for common workflows (see
+[Claude Code Commands](#claude-code-commands)).
+
 ```bash
-# Run smoke test
-pytest -n 2 tests/functional/cli/show/test_show_account.py::test_show_account tests/functional/cli/process/test_process_transfer.py::test_process_transfer
-
-# Run all tests in parallel (default process count set in .gitlab-ci.yml)
-pytest -n 16
-
-# Run unit tests only
-pytest tests/unit/
-
-# Run functional tests (CLI or TUI)
-pytest tests/functional/cli/
-pytest tests/functional/tui/
-
-# Run a single test file (example)
-pytest tests/unit/test_date_utils.py
-
 # Run a specific test (example)
 pytest tests/unit/test_date_utils.py::test_specific_function -v
 
