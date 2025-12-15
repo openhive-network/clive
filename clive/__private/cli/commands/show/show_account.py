@@ -21,7 +21,6 @@ from clive.__private.core.formatters.humanize import (
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
-from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarms_storage import AlarmsStorage
@@ -77,28 +76,25 @@ class ShowAccount(WorldBasedCommand):
         return general_info_table
 
     def _create_balance_table(self) -> Table:
-        balances_table = Table(title="The balances")
-        hive_symbol = Asset.get_symbol(Asset.Hive)
-        hbd_symbol = Asset.get_symbol(Asset.Hbd)
-        hp_symbol = "HP"
-        balances_table.add_column("", justify="left", style="cyan", no_wrap=True)
-        balances_table.add_column(hbd_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hive_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hp_symbol, justify="right", style="green", no_wrap=True)
-
-        humanize_asset_no_symbol = partial(humanize_asset, show_symbol=False)
+        balances_table = Table(title="The balances", show_header=False)
+        balances_table.add_column(justify="left", style="cyan", no_wrap=True)
+        balances_table.add_column(justify="right", style="green", no_wrap=True)
+        balances_table.add_column(justify="right", style="green", no_wrap=True)
 
         balances_table.add_row(
             "Liquid",
-            humanize_asset_no_symbol(self._account_data.hbd_balance),
-            humanize_asset_no_symbol(self._account_data.hive_balance),
-            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=False),
+            f"{humanize_asset(self._account_data.hbd_balance)}",
+            f"{humanize_asset(self._account_data.hive_balance)}",
         )
         balances_table.add_row(
             "Savings",
-            humanize_asset_no_symbol(self._account_data.hbd_savings),
-            humanize_asset_no_symbol(self._account_data.hive_savings),
-            "---",
+            f"{humanize_asset(self._account_data.hbd_savings)}",
+            f"{humanize_asset(self._account_data.hive_savings)}",
+        )
+        balances_table.add_row(
+            "Stake",
+            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=True),
+            humanize_asset(self._account_data.owned_hp_balance.vests_balance),
         )
         return balances_table
 
