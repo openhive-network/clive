@@ -47,6 +47,7 @@ def configure(node: tt.InitNode) -> None:
         node.config.private_key.append(witness.private_key)
     node.config.plugin.append("account_history_rocksdb")
     node.config.plugin.append("account_history_api")
+    node.config.plugin.append("market_history_api")
     node.config.plugin.append("reputation_api")
     node.config.plugin.append("rc_api")
     node.config.plugin.append("transaction_status_api")
