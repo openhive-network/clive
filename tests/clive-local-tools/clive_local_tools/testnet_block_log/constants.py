@@ -14,7 +14,16 @@ if TYPE_CHECKING:
     from datetime import timedelta
 
 BLOCK_LOG_WITH_CONFIG_DIRECTORY: Final[Path] = Path(__file__).parent / "block_log_with_config"
-EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = tt.Time.days(1)
+EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_REWARDS: Final[timedelta] = tt.Time.days(1)
+"""
+Time shift applied when starting testnet node from block log.
+
+Required for:
+- Delayed voting: takes 1 day on testnet (hive_delayed_voting_total_interval_seconds)
+- Post rewards cashout: takes 1 hour on testnet (hive_cashout_window_seconds)
+
+Using 1 day provides a safe margin for all operations.
+"""
 
 
 WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [generate_witness_name(i) for i in range(60)]]
