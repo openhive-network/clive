@@ -687,3 +687,14 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
+
+    def process_claim_rewards(
+        self,
+        *,
+        account_name: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "claim", "rewards"], **extract_params(locals()))
