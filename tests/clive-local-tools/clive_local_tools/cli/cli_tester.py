@@ -908,3 +908,10 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "social", "unmute"], **extract_params(locals()))
+
+    def call(
+        self,
+        *args: StringConvertibleOptionTypes,
+        node_address: str | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["call"], args, **extract_params(locals(), "args"))

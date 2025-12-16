@@ -32,7 +32,7 @@ def get_api_class_name(api_name: str) -> str:
 
 
 def get_api_client_module_path(api_name: str) -> str:
-    return f"{api_name}.{api_name}_client"
+    return f"hiveio_api.{api_name}.{api_name}_client"
 
 
 class CLICallAPINoNodeAddressError(CLIPrettyError):
@@ -195,7 +195,7 @@ class _CallAPICommon(ExternalCLICommand, ABC):
         api_client_module_name = get_api_client_module_path(self.api_name)
         api_class_name = get_api_class_name(self.api_name)
         try:
-            importlib.import_module(self.api_name)
+            importlib.import_module(f"hiveio_api.{self.api_name}")
         except Exception as err:
             raise CLICallAPIModuleNotFoundError(self.api_name) from err
         try:

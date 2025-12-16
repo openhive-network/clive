@@ -89,7 +89,7 @@ def test_import_api_package(api_name: str) -> None:
 
     # ACT & ASSERT
     try:
-        importlib.import_module(api_name)
+        importlib.import_module(f"hiveio_api.{api_name}")
     except Exception as error:  # noqa: BLE001
         pytest.fail(f"API package {api_name} couldn't be imported: {error}")
     try:
