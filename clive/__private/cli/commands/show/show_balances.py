@@ -30,5 +30,7 @@ class ShowBalances(WorldBasedCommand):
         table.add_row("HIVE Liquid", f"{Asset.pretty_amount(data.hive_balance)}")
         table.add_row("HIVE Savings", f"{Asset.pretty_amount(data.hive_savings)}")
         table.add_row("HIVE Unclaimed", f"{Asset.pretty_amount(data.hive_unclaimed)}")
+        table.add_row("Stake Owned", f"{Asset.pretty_amount(data.owned_hp_balance.hp_balance)}")
+        table.add_row("Stake Unclaimed", f"{Asset.pretty_amount(data.unclaimed_hp_balance.hp_balance)}")
 
         print_cli(table)
