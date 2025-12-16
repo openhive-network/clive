@@ -6,7 +6,7 @@ import test_tools as tt
 
 from clive_local_tools.testnet_block_log.constants import (
     BLOCK_LOG_WITH_CONFIG_DIRECTORY,
-    EXTRA_TIME_SHIFT_FOR_GOVERNANCE,
+    EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_REWARDS,
 )
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ def get_block_log() -> tt.BlockLog:
 
 def get_time_control(block_log: tt.BlockLog) -> tt.StartTimeControl:
     block_log_time = block_log.get_head_block_time()
-    return tt.StartTimeControl(start_time=block_log_time + EXTRA_TIME_SHIFT_FOR_GOVERNANCE)
+    return tt.StartTimeControl(start_time=block_log_time + EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_REWARDS)
 
 
 def run_node(webserver_http_endpoint: HttpUrl | None = None) -> tt.RawNode:
