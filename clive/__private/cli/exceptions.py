@@ -545,3 +545,19 @@ class CLIChangeRecoveryAccountValidationError(CLIPrettyError):
     def __init__(self, name: str, reason: str) -> None:
         message = f"Account `{name}` can't be used. Reason: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class CLIChainIdFromSettingsNotAvailableError(CLIPrettyError):
+    """Raise when chain id is not available in settings."""
+
+    def __init__(self) -> None:
+        from clive.__private.core.constants.setting_identifiers import (  # noqa: PLC0415
+            NODE_CHAIN_ID,
+        )
+        from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar  # noqa: PLC0415
+
+        message = (
+            "There is no configured chain id in settings."
+            f" You can override settings by environment variable {clive_prefixed_envvar(NODE_CHAIN_ID)}"
+        )
+        super().__init__(message, errno.EINVAL)
