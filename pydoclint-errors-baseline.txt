@@ -104,6 +104,8 @@ clive/__private/cli/main.py
 clive/__private/cli/process/claim.py
     DOC101: Function `process_claim_new_account_token`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_claim_new_account_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool | None, creator: str, fee: str | None, save_file: str | None, sign_with: str | None].
+    DOC101: Function `process_claim_rewards`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_claim_rewards`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None].
 --------------------
 clive/__private/cli/process/custom_operations/custom_json.py
     DOC101: Function `process_custom_json`: Docstring contains fewer arguments than in function signature.
