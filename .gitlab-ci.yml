@@ -259,7 +259,16 @@ testing_cli:
     PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
-    - export PYTEST_ARGS=(tests/functional/cli -v)
+    - export PYTEST_ARGS=(tests/functional/cli --ignore tests/functional/cli/calling_api -v)
+    - !reference [.run-pytest, script]
+
+testing_cli_call:
+  extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
+  script:
+    - echo -e "${TXT_BLUE}Launching cli call tests...${TXT_CLEAR}"
+    - export PYTEST_ARGS=(tests/functional/cli/calling_api -v)
     - !reference [.run-pytest, script]
 
 testing_password_private_key_logging:

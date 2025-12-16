@@ -53,3 +53,22 @@ TRANSACTION_CREATED_MESSAGE: Final[str] = "Transaction was successfully created.
 TRANSACTION_LOADED_MESSAGE: Final[str] = "Transaction was successfully loaded."
 TRANSACTION_BROADCASTED_MESSAGE: Final[str] = "Transaction was successfully broadcasted."
 TRANSACTION_SAVED_MESSAGE_PREFIX: Final[str] = "Transaction was saved to "
+
+# search-api and follow_api need hivemind, condenser_api is not included
+HIVED_API_NAMES: Final[tuple[str, ...]] = (
+    "account_by_key_api",
+    "account_history_api",
+    "block_api",
+    "database_api",
+    "debug_node_api",
+    "market_history_api",
+    "network_broadcast_api",
+    "rc_api",
+    "reputation_api",
+    "transaction_status_api",
+)
+ADDITIONAL_API_NAMES: Final[tuple[str, ...]] = (
+    "search_api",
+    "follow_api",
+)
+ALL_API_NAMES: Final[tuple[str, ...]] = (*HIVED_API_NAMES, *ADDITIONAL_API_NAMES)
