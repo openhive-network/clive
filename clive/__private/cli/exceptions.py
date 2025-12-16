@@ -741,3 +741,19 @@ class OrderFillOrKillNotFilledError(CLIPrettyError):
             "or adjust your price/amount to match existing orders."
         )
         super().__init__(message, errno.ECANCELED)
+
+
+class CLIChainIdFromSettingsNotAvailableError(CLIPrettyError):
+    """Raise when chain id is not available in settings."""
+
+    def __init__(self) -> None:
+        from clive.__private.core.constants.setting_identifiers import (  # noqa: PLC0415
+            NODE_CHAIN_ID,
+        )
+        from clive.__private.settings.clive_prefixed_envvar import clive_prefixed_envvar  # noqa: PLC0415
+
+        message = (
+            "There is no configured chain id in settings."
+            f" You can override settings by environment variable {clive_prefixed_envvar(NODE_CHAIN_ID)}"
+        )
+        super().__init__(message, errno.EINVAL)
