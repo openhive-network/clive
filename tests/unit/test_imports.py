@@ -10,13 +10,21 @@ import pytest
 from textual import __name__ as textual_package_name
 
 import clive.__private.models.schemas as schemas_models_module
+from clive.__private.cli.commands.call_api import get_api_class_name, get_api_client_module_path
 from clive.__private.ui import __name__ as ui_package_name
 from clive_local_tools.cli.imports import get_cli_help_imports_tree
+from clive_local_tools.data.constants import ALL_API_NAMES
 from wax import __name__ as wax_package_name
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from types import ModuleType
+
+
+def get_tested_api_names() -> list[str]:
+    """Get list of api names to be tested for import."""
+    invalid_apis = ["search_api"]  # APIs that are not properly generated, fix is already merged in hived
+    return [api_name for api_name in ALL_API_NAMES if api_name not in invalid_apis]
 
 
 @contextlib.contextmanager
@@ -70,4 +78,26 @@ def test_schemas_imports_runtime_match_type_checking(name: str) -> None:
     # ASSERT
     assert runtime_object is typechecking_object, (
         f"Runtime `{runtime_object}` and type checking `{typechecking_object}` objects do not match"
+    )
+
+
+@pytest.mark.parametrize("api_name", get_tested_api_names())
+def test_import_api_package(api_name: str) -> None:
+    """Import api package given as argument `api_name`."""
+    # ARRANGE
+    client_module_name = get_api_client_module_path(api_name)
+    api_class_name = get_api_class_name(api_name)
+
+    # ACT & ASSERT
+    try:
+        importlib.import_module(api_name)
+    except Exception as error:  # noqa: BLE001
+        pytest.fail(f"API package {api_name} couldn't be imported: {error}")
+    try:
+        client_module = importlib.import_module(client_module_name)
+    except Exception as error:  # noqa: BLE001
+        pytest.fail(f"API client module {client_module_name} couldn't be imported: {error}")
+    assert hasattr(client_module, api_class_name), (
+        f"In api package {api_name} in module {client_module_name} there should be"
+        f" definition of api class {api_class_name}"
     )
