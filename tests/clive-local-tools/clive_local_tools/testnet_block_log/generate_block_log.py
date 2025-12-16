@@ -198,6 +198,25 @@ def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
             wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, approve=True)
 
 
+def create_example_post_and_vote(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating example post and vote for alice...")
+    wallet.api.post_comment(
+        WORKING_ACCOUNT_DATA.account.name,
+        "example-post",
+        "",
+        "parent-example-post",
+        "Example Post Title",
+        "This is an example post body.",
+        "{}",
+    )
+    wallet.api.vote(
+        WORKING_ACCOUNT_DATA.account.name,
+        WORKING_ACCOUNT_DATA.account.name,
+        "example-post",
+        100,
+    )
+
+
 def main() -> None:
     node = tt.InitNode()
     configure(node)
@@ -215,6 +234,7 @@ def main() -> None:
     create_watched_accounts(wallet)
     prepare_savings(wallet)
     prepare_votes_for_witnesses(wallet)
+    create_example_post_and_vote(wallet)
     create_empty_account(wallet)
     create_known_exchange_accounts(wallet)
 
