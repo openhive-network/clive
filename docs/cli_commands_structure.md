@@ -73,7 +73,8 @@ clive
 │ ├── account-creation
 │ ├── change-recovery-account
 │ ├── claim
-│ │ └── new-account-token
+│ │ ├── new-account-token
+│ │ └── rewards
 │ ├── custom-json
 │ ├── delegations
 │ │ ├── remove
