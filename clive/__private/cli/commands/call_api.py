@@ -121,16 +121,6 @@ class CLICallAPIParamNotAJSONContainerError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
-class RequestedApiCollection:
-    """API collection class for dynamically extending wax interface with a single API."""
-
-    _api_name: str
-    _api_class: type
-
-    def __init__(self) -> None:
-        setattr(self, self._api_name, self._api_class)
-
-
 @dataclass(kw_only=True)
 class _CallAPICommon(ExternalCLICommand, ABC):
     """
@@ -153,12 +143,15 @@ class _CallAPICommon(ExternalCLICommand, ABC):
     def wax_interface(self) -> IHiveChainInterface:
         """Return the wax interface to use for API calls."""
 
-    def build_extended_api_collection(self) -> type[RequestedApiCollection]:
-        class ConfiguredApiCollection(RequestedApiCollection):
-            _api_name = self.api_name
-            _api_class = self._api_class
+    def build_extended_api_collection(self) -> type:
+        api_name = self.api_name
+        api_class = self._api_class
 
-        return ConfiguredApiCollection
+        class RequestedApiCollection:
+            def __init__(self) -> None:
+                setattr(self, api_name, api_class)
+
+        return RequestedApiCollection
 
     async def call_api_and_print_result(self) -> None:
         collection_type = self.build_extended_api_collection()
