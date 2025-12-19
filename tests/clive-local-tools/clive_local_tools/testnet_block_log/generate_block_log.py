@@ -12,6 +12,7 @@ from clive_local_tools.testnet_block_log.constants import (
     BLOCK_LOG_WITH_CONFIG_DIRECTORY,
     CREATOR_ACCOUNT,
     EMPTY_ACCOUNT,
+    ENCRYPTED_MEMO_CONTENT,
     KNOWN_EXCHANGES_NAMES,
     PROPOSALS,
     WATCHED_ACCOUNTS_DATA,
@@ -198,6 +199,21 @@ def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
             wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, approve=True)
 
 
+def create_transfer_with_encrypted_memo(node: tt.InitNode) -> None:
+    """Create a transfer with encrypted memo using OldWallet (cli_wallet encrypts memos starting with '#')."""
+    tt.logger.info("Creating transfer with encrypted memo...")
+    # OldWallet uses cli_wallet which automatically encrypts memos starting with '#'
+    old_wallet = tt.OldWallet(attach_to=node)
+    old_wallet.api.import_key(WORKING_ACCOUNT_DATA.account.private_key)
+    old_wallet.api.transfer(
+        CREATOR_ACCOUNT.name,
+        WORKING_ACCOUNT_DATA.account.name,
+        tt.Asset.Test(1),
+        f"#{ENCRYPTED_MEMO_CONTENT}",
+    )
+    old_wallet.close()
+
+
 def main() -> None:
     node = tt.InitNode()
     configure(node)
@@ -217,6 +233,7 @@ def main() -> None:
     prepare_votes_for_witnesses(wallet)
     create_empty_account(wallet)
     create_known_exchange_accounts(wallet)
+    create_transfer_with_encrypted_memo(node)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)

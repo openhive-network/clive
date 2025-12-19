@@ -36,6 +36,9 @@ clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC501: Method `_ProcessTransferScheduleCreateModifyCommon.validate_amount_not_a_removal_value` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `_ProcessTransferScheduleCreateModifyCommon.validate_amount_not_a_removal_value` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProcessTransferScheduleInvalidAmountError'].
 --------------------
+clive/__private/cli/commands/process/transfer.py
+    DOC503: Method `Transfer._maybe_encrypt_memo` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['CLIPrettyError']. Raised exceptions in the body: ['EncryptMemoError'].
+--------------------
 clive/__private/cli/commands/show/show_transfer_schedule.py
     DOC101: Method `ShowTransferSchedule.__create_table_definition`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `ShowTransferSchedule.__create_table_definition`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_scheduled_transfers_data: AccountScheduledTransferData].
@@ -90,6 +93,10 @@ clive/__private/cli/configure/tracked_account.py
 clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+--------------------
+clive/__private/cli/crypt/main.py
+    DOC101: Function `decrypt_memo`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `decrypt_memo`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encoded_text: str | None, encoded_text_option: str | None].
 --------------------
 clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
@@ -272,6 +279,9 @@ clive/__private/core/accounts/account_manager.py
 --------------------
 clive/__private/core/commands/abc/command_restricted.py
     DOC503: Method `CommandRestricted.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: ['CommandExecutionNotPossibleError']. Raised exceptions in the body: ['self._execution_impossible_error'].
+--------------------
+clive/__private/core/commands/commands.py
+    DOC502: Method `Commands.encrypt_memo_from_accounts` has a "Raises" section in the docstring, but there are not "raise" statements in the body
 --------------------
 clive/__private/core/commands/data_retrieval/chain_data.py
     DOC101: Method `ChainData.__colorize_hbd_print_rate`: Docstring contains fewer arguments than in function signature.
