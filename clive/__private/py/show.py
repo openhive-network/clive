@@ -13,9 +13,6 @@ if TYPE_CHECKING:
 class ShowInterfaceNoProfile:
     """Interface for show operations that do not require a profile."""
 
-    def __init__(self) -> None:
-        pass
-
     async def profiles(self) -> list[str]:
         """List all available profiles."""
         return await ShowProfiles().run()

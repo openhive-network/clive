@@ -21,9 +21,6 @@ if TYPE_CHECKING:
 
 
 class ShowProfiles(CommandBase[list[str]]):
-    def __init__(self) -> None:
-        pass
-
     async def _run(self) -> list[str]:
         return Profile.list_profiles()
 
