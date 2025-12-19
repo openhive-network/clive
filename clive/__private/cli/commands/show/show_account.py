@@ -82,22 +82,24 @@ class ShowAccount(WorldBasedCommand):
         balances_table.add_column(justify="right", style="green", no_wrap=True)
         balances_table.add_column(justify="right", style="green", no_wrap=True)
 
-        # Get all balance values as strings
-        hbd_liquid = humanize_asset(self._account_data.hbd_balance)
-        hbd_savings = humanize_asset(self._account_data.hbd_savings)
-        hp_stake = humanize_hive_power(self._account_data.owned_hp_balance.hp_balance)
-
+        # Get all balance values as strings (HIVE/HP column, then HBD/VESTS column - matching Dashboard order)
         hive_liquid = humanize_asset(self._account_data.hive_balance)
         hive_savings = humanize_asset(self._account_data.hive_savings)
-        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance)
+        hp_stake = humanize_hive_power(self._account_data.owned_hp_balance.hp_balance)
+
+        hbd_liquid = humanize_asset(self._account_data.hbd_balance)
+        hbd_savings = humanize_asset(self._account_data.hbd_savings)
+        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, use_short_form=True)
 
         # Align decimal points within each column
-        col2_aligned = align_to_dot(hbd_liquid, hbd_savings, hp_stake)
-        col3_aligned = align_to_dot(hive_liquid, hive_savings, vests_stake)
+        hive_liquid_aligned, hive_savings_aligned, hp_stake_aligned = align_to_dot(hive_liquid, hive_savings, hp_stake)
+        hbd_liquid_aligned, hbd_savings_aligned, vests_stake_aligned = align_to_dot(
+            hbd_liquid, hbd_savings, vests_stake
+        )
 
-        balances_table.add_row("Liquid", col2_aligned[0], col3_aligned[0])
-        balances_table.add_row("Savings", col2_aligned[1], col3_aligned[1])
-        balances_table.add_row("Stake", col2_aligned[2], col3_aligned[2])
+        balances_table.add_row("Liquid", hive_liquid_aligned, hbd_liquid_aligned)
+        balances_table.add_row("Savings", hive_savings_aligned, hbd_savings_aligned)
+        balances_table.add_row("Stake", hp_stake_aligned, vests_stake_aligned)
 
         return balances_table
 
