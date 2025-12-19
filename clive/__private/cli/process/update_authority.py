@@ -9,6 +9,7 @@ from click import Context, pass_context
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters import modified_param
+from clive.__private.cli.common.parsers import account_name
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 _authority_account_name = typer.Option(
     ...,
     "--account",
+    parser=account_name,
     help="The account to  add/remove/modify (account must exist).",
 )
 _authority_key = typer.Option(

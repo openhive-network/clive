@@ -4,6 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.parsers import account_name
 
 vote_witness = CliveTyper(name="vote-witness", help="Vote/unvote for a witness.")
 
@@ -11,7 +12,7 @@ vote_witness = CliveTyper(name="vote-witness", help="Vote/unvote for a witness."
 @vote_witness.command(name="add")
 async def process_vote_witness_add(  # noqa: PLR0913
     account_name: str = options.account_name,
-    witness_name: str = typer.Option(..., help="Witness name to vote."),
+    witness_name: str = typer.Option(..., parser=account_name, help="Witness name to vote."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
@@ -34,7 +35,7 @@ async def process_vote_witness_add(  # noqa: PLR0913
 @vote_witness.command(name="remove")
 async def process_vote_witness_remove(  # noqa: PLR0913
     account_name: str = options.account_name,
-    witness_name: str = typer.Option(..., help="Witness name to unvote."),
+    witness_name: str = typer.Option(..., parser=account_name, help="Witness name to unvote."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001

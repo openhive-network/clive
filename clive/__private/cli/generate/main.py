@@ -9,6 +9,7 @@ from clive.__private.cli.common.parameters.argument_related_options import (
 )
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.common.parsers import account_name
 from clive.__private.core.types import AuthorityLevel
 
 generate = CliveTyper(name="generate", help="Commands for generating things (e.g. keys).")
@@ -16,6 +17,7 @@ generate = CliveTyper(name="generate", help="Commands for generating things (e.g
 
 _account_name_argument = typer.Argument(
     None,
+    parser=account_name,
     help=stylized_help(
         "Account for which key is derived, this is not working account of profile.", required_as_arg_or_option=True
     ),
