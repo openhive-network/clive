@@ -46,9 +46,47 @@ Note: Process operations (transfer, update_authority, etc.) will be available in
 from __future__ import annotations
 
 from clive.__private.py.base import ClivePy, UnlockedClivePy, clive_use_unlocked_profile
+from clive.__private.py.data_classes import (
+    Accounts,
+    Authority,
+    AuthorityInfo,
+    Balances,
+    KeyPair,
+    Witness,
+    WitnessesResult,
+)
+from clive.__private.py.exceptions import (
+    AccountNotFoundError,
+    InvalidAccountNameError,
+    InvalidNumberOfKeyPairsError,
+    InvalidPageNumberError,
+    InvalidPageSizeError,
+    InvalidProfileNameError,
+    PasswordRequirementsNotMetError,
+    PyContextManagerNotUsedError,
+    PyError,
+    PyValidationError,
+)
 
 __all__ = [
+    "AccountNotFoundError",
+    "Accounts",
+    "Authority",
+    "AuthorityInfo",
+    "Balances",
     "ClivePy",
+    "InvalidAccountNameError",
+    "InvalidNumberOfKeyPairsError",
+    "InvalidPageNumberError",
+    "InvalidPageSizeError",
+    "InvalidProfileNameError",
+    "KeyPair",
+    "PasswordRequirementsNotMetError",
+    "PyContextManagerNotUsedError",
+    "PyError",
+    "PyValidationError",
     "UnlockedClivePy",
+    "Witness",
+    "WitnessesResult",
     "clive_use_unlocked_profile",
 ]
