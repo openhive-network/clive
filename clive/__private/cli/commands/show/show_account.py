@@ -89,7 +89,7 @@ class ShowAccount(WorldBasedCommand):
 
         hive_liquid = humanize_asset(self._account_data.hive_balance)
         hive_savings = humanize_asset(self._account_data.hive_savings)
-        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance)
+        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, use_short_form=True)
 
         # Align decimal points within each column
         col2_aligned = align_to_dot(hbd_liquid, hbd_savings, hp_stake)
