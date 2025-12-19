@@ -8,8 +8,10 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
+from clive.__private.core.commands.find_accounts import AccountNotFoundError as CoreAccountNotFoundError
 from clive.__private.core.profile import Profile
 from clive.__private.py.data_classes import Accounts, Authority, AuthorityInfo, Balances, Witness, WitnessesResult
+from clive.__private.py.exceptions import AccountNotFoundError
 from clive.__private.py.foundation.base import CommandBase
 from clive.__private.py.validators import AccountNameValidator, PageNumberValidator, PageSizeValidator
 
@@ -74,7 +76,13 @@ class ShowWitnesses(CommandBase[WitnessesResult]):
         PageNumberValidator().validate(self.page_no)
 
     async def _run(self) -> WitnessesResult:
-        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
+        wrapper = await self.world.commands.find_accounts(accounts=[self.account_name])
+        try:
+            accounts = wrapper.result_or_raise
+        except CoreAccountNotFoundError as err:
+            raise AccountNotFoundError(self.account_name) from err
+        if not accounts:
+            raise AccountNotFoundError(self.account_name)
         proxy = accounts[0].proxy
 
         wrapper = await self.world.commands.retrieve_witnesses_data(
