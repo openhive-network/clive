@@ -143,3 +143,30 @@ def public_key(raw: str) -> PublicKey:
     except PublicKeyInvalidFormatError as error:
         raise CLIPublicKeyInvalidFormatError(raw) from error
     return parsed
+
+
+def account_name(raw: str) -> str:
+    """
+    Parse and validate account name.
+
+    Args:
+        raw: The raw input representing the account name.
+
+    Raises:
+        typer.BadParameter: If the account name is invalid.
+
+    Returns:
+        The validated account name.
+    """
+    from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD  # noqa: PLC0415
+    from clive.__private.core.formatters.humanize import humanize_validation_result  # noqa: PLC0415
+    from clive.__private.validators.account_name_validator import AccountNameValidator  # noqa: PLC0415
+
+    # Allow placeholder value to pass through without validation
+    if raw == PERFORM_WORKING_ACCOUNT_LOAD:
+        return raw
+
+    status = AccountNameValidator().validate(raw)
+    if status.is_valid:
+        return raw
+    raise typer.BadParameter(humanize_validation_result(status))
