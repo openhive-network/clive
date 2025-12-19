@@ -17,6 +17,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_asset,
     humanize_bool,
     humanize_datetime,
+    humanize_hive_power,
     humanize_hive_power_with_comma,
     humanize_manabar_regeneration_time,
     humanize_percent,
@@ -84,7 +85,7 @@ class ShowAccount(WorldBasedCommand):
         # Get all balance values as strings
         hbd_liquid = humanize_asset(self._account_data.hbd_balance)
         hbd_savings = humanize_asset(self._account_data.hbd_savings)
-        hp_stake = humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=True)
+        hp_stake = humanize_hive_power(self._account_data.owned_hp_balance.hp_balance)
 
         hive_liquid = humanize_asset(self._account_data.hive_balance)
         hive_savings = humanize_asset(self._account_data.hive_savings)
