@@ -65,8 +65,20 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
 
     def _identity_check(self, scheduled_transfer: ScheduledTransfer) -> bool:
         """Determine if a scheduled transfer matches destination and the specified pair ID."""
-        pair_id = 0 if self.pair_id is None else self.pair_id
-        return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
+        if scheduled_transfer.to != self.to:
+            return False
+
+        if self.pair_id is not None:
+            return scheduled_transfer.pair_id == self.pair_id
+
+        # pair_id not specified - check if we can auto-select
+        transfers_to_receiver = self.account_scheduled_transfers_data.filter_by_receiver(self.to)
+        if len(transfers_to_receiver) == 1 and transfers_to_receiver[0].pair_id == 0:
+            # Single transfer with pair_id=0, auto-select it
+            return scheduled_transfer.pair_id == 0
+
+        # Default behavior: treat None as 0
+        return scheduled_transfer.pair_id == 0
 
     async def fetch_data(self) -> None:
         self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
@@ -86,12 +98,30 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         raise ProcessTransferScheduleDoesNotExistsError(self.to, pair_id)
 
     def validate_pair_id_should_be_given(self) -> None:
-        """Validate if pair_id is set, when there is more than one recurrent transfers."""
-        if (
-            self.account_scheduled_transfers_data.has_mutiple_scheduled_transfers_to_receiver(self.to)
-            and self.pair_id is None
-        ):
-            raise ProcessTransferScheduleNullPairIdError
+        """
+        Validate if pair_id should be specified explicitly.
+
+        Rules:
+        - If pair_id is specified, OK
+        - If there's exactly one transfer to receiver with pair_id=0, auto-select OK
+        - Otherwise (multiple transfers OR single transfer with pair_id != 0), error
+        """
+        if self.pair_id is not None:
+            return
+
+        transfers_to_receiver = self.account_scheduled_transfers_data.filter_by_receiver(self.to)
+
+        if len(transfers_to_receiver) == 0:
+            return  # No transfers, will fail on existence check
+
+        if len(transfers_to_receiver) == 1:
+            if transfers_to_receiver[0].pair_id == 0:
+                return  # Single transfer with pair_id=0, auto-select OK
+            # Single transfer with pair_id != 0
+            raise ProcessTransferScheduleNullPairIdError(self.to, existing_pair_id=transfers_to_receiver[0].pair_id)
+
+        # Multiple transfers
+        raise ProcessTransferScheduleNullPairIdError(self.to)
 
 
 @dataclass(kw_only=True)
@@ -167,8 +197,8 @@ class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
             self.memo = self.memo if self.memo is not None else self.scheduled_transfer.memo
 
     async def validate_inside_context_manager(self) -> None:
-        self.validate_existence(should_exists=True)
         self.validate_pair_id_should_be_given()
+        self.validate_existence(should_exists=True)
         self.validate_existence_lifetime()
         await super().validate_inside_context_manager()
 
@@ -197,6 +227,6 @@ class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
         )
 
     async def validate_inside_context_manager(self) -> None:
-        self.validate_existence(should_exists=True)
         self.validate_pair_id_should_be_given()
+        self.validate_existence(should_exists=True)
         await super().validate_inside_context_manager()
