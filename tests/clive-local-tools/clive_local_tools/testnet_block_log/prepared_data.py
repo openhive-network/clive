@@ -25,7 +25,11 @@ def get_alternate_chain_spec() -> tt.AlternateChainSpecs:
 
 
 def get_block_log() -> tt.BlockLog:
-    return tt.BlockLog(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
+    """Makes copy of block_log, ensuring artifacts are excluded."""
+    block_log = tt.BlockLog(BLOCK_LOG_WITH_CONFIG_DIRECTORY)
+    directory = tt.context.get_current_directory() / "block_log_copy"
+    directory.mkdir(exist_ok=True)
+    return block_log.copy_to(directory, artifacts="excluded")
 
 
 def get_time_control(block_log: tt.BlockLog) -> tt.StartTimeControl:
