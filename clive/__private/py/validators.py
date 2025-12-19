@@ -43,7 +43,8 @@ class Validator(ABC):
 
 class ProfileNameValidator(Validator):
     def validate(self, value: object) -> None:
-        assert isinstance(value, str)
+        if not isinstance(value, str):
+            raise TypeError(f"Expected str, got {type(value).__name__}: {value!r}")
         validation_result = ProfileNameValidatorImpl().validate(value)
         if not validation_result.is_valid:
             raise InvalidProfileNameError(value, humanize_validation_result(validation_result))
@@ -51,7 +52,8 @@ class ProfileNameValidator(Validator):
 
 class SetPasswordValidator(Validator):
     def validate(self, value: object) -> None:
-        assert isinstance(value, str)
+        if not isinstance(value, str):
+            raise TypeError(f"Expected str, got {type(value).__name__}: {value!r}")
         validation_result = SetPasswordValidatorImpl().validate(value)
         if not validation_result.is_valid:
             raise PasswordRequirementsNotMetError(humanize_validation_result(validation_result))
@@ -59,7 +61,8 @@ class SetPasswordValidator(Validator):
 
 class AccountNameValidator(Validator):
     def validate(self, value: object) -> None:
-        assert isinstance(value, str)
+        if not isinstance(value, str):
+            raise TypeError(f"Expected str, got {type(value).__name__}: {value!r}")
         validation_result = AccountNameValidatorImpl().validate(value)
         if not validation_result.is_valid:
             raise InvalidAccountNameError(value)
@@ -69,7 +72,8 @@ class PageNumberValidator(Validator):
     MIN_NUMBER: Final[int] = 0
 
     def validate(self, value: object) -> None:
-        assert isinstance(value, int)
+        if not isinstance(value, int):
+            raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
         if value < self.MIN_NUMBER:
             raise InvalidPageNumberError(value, self.MIN_NUMBER)
 
@@ -78,7 +82,8 @@ class PageSizeValidator(Validator):
     MIN_SIZE: Final[int] = 1
 
     def validate(self, value: object) -> None:
-        assert isinstance(value, int)
+        if not isinstance(value, int):
+            raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
         if value < self.MIN_SIZE:
             raise InvalidPageSizeError(value, self.MIN_SIZE)
 
@@ -87,6 +92,7 @@ class KeyPairsNumberValidator(Validator):
     MIN_NUMBER: Final[int] = 1
 
     def validate(self, value: object) -> None:
-        assert isinstance(value, int)
+        if not isinstance(value, int):
+            raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
         if value < self.MIN_NUMBER:
             raise InvalidNumberOfKeyPairsError(value, self.MIN_NUMBER)
