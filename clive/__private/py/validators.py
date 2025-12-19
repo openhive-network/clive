@@ -70,29 +70,31 @@ class AccountNameValidator(Validator):
 
 class PageNumberValidator(Validator):
     MIN_NUMBER: Final[int] = 0
+    MAX_NUMBER: Final[int] = 100000
 
     def validate(self, value: object) -> None:
-        if not isinstance(value, int):
+        if isinstance(value, bool) or not isinstance(value, int):
             raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
-        if value < self.MIN_NUMBER:
-            raise InvalidPageNumberError(value, self.MIN_NUMBER)
+        if value < self.MIN_NUMBER or value > self.MAX_NUMBER:
+            raise InvalidPageNumberError(value, self.MIN_NUMBER, self.MAX_NUMBER)
 
 
 class PageSizeValidator(Validator):
     MIN_SIZE: Final[int] = 1
+    MAX_SIZE: Final[int] = 1000
 
     def validate(self, value: object) -> None:
-        if not isinstance(value, int):
+        if isinstance(value, bool) or not isinstance(value, int):
             raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
-        if value < self.MIN_SIZE:
-            raise InvalidPageSizeError(value, self.MIN_SIZE)
+        if value < self.MIN_SIZE or value > self.MAX_SIZE:
+            raise InvalidPageSizeError(value, self.MIN_SIZE, self.MAX_SIZE)
 
 
 class KeyPairsNumberValidator(Validator):
     MIN_NUMBER: Final[int] = 1
 
     def validate(self, value: object) -> None:
-        if not isinstance(value, int):
+        if isinstance(value, bool) or not isinstance(value, int):
             raise TypeError(f"Expected int, got {type(value).__name__}: {value!r}")
         if value < self.MIN_NUMBER:
             raise InvalidNumberOfKeyPairsError(value, self.MIN_NUMBER)

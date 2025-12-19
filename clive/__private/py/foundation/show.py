@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.commands.data_retrieval.witnesses_data import (
@@ -11,7 +11,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
 from clive.__private.core.commands.find_accounts import AccountNotFoundError as CoreAccountNotFoundError
 from clive.__private.core.profile import Profile
 from clive.__private.py.data_classes import Accounts, Authority, AuthorityInfo, Balances, Witness, WitnessesResult
-from clive.__private.py.exceptions import AccountNotFoundError
+from clive.__private.py.exceptions import AccountNotFoundError, InvalidAuthorityTypeError
 from clive.__private.py.foundation.base import CommandBase
 from clive.__private.py.validators import AccountNameValidator, PageNumberValidator, PageSizeValidator
 
@@ -34,6 +34,7 @@ class ShowBalances(CommandBase[Balances]):
         AccountNameValidator().validate(self.account_name)
 
     async def _run(self) -> Balances:
+        await self._ensure_account_exists()
         account = TrackedAccount(name=self.account_name)
         await self.world.commands.update_node_data(accounts=[account])
 
@@ -46,6 +47,13 @@ class ShowBalances(CommandBase[Balances]):
             hive_unclaimed=account.data.hive_unclaimed,
         )
 
+    async def _ensure_account_exists(self) -> None:
+        """Check if the account exists on the blockchain."""
+        try:
+            await self.world.commands.find_accounts(accounts=[self.account_name])
+        except CoreAccountNotFoundError as err:
+            raise AccountNotFoundError(self.account_name) from err
+
 
 class ShowAccounts(CommandBase[Accounts]):
     def __init__(self, world: World) -> None:
@@ -55,12 +63,21 @@ class ShowAccounts(CommandBase[Accounts]):
         profile = self.world.profile
         return Accounts(
             working_account=profile.accounts.working.name if profile.accounts.has_working_account else None,
-            tracked_accounts=[account.name for account in profile.accounts.tracked],
-            known_accounts=[account.name for account in profile.accounts.known],
+            tracked_accounts=tuple(account.name for account in profile.accounts.tracked),
+            known_accounts=tuple(account.name for account in profile.accounts.known),
         )
 
 
 class ShowWitnesses(CommandBase[WitnessesResult]):
+    """
+    Command to retrieve witnesses with pagination support.
+
+    Note:
+        If page_no exceeds available pages, returns empty witnesses list
+        without raising an error. The total_count field in the result
+        can be used to calculate the maximum valid page number.
+    """
+
     def __init__(self, world: World, account_name: str, page_size: int, page_no: int) -> None:
         self.world = world
         self.account_name = account_name
@@ -94,12 +111,13 @@ class ShowWitnesses(CommandBase[WitnessesResult]):
         witnesses_list: list[WitnessData] = list(witnesses_data.witnesses.values())
         witnesses_chunk: list[WitnessData] = witnesses_list[start_index:end_index]
 
-        witnesses = [
+        witnesses = tuple(
             Witness(
                 voted=witness.voted,
                 rank=witness.rank,
                 witness_name=witness.name,
-                votes=witness.votes,
+                votes=witness.votes_raw,
+                votes_display=witness.votes,
                 created=witness.created,
                 missed_blocks=witness.missed_blocks,
                 last_block=witness.last_block,
@@ -107,7 +125,7 @@ class ShowWitnesses(CommandBase[WitnessesResult]):
                 version=witness.version,
             )
             for witness in witnesses_chunk
-        ]
+        )
 
         return WitnessesResult(
             witnesses=witnesses,
@@ -117,6 +135,8 @@ class ShowWitnesses(CommandBase[WitnessesResult]):
 
 
 class ShowAuthority(CommandBase[AuthorityInfo]):
+    VALID_AUTHORITIES: Final[frozenset[str]] = frozenset({"owner", "active", "posting"})
+
     def __init__(self, world: World, account_name: str, authority: AuthorityLevelRegular) -> None:
         self.world = world
         self.account_name = account_name
@@ -124,14 +144,17 @@ class ShowAuthority(CommandBase[AuthorityInfo]):
 
     async def validate(self) -> None:
         AccountNameValidator().validate(self.account_name)
+        if self.authority not in self.VALID_AUTHORITIES:
+            raise InvalidAuthorityTypeError(self.authority, self.VALID_AUTHORITIES)
 
     async def _run(self) -> AuthorityInfo:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         account = accounts[0]
 
-        authorities = []
-        for auth, weight in [*account[self.authority].key_auths, *account[self.authority].account_auths]:
-            authorities.append(Authority(account_or_public_key=auth, weight=weight))
+        authorities = tuple(
+            Authority(account_or_public_key=auth, weight=weight)
+            for auth, weight in [*account[self.authority].key_auths, *account[self.authority].account_auths]
+        )
 
         return AuthorityInfo(
             authority_owner_account_name=account.name,

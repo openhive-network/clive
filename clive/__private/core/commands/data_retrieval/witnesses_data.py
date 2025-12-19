@@ -34,6 +34,7 @@ class WitnessData:
     created: datetime = field(default_factory=utc_epoch)
     voted: bool = False
     votes: str = "?"
+    votes_raw: int = 0
     rank: int | None = None
     missed_blocks: int = 0
     last_block: int = 0
@@ -207,6 +208,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             created=witness.created,
             rank=rank,
             votes=humanize_votes_with_suffix(witness.votes, data.gdpo),
+            votes_raw=witness.votes,
             missed_blocks=witness.total_missed,
             voted=witness.owner in data.witnesses_votes,
             last_block=witness.last_confirmed_block_num,
