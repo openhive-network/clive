@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Generic, Literal, overload
-
-from typing_extensions import TypeVar
+from typing import Generic, Literal, TypeVar, overload
 
 from clive.__private.cli.completion import is_tab_completion_active
 

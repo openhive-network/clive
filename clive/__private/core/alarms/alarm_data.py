@@ -17,7 +17,7 @@ class BaseAlarmData(ABC):
         pass
 
 
-@dataclass
+@dataclass(replace=False)  # type: ignore[call-overload]
 class AlarmDataWithStartDate(BaseAlarmData):
     START_DATE_LABEL: ClassVar[str] = "Start date"
 
@@ -33,7 +33,7 @@ class AlarmDataWithStartDate(BaseAlarmData):
         }
 
 
-@dataclass
+@dataclass(replace=False)  # type: ignore[call-overload]
 class AlarmDataWithEndDate(BaseAlarmData):
     END_DATE_LABEL: ClassVar[str] = "End date"
     TIME_LEFT_LABEL: ClassVar[str] = "Time left"
@@ -59,7 +59,7 @@ class AlarmDataWithEndDate(BaseAlarmData):
         }
 
 
-class AlarmDataWithStartAndEndDate(AlarmDataWithStartDate, AlarmDataWithEndDate):
+class AlarmDataWithStartAndEndDate(AlarmDataWithStartDate, AlarmDataWithEndDate):  # type: ignore[misc]
     def get_titled_data(self) -> dict[str, str]:
         return {
             self.START_DATE_LABEL: self.pretty_start_date,
