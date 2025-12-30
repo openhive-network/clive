@@ -100,16 +100,19 @@ default:
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
+  image: ${CI_BASE_IMAGE}
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
+  image: ${CI_BASE_IMAGE}
   script:
     - poetry check --lock
 
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
+  image: ${CI_BASE_IMAGE}
   script:  # our own script because of newer ruff version
     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
@@ -118,6 +121,7 @@ lint_code_with_ruff:
 formatting_with_ruff_check:
   stage: static_code_analysis
   extends: .project_develop_configuration_template
+  image: ${CI_BASE_IMAGE}
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
       ruff format --check --diff ${PACKAGES_TO_CHECK}
@@ -125,6 +129,7 @@ formatting_with_ruff_check:
 type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
+  image: ${CI_BASE_IMAGE}
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -158,6 +163,7 @@ prepare_testnet_hived_image:
 build_wheel:
   extends: .build_wheel_template
   stage: build
+  image: ${CI_BASE_IMAGE}
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al
@@ -188,6 +194,7 @@ build_docs:
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
+  image: ${CI_BASE_IMAGE}
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
@@ -268,6 +275,7 @@ testing_cli:
 
 testing_password_private_key_logging:
   stage: tests
+  image: ${CI_BASE_IMAGE}
   needs:
     - job: testing_clive
       artifacts: true
@@ -304,6 +312,7 @@ test_async_hived:
 deploy_wheel_to_gitlab:
   extends: .deploy_wheel_to_gitlab_template
   stage: deploy
+  image: ${CI_BASE_IMAGE}
   <<: *deploy_wheel_needs
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
@@ -313,6 +322,7 @@ deploy_wheel_to_gitlab:
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
+  image: ${CI_BASE_IMAGE}
   <<: *deploy_wheel_needs
 
 .docs_deployment_base:
