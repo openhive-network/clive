@@ -178,6 +178,7 @@ build_docs:
   extends:
     - .build_docs_env
     - .docs_variables
+  image: ${CI_BASE_IMAGE}
   script:
     - cd $PYPROJECT_DIR
     - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
