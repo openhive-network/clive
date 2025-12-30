@@ -46,15 +46,15 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-XXX (defined in hive/scripts/ci-helpers/ci_image_tag_vars.yml)
-  CI_BASE_IMAGE_TAG: "${TEST_IMAGE_TAG}"
-  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04-1
-  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
-  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04-1
-  CLIVE_BASE_IMAGE_TAG: "@sha256:28f515d0cda87b9372b48f70b9d48468bc074ad9b54940827f2eebf49fd8521f"
-  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1 (Python 3.14)
+  CI_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
+  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1 (Python 3.14)
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
+  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CLIVE_TESTNET_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1 (Python 3.14)
+  CLIVE_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
+  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
