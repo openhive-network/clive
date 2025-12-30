@@ -10,7 +10,7 @@ from clive.__private.logger import logger
 CommandResultT = TypeVar("CommandResultT")
 
 
-@dataclass(kw_only=True, replace=False)  # type: ignore[call-overload]
+@dataclass(kw_only=True)
 class CommandWithResult(Command, ABC, Generic[CommandResultT]):  # noqa: UP046
     """
     A command that returns a result.

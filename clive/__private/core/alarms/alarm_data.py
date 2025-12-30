@@ -17,7 +17,7 @@ class BaseAlarmData(ABC):
         pass
 
 
-@dataclass(replace=False)  # type: ignore[call-overload]
+@dataclass
 class AlarmDataWithStartDate(BaseAlarmData):
     START_DATE_LABEL: ClassVar[str] = "Start date"
 
@@ -33,7 +33,7 @@ class AlarmDataWithStartDate(BaseAlarmData):
         }
 
 
-@dataclass(replace=False)  # type: ignore[call-overload]
+@dataclass
 class AlarmDataWithEndDate(BaseAlarmData):
     END_DATE_LABEL: ClassVar[str] = "End date"
     TIME_LEFT_LABEL: ClassVar[str] = "Time left"

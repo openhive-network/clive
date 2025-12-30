@@ -16,7 +16,7 @@ class CommandError(CliveError):
         super().__init__(message)
 
 
-@dataclass(kw_only=True, replace=False)  # type: ignore[call-overload]
+@dataclass(kw_only=True)
 class Command(ABC):
     """
     An abstract class that defines a common interface for executing commands.
