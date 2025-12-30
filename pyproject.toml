@@ -58,7 +58,7 @@ hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
+test-tools = { git = "https://gitlab.syncad.com/hive/test-tools.git", branch = "feature/python-3.14" }
 pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
@@ -73,7 +73,7 @@ textual-dev = "1.7.0"
 pydoclint = "0.6.6"
 types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
+test-tools = { git = "https://gitlab.syncad.com/hive/test-tools.git", branch = "feature/python-3.14" }
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"
