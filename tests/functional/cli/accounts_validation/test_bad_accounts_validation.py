@@ -41,7 +41,7 @@ def transaction_file_with_bad_account() -> Path:
 
 
 @contextmanager
-def extended_bad_account_names(bad_account_to_add: str) -> Generator[Any, None, None]:
+def extended_bad_account_names(bad_account_to_add: str) -> Generator[Any]:
     with pytest.MonkeyPatch.context() as monkeypatch:
         original_bad_accounts_names = AccountManager.get_bad_accounts()
         extended_bad_accounts_names = [*original_bad_accounts_names, bad_account_to_add]

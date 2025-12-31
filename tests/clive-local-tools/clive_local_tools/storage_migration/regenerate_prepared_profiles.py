@@ -101,7 +101,7 @@ def save_encrypted_profile(encrypted: str) -> None:
 
 
 @contextmanager
-def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None, None]:
+def copy_profile_files_from_tmp_dir(dst_dir_name: str) -> Generator[None]:
     init_file_name = "__init__.py"
     dst_dir = Path(__file__).parent.absolute() / dst_dir_name
 
