@@ -8,7 +8,7 @@ from clive.__private.core.commands.abc.command_data_retrieval_base import (
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 
 
-class CommandDataRetrieval(
+class CommandDataRetrieval(  # type: ignore[misc]
     CommandDataRetrievalBase[HarvestedDataT, SanitizedDataT, CommandResultT],
     CommandWithResult[CommandResultT],
 ):

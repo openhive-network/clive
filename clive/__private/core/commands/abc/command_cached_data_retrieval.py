@@ -8,6 +8,6 @@ from clive.__private.core.commands.abc.command_data_retrieval_base import (
 )
 
 
-class CommandCachedDataRetrieval(Command, CommandDataRetrievalBase[HarvestedDataT, SanitizedDataT, None]):
+class CommandCachedDataRetrieval(Command, CommandDataRetrievalBase[HarvestedDataT, SanitizedDataT, None]):  # type: ignore[misc]
     async def _execute(self) -> None:
         await super()._perform_data_operations()

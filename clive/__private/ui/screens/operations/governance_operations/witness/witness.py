@@ -40,10 +40,9 @@ from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
-    from typing import Final
+    from typing import Final, TypeIs
 
     from textual.app import ComposeResult
-    from typing_extensions import TypeIs
 
 
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150

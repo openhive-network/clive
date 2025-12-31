@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypeVar
 
 from textual import on
 from textual.binding import Binding
@@ -10,7 +10,6 @@ from textual.events import Click
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import ModalScreen
-from typing_extensions import TypeVar
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import ScreenResultT
