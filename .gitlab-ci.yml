@@ -22,8 +22,8 @@ include:
 variables:
   # git:
   GIT_STRATEGY: clone
-  # Hived version - full commit SHA from hive/hive repo (first 8 chars used as image tag)
-  HIVED_COMMIT: "88ed62e3d522d41d153295574385bcdc1f937056"
+  # Hived source: branch/tag in hive/hive repo to find latest image
+  HIVED_SOURCE_REF: "develop"
   # Docker builder tags (from common-ci-configuration)
   CI_COMMON_JOB_VERSION: "7cc2791e1e11f4c29d305103ad6dbc7a00e150a6"
   DOCKER_BUILDER_TAG: "$CI_COMMON_JOB_VERSION"
@@ -141,7 +141,7 @@ type_check_with_mypy:
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Pull pre-built hived image and extract binaries
-# Similar to balance_tracker's approach with HAF images
+# Finds the latest commit on HIVED_SOURCE_REF that has a published image
 .prepare_hived_image:
   extends: .docker_image_builder_job_template
   stage: build
@@ -150,23 +150,38 @@ type_check_with_mypy:
     BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
   script:
     - |
-      # Build image name based on network type
-      HIVED_SHORT_COMMIT="${HIVED_COMMIT:0:8}"
-      if [ "$HIVE_NETWORK_TYPE" = "mainnet" ]; then
-        HIVED_IMAGE="registry.gitlab.syncad.com/hive/hive:${HIVED_SHORT_COMMIT}"
-      else
-        HIVED_IMAGE="registry.gitlab.syncad.com/hive/hive/${HIVE_NETWORK_TYPE}:${HIVED_SHORT_COMMIT}"
-      fi
-      echo "Using hived image: ${HIVED_IMAGE}"
-    - |
-      # Verify image exists
-      if ! docker manifest inspect "$HIVED_IMAGE" >/dev/null 2>&1; then
-        echo "ERROR: Hived image not found: ${HIVED_IMAGE}"
-        echo "Please use a HIVED_COMMIT that has a published image."
-        echo "Check hive/hive CI for available images."
+      # Find latest hive/hive commit with a published image
+      # Fetch recent commits from GitLab API and check registry for each
+      echo "Finding latest hived image for ref: ${HIVED_SOURCE_REF}"
+      HIVE_PROJECT_ID="198"  # hive/hive
+      API_URL="https://gitlab.syncad.com/api/v4/projects/${HIVE_PROJECT_ID}/repository/commits?ref_name=${HIVED_SOURCE_REF}&per_page=20"
+
+      COMMITS=$(curl -sf "$API_URL" | jq -r '.[].short_id')
+      if [ -z "$COMMITS" ]; then
+        echo "ERROR: Failed to fetch commits from hive/hive"
         exit 1
       fi
-      echo "Image verified: ${HIVED_IMAGE}"
+
+      HIVED_IMAGE=""
+      for SHORT_COMMIT in $COMMITS; do
+        if [ "$HIVE_NETWORK_TYPE" = "mainnet" ]; then
+          TEST_IMAGE="registry.gitlab.syncad.com/hive/hive:${SHORT_COMMIT}"
+        else
+          TEST_IMAGE="registry.gitlab.syncad.com/hive/hive/${HIVE_NETWORK_TYPE}:${SHORT_COMMIT}"
+        fi
+        echo "Checking: ${TEST_IMAGE}"
+        if docker manifest inspect "$TEST_IMAGE" >/dev/null 2>&1; then
+          HIVED_IMAGE="$TEST_IMAGE"
+          HIVED_SHORT_COMMIT="$SHORT_COMMIT"
+          echo "Found image: ${HIVED_IMAGE}"
+          break
+        fi
+      done
+
+      if [ -z "$HIVED_IMAGE" ]; then
+        echo "ERROR: No hived image found in last 20 commits of ${HIVED_SOURCE_REF}"
+        exit 1
+      fi
     - |
       # Pull image and extract binaries
       docker pull "$HIVED_IMAGE"
@@ -179,7 +194,7 @@ type_check_with_mypy:
     - |
       # Export image info for downstream jobs
       echo "HIVED_IMAGE_NAME=${HIVED_IMAGE}" > docker_image_name.env
-      echo "HIVED_COMMIT=${HIVED_COMMIT}" >> docker_image_name.env
+      echo "HIVED_SHORT_COMMIT=${HIVED_SHORT_COMMIT}" >> docker_image_name.env
   artifacts:
     expire_in: 6 hours
     paths:
