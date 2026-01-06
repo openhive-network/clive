@@ -156,8 +156,8 @@ type_check_with_mypy:
       HIVE_PROJECT_ID="198"  # hive/hive
       API_URL="https://gitlab.syncad.com/api/v4/projects/${HIVE_PROJECT_ID}/repository/commits?ref_name=${HIVED_SOURCE_REF}&per_page=20"
 
-      # Parse short_id from JSON without jq (grep for "short_id":"XXXXXXXX")
-      COMMITS=$(curl -sf "$API_URL" | grep -oP '"short_id"\s*:\s*"\K[^"]+')
+      # Parse short_id from JSON without jq (BusyBox compatible)
+      COMMITS=$(curl -sf "$API_URL" | grep -o '"short_id":"[^"]*"' | sed 's/"short_id":"//;s/"//')
       if [ -z "$COMMITS" ]; then
         echo "ERROR: Failed to fetch commits from hive/hive"
         exit 1
