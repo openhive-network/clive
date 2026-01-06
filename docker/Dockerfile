@@ -174,9 +174,6 @@ ENV BLOCK_LOG_UTIL_PATH="${HIVED_BINARIES_DIR_DEST}/block_log_util"
 # Get all the files required for embedded testnet
 COPY --chown=clive ./testnet_node.py /clive
 
-ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
-COPY --chown=clive ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
-
 ENV LOCAL_TOOLS_PATH="tests/clive-local-tools/"
 COPY --chown=clive ${LOCAL_TOOLS_PATH} /clive/${LOCAL_TOOLS_PATH}
 

@@ -13,16 +13,21 @@ workflow:
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
 include:
-  - project: 'hive/hive'
-    ref: 88ed62e3d522d41d153295574385bcdc1f937056
-    file: '/scripts/ci-helpers/prepare_data_image_job.yml'
-    # Do not include common-ci-configuration here, it is already referenced by scripts/ci-helpers/prepare_data_image_job.yml included from Hive
+  - project: 'hive/common-ci-configuration'
+    ref: 7cc2791e1e11f4c29d305103ad6dbc7a00e150a6
+    file:
+      - '/templates/python_projects.gitlab-ci.yml'
+      - '/templates/docker_image_jobs.gitlab-ci.yml'
 
 variables:
   # git:
   GIT_STRATEGY: clone
-  GIT_SUBMODULE_STRATEGY: recursive
-  GIT_SUBMODULE_DEPTH: 1
+  # Hived version - full commit SHA from hive/hive repo (first 8 chars used as image tag)
+  HIVED_COMMIT: "88ed62e3d522d41d153295574385bcdc1f937056"
+  # Docker builder tags (from common-ci-configuration)
+  CI_COMMON_JOB_VERSION: "7cc2791e1e11f4c29d305103ad6dbc7a00e150a6"
+  DOCKER_BUILDER_TAG: "$CI_COMMON_JOB_VERSION"
+  DOCKER_DIND_TAG: "$CI_COMMON_JOB_VERSION"
   # first party libraries gitlab indexes:
   # - 198 -> hive (generated APIs)
   # - 362 -> schemas
@@ -135,30 +140,67 @@ type_check_with_mypy:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-.common_prepare_hived_image:
-  extends: .prepare_hived_image
+# Pull pre-built hived image and extract binaries
+# Similar to balance_tracker's approach with HAF images
+.prepare_hived_image:
+  extends: .docker_image_builder_job_template
   stage: build
   variables:
-    GIT_SUBMODULE_DEPTH: 20
-
-    REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
-    REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
-    SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
+    HIVE_NETWORK_TYPE: ""
     BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
+  script:
+    - |
+      # Build image name based on network type
+      HIVED_SHORT_COMMIT="${HIVED_COMMIT:0:8}"
+      if [ "$HIVE_NETWORK_TYPE" = "mainnet" ]; then
+        HIVED_IMAGE="registry.gitlab.syncad.com/hive/hive:${HIVED_SHORT_COMMIT}"
+      else
+        HIVED_IMAGE="registry.gitlab.syncad.com/hive/hive/${HIVE_NETWORK_TYPE}:${HIVED_SHORT_COMMIT}"
+      fi
+      echo "Using hived image: ${HIVED_IMAGE}"
+    - |
+      # Verify image exists
+      if ! docker manifest inspect "$HIVED_IMAGE" >/dev/null 2>&1; then
+        echo "ERROR: Hived image not found: ${HIVED_IMAGE}"
+        echo "Please use a HIVED_COMMIT that has a published image."
+        echo "Check hive/hive CI for available images."
+        exit 1
+      fi
+      echo "Image verified: ${HIVED_IMAGE}"
+    - |
+      # Pull image and extract binaries
+      docker pull "$HIVED_IMAGE"
+      mkdir -p "${BINARY_CACHE_PATH}"
+      CONTAINER_ID=$(docker create "$HIVED_IMAGE")
+      docker cp "$CONTAINER_ID:/home/hived/bin/." "${BINARY_CACHE_PATH}/"
+      docker rm "$CONTAINER_ID"
+    - chmod -Rc a+rwx "$BINARY_CACHE_PATH"
+    - ls -la "$BINARY_CACHE_PATH"/*
+    - |
+      # Export image info for downstream jobs
+      echo "HIVED_IMAGE_NAME=${HIVED_IMAGE}" > docker_image_name.env
+      echo "HIVED_COMMIT=${HIVED_COMMIT}" >> docker_image_name.env
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - "${BINARY_CACHE_PATH}/*"
+      - docker_image_name.env
+    reports:
+      dotenv: docker_image_name.env
 
 prepare_mainnet_hived_image:
-  extends: .common_prepare_hived_image
+  extends: .prepare_hived_image
   variables:
     HIVE_NETWORK_TYPE: mainnet
   tags:
-    - build-mainnet
+    - public-runner-docker
 
 prepare_testnet_hived_image:
-  extends: .common_prepare_hived_image
+  extends: .prepare_hived_image
   variables:
     HIVE_NETWORK_TYPE: testnet
   tags:
-    - build-testnet
+    - public-runner-docker
 
 build_wheel:
   extends: .build_wheel_template
@@ -170,8 +212,6 @@ build_wheel:
     - poetry -C "${PYPROJECT_DIR}" version
     - poetry self add "poetry-plugin-freeze==1.2.0"
     - poetry -C "${PYPROJECT_DIR}" build --format wheel
-    # Remove hive submodule before freeze-wheel to avoid it finding pyproject.toml files without poetry.lock
-    - rm -rf hive/
     - poetry -C "${PYPROJECT_DIR}" freeze-wheel
     - if [ ! -d "${DIST_DIR}" ] && [ -d "dist" ]; then cp -r "dist" "${DIST_DIR}"; fi
     - ls -al ${DIST_DIR}
