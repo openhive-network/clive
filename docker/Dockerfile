@@ -85,6 +85,9 @@ WORKDIR /clive
 
 SHELL ["/bin/bash", "-c"]
 
+# Create the virtual environment (not pre-existing in the base image)
+RUN python3 -m venv "${PYTHON_VENV_PATH}"
+
 # Project IDS:
 # - 198 -> hive (generated APIs)
 # - 362 -> schemas
