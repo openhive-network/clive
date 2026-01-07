@@ -309,3 +309,74 @@ Tests run in CI with:
 -   Timeout configurable via `PYTEST_TIMEOUT_MINUTES` (typically 10 minutes for most test suites)
 -   Separate jobs for unit tests, CLI tests, and TUI tests
 -   Tests run against installed wheel (not editable install)
+
+## GitLab Formatting Rules
+
+When creating comments, threads, or notes on GitLab:
+
+-   **Be careful with `#` followed by a number** - GitLab auto-links `#N` to issue N
+    -   ✅ Use `#123` when intentionally referencing issue 123
+    -   ❌ Avoid `Problem #5:` or `Point #12` when numbering items (use `Problem 5:` or `Point 12` instead)
+-   When referencing threads/notes, use full URLs:
+    `[link text](https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>)`
+
+## Code Review Guidelines
+
+When reviewing MRs for the Clive project:
+
+### Publishing Reviews on GitLab
+
+-   Each identified problem should have its own thread on the relevant code line
+-   After creating all threads, add a summary comment with references to all threads
+-   Use full URLs to reference threads in the summary (see [GitLab Formatting Rules](#gitlab-formatting-rules))
+
+### Naming Conventions
+
+-   Prefer `self._name` (single underscore) over `self.__name` (double underscore) for private attributes
+-   Exceptions should inherit from `CliveError`
+
+### General Coding Practices
+
+-   Don't forget to call `super().__init__()` in subclass `__init__` when parent class has its own `__init__`
+-   Don't create empty `__init__` methods that add nothing (e.g., just `pass` or only `super().__init__()`)
+-   All public classes, functions, and methods should have docstrings
+-   Be careful when accessing list elements (e.g., `list[0]`):
+    -   If certain the element exists, use assertion for clear error message
+    -   If uncertain, use proper error handling with custom exceptions
+-   Remove unused code/methods - don't leave dead code
+-   Prefer one clear usage pattern in docstrings; keep examples focused
+-   Avoid empty methods with just `pass` - remove them or add docstring (then `pass` is not needed)
+-   Avoid `assert isinstance()` for type validation (can be disabled with `-O` flag) - use proper type checking
+
+### Class Structure
+
+Keep method ordering logical and consistent:
+
+-   Group related methods together
+-   Public API before private implementation
+-   Properties near the top, after `__init__`
+
+Suggested order:
+
+1. Magic methods (`__init__`, `__str__`, etc.)
+2. Public properties
+3. Private properties
+4. Public methods
+5. Private methods
+
+Factory methods and static/class methods may be placed higher depending on context (e.g., before regular instance
+methods).
+
+### Test Conventions
+
+-   Use standalone test functions, not test classes (helper classes are fine)
+-   Follow AAA format (ARRANGE-ACT-ASSERT) with comments
+-   Import from public API instead of `__private` when possible
+-   Fixtures should be in `conftest.py`
+-   Split tests per command/feature into separate files
+
+### Code Quality
+
+-   Avoid mypy suppressions (`# type: ignore`) and ruff suppressions (`# noqa:`) - fix issues instead
+-   If suppression is necessary, it should be a last resort with justification
+-   Pydoclint errors should be fixed; adding to baseline only as a last resort with justification
