@@ -52,7 +52,7 @@ repos:
           - stylelint-config-standard-scss@13.0.0
         args: [ "--fix" ]
   - repo: https://github.com/jsh9/pydoclint
-    rev: 0.6.6
+    rev: 0.8.3
     hooks:
       - id: pydoclint
         name: check docstrings with pydoclint
