@@ -52,7 +52,7 @@ async def process_claim_rewards(
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Claim all pending blockchain rewards in HBD, HP (VESTS), and HIVE."""
+    """Claim all pending blockchain rewards in HBD, HP (VESTS), and HIVE. Requires posting authority"""
     from clive.__private.cli.commands.process.process_claim_rewards import ProcessClaimRewards  # noqa: PLC0415
 
     await ProcessClaimRewards(
