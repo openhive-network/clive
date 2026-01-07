@@ -347,6 +347,11 @@ When reviewing MRs for the Clive project:
 -   Prefer one clear usage pattern in docstrings; keep examples focused
 -   Avoid empty methods with just `pass` - remove them or add docstring (then `pass` is not needed)
 -   Avoid `assert isinstance()` for type validation (can be disabled with `-O` flag) - use proper type checking
+-   Classes with `abstractmethod` should inherit from `ABC`
+-   Accept specific types in function signatures, not `Any` or `object` unless required
+-   For file path parameters, accept `str | Path` for flexibility
+-   Make boolean parameters keyword-only to avoid cryptic calls (avoids ruff FBT001)
+-   Place `TYPE_CHECKING` imports after regular imports
 
 ### Class Structure
 
