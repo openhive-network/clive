@@ -62,7 +62,7 @@ test-tools = { git = "https://gitlab.syncad.com/hive/test-tools.git", rev = "620
 pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
-mypy = "1.18.2"
+mypy = "1.19.1"
 pre-commit = "4.2.0"
 pytest = "8.3.5"
 pytest-asyncio = "0.26.0"
