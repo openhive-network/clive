@@ -299,7 +299,7 @@ class AccountsAuthorities(CliveWidget):
             selected_accounts_in_filter: Accounts selected in the filter.
             *filter_patterns: Patterns to filter the entries in the authority.
         """
-        account_collapsibles = list(self.account_collapsibles)
+        account_collapsibles = self.account_collapsibles
 
         for account_collapsible in account_collapsibles:
             account_collapsible.filter(selected_accounts_in_filter, *filter_patterns)
@@ -314,9 +314,7 @@ class AccountsAuthorities(CliveWidget):
         authority_section_scrollable.mount_no_filter_criteria_match_widget()
 
     def filter_clear(self) -> None:
-        account_collapsibles = list(self.account_collapsibles)
-
-        for account_collapsible in account_collapsibles:
+        for account_collapsible in self.account_collapsibles:
             if account_collapsible.authority_owner == self._initial_account.name:
                 account_collapsible.filter_clear()
             else:
