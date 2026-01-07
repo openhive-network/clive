@@ -18,6 +18,11 @@ include:
     file:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
+  # Use newer ref for source_change_detection template (includes find-upstream-image)
+  - project: 'hive/common-ci-configuration'
+    ref: f721942b5b7f4e93031a994adf647af83fbcf0f6
+    file:
+      - '/templates/source_change_detection.gitlab-ci.yml'
 
 variables:
   # git:
@@ -140,8 +145,57 @@ type_check_with_mypy:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+# Find the latest hived image from hive repo
+# Uses common-ci-configuration's find-upstream-image.sh which:
+# 1. Clones the hive repo
+# 2. Finds the last commit that changed source files (not docs)
+# 3. Checks if a Docker image exists for that commit
+#
+# Source patterns are fetched from hive's source-patterns.sh (single source of truth)
+.find_hived_image:
+  extends: .find_upstream_image
+  variables:
+    UPSTREAM_REPO_URL: "https://gitlab.syncad.com/hive/hive.git"
+    UPSTREAM_REGISTRY: "registry.gitlab.syncad.com/hive/hive"
+    UPSTREAM_BRANCH: "${HIVED_SOURCE_REF}"
+  before_script:
+    - apk add --no-cache git bash curl
+    # Fetch source patterns from hive's script (single source of truth)
+    - |
+      PATTERNS_URL="https://gitlab.syncad.com/hive/hive/-/raw/${HIVED_SOURCE_REF}/scripts/ci-helpers/source-patterns.sh"
+      echo "Fetching source patterns from: $PATTERNS_URL"
+      if UPSTREAM_PATTERNS=$(curl -sf "$PATTERNS_URL" | bash); then
+        echo "Loaded patterns: $UPSTREAM_PATTERNS"
+        export UPSTREAM_PATTERNS
+      else
+        echo "ERROR: Could not fetch source-patterns.sh from hive"
+        exit 1
+      fi
+  tags:
+    - public-runner-docker
+
+find_mainnet_hived_image:
+  extends: .find_hived_image
+  variables:
+    UPSTREAM_IMAGE: ""  # mainnet uses root registry path
+    UPSTREAM_OUTPUT: "mainnet-hived-image.env"
+  artifacts:
+    reports:
+      dotenv: mainnet-hived-image.env
+    expire_in: 1 day
+
+find_testnet_hived_image:
+  extends: .find_hived_image
+  variables:
+    UPSTREAM_IMAGE: "testnet"
+    UPSTREAM_OUTPUT: "testnet-hived-image.env"
+  artifacts:
+    reports:
+      dotenv: testnet-hived-image.env
+    expire_in: 1 day
+
 # Pull pre-built hived image and extract binaries
-# Finds the latest commit on HIVED_SOURCE_REF that has a published image
+# Uses image found by find_*_hived_image jobs
 .prepare_hived_image:
   extends: .docker_image_builder_job_template
   stage: build
@@ -150,39 +204,13 @@ type_check_with_mypy:
     BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
   script:
     - |
-      # Find latest hive/hive commit with a published image
-      # Fetch recent commits from GitLab API and check registry for each
-      echo "Finding latest hived image for ref: ${HIVED_SOURCE_REF}"
-      HIVE_PROJECT_ID="198"  # hive/hive
-      API_URL="https://gitlab.syncad.com/api/v4/projects/${HIVE_PROJECT_ID}/repository/commits?ref_name=${HIVED_SOURCE_REF}&per_page=20"
-
-      # Parse short_id from JSON without jq (BusyBox compatible)
-      COMMITS=$(curl -sf "$API_URL" | grep -o '"short_id":"[^"]*"' | sed 's/"short_id":"//;s/"//')
-      if [ -z "$COMMITS" ]; then
-        echo "ERROR: Failed to fetch commits from hive/hive"
+      # Use the image found by the upstream image finder
+      if [ -z "$UPSTREAM_IMAGE" ]; then
+        echo "ERROR: UPSTREAM_IMAGE not set - find job may have failed"
         exit 1
       fi
-
-      HIVED_IMAGE=""
-      for SHORT_COMMIT in $COMMITS; do
-        if [ "$HIVE_NETWORK_TYPE" = "mainnet" ]; then
-          TEST_IMAGE="registry.gitlab.syncad.com/hive/hive:${SHORT_COMMIT}"
-        else
-          TEST_IMAGE="registry.gitlab.syncad.com/hive/hive/${HIVE_NETWORK_TYPE}:${SHORT_COMMIT}"
-        fi
-        echo "Checking: ${TEST_IMAGE}"
-        if docker manifest inspect "$TEST_IMAGE" >/dev/null 2>&1; then
-          HIVED_IMAGE="$TEST_IMAGE"
-          HIVED_SHORT_COMMIT="$SHORT_COMMIT"
-          echo "Found image: ${HIVED_IMAGE}"
-          break
-        fi
-      done
-
-      if [ -z "$HIVED_IMAGE" ]; then
-        echo "ERROR: No hived image found in last 20 commits of ${HIVED_SOURCE_REF}"
-        exit 1
-      fi
+      echo "Using hived image: $UPSTREAM_IMAGE (commit: ${UPSTREAM_COMMIT:-unknown})"
+      HIVED_IMAGE="$UPSTREAM_IMAGE"
     - |
       # Pull image and extract binaries
       docker pull "$HIVED_IMAGE"
@@ -195,7 +223,7 @@ type_check_with_mypy:
     - |
       # Export image info for downstream jobs
       echo "HIVED_IMAGE_NAME=${HIVED_IMAGE}" > docker_image_name.env
-      echo "HIVED_SHORT_COMMIT=${HIVED_SHORT_COMMIT}" >> docker_image_name.env
+      echo "HIVED_SHORT_COMMIT=${UPSTREAM_TAG:-${UPSTREAM_COMMIT:-unknown}}" >> docker_image_name.env
   artifacts:
     expire_in: 6 hours
     paths:
@@ -206,6 +234,9 @@ type_check_with_mypy:
 
 prepare_mainnet_hived_image:
   extends: .prepare_hived_image
+  needs:
+    - job: find_mainnet_hived_image
+      artifacts: true
   variables:
     HIVE_NETWORK_TYPE: mainnet
   tags:
@@ -213,6 +244,9 @@ prepare_mainnet_hived_image:
 
 prepare_testnet_hived_image:
   extends: .prepare_hived_image
+  needs:
+    - job: find_testnet_hived_image
+      artifacts: true
   variables:
     HIVE_NETWORK_TYPE: testnet
   tags:
