@@ -14,7 +14,7 @@ authors = [{ name = "Krzysztof Mochocki", email = "kmochocki@syncad.com" }, { na
 requires-python = '>=3.12,<4'
 dependencies = [
     'loguru (==0.7.2)',
-    'textual (==6.7.1)',
+    'textual (==6.8.0)',
     'aiohttp (==3.11.15)',
     'typer (==0.20.0)',
     'inflection (==0.5.1)',
