@@ -61,3 +61,6 @@ ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
 KNOWN_EXCHANGES_NAMES: Final[list[str]] = [exchange.name for exchange in KnownExchanges()]
 
 WITNESS_ACCOUNT: Final[tt.Account] = WITNESSES[0]
+
+ENCRYPTED_MEMO_CONTENT: Final[str] = "This is a secret memo for testing encryption"
+ACCOUNT_WITH_ENCRYPTED_MEMO_DATA: Final[AccountData] = ALT_WORKING_ACCOUNT1_DATA
