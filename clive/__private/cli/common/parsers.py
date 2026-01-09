@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, get_args
 import typer
 
 from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
+from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -222,3 +223,29 @@ def hive_datetime(raw: str) -> datetime | timedelta:
         f"Invalid datetime format: '{raw}'. "
         "Expected format: YYYY-MM-DD[THH[:MM[:SS]]] or relative (+7d, +2w, +1d 12h). Time is UTC."
     ) from None
+
+
+def account_name(raw: str) -> str:
+    """
+    Parse and validate account name.
+
+    Args:
+        raw: The raw input representing the account name.
+
+    Raises:
+        typer.BadParameter: If the account name is invalid.
+
+    Returns:
+        The validated account name.
+    """
+    from clive.__private.core.formatters.humanize import humanize_validation_result  # noqa: PLC0415
+    from clive.__private.validators.account_name_validator import AccountNameValidator  # noqa: PLC0415
+
+    # Allow placeholder value to pass through without validation
+    if raw == PERFORM_WORKING_ACCOUNT_LOAD:
+        return raw
+
+    status = AccountNameValidator().validate(raw)
+    if status.is_valid:
+        return raw
+    raise typer.BadParameter(humanize_validation_result(status))
