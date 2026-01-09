@@ -687,3 +687,6 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
+
+    def crypt_decrypt(self, *, encrypted_memo: str) -> CLITestResult:
+        return self.__invoke_command_with_options(["crypt", "decrypt"], (encrypted_memo,))
