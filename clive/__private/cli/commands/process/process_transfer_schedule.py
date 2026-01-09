@@ -71,14 +71,9 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         if self.pair_id is not None:
             return scheduled_transfer.pair_id == self.pair_id
 
-        # pair_id not specified - check if we can auto-select
-        transfers_to_receiver = self.account_scheduled_transfers_data.filter_by_receiver(self.to)
-        if len(transfers_to_receiver) == 1 and transfers_to_receiver[0].pair_id == 0:
-            # Single transfer with pair_id=0, auto-select it
-            return scheduled_transfer.pair_id == 0
+        transfers = self.account_scheduled_transfers_data.scheduled_transfers
+        return len(transfers) == 1 and transfers[0].pair_id == 0
 
-        # Default behavior: treat None as 0
-        return scheduled_transfer.pair_id == 0
 
     async def fetch_data(self) -> None:
         self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
@@ -109,16 +104,16 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         if self.pair_id is not None:
             return
 
-        transfers_to_receiver = self.account_scheduled_transfers_data.filter_by_receiver(self.to)
+        transfers = self.account_scheduled_transfers_data.scheduled_transfers
 
-        if len(transfers_to_receiver) == 0:
+        if len(transfers) == 0:
             return  # No transfers, will fail on existence check
 
-        if len(transfers_to_receiver) == 1:
-            if transfers_to_receiver[0].pair_id == 0:
+        if len(transfers) == 1:
+            if transfers[0].pair_id == 0:
                 return  # Single transfer with pair_id=0, auto-select OK
             # Single transfer with pair_id != 0
-            raise ProcessTransferScheduleNullPairIdError(self.to, existing_pair_id=transfers_to_receiver[0].pair_id)
+            raise ProcessTransferScheduleNullPairIdError(self.to, existing_pair_id=transfers[0].pair_id)
 
         # Multiple transfers
         raise ProcessTransferScheduleNullPairIdError(self.to)
