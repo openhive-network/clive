@@ -4,6 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import modified_param, options
+from clive.__private.cli.common.parsers import account_name
 
 custom_json = CliveTyper(name="custom-json", help="Send raw custom json operation.")
 
@@ -18,6 +19,7 @@ async def process_custom_json(  # noqa: PLR0913
     ),
     authorize_by_active: list[str] = typer.Option(
         [],
+        parser=account_name,
         help="Active authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
         " used, then posting authority of working account is used for authorization.",
     ),

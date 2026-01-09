@@ -13,7 +13,7 @@ from clive.__private.cli.common.parameters.ensure_single_value import (
     EnsureSingleValue,
 )
 from clive.__private.cli.common.parameters.styling import stylized_help
-from clive.__private.cli.common.parsers import decimal_percent, hbd_asset, hive_asset, public_key
+from clive.__private.cli.common.parsers import account_name, decimal_percent, hbd_asset, hive_asset, public_key
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.convert import convert
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
@@ -68,7 +68,7 @@ process.add_typer(voting_rights)
 @process.command(name="transfer")
 async def transfer(  # noqa: PLR0913
     from_account: str = options.from_account_name,
-    to: str = typer.Option(..., help="The account to transfer to."),
+    to: str = typer.Option(..., parser=account_name, help="The account to transfer to."),
     amount: str = options.liquid_amount,
     memo: str = options.memo_text,
     sign_with: list[str] = options.sign_with,
@@ -157,6 +157,7 @@ async def process_update_memo_key(  # noqa: PLR0913
 
 _new_account_name_argument = typer.Argument(
     None,
+    parser=account_name,
     help=stylized_help("The name of the new account.", required_as_arg_or_option=True),
 )
 

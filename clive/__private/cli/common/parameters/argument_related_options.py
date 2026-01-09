@@ -41,7 +41,7 @@ profile_name = _make_argument_related_option(options.profile_name)
 
 new_account_name = _make_argument_related_option(options.new_account_name)
 
-name = _make_argument_related_option("--name")
+name = modified_param(account_name, param_decls=("--name",))
 
 key = _make_argument_related_option("--key")
 
