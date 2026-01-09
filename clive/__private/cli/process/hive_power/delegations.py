@@ -6,6 +6,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.parsers import account_name
 
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
@@ -15,6 +16,7 @@ delegations = CliveTyper(name="delegations", help="Set or remove vesting delegat
 _delegatee_account_name = typer.Option(
     ...,
     "--delegatee",
+    parser=account_name,
     help='The account to use as "delegatee" argument.',
 )
 

@@ -6,6 +6,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.parameters import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleProfileNameValue
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.common.parsers import account_name
 
 profile = CliveTyper(name="profile", help="Manage your Clive profile(s).")
 
@@ -19,7 +20,7 @@ _profile_name_create_argument = typer.Argument(
 async def create_profile(
     profile_name: str | None = _profile_name_create_argument,
     profile_name_option: str | None = argument_related_options.profile_name,
-    working_account_name: str | None = typer.Option(None, help="The name of the working account."),
+    working_account_name: str | None = typer.Option(None, parser=account_name, help="The name of the working account."),
 ) -> None:
     """
     Create a new profile. Password for new profile is provided by stdin.

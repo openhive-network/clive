@@ -10,6 +10,7 @@ from clive.__private.cli.common.parameters.ensure_single_value import (
 )
 from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.common.parsers import account_name
 from clive.__private.cli.show.pending import pending
 from clive.__private.core.constants.data_retrieval import (
     ORDER_DIRECTION_DEFAULT,
@@ -130,7 +131,9 @@ async def show_witnesses(
     ).run()
 
 
-_witness_name_argument = typer.Argument(None, help=stylized_help("Witness name.", required_as_arg_or_option=True))
+_witness_name_argument = typer.Argument(
+    None, parser=account_name, help=stylized_help("Witness name.", required_as_arg_or_option=True)
+)
 
 
 @show.command(name="witness")

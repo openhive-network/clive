@@ -6,11 +6,14 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleAccountNameValue
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.common.parsers import account_name
 
 tracked_account = CliveTyper(name="tracked-account", help="Manage your tracked account(s).")
 
 _account_name_add_argument = typer.Argument(
-    None, help=stylized_help("The name of the tracked account to add.", required_as_arg_or_option=True)
+    None,
+    parser=account_name,
+    help=stylized_help("The name of the tracked account to add.", required_as_arg_or_option=True),
 )
 
 

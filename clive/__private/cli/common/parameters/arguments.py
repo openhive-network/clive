@@ -12,11 +12,13 @@ import typer
 
 from clive.__private.cli.common.parameters import modified_param
 from clive.__private.cli.common.parameters.styling import stylized_help
+from clive.__private.cli.common.parsers import account_name as account_name_parser
 from clive.__private.cli.common.parsers import public_key
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 
 working_account_template = typer.Argument(
     PERFORM_WORKING_ACCOUNT_LOAD,  # we don't know if account_name_option is required until the profile is loaded
+    parser=account_name_parser,
     help=stylized_help("The account to use.", is_working_account_default=True, required_as_arg_or_option=True),
     show_default=False,
 )

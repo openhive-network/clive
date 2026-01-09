@@ -13,6 +13,7 @@ import typer
 
 from clive.__private.cli.common.parameters import options
 from clive.__private.cli.common.parameters.modified_param import modified_param
+from clive.__private.cli.common.parsers import account_name as account_name_parser
 from clive.__private.cli.common.parsers import public_key
 from clive.__private.core.constants.cli import LOOK_INTO_ARGUMENT_OPTION_HELP
 
@@ -41,7 +42,14 @@ profile_name = _make_argument_related_option(options.profile_name)
 
 new_account_name = _make_argument_related_option(options.new_account_name)
 
-name = _make_argument_related_option("--name")
+name = _make_argument_related_option(
+    typer.Option(
+        None,
+        "--name",
+        parser=account_name_parser,
+        help=LOOK_INTO_ARGUMENT_OPTION_HELP,
+    )
+)
 
 key = _make_argument_related_option("--key")
 
