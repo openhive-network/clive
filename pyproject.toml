@@ -104,6 +104,7 @@ files = [
 strict = true
 strict_equality_for_none = true
 disallow_untyped_decorators = false
+exclude = [".claude"]
 
 [[tool.mypy.overrides]]
 module = ["test_tools.*"]
@@ -113,6 +114,7 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+exclude = [".claude"]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
