@@ -6,9 +6,11 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
+from clive.__private.models.schemas import TransferToSavingsOperation
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.helpers import get_operation_from_transaction, get_transaction_id_from_output
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -132,3 +134,26 @@ async def test_deposit_with_memo(cli_tester: CLITester) -> None:
         asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE,
         balance="Liquid",
     )
+
+
+async def test_deposit_with_encrypted_memo(node: tt.RawNode, cli_tester: CLITester) -> None:
+    """Check that savings deposit encrypts memo when it starts with '#'."""
+    # ARRANGE
+    memo_content = "#This is a secret savings deposit memo"
+
+    # ACT
+    result = cli_tester.process_savings_deposit(
+        from_=WORKING_ACCOUNT_DATA.account.name,
+        to=WORKING_ACCOUNT_DATA.account.name,
+        amount=AMOUNT_TO_DEPOSIT_HIVE,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+        memo=memo_content,
+    )
+
+    # ASSERT
+    assert result.exit_code == 0
+
+    transaction_id = get_transaction_id_from_output(result.stdout)
+    op = get_operation_from_transaction(node, transaction_id, TransferToSavingsOperation)
+    assert op.memo.startswith("#"), "Encrypted memos start with '#' followed by the encoded key data"
+    assert len(op.memo) > len(memo_content), "The encrypted memo should be longer than the original"

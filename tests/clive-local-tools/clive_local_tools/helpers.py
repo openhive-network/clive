@@ -67,3 +67,29 @@ def create_transaction_file(content: TransactionConvertibleType, identifier: str
     transaction_serialized = transaction.json(indent=4)
     transaction_filepath.write_text(transaction_serialized)
     return transaction_filepath
+
+
+def get_operation_from_transaction[OperationT](
+    node: tt.RawNode, transaction_id: str, operation_type: type[OperationT]
+) -> OperationT:
+    """
+    Get an operation of a specific type from a transaction.
+
+    Args:
+        node: The node to query for the transaction.
+        transaction_id: The ID of the transaction to look up.
+        operation_type: The expected type of the operation.
+
+    Returns:
+        The operation of the specified type.
+
+    Raises:
+        AssertionError: If the transaction doesn't contain exactly one operation of the expected type.
+    """
+    node.wait_number_of_blocks(1)
+    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+
+    assert len(transaction.operations) == 1, f"Expected 1 operation, got {len(transaction.operations)}"
+    op = transaction.operations[0]
+    assert isinstance(op.value, operation_type), f"Expected {operation_type.__name__}, got {type(op.value).__name__}"
+    return op.value

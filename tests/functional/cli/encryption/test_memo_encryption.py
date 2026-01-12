@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.cli.commands.abc.memo_command import CLIEncryptMemoKeyNotImportedError
 from clive.__private.cli.commands.crypto.decrypt import (
     CLIDecryptMemoKeyNotImportedError,
     CLIInvalidEncryptedMemoFormatError,
 )
-from clive.__private.cli.commands.process.transfer import CLIEncryptMemoKeyNotImportedError
 from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import (
@@ -19,7 +19,11 @@ from clive_local_tools.checkers.blockchain_checkers import (
 from clive_local_tools.cli.checkers import assert_memo_key
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message, get_transaction_id_from_output
+from clive_local_tools.helpers import (
+    get_formatted_error_message,
+    get_operation_from_transaction,
+    get_transaction_id_from_output,
+)
 from clive_local_tools.testnet_block_log.constants import (
     ACCOUNT_WITH_ENCRYPTED_MEMO_DATA,
     ENCRYPTED_MEMO_CONTENT,
@@ -72,19 +76,13 @@ async def test_process_transfer_with_encrypted_memo(
     # Verify the transaction was placed in blockchain
     assert_transaction_in_blockchain(node, result)
 
-    # Get the transaction to check the memo
+    # Get the operation and check the memo
     transaction_id = get_transaction_id_from_output(result.stdout)
-    node.wait_number_of_blocks(1)
-    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
-
-    # Assert exactly one operation of type Transfer
-    assert len(transaction.operations) == 1, f"Expected 1 operation, got {len(transaction.operations)}"
-    op = transaction.operations[0]
-    assert isinstance(op.value, TransferOperation), f"Expected TransferOperation, got {type(op.value).__name__}"
+    op = get_operation_from_transaction(node, transaction_id, TransferOperation)
 
     # Assert the memo is encrypted
-    assert op.value.memo.startswith("#"), "Encrypted memos start with '#' followed by the encoded key data"
-    assert len(op.value.memo) > len(memo_content), (
+    assert op.memo.startswith("#"), "Encrypted memos start with '#' followed by the encoded key data"
+    assert len(op.memo) > len(memo_content), (
         "The encrypted memo should be longer than the original (contains keys + encrypted content)"
     )
 
