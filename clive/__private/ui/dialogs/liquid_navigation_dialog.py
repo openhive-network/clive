@@ -8,7 +8,7 @@ from textual.containers import Center
 from clive.__private.core.accounts.accounts import Account
 from clive.__private.models.asset import Asset
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
+from clive.__private.ui.dialogs.clive_base_dialogs import AutoDismissDialog, CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operations import HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.widgets.buttons import OneLineButton
@@ -60,7 +60,7 @@ class LiquidOperationChooseButton(OneLineButton):
         self.app.push_screen(HivePowerManagement())
 
 
-class LiquidNavigationDialog(CliveInfoDialog):
+class LiquidNavigationDialog(AutoDismissDialog, CliveInfoDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, account: Account, asset_type: type[Asset.LiquidT]) -> None:

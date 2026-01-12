@@ -176,6 +176,15 @@ class CliveActionDialog(CliveBaseDialog[CliveActionDialogResultT], ABC):
         await self.cancel_dialog()
 
 
+class AutoDismissDialog:
+    """
+    Marker class for dialogs that get auto-dismissed when a new screen is pushed.
+
+    Use this for dialogs that are only relevant in their immediate context (e.g., navigation dialogs,
+    operation summary dialogs) and should be removed from the screen stack when the user navigates elsewhere.
+    """
+
+
 class CliveInfoDialog(CliveBaseDialog[None], ABC):
     BINDINGS = [Binding("escape", "close", "Close")]
 

@@ -119,6 +119,16 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         """Synchronize the presence of help panel on newly created screens."""
         self.toggle_help_panel(show=self.app.is_help_panel_visible)
 
+    @on(Mount)
+    def _remove_auto_dismiss_dialogs_from_screen_stack(self) -> None:
+        """Remove all AutoDismissDialogs from the screen stack when a new screen is mounted."""
+        from clive.__private.ui.dialogs.clive_base_dialogs import AutoDismissDialog  # noqa: PLC0415
+
+        screen_stack = self.app._screen_stacks[self.app._current_mode]
+        for screen in list(screen_stack):
+            if isinstance(screen, AutoDismissDialog):
+                screen_stack.remove(screen)
+
     def _post_to_children(self, node: Widget, message: Message) -> None:
         """Post a message to all widgets of the screen (even grandchildren and further)."""
         for child in node.children:

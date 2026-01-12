@@ -6,7 +6,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
-from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
+from clive.__private.ui.dialogs.clive_base_dialogs import AutoDismissDialog, CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.widgets.clive_basic import (
@@ -52,7 +52,7 @@ class AlarmData(CliveCheckerboardTable):
         return [AlarmDataRow(self._alarm_titled_data.values())]
 
 
-class AlarmInfoDialog(CliveInfoDialog):
+class AlarmInfoDialog(AutoDismissDialog, CliveInfoDialog):
     """
     Dialog screen containing information about the alarm and description of how to fix it.
 

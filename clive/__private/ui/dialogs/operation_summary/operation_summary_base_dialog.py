@@ -5,7 +5,11 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
-from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog, CliveActionDialogResultT
+from clive.__private.ui.dialogs.clive_base_dialogs import (
+    AutoDismissDialog,
+    CliveActionDialog,
+    CliveActionDialogResultT,
+)
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
 from clive.__private.ui.widgets.buttons import (
@@ -18,7 +22,12 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class OperationSummaryBaseDialog(CliveActionDialog[CliveActionDialogResultT], OperationActionBindings, ABC):
+class OperationSummaryBaseDialog(
+    AutoDismissDialog,
+    CliveActionDialog[CliveActionDialogResultT],
+    OperationActionBindings,
+    ABC,
+):
     """
     Base class for operation summary dialogs. Confirmation means that operation was added to cart or finalized.
 
