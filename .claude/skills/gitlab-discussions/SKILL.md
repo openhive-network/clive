@@ -68,6 +68,38 @@ MR !<MR_IID> comment added: https://gitlab.syncad.com/hive/clive/-/merge_request
 Issue #<ISSUE_IID> comment added: https://gitlab.syncad.com/hive/clive/-/issues/<ISSUE_IID>#note_<NOTE_ID>
 ```
 
+## Formatting Rules
+
+GitLab auto-links special patterns. Be intentional about their use:
+
+| Pattern | Links to | Example |
+|---------|----------|---------|
+| `#N` | Issue N | `#123` → Issue 123 |
+| `!N` | Merge Request N | `!456` → MR 456 |
+| `%"name"` | Milestone | `%"v1.0"` → Milestone v1.0 |
+| `@username` | User mention (notifies) | `@mzebrak` → mentions mzebrak |
+| `~label` | Label | `~bug` → Label |
+| `$N` | Snippet N | `$789` → Snippet 789 |
+| `abc1234` | Commit (7+ chars) | `a1b2c3d4` → Commit |
+
+**Avoid accidental links:**
+-   ❌ `Problem #5:` or `Point #12` → use `Problem 5:` or `Point 12`
+-   ❌ `Step !1` → use `Step 1`
+
+**When referencing threads/notes, use full URLs:**
+
+MR note:
+```
+[see thread](https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>)
+```
+
+Issue note:
+```
+[related discussion](https://gitlab.syncad.com/hive/clive/-/issues/<ISSUE_IID>#note_<NOTE_ID>)
+```
+
+This ensures links work across projects and in external contexts.
+
 ## Common Operations
 
 ### Merge Requests
