@@ -90,3 +90,5 @@ memo_key = _make_argument_related_option(
         help="Memo public key that will be set for account.",
     )
 )
+
+encoded_text = _make_argument_related_option("--encoded-text")
