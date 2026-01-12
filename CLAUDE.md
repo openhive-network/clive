@@ -310,16 +310,6 @@ Tests run in CI with:
 -   Separate jobs for unit tests, CLI tests, and TUI tests
 -   Tests run against installed wheel (not editable install)
 
-## GitLab Formatting Rules
-
-When creating comments, threads, or notes on GitLab:
-
--   **Be careful with `#` followed by a number** - GitLab auto-links `#N` to issue N
-    -   ✅ Use `#123` when intentionally referencing issue 123
-    -   ❌ Avoid `Problem #5:` or `Point #12` when numbering items (use `Problem 5:` or `Point 12` instead)
--   When referencing threads/notes, use full URLs:
-    `[link text](https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>)`
-
 ## Code Review Guidelines
 
 When reviewing MRs for the Clive project:
@@ -328,7 +318,7 @@ When reviewing MRs for the Clive project:
 
 -   Each identified problem should have its own thread on the relevant code line
 -   After creating all threads, add a summary comment with references to all threads
--   Use full URLs to reference threads in the summary (see [GitLab Formatting Rules](#gitlab-formatting-rules))
+-   Use full URLs to reference threads in the summary (see `gitlab-discussions` skill for formatting rules)
 
 ### Naming Conventions
 
