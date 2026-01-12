@@ -126,15 +126,25 @@ class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon,
     async def _create_operations(self) -> ComposeTransaction:
         assert self.repeat is not None, "Value of repeat is None."
         assert self.amount is not None, "Value of amount is None."
+        memo = await self._get_memo_for_operation()
         yield RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
-            memo=self.ensure_memo,
+            memo=memo,
             recurrence=timedelta_to_int_hours(self.frequency_ensure),
             executions=self.repeat,
             extensions=self._create_recurrent_transfer_pair_id_extension(),
         )
+
+    async def _get_memo_for_operation(self) -> str:
+        """
+        Get the memo for the operation, potentially encrypting it.
+
+        Returns:
+            The memo, encrypted if it starts with '#'.
+        """
+        return await self._maybe_encrypt_memo(self.ensure_memo, self.from_account, self.to)
 
 
 @dataclass(kw_only=True)
@@ -155,7 +165,10 @@ class ProcessTransferScheduleCreate(_ProcessTransferScheduleCreateModifyCommon):
 
 @dataclass(kw_only=True)
 class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
+    _memo_was_given: bool = field(init=False, default=False)
+
     async def fetch_data(self) -> None:
+        self._memo_was_given = self.memo is not None
         await super().fetch_data()
         if self.scheduled_transfer:
             self.amount = self.amount if self.amount is not None else self.scheduled_transfer.amount
@@ -177,6 +190,17 @@ class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
         if self.frequency and self.repeat:
             self.validate_existence_lifetime()
         await super().validate()
+
+    async def _get_memo_for_operation(self) -> str:
+        """
+        Get the memo for the operation, encrypting only if memo was explicitly provided.
+
+        Returns:
+            The memo, encrypted if it starts with '#' and was explicitly provided.
+        """
+        if self._memo_was_given:
+            return await self._maybe_encrypt_memo(self.ensure_memo, self.from_account, self.to)
+        return self.ensure_memo
 
 
 @dataclass(kw_only=True)

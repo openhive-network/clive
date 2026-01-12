@@ -19,9 +19,10 @@ class ProcessDeposit(OperationCommand, MemoCommand):
     amount: Asset.LiquidT
 
     async def _create_operations(self) -> ComposeTransaction:
+        memo = await self._maybe_encrypt_memo(self.ensure_memo, self.from_account, self.to_account)
         yield TransferToSavingsOperation(
             from_=self.from_account,
             to=self.to_account,
             amount=self.amount,
-            memo=self.ensure_memo,
+            memo=memo,
         )

@@ -33,10 +33,11 @@ class ProcessWithdrawal(OperationCommand, MemoCommand):
             self.request_id = savings_data.create_request_id()
 
     async def _create_operations(self) -> ComposeTransaction:
+        memo = await self._maybe_encrypt_memo(self.ensure_memo, self.from_account, self.to_account)
         yield TransferFromSavingsOperation(
             from_=self.from_account,
             request_id=self.request_id_ensure,
             to=self.to_account,
             amount=self.amount,
-            memo=self.ensure_memo,
+            memo=memo,
         )
