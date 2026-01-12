@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.models.schemas import TransferFromSavingsOperation
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.helpers import get_operation_from_transaction, get_transaction_id_from_output
 from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -105,3 +107,33 @@ async def test_withdrawal_with_memo(cli_tester: CLITester) -> None:
     )
     result = cli_tester.show_pending_withdrawals()
     assert WITHDRAWAL_MEMO in result.output, f"There should be memo `{WITHDRAWAL_MEMO}` in transaction."
+
+
+async def test_withdrawal_with_encrypted_memo(node: tt.RawNode, cli_tester: CLITester) -> None:
+    """Check that savings withdrawal encrypts memo when it starts with '#'."""
+    # ARRANGE
+    memo_content = "#This is a secret savings withdrawal memo"
+    cli_tester.process_savings_deposit(
+        from_=WORKING_ACCOUNT_DATA.account.name,
+        to=WORKING_ACCOUNT_DATA.account.name,
+        amount=AMOUNT_TO_DEPOSIT_HIVE,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+        memo="Initial deposit for withdrawal test",
+    )
+
+    # ACT
+    result = cli_tester.process_savings_withdrawal(
+        from_=WORKING_ACCOUNT_DATA.account.name,
+        to=WORKING_ACCOUNT_DATA.account.name,
+        amount=AMOUNT_TO_DEPOSIT_HIVE,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+        memo=memo_content,
+    )
+
+    # ASSERT
+    assert result.exit_code == 0
+
+    transaction_id = get_transaction_id_from_output(result.stdout)
+    op = get_operation_from_transaction(node, transaction_id, TransferFromSavingsOperation)
+    assert op.memo.startswith("#"), "Encrypted memos start with '#' followed by the encoded key data"
+    assert len(op.memo) > len(memo_content), "The encrypted memo should be longer than the original"
