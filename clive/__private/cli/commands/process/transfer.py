@@ -19,9 +19,10 @@ class Transfer(OperationCommand, MemoCommand):
     amount: Asset.LiquidT
 
     async def _create_operations(self) -> ComposeTransaction:
+        memo = await self._maybe_encrypt_memo(self.ensure_memo, self.from_account, self.to)
         yield TransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
-            memo=self.ensure_memo,
+            memo=memo,
         )

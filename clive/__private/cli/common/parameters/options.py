@@ -96,7 +96,10 @@ percent = typer.Option(
 memo_text = typer.Option(
     "",
     "--memo",
-    help="The memo to attach to the transfer.",
+    help=stylized_help(
+        "The memo to attach to the transfer. If it starts with '#', it will be encrypted."
+        " You must have sender memo key in your wallet to perform encryption."
+    ),
 )
 memo_text_optional = modified_param(memo_text, default=None)
 
