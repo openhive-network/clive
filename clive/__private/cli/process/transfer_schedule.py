@@ -32,10 +32,7 @@ _pair_id_value = typer.Option(
     0,
     "--pair-id",
     min=SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
-    help=(
-        "Unique pair id used to differentiate between multiple transfers to the same account \n"
-        "(will be mandatory since HF28)."
-    ),
+    help="Unique pair id used to differentiate between multiple transfers to the same account.",
 )
 
 _pair_id_value_none = modified_param(_pair_id_value, default=None)
@@ -106,6 +103,9 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     Modify an existing recurrent transfer.
 
     If you change the frequency, the first execution after modification is update date + frequency.
+
+    If --pair-id is not specified and there is exactly one transfer to the recipient with pair_id=0,
+    it will be modified automatically. Otherwise, --pair-id is required.
     """
     from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
         ProcessTransferScheduleModify,
@@ -137,7 +137,12 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Remove an existing recurrent transfer."""
+    """
+    Remove an existing recurrent transfer.
+
+    If --pair-id is not specified and there is exactly one transfer to the recipient with pair_id=0,
+    it will be removed automatically. Otherwise, --pair-id is required.
+    """
     from clive.__private.cli.commands.process.process_transfer_schedule import (  # noqa: PLC0415
         ProcessTransferScheduleRemove,
     )
