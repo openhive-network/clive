@@ -38,6 +38,7 @@ repos:
         name: pretty format markdown
         additional_dependencies: [ 'prettier@2.8.8' ]
         files: \.md$
+        exclude: ^\.claude/
         args:
           - "--print-width"
           - "120"
@@ -78,11 +79,13 @@ repos:
         entry: mypy
         language: system
         types: [python]
+        exclude: ^\.claude/
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
     hooks:
     - id: codespell
       args: ["--skip=clive/__private/core/accounts/bad_accounts_list.txt", "-L=accountt"]
+      exclude: ^\.claude/
   - repo: https://github.com/lk16/detect-missing-init
     rev: v0.1.6
     hooks:
