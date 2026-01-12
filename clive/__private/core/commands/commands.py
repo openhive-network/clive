@@ -172,6 +172,78 @@ class Commands[WorldT: World]:
             )
         )
 
+    async def encrypt_memo(
+        self, *, content: str, from_key: PublicKey, to_key: PublicKey
+    ) -> CommandWithResultWrapper[str]:
+        """
+        Encrypt a memo using the provided memo keys.
+
+        Args:
+            content: The memo content to encrypt.
+            from_key: The sender's memo public key.
+            to_key: The recipient's memo public key.
+
+        Returns:
+            A wrapper containing the encrypted memo string.
+        """
+        from clive.__private.core.commands.encrypt_memo import EncryptMemo  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            EncryptMemo(
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                content=content,
+                from_key=from_key,
+                to_key=to_key,
+            )
+        )
+
+    async def encrypt_memo_with_account_names(
+        self, *, content: str, from_account: str, to_account: str
+    ) -> CommandWithResultWrapper[str]:
+        """
+        Encrypt a memo using the sender's and recipient's memo keys.
+
+        Args:
+            content: The memo content to encrypt.
+            from_account: The sender's account name.
+            to_account: The recipient's account name.
+
+        Returns:
+            A wrapper containing the encrypted memo string.
+        """
+        from clive.__private.core.commands.encrypt_memo_with_account_names import (  # noqa: PLC0415
+            EncryptMemoWithAccountNames,
+        )
+
+        return await self.__surround_with_exception_handlers(
+            EncryptMemoWithAccountNames(
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                content=content,
+                from_account=from_account,
+                to_account=to_account,
+                node=self._world.node,
+            )
+        )
+
+    async def decrypt_memo(self, *, encrypted_memo: str) -> CommandWithResultWrapper[str]:
+        """
+        Decrypt an encrypted memo.
+
+        Args:
+            encrypted_memo: The encrypted memo string (starts with '#').
+
+        Returns:
+            A wrapper containing the decrypted memo content.
+        """
+        from clive.__private.core.commands.decrypt_memo import DecryptMemo  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            DecryptMemo(
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet,
+                encrypted_memo=encrypted_memo,
+            )
+        )
+
     async def unlock(
         self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = True
     ) -> CommandWithResultWrapper[UnlockWalletStatus]:
