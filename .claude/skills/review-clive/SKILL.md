@@ -39,17 +39,29 @@ Then offer choices:
 ### Step 2: Detect Context
 
 ```bash
-# Check if MR exists and has discussions
-glab mr view <MR_IID>
-mcp__gitlab__mr_discussions(project_id="hive/clive", merge_request_iid="<MR_IID>")
+# Quick check: MR info + blocking discussions status
+glab mr view <MR_IID> -F json | jq '{user_notes_count, blocking_discussions_resolved}'
+
+# Count unresolved threads (use glab api, NOT MCP - avoids large payloads)
+glab api "projects/hive%2Fclive/merge_requests/<MR_IID>/discussions?per_page=100" | \
+  jq '[.[] | select(.notes[0].resolvable == true and .notes[0].resolved == false)] | length'
+
+# Preview unresolved threads
+glab api "projects/hive%2Fclive/merge_requests/<MR_IID>/discussions?per_page=100" | \
+  jq -r '[.[] | select(.notes[0].resolvable == true and .notes[0].resolved == false)] |
+         .[] | "\(.id[0:8])... | \(.notes[0].author.username) | \(.notes[0].body[0:50])..."'
 ```
 
 Determine context type:
 | Context | Condition |
 |---------|-----------|
 | `LOCAL` | No MR, only local changes |
-| `INITIAL_MR` | MR exists, no/few discussions |
-| `FOLLOWUP_MR` | MR exists, has discussions (review after fixes) |
+| `INITIAL_MR` | MR exists, no discussions yet (fresh MR, never reviewed) |
+| `FOLLOWUP_MR` | MR exists, has discussions (already reviewed - resolved or not) |
+
+For `FOLLOWUP_MR`, additionally check unresolved threads count to determine if action needed.
+
+**Note:** Use `glab api` for counting/listing threads. Use MCP only for creating comments, responding, or resolving.
 
 ### Step 3: Suggest Mode
 
