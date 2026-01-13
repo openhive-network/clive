@@ -152,7 +152,13 @@ class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
 
 
 class ProcessTransferScheduleNonZeroPairIdError(CLIPrettyError):
-    """Raised when single transfer exists but has non-zero pair_id requiring explicit --pair-id."""
+    """
+    Raised when single transfer exists but has non-zero pair_id requiring explicit --pair-id.
+
+    Args:
+        to: The receiver account name.
+        existing_pair_id: The pair_id of the existing transfer.
+    """
 
     def __init__(self, to: str, existing_pair_id: int) -> None:
         self.to = to
@@ -166,7 +172,12 @@ class ProcessTransferScheduleNonZeroPairIdError(CLIPrettyError):
 
 
 class ProcessTransferScheduleMultipleTransfersError(CLIPrettyError):
-    """Raised when multiple transfers exist to the same receiver requiring explicit --pair-id."""
+    """
+    Raised when multiple transfers exist to the same receiver requiring explicit --pair-id.
+
+    Args:
+        to: The receiver account name.
+    """
 
     def __init__(self, to: str) -> None:
         self.to = to
