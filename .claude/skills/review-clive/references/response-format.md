@@ -98,6 +98,31 @@ New thread created ✅: https://gitlab.syncad.com/hive/clive/-/merge_requests/<M
 
 **Rule:** Never confirm an action without providing the link. User must be able to verify immediately.
 
+## Link Format Rules
+
+**CRITICAL:** GitLab links require numeric `note_id`, NOT `discussion_id` hash.
+
+| Field | Format | Example | Works in URL? |
+|-------|--------|---------|---------------|
+| `discussion_id` | 40-char hash | `8650b0213b91d2531ec4...` | ❌ NO |
+| `note_id` | Numeric | `237760` | ✅ YES |
+
+**Correct format:**
+```
+https://gitlab.syncad.com/hive/clive/-/merge_requests/800#note_237760
+```
+
+**Wrong format (won't navigate to note):**
+```
+https://gitlab.syncad.com/hive/clive/-/merge_requests/800#note_8650b0213b91d2531ec4ff7210803cadb9706395
+```
+
+**How to get note_id from glab:**
+```bash
+glab api "projects/hive%2Fclive/merge_requests/<MR_IID>/discussions" | \
+  jq '.[] | {discussion_id: .id, note_id: .notes[0].id}'
+```
+
 ## Actions Summary Table
 
 When presenting summary of multiple executed actions, **always include links**:
