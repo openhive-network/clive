@@ -9,7 +9,7 @@ description: |
   - Need to publish review comments to GitLab with approval workflow
 
   This skill orchestrates: input detection, context analysis, mode selection (agent vs manual),
-  review execution, Polish approval, English approval, and GitLab publishing.
+  review execution, approval workflow, and GitLab publishing.
 ---
 
 # Review Clive
@@ -17,6 +17,16 @@ description: |
 Code review for Clive project with smart detection and flexible execution.
 
 ## Workflow
+
+### Step 0: Detect Language
+
+Determine communication language for this session:
+
+1. **If previous messages exist** → detect language from conversation context
+2. **If no context** → ask user with Polish as suggested default:
+   "Which language for our communication? Polish (recommended) / English"
+
+**Note:** This only affects communication with user. GitLab comments are always in English.
 
 ### Step 1: Detect Input
 
@@ -107,15 +117,15 @@ Thread #1 resolved. Show details of thread #2?
 
 ### Step 5: Present Results
 
-1. **Show findings in Polish** (for user review)
+1. **Show findings in user's language** (detected in Step 0)
 2. Allow questions and clarifications
 3. Allow rejection of individual items
-4. **Wait for explicit approval** ("yes", "ok", "approve")
+4. **Wait for explicit approval**
 
 ### Step 6: Publish (After Approval)
 
-1. **Show English version** that will be published
-2. **Wait for publication approval** ("publish", "send")
+1. **Show English version** that will be published (translate if user's language differs)
+2. **Wait for publication approval**
 3. Use `gitlab-discussions` skill to learn how to publish on GitLab
 4. Create threads on specific code lines
 5. Add summary comment with thread references
@@ -128,13 +138,13 @@ Thread #1 resolved. Show details of thread #2?
 
 ## Language Rules
 
-- **Console output**: Polish (for approval workflow)
-- **GitLab comments**: Always English
+- **Communication with user**: Match user's language (detected in Step 0)
+- **GitLab comments**: Always English (mandatory)
 - **Code examples**: Keep original (English identifiers)
 
 ## Critical Rules
 
-1. **Two-stage approval**: Polish first, then English
+1. **Two-stage approval**: User's language first, then English for GitLab
 2. **Never auto-publish**: Always wait for explicit user confirmation
 3. **Use gitlab-discussions skill**: For proper MCP tool usage
 4. **Same principles for both modes**: Agent and manual use identical review-principles.md
