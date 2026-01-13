@@ -9,11 +9,7 @@ Core principles for reviewing Clive project code. Apply these in both agent and 
 Clive is a mature project. **Actively search** for existing implementations before accepting new code.
 
 **Process:**
-```bash
-# Search for similar implementations
-grep -r "similar_pattern" clive/__private/
-# Check commands, models, utilities, widgets
-```
+Search for similar implementations in `clive/__private/` - check commands, models, utilities, widgets.
 
 **Actions:**
 - If duplication found → **Demand refactoring** toward existing code
