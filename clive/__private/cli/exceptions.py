@@ -117,9 +117,11 @@ class ProcessTransferScheduleAlreadyExistsError(CLIPrettyError):
         self.to = to
         self.pair_id = pair_id
         message = (
-            f"Scheduled transfer to `{self.to}` with pair_id `{self.pair_id}` already exists.\n"
-            "Please use command `clive process transfer-schedule modify` to change it, "
-            "or command `clive process transfer-schedule remove` to delete it."
+            f"A scheduled transfer to `{self.to}` with pair_id `{self.pair_id}` already exists.\n"
+            f"If you want to create a new recurrent transfer to `{self.to}`, "
+            "use `clive process transfer-schedule create` and specify the --pair-id.\n"
+            "If you want to modify an existing one, use `clive process transfer-schedule modify`.\n"
+            "If you want to list existing recurrent transfers, use `clive show transfer-schedule`."
         )
         super().__init__(message, errno.EPERM)
 
@@ -149,9 +151,30 @@ class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
         super().__init__(message, errno.EPERM)
 
 
-class ProcessTransferScheduleNullPairIdError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = "Pair id must be set explicit, when there are multiple scheduled transfers defined."
+class ProcessTransferScheduleNonZeroPairIdError(CLIPrettyError):
+    """Raised when single transfer exists but has non-zero pair_id requiring explicit --pair-id."""
+
+    def __init__(self, to: str, existing_pair_id: int) -> None:
+        self.to = to
+        self.existing_pair_id = existing_pair_id
+        message = (
+            f"The scheduled transfer to `{self.to}` has pair_id=`{existing_pair_id}`, not 0.\n"
+            f"Please specify --pair-id {existing_pair_id} explicitly.\n"
+            "Use `clive show transfer-schedule` to list existing transfers and their pair IDs."
+        )
+        super().__init__(message, errno.EPERM)
+
+
+class ProcessTransferScheduleMultipleTransfersError(CLIPrettyError):
+    """Raised when multiple transfers exist to the same receiver requiring explicit --pair-id."""
+
+    def __init__(self, to: str) -> None:
+        self.to = to
+        message = (
+            f"Cannot determine which scheduled transfer to `{self.to}` to modify/remove.\n"
+            "Please specify --pair-id explicitly.\n"
+            "Use `clive show transfer-schedule` to list existing transfers and their pair IDs."
+        )
         super().__init__(message, errno.EPERM)
 
 
