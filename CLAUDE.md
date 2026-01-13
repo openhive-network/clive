@@ -26,12 +26,13 @@ This project uses **gitlab.syncad.com**, NOT gitlab.com.
 
 Available slash commands for development workflows:
 
-| Command        | Description                                                   |
-| -------------- | ------------------------------------------------------------- |
-| `/smoke`       | Run smoke test                                                |
-| `/lint`        | Run all pre-commit hooks                                      |
-| `/test <args>` | Run pytest with shortcuts: `unit`, `cli`, `tui`, `functional` |
-| `/reflection`  | Analyze and improve Claude Code configuration                 |
+| Command         | Description                                                   |
+| --------------- | ------------------------------------------------------------- |
+| `/smoke`        | Run smoke test                                                |
+| `/lint`         | Run all pre-commit hooks                                      |
+| `/test <args>`  | Run pytest with shortcuts: `unit`, `cli`, `tui`, `functional` |
+| `/reflection`   | Analyze and improve Claude Code configuration                 |
+| `/review-clive` | Code review with intelligent mode selection                   |
 
 ## Essential Commands
 
@@ -313,6 +314,8 @@ Tests run in CI with:
 ## Code Review Guidelines
 
 When reviewing MRs for the Clive project:
+
+**For complete review workflow** (input detection, mode selection, approval flow), use `/review-clive` skill.
 
 ### Publishing Reviews on GitLab
 
