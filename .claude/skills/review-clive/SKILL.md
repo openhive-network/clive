@@ -130,42 +130,41 @@ All threads reviewed. Run final agent check to catch anything missed?
 
 This ensures comprehensive coverage - manual review focuses on specific threads while agent can spot patterns across entire diff.
 
-### Step 7: Final Summary (After Review Complete)
+### Step 7: Create Summary Comment (Optional - When Review Complete)
 
-When all issues are resolved and user confirms review is complete, create and publish summary.
+**When to use:** Only after ALL threads resolved and no new issues found. Skip if publishing new review threads.
 
-**1. Prepare summary:**
+When review is complete (all issues resolved, user satisfied), offer to create comprehensive summary comment for GitLab.
 
-Fetch ALL discussions from MR:
+**Process:**
+
+1. **Fetch ALL discussions from MR:**
 ```bash
 glab api "projects/hive%2Fclive/merge_requests/<MR_IID>/discussions?per_page=100"
 ```
 
-Categorize discussions:
-- Resolvable threads (code comments) → Issues Addressed table
-- General comments → Context for summary
-- System notes → Skip
+2. **Categorize discussions:**
+   - Resolvable threads (code comments) → Issues Addressed table
+   - General comments → Context for summary
+   - System notes → Skip
 
-For EACH discussion, read the FULL conversation to verify what was actually done.
+3. **For EACH discussion, read the FULL conversation** to verify what was actually done
 
-Check for created issues:
+4. **Check for created issues:**
 ```bash
 glab api "projects/hive%2Fclive/merge_requests/<MR_IID>/discussions?per_page=100" | \
   jq -r '.[] | .notes[] | .body' | grep -oE '#[0-9]+|issues/[0-9]+'
 ```
 
-Build summary using template from [response-format.md](references/response-format.md#final-summary-comment-template).
+5. **Build summary using template** from [response-format.md](references/response-format.md#final-summary-comment-template)
 
-**2. Get approval:**
+### Step 8: Publish (After Approval)
 
-- Show English version that will be published (translate if user's language differs)
-- Wait for explicit user approval
-
-**3. Publish:**
-
-- Use `gitlab-discussions` skill for MCP tools
-- Create threads on specific code lines (if new issues found)
-- Post summary comment to MR
+1. **Show English version** that will be published (translate if user's language differs)
+2. **Wait for publication approval**
+3. Use `gitlab-discussions` skill to learn how to publish on GitLab
+4. Create threads on specific code lines (if new issues found)
+5. **Publish summary comment** - only when finishing review (no new threads added in this session)
 
 ## References
 
