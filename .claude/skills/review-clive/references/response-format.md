@@ -84,6 +84,20 @@ vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, 
 ```
 ```
 
+## Actions Summary Table
+
+When presenting summary of executed actions (comments published, threads resolved), **always include links**:
+
+```markdown
+| # | Action | Thread | Link |
+|---|--------|--------|------|
+| 1 | Resolve | PRIVATE_KEY_ERROR_MATCH | [note_243229](https://gitlab.syncad.com/.../merge_requests/800#note_243229) |
+| 2 | Comment | Docstring (pydoclint) | [note_244167](https://gitlab.syncad.com/.../merge_requests/800#note_244167) |
+| 3 | New thread | Duplicate commits | [note_244168](https://gitlab.syncad.com/.../merge_requests/800#note_244168) |
+```
+
+**Rule:** Every row with published comment or resolved thread MUST have a clickable link.
+
 ## Best Practices
 
 - Include **file paths with line numbers** (e.g., `filename.py:42-45`)
@@ -91,3 +105,4 @@ vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, 
 - Quote **actual code** from the codebase, don't paraphrase
 - Show **before/after** when suggesting changes
 - Use comparison tables for CLI/TUI discrepancies
+- **Always include links** in action summary tables
