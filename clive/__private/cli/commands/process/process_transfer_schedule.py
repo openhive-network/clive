@@ -78,7 +78,8 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         if self.pair_id is not None:
             return scheduled_transfer.pair_id == self.pair_id
 
-        # pair_id not specified - we assume there exist exactly one transfer with pair_id=0, otherwise validation will fail on `validate_existence`
+        # pair_id not specified - we assume there exist exactly one transfer with pair_id=0,
+        # otherwise validation will fail on `validate_existence`
         return scheduled_transfer.pair_id == 0
 
     async def fetch_data(self) -> None:
