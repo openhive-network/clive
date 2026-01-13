@@ -22,9 +22,8 @@ Code review for Clive project with smart detection and flexible execution.
 
 Determine communication language for this session:
 
-1. **If previous messages exist** → detect language from conversation context
-2. **If no context** → ask user with Polish as suggested default:
-   "Which language for our communication? Polish (recommended) / English"
+1. **If language clear from context** → use it
+2. **Otherwise** → ask: "Polish (recommended) / English?"
 
 **Note:** This only affects communication with user. GitLab comments are always in English.
 
