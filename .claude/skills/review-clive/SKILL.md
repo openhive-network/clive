@@ -34,7 +34,7 @@ glab mr list --source-branch=<branch>
 Then offer choices:
 - MR found → Suggest reviewing it, offer alternatives
 - Local changes only → Suggest local review
-- Nothing → Ask: "Co chcesz zreviewować?"
+- Nothing → Ask: "What do you want to review?"
 
 ### Step 2: Detect Context
 
@@ -84,6 +84,26 @@ Task(subagent_type="clive-code-reviewer", prompt="Review MR !<N> for Clive proje
 - Read [references/review-principles.md](references/review-principles.md) for review guidelines
 - Analyze diff applying DRY, CLI/TUI, SRP, commit organization principles
 - Use format from [references/response-format.md](references/response-format.md)
+
+**FOLLOWUP_MR with unresolved threads** - sequential review:
+
+1. Show: "Found X unresolved threads. Show details of thread #1?"
+2. For each thread:
+   - Show thread content (author, original comment, responses)
+   - Verify if suggestion was implemented in code
+   - Present verification result
+   - Offer: "Resolve thread #1?" or "Skip to thread #2?"
+3. After user decision → proceed to next thread
+4. Repeat until all threads reviewed
+
+Example flow:
+```
+Found 3 unresolved threads. Show details of thread #1?
+→ [show details + code verification]
+Suggestion implemented ✅ → Resolve thread #1, or skip to #2?
+→ [user: resolve]
+Thread #1 resolved. Show details of thread #2?
+```
 
 ### Step 5: Present Results
 
