@@ -84,9 +84,23 @@ vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, 
 ```
 ```
 
+## Immediate Action Feedback
+
+**Every GitLab action MUST show link immediately after execution:**
+
+```markdown
+Thread #1 resolved ✅: https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>
+
+Comment published ✅: https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>
+
+New thread created ✅: https://gitlab.syncad.com/hive/clive/-/merge_requests/<MR_IID>#note_<NOTE_ID>
+```
+
+**Rule:** Never confirm an action without providing the link. User must be able to verify immediately.
+
 ## Actions Summary Table
 
-When presenting summary of executed actions (comments published, threads resolved), **always include links**:
+When presenting summary of multiple executed actions, **always include links**:
 
 ```markdown
 | # | Action | Thread | Link |
