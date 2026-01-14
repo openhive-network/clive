@@ -12,16 +12,15 @@ workflow:
       when: never
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
+# YAML anchors for pinned versions (single source of truth)
+.common_ci_configuration_version: &common_ci_configuration_version "f721942b5b7f4e93031a994adf647af83fbcf0f6"
+
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 7cc2791e1e11f4c29d305103ad6dbc7a00e150a6
+    ref: *common_ci_configuration_version
     file:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
-  # Use newer ref for source_change_detection template (includes find-upstream-image)
-  - project: 'hive/common-ci-configuration'
-    ref: f721942b5b7f4e93031a994adf647af83fbcf0f6
-    file:
       - '/templates/source_change_detection.gitlab-ci.yml'
 
 variables:
@@ -30,7 +29,7 @@ variables:
   # Hived source: branch/tag in hive/hive repo to find latest image
   HIVED_SOURCE_REF: "develop"
   # Docker builder tags (from common-ci-configuration)
-  CI_COMMON_JOB_VERSION: "7cc2791e1e11f4c29d305103ad6dbc7a00e150a6"
+  CI_COMMON_JOB_VERSION: *common_ci_configuration_version
   DOCKER_BUILDER_TAG: "$CI_COMMON_JOB_VERSION"
   DOCKER_DIND_TAG: "$CI_COMMON_JOB_VERSION"
   # first party libraries gitlab indexes:
