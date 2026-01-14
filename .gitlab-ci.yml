@@ -67,8 +67,6 @@ variables:
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
-image: ${CI_BASE_IMAGE}
-
 default:
   tags:
     - public-runner-docker
@@ -420,6 +418,7 @@ deploy_wheel_to_pypi:
 .docs_deployment_base:
   extends: .docs_variables
   stage: deploy
+  image: ${CI_BASE_IMAGE}
   cache:
     # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
@@ -504,6 +503,7 @@ clean_docs_preview:
 .generate_clive_startup_scripts_base:
   extends: .job-defaults
   stage: build_and_deploy_docker
+  image: ${CI_BASE_IMAGE}
   variables:
     GIT_SUBMODULE_STRATEGY: none
     IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
