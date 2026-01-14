@@ -113,8 +113,6 @@ verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
   image: ${CI_BASE_IMAGE}
-  script:
-    - poetry check --lock
 
 lint_code_with_ruff:
   stage: static_code_analysis
