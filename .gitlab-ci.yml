@@ -269,7 +269,14 @@ build_docs:
   image: ${CI_BASE_IMAGE}
   parallel:
     matrix:
-      - CI_BASE_IMAGE: ["${CI_BASE_IMAGE_312}", "${CI_BASE_IMAGE_314}"]
+      - PYTHON_VERSION: ["3.12", "3.14"]
+  rules:
+    - if: $PYTHON_VERSION == "3.12"
+      variables:
+        CI_BASE_IMAGE: "${CI_BASE_IMAGE_312}"
+    - if: $PYTHON_VERSION == "3.14"
+      variables:
+        CI_BASE_IMAGE: "${CI_BASE_IMAGE_314}"
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
