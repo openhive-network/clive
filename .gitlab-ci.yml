@@ -30,9 +30,8 @@ variables:
   # Hived source: branch/tag/commit in hive/hive repo to find image
   HIVED_SOURCE_REF: *hived_version
   # Docker builder tags (from common-ci-configuration)
-  CI_COMMON_JOB_VERSION: *common_ci_configuration_version
-  DOCKER_BUILDER_TAG: "$CI_COMMON_JOB_VERSION"
-  DOCKER_DIND_TAG: "$CI_COMMON_JOB_VERSION"
+  DOCKER_BUILDER_TAG: "47dab930d3676b007782723c45ae7080fa611705"
+  DOCKER_DIND_TAG: "53c7826ef0f74b9896fa39aa7eb43140e53ddb0d"
   # first party libraries gitlab indexes:
   # - 198 -> hive (generated APIs)
   # - 362 -> schemas
