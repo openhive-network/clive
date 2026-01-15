@@ -16,9 +16,8 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import Section, SectionBody
 
 if TYPE_CHECKING:
-    from typing import TypeIs
-
     from textual.app import ComposeResult
+    from typing_extensions import TypeIs
 
     from clive.__private.core.profile import Profile
 

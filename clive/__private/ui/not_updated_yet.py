@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import TypeIs
+    from typing_extensions import TypeIs
 
 
 def is_not_updated_yet[T](value: T | NotUpdatedYet) -> TypeIs[NotUpdatedYet]:

@@ -14,9 +14,8 @@ from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
-    from typing import TypeIs
-
     from textual.app import ComposeResult
+    from typing_extensions import TypeIs
 
     from clive.__private.models.schemas import AccountWitnessVoteOperation, UpdateProposalVotesOperation
 
