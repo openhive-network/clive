@@ -13,7 +13,7 @@ workflow:
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
 # YAML anchors for pinned versions (single source of truth)
-.common_ci_configuration_version: &common_ci_configuration_version "f721942b5b7f4e93031a994adf647af83fbcf0f6"
+.common_ci_configuration_version: &common_ci_configuration_version "1f2247a35b7115a316cbb2283242ab4669928c69"
 .hived_version: &hived_version "fa159b7c"
 
 include:
