@@ -56,9 +56,12 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # ci registry:
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1 (Python 3.14)
-  CI_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
-  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-3 (Python 3.12)
+  CI_BASE_IMAGE_312_TAG: "@sha256:50bcbfe37fc031a902071ceaf586aff4554b15aa84e33b8bd84c31ad2386a26f"
+  CI_BASE_IMAGE_312: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_312_TAG}"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-2 (Python 3.14)
+  CI_BASE_IMAGE_314_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
+  CI_BASE_IMAGE_314: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_314_TAG}"
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04-1 (Python 3.12)
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
@@ -108,17 +111,17 @@ default:
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
 
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   script:  # our own script because of newer ruff version
     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
@@ -127,7 +130,7 @@ lint_code_with_ruff:
 formatting_with_ruff_check:
   stage: static_code_analysis
   extends: .project_develop_configuration_template
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
       ruff format --check --diff ${PACKAGES_TO_CHECK}
@@ -135,7 +138,7 @@ formatting_with_ruff_check:
 type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -232,7 +235,7 @@ prepare_testnet_hived_image:
 build_wheel:
   extends: .build_wheel_template
   stage: build
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_312}  # We deliver Clive in a container with Python 3.12
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al
@@ -247,7 +250,7 @@ build_docs:
   extends:
     - .build_docs_env
     - .docs_variables
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   script:
     - cd $PYPROJECT_DIR
     - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
@@ -265,6 +268,9 @@ build_docs:
   stage: tests
   extends: .project_develop_configuration_template
   image: ${CI_BASE_IMAGE}
+  parallel:
+    matrix:
+      - CI_BASE_IMAGE: ["${CI_BASE_IMAGE_312}", "${CI_BASE_IMAGE_314}"]
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
@@ -345,7 +351,7 @@ testing_cli:
 
 testing_password_private_key_logging:
   stage: tests
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   needs:
     - job: testing_clive
       artifacts: true
@@ -360,7 +366,6 @@ testing_password_private_key_logging:
     - bash "${CI_PROJECT_DIR}/scripts/check_for_private_key_or_password_logging.bash"
 
 test_async_hived:
-  stage: tests
   extends: .testing
   variables:
     PYTEST_TIMEOUT_MINUTES: 5
@@ -382,7 +387,7 @@ test_async_hived:
 deploy_wheel_to_gitlab:
   extends: .deploy_wheel_to_gitlab_template
   stage: deploy
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
@@ -392,13 +397,13 @@ deploy_wheel_to_gitlab:
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
 
 .docs_deployment_base:
   extends: .docs_variables
   stage: deploy
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   cache:
     # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
@@ -483,7 +488,7 @@ clean_docs_preview:
 .generate_clive_startup_scripts_base:
   extends: .job-defaults
   stage: build_and_deploy_docker
-  image: ${CI_BASE_IMAGE}
+  image: ${CI_BASE_IMAGE_314}
   variables:
     GIT_SUBMODULE_STRATEGY: none
     IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
