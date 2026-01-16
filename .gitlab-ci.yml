@@ -12,7 +12,7 @@ workflow:
       when: never
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
-# YAML anchors for pinned versions (single source of truth)
+# YAML anchors for pinned versions (used via *anchor_name syntax)
 .common_ci_configuration_version: &common_ci_configuration_version "1f2247a35b7115a316cbb2283242ab4669928c69"
 .hived_version: &hived_version "fa159b7c"
 
@@ -25,13 +25,32 @@ include:
       - '/templates/source_change_detection.gitlab-ci.yml'
 
 variables:
-  # git:
-  GIT_STRATEGY: clone
+  # ---------------------------------------------------------------------------
+  # Pinned Versions and Image Tags
+  # ---------------------------------------------------------------------------
   # Hived source: branch/tag/commit in hive/hive repo to find image
   HIVED_SOURCE_REF: *hived_version
-  # Docker builder tags (from common-ci-configuration)
+  # Docker builder images (from common-ci-configuration)
   DOCKER_BUILDER_TAG: "47dab930d3676b007782723c45ae7080fa611705"
   DOCKER_DIND_TAG: "53c7826ef0f74b9896fa39aa7eb43140e53ddb0d"
+  # CI base images - Python 3.12 (ubuntu24.04-3)
+  CI_BASE_IMAGE_312_TAG: "@sha256:50bcbfe37fc031a902071ceaf586aff4554b15aa84e33b8bd84c31ad2386a26f"
+  CI_BASE_IMAGE_312: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_312_TAG}"
+  # CI base images - Python 3.14 (ubuntu24.04-py3.14-2)
+  CI_BASE_IMAGE_314_TAG: "@sha256:adad618163d38cd0427840192f9113b165a661e17bc112715bb713e1a5219062"
+  CI_BASE_IMAGE_314: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_314_TAG}"
+  # Clive testnet base image (python_development:3.12-u24.04-1)
+  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
+  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
+  # Clive runtime base image (python_runtime:3.12-u24.04-1)
+  CLIVE_BASE_IMAGE_TAG: "@sha256:28f515d0cda87b9372b48f70b9d48468bc074ad9b54940827f2eebf49fd8521f"
+  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
+
+  # ---------------------------------------------------------------------------
+  # Configuration Variables
+  # ---------------------------------------------------------------------------
+  # git:
+  GIT_STRATEGY: clone
   # first party libraries gitlab indexes:
   # - 198 -> hive (generated APIs)
   # - 362 -> schemas
@@ -54,19 +73,6 @@ variables:
   # binaries:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
-  # ci registry:
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-3 (Python 3.12)
-  CI_BASE_IMAGE_312_TAG: "@sha256:50bcbfe37fc031a902071ceaf586aff4554b15aa84e33b8bd84c31ad2386a26f"
-  CI_BASE_IMAGE_312: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_312_TAG}"
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-py3.14-2 (Python 3.14)
-  CI_BASE_IMAGE_314_TAG: "@sha256:adad618163d38cd0427840192f9113b165a661e17bc112715bb713e1a5219062"
-  CI_BASE_IMAGE_314: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_314_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_development:3.12-u24.04-1 (Python 3.12)
-  CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
-  CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04-1 (Python 3.12)
-  CLIVE_BASE_IMAGE_TAG: "@sha256:28f515d0cda87b9372b48f70b9d48468bc074ad9b54940827f2eebf49fd8521f"
-  CLIVE_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime${CLIVE_BASE_IMAGE_TAG}"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
