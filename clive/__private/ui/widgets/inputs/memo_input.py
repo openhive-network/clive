@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
+
+from textual import on
+from textual.containers import Vertical
+from textual.events import Mount
 
 from clive.__private.core.constants.tui.placeholders import MEMO_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
@@ -9,13 +13,39 @@ from clive.__private.validators.private_key_in_memo_validator import PrivateKeyI
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.app import ComposeResult
     from textual.suggester import Suggester
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
 
 class MemoInput(TextInput):
-    """An input for a Hive memo."""
+    """
+    An input for a Hive memo.
+
+    Attributes:
+        DEFAULT_CSS: Default CSS for the memo input.
+    """
+
+    _ENCRYPTED_MEMO_CLASS: Final[str] = "-encrypted-memo"
+
+    DEFAULT_CSS = """
+    MemoInput {
+        height: auto;
+
+        Vertical {
+            height: auto;
+
+            CliveInput {
+                width: 1fr;
+
+                &.-encrypted-memo {
+                    border-subtitle-background: $secondary;
+                }
+            }
+        }
+    }
+    """
 
     def __init__(
         self,
@@ -51,3 +81,21 @@ class MemoInput(TextInput):
             classes=classes,
             disabled=disabled,
         )
+
+    def compose(self) -> ComposeResult:
+        with Vertical():
+            yield self.input
+            yield self.pretty
+
+    @on(Mount)
+    def _watch_input_value_change(self) -> None:
+        self.watch(self.input, "value", self._update_encryption_status)
+
+    def _update_encryption_status(self) -> None:
+        if self.value_raw.startswith("#"):
+            self.input.border_subtitle = "will be encrypted"
+            self.input.add_class(self._ENCRYPTED_MEMO_CLASS)
+        else:
+            self.input.border_subtitle = None
+            self.input.remove_class(self._ENCRYPTED_MEMO_CLASS)
+        self.input.refresh()

@@ -16,6 +16,7 @@ from clive.__private.ui.screens.operations import Operations, TransferToAccount
 from clive.__private.ui.screens.operations.bindings.memo_encrypting_operation_action_bindings import (
     MEMO_KEY_NOT_IMPORTED_WARNING,
 )
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
 )
@@ -31,6 +32,7 @@ from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
     press_and_wait_for_screen,
+    write_text,
 )
 from clive_local_tools.tui.utils import log_current_view
 from tests.functional.tui.test_savings import fill_savings_data, go_to_savings
@@ -212,4 +214,56 @@ async def test_negative_transfer_encrypted_memo_to_nonexistent_account(
     expected_message = f"Memo encryption failed: account '{NON_EXISTENT_ACCOUNT}' was not found."
     assert any(expected_message in msg for msg in notifications), (
         f"Expected notification about missing account, got: {notifications}"
+    )
+
+
+async def test_memo_encryption_indicator_shown_when_memo_starts_with_hash(
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+) -> None:
+    """Test that 'will be encrypted' indicator is shown when memo starts with '#'."""
+    _, _, pilot = prepared_tui_on_dashboard
+
+    # ACT
+    await press_and_wait_for_screen(pilot, CLIVE_PREDEFINED_BINDINGS.dashboard.operations.key, Operations)
+    await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
+
+    # Focus memo input
+    await focus_next(pilot)  # From -> Amount
+    await focus_next(pilot)  # Amount -> Asset select
+    await focus_next(pilot)  # Asset select -> Memo
+
+    # Get memo input widget
+    memo_input = pilot.app.screen.query_one(MemoInput)
+
+    # Initially, border_subtitle should be empty
+    assert not memo_input.input.border_subtitle, "Border subtitle should be empty initially"
+
+    # Type '#' to trigger encryption indicator
+    await write_text(pilot, "#")
+    await pilot.pause()
+
+    # ASSERT - border_subtitle should show "will be encrypted"
+    assert memo_input.input.border_subtitle == "will be encrypted", (  # type: ignore[comparison-overlap]
+        f"Expected 'will be encrypted', got '{memo_input.input.border_subtitle}'"
+    )
+
+    # Type more text, indicator should still be shown
+    await write_text(pilot, "secret message")
+    await pilot.pause()
+
+    assert memo_input.input.border_subtitle == "will be encrypted", (
+        "Encryption indicator should persist while memo starts with '#'"
+    )
+
+    # Clear memo and type plain text
+    for _ in range(len("#secret message")):
+        await pilot.press("backspace")
+    await pilot.pause()
+
+    await write_text(pilot, "plain memo")
+    await pilot.pause()
+
+    # ASSERT - border_subtitle should be empty for plain memo
+    assert not memo_input.input.border_subtitle, (
+        f"Border subtitle should be empty for plain memo, got '{memo_input.input.border_subtitle}'"
     )
