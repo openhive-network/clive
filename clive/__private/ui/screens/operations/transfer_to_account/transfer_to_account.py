@@ -9,7 +9,9 @@ from clive.__private.models.asset import Asset, AssetAmount
 from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.screens.operations.bindings import OperationActionBindings
+from clive.__private.ui.screens.operations.bindings.memo_encrypting_operation_action_bindings import (
+    MemoEncryptingOperationActionBindings,
+)
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
@@ -30,7 +32,7 @@ class Body(Grid):
     """All the content of the screen, excluding the title."""
 
 
-class TransferToAccount(OperationBaseScreen, OperationActionBindings):
+class TransferToAccount(OperationBaseScreen, MemoEncryptingOperationActionBindings):
     CSS_PATH = [
         *OperationBaseScreen.CSS_PATH,
         get_relative_css_path(__file__),

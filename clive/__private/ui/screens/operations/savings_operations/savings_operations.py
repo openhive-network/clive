@@ -23,7 +23,9 @@ from clive.__private.ui.dialogs.operation_summary.cancel_transfer_from_savings_d
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet, is_updated
 from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.screens.operations.bindings import OperationActionBindings
+from clive.__private.ui.screens.operations.bindings.memo_encrypting_operation_action_bindings import (
+    MemoEncryptingOperationActionBindings,
+)
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.buttons import CancelOneLineButton
 from clive.__private.ui.widgets.clive_basic import (
@@ -198,7 +200,7 @@ class PendingTransfersPane(TabPane, CliveWidget):
             yield PendingTransfers()
 
 
-class SavingsTransfers(TabPane, OperationActionBindings):
+class SavingsTransfers(TabPane, MemoEncryptingOperationActionBindings):
     TITLE: Final[str] = "transfer"
 
     def __init__(self, default_transfer_type: TransferType, default_asset_selected: type[Asset.LiquidT]) -> None:
