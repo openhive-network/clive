@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 import beekeepy.communication as bkc
@@ -79,7 +80,12 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
 
     async def _validate_remote_beekeeper_running(self) -> None:
         beekeeper_remote_url = self.beekeeper_remote_url
-        if beekeeper_remote_url and not await bkc.async_is_url_reachable(beekeeper_remote_url):
+        if beekeeper_remote_url is None:
+            return  # No remote address configured, skip validation
+
+        timeout = timedelta(seconds=safe_settings.beekeeper.initialization_timeout)
+        settings = bkc.CommunicationSettings(timeout=timeout)
+        if not await bkc.async_is_url_reachable(beekeeper_remote_url, settings=settings):
             raise CLIBeekeeperRemoteAddressIsNotRespondingError(beekeeper_remote_url)
 
     async def _validate_session_is_locked(self) -> None:
