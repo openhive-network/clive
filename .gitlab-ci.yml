@@ -429,6 +429,7 @@ deploy_wheel_to_pypi:
   artifacts:
     paths: [ public ]
   tags:  # has to be a single runner or cache should be shared between multiple runners
+    - public-runner-docker
     - data-cache-storage
     - hive-builder-9
 
