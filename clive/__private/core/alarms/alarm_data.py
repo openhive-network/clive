@@ -59,7 +59,7 @@ class AlarmDataWithEndDate(BaseAlarmData):
         }
 
 
-class AlarmDataWithStartAndEndDate(AlarmDataWithStartDate, AlarmDataWithEndDate):  # type: ignore[misc]
+class AlarmDataWithStartAndEndDate(AlarmDataWithStartDate, AlarmDataWithEndDate):
     def get_titled_data(self) -> dict[str, str]:
         return {
             self.START_DATE_LABEL: self.pretty_start_date,
