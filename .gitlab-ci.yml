@@ -13,6 +13,8 @@ workflow:
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
 # YAML anchors for pinned versions (used via *anchor_name syntax)
+# Note: When upgrading common_ci_configuration_version, you may also need to update
+# DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
 .common_ci_configuration_version: &common_ci_configuration_version "1f2247a35b7115a316cbb2283242ab4669928c69"
 .hived_version: &hived_version "fa159b7c"
 
@@ -31,6 +33,9 @@ variables:
   # Hived source: branch/tag/commit in hive/hive repo to find image
   HIVED_SOURCE_REF: *hived_version
   # Docker builder images (from common-ci-configuration)
+  # Note: These images are not built on every common-ci-configuration commit.
+  # When upgrading common-ci-configuration, check the common-ci-configuration registry for latest available
+  # versions that were already built from the develop branch.
   DOCKER_BUILDER_TAG: "47dab930d3676b007782723c45ae7080fa611705"
   DOCKER_DIND_TAG: "53c7826ef0f74b9896fa39aa7eb43140e53ddb0d"
   # CI base images - Python 3.12 (ubuntu24.04-py3.12-1)
