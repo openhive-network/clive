@@ -104,6 +104,7 @@ files = [
 strict = true
 strict_equality_for_none = true
 disallow_untyped_decorators = false
+python_version = 3.12
 
 [[tool.mypy.overrides]]
 module = ["test_tools.*"]
