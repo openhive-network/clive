@@ -2406,14 +2406,14 @@ resolved_reference = "62065bcfc5d520d63aaa44e4a7642e60d53caa21"
 
 [[package]]
 name = "textual"
-version = "7.0.2"
+version = "7.0.3"
 description = "Modern Text User Interface framework"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "textual-7.0.2-py3-none-any.whl", hash = "sha256:cb572e5a722bbf90267b5c44ea07846a8bc654e806dd748277c025d56371ebb0"},
-    {file = "textual-7.0.2.tar.gz", hash = "sha256:a2c6b42036e8dbde178536c997a82392f1ab73dac9518543f8ff7206eff881c5"},
+    {file = "textual-7.0.3-py3-none-any.whl", hash = "sha256:fac6f805d464d407f830102863944103c2ef8b10003d28851ed884626124560e"},
+    {file = "textual-7.0.3.tar.gz", hash = "sha256:e9206a33bcd9486650d3e954147cd94ef49170df09d9a6dfc349400a4b25772d"},
 ]
 
 [package.dependencies]
@@ -2781,4 +2781,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "eab2ab8d4a4938e5b7319f725a387b21489bc57ac6b72863568487494b359897"
+content-hash = "4fc74d44a00fbc86dd17dfecf7cb662f80f52fec09e6d86dfd7888e17640ccbf"
