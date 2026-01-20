@@ -150,8 +150,8 @@ RUN strip -s "${HIVED_BINARIES_DIR_DEST}"/*
 # Installing faketime lib, because it is needed in embedded testnet.
 # The Faketime library is used in embedded testnet images to start blockchain nodes
 # with the correct historical timestamp matching the generated block_log.
-# Based on https://gitlab.syncad.com/hive/hive/blob/2a04c2be5d4b47c38ab498e588465bf041d294d6/scripts/setup_ubuntu.sh#L70
-RUN git clone --depth 1 --branch bw_timer_settime_fix https://gitlab.syncad.com/bwrona/faketime.git && \
+# Based on https://gitlab.syncad.com/hive/hive/-/blob/e494a45f580cdae0cbd34a28c48cbed7684f0ed8/scripts/setup_ubuntu.sh#L92
+RUN git clone --depth 1 --branch v0.9.12 https://gitlab.syncad.com/hive/faketime.git && \
     pushd faketime && CFLAGS="-O2 -DFAKE_STATELESS=1" make && \
     sudo make install && \
     popd && \
