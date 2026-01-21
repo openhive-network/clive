@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -45,13 +44,13 @@ from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
-    POLL_TIME_SECS,
     focus_next,
     press_and_wait_for_screen,
     press_binding,
     write_text,
 )
 from clive_local_tools.tui.utils import log_current_view
+from clive_local_tools.waiters import wait_for
 
 if TYPE_CHECKING:
     from typing import Any
@@ -130,17 +129,14 @@ async def go_to_savings(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
 
-async def wait_for_savings_data(pilot: ClivePilot) -> None:
+async def wait_for_savings_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
     """Wait for SavingsDataProvider to finish loading data, with timeout."""
-    timeout = TUI_TESTS_GENERAL_TIMEOUT
-    try:
-        async with asyncio.timeout(timeout):
-            provider = pilot.app.screen.query_one(SavingsDataProvider)
-            while not provider.updated:
-                tt.logger.debug("Waiting for SavingsDataProvider to update...")
-                await pilot.pause(POLL_TIME_SECS)
-    except TimeoutError:
-        raise AssertionError(f"SavingsDataProvider didn't update in {timeout:.2f}s.") from None
+    provider = pilot.app.screen.query_one(SavingsDataProvider)
+    await wait_for(
+        condition=lambda: provider.updated,
+        message="SavingsDataProvider didn't update",
+        timeout=timeout,
+    )
 
 
 async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
