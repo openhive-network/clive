@@ -701,3 +701,16 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "claim", "rewards"], **extract_params(locals()))
+
+    def process_convert(  # noqa: PLR0913
+        self,
+        *,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT,
+        from_: str | None = None,
+        request_id: int | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "convert"], **extract_params(locals()))
