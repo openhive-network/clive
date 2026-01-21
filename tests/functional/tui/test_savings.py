@@ -130,20 +130,15 @@ async def go_to_savings(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
 
-async def _wait_for_savings_data(pilot: ClivePilot) -> None:
-    """Wait for SavingsDataProvider to finish loading data."""
-    provider = pilot.app.screen.query_one(SavingsDataProvider)
-    while not provider.updated:
-        tt.logger.debug("Waiting for SavingsDataProvider to update...")
-        await pilot.pause(POLL_TIME_SECS)
-
-
-async def wait_for_savings_data(
-    pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT
-) -> None:  # noqa: ASYNC109
-    """Wait for SavingsDataProvider to finish loading, with timeout."""
+async def wait_for_savings_data(pilot: ClivePilot) -> None:
+    """Wait for SavingsDataProvider to finish loading data, with timeout."""
+    timeout = TUI_TESTS_GENERAL_TIMEOUT
     try:
-        await asyncio.wait_for(_wait_for_savings_data(pilot), timeout=timeout)
+        async with asyncio.timeout(timeout):
+            provider = pilot.app.screen.query_one(SavingsDataProvider)
+            while not provider.updated:
+                tt.logger.debug("Waiting for SavingsDataProvider to update...")
+                await pilot.pause(POLL_TIME_SECS)
     except TimeoutError:
         raise AssertionError(f"SavingsDataProvider didn't update in {timeout:.2f}s.") from None
 
