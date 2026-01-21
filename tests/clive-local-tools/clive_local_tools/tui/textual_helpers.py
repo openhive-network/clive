@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import math
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -9,15 +10,10 @@ from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 from clive_local_tools.waiters import wait_for
 
 if TYPE_CHECKING:
-    from typing import Final
-
     from textual.screen import Screen
     from textual.widget import Widget
 
     from clive_local_tools.tui.types import ClivePilot
-
-
-POLL_TIME_SECS: Final[float] = 0.1
 
 
 async def write_text(pilot: ClivePilot, text: str) -> None:
@@ -60,12 +56,6 @@ async def press_and_wait_for_focus(
     await wait_for_focus(pilot, different_than=current_focus, timeout=timeout)
 
 
-async def _wait_for_screen_change(pilot: ClivePilot, expected_screen: type[Screen[Any]]) -> None:
-    app = pilot.app
-    while not isinstance(app.screen, expected_screen):
-        await pilot.pause(POLL_TIME_SECS)
-
-
 async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
     """Wait for accounts node and alarms data to be available."""
 
@@ -88,23 +78,31 @@ async def wait_for_screen(
     timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
     """Wait for the expected screen to be active."""
-
-    async def wait_for_everything() -> None:
-        await _wait_for_screen_change(pilot, expected_screen)
-        if wait_for_focused:
-            await _wait_for_focus(pilot)
-
     app = pilot.app
+    no_timeout = math.inf  # outer asyncio.timeout controls the actual timeout
 
-    try:
-        await asyncio.wait_for(wait_for_everything(), timeout=timeout)
-    except TimeoutError:
+    def is_expected_screen() -> bool:
+        return isinstance(app.screen, expected_screen)
+
+    def error_message() -> str:
         wait_for_focused_info = " or nothing was focused " if wait_for_focused else " "
-        raise AssertionError(
+        return (
             f"Screen didn't changed to '{expected_screen}'{wait_for_focused_info}in {timeout=}s.\n"
             f"Current screen is: {app.screen}\n"
             f"Currently focused: {app.focused}"
-        ) from None
+        )
+
+    try:
+        async with asyncio.timeout(timeout):
+            await wait_for(
+                condition=is_expected_screen,
+                message=error_message,
+                timeout=no_timeout,
+            )
+            if wait_for_focused:
+                await wait_for_focus(pilot, timeout=no_timeout)
+    except TimeoutError:
+        raise AssertionError(error_message()) from None
 
 
 async def wait_for_focus(
