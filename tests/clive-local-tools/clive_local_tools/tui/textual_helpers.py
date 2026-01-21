@@ -3,8 +3,6 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
-import test_tools as tt
-
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
@@ -68,23 +66,18 @@ async def _wait_for_screen_change(pilot: ClivePilot, expected_screen: type[Scree
         await pilot.pause(POLL_TIME_SECS)
 
 
-async def _wait_for_accounts_data(pilot: ClivePilot) -> None:
-    while (
-        not pilot.app.world.profile.accounts.is_tracked_accounts_node_data_available
-        or not pilot.app.world.profile.accounts.is_tracked_accounts_alarms_data_available
-    ):
-        tt.logger.debug("Waiting for accounts node and alarms data...")
-        await pilot.pause(POLL_TIME_SECS)
-
-
 async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
-    try:
-        await asyncio.wait_for(_wait_for_accounts_data(pilot), timeout=timeout)
-    except TimeoutError:
-        wait_for_node_data_info = (
-            f"Waited too long for the accounts node or alarms data. Hasn't arrived in {timeout:.2f}s."
-        )
-        raise AssertionError(wait_for_node_data_info) from None
+    """Wait for accounts node and alarms data to be available."""
+
+    def is_data_available() -> bool:
+        accounts = pilot.app.world.profile.accounts
+        return accounts.is_tracked_accounts_node_data_available and accounts.is_tracked_accounts_alarms_data_available
+
+    await wait_for(
+        condition=is_data_available,
+        message="Accounts node/alarms data hasn't arrived",
+        timeout=timeout,
+    )
 
 
 async def _wait_for_focus(pilot: ClivePilot, *, different_than: Widget | None = None) -> None:
