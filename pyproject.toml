@@ -35,7 +35,7 @@ clive-dev = "clive.dev:main"
 
 
 [tool.poetry]
-requires-poetry = '>=2.0.0,<3.0.0'
+requires-poetry = "2.1.3"
 packages = [
     { include = "clive" },
 ]
