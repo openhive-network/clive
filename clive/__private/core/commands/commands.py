@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.commands.create_profile_wallets import CreateProfileWalletsResult
     from clive.__private.core.commands.data_retrieval.chain_data import ChainData
+    from clive.__private.core.commands.data_retrieval.convert_data import ConvertData
     from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import AccountScheduledTransferData
     from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expirations import (
         VestingDelegationExpirationData,
@@ -516,6 +517,13 @@ class Commands[WorldT: World]:
 
         return await self.__surround_with_exception_handlers(
             SavingsDataRetrieval(node=self._world.node, account_name=account_name)
+        )
+
+    async def retrieve_convert_data(self, *, account_name: str) -> CommandWithResultWrapper[ConvertData]:
+        from clive.__private.core.commands.data_retrieval.convert_data import ConvertDataRetrieval  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            ConvertDataRetrieval(node=self._world.node, account_name=account_name)
         )
 
     async def retrieve_witnesses_data(
