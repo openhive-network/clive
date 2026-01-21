@@ -309,3 +309,13 @@ Tests run in CI with:
 -   Timeout configurable via `PYTEST_TIMEOUT_MINUTES` (typically 10 minutes for most test suites)
 -   Separate jobs for unit tests, CLI tests, and TUI tests
 -   Tests run against installed wheel (not editable install)
+
+## Dependency Management (Poetry)
+
+-   **Dependency versions are specified in `pyproject.toml` and locked in `poetry.lock`**
+-   **Always use `poetry lock`** (without additional flags like `--regenerate`)
+-   **Always run `poetry lock` after changing `pyproject.toml`**
+-   **The `poetry.lock` file must be in the repository** - never add it to `.gitignore`
+-   **Never delete `poetry.lock`** - it ensures reproducible builds
+-   **Never edit `poetry.lock` manually** - always use poetry commands
+-   **Don't upgrade dependencies on your own** - only upgrade when explicitly requested
