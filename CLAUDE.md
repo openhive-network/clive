@@ -259,6 +259,10 @@ TUI test patterns (`tests/functional/tui/`):
 
 ### Dependency Management (Poetry)
 
+The lockfile pins exact versions of all dependencies (direct and transitive). This prevents dependency mismatches
+between environments - if the lockfile is wrong or missing, builds may fail or behave differently. These rules keep it
+synchronized with pyproject.toml.
+
 -   **Dependency versions are specified in `pyproject.toml` and locked in `poetry.lock`**
 -   **Always use `poetry lock`** (without additional flags like `--regenerate`)
 -   **Always run `poetry lock` after changing `pyproject.toml`**
