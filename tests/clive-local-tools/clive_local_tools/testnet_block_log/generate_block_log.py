@@ -31,7 +31,7 @@ def prepare_alternate_chain_specs(node: tt.InitNode) -> Path:
         genesis_time=int(current_time.timestamp()),
         hardfork_schedule=[tt.HardforkSchedule(hardfork=hardfork_num, block_num=1)],
         init_supply=20_000_000_000,
-        hbd_init_supply=10_000_000_000,
+        hbd_init_supply=1_000_000_000,  # 5% ratio (1B/20B) - allows collateralized convert
         initial_vesting=tt.InitialVesting(vests_per_hive=1800, hive_amount=10_000_000_000),
     )
 

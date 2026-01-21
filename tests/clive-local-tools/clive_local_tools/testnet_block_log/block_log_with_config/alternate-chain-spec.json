@@ -1,12 +1,12 @@
 {
-  "genesis_time": 1749451951,
+  "genesis_time": 1768998604,
   "hardfork_schedule": [
     {
       "block_num": 1,
       "hardfork": 28
     }
   ],
-  "hbd_init_supply": 10000000000,
+  "hbd_init_supply": 1000000000,
   "init_supply": 20000000000,
   "initial_vesting": {
     "hive_amount": 10000000000,
