@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -12,6 +13,7 @@ from clive.__private.models.schemas import (
     TransferToSavingsOperation,
 )
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
+from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.dialogs.operation_summary.cancel_transfer_from_savings_dialog import (
     CancelTransferFromSavingsDialog,
 )
@@ -39,9 +41,11 @@ from clive_local_tools.tui.checkers import (
     assert_is_screen_active,
 )
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
+from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
+    POLL_TIME_SECS,
     focus_next,
     press_and_wait_for_screen,
     press_binding,
@@ -126,9 +130,28 @@ async def go_to_savings(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
 
+async def _wait_for_savings_data(pilot: ClivePilot) -> None:
+    """Wait for SavingsDataProvider to finish loading data."""
+    provider = pilot.app.screen.query_one(SavingsDataProvider)
+    while not provider.updated:
+        tt.logger.debug("Waiting for SavingsDataProvider to update...")
+        await pilot.pause(POLL_TIME_SECS)
+
+
+async def wait_for_savings_data(
+    pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT
+) -> None:  # noqa: ASYNC109
+    """Wait for SavingsDataProvider to finish loading, with timeout."""
+    try:
+        await asyncio.wait_for(_wait_for_savings_data(pilot), timeout=timeout)
+    except TimeoutError:
+        raise AssertionError(f"SavingsDataProvider didn't update in {timeout:.2f}s.") from None
+
+
 async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
     await go_to_savings(pilot)
     assert_is_screen_active(pilot, Savings)
+    await wait_for_savings_data(pilot)
     pending_transfers = pilot.app.screen.query(PendingTransfer)
     tt.logger.debug(f"get_pending_transfers_from_savings_count: {len(pending_transfers)}")
     await press_and_wait_for_screen(pilot, "escape", Operations)

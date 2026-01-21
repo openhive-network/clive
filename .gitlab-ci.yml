@@ -302,6 +302,7 @@ build_docs:
     CLIVE_BEEKEEPER__CLOSE_TIMEOUT: 60
     BEEKEEPY_INITIALIZATION_TIMEOUT: 60  # for test-tools
     BEEKEEPY_CLOSE_TIMEOUT: 60  # for test-tools
+    TEST_TOOLS_NODE_DEFAULT_WAIT_FOR_LIVE_TIMEOUT: 60  # for test-tools node startup
     HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
     CLI_WALLET_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/cli_wallet"
     GET_DEV_KEY_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/get_dev_key"
