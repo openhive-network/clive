@@ -80,13 +80,6 @@ async def wait_for_accounts_data(pilot: ClivePilot, timeout: float = TUI_TESTS_G
     )
 
 
-async def _wait_for_focus(pilot: ClivePilot, *, different_than: Widget | None = None) -> None:
-    """Wait for focus set to anything if different_than is None or for change if not None."""
-    app = pilot.app
-    while not app.focused or app.focused is different_than:
-        await pilot.pause(POLL_TIME_SECS)
-
-
 async def wait_for_screen(
     pilot: ClivePilot,
     expected_screen: type[Screen[Any]],
@@ -120,17 +113,25 @@ async def wait_for_focus(
     different_than: Widget | None = None,
     timeout: float = TUI_TESTS_GENERAL_TIMEOUT,  # noqa: ASYNC109
 ) -> None:
-    """See _wait_for_focus."""
-    try:
-        task = _wait_for_focus(pilot, different_than=different_than)
-        await asyncio.wait_for(task, timeout=timeout)
-    except TimeoutError:
-        wait_for_focused_info = "or focus not changed " if different_than else " "
-        raise AssertionError(
+    """Wait for focus to be set or changed."""
+
+    def is_focused() -> bool:
+        app = pilot.app
+        return bool(app.focused) and app.focused is not different_than
+
+    def error_message() -> str:
+        wait_for_focused_info = "or focus not changed " if different_than else ""
+        return (
             f"Nothing was focused {wait_for_focused_info}in {timeout=}s.\n"
             f"Current screen is: {pilot.app.screen}\n"
             f"Currently focused: {pilot.app.focused}"
-        ) from None
+        )
+
+    await wait_for(
+        condition=is_focused,
+        message=error_message,
+        timeout=timeout,
+    )
 
 
 async def wait_for_cart_not_empty(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
