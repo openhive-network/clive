@@ -8,6 +8,7 @@ import test_tools as tt
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
+from clive_local_tools.waiters import wait_for
 
 if TYPE_CHECKING:
     from typing import Final
@@ -137,6 +138,15 @@ async def wait_for_focus(
             f"Current screen is: {pilot.app.screen}\n"
             f"Currently focused: {pilot.app.focused}"
         ) from None
+
+
+async def wait_for_cart_not_empty(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
+    """Wait for the transaction cart to have at least one operation."""
+    await wait_for(
+        condition=lambda: bool(pilot.app.world.profile.transaction),
+        message="Cart is still empty",
+        timeout=timeout,
+    )
 
 
 async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:  # noqa: ASYNC109
