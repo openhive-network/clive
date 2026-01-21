@@ -17,19 +17,13 @@ async def wait_for(
 
     It supports both synchronous and asynchronous conditions.
     """
-
-    async def __wait_for() -> None:
-        while True:
-            if asyncio.iscoroutinefunction(condition):
-                result = await condition()
-            else:
-                result = condition()
-            if result:
-                break
-            await asyncio.sleep(0.1)
-
     try:
-        await asyncio.wait_for(__wait_for(), timeout=timeout)
+        async with asyncio.timeout(timeout):
+            while True:
+                result = await condition() if asyncio.iscoroutinefunction(condition) else condition()
+                if result:
+                    return
+                await asyncio.sleep(0.1)
     except TimeoutError:
         message_ = message if isinstance(message, str) else message()
         raise AssertionError(f"{message_}, wait_for timeout is {timeout:.2f}") from None
