@@ -248,6 +248,8 @@ clive/__private/cli/show/pending.py
     DOC103: Function `show_pending_change_recovery_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_pending_decline_voting_rights`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_pending_decline_voting_rights`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+    DOC101: Function `show_pending_convert`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `show_pending_convert`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
 clive/__private/core/_async.py
     DOC101: Function `asyncio_run`: Docstring contains fewer arguments than in function signature.
@@ -283,6 +285,14 @@ clive/__private/core/commands/data_retrieval/chain_data.py
     DOC101: Method `ChainData.__colorize_participation_count`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `ChainData.__colorize_participation_count`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [participation: str].
     DOC201: Method `ChainData.__colorize_participation_count` does not have a return section in docstring
+--------------------
+clive/__private/core/commands/data_retrieval/convert_data.py
+    DOC601: Class `HbdConversionRequest`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `HbdConversionRequest`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [amount: AssetHbd, conversion_date: datetime, request_id: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `CollateralizedConversionRequest`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `CollateralizedConversionRequest`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [collateral_amount: AssetHive, conversion_date: datetime, converted_amount: AssetHbd, request_id: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `ConvertData`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ConvertData`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [collateralized_conversions: list[CollateralizedConversionRequest], hbd_conversions: list[HbdConversionRequest]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC101: Method `AccountScheduledTransferData._receiver_check`: Docstring contains fewer arguments than in function signature.
