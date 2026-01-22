@@ -89,3 +89,14 @@ async def show_pending_decline_voting_rights(
     await ShowPendingDeclineVotingRights(
         account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
+
+
+@pending.command(name="convert")
+async def show_pending_convert(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """Show pending conversion requests (both HBD → HIVE and HIVE → HBD)."""
+    from clive.__private.cli.commands.show.show_pending_convert import ShowPendingConvert  # noqa: PLC0415
+
+    await ShowPendingConvert(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
