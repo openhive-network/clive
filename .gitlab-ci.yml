@@ -97,6 +97,10 @@ variables:
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
   # other:
   AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
+  # Set to "true" to run `poetry update` before tests (tests with latest dependency versions).
+  # Useful for detecting compatibility issues with newer dependency versions early.
+  # Set to "false" to use pinned versions from poetry.lock for stable, reproducible builds.
+  TEST_WITH_LATEST_DEPENDENCIES: "true"
 
 default:
   tags:
@@ -351,8 +355,17 @@ build_docs:
     - python3 -m pip uninstall clive -y
     - echo -e "${TXT_BLUE}We want to perform tests on Clive after installing it from a wheel...${TXT_CLEAR}"
     - stat dist/*.whl
-    - python3 -m pip install dist/*.whl
+    - |
+      if [ "$TEST_WITH_LATEST_DEPENDENCIES" = "true" ]; then
+        echo -e "${TXT_BLUE}Running poetry update to test with latest dependency versions...${TXT_CLEAR}"
+        poetry -C "${CI_PROJECT_DIR}" update
+        echo -e "${TXT_BLUE}Installing wheel without dependencies (using updated deps from poetry)...${TXT_CLEAR}"
+        python3 -m pip install --no-deps dist/*.whl
+      else
+        python3 -m pip install dist/*.whl
+      fi
     - pip list --editable
+    - pip list
     - clive --version  # assertion that Clive can be run as application
   artifacts:
     reports:
