@@ -13,17 +13,17 @@ readme = "README.md"
 authors = [{ name = "Krzysztof Mochocki", email = "kmochocki@syncad.com" }, { name = "Mateusz Żebrak", email = "mzebrak@syncad.com" }]
 requires-python = '>=3.12,<4'
 dependencies = [
-    'loguru (==0.7.2)',
-    'textual (==7.3.0)',
-    'aiohttp (==3.11.15)',
-    'typer (==0.20.0)',
-    'inflection (==0.5.1)',
-    'humanize (==4.12.2)',
-    'toml (==0.10.2)',
-    "pathvalidate (==3.3.1)",
-    'hiveio-schemas (==1.28.1.dev9+3bf30d2)',
-    'hiveio-beekeepy (==1.28.4.dev16+83e3a3c)',
-    'hiveio-wax (==1.28.4rc1.dev91+61b0797e)',
+    'loguru (>=0.7.2)',
+    'textual (>=7.3.0)',
+    'aiohttp (>=3.11.15)',
+    'typer (>=0.20.0)',
+    'inflection (>=0.5.1)',
+    'humanize (>=4.12.2)',
+    'toml (>=0.10.2)',
+    "pathvalidate (>=3.3.1)",
+    'hiveio-schemas (>=1.28.1.dev9)',
+    'hiveio-beekeepy (>=1.28.4.dev16)',
+    'hiveio-wax (>=1.28.4rc1.dev91)',
 ]
 
 [project.urls]
