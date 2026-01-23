@@ -21,8 +21,8 @@ dependencies = [
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
-    'hiveio-schemas (==1.28.1.dev8+cc9d4bb)',
-    'hiveio-beekeepy (==1.28.4.dev15+d0a1bbf)',
+    'hiveio-schemas (==1.28.1.dev9+3bf30d2)',
+    'hiveio-beekeepy (==1.28.4.dev16+83e3a3c)',
     'hiveio-wax (==1.28.4rc1.dev91+61b0797e)',
 ]
 
@@ -41,6 +41,7 @@ packages = [
 ]
 source = [
     { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-test-tools", url = "https://gitlab.syncad.com/api/v4/projects/300/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
@@ -52,13 +53,14 @@ poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.dependencies]
+test-tools = { source = "gitlab-test-tools" }
 hiveio-schemas = { source = "gitlab-schemas" }
 hiveio-wax = { source = "gitlab-wax" }
 hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { git = "https://gitlab.syncad.com/hive/test-tools.git", rev = "62065bcfc5d520d63aaa44e4a7642e60d53caa21" }
+test-tools = "0.0.1.dev1398+4478459"
 pytest = "8.3.5"  # required by test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
@@ -73,7 +75,7 @@ textual-dev = "1.7.0"
 pydoclint = "0.8.3"
 types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { git = "https://gitlab.syncad.com/hive/test-tools.git", rev = "62065bcfc5d520d63aaa44e4a7642e60d53caa21" }
+test-tools = "0.0.1.dev1398+4478459"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"
