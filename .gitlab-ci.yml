@@ -101,6 +101,8 @@ variables:
   # Useful for detecting compatibility issues with newer dependency versions early.
   # Set to "false" to use pinned versions from poetry.lock for stable, reproducible builds.
   TEST_WITH_LATEST_DEPENDENCIES: "true"
+  # Same as above but for static code analysis jobs (ruff, mypy, pre-commit).
+  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "true"
 
 default:
   tags:
@@ -139,10 +141,22 @@ default:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+.update_deps_for_static_analysis:
+  script:
+    - |
+      if [ "$STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES" = "true" ]; then
+        echo -e "${TXT_BLUE}Running poetry update to use latest dependency versions for static analysis...${TXT_CLEAR}"
+        poetry -C "${CI_PROJECT_DIR}" update
+        pip list
+      fi
+
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
   image: ${CI_BASE_IMAGE_312}
+  before_script:
+    - !reference [.pre_commit_checks_template, before_script]
+    - !reference [.update_deps_for_static_analysis, script]
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
@@ -153,6 +167,9 @@ lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
   image: ${CI_BASE_IMAGE_312}
+  before_script:
+    - !reference [.lint_code_with_ruff_template, before_script]
+    - !reference [.update_deps_for_static_analysis, script]
   script:  # our own script because of newer ruff version
     - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
       ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
@@ -162,6 +179,9 @@ formatting_with_ruff_check:
   stage: static_code_analysis
   extends: .project_develop_configuration_template
   image: ${CI_BASE_IMAGE_312}
+  before_script:
+    - !reference [.project_develop_configuration_template, before_script]
+    - !reference [.update_deps_for_static_analysis, script]
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
       ruff format --check --diff ${PACKAGES_TO_CHECK}
@@ -170,6 +190,9 @@ type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
   image: ${CI_BASE_IMAGE_312}
+  before_script:
+    - !reference [.type_check_with_mypy_template, before_script]
+    - !reference [.update_deps_for_static_analysis, script]
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
