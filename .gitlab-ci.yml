@@ -16,10 +16,23 @@ workflow:
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
 .common_ci_configuration_version: &common_ci_configuration_version "cafb362f9b025cf91caebccd91e6275e2d0d6b60"
-# Note: When upgrading hived_version, prefer official release tags. If a required version
+# Hived image configuration:
+# - hived_branch: Branch to search for images (used for dynamic lookup)
+# - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
+#
+# For dynamic lookup (follow branch, find latest image):
+#   .hived_branch: &hived_branch "develop"
+#   .hived_override_tag: &hived_override_tag "none"
+#
+# For stable release (use specific tag):
+#   .hived_branch: &hived_branch "develop"
+#   .hived_override_tag: &hived_override_tag "1.28.6-alpha.1"
+#
+# Note: When using override tag, prefer official release tags. If a required version
 # is not tagged, create a tag in hived repository with format: hived-for-clive-<version>
 # to avoid the image being removed from registry (non-tagged images may be garbage collected).
-.hived_version: &hived_version "1.28.6-alpha.1"
+.hived_branch: &hived_branch "develop"
+.hived_override_tag: &hived_override_tag "none"
 
 include:
   - project: 'hive/common-ci-configuration'
@@ -33,8 +46,9 @@ variables:
   # ---------------------------------------------------------------------------
   # Pinned Versions and Image Tags
   # ---------------------------------------------------------------------------
-  # Hived source: branch/tag/commit in hive/hive repo to find image
-  HIVED_SOURCE_REF: *hived_version
+  # Hived image lookup (set via anchors above)
+  HIVED_BRANCH: *hived_branch
+  HIVED_OVERRIDE_TAG: *hived_override_tag
   # Docker builder images (from common-ci-configuration)
   # Note: These images are not built on every common-ci-configuration commit.
   # When upgrading common-ci-configuration, check the common-ci-configuration registry for latest available
@@ -157,13 +171,33 @@ type_check_with_mypy:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# Find hived image from hive repo by specific commit/tag
-# Uses UPSTREAM_OVERRIDE_TAG to skip dynamic lookup and directly check if image exists
+# Find hived image from hive repo
+# Mode is determined by HIVED_OVERRIDE_TAG:
+# - "none": Dynamic lookup - clones repo, finds last source-changing commit with image
+# - Set: Direct lookup - checks if image exists for specified tag/commit
 .find_hived_image:
   extends: .find_upstream_image
   variables:
+    UPSTREAM_REPO_URL: "https://gitlab.syncad.com/hive/hive.git"
     UPSTREAM_REGISTRY: "registry.gitlab.syncad.com/hive/hive"
-    UPSTREAM_OVERRIDE_TAG: "${HIVED_SOURCE_REF}"
+    UPSTREAM_BRANCH: "${HIVED_BRANCH}"
+    UPSTREAM_OVERRIDE_TAG: "${HIVED_OVERRIDE_TAG}"
+  before_script:
+    - |
+      # Dynamic lookup mode - fetch source patterns from hive's script
+      if [[ -z "$UPSTREAM_OVERRIDE_TAG" || "$UPSTREAM_OVERRIDE_TAG" == "none" ]]; then
+        # Unset so parent template does dynamic lookup (until parent supports "none" sentinel)
+        unset UPSTREAM_OVERRIDE_TAG
+        PATTERNS_URL="https://gitlab.syncad.com/hive/hive/-/raw/${UPSTREAM_BRANCH}/scripts/ci-helpers/source-patterns.sh"
+        echo "Fetching source patterns from: $PATTERNS_URL"
+        if UPSTREAM_PATTERNS=$(curl -sf "$PATTERNS_URL" | bash); then
+          echo "Loaded patterns: $UPSTREAM_PATTERNS"
+          export UPSTREAM_PATTERNS
+        else
+          echo "ERROR: Could not fetch source-patterns.sh from hive"
+          exit 1
+        fi
+      fi
   tags:
     - public-runner-docker
 
