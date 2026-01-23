@@ -16,7 +16,6 @@ convert = CliveTyper(
 Convert assets between HBD and HIVE.
 
 The --amount specifies what will be TAKEN from your balance, not what you will receive.
-The received amount is determined after 3.5 days based on the market price.
 
 Conversion types (determined by asset type in --amount):
 
@@ -24,9 +23,10 @@ Conversion types (determined by asset type in --amount):
   after 3.5 days based on median feed price at that time.
 
 - HIVE → HBD: Collateralized conversion. HIVE is taken immediately; you receive
-  HBD instantly (approx. half the HIVE value, using minimum feed price minus 5% fee).
-  The other half is held as collateral and returned after 3.5 days. The returned
-  amount may vary based on price changes during this period.
+  HBD instantly: (HIVE_amount / 2) × min_feed_price / 1.05.
+  The other half is held as collateral. After 3.5 days, the excess collateral
+  is returned based on the median feed price at that time. The returned amount
+  may vary based on price changes during this period.
 """,
 )
 
