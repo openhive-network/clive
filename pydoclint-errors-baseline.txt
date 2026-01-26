@@ -31,6 +31,7 @@ clive/__private/cli/commands/process/process_order.py
     DOC503: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderInvalidExpirationError'].
     DOC501: Method `ProcessOrderCreate._validate_assets` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ProcessOrderCreate._validate_assets` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderSameAssetError'].
+    DOC201: Method `ProcessOrderCreate._get_min_to_receive_from_price` does not have a return section in docstring
 --------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC101: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring contains fewer arguments than in function signature.

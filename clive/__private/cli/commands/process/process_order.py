@@ -13,8 +13,10 @@ from clive.__private.cli.exceptions import (
     OrderSameAssetError,
 )
 from clive.__private.models.schemas import (
+    HbdExchangeRate,
     HiveDateTime,
     LimitOrderCancelOperation,
+    LimitOrderCreate2Operation,
     LimitOrderCreateOperation,
 )
 
@@ -82,8 +84,8 @@ class ProcessOrderCreate(OperationCommand):
         if sell_is_hive == receive_is_hive:
             raise OrderSameAssetError
 
-    def _calculate_min_to_receive_from_price(self) -> None:
-        """Calculate min_to_receive from amount_to_sell and price."""
+    def _get_min_to_receive_from_price(self) -> Asset.LiquidT:
+        """Calculate and return min_to_receive from amount_to_sell and price."""
         from clive.__private.models.asset import Asset  # noqa: PLC0415
 
         assert self.price is not None, "price should be set at this point"
@@ -94,20 +96,17 @@ class ProcessOrderCreate(OperationCommand):
         # Determine the opposite asset type
         if isinstance(self.amount_to_sell, Asset.Hive):
             # Selling HIVE, receiving HBD
-            self.min_to_receive = Asset.hbd(calculated_amount)
-        else:
-            # Selling HBD, receiving HIVE
-            self.min_to_receive = Asset.hive(calculated_amount)
+            return Asset.hbd(calculated_amount)
+        # Selling HBD, receiving HIVE
+        return Asset.hive(calculated_amount)
 
     async def fetch_data(self) -> None:
         await super().fetch_data()
 
-        # Calculate min_to_receive from price if price was specified
-        if self.price is not None and self.min_to_receive is None:
-            self._calculate_min_to_receive_from_price()
-
-        # Validate assets after min_to_receive is computed
-        self._validate_assets()
+        # Validate assets only when --min-to-receive is specified (not --price)
+        # For --price path, the opposite asset type is implicit (HIVE→HBD or HBD→HIVE)
+        if self.min_to_receive is not None:
+            self._validate_assets()
 
         # Get head_block_time from node for expiration calculations
         dgpo = await self.world.node.api.database_api.get_dynamic_global_properties()
@@ -128,14 +127,30 @@ class ProcessOrderCreate(OperationCommand):
             self.order_id = order_data.create_order_id()
 
     async def _create_operations(self) -> ComposeTransaction:
-        yield LimitOrderCreateOperation(
-            owner=self.from_account,
-            orderid=self.order_id_ensure,
-            amount_to_sell=self.amount_to_sell,
-            min_to_receive=self.min_to_receive_ensure,
-            fill_or_kill=self.fill_or_kill,
-            expiration=HiveDateTime(self.expiration_ensure),
-        )
+        if self.price is not None:
+            # User provided --price → use LimitOrderCreate2Operation
+            min_to_receive = self._get_min_to_receive_from_price()
+            yield LimitOrderCreate2Operation(
+                owner=self.from_account,
+                orderid=self.order_id_ensure,
+                amount_to_sell=self.amount_to_sell,
+                exchange_rate=HbdExchangeRate(
+                    base=self.amount_to_sell,
+                    quote=min_to_receive,
+                ),
+                fill_or_kill=self.fill_or_kill,
+                expiration=HiveDateTime(self.expiration_ensure),
+            )
+        else:
+            # User provided --min-to-receive → use LimitOrderCreateOperation
+            yield LimitOrderCreateOperation(
+                owner=self.from_account,
+                orderid=self.order_id_ensure,
+                amount_to_sell=self.amount_to_sell,
+                min_to_receive=self.min_to_receive_ensure,
+                fill_or_kill=self.fill_or_kill,
+                expiration=HiveDateTime(self.expiration_ensure),
+            )
 
 
 @dataclass(kw_only=True)

@@ -12,8 +12,15 @@ from clive.__private.cli.exceptions import (
     OrderMutuallyExclusiveOptionsError,
     OrderSameAssetError,
 )
-from clive.__private.models.schemas import LimitOrderCancelOperation
-from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
+from clive.__private.models.schemas import (
+    LimitOrderCancelOperation,
+    LimitOrderCreate2Operation,
+    LimitOrderCreateOperation,
+)
+from clive_local_tools.checkers.blockchain_checkers import (
+    assert_operation_type_in_blockchain,
+    assert_operations_placed_in_blockchain,
+)
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import get_formatted_error_message
@@ -27,10 +34,10 @@ HBD_AMOUNT: Final[tt.Asset.TbdT] = tt.Asset.Tbd(25)
 
 
 async def test_process_order_create_with_min_to_receive(
-    node: tt.RawNode,  # noqa: ARG001
+    node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
-    """Test clive process order create with --min-to-receive option."""
+    """Test clive process order create with --min-to-receive option uses LimitOrderCreateOperation."""
     # ARRANGE
     order_id = 1
 
@@ -45,13 +52,14 @@ async def test_process_order_create_with_min_to_receive(
 
     # ASSERT
     assert result.exit_code == 0
+    assert_operation_type_in_blockchain(node, result, LimitOrderCreateOperation)
 
 
 async def test_process_order_create_with_price(
-    node: tt.RawNode,  # noqa: ARG001
+    node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
-    """Test clive process order create with --price option (auto-calculates min_to_receive)."""
+    """Test clive process order create with --price option uses LimitOrderCreate2Operation."""
     # ARRANGE
     order_id = 2
     price = Decimal("0.25")  # 0.25 HBD per HIVE
@@ -67,6 +75,7 @@ async def test_process_order_create_with_price(
 
     # ASSERT
     assert result.exit_code == 0
+    assert_operation_type_in_blockchain(node, result, LimitOrderCreate2Operation)
 
 
 async def test_process_order_create_sell_hive(
@@ -147,9 +156,7 @@ async def test_process_order_create_custom_expiration(
     _ = node, cli_tester
 
 
-@pytest.mark.skip(
-    reason="fill_or_kill requires a matching counter-order on the testnet which doesn't exist"
-)
+@pytest.mark.skip(reason="fill_or_kill requires a matching counter-order on the testnet which doesn't exist")
 async def test_process_order_create_fill_or_kill(
     node: tt.RawNode,
     cli_tester: CLITester,
@@ -269,9 +276,7 @@ async def test_process_order_create_past_expiration_error(
     past_expiration = "2000-01-01T00:00:00"
     order_id = 31
 
-    expected_error = get_formatted_error_message(
-        OrderInvalidExpirationError("Expiration must be in the future.")
-    )
+    expected_error = get_formatted_error_message(OrderInvalidExpirationError("Expiration must be in the future."))
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=expected_error):
