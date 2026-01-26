@@ -21,9 +21,9 @@ dependencies = [
     'humanize (==4.12.2)',
     'toml (==0.10.2)',
     "pathvalidate (==3.3.1)",
-    'hiveio-schemas (==1.28.1.dev9+3bf30d2)',
-    'hiveio-beekeepy (==1.28.4.dev16+83e3a3c)',
-    'hiveio-wax (==1.28.4rc1.dev91+61b0797e)',
+    'hiveio-schemas (==1.28.1.dev14+16dc964)',
+    'hiveio-beekeepy (==1.28.4.dev24+dd092e5)',
+    'hiveio-wax (==1.28.4rc1.dev124+72cfe8ea)',
 ]
 
 [project.urls]
@@ -53,15 +53,15 @@ poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.dependencies]
-test-tools = { source = "gitlab-test-tools" }
+hiveio-test-tools = { source = "gitlab-test-tools" }
 hiveio-schemas = { source = "gitlab-schemas" }
 hiveio-wax = { source = "gitlab-wax" }
 hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = "0.0.1.dev1398+4478459"
-pytest = "8.3.5"  # required by test-tools, otherwise they will fail
+hiveio-test-tools = "0.0.1.dev1404+dbfbe3b"
+pytest = "8.3.5"  # required by hiveio-test-tools, otherwise they will fail
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.19.1"
@@ -75,7 +75,7 @@ textual-dev = "1.7.0"
 pydoclint = "0.8.3"
 types-toml = "0.10.8.20240310"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = "0.0.1.dev1398+4478459"
+hiveio-test-tools = "0.0.1.dev1404+dbfbe3b"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"
