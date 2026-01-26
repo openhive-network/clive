@@ -1,0 +1,114 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": [
+    "develop"
+  ],
+  "commitMessagePrefix": "chore(deps):",
+  "dependencyDashboard": true,
+  "extends": [
+    "config:recommended"
+  ],
+  "gitLabAutomerge": true,
+  "ignoreDeps": [
+    "clive-local-tools"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 5am on monday",
+      "before 5am on wednesday"
+    ]
+  },
+  "packageRules": [
+    {
+      "automerge": true,
+      "description": "Group internal Hive ecosystem packages",
+      "groupName": "hive-internal",
+      "groupSlug": "hive-internal",
+      "matchPackageNames": [
+        "hiveio-schemas",
+        "hiveio-wax",
+        "hiveio-beekeepy",
+        "test-tools"
+      ]
+    },
+    {
+      "description": "Group all patch updates together",
+      "groupName": "patch updates",
+      "groupSlug": "patch-updates",
+      "matchUpdateTypes": [
+        "patch"
+      ]
+    },
+    {
+      "automerge": true,
+      "description": "Group static-analysis tools",
+      "groupName": "static-analysis",
+      "groupSlug": "static-analysis",
+      "matchPackageNames": [
+        "mypy",
+        "pre-commit",
+        "ruff",
+        "pydoclint",
+        "types-toml"
+      ]
+    },
+    {
+      "description": "Group pytest ecosystem",
+      "groupName": "pytest",
+      "groupSlug": "pytest",
+      "matchPackagePatterns": [
+        "^pytest"
+      ]
+    },
+    {
+      "description": "Group documentation tools",
+      "groupName": "documentation",
+      "groupSlug": "docs",
+      "matchPackagePatterns": [
+        "^mkdocs",
+        "^markdown-pycon"
+      ]
+    },
+    {
+      "description": "Textual ecosystem (TUI framework)",
+      "groupName": "textual",
+      "groupSlug": "textual",
+      "matchPackageNames": [
+        "textual",
+        "textual-dev"
+      ]
+    },
+    {
+      "description": "Typer ecosystem (CLI framework)",
+      "groupName": "typer",
+      "groupSlug": "typer",
+      "matchPackagePatterns": [
+        "^typer"
+      ]
+    },
+    {
+      "automerge": true,
+      "description": "Auto-merge all patch updates after CI passes",
+      "matchUpdateTypes": [
+        "patch"
+      ]
+    }
+  ],
+  "pip_requirements": {
+    "enabled": false
+  },
+  "poetry": {
+    "enabled": true
+  },
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 5,
+  "schedule": [
+    "before 5am on monday",
+    "before 5am on wednesday"
+  ],
+  "timezone": "Europe/Warsaw"
+}
