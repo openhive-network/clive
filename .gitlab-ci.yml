@@ -347,6 +347,16 @@ build_docs:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+# Installation flow in .testing:
+# 1. poetry install (from .project_develop_configuration_template) - installs all deps including clive in editable mode
+# 2. poetry update --without static-analysis (when TEST_WITH_LATEST_DEPENDENCIES=true) - updates to latest versions
+# 3. pip uninstall clive - removes editable clive to replace with wheel
+# 4. pip install --no-deps dist/*.whl - installs wheel without touching deps (already installed by poetry)
+#
+# We always use --no-deps because:
+# - Poetry already installed all dependencies (either from lock or updated)
+# - Wheel has frozen deps that could downgrade newer versions from poetry update
+# - Faster installation (skips dependency resolution)
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
