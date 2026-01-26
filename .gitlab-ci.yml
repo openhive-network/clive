@@ -109,6 +109,15 @@ default:
   tags:
     - public-runner-docker
 
+# Rule to skip jobs during Renovate-only pipeline
+.not_for_renovate_rule: &not_for_renovate_rule
+  if: '$RENOVATE_RUN == "true"'
+  when: never
+
+.default_rules: &default_rules
+  - *not_for_renovate_rule
+  - when: on_success
+
 .runtime_like_env:
   extends: .configuration_template
   needs:
@@ -164,6 +173,7 @@ pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
   image: ${CI_BASE_IMAGE_312}
+  rules: *default_rules
   before_script:
     - !reference [.pre_commit_checks_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -172,11 +182,13 @@ verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
   image: ${CI_BASE_IMAGE_312}
+  rules: *default_rules
 
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
   image: ${CI_BASE_IMAGE_312}
+  rules: *default_rules
   before_script:
     - !reference [.lint_code_with_ruff_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -189,6 +201,7 @@ formatting_with_ruff_check:
   stage: static_code_analysis
   extends: .project_develop_configuration_template
   image: ${CI_BASE_IMAGE_312}
+  rules: *default_rules
   before_script:
     - !reference [.project_develop_configuration_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -200,6 +213,7 @@ type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
   image: ${CI_BASE_IMAGE_312}
+  rules: *default_rules
   before_script:
     - !reference [.type_check_with_mypy_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -240,6 +254,7 @@ type_check_with_mypy:
 
 find_mainnet_hived_image:
   extends: .find_hived_image
+  rules: *default_rules
   variables:
     UPSTREAM_IMAGE: ""  # mainnet uses root registry path
     UPSTREAM_OUTPUT: "mainnet-hived-image.env"
@@ -250,6 +265,7 @@ find_mainnet_hived_image:
 
 find_testnet_hived_image:
   extends: .find_hived_image
+  rules: *default_rules
   variables:
     UPSTREAM_IMAGE: "testnet"
     UPSTREAM_OUTPUT: "testnet-hived-image.env"
@@ -298,6 +314,7 @@ find_testnet_hived_image:
 
 prepare_mainnet_hived_image:
   extends: .prepare_hived_image
+  rules: *default_rules
   needs:
     - job: find_mainnet_hived_image
       artifacts: true
@@ -308,6 +325,7 @@ prepare_mainnet_hived_image:
 
 prepare_testnet_hived_image:
   extends: .prepare_hived_image
+  rules: *default_rules
   needs:
     - job: find_testnet_hived_image
       artifacts: true
@@ -320,6 +338,7 @@ build_wheel:
   extends: .build_wheel_template
   stage: build
   image: ${CI_BASE_IMAGE_312}  # We deliver Clive in a container with Python 3.12
+  rules: *default_rules
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al
@@ -335,6 +354,7 @@ build_docs:
     - .build_docs_env
     - .docs_variables
   image: ${CI_BASE_IMAGE_314}
+  rules: *default_rules
   script:
     - cd $PYPROJECT_DIR
     - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
@@ -366,6 +386,7 @@ build_docs:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
   rules:
+    - *not_for_renovate_rule
     - if: $PYTHON_VERSION == "3.12"
       variables:
         CI_BASE_IMAGE: "${CI_BASE_IMAGE_312}"
@@ -456,6 +477,7 @@ testing_cli:
 testing_password_private_key_logging:
   stage: tests
   image: ${CI_BASE_IMAGE_314}
+  rules: *default_rules
   needs:
     - job: testing_clive
       artifacts: true
@@ -494,6 +516,7 @@ deploy_wheel_to_gitlab:
   image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: manual
@@ -503,6 +526,7 @@ deploy_wheel_to_pypi:
   stage: deploy
   image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
+  rules: *default_rules
 
 .docs_deployment_base:
   extends: .docs_variables
@@ -527,6 +551,7 @@ deploy_docs:
     - job: build_docs
       artifacts: true
   rules:
+    - *not_for_renovate_rule
     # Protected tags
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
       variables:
@@ -564,6 +589,7 @@ clean_docs_preview:
   extends: .docs_deployment_base
   needs: []
   rules:
+    - *not_for_renovate_rule
     # Protected tags
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
       when: never
@@ -615,6 +641,7 @@ clean_docs_preview:
     - job: deploy_wheel_to_gitlab
       artifacts: true
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: manual
       allow_failure: true
@@ -666,6 +693,7 @@ generate_clive_startup_scripts:
     - job: build_and_push_clive_image
       artifacts: true
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: on_success
     - when: never
@@ -692,6 +720,7 @@ build_and_push_clive_testnet_image:
     - docker push "${BRANCH_IMAGE_NAME}"
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
@@ -703,6 +732,7 @@ build_and_push_clive_stable_image:
 build_and_publish_tagged_image:
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
+  rules: *default_rules
   needs:
     - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
@@ -730,6 +760,7 @@ build_and_publish_tagged_image:
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
@@ -742,6 +773,7 @@ generate_clive_develop_startup_scripts:
 generate_clive_master_startup_scripts:
   extends: .generate_clive_startup_scripts_base
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
@@ -757,6 +789,7 @@ generate_clive_tagged_image_startup_scripts:
     IMAGE_NAME: "${DOCKERHUB_IMAGE_NAME}"
 
   rules:
+    - *not_for_renovate_rule
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
