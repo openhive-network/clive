@@ -145,8 +145,8 @@ default:
   script:
     - |
       if [ "$STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES" = "true" ]; then
-        echo -e "${TXT_BLUE}Running poetry update to use latest dependency versions for static analysis...${TXT_CLEAR}"
-        poetry -C "${CI_PROJECT_DIR}" update
+        echo -e "${TXT_BLUE}Running poetry update for static-analysis group...${TXT_CLEAR}"
+        poetry -C "${CI_PROJECT_DIR}" update --only static-analysis
         pip list
       fi
 
