@@ -59,7 +59,7 @@ hiveio-wax = { source = "gitlab-wax" }
 hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
-test-tools = ">=0.0.1.dev1398"
+test-tools = { version = ">=0.0.1.dev1398", source = "gitlab-test-tools" }
 pytest = ">=8.3.5"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
@@ -69,7 +69,7 @@ pytest-asyncio = ">=0.26.0"
 pytest-xdist = ">=3.6.1"
 pytest-timeout = ">=2.3.1"
 textual-dev = ">=1.7.0"
-test-tools = ">=0.0.1.dev1398"
+test-tools = { version = ">=0.0.1.dev1398", source = "gitlab-test-tools" }
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
