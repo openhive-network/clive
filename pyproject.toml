@@ -64,18 +64,20 @@ pytest = ">=8.3.5"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.dev.dependencies]
-mypy = ">=1.19.1"
-pre-commit = ">=4.5.1"
 pytest = ">=8.3.5"
 pytest-asyncio = ">=0.26.0"
 pytest-xdist = ">=3.6.1"
 pytest-timeout = ">=2.3.1"
-ruff = ">=0.14.10"
 textual-dev = ">=1.7.0"
-pydoclint = ">=0.8.3"
-types-toml = ">=0.10.8.20240310"
 test-tools = ">=0.0.1.dev1398"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
+
+[tool.poetry.group.static-analysis.dependencies]
+mypy = ">=1.19.1"
+pre-commit = ">=4.5.1"
+ruff = ">=0.14.10"
+pydoclint = ">=0.8.3"
+types-toml = ">=0.10.8.20240310"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = ">=1.6.1"
