@@ -68,7 +68,8 @@ clive
 │ ├── transaction-status
 │ ├── transfer-schedule
 │ ├── witnesses
-│ └── witness
+│ ├── witness
+│ └── orders
 ├── process
 │ ├── account-creation
 │ ├── change-recovery-account
@@ -78,6 +79,9 @@ clive
 │ ├── delegations
 │ │ ├── remove
 │ │ └── set
+│ ├── order
+│ │ ├── cancel
+│ │ └── create
 │ ├── power-down
 │ │ ├── cancel
 │ │ ├── restart

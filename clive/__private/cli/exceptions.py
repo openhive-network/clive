@@ -558,3 +558,44 @@ class CLIPrivateKeyInMemoValidationError(CLIPrettyError):
     def __init__(self, reason: str) -> None:
         message = f"Memo validation failed: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class OrderMutuallyExclusiveOptionsError(CLIPrettyError):
+    """Raise when both --min-to-receive and --price are specified."""
+
+    def __init__(self) -> None:
+        message = (
+            "Options '--min-to-receive' and '--price' are mutually exclusive. "
+            "Please specify only one of them."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderMissingPriceSpecificationError(CLIPrettyError):
+    """Raise when neither --min-to-receive nor --price is specified."""
+
+    def __init__(self) -> None:
+        message = (
+            "Either '--min-to-receive' or '--price' must be specified. "
+            "Use '--min-to-receive' to specify the exact amount, or '--price' to calculate it automatically."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderSameAssetError(CLIPrettyError):
+    """Raise when amount_to_sell and min_to_receive are the same asset type."""
+
+    def __init__(self) -> None:
+        message = (
+            "Cannot create an order where both assets are the same type. "
+            "If selling HIVE, you must receive HBD, and vice versa."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderInvalidExpirationError(CLIPrettyError):
+    """Raise when order expiration is invalid."""
+
+    def __init__(self, reason: str) -> None:
+        message = f"Invalid order expiration: {reason}"
+        super().__init__(message, errno.EINVAL)

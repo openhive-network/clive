@@ -310,3 +310,14 @@ async def show_account(
     from clive.__private.cli.commands.show.show_account import ShowAccount  # noqa: PLC0415
 
     await ShowAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
+
+
+@show.command(name="orders")
+async def show_orders(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """Show open limit orders for an account."""
+    from clive.__private.cli.commands.show.show_orders import ShowOrders  # noqa: PLC0415
+
+    await ShowOrders(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

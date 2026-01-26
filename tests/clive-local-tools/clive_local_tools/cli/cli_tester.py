@@ -687,3 +687,35 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
+
+    def show_orders(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "orders"], account_name=account_name)
+
+    def process_order_create(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        amount_to_sell: tt.Asset.HiveT | tt.Asset.HbdT,
+        min_to_receive: tt.Asset.HiveT | tt.Asset.HbdT | None = None,
+        price: Decimal | None = None,
+        order_id: int | None = None,
+        expiration: str | None = None,
+        fill_or_kill: bool | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "order", "create"], **extract_params(locals()))
+
+    def process_order_cancel(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        order_id: int,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "order", "cancel"], **extract_params(locals()))
