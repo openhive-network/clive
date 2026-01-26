@@ -16,11 +16,7 @@
     "dependencies"
   ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": [
-      "before 5am on monday",
-      "before 5am on wednesday"
-    ]
+    "enabled": true
   },
   "packageRules": [
     {
@@ -105,10 +101,5 @@
     "enabled": true
   },
   "prConcurrentLimit": 10,
-  "prHourlyLimit": 5,
-  "schedule": [
-    "before 5am on monday",
-    "before 5am on wednesday"
-  ],
-  "timezone": "Europe/Warsaw"
+  "prHourlyLimit": 5
 }
