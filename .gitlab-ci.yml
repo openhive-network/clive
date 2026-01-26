@@ -4,6 +4,7 @@ stages:
   - tests
   - deploy
   - build_and_deploy_docker
+  - maintenance
 
 workflow:
   rules:
@@ -775,3 +776,25 @@ build_and_push_clive_stable_testnet_image:
     STABLE_IMAGE_TAG: "testnet-${CI_COMMIT_REF_NAME}"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| MAINTENANCE |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+renovate:
+  stage: maintenance
+  image: renovate/renovate:42.92
+  variables:
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: https://gitlab.syncad.com/api/v4
+    RENOVATE_REPOSITORIES: hive/clive
+    RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
+    LOG_LEVEL: info
+  rules:
+    - if: '$RENOVATE_RUN == "true"'
+      when: always
+    - when: never
+  script:
+    - renovate --token="${RENOVATE_TOKEN}"
+  tags:
+    - public-runner-docker
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| MAINTENANCE |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
