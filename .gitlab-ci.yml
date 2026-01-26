@@ -150,6 +150,15 @@ default:
         pip list
       fi
 
+.update_deps_for_tests:
+  script:
+    - |
+      if [ "$TEST_WITH_LATEST_DEPENDENCIES" = "true" ]; then
+        echo -e "${TXT_BLUE}Running poetry update (excluding static-analysis group)...${TXT_CLEAR}"
+        poetry -C "${CI_PROJECT_DIR}" update --without static-analysis
+        pip list
+      fi
+
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
@@ -374,19 +383,12 @@ build_docs:
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   before_script:
     - !reference [.project_develop_configuration_template, before_script]
+    - !reference [.update_deps_for_tests, script]
     - pip list --editable
     - python3 -m pip uninstall clive -y
     - echo -e "${TXT_BLUE}We want to perform tests on Clive after installing it from a wheel...${TXT_CLEAR}"
     - stat dist/*.whl
-    - |
-      if [ "$TEST_WITH_LATEST_DEPENDENCIES" = "true" ]; then
-        echo -e "${TXT_BLUE}Running poetry update to test with latest dependency versions...${TXT_CLEAR}"
-        poetry -C "${CI_PROJECT_DIR}" update
-        echo -e "${TXT_BLUE}Installing wheel without dependencies (using updated deps from poetry)...${TXT_CLEAR}"
-        python3 -m pip install --no-deps dist/*.whl
-      else
-        python3 -m pip install dist/*.whl
-      fi
+    - python3 -m pip install --no-deps dist/*.whl
     - pip list --editable
     - pip list
     - clive --version  # assertion that Clive can be run as application
