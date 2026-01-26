@@ -15,7 +15,7 @@ workflow:
 # YAML anchors for pinned versions (used via *anchor_name syntax)
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "1f2247a35b7115a316cbb2283242ab4669928c69"
+.common_ci_configuration_version: &common_ci_configuration_version "cafb362f9b025cf91caebccd91e6275e2d0d6b60"
 # Note: When upgrading hived_version, prefer official release tags. If a required version
 # is not tagged, create a tag in hived repository with format: hived-for-clive-<version>
 # to avoid the image being removed from registry (non-tagged images may be garbage collected).
