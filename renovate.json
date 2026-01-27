@@ -110,5 +110,6 @@
     "enabled": true
   },
   "prConcurrentLimit": 10,
-  "prHourlyLimit": 5
+  "prHourlyLimit": 5,
+  "recreateWhen": "always"
 }
