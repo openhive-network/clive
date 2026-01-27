@@ -3,7 +3,6 @@
   "baseBranchPatterns": [
     "mzebrak/renovate"
   ],
-  "binarySource": "global",
   "commitMessagePrefix": "chore(deps):",
   "dependencyDashboard": true,
   "extends": [
