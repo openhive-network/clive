@@ -22,6 +22,21 @@ clive/__private/cli/commands/beekeeper/beekeeper_spawn.py
     DOC501: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `BeekeeperSpawn._validate_beekeepers_env_vars_not_set` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError'].
 --------------------
+clive/__private/cli/commands/process/process_escrow.py
+    DOC501: Method `ProcessEscrowTransfer._validate_amounts` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessEscrowTransfer._validate_amounts` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowZeroAmountError'].
+    DOC501: Method `ProcessEscrowTransfer._validate_deadlines` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessEscrowTransfer._validate_deadlines` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowInvalidDeadlineError'].
+    DOC201: Method `ProcessEscrowApprove._get_escrow_from_blockchain` does not have a return section in docstring
+    DOC501: Method `ProcessEscrowApprove._get_escrow_from_blockchain` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessEscrowApprove._get_escrow_from_blockchain` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowNotFoundError'].
+    DOC201: Method `ProcessEscrowDispute._get_escrow_from_blockchain` does not have a return section in docstring
+    DOC501: Method `ProcessEscrowDispute._get_escrow_from_blockchain` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessEscrowDispute._get_escrow_from_blockchain` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowNotFoundError'].
+    DOC201: Method `ProcessEscrowRelease._get_escrow_from_blockchain` does not have a return section in docstring
+    DOC501: Method `ProcessEscrowRelease._get_escrow_from_blockchain` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessEscrowRelease._get_escrow_from_blockchain` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowNotFoundError'].
+--------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC101: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [scheduled_transfer: ScheduledTransfer].
@@ -91,6 +106,12 @@ clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
+clive/__private/cli/exceptions.py
+    DOC101: Method `EscrowInvalidDeadlineError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `EscrowInvalidDeadlineError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
+    DOC101: Method `EscrowNotFoundError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `EscrowNotFoundError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [escrow_id: int, from_account: str].
+--------------------
 clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `generate_key_from_seed`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str | None, account_name_option: str | None, only_private_key: bool, only_public_key: bool, role: AuthorityLevel | None, role_option: AuthorityLevel | None].
@@ -108,6 +129,28 @@ clive/__private/cli/process/claim.py
 clive/__private/cli/process/custom_operations/custom_json.py
     DOC101: Function `process_custom_json`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_custom_json`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [authorize: list[str], authorize_by_active: list[str], autosign: bool | None, broadcast: bool | None, id_: str, json_: str, save_file: str | None, sign_with: str | None].
+--------------------
+clive/__private/cli/process/escrow.py
+    DOC101: Function `process_escrow_transfer`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_transfer`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str, autosign: bool | None, broadcast: bool | None, escrow_expiration: datetime, escrow_id: int | None, fee: str, from_account: str, hbd_amount: str, hive_amount: str, json_meta: str, ratification_deadline: datetime, save_file: str | None, sign_with: str | None, to: str].
+    DOC101: Function `process_escrow_approve_by_agent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_approve_by_agent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str | None].
+    DOC101: Function `process_escrow_approve_by_receiver`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_approve_by_receiver`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str].
+    DOC101: Function `process_escrow_reject_by_agent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_reject_by_agent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str | None].
+    DOC101: Function `process_escrow_reject_by_receiver`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_reject_by_receiver`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str].
+    DOC101: Function `process_escrow_dispute_by_sender`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_dispute_by_sender`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str | None].
+    DOC101: Function `process_escrow_dispute_by_receiver`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_dispute_by_receiver`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, save_file: str | None, sign_with: str | None, to: str].
+    DOC101: Function `process_escrow_release_by_sender`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_release_by_sender`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, hbd_amount: str, hive_amount: str, receiver: str, save_file: str | None, sign_with: str | None, to: str | None].
+    DOC101: Function `process_escrow_release_by_receiver`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_release_by_receiver`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str | None, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, hbd_amount: str, hive_amount: str, receiver: str, save_file: str | None, sign_with: str | None, to: str].
+    DOC101: Function `process_escrow_release_by_agent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_escrow_release_by_agent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [agent: str, autosign: bool | None, broadcast: bool | None, escrow_id: int, from_account: str, hbd_amount: str, hive_amount: str, receiver: str, save_file: str | None, sign_with: str | None, to: str | None].
 --------------------
 clive/__private/cli/process/hive_power/delegations.py
     DOC101: Function `process_delegations_set`: Docstring contains fewer arguments than in function signature.
@@ -234,6 +277,8 @@ clive/__private/cli/show/main.py
     DOC103: Function `show_transfer_schedule`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+    DOC101: Function `show_escrow`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `show_escrow`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
 clive/__private/cli/show/pending.py
     DOC101: Function `show_pending_withdrawals`: Docstring contains fewer arguments than in function signature.
@@ -283,6 +328,15 @@ clive/__private/core/commands/data_retrieval/chain_data.py
     DOC101: Method `ChainData.__colorize_participation_count`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `ChainData.__colorize_participation_count`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [participation: str].
     DOC201: Method `ChainData.__colorize_participation_count` does not have a return section in docstring
+--------------------
+clive/__private/core/commands/data_retrieval/escrow_data.py
+    DOC601: Class `EscrowInfo`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `EscrowInfo`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [agent: str, agent_approved: bool, disputed: bool, escrow_expiration: datetime, escrow_id: int, from_: str, hbd_balance: Asset.Hbd, hive_balance: Asset.Hive, id_: int, pending_fee: Asset.LiquidT, ratification_deadline: datetime, to: str, to_approved: bool]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `EscrowData.get_escrow_by_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `EscrowData.get_escrow_by_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [escrow_id: int].
+    DOC201: Method `EscrowData.get_escrow_by_id` does not have a return section in docstring
+    DOC201: Method `EscrowData.get_aligned_hbd_amounts` does not have a return section in docstring
+    DOC201: Method `EscrowData.get_aligned_hive_amounts` does not have a return section in docstring
 --------------------
 clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC101: Method `AccountScheduledTransferData._receiver_check`: Docstring contains fewer arguments than in function signature.
