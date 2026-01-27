@@ -13,6 +13,7 @@ renovate:
     RENOVATE_ENDPOINT: https://gitlab.syncad.com/api/v4
     RENOVATE_REPOSITORIES: hive/clive
     RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
+    RENOVATE_ONBOARDING: "false"
     LOG_LEVEL: info
   script:
     - renovate --token="${RENOVATE_TOKEN}"
