@@ -6,6 +6,7 @@
   "baseBranchPatterns": [
     "mzebrak/renovate"
   ],
+  "branchPrefix": "deps/",
   "commitMessagePrefix": "chore(deps):",
   "dependencyDashboard": true,
   "extends": [
