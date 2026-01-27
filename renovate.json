@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": [
+  "baseBranchPatterns": [
     "mzebrak/renovate"
   ],
   "commitMessagePrefix": "chore(deps):",
@@ -8,7 +8,6 @@
   "extends": [
     "config:recommended"
   ],
-  "gitLabAutomerge": true,
   "ignoreDeps": [
     "clive-local-tools"
   ],
@@ -57,17 +56,17 @@
       "description": "Group pytest ecosystem",
       "groupName": "pytest",
       "groupSlug": "pytest",
-      "matchPackagePatterns": [
-        "^pytest"
+      "matchPackageNames": [
+        "/^pytest/"
       ]
     },
     {
       "description": "Group documentation tools",
       "groupName": "documentation",
       "groupSlug": "docs",
-      "matchPackagePatterns": [
-        "^mkdocs",
-        "^markdown-pycon"
+      "matchPackageNames": [
+        "/^mkdocs/",
+        "/^markdown-pycon/"
       ]
     },
     {
@@ -83,8 +82,8 @@
       "description": "Typer ecosystem (CLI framework)",
       "groupName": "typer",
       "groupSlug": "typer",
-      "matchPackagePatterns": [
-        "^typer"
+      "matchPackageNames": [
+        "/^typer/"
       ]
     },
     {
@@ -98,6 +97,7 @@
   "pip_requirements": {
     "enabled": false
   },
+  "platformAutomerge": true,
   "poetry": {
     "enabled": true
   },
