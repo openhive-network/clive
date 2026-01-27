@@ -27,7 +27,8 @@
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
-      ]
+      ],
+      "rangeStrategy": "bump"
     },
     {
       "description": "Group all patch updates together",
