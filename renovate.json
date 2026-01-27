@@ -1,5 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "addLabels": [
+    "dependencies"
+  ],
   "baseBranchPatterns": [
     "mzebrak/renovate"
   ],
@@ -10,9 +13,6 @@
   ],
   "ignoreDeps": [
     "clive-local-tools"
-  ],
-  "labels": [
-    "dependencies"
   ],
   "lockFileMaintenance": {
     "enabled": true
