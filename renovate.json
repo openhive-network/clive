@@ -25,9 +25,7 @@
       "groupName": "hive-internal",
       "groupSlug": "hive-internal",
       "matchPackageNames": [
-        "hiveio-schemas",
-        "hiveio-wax",
-        "hiveio-beekeepy",
+        "/^hiveio-/",
         "test-tools"
       ]
     },
