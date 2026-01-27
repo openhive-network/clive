@@ -92,6 +92,13 @@
       "matchUpdateTypes": [
         "patch"
       ]
+    },
+    {
+      "automerge": false,
+      "description": "Never auto-merge Dockerfile changes (CI infrastructure)",
+      "matchManagers": [
+        "dockerfile"
+      ]
     }
   ],
   "pip_requirements": {
