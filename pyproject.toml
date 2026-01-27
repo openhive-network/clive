@@ -87,14 +87,43 @@ markdown-pycon = ">=1.0.1"
 
 [tool.poetry-dynamic-versioning]
 enable = true
+# PEP 440 compliant versioning: https://peps.python.org/pep-0440/
+#
+# Version examples (assuming last tag is 1.2.3):
+#   Tag (distance=0, clean):    1.2.3
+#   Tag (distance=0, dirty):    1.2.3+dirty
+#   develop (distance>0):       1.2.4.dev5+abc123
+#   develop (dirty):            1.2.4.dev5+abc123.dirty
+#   feature branch:             1.2.4.dev5+abc123.unstable
+#   feature branch (dirty):     1.2.4.dev5+abc123.unstable.dirty
+#   pre-release tag 1.2.3a1:    1.2.3a2.dev5+abc123 (revision incremented)
+#
+# Logic:
+#   - distance=0, clean   -> exact tag version (1.2.3)
+#   - distance=0, dirty   -> tag version + dirty marker (1.2.3+dirty)
+#   - distance>0, pre-rel -> increment revision (1.2.3a1 -> 1.2.3a2.devN+...)
+#   - distance>0, release -> bump patch (1.2.3 -> 1.2.4.devN+...)
+#   - feature branches    -> append 'unstable' to local part
+#   - dirty state         -> append 'dirty' to local part
+#
+# Stability detection:
+#   - stable: develop/master/main branches OR tag checkout (detached HEAD with distance=0)
+#   - unstable: feature branches OR detached HEAD not on tag (distance>0)
 format-jinja = """
-    {%- set dirty_postfix = '.dirty' if dirty else '' -%}
-    {%- if distance == 0 and not dirty -%}
-        {{ serialize_pep440(base, stage, revision) }}
+    {%- set is_on_tag = branch is none and distance == 0 -%}
+    {%- set is_stable = branch in ['develop', 'master', 'main'] or is_on_tag -%}
+    {%- set is_unstable = not is_stable -%}
+
+    {%- set local_parts = [commit] if distance > 0 else [] -%}
+    {%- set local_parts = local_parts + ['unstable'] if is_unstable and distance > 0 else local_parts -%}
+    {%- set local_parts = local_parts + ['dirty'] if dirty else local_parts -%}
+
+    {%- if distance == 0 -%}
+        {{ serialize_pep440(base, stage, revision, metadata=local_parts) }}
     {%- elif revision is not none -%}
-        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=[commit]) }}{{ dirty_postfix }}
+        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=local_parts) }}
     {%- else -%}
-        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=[commit]) }}{{ dirty_postfix }}
+        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=local_parts) }}
     {%- endif -%}
 """
 
