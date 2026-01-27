@@ -3,7 +3,7 @@
   "baseBranchPatterns": [
     "mzebrak/renovate"
   ],
-  "binarySource": "install",
+  "binarySource": "global",
   "commitMessagePrefix": "chore(deps):",
   "constraints": {
     "python": "3.12"
