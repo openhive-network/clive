@@ -687,3 +687,173 @@ class CLITester:
         return self.__invoke_command_with_options(
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
+
+    def show_escrow(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "escrow"], account_name=account_name)
+
+    def process_escrow_transfer(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str,
+        agent: str,
+        escrow_id: int | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        fee: tt.Asset.HiveT | tt.Asset.HbdT,
+        ratification_deadline: str,
+        escrow_expiration: str,
+        json_meta: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "transfer"], **extract_params(locals()))
+
+    def process_escrow_approve_by_agent(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        escrow_id: int,
+        to: str | None = None,
+        agent: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "approve-by-agent"], **extract_params(locals()))
+
+    def process_escrow_approve_by_receiver(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        agent: str,
+        escrow_id: int,
+        to: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "approve-by-receiver"], **extract_params(locals())
+        )
+
+    def process_escrow_reject_by_agent(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        escrow_id: int,
+        to: str | None = None,
+        agent: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "reject-by-agent"], **extract_params(locals()))
+
+    def process_escrow_reject_by_receiver(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        agent: str,
+        escrow_id: int,
+        to: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "reject-by-receiver"], **extract_params(locals())
+        )
+
+    def process_escrow_dispute_by_sender(  # noqa: PLR0913
+        self,
+        *,
+        escrow_id: int,
+        from_: str | None = None,
+        to: str | None = None,
+        agent: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "dispute-by-sender"], **extract_params(locals())
+        )
+
+    def process_escrow_dispute_by_receiver(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        agent: str,
+        escrow_id: int,
+        to: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "dispute-by-receiver"], **extract_params(locals())
+        )
+
+    def process_escrow_release_by_sender(  # noqa: PLR0913
+        self,
+        *,
+        receiver: str,
+        escrow_id: int,
+        from_: str | None = None,
+        to: str | None = None,
+        agent: str | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "release-by-sender"], **extract_params(locals())
+        )
+
+    def process_escrow_release_by_receiver(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        agent: str,
+        receiver: str,
+        escrow_id: int,
+        to: str | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "release-by-receiver"], **extract_params(locals())
+        )
+
+    def process_escrow_release_by_agent(  # noqa: PLR0913
+        self,
+        *,
+        from_: str,
+        receiver: str,
+        escrow_id: int,
+        to: str | None = None,
+        agent: str | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "release-by-agent"], **extract_params(locals()))

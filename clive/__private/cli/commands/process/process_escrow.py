@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.cli.exceptions import EscrowInvalidDeadlineError, EscrowZeroAmountError
+from clive.__private.cli.exceptions import EscrowInvalidDeadlineError, EscrowNotFoundError, EscrowZeroAmountError
 from clive.__private.models.schemas import (
     EscrowApproveOperation,
     EscrowDisputeOperation,
@@ -16,7 +16,7 @@ from clive.__private.models.schemas import (
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import ComposeTransaction
-    from clive.__private.core.commands.data_retrieval.escrow_data import EscrowData
+    from clive.__private.core.commands.data_retrieval.escrow_data import EscrowData, EscrowInfo
     from clive.__private.models.asset import Asset
 
 
@@ -94,17 +94,49 @@ class ProcessEscrowTransfer(OperationCommand):
 @dataclass(kw_only=True)
 class ProcessEscrowApprove(OperationCommand):
     from_account: str
-    to: str
-    agent: str
+    to: str | None
+    agent: str | None
     who: str
     escrow_id: int
     approve: bool = True
 
+    @property
+    def to_ensure(self) -> str:
+        assert self.to is not None, "to should be set at this point"
+        return self.to
+
+    @property
+    def agent_ensure(self) -> str:
+        assert self.agent is not None, "agent should be set at this point"
+        return self.agent
+
+    async def fetch_data(self) -> None:
+        await super().fetch_data()
+        await self._fill_escrow_data_if_needed()
+
+    async def _fill_escrow_data_if_needed(self) -> None:
+        """Fetch escrow data from blockchain if to or agent is not provided."""
+        if self.to is None or self.agent is None:
+            escrow = await self._get_escrow_from_blockchain()
+            if self.to is None:
+                self.to = escrow.to
+            if self.agent is None:
+                self.agent = escrow.agent
+
+    async def _get_escrow_from_blockchain(self) -> EscrowInfo:
+        """Fetch escrow from blockchain and return it."""
+        wrapper = await self.world.commands.retrieve_escrow_data(account_name=self.from_account)
+        escrow_data: EscrowData = wrapper.result_or_raise
+        escrow = escrow_data.get_escrow_by_id(self.escrow_id)
+        if escrow is None:
+            raise EscrowNotFoundError(self.from_account, self.escrow_id)
+        return escrow
+
     async def _create_operations(self) -> ComposeTransaction:
         yield EscrowApproveOperation(
             from_=self.from_account,
-            to=self.to,
-            agent=self.agent,
+            to=self.to_ensure,
+            agent=self.agent_ensure,
             who=self.who,
             escrow_id=self.escrow_id,
             approve=self.approve,
@@ -114,16 +146,48 @@ class ProcessEscrowApprove(OperationCommand):
 @dataclass(kw_only=True)
 class ProcessEscrowDispute(OperationCommand):
     from_account: str
-    to: str
-    agent: str
+    to: str | None
+    agent: str | None
     who: str
     escrow_id: int
+
+    @property
+    def to_ensure(self) -> str:
+        assert self.to is not None, "to should be set at this point"
+        return self.to
+
+    @property
+    def agent_ensure(self) -> str:
+        assert self.agent is not None, "agent should be set at this point"
+        return self.agent
+
+    async def fetch_data(self) -> None:
+        await super().fetch_data()
+        await self._fill_escrow_data_if_needed()
+
+    async def _fill_escrow_data_if_needed(self) -> None:
+        """Fetch escrow data from blockchain if to or agent is not provided."""
+        if self.to is None or self.agent is None:
+            escrow = await self._get_escrow_from_blockchain()
+            if self.to is None:
+                self.to = escrow.to
+            if self.agent is None:
+                self.agent = escrow.agent
+
+    async def _get_escrow_from_blockchain(self) -> EscrowInfo:
+        """Fetch escrow from blockchain and return it."""
+        wrapper = await self.world.commands.retrieve_escrow_data(account_name=self.from_account)
+        escrow_data: EscrowData = wrapper.result_or_raise
+        escrow = escrow_data.get_escrow_by_id(self.escrow_id)
+        if escrow is None:
+            raise EscrowNotFoundError(self.from_account, self.escrow_id)
+        return escrow
 
     async def _create_operations(self) -> ComposeTransaction:
         yield EscrowDisputeOperation(
             from_=self.from_account,
-            to=self.to,
-            agent=self.agent,
+            to=self.to_ensure,
+            agent=self.agent_ensure,
             who=self.who,
             escrow_id=self.escrow_id,
         )
@@ -132,19 +196,51 @@ class ProcessEscrowDispute(OperationCommand):
 @dataclass(kw_only=True)
 class ProcessEscrowRelease(OperationCommand):
     from_account: str
-    to: str
-    agent: str
+    to: str | None
+    agent: str | None
     who: str
     receiver: str
     escrow_id: int
     hbd_amount: Asset.Hbd
     hive_amount: Asset.Hive
 
+    @property
+    def to_ensure(self) -> str:
+        assert self.to is not None, "to should be set at this point"
+        return self.to
+
+    @property
+    def agent_ensure(self) -> str:
+        assert self.agent is not None, "agent should be set at this point"
+        return self.agent
+
+    async def fetch_data(self) -> None:
+        await super().fetch_data()
+        await self._fill_escrow_data_if_needed()
+
+    async def _fill_escrow_data_if_needed(self) -> None:
+        """Fetch escrow data from blockchain if to or agent is not provided."""
+        if self.to is None or self.agent is None:
+            escrow = await self._get_escrow_from_blockchain()
+            if self.to is None:
+                self.to = escrow.to
+            if self.agent is None:
+                self.agent = escrow.agent
+
+    async def _get_escrow_from_blockchain(self) -> EscrowInfo:
+        """Fetch escrow from blockchain and return it."""
+        wrapper = await self.world.commands.retrieve_escrow_data(account_name=self.from_account)
+        escrow_data: EscrowData = wrapper.result_or_raise
+        escrow = escrow_data.get_escrow_by_id(self.escrow_id)
+        if escrow is None:
+            raise EscrowNotFoundError(self.from_account, self.escrow_id)
+        return escrow
+
     async def _create_operations(self) -> ComposeTransaction:
         yield EscrowReleaseOperation(
             from_=self.from_account,
-            to=self.to,
-            agent=self.agent,
+            to=self.to_ensure,
+            agent=self.agent_ensure,
             who=self.who,
             receiver=self.receiver,
             escrow_id=self.escrow_id,

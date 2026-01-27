@@ -60,6 +60,13 @@ class EscrowInfo:
 class EscrowData:
     escrows: list[EscrowInfo]
 
+    def get_escrow_by_id(self, escrow_id: int) -> EscrowInfo | None:
+        """Find escrow by its ID."""
+        for escrow in self.escrows:
+            if escrow.escrow_id == escrow_id:
+                return escrow
+        return None
+
     def create_escrow_id(self, *, future_escrow_ids: list[int] | None = None) -> int:
         """
         Calculate the next available escrow id for EscrowTransferOperation.

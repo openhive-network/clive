@@ -574,3 +574,11 @@ class EscrowInvalidDeadlineError(CLIPrettyError):
     def __init__(self, reason: str) -> None:
         message = f"Invalid escrow deadline: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class EscrowNotFoundError(CLIPrettyError):
+    """Raise when escrow is not found on the blockchain."""
+
+    def __init__(self, from_account: str, escrow_id: int) -> None:
+        message = f"Escrow with ID {escrow_id} not found for account `{from_account}`."
+        super().__init__(message, errno.ENOENT)

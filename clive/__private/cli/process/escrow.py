@@ -47,13 +47,15 @@ async def process_escrow_transfer(  # noqa: PLR0913
         "0 HBD",
         "--hbd-amount",
         parser=hbd_asset,
-        help="Amount of HBD to escrow (e.g., 100.000 HBD). At least one of --hbd-amount or --hive-amount must be non-zero.",
+        help="Amount of HBD to escrow (e.g., 100.000 HBD). "
+        "At least one of --hbd-amount or --hive-amount must be non-zero.",
     ),
     hive_amount: str = typer.Option(
         "0 HIVE",
         "--hive-amount",
         parser=hive_asset,
-        help="Amount of HIVE to escrow (e.g., 100.000 HIVE). At least one of --hbd-amount or --hive-amount must be non-zero.",
+        help="Amount of HIVE to escrow (e.g., 100.000 HIVE). "
+        "At least one of --hbd-amount or --hive-amount must be non-zero.",
     ),
     fee: str = typer.Option(
         ...,
@@ -107,7 +109,9 @@ async def process_escrow_transfer(  # noqa: PLR0913
 @escrow.command(name="approve-by-agent")
 async def process_escrow_approve_by_agent(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
-    to: str = typer.Option(..., "--to", help="The escrow receiver account."),
+    to: str | None = typer.Option(
+        None, "--to", help="The escrow receiver account. If not given, fetched from blockchain."
+    ),
     agent: str = options.agent_account_name,
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to approve."),
     sign_with: str | None = options.sign_with,
@@ -136,7 +140,9 @@ async def process_escrow_approve_by_agent(  # noqa: PLR0913
 async def process_escrow_approve_by_receiver(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
     to: str = options.to_account_name,
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to approve."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
@@ -163,7 +169,9 @@ async def process_escrow_approve_by_receiver(  # noqa: PLR0913
 @escrow.command(name="reject-by-agent")
 async def process_escrow_reject_by_agent(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
-    to: str = typer.Option(..., "--to", help="The escrow receiver account."),
+    to: str | None = typer.Option(
+        None, "--to", help="The escrow receiver account. If not given, fetched from blockchain."
+    ),
     agent: str = options.agent_account_name,
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to reject."),
     sign_with: str | None = options.sign_with,
@@ -192,7 +200,9 @@ async def process_escrow_reject_by_agent(  # noqa: PLR0913
 async def process_escrow_reject_by_receiver(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
     to: str = options.to_account_name,
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to reject."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
@@ -219,8 +229,12 @@ async def process_escrow_reject_by_receiver(  # noqa: PLR0913
 @escrow.command(name="dispute-by-sender")
 async def process_escrow_dispute_by_sender(  # noqa: PLR0913
     from_account: str = options.from_account_name,
-    to: str = typer.Option(..., "--to", help="The escrow receiver account."),
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    to: str | None = typer.Option(
+        None, "--to", help="The escrow receiver account. If not given, fetched from blockchain."
+    ),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to dispute."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
@@ -247,7 +261,9 @@ async def process_escrow_dispute_by_sender(  # noqa: PLR0913
 async def process_escrow_dispute_by_receiver(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
     to: str = options.to_account_name,
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to dispute."),
     sign_with: str | None = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
@@ -273,8 +289,12 @@ async def process_escrow_dispute_by_receiver(  # noqa: PLR0913
 @escrow.command(name="release-by-sender")
 async def process_escrow_release_by_sender(  # noqa: PLR0913
     from_account: str = options.from_account_name,
-    to: str = typer.Option(..., "--to", help="The escrow receiver account."),
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    to: str | None = typer.Option(
+        None, "--to", help="The escrow receiver account. If not given, fetched from blockchain."
+    ),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     receiver: str = typer.Option(..., "--receiver", help="Who receives the funds (account name)."),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to release."),
     hbd_amount: str = typer.Option(
@@ -317,7 +337,9 @@ async def process_escrow_release_by_sender(  # noqa: PLR0913
 async def process_escrow_release_by_receiver(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
     to: str = options.to_account_name,
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account."),
+    agent: str | None = typer.Option(
+        None, "--agent", help="The escrow agent account. If not given, fetched from blockchain."
+    ),
     receiver: str = typer.Option(..., "--receiver", help="Who receives the funds (account name)."),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to release."),
     hbd_amount: str = typer.Option(
@@ -359,7 +381,9 @@ async def process_escrow_release_by_receiver(  # noqa: PLR0913
 @escrow.command(name="release-by-agent")
 async def process_escrow_release_by_agent(  # noqa: PLR0913
     from_account: str = options.from_account_name_required,
-    to: str = typer.Option(..., "--to", help="The escrow receiver account."),
+    to: str | None = typer.Option(
+        None, "--to", help="The escrow receiver account. If not given, fetched from blockchain."
+    ),
     agent: str = options.agent_account_name,
     receiver: str = typer.Option(..., "--receiver", help="Who receives the funds (account name)."),
     escrow_id: int = typer.Option(..., "--escrow-id", help="ID of the escrow to release."),
