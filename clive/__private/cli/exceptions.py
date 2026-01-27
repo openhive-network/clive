@@ -558,3 +558,19 @@ class CLIPrivateKeyInMemoValidationError(CLIPrettyError):
     def __init__(self, reason: str) -> None:
         message = f"Memo validation failed: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class EscrowZeroAmountError(CLIPrettyError):
+    """Raise when escrow transfer has zero amounts for both HBD and HIVE."""
+
+    def __init__(self) -> None:
+        message = "Escrow transfer must have at least one non-zero amount (HBD or HIVE)."
+        super().__init__(message, errno.EINVAL)
+
+
+class EscrowInvalidDeadlineError(CLIPrettyError):
+    """Raise when escrow deadlines are invalid."""
+
+    def __init__(self, reason: str) -> None:
+        message = f"Invalid escrow deadline: {reason}"
+        super().__init__(message, errno.EINVAL)
