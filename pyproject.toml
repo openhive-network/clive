@@ -87,6 +87,7 @@ markdown-pycon = ">=1.0.1"
 
 [tool.poetry-dynamic-versioning]
 enable = true
+pattern = "default-unprefixed"
 # PEP 440 compliant versioning: https://peps.python.org/pep-0440/
 #
 # Version examples (assuming last tag is 1.2.3):
