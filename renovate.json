@@ -98,6 +98,9 @@
       "description": "Never auto-merge Dockerfile changes (CI infrastructure)",
       "matchManagers": [
         "dockerfile"
+      ],
+      "prBodyNotes": [
+        "\u26a0\ufe0f **This updates CI infrastructure.** Trigger manual image build jobs in this MR before merging to confirm it's working."
       ]
     }
   ],
