@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "baseBranches": [
-    "develop"
+    "mzebrak/renovate"
   ],
   "commitMessagePrefix": "chore(deps):",
   "dependencyDashboard": true,
