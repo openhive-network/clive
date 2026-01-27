@@ -15,5 +15,12 @@ renovate:
     RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
     RENOVATE_ONBOARDING: "false"
     LOG_LEVEL: info
+    LOG_FILE: renovate.log
+    LOG_FILE_LEVEL: debug
   script:
     - renovate --token="${RENOVATE_TOKEN}"
+  artifacts:
+    paths:
+      - renovate.log
+    expire_in: 1 week
+    when: always
