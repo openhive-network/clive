@@ -15,7 +15,10 @@ renovate:
     RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
     RENOVATE_ONBOARDING: "false"
     RENOVATE_REQUIRE_CONFIG: "optional"
+    RENOVATE_CONFIG_FILE: "renovate.json"
     RENOVATE_BASE_BRANCHES: '["mzebrak/renovate"]'
+    RENOVATE_USE_BASE_BRANCH_CONFIG: "merge"
+    RENOVATE_PRUNE_STALE_BRANCHES: "false"
     LOG_LEVEL: info
     LOG_FILE: renovate.log
     LOG_FILE_LEVEL: debug
