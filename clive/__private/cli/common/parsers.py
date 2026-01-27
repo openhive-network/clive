@@ -9,7 +9,7 @@ from clive.__private.cli.exceptions import CLIPublicKeyInvalidFormatError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from datetime import timedelta
+    from datetime import datetime, timedelta
     from decimal import Decimal
 
     from clive.__private.core.keys.keys import PublicKey
@@ -143,3 +143,45 @@ def public_key(raw: str) -> PublicKey:
     except PublicKeyInvalidFormatError as error:
         raise CLIPublicKeyInvalidFormatError(raw) from error
     return parsed
+
+
+def hive_datetime(raw: str) -> datetime:
+    """
+    Parse a datetime string in Hive format.
+
+    Accepts formats (missing time parts default to end of day 23:59:59):
+    - YYYY-MM-DD (e.g., 2024-01-15 -> 2024-01-15T23:59:59)
+    - YYYY-MM-DDTHH (e.g., 2024-01-15T14 -> 2024-01-15T14:59:59)
+    - YYYY-MM-DDTHH:MM (e.g., 2024-01-15T14:30 -> 2024-01-15T14:30:59)
+    - YYYY-MM-DDTHH:MM:SS (e.g., 2024-01-15T14:30:00)
+
+    Args:
+        raw: The raw datetime string.
+
+    Raises:
+        typer.BadParameter: If the datetime format is invalid.
+
+    Returns:
+        The parsed datetime object in UTC.
+    """
+    from datetime import UTC  # noqa: PLC0415
+    from datetime import datetime as dt  # noqa: PLC0415
+
+    formats_with_defaults = [
+        ("%Y-%m-%dT%H:%M:%S", {}),
+        ("%Y-%m-%dT%H:%M", {"second": 59}),
+        ("%Y-%m-%dT%H", {"minute": 59, "second": 59}),
+        ("%Y-%m-%d", {"hour": 23, "minute": 59, "second": 59}),
+    ]
+
+    for fmt, defaults in formats_with_defaults:
+        try:
+            parsed = dt.strptime(raw, fmt)  # noqa: DTZ007
+            return parsed.replace(tzinfo=UTC, **defaults)
+        except ValueError:
+            continue
+
+    raise typer.BadParameter(
+        f"Invalid datetime format: '{raw}'. "
+        "Expected format: YYYY-MM-DD[THH[:MM[:SS]]] (e.g., 2024-01-15 or 2024-01-15T12:00:00)"
+    ) from None
