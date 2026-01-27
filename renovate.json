@@ -109,7 +109,7 @@
   "poetry": {
     "enabled": true
   },
-  "prConcurrentLimit": 10,
-  "prHourlyLimit": 5,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "recreateWhen": "always"
 }
