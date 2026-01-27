@@ -14,6 +14,8 @@ renovate:
     RENOVATE_REPOSITORIES: hive/clive
     RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
     RENOVATE_ONBOARDING: "false"
+    RENOVATE_REQUIRE_CONFIG: "optional"
+    RENOVATE_BASE_BRANCHES: '["mzebrak/renovate"]'
     LOG_LEVEL: info
     LOG_FILE: renovate.log
     LOG_FILE_LEVEL: debug
