@@ -1,0 +1,18 @@
+stages:
+  - maintenance
+
+default:
+  tags:
+    - public-runner-docker
+
+renovate:
+  stage: maintenance
+  image: renovate/renovate:42.92
+  variables:
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: https://gitlab.syncad.com/api/v4
+    RENOVATE_REPOSITORIES: hive/clive
+    RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@syncad.com>"
+    LOG_LEVEL: info
+  script:
+    - renovate --token="${RENOVATE_TOKEN}"
