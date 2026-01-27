@@ -695,7 +695,7 @@ requests = "2.32.3"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple"
 reference = "gitlab-beekeepy"
 
 [[package]]
@@ -2869,4 +2869,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "a127934be0ed2e22e81905b83b368be989c9bd044403cc701628aa6f20d57d9d"
+content-hash = "3d3de88cd1a0eabe200c662e2efd92a4851fcae6f5166a1d57ab23225f895098"
