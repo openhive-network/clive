@@ -5,9 +5,6 @@
   ],
   "binarySource": "global",
   "commitMessagePrefix": "chore(deps):",
-  "constraints": {
-    "python": "3.12"
-  },
   "dependencyDashboard": true,
   "extends": [
     "config:recommended"
