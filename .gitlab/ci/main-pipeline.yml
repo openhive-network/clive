@@ -94,9 +94,9 @@ variables:
   # Set to "true" to run `poetry update` before tests (tests with latest dependency versions).
   # Useful for detecting compatibility issues with newer dependency versions early.
   # Set to "false" to use pinned versions from poetry.lock for stable, reproducible builds.
-  TEST_WITH_LATEST_DEPENDENCIES: "true"
+  TEST_WITH_LATEST_DEPENDENCIES: "false"
   # Same as above but for static code analysis jobs (ruff, mypy, pre-commit).
-  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "true"
+  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
 
 default:
   tags:
