@@ -53,9 +53,9 @@ poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.dependencies]
-hiveio-schemas = { source = "gitlab-schemas" }
-hiveio-wax = { source = "gitlab-wax" }
-hiveio-beekeepy = { source = "gitlab-beekeepy" }
+hiveio-schemas = { version = ">=1.28.1.dev9", source = "gitlab-schemas" }
+hiveio-wax = { version = ">=1.28.4rc1.dev91", source = "gitlab-wax" }
+hiveio-beekeepy = { version = ">=1.28.4.dev16", source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 test-tools = { version = ">=0.0.1.dev1398", source = "gitlab-test-tools" }
