@@ -29,7 +29,7 @@
         "/^hiveio-/",
         "test-tools"
       ],
-      "rangeStrategy": "bump"
+      "rangeStrategy": "replace"
     },
     {
       "description": "Group all patch updates together",
