@@ -25,6 +25,9 @@
       "description": "Group internal Hive ecosystem packages (ignore feature branch builds)",
       "groupName": "hive-internal",
       "groupSlug": "hive-internal",
+      "matchDatasources": [
+        "pypi"
+      ],
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
