@@ -18,7 +18,6 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "logLevel": "debug",
   "packageRules": [
     {
       "allowedVersions": "!/\\.unstable$/",
