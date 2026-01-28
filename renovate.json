@@ -12,6 +12,12 @@
   "extends": [
     "config:recommended"
   ],
+  "hostRules": [
+    {
+      "matchHost": "gitlab.syncad.com",
+      "token": "${GITLAB_TOKEN}"
+    }
+  ],
   "ignoreDeps": [
     "clive-local-tools"
   ],
@@ -29,7 +35,13 @@
         "/^hiveio-/",
         "test-tools"
       ],
-      "rangeStrategy": "replace"
+      "rangeStrategy": "replace",
+      "registryUrls": [
+        "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple",
+        "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple",
+        "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple",
+        "https://gitlab.syncad.com/api/v4/projects/300/packages/pypi/simple"
+      ]
     },
     {
       "description": "Group all patch updates together",
