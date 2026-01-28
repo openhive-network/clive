@@ -25,21 +25,11 @@
       "description": "Group internal Hive ecosystem packages (ignore feature branch builds)",
       "groupName": "hive-internal",
       "groupSlug": "hive-internal",
-      "matchDatasources": [
-        "pypi"
-      ],
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
       ],
-      "rangeStrategy": "replace",
-      "registryUrls": [
-        "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple",
-        "https://gitlab.syncad.com/api/v4/projects/300/packages/pypi/simple",
-        "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple",
-        "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple",
-        "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
-      ]
+      "rangeStrategy": "replace"
     },
     {
       "description": "Group all patch updates together",
