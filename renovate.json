@@ -29,8 +29,7 @@
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
-      ],
-      "rangeStrategy": "replace"
+      ]
     },
     {
       "description": "Group all patch updates together",
