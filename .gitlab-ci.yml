@@ -319,6 +319,7 @@ build_wheel:
   extends: .build_wheel_template
   stage: build
   image: ${CI_BASE_IMAGE_312}  # We deliver Clive in a container with Python 3.12
+  dependencies: []  # Don't download artifacts from previous stages (prevents modified poetry.lock from pre_commit_checks)
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
     - ls -al
