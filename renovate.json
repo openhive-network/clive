@@ -24,6 +24,7 @@
       "description": "Group internal Hive ecosystem packages (ignore feature branch builds)",
       "groupName": "hive-internal",
       "groupSlug": "hive-internal",
+      "ignoreUnstable": false,
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
