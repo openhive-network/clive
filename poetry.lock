@@ -690,7 +690,7 @@ hiveio-beekeepy = ">=1.28.4.dev24"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -714,7 +714,7 @@ requests = "2.32.3"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -733,7 +733,7 @@ msgspec = "0.20.0"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -758,7 +758,7 @@ python-dateutil = "2.8.2"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -784,7 +784,7 @@ typing-extensions = ">=4.0.0"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -2829,4 +2829,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "73c94fd4ed4c1ebfe5fab1cee9c8c9b1a7b13bcd33b4484bdf88ec7c2f1ab8a9"
+content-hash = "6472b00697bc492661e8971513a70a336d1d1eb648b056c8c0462d4af5535682"

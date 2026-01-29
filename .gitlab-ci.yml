@@ -73,16 +73,9 @@ variables:
   # ---------------------------------------------------------------------------
   # git:
   GIT_STRATEGY: clone
-  # first party libraries gitlab indexes:
-  # - 198 -> hive (generated APIs)
-  # - 362 -> schemas
-  # - 419 -> wax
-  # - 434 -> beekeepy
+  # first party libraries gitlab index (group-level registry aggregating all hive packages):
   FIRST_PARTY_EXTRA_INDEX_ARGS: |
-    --extra-index https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple
-    --extra-index https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple
-    --extra-index https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
-    --extra-index https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple
+    --extra-index https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple
   # static code analysis:
   PACKAGES_TO_CHECK: "clive/ tests/"
   # tests:
