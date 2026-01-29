@@ -15,7 +15,7 @@ workflow:
 # YAML anchors for pinned versions (used via *anchor_name syntax)
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "cafb362f9b025cf91caebccd91e6275e2d0d6b60"
+.common_ci_configuration_version: &common_ci_configuration_version "07fdf2c2bf8155477e7e1229e0bcc77852c9aa84"
 # Hived image configuration:
 # - hived_branch: Branch to search for images (used for dynamic lookup)
 # - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
@@ -140,24 +140,6 @@ default:
     PAGES_ABSOLUTE_CONTENT_PATH: "${PAGES_BASE_DIR}/${PAGES_CURRENT_CONTENT_PATH}"  # requires PAGES_CURRENT_CONTENT_PATH variable which is set dynamically later
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-.update_deps_for_static_analysis:
-  script:
-    - |
-      if [ "$STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES" = "true" ]; then
-        echo -e "${TXT_BLUE}Running poetry update for static-analysis group...${TXT_CLEAR}"
-        poetry -C "${CI_PROJECT_DIR}" update --only static-analysis
-        pip list
-      fi
-
-.update_deps_for_tests:
-  script:
-    - |
-      if [ "$TEST_WITH_LATEST_DEPENDENCIES" = "true" ]; then
-        echo -e "${TXT_BLUE}Running poetry update (excluding static-analysis group)...${TXT_CLEAR}"
-        poetry -C "${CI_PROJECT_DIR}" update --without static-analysis
-        pip list
-      fi
 
 pre_commit_checks:
   stage: static_code_analysis
