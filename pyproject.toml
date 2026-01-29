@@ -21,9 +21,7 @@ dependencies = [
     'humanize (>=4.12.2)',
     'toml (>=0.10.2)',
     "pathvalidate (>=3.3.1)",
-    'hiveio-schemas (>=1.28.1.dev9)',
-    'hiveio-beekeepy (>=1.28.4.dev16)',
-    'hiveio-wax (>=1.28.4rc1.dev91)',
+    'hiveio-wax (==1.27.12rc3)',
 ]
 
 [project.urls]
@@ -50,7 +48,6 @@ poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
-test-tools = { version = ">=0.0.1.dev1398", source = "gitlab-hive" }
 pytest = ">=8.3.5"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
@@ -60,7 +57,6 @@ pytest-asyncio = ">=0.26.0"
 pytest-xdist = ">=3.6.1"
 pytest-timeout = ">=2.3.1"
 textual-dev = ">=1.7.0"
-test-tools = { version = ">=0.0.1.dev1398", source = "gitlab-hive" }
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
