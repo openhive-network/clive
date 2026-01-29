@@ -3270,4 +3270,4 @@ reference = "gitlab-hive"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "f5aed9a72c7aeae9b7ad549d95e5892e545f40f1edf03f6b854d4b5dd63889d6"
+content-hash = "247318001343c6fed13b01073bf9d2fbb998981b0fa79942e4989b3f3e33bb4c"

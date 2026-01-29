@@ -21,7 +21,7 @@ dependencies = [
     'humanize (>=4.12.2)',
     'toml (>=0.10.2)',
     "pathvalidate (>=3.3.1)",
-    'hiveio-wax (==1.27.12rc3)',
+    'hiveio-wax (>=1.27.12rc3)',
 ]
 
 [project.urls]
