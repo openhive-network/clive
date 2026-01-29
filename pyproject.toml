@@ -88,44 +88,39 @@ markdown-pycon = ">=1.0.1"
 [tool.poetry-dynamic-versioning]
 enable = true
 pattern = "default-unprefixed"
-# PEP 440 compliant versioning: https://peps.python.org/pep-0440/
+# PEP 440 compliant versioning with .post{timestamp}
+# https://peps.python.org/pep-0440/
 #
-# Version examples (assuming last tag is 1.2.3):
-#   Tag (distance=0, clean):    1.2.3
-#   Tag (distance=0, dirty):    1.2.3+dirty
-#   develop (distance>0):       1.2.4.dev5+abc123
-#   develop (dirty):            1.2.4.dev5+abc123.dirty
-#   feature branch:             1.2.4.dev5+abc123.unstable
-#   feature branch (dirty):     1.2.4.dev5+abc123.unstable.dirty
-#   pre-release tag 1.2.3a1:    1.2.3a2.dev5+abc123 (revision incremented)
+# Version examples (assuming last tag is 1.2.3rc1):
+#   Tag (distance=0, clean):       1.2.3rc1
+#   Tag (distance=0, dirty):       1.2.3rc1+dirty
+#   develop (distance>0):          1.2.3rc1.post20260129082556
+#   develop (dirty):               1.2.3rc1.post20260129082556+dirty
+#   feature branch (distance>0):   1.2.3rc1.post20260129082556+unstable
+#   feature branch (dirty):        1.2.3rc1.post20260129082556+unstable.dirty
+#   feature branch (distance=0):   1.2.3rc1  (same as tag)
 #
 # Logic:
-#   - distance=0, clean   -> exact tag version (1.2.3)
-#   - distance=0, dirty   -> tag version + dirty marker (1.2.3+dirty)
-#   - distance>0, pre-rel -> increment revision (1.2.3a1 -> 1.2.3a2.devN+...)
-#   - distance>0, release -> bump patch (1.2.3 -> 1.2.4.devN+...)
-#   - feature branches    -> append 'unstable' to local part
-#   - dirty state         -> append 'dirty' to local part
+#   - distance=0         -> exact tag version
+#   - distance>0         -> tag + .post{timestamp}
+#   - distance>0, unstable -> + 'unstable' marker
+#   - dirty              -> + 'dirty' marker
 #
 # Stability detection:
 #   - stable: develop/master/main branches OR tag checkout (detached HEAD with distance=0)
-#   - unstable: feature branches OR detached HEAD not on tag (distance>0)
+#   - unstable: feature branches OR detached HEAD with distance>0
+#   - CI: GitLab checks out as detached HEAD, so branch is None;
+#     use CI_COMMIT_REF_NAME env var as fallback for branch detection
 format-jinja = """
     {%- set is_on_tag = branch is none and distance == 0 -%}
-    {%- set is_stable = branch in ['develop', 'master', 'main'] or is_on_tag -%}
-    {%- set is_unstable = not is_stable -%}
+    {%- set effective_branch = branch if branch else env.get('CI_COMMIT_REF_NAME') -%}
+    {%- set is_stable = effective_branch in ['develop', 'master', 'main'] or is_on_tag -%}
+    {%- set post = timestamp|int if distance > 0 else none -%}
 
-    {%- set local_parts = [commit] if distance > 0 else [] -%}
-    {%- set local_parts = local_parts + ['unstable'] if is_unstable and distance > 0 else local_parts -%}
+    {%- set local_parts = ['unstable'] if not is_stable and distance > 0 else [] -%}
     {%- set local_parts = local_parts + ['dirty'] if dirty else local_parts -%}
 
-    {%- if distance == 0 -%}
-        {{ serialize_pep440(base, stage, revision, metadata=local_parts) }}
-    {%- elif revision is not none -%}
-        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=local_parts) }}
-    {%- else -%}
-        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=local_parts) }}
-    {%- endif -%}
+    {{ serialize_pep440(base, stage, revision, post=post, metadata=local_parts) }}
 """
 
 [tool.poetry-dynamic-versioning.substitution]
