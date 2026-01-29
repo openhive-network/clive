@@ -695,7 +695,7 @@ requests = "2.32.3"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -714,7 +714,7 @@ hiveio-beekeepy = ">=1.28.4.dev7"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -733,7 +733,7 @@ hiveio-beekeepy = ">=1.28.4.dev7"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -752,7 +752,7 @@ hiveio-beekeepy = ">=1.28.4.dev7"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -771,7 +771,7 @@ msgspec = "0.20.0"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -799,7 +799,7 @@ typing-extensions = ">=4.0.0"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 reference = "gitlab-hive"
 
 [[package]]
@@ -2489,8 +2489,8 @@ python-dateutil = "2.8.2"
 
 [package.source]
 type = "legacy"
-url = "https://gitlab.syncad.com/api/v4/projects/300/packages/pypi/simple"
-reference = "gitlab-test-tools"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
+reference = "gitlab-hive"
 
 [[package]]
 name = "textual"
@@ -2869,4 +2869,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "8c0b9d5a46c0e7de639845a84661e7feb7111bbcb460c463f2db6dc0e80e8291"
+content-hash = "6121db1c312c27c24ce6b70af670f8a695c2226ed2695b0083a78c061a7f0619"
