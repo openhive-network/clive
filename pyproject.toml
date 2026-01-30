@@ -22,8 +22,8 @@ dependencies = [
     'toml (>=0.10.2)',
     "pathvalidate (>=3.3.1)",
     'hiveio-schemas (>=1.28.1.dev14)',
-    'hiveio-beekeepy (>=1.28.4.dev24)',
-    'hiveio-wax (>=1.28.4rc1.dev144)',
+    'hiveio-beekeepy (>=1.0.1.dev27)',
+    'hiveio-wax (>=1.28.4rc1.dev150)',
 ]
 
 [project.urls]
@@ -44,7 +44,7 @@ source = [
     { name = "gitlab-test-tools", url = "https://gitlab.syncad.com/api/v4/projects/300/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
-    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple", priority = "supplemental" },
 ]
 version = "0.0.0"
 
@@ -59,7 +59,7 @@ hiveio-wax = { source = "gitlab-wax" }
 hiveio-beekeepy = { source = "gitlab-beekeepy" }
 
 [tool.poetry.group.embeddedtestnet.dependencies]
-hiveio-test-tools = ">=0.0.1.dev1410"
+hiveio-test-tools = ">=0.0.1.dev1412"
 pytest = ">=8.3.5"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
@@ -69,7 +69,7 @@ pytest-asyncio = ">=0.26.0"
 pytest-xdist = ">=3.6.1"
 pytest-timeout = ">=2.3.1"
 textual-dev = ">=1.7.0"
-hiveio-test-tools = ">=0.0.1.dev1410"
+hiveio-test-tools = ">=0.0.1.dev1412"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
