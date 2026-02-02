@@ -90,7 +90,7 @@ SHELL ["/bin/bash", "-c"]
 # - 362 -> schemas
 # - 392 -> clive
 # - 419 -> wax
-# - 434 -> beekeepy
+# - 558 -> beekeepy (beekeeper)
 RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     source /python_venv/bin/activate && \
     pip install hiveio_clive=="${CLIVE_VERSION}" \
@@ -98,7 +98,7 @@ RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
-    --extra-index-url https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple && \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple && \
     # Remove the cache so it is not included in the image to save space, but grant group write access so the clive user can generate it itself.
     find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} + && \
     chmod -R g+w "${PYTHON_VENV_PATH}"
