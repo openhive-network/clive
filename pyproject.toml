@@ -111,13 +111,18 @@ pattern = "default-unprefixed"
 #   - `poetry update` / `pip install pkg>=1.0` -> selects stable only (ignores .dev0)
 #   - `pip install --pre` / `allow-prereleases = true` -> includes feature branches
 format-jinja = """
-    {%- set is_on_tag = branch is none and distance == 0 -%}
-    {%- set effective_branch = branch if branch else env.get('CI_COMMIT_REF_NAME') -%}
-    {%- set is_stable = effective_branch in ['develop', 'master', 'main'] or is_on_tag -%}
+    {%- set STABLE_BRANCHES = ['develop', 'master', 'main'] -%}
 
-    {%- set post = timestamp|int if distance > 0 else none -%}
-    {%- set dev = 0 if not is_stable and distance > 0 else none -%}
-    {%- set local_parts = ['unstable'] if not is_stable and distance > 0 else [] -%}
+    {%- set effective_branch = branch or env.get('CI_COMMIT_REF_NAME') -%}
+    {%- set is_on_tag = distance == 0 -%}
+    {%- set is_after_tag = distance > 0 -%}
+    {%- set is_tag_checkout = branch is none and is_on_tag -%}
+    {%- set is_stable = effective_branch in STABLE_BRANCHES or is_tag_checkout -%}
+    {%- set is_feature_branch = is_after_tag and not is_stable -%}
+
+    {%- set post = timestamp|int if is_after_tag else none -%}
+    {%- set dev = 0 if is_feature_branch else none -%}
+    {%- set local_parts = ['unstable'] if is_feature_branch else [] -%}
     {%- set local_parts = local_parts + ['dirty'] if dirty else local_parts -%}
 
     {{ serialize_pep440(base, stage, revision, post=post, dev=dev, metadata=local_parts) }}
