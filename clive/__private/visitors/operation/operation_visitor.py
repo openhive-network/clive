@@ -108,7 +108,7 @@ class OperationVisitor:
     def visit_limit_order_cancel_operation(self, operation: schemas.LimitOrderCancelOperation) -> None:
         self._default_visit(operation)
 
-    def visit_limit_order_create_2_operation(self, operation: schemas.LimitOrderCreate2Operation) -> None:
+    def visit_limit_order_create2_operation(self, operation: schemas.LimitOrderCreate2Operation) -> None:
         self._default_visit(operation)
 
     def visit_limit_order_create_operation(self, operation: schemas.LimitOrderCreateOperation) -> None:

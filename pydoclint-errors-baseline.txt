@@ -49,6 +49,17 @@ clive/__private/cli/commands/process/process_escrow.py
     DOC501: Method `ProcessEscrowRelease._resolve_receiver` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ProcessEscrowRelease._resolve_receiver` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowAgentReceiverRequiredError', 'ValueError'].
 --------------------
+clive/__private/cli/commands/process/process_order.py
+    DOC501: Method `ProcessOrderCreate._validate_price_specification` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessOrderCreate._validate_price_specification` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderMissingPriceSpecificationError', 'OrderMutuallyExclusiveOptionsError'].
+    DOC101: Method `ProcessOrderCreate._validate_expiration_against_head_block_time`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ProcessOrderCreate._validate_expiration_against_head_block_time`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [head_block_time: datetime].
+    DOC501: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderInvalidExpirationError'].
+    DOC501: Method `ProcessOrderCreate._validate_assets` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessOrderCreate._validate_assets` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderSameAssetError'].
+    DOC201: Method `ProcessOrderCreate._get_min_to_receive_from_price` does not have a return section in docstring
+--------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC101: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [scheduled_transfer: ScheduledTransfer].
@@ -59,7 +70,7 @@ clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC501: Method `_ProcessTransferScheduleCommon.validate_existence` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `_ProcessTransferScheduleCommon.validate_existence` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProcessTransferScheduleAlreadyExistsError', 'ProcessTransferScheduleDoesNotExistsError'].
     DOC501: Method `_ProcessTransferScheduleCommon.validate_pair_id_should_be_given` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `_ProcessTransferScheduleCommon.validate_pair_id_should_be_given` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProcessTransferScheduleMultipleTransfersError', 'ProcessTransferScheduleNonZeroPairIdError'].
+    DOC503: Method `_ProcessTransferScheduleCommon.validate_pair_id_should_be_given` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProcessTransferScheduleNullPairIdError'].
     DOC501: Method `_ProcessTransferScheduleCreateModifyCommon.validate_amount_not_a_removal_value` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `_ProcessTransferScheduleCreateModifyCommon.validate_amount_not_a_removal_value` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ProcessTransferScheduleInvalidAmountError'].
 --------------------
@@ -77,6 +88,11 @@ clive/__private/cli/common/parsers.py
     DOC201: Function `_parse_asset` does not have a return section in docstring
     DOC501: Function `_parse_asset` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `_parse_asset` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.BadParameter'].
+    DOC101: Function `price`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `price`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [raw: str].
+    DOC201: Function `price` does not have a return section in docstring
+    DOC501: Function `price` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `price` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.BadParameter'].
 --------------------
 clive/__private/cli/configure/chain_id.py
     DOC101: Function `set_chain_id`: Docstring contains fewer arguments than in function signature.
@@ -118,10 +134,6 @@ clive/__private/cli/configure/working_account.py
     DOC101: Function `switch_working_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `switch_working_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
-clive/__private/cli/crypto/main.py
-    DOC101: Function `decrypt_memo`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `decrypt_memo`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encoded_text: str | None, encoded_text_option: str | None].
---------------------
 clive/__private/cli/exceptions.py
     DOC101: Method `EscrowInvalidDeadlineError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `EscrowInvalidDeadlineError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
@@ -135,6 +147,8 @@ clive/__private/cli/exceptions.py
     DOC103: Method `EscrowAlreadyApprovedError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [role: str].
     DOC101: Method `EscrowReleaseNotAllowedError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `EscrowReleaseNotAllowedError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
+    DOC101: Method `OrderInvalidExpirationError.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OrderInvalidExpirationError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
 --------------------
 clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.
@@ -149,8 +163,6 @@ clive/__private/cli/main.py
 clive/__private/cli/process/claim.py
     DOC101: Function `process_claim_new_account_token`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_claim_new_account_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool | None, creator: str, fee: str | None, save_file: str | None, sign_with: str | None].
-    DOC101: Function `process_claim_rewards`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `process_claim_rewards`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None].
 --------------------
 clive/__private/cli/process/convert.py
     DOC101: Function `process_convert`: Docstring contains fewer arguments than in function signature.
@@ -209,6 +221,12 @@ clive/__private/cli/process/main.py
     DOC103: Function `process_witness_update`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_creation_fee: str | None, account_subsidy_budget: int | None, account_subsidy_decay: int | None, autosign: bool | None, broadcast: bool | None, hbd_exchange_rate: str | None, hbd_interest_rate: Decimal | None, maximum_block_size: int | None, new_signing_key: str | None, save_file: str | None, sign_with: str | None, url: str | None, use_witness_key: bool, witness_name: str].
     DOC101: Function `process_change_recovery_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_change_recovery_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool, new_recovery_account: str, save_file: str | None, sign_with: str | None].
+--------------------
+clive/__private/cli/process/order.py
+    DOC101: Function `process_order_create`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_order_create`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount_to_sell: str, autosign: bool | None, broadcast: bool | None, expiration: datetime | None, fill_or_kill: bool, from_account: str, min_to_receive: str | None, order_id: int | None, price_value: str | None, save_file: str | None, sign_with: str | None].
+    DOC101: Function `process_order_cancel`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_order_cancel`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool | None, from_account: str, order_id: int, save_file: str | None, sign_with: str | None].
 --------------------
 clive/__private/cli/process/proxy.py
     DOC101: Function `process_proxy_set`: Docstring contains fewer arguments than in function signature.
@@ -299,6 +317,8 @@ clive/__private/cli/show/main.py
     DOC103: Function `show_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_escrow`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_escrow`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+    DOC101: Function `show_orders`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `show_orders`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
 --------------------
 clive/__private/cli/show/pending.py
     DOC101: Function `show_pending_withdrawals`: Docstring contains fewer arguments than in function signature.
@@ -364,6 +384,13 @@ clive/__private/core/commands/data_retrieval/find_scheduled_transfers.py
     DOC101: Method `AccountScheduledTransferData._receiver_check`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `AccountScheduledTransferData._receiver_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [receiver: str, scheduled_transfer: ScheduledTransfer].
     DOC201: Method `AccountScheduledTransferData._receiver_check` does not have a return section in docstring
+--------------------
+clive/__private/core/commands/data_retrieval/order_data.py
+    DOC601: Class `OrderInfo`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `OrderInfo`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [created: datetime, expiration: datetime, id_: int, orderid: int, original_receive_asset: Asset.LiquidT, original_sell_asset: Asset.LiquidT, price: Decimal, remaining_receive_asset: Asset.LiquidT, remaining_sell_asset: Asset.LiquidT, seller: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `OrderInfo.from_fundament`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OrderInfo.from_fundament`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [fundament: LimitOrdersFundament].
+    DOC201: Method `OrderInfo.from_fundament` does not have a return section in docstring
 --------------------
 clive/__private/core/commands/recover_wallets.py
     DOC501: Method `RecoverWallets._validate_recovery_attempt` has raise statements, but the docstring does not have a "Raises" section
