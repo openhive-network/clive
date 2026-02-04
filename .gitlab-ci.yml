@@ -15,7 +15,7 @@ workflow:
 # YAML anchors for pinned versions (used via *anchor_name syntax)
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "07fdf2c2bf8155477e7e1229e0bcc77852c9aa84"
+.common_ci_configuration_version: &common_ci_configuration_version "f8e1b42621babbd8df2e6e197ecb598cfb9b228e"
 # Hived image configuration:
 # - hived_branch: Branch to search for images (used for dynamic lookup)
 # - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
@@ -145,6 +145,11 @@ pre_commit_checks:
 verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
+  image: ${CI_BASE_IMAGE_312}
+
+verify_poetry_lock_stability:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_stability_template
   image: ${CI_BASE_IMAGE_312}
 
 lint_code_with_ruff:
@@ -294,6 +299,7 @@ build_wheel:
   extends: .build_wheel_template
   stage: build
   image: ${CI_BASE_IMAGE_312}  # We deliver Clive in a container with Python 3.12
+  needs: []  # Start immediately, don't wait for static_code_analysis (allows tests to run even if verify_poetry_lock_stability fails)
   dependencies: []  # Don't download artifacts from previous stages (prevents modified poetry.lock from pre_commit_checks)
   script:
     - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
