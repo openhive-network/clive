@@ -85,7 +85,9 @@ WORKDIR /clive
 
 SHELL ["/bin/bash", "-c"]
 
-# Extra index URL: group-level registry aggregating all hive packages
+# Project IDS:
+# - 198 -> hive (generated APIs)
+# - 136 -> hive group (includes all packages: wax, schemas, beekeepy, test-tools, clive, etc.)
 RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
     source /python_venv/bin/activate && \
     pip install hiveio_clive=="${CLIVE_VERSION}" \

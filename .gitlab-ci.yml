@@ -73,7 +73,8 @@ variables:
   # ---------------------------------------------------------------------------
   # git:
   GIT_STRATEGY: clone
-  # first party libraries gitlab index (group-level registry aggregating all hive packages):
+  # first party libraries gitlab index (group-level registry for all hive packages):
+  # - 136 -> hive group (includes all packages: wax, schemas, beekeepy, test-tools, etc.)
   FIRST_PARTY_EXTRA_INDEX_ARGS: |
     --extra-index https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple
   # static code analysis:
@@ -93,9 +94,9 @@ variables:
   # Set to "true" to run `poetry update` before tests (tests with latest dependency versions).
   # Useful for detecting compatibility issues with newer dependency versions early.
   # Set to "false" to use pinned versions from poetry.lock for stable, reproducible builds.
-  TEST_WITH_LATEST_DEPENDENCIES: "false"
+  TEST_WITH_LATEST_DEPENDENCIES: "true"
   # Same as above but for static code analysis jobs (ruff, mypy, pre-commit).
-  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
+  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "true"
 
 default:
   tags:
