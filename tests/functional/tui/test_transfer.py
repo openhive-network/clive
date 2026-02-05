@@ -88,7 +88,7 @@ async def test_transfers(
         from_=SENDER,
         to=RECEIVER,
         amount=asset,
-        memo=memo if memo else "",
+        memo=memo or "",
     )
 
     # TODO: save balances before transfer

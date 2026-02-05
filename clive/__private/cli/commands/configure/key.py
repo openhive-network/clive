@@ -41,7 +41,7 @@ class AddKey(WorldBasedCommand):
 
     def get_actual_alias(self, private_key: PrivateKey | None = None) -> str:
         private_key = private_key or self.private_key
-        return self.alias if self.alias else private_key.calculate_public_key().value
+        return self.alias or private_key.calculate_public_key().value
 
     async def validate_inside_context_manager(self) -> None:
         await self._validate_key_alias()

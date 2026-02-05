@@ -114,7 +114,7 @@ def prepare_expected_operation(
         "from_": SENDER,
         "to": other_account if other_account is not None else RECEIVER,
         "amount": asset,
-        "memo": memo if memo else "",
+        "memo": memo or "",
     }
 
     if operation_type is TransferFromSavingsOperation:

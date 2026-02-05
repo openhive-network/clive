@@ -21,7 +21,7 @@ def get_relative_css_path(file_path: str | Path, *, name: str = "") -> Path:
     Returns:
         The relative path to the css file.
     """
-    file_stem = name if name else Path(file_path).stem
+    file_stem = name or Path(file_path).stem
     css_file_name = f"{file_stem}.scss"
     return Path(file_path).parent / css_file_name
 

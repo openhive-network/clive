@@ -32,7 +32,7 @@ class ShowProposals(WorldBasedCommand):
         proxy = accounts[0].proxy
 
         wrapper = await self.world.commands.retrieve_proposals_data(
-            account_name=proxy if proxy else self.account_name,
+            account_name=proxy or self.account_name,
             order=self.order_by,
             order_direction=self.order_direction,
             status=self.status,

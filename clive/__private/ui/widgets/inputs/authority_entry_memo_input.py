@@ -61,7 +61,7 @@ class AuthorityEntryMemoInput(TextInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             suggester=suggester,
-            validators=validators if validators else PublicKeyValidator(),
+            validators=validators or PublicKeyValidator(),
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,

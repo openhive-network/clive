@@ -212,7 +212,7 @@ class Clive(App[int]):
         timeout: float | None = None,
         markup: bool = True,
     ) -> None:
-        title = title if title else severity.capitalize()
+        title = title or severity.capitalize()
         timeout = math.inf if timeout is None and severity == "error" else timeout
         logger.info(f"Sending notification: {severity=}, {title=}, {message=}")
         return super().notify(message, title=title, severity=severity, timeout=timeout, markup=markup)

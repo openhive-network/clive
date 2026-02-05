@@ -74,8 +74,8 @@ class Profile:
         self.name = name
         self.keys = KeyManager()
         self.keys.add(*key_aliases or [])
-        self.transaction = transaction if transaction else Transaction()
-        self.transaction_file_path = transaction_file_path if transaction_file_path else None
+        self.transaction = transaction or Transaction()
+        self.transaction_file_path = transaction_file_path or None
 
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
 

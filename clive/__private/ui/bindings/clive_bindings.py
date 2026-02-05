@@ -43,12 +43,12 @@ class CliveBindings:
     Each section is a `CliveBindingSection` instance, which contains `CliveBinding` instances.
     """
 
-    app: App = field(default_factory=lambda: App())
-    dashboard: Dashboard = field(default_factory=lambda: Dashboard())
-    help: Help = field(default_factory=lambda: Help())
-    manage_key_aliases: ManageKeyAliases = field(default_factory=lambda: ManageKeyAliases())
-    operations: Operations = field(default_factory=lambda: Operations())
-    transaction_summary: TransactionSummary = field(default_factory=lambda: TransactionSummary())
+    app: App = field(default_factory=App)
+    dashboard: Dashboard = field(default_factory=Dashboard)
+    help: Help = field(default_factory=Help)
+    manage_key_aliases: ManageKeyAliases = field(default_factory=ManageKeyAliases)
+    operations: Operations = field(default_factory=Operations)
+    transaction_summary: TransactionSummary = field(default_factory=TransactionSummary)
 
     def __post_init__(self) -> None:
         self._assert_all_fields_are_sections()

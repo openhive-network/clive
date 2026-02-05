@@ -162,7 +162,7 @@ class PersistentStorageService:
     @classmethod
     def is_profile_file(cls, path: Path, *, file_type: ProfileFileTypes = "profile") -> bool:
         conditions: list[Callable[[], bool]] = [
-            lambda: path.is_file(),
+            path.is_file,
             lambda: path.suffix in cls._get_suffixes_for_file_type(file_type),
             lambda: cls.get_version_from_profile_file(path) is not None,
         ]
@@ -343,7 +343,7 @@ class PersistentStorageService:
         Returns:
             Decrypted profile content as a string.
         """
-        encrypted_profile = profile_filepath.read_text()
+        encrypted_profile = profile_filepath.read_text()  # noqa: ASYNC240
         try:
             decrypted_profile = await self._encryption_service.decrypt(encrypted_profile)
         except (CommandDecryptError, CommandRequiresUnlockedEncryptionWalletError) as error:
