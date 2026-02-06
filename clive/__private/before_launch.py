@@ -3,16 +3,23 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
+# This have to be unordered, to properly setup schemas
+from clive.__private.setup_schemas import _disable_schemas_extra_fields_check  # isort: skip  # fmt: skip
+
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
-from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
 from clive.__private.settings import get_settings, safe_settings
-from clive.__private.storage.storage_history import StorageHistory
 from clive.dev import is_in_dev_mode
 
-
-def _disable_schemas_extra_fields_check() -> None:
-    set_policies(ExtraFieldsPolicy(allow=True), MissingFieldsInGetConfigPolicy(allow=True))
+__all__ = [
+    "_create_clive_data_directory",
+    "_create_select_file_root_directory",
+    "_disable_schemas_extra_fields_check",
+    "_initialize_storage_history",
+    "_initialize_user_settings",
+    "_log_in_dev_mode",
+    "prepare_before_launch",
+]
 
 
 def _create_clive_data_directory() -> None:
@@ -38,12 +45,12 @@ def _log_in_dev_mode() -> None:
 
 
 def _initialize_storage_history() -> None:
+    from clive.__private.storage.storage_history import StorageHistory  # noqa: PLC0415
+
     StorageHistory.initialize()
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_handlers: bool = False) -> None:
-    _disable_schemas_extra_fields_check()
-
     if is_in_dev_mode():
         # logger also refers to settings, so we need to set it before logger setup
         get_settings().setenv("dev")
