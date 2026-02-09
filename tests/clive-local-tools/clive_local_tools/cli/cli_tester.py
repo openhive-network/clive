@@ -691,6 +691,9 @@ class CLITester:
     def crypto_decrypt(self, *, encrypted_memo: str) -> CLITestResult:
         return self.__invoke_command_with_options(["crypto", "decrypt"], (encrypted_memo,))
 
+    def show_escrow(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "escrow"], account_name=account_name)
+
     def process_claim_rewards(
         self,
         *,
@@ -701,3 +704,78 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "claim", "rewards"], **extract_params(locals()))
+
+    def process_escrow_transfer(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str,
+        agent: str,
+        escrow_id: int | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        fee: tt.Asset.HiveT | tt.Asset.HbdT,
+        ratification_deadline: str,
+        escrow_expiration: str,
+        json_meta: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "transfer"], **extract_params(locals()))
+
+    def process_escrow_approve(  # noqa: PLR0913
+        self,
+        *,
+        escrow_owner: str,
+        escrow_id: int,
+        who: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "approve"], **extract_params(locals()))
+
+    def process_escrow_reject(  # noqa: PLR0913
+        self,
+        *,
+        escrow_owner: str,
+        escrow_id: int,
+        who: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "reject"], **extract_params(locals()))
+
+    def process_escrow_dispute(  # noqa: PLR0913
+        self,
+        *,
+        escrow_owner: str,
+        escrow_id: int,
+        who: str | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "dispute"], **extract_params(locals()))
+
+    def process_escrow_release(  # noqa: PLR0913
+        self,
+        *,
+        escrow_owner: str,
+        escrow_id: int,
+        who: str | None = None,
+        receiver: str | None = None,
+        hbd_amount: tt.Asset.HbdT | None = None,
+        hive_amount: tt.Asset.HiveT | None = None,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "escrow", "release"], **extract_params(locals()))
