@@ -310,3 +310,14 @@ async def show_account(
     from clive.__private.cli.commands.show.show_account import ShowAccount  # noqa: PLC0415
 
     await ShowAccount(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
+
+
+@show.command(name="escrow")
+async def show_escrow(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """Show escrow transactions for an account."""
+    from clive.__private.cli.commands.show.show_escrow import ShowEscrow  # noqa: PLC0415
+
+    await ShowEscrow(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()

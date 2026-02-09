@@ -17,6 +17,7 @@ from clive.__private.cli.common.parsers import decimal_percent, hbd_asset, hive_
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.convert import convert
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
+from clive.__private.cli.process.escrow import escrow
 from clive.__private.cli.process.hive_power.delegations import delegations
 from clive.__private.cli.process.hive_power.power_down import power_down
 from clive.__private.cli.process.hive_power.power_up import power_up
@@ -39,6 +40,7 @@ process = CliveTyper(name="process", help="Process something (e.g. perform a tra
 
 process.add_typer(claim)
 process.add_typer(convert)
+process.add_typer(escrow)
 process.add_typer(proxy)
 process.add_typer(savings)
 process.add_typer(get_update_authority_typer("owner"))

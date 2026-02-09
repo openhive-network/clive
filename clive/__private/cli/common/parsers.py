@@ -150,7 +150,7 @@ def hive_datetime(raw: str) -> datetime:
     Parse a datetime string in Hive format.
 
     Accepts formats:
-    - Relative: +Nd, +Nw, +Nd Nh (e.g., +7d, +2w, +1d 12h) - offset from current UTC time
+    - Relative: +<N>d, +<N>w, +<N>d <N>h (e.g., +7d, +2w, +1d 12h) - offset from current UTC time
     - Absolute (missing time parts default to end of day 23:59:59):
       - YYYY-MM-DD (e.g., 2024-01-15 -> 2024-01-15T23:59:59)
       - YYYY-MM-DDTHH (e.g., 2024-01-15T14 -> 2024-01-15T14:59:59)
@@ -182,7 +182,7 @@ def hive_datetime(raw: str) -> datetime:
         except InvalidShorthandToTimedeltaError:
             raise typer.BadParameter(
                 f"Invalid relative datetime format: '{raw}'. "
-                "Expected format: +Nd, +Nw, +Nh, +Nm, +Ns or combinations (e.g., +7d, +2w, +1d 12h)"
+                "Expected format: +<N>d, +<N>w, +<N>h, +<N>m, +<N>s or combinations (e.g., +7d, +2w, +1d 12h)"
             ) from None
         return dt.now(UTC) + delta
 
