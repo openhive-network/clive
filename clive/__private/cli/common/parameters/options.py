@@ -70,6 +70,24 @@ to_account_name_required = typer.Option(
     help='The account to use as "to" argument.',
 )
 
+from_account_name_required = typer.Option(
+    ...,
+    "--from",
+    help='The account to use as "from" argument.',
+)
+
+escrow_owner = typer.Option(
+    ...,
+    "--escrow-owner",
+    help="The account that initiated the escrow (escrow creator).",
+)
+
+agent_account_name = modified_param(
+    working_account_template,
+    param_decls=("--agent",),
+    help=stylized_help("The escrow agent account.", is_working_account_default=True),
+)
+
 liquid_amount = typer.Option(
     ...,
     "--amount",

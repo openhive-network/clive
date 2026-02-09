@@ -592,3 +592,86 @@ class CLIPrivateKeyInMemoValidationError(CLIPrettyError):
     def __init__(self, reason: str) -> None:
         message = f"Memo validation failed: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class EscrowZeroAmountError(CLIPrettyError):
+    """Raise when escrow transfer has zero amounts for both HBD and HIVE."""
+
+    def __init__(self) -> None:
+        message = "Escrow transfer must have at least one non-zero amount (HBD or HIVE)."
+        super().__init__(message, errno.EINVAL)
+
+
+class EscrowInvalidDeadlineError(CLIPrettyError):
+    """Raise when escrow deadlines are invalid."""
+
+    def __init__(self, reason: str) -> None:
+        message = f"Invalid escrow deadline: {reason}"
+        super().__init__(message, errno.EINVAL)
+
+
+class EscrowNotFoundError(CLIPrettyError):
+    """Raise when escrow is not found on the blockchain."""
+
+    def __init__(self, from_account: str, escrow_id: int) -> None:
+        message = f"Escrow with ID {escrow_id} not found for account `{from_account}`."
+        super().__init__(message, errno.ENOENT)
+
+
+class EscrowRoleDetectionError(CLIPrettyError):
+    """Raise when working account is not a party to the escrow."""
+
+    def __init__(self, working_account: str, escrow_from: str, escrow_to: str, escrow_agent: str) -> None:
+        message = (
+            f"Working account `{working_account}` is not a party to this escrow.\n"
+            f"Escrow parties: from=`{escrow_from}`, to=`{escrow_to}`, agent=`{escrow_agent}`.\n"
+            "Switch to a working account that is a party to this escrow."
+        )
+        super().__init__(message, errno.EPERM)
+
+
+class EscrowOperationNotAllowedForRoleError(CLIPrettyError):
+    """Raise when user's role cannot perform the requested operation."""
+
+    def __init__(self, role: str, operation: str, allowed_roles: tuple[str, ...]) -> None:
+        allowed_str = " or ".join(allowed_roles)
+        message = f"{role.capitalize()} cannot {operation} an escrow. Only {allowed_str} can {operation}."
+        super().__init__(message, errno.EPERM)
+
+
+class EscrowAgentReceiverRequiredError(CLIPrettyError):
+    """Raise when agent tries to release funds without specifying receiver."""
+
+    def __init__(self) -> None:
+        message = (
+            "As an agent, you must specify --receiver to indicate who receives the funds.\n"
+            "The receiver must be either the sender (from) or receiver (to) of the escrow."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class EscrowNotApprovedError(CLIPrettyError):
+    """Raise when trying to dispute an escrow that is not fully approved."""
+
+    def __init__(self) -> None:
+        message = (
+            "Cannot dispute this escrow: it has not been fully approved yet.\n"
+            "Both agent and receiver must approve before a dispute can be raised."
+        )
+        super().__init__(message, errno.EPERM)
+
+
+class EscrowAlreadyApprovedError(CLIPrettyError):
+    """Raise when trying to approve an escrow that has already been approved by this role."""
+
+    def __init__(self, role: str) -> None:
+        message = f"The {role} has already approved this escrow."
+        super().__init__(message, errno.EPERM)
+
+
+class EscrowReleaseNotAllowedError(CLIPrettyError):
+    """Raise when release is not allowed based on escrow state."""
+
+    def __init__(self, reason: str) -> None:
+        message = f"Cannot release funds from this escrow: {reason}"
+        super().__init__(message, errno.EPERM)

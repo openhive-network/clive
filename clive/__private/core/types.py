@@ -21,3 +21,6 @@ AuthorityLevelRegular = Literal["owner", "active", "posting"]
 AuthorityLevelMemo = Literal["memo"]
 AuthorityLevel = Literal["owner", "active", "posting", "memo"]
 """A combination of regular and memo levels."""
+
+EscrowRole = Literal["sender", "receiver", "agent"]
+"""Role in an escrow transaction."""

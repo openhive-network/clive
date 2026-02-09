@@ -56,3 +56,12 @@ class FinancialOperationsAccountCollector(OperationVisitor):
             self.accounts.add(operation.from_)
         else:
             self.accounts.add(operation.to)
+
+    @override
+    def visit_escrow_transfer_operation(self, operation: schemas.EscrowTransferOperation) -> None:
+        self.accounts.add(operation.to)
+        self.accounts.add(operation.agent)
+
+    @override
+    def visit_escrow_release_operation(self, operation: schemas.EscrowReleaseOperation) -> None:
+        self.accounts.add(operation.receiver)
