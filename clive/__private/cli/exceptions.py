@@ -675,3 +675,10 @@ class EscrowReleaseNotAllowedError(CLIPrettyError):
     def __init__(self, reason: str) -> None:
         message = f"Cannot release funds from this escrow: {reason}"
         super().__init__(message, errno.EPERM)
+
+
+class EscrowAgentReleaseWithoutDisputeError(EscrowReleaseNotAllowedError):
+    """Raise when agent tries to release funds from a non-disputed escrow."""
+
+    def __init__(self) -> None:
+        super().__init__("agent can only release after a dispute has been raised.")

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, ClassVar
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import (
     EscrowAgentReceiverRequiredError,
+    EscrowAgentReleaseWithoutDisputeError,
     EscrowAlreadyApprovedError,
     EscrowInvalidDeadlineError,
     EscrowNotApprovedError,
@@ -318,8 +319,9 @@ class ProcessEscrowRelease(ProcessEscrowWithRoleDetection):
 
         Rules:
         - Disputed: only agent can release
+        - Non-disputed: agent cannot release (only sender and receiver can)
         - Non-disputed, before expiration: sender→receiver or receiver→sender only (cross-release)
-        - Non-disputed, after expiration: anyone can release to anyone
+        - Non-disputed, after expiration: sender and receiver can release to anyone
         """
         escrow = self.escrow_info
         role = self.detected_role
@@ -329,6 +331,10 @@ class ProcessEscrowRelease(ProcessEscrowWithRoleDetection):
             if role != "agent":
                 raise EscrowReleaseNotAllowedError("escrow is disputed, only the agent can release funds.")
             return
+
+        # Non-disputed: agent can never release (blockchain enforces this)
+        if role == "agent":
+            raise EscrowAgentReleaseWithoutDisputeError
 
         # Non-disputed case - check expiration
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
@@ -345,8 +351,6 @@ class ProcessEscrowRelease(ProcessEscrowWithRoleDetection):
                 raise EscrowReleaseNotAllowedError("before expiration, sender can only release to receiver.")
             if role == "receiver" and receiver != escrow.from_:
                 raise EscrowReleaseNotAllowedError("before expiration, receiver can only release to sender.")
-            if role == "agent":
-                raise EscrowReleaseNotAllowedError("agent can only release after a dispute has been raised.")
 
     def _resolve_receiver(self) -> str:
         """

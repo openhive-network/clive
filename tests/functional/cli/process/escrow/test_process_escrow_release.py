@@ -6,6 +6,7 @@ import pytest
 
 from clive.__private.cli.exceptions import (
     EscrowAgentReceiverRequiredError,
+    EscrowAgentReleaseWithoutDisputeError,
     EscrowNotFoundError,
     EscrowReleaseNotAllowedError,
 )
@@ -235,9 +236,7 @@ async def test_process_escrow_agent_release_before_dispute_error(
     # Switch to agent (keys already added by approve_escrow_by_both)
     cli_tester.configure_working_account_switch(account_name=AGENT)
 
-    expected_error = get_formatted_error_message(
-        EscrowReleaseNotAllowedError("agent can only release after a dispute has been raised.")
-    )
+    expected_error = get_formatted_error_message(EscrowAgentReleaseWithoutDisputeError())
 
     # ACT & ASSERT - agent tries to release before dispute (should fail)
     with pytest.raises(CLITestCommandError, match=expected_error):
@@ -414,39 +413,28 @@ async def test_process_escrow_receiver_release_to_self_after_expiration(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_process_escrow_agent_release_after_expiration_no_dispute(
+async def test_process_escrow_agent_release_after_expiration_no_dispute_error(
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
-    """Test that agent can release funds after escrow expiration without a dispute."""
+    """Test that agent cannot release funds from a non-disputed escrow even after expiration."""
     # ARRANGE - create an escrow with short deadlines and wait for expiration
     escrow_id = 908
     create_expired_escrow(cli_tester, escrow_id, node)
 
-    operation = EscrowReleaseOperation(
-        from_=WORKING_ACCOUNT_NAME,
-        to=RECEIVER,
-        agent=AGENT,
-        who=AGENT,
-        receiver=RECEIVER,
-        escrow_id=escrow_id,
-        hbd_amount=HBD_AMOUNT,
-        hive_amount=HIVE_AMOUNT,
-    )
+    expected_error = get_formatted_error_message(EscrowAgentReleaseWithoutDisputeError())
 
-    # ACT - agent releases after expiration using --who (no dispute needed)
-    result = cli_tester.process_escrow_release(
-        escrow_owner=WORKING_ACCOUNT_NAME,
-        escrow_id=escrow_id,
-        who=AGENT,
-        receiver=RECEIVER,
-        hbd_amount=HBD_AMOUNT,
-        hive_amount=HIVE_AMOUNT,
-        sign_with=AGENT_KEY_ALIAS,
-    )
-
-    # ASSERT
-    assert_operations_placed_in_blockchain(node, result, operation)
+    # ACT & ASSERT - agent tries to release after expiration without dispute
+    with pytest.raises(CLITestCommandError, match=expected_error):
+        cli_tester.process_escrow_release(
+            escrow_owner=WORKING_ACCOUNT_NAME,
+            escrow_id=escrow_id,
+            who=AGENT,
+            receiver=RECEIVER,
+            hbd_amount=HBD_AMOUNT,
+            hive_amount=HIVE_AMOUNT,
+            sign_with=AGENT_KEY_ALIAS,
+        )
 
 
 async def test_process_escrow_release_not_found_error(
