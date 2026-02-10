@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
@@ -41,14 +41,21 @@ class ProcessEscrowTransfer(OperationCommand):
     hbd_amount: Asset.Hbd
     hive_amount: Asset.Hive
     fee: Asset.LiquidT
-    ratification_deadline: datetime
-    escrow_expiration: datetime
+    ratification_deadline: datetime | timedelta
+    escrow_expiration: datetime | timedelta
     json_meta: str = ""
+
+    _head_block_time: datetime | None = None
 
     @property
     def escrow_id_ensure(self) -> int:
         assert self.escrow_id is not None, "escrow_id should be set at this point"
         return self.escrow_id
+
+    @property
+    def head_block_time(self) -> datetime:
+        assert self._head_block_time is not None, "head_block_time should be set at this point"
+        return self._head_block_time
 
     async def validate(self) -> None:
         self._validate_amounts()
@@ -65,10 +72,12 @@ class ProcessEscrowTransfer(OperationCommand):
 
     async def _validate_deadlines(self) -> None:
         """Validate that deadlines are in the future and properly ordered."""
-        gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        now = gdpo.time
+        now = self.head_block_time
         ratification = self.ratification_deadline
         expiration = self.escrow_expiration
+
+        assert isinstance(ratification, datetime), "ratification_deadline should be resolved to datetime at this point"
+        assert isinstance(expiration, datetime), "escrow_expiration should be resolved to datetime at this point"
 
         # Make datetimes timezone-aware if they're naive
         if ratification.tzinfo is None:
@@ -87,12 +96,24 @@ class ProcessEscrowTransfer(OperationCommand):
 
     async def fetch_data(self) -> None:
         await super().fetch_data()
+
+        gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
+        self._head_block_time = gdpo.time.replace(tzinfo=UTC)
+
+        if isinstance(self.ratification_deadline, timedelta):
+            self.ratification_deadline = self.head_block_time + self.ratification_deadline
+        if isinstance(self.escrow_expiration, timedelta):
+            self.escrow_expiration = self.head_block_time + self.escrow_expiration
+
         if self.escrow_id is None:
             wrapper = await self.world.commands.retrieve_escrow_data(account_name=self.from_account)
             escrow_data: EscrowData = wrapper.result_or_raise
             self.escrow_id = escrow_data.create_escrow_id()
 
     async def _create_operations(self) -> ComposeTransaction:
+        assert isinstance(self.ratification_deadline, datetime), "should be resolved at this point"
+        assert isinstance(self.escrow_expiration, datetime), "should be resolved at this point"
+
         yield EscrowTransferOperation(
             from_=self.from_account,
             to=self.to,

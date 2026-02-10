@@ -72,15 +72,10 @@ def test_invalid_datetime_formats(raw: str) -> None:
     ],
 )
 def test_valid_relative_datetime_formats(raw: str, expected_delta: timedelta) -> None:
-    """Test relative datetime parsing with a tolerance of 2 seconds."""
-    before = datetime.now(UTC)
+    """Test relative datetime parsing returns a timedelta for later resolution against blockchain time."""
     result = hive_datetime(raw)
-    after = datetime.now(UTC)
-
-    # Result should be within the range [before + delta, after + delta]
-    assert result >= before + expected_delta - timedelta(seconds=1)
-    assert result <= after + expected_delta + timedelta(seconds=1)
-    assert result.tzinfo == UTC
+    assert isinstance(result, timedelta)
+    assert result == expected_delta
 
 
 @pytest.mark.parametrize(
