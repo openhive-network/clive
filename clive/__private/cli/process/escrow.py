@@ -19,8 +19,9 @@ Manage escrow transactions.
 WORKFLOW:
   1. Sender creates escrow with receiver, agent, deadlines, and fee
   2. BOTH agent AND receiver must approve before ratification deadline
-  3. If either rejects, funds return to sender immediately
-  4. After both approve, escrow is active until expiration
+  3. If either rejects OR ratification deadline passes without both approvals,
+     all funds (including the agent fee) return to the sender
+  4. After both approve, escrow is active until all funds are released
 
 RELEASE RULES:
   Before expiration (non-disputed):
@@ -30,13 +31,21 @@ RELEASE RULES:
     - Sender and receiver can release to either party
   After dispute:
     - Only the agent can release funds (to either party)
+  Partial releases are allowed - escrow remains active until fully drained.
+
+AGENT FEE:
+  - Fee is deducted from sender at escrow creation but held in escrow
+  - Agent receives the fee only when BOTH agent and receiver approve
+  - If escrow is rejected or expires before both approvals, fee returns to sender
 
 DISPUTE:
   - Either sender or receiver can raise a dispute (after both approved)
   - Once disputed, only the agent can release funds
   - Agent decides who receives how much based on the situation
+  - Without a dispute, the agent has no role in releasing funds
 
-Your role is automatically detected based on your working account.
+Your role is automatically detected based on your working account,
+or the account specified with --who.
 Use `clive show escrow` to view existing escrows.
 """
 
@@ -111,7 +120,11 @@ async def process_escrow_transfer(  # noqa: PLR0913
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    """Create a new escrow transaction between accounts."""
+    """
+    Create a new escrow transaction between accounts.
+
+    See `clive process escrow --help` for full escrow workflow documentation.
+    """
     from clive.__private.cli.commands.process.process_escrow import ProcessEscrowTransfer  # noqa: PLC0415
 
     await ProcessEscrowTransfer(
@@ -150,7 +163,7 @@ async def process_escrow_approve(  # noqa: PLR0913
     Only receiver or agent can approve. Sender cannot approve their own escrow.
 
     Your role (receiver or agent) is automatically detected based on your working account,
-    or the account specified with --who if you have delegated authority.
+    or the account specified with --who.
 
     See `clive process escrow --help` for full escrow workflow documentation.
     """
@@ -188,7 +201,7 @@ async def process_escrow_reject(  # noqa: PLR0913
     Rejecting returns all escrowed funds to the sender immediately.
 
     Your role (receiver or agent) is automatically detected based on your working account,
-    or the account specified with --who if you have delegated authority.
+    or the account specified with --who.
 
     See `clive process escrow --help` for full escrow workflow documentation.
     """
@@ -227,7 +240,7 @@ async def process_escrow_dispute(  # noqa: PLR0913
     party cannot agree on the release terms.
 
     Your role (sender or receiver) is automatically detected based on your working account,
-    or the account specified with --who if you have delegated authority.
+    or the account specified with --who.
 
     See `clive process escrow --help` for full escrow workflow documentation.
     """
@@ -282,7 +295,7 @@ async def process_escrow_release(  # noqa: PLR0913
       - Disputed: only agent can release
 
     Your role (sender, receiver, or agent) is automatically detected based on your working account,
-    or the account specified with --who if you have delegated authority.
+    or the account specified with --who.
 
     Receiver auto-fill:
       - Sender releases to receiver (to account)
