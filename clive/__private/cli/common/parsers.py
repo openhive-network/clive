@@ -145,12 +145,13 @@ def public_key(raw: str) -> PublicKey:
     return parsed
 
 
-def hive_datetime(raw: str) -> datetime:
+def hive_datetime(raw: str) -> datetime | timedelta:
     """
     Parse a datetime string in Hive format.
 
     Accepts formats:
-    - Relative: +<N>d, +<N>w, +<N>d <N>h (e.g., +7d, +2w, +1d 12h) - offset from current UTC time
+    - Relative: +<N>d, +<N>w, +<N>d <N>h (e.g., +7d, +2w, +1d 12h) - returns timedelta for later resolution
+      against blockchain head block time
     - Absolute (missing time parts default to end of day 23:59:59):
       - YYYY-MM-DD (e.g., 2024-01-15 -> 2024-01-15T23:59:59)
       - YYYY-MM-DDTHH (e.g., 2024-01-15T14 -> 2024-01-15T14:59:59)
@@ -164,10 +165,11 @@ def hive_datetime(raw: str) -> datetime:
         typer.BadParameter: If the datetime format is invalid.
 
     Returns:
-        The parsed datetime object in UTC.
+        A timedelta for relative inputs, or a datetime object in UTC for absolute inputs.
     """
     from datetime import UTC  # noqa: PLC0415
     from datetime import datetime as dt  # noqa: PLC0415
+    from datetime import timedelta as td  # noqa: PLC0415
 
     from clive.__private.core.shorthand_timedelta import (  # noqa: PLC0415
         InvalidShorthandToTimedeltaError,
@@ -178,13 +180,13 @@ def hive_datetime(raw: str) -> datetime:
     if raw.startswith("+"):
         shorthand = raw[1:]  # Remove the leading '+'
         try:
-            delta = shorthand_timedelta_to_timedelta(shorthand)
+            delta: td = shorthand_timedelta_to_timedelta(shorthand)
         except InvalidShorthandToTimedeltaError:
             raise typer.BadParameter(
                 f"Invalid relative datetime format: '{raw}'. "
                 "Expected format: +<N>d, +<N>w, +<N>h, +<N>m, +<N>s or combinations (e.g., +7d, +2w, +1d 12h)"
             ) from None
-        return dt.now(UTC) + delta
+        return delta
 
     # Handle absolute datetime formats
     formats_with_defaults = [

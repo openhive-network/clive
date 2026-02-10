@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime  # noqa: TC003
+from datetime import datetime, timedelta  # noqa: TC003
 from typing import TYPE_CHECKING, cast
 
 import typer
@@ -79,24 +79,26 @@ async def process_escrow_transfer(  # noqa: PLR0913
         parser=liquid_asset,
         help="Fee paid to the agent (HBD or HIVE, e.g., 1.000 HBD).",
     ),
-    ratification_deadline: datetime = typer.Option(
+    ratification_deadline: str = typer.Option(  # actually datetime | timedelta, but Typer doesn't support Union types
         ...,
         "--ratification-deadline",
         parser=hive_datetime,
         help=(
             "Deadline by which BOTH agent AND receiver must approve. "
             "If not approved by this time, escrow is automatically cancelled. "
-            "Formats: absolute (2024-12-31, 2024-12-31T14:30:00) or relative (+7d, +1w 2d). Time is UTC."
+            "Formats: absolute (2024-12-31, 2024-12-31T14:30:00) or relative (+7d, +1w 2d). Time is UTC. "
+            "Relative times are calculated from blockchain time."
         ),
     ),
-    escrow_expiration: datetime = typer.Option(
+    escrow_expiration: str = typer.Option(  # actually datetime | timedelta, but Typer doesn't support Union types
         ...,
         "--escrow-expiration",
         parser=hive_datetime,
         help=(
             "When escrow expires. Before expiration, release is limited (sender→receiver, receiver→sender only). "
             "After expiration, either party can release to anyone. Must be after ratification deadline. "
-            "Formats: absolute (2024-12-31, 2024-12-31T14:30:00) or relative (+14d, +2w). Time is UTC."
+            "Formats: absolute (2024-12-31, 2024-12-31T14:30:00) or relative (+14d, +2w). Time is UTC. "
+            "Relative times are calculated from blockchain time."
         ),
     ),
     json_meta: str = typer.Option(
@@ -120,8 +122,8 @@ async def process_escrow_transfer(  # noqa: PLR0913
         hbd_amount=cast("Asset.Hbd", hbd_amount),
         hive_amount=cast("Asset.Hive", hive_amount),
         fee=cast("Asset.LiquidT", fee),
-        ratification_deadline=ratification_deadline,
-        escrow_expiration=escrow_expiration,
+        ratification_deadline=cast("datetime | timedelta", ratification_deadline),
+        escrow_expiration=cast("datetime | timedelta", escrow_expiration),
         json_meta=json_meta,
         sign_with=sign_with,
         broadcast=broadcast,
