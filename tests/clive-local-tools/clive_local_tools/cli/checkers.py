@@ -239,6 +239,12 @@ def _get_result(
     return result
 
 
+def assert_is_working_account(context: CLITester | CLITestResult, account_name: str) -> None:
+    result = _get_result(context, lambda cli_tester: cli_tester.show_profile())
+    expected_output = f"Working account: {account_name}"
+    assert_output_contains(expected_output, result)
+
+
 def assert_unlocked_profile(context: CLITester | CLITestResult, profile_name: str) -> None:
     result = _get_result(context, lambda cli_tester: cli_tester.show_profile())
     expected_output = f"Profile name: {profile_name}"
