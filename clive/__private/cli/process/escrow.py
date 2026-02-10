@@ -13,6 +13,12 @@ from clive.__private.cli.common.parsers import hbd_asset, hive_asset, hive_datet
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
 
+_who = modified_param(
+    options.working_account_template,
+    param_decls=("--who",),
+    help=stylized_help("Account to act as.", is_working_account_default=True),
+)
+
 ESCROW_HELP = """\
 Manage escrow transactions.
 

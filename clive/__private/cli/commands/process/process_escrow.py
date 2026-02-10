@@ -134,7 +134,7 @@ class ProcessEscrowWithRoleDetection(OperationCommand):
 
     escrow_owner: str
     escrow_id: int
-    who_override: str  # Account to act as for role detection
+    who_override: str
 
     # Class variable - override in subclasses to specify valid roles
     _valid_roles: ClassVar[tuple[EscrowRole, ...]]
