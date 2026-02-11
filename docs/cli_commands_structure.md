@@ -136,6 +136,8 @@ clive
 │ ├── public-key
 │ ├── random-key
 │ └── secret-phrase
+├── crypto
+│ └── decrypt
 ├── beekeeper
 │ ├── close
 │ ├── create-session
