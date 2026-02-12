@@ -48,7 +48,8 @@ class ShowPendingChangeRecoveryAccount(WorldBasedCommand):
     def _create_pending_change_recovery_account_info_table(
         self, data: ChangingRecoveryAccountInProgressAlarmData
     ) -> Table:
-        table = Table(title=self._format_table_title(self.account_name), show_header=False)
+        title = self._format_table_title(self.account_name)
+        table = Table(title=title, min_width=len(title), show_header=False)
         table.add_row("Start data", humanize_datetime(data.start_date))
         table.add_row("End date", humanize_datetime(data.end_date))
         table.add_row("Time left", humanize_timedelta(data.time_left))
