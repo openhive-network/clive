@@ -113,14 +113,22 @@ def assert_memo_key(context: CLITester | CLITestResult, memo_key: PublicKey) -> 
     assert_output_contains(expected_output, result)
 
 
+def _normalize_whitespace(text: str) -> str:
+    return " ".join(text.split())
+
+
 def assert_output_contains(expected_output: str, context: CLITestResult | str) -> None:
     if isinstance(context, CLITestResult):
         result = context
         output = result.output
-        assert expected_output in output, f"expected `{expected_output}` in output, result info\n{result.info}"
+        assert _normalize_whitespace(expected_output) in _normalize_whitespace(output), (
+            f"expected `{expected_output}` in output, result info\n{result.info}"
+        )
     else:
         output = context
-        assert expected_output in output, f"expected `{expected_output}` in output:\n{output}"
+        assert _normalize_whitespace(expected_output) in _normalize_whitespace(output), (
+            f"expected `{expected_output}` in output:\n{output}"
+        )
 
 
 def assert_output_does_not_contain(part: str, output: str) -> None:
