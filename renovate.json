@@ -51,7 +51,7 @@
         "pre-commit",
         "ruff",
         "pydoclint",
-        "types-toml"
+        "/^types-/"
       ]
     },
     {
