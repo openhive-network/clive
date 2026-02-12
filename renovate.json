@@ -12,7 +12,8 @@
     "config:recommended"
   ],
   "ignoreDeps": [
-    "clive-local-tools"
+    "clive-local-tools",
+    "python-poetry/poetry"
   ],
   "lockFileMaintenance": {
     "enabled": true
@@ -89,6 +90,14 @@
       ]
     },
     {
+      "description": "Group all pre-commit hook updates",
+      "groupName": "pre-commit hooks",
+      "groupSlug": "pre-commit-hooks",
+      "matchManagers": [
+        "pre-commit"
+      ]
+    },
+    {
       "automerge": false,
       "description": "Never auto-merge Dockerfile changes (CI infrastructure)",
       "matchManagers": [
@@ -108,5 +117,8 @@
   },
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
+  "pre-commit": {
+    "enabled": true
+  },
   "separateMultipleMajor": true
 }
