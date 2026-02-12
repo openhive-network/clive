@@ -3,7 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import beekeepy as bk
+from beekeepy.exceptions import BeekeeperFailedToStartError
 
+from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError
 
@@ -110,4 +112,31 @@ class BeekeeperManager:
         if self.settings.http_endpoint is not None:
             return await bk.AsyncBeekeeper.remote_factory(url_or_settings=self.settings)
 
-        return await bk.AsyncBeekeeper.factory(settings=self.settings)
+        try:
+            return await bk.AsyncBeekeeper.factory(settings=self.settings)
+        except BeekeeperFailedToStartError:
+            logger.warning("Beekeeper failed to start. Cleaning stale state from working directory and retrying...")
+            self._clean_stale_beekeeper_state()
+            self._settings = self._setup_beekeepy_settings()
+            return await bk.AsyncBeekeeper.factory(settings=self._settings)
+
+    def _clean_stale_beekeeper_state(self) -> None:
+        working_directory = self._settings.working_directory
+        if working_directory is None or not working_directory.exists():
+            return
+
+        for entry in working_directory.iterdir():
+            if entry.suffix == ".wallet":
+                logger.info(f"Preserving wallet file: {entry.name}")
+                continue
+
+            try:
+                if entry.is_dir():
+                    import shutil  # noqa: PLC0415
+
+                    shutil.rmtree(entry)
+                else:
+                    entry.unlink()
+                logger.info(f"Removed stale beekeeper file: {entry.name}")
+            except OSError:
+                logger.warning(f"Failed to remove stale beekeeper file: {entry.name}")
