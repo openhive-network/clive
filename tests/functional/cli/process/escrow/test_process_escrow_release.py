@@ -236,7 +236,9 @@ async def test_process_escrow_agent_release_before_dispute_error(
     # Switch to agent (keys already added by approve_escrow_by_both)
     cli_tester.configure_working_account_switch(account_name=AGENT)
 
-    expected_error = get_formatted_error_message(EscrowAgentReleaseWithoutDisputeError())
+    expected_error = get_formatted_error_message(
+        EscrowReleaseNotAllowedError("agent can only release after a dispute has been raised.")
+    )
 
     # ACT & ASSERT - agent tries to release before dispute (should fail)
     with pytest.raises(CLITestCommandError, match=expected_error):
@@ -413,7 +415,7 @@ async def test_process_escrow_receiver_release_to_self_after_expiration(
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_process_escrow_agent_release_after_expiration_no_dispute_error(
+async def test_negative_process_escrow_agent_release_after_expiration_no_dispute(
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:

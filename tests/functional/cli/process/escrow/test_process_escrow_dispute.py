@@ -148,7 +148,7 @@ async def test_process_escrow_dispute_not_approved_error(
         )
 
 
-async def test_process_escrow_dispute_double_error(
+async def test_negative_process_escrow_dispute_double(
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:
