@@ -1,25 +1,47 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "addLabels": [
-    "dependencies"
+  "extends": [
+    "config:recommended"
   ],
+  "poetry": {
+    "enabled": true
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "pip_requirements": {
+    "enabled": false
+  },
+  "dependencyDashboard": true,
+  "separateMultipleMajor": true,
+  "minimumReleaseAge": "2 days",
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "platformAutomerge": true,
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "baseBranchPatterns": [
     "develop"
   ],
   "commitMessagePrefix": "chore(deps):",
-  "dependencyDashboard": true,
-  "extends": [
-    "config:recommended"
+  "addLabels": [
+    "dependencies"
   ],
   "ignoreDeps": [
     "clive-local-tools",
     "python-poetry/poetry"
   ],
-  "lockFileMaintenance": {
-    "enabled": true
-  },
-  "minimumReleaseAge": "2 days",
   "packageRules": [
+    {
+      "automerge": true,
+      "description": "Group all patch updates together",
+      "groupName": "patch updates",
+      "groupSlug": "patch-updates",
+      "matchUpdateTypes": [
+        "patch"
+      ]
+    },
     {
       "allowedVersions": "!/unstable/",
       "automerge": false,
@@ -32,15 +54,6 @@
         "test-tools"
       ],
       "minimumReleaseAge": "0 days"
-    },
-    {
-      "automerge": true,
-      "description": "Group all patch updates together",
-      "groupName": "patch updates",
-      "groupSlug": "patch-updates",
-      "matchUpdateTypes": [
-        "patch"
-      ]
     },
     {
       "automerge": true,
@@ -107,18 +120,5 @@
         "\u26a0\ufe0f **This updates CI infrastructure.** Trigger manual image build jobs in this MR before merging to confirm it's working."
       ]
     }
-  ],
-  "pip_requirements": {
-    "enabled": false
-  },
-  "platformAutomerge": true,
-  "poetry": {
-    "enabled": true
-  },
-  "prConcurrentLimit": 0,
-  "prHourlyLimit": 0,
-  "pre-commit": {
-    "enabled": true
-  },
-  "separateMultipleMajor": true
+  ]
 }
