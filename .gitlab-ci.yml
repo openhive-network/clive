@@ -13,7 +13,7 @@ include:
         when: never
       - when: always
 
-  # Renovate pipeline - only when RENOVATE_RUN=true
+  # Renovate pipeline - only when RENOVATE_RUN=true for example during scheduled pipeline
   - local: '.gitlab/ci/renovate.yml'
     rules:
       - if: '$RENOVATE_RUN == "true"'
