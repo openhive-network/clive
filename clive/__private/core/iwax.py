@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
+    from wax.wax_result import python_encrypted_memo
 
 
 def cast_hiveint_args[F: Callable[..., Any]](func: F) -> F:
@@ -75,8 +76,8 @@ class WaxOperationFailedError(CliveError):
 def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-    asset_cls = Asset.resolve_nai(result.nai.decode())
-    return asset_cls(amount=int(result.amount.decode()))
+    asset_cls = Asset.resolve_nai(result.nai)
+    return asset_cls(amount=int(result.amount))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
@@ -95,15 +96,15 @@ def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
 
 def __validate_wax_response(response: wax.python_result) -> None:
     if response.status == wax.python_error_code.fail:
-        raise WaxOperationFailedError(response.exception_message.decode())
+        raise WaxOperationFailedError(response.exception_message)
 
 
-def __as_binary_json(item: OperationUnion | Transaction) -> bytes:
+def __as_binary_json(item: OperationUnion | Transaction) -> str:
     from clive.__private.models.schemas import convert_to_representation  # noqa: PLC0415
     from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
     to_serialize = item if isinstance(item, Transaction) else convert_to_representation(item)
-    return to_serialize.json().encode()
+    return to_serialize.json()
 
 
 def validate_transaction(transaction: Transaction) -> None:
@@ -115,37 +116,37 @@ def validate_operation(operation: OperationUnion) -> None:
 
 
 def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
-    result = wax.calculate_sig_digest(__as_binary_json(transaction), chain_id.encode())
+    result = wax.calculate_sig_digest(__as_binary_json(transaction), chain_id)
     __validate_wax_response(result)
-    return result.result.decode()
+    return result.result
 
 
 def calculate_transaction_id(transaction: Transaction) -> str:
     result = wax.calculate_transaction_id(__as_binary_json(transaction))
     __validate_wax_response(result)
-    return result.result.decode()
+    return result.result
 
 
 def serialize_transaction(transaction: Transaction) -> bytes:
     result = wax.serialize_transaction(__as_binary_json(transaction))
     __validate_wax_response(result)
-    return result.result
+    return result.result.encode()
 
 
 def deserialize_transaction(transaction: bytes) -> Transaction:
     from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
-    result = wax.deserialize_transaction(transaction)
+    result = wax.deserialize_transaction(transaction.decode())
     __validate_wax_response(result)
-    return Transaction.parse_raw(result.result.decode())
+    return Transaction.parse_raw(result.result)
 
 
 def calculate_public_key(wif: str) -> PublicKey:
     from clive.__private.core.keys import PublicKey  # noqa: PLC0415
 
-    result = wax.calculate_public_key(wif.encode())
+    result = wax.calculate_public_key(wif)
     __validate_wax_response(result)
-    return PublicKey(value=result.result.decode())
+    return PublicKey(value=result.result)
 
 
 def generate_private_key() -> PrivateKey:
@@ -153,7 +154,7 @@ def generate_private_key() -> PrivateKey:
 
     result = wax.generate_private_key()
     __validate_wax_response(result)
-    return PrivateKey(value=result.result.decode())
+    return PrivateKey(value=result.result)
 
 
 @cast_hiveint_args
@@ -164,7 +165,7 @@ def calculate_manabar_full_regeneration_time(
         now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
     )
     __validate_wax_response(result)
-    return datetime.datetime.fromtimestamp(int(result.result.decode()), tz=datetime.UTC)
+    return datetime.datetime.fromtimestamp(int(result.result), tz=datetime.UTC)
 
 
 @cast_hiveint_args
@@ -173,7 +174,7 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
         now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
     )
     __validate_wax_response(result)
-    return int(result.result.decode())
+    return int(result.result)
 
 
 @cast_hiveint_args
@@ -182,7 +183,7 @@ def general_asset(asset_num: int, amount: int) -> Asset.AnyT:
 
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
-    return wax.get_tapos_data(block_id.encode())
+    return wax.get_tapos_data(block_id)
 
 
 @cast_hiveint_args
@@ -208,7 +209,7 @@ def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
     )
     __validate_wax_response(result)
-    return DecimalConverter.convert(result.result.decode(), precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
+    return DecimalConverter.convert(result.result, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
 
 
 def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Asset.Hive:
@@ -244,7 +245,7 @@ def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asse
 def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
     result = wax.calculate_inflation_rate_for_block(head_block_num)
     __validate_wax_response(result)
-    return hive_percent_to_percent(result.result.decode())
+    return hive_percent_to_percent(result.result)
 
 
 @cast_hiveint_args
@@ -262,10 +263,18 @@ def generate_password_based_private_key(
 ) -> PrivateKey:
     from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
-    result = wax.generate_password_based_private_key(account_name.encode(), role.encode(), password.encode())
-    return PrivateKey(value=result.wif_private_key.decode())
+    result = wax.generate_password_based_private_key(account_name, role, password)
+    return PrivateKey(value=result.wif_private_key)
 
 
 def suggest_brain_key() -> str:
     result = wax.suggest_brain_key()
-    return result.brain_key.decode()
+    return result.brain_key
+
+
+def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, other_encryption_key: str = "") -> str:
+    return wax.encode_encrypted_memo(encrypted_content, main_encryption_key, other_encryption_key)
+
+
+def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
+    return wax.decode_encrypted_memo(encoded_memo)
