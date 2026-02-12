@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 import beekeepy.exceptions as bke
 
+from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from wax import encode_encrypted_memo as wax_encode_encrypted_memo
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKey
@@ -47,9 +47,9 @@ class EncryptMemo(CommandInUnlocked, CommandWithResult[str]):
             raise EncryptMemoKeyNotImportedError(self) from error
 
         # Encode the encrypted memo with keys using wax
-        encoded_memo = wax_encode_encrypted_memo(
-            encrypted_content.encode(),
-            self.from_key.value.encode(),
-            self.to_key.value.encode(),
+        encoded_memo = iwax.encode_encrypted_memo(
+            encrypted_content,
+            self.from_key.value,
+            self.to_key.value,
         )
-        self._result = encoded_memo.decode()
+        self._result = encoded_memo
