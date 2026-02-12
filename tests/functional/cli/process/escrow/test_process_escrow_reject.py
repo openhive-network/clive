@@ -111,16 +111,17 @@ async def test_process_escrow_reject_sender_not_allowed_error(
         EscrowOperationNotAllowedForRoleError("sender", "approve/reject", ("receiver", "agent"))
     )
 
-    # ACT & ASSERT - sender (working account=alice, no --who) tries to reject
+    # ACT & ASSERT - sender (alice) explicitly passed via --who tries to reject
     with pytest.raises(CLITestCommandError, match=expected_error):
         cli_tester.process_escrow_reject(
             escrow_owner=WORKING_ACCOUNT_NAME,
             escrow_id=escrow_id,
+            who=WORKING_ACCOUNT_NAME,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
 
 
-async def test_process_escrow_reject_after_ratification_deadline_error(
+async def test_negative_process_escrow_reject_after_ratification_deadline(
     node: tt.RawNode,
     cli_tester: CLITester,
 ) -> None:

@@ -6,7 +6,6 @@ import test_tools as tt
 
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_NAME
-from tests.functional.cli.process.escrow.conftest import get_future_datetime
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -19,25 +18,19 @@ FEE: Final[tt.Asset.TbdT] = tt.Asset.Tbd(1)
 
 
 async def test_show_escrow(
-    node: tt.RawNode,  # noqa: ARG001
     cli_tester: CLITester,
 ) -> None:
     """Test clive show escrow command."""
     # ARRANGE - create an escrow first
-    ratification_deadline = get_future_datetime(1)
-    escrow_expiration = get_future_datetime(7)
-    escrow_id = 20
-
     cli_tester.process_escrow_transfer(
         from_=WORKING_ACCOUNT_NAME,
         to=RECEIVER,
         agent=AGENT,
-        escrow_id=escrow_id,
         hbd_amount=HBD_AMOUNT,
         hive_amount=HIVE_AMOUNT,
         fee=FEE,
-        ratification_deadline=ratification_deadline,
-        escrow_expiration=escrow_expiration,
+        ratification_deadline="+1d",
+        escrow_expiration="+7d",
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
