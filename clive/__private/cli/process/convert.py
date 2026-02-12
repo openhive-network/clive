@@ -22,11 +22,18 @@ Conversion types (determined by asset type in --amount):
 - HBD → HIVE: Standard conversion. HBD is taken immediately; HIVE is received
   after 3.5 days based on median feed price at that time.
 
-- HIVE → HBD: Collateralized conversion. HIVE is taken immediately; you receive
-  HBD instantly: (HIVE_amount / 2) * min_feed_price / 1.05.
-  The other half is held as collateral. After 3.5 days, the excess collateral
-  is returned based on the median feed price at that time. The returned amount
-  may vary based on price changes during this period.
+- HIVE → HBD: Collateralized conversion. All specified HIVE is locked as
+  collateral. The process has two phases:
+
+  First half - instant HBD payout: You receive HBD right away, calculated from
+  half the HIVE amount: (HIVE_amount / 2) * min_feed_price / 1.05. Uses the
+  minimum feed price with a 5% fee to prevent gaming.
+
+  Second half - collateral settlement after 3.5 days: The blockchain calculates
+  how much HIVE is needed to cover the HBD already paid out (using median feed
+  price + 5% fee) and returns the excess collateral as HIVE. The returned amount
+  depends on price changes during this period - if HIVE price rises, you get back
+  more; if it drops, you get back less.
 """,
 )
 
