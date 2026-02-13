@@ -11,8 +11,8 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 BLOCK_INTERVAL: Final[int] = 3  # Hive block production interval in seconds
-RATIFICATION_SECONDS: Final[int] = 9
-EXPIRATION_SECONDS: Final[int] = 15
+RATIFICATION_SECONDS: Final[int] = 15
+EXPIRATION_SECONDS: Final[int] = 21
 
 RECEIVER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[0].account  # bob
 RECEIVER: Final[str] = RECEIVER_ACCOUNT.name
