@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from rich.table import Table
@@ -34,27 +35,37 @@ class ShowOrders(WorldBasedCommand):
         table.add_column("For", justify="right", style="green", no_wrap=True)
         table.add_column("Remaining", justify="right", style="green", no_wrap=True)
         table.add_column("For (rem)", justify="right", style="green", no_wrap=True)
-        table.add_column("Price", justify="right", style="magenta", no_wrap=True)
+        table.add_column("Price (HBD/HIVE)", justify="right", style="magenta", no_wrap=True)
         table.add_column("Created (UTC)", justify="right", style="green", no_wrap=True)
         table.add_column("Expires (UTC)", justify="right", style="green", no_wrap=True)
 
+        def get_normalized_price(order: OrderInfo) -> Decimal:
+            """Get price normalized to HBD/HIVE (invert for SELL HBD orders)."""
+            if isinstance(order.original_sell_asset, Asset.Hbd):
+                return Decimal(1) / order.price if order.price != 0 else Decimal(0)
+            return order.price
+
+        # Sort orders by normalized price (HBD/HIVE)
+        sorted_orders = sorted(result.orders, key=get_normalized_price)
+
         order_info: OrderInfo
-        for order_info in result.orders:
+        for order_info in sorted_orders:
             # Determine order type based on what's being sold
             order_type = "SELL HIVE" if isinstance(order_info.original_sell_asset, Asset.Hive) else "SELL HBD"
 
-            # Calculate price
-            price_str = f"{order_info.price:.6f}"
+            # Calculate price normalized to HBD/HIVE
+            normalized_price = get_normalized_price(order_info)
+            price_str = f"{normalized_price:.6f}"
 
             table.add_row(
                 f"{order_info.orderid}",
                 order_type,
-                f"{Asset.to_legacy(order_info.original_sell_asset)}",
-                f"{Asset.to_legacy(order_info.original_receive_asset)}",
-                f"{Asset.to_legacy(order_info.remaining_sell_asset)}",
-                f"{Asset.to_legacy(order_info.remaining_receive_asset)}",
+                Asset.pretty_amount(order_info.original_sell_asset),
+                Asset.pretty_amount(order_info.original_receive_asset),
+                Asset.pretty_amount(order_info.remaining_sell_asset),
+                Asset.pretty_amount(order_info.remaining_receive_asset),
                 price_str,
-                f"{humanize_datetime(order_info.created)}",
-                f"{humanize_datetime(order_info.expiration)}",
+                humanize_datetime(order_info.created, with_time=False),
+                humanize_datetime(order_info.expiration, with_time=False),
             )
         print_cli(table)

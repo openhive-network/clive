@@ -7,6 +7,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
+from clive.__private.cli.common.parameters.styling import stylized_help
 from clive.__private.cli.common.parsers import hive_datetime, liquid_asset, price
 
 if TYPE_CHECKING:
@@ -20,10 +21,6 @@ Manage limit orders on the internal HIVE/HBD market.
 The internal market allows direct trading between HIVE and HBD without external exchanges.
 Limit orders specify a price at which you're willing to trade and remain open until
 filled, cancelled, or expired (default: 28 days).
-
-Commands:
-  create - Create a new limit order (sell HIVE for HBD or sell HBD for HIVE)
-  cancel - Cancel an existing limit order
 
 To view your open orders: clive show orders
 To view all market orders: clive show orders --account-name <any_account>
@@ -76,7 +73,9 @@ async def process_order_create(  # noqa: PLR0913
         None,
         "--expiration",
         parser=hive_datetime,
-        help="When the order expires (e.g., YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS). Default: 28 days from now.",
+        help=stylized_help(
+            "When the order expires (e.g., YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS).", default="28 days from now"
+        ),
     ),
     fill_or_kill: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
