@@ -15,17 +15,16 @@ from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+    from pathlib import Path
+
     from beekeepy import AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
-
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.node import Node
@@ -67,9 +66,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
             Format is determined by file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
         force_save_format: The format to force when saving. Matters only when save_file_path is specified.
         broadcast: Whether to broadcast the transaction.
-
-    Returns:
-    The transaction object.
+        expiration: The transaction expiration duration.
+        force_update_metadata: Whether to force updating transaction metadata even when TaPoS is already set.
     """
 
     content: TransactionConvertibleType
@@ -88,9 +86,16 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
     broadcast: bool = False
+    expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+    force_update_metadata: bool = False
 
     async def _execute(self) -> None:
-        transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
+        transaction = await BuildTransaction(
+            content=self.content,
+            node=self.node,
+            expiration=self.expiration,
+            force_update_metadata=self.force_update_metadata,
+        ).execute_with_result()
 
         if not self.force_unsign and (self.sign_key or self.autosign):
             assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"

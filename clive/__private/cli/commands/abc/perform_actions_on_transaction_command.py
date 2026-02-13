@@ -63,6 +63,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool | None = None
+    update_metadata: bool = False
     _transaction: Transaction | None = None
 
     @abstractmethod
@@ -140,6 +141,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self.validate_all_mutually_exclusive_options()
         self._validate_already_signed_mode()
         self._validate_save_file_path()
+        self._validate_update_metadata()
         await super().validate()
 
     def validate_all_mutually_exclusive_options(self) -> None:
@@ -180,6 +182,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                     save_file_path=self.save_file_path,
                     broadcast=self.should_broadcast,
                     autosign=self.use_autosign,
+                    force_update_metadata=self.update_metadata,
                 )
             ).result_or_raise
 
@@ -203,6 +206,16 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._validate_mutually_exclusive(
             broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
         )
+
+    def _validate_update_metadata(self) -> None:
+        if not self.update_metadata:
+            return
+        if not self.force_unsign and self.already_signed_mode != "override":
+            raise CLIPrettyError(
+                "'--update-metadata' requires '--force-unsign' or '--already-signed-mode=override',\n"
+                "because changing metadata invalidates existing transaction signatures.\n"
+                "Use `clive configure transaction-expiration` to set the expiration value."
+            )
 
     def _validate_already_signed_mode(self) -> None:
         if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:

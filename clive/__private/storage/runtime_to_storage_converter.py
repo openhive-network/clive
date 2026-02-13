@@ -39,6 +39,7 @@ class RuntimeToStorageConverter:
             node_address=str(self._profile.node_address),
             tui_theme=self._profile.tui_theme,
             should_enable_known_accounts=self._profile.should_enable_known_accounts,
+            transaction_expiration=self._profile.transaction_expiration_custom,
         )
 
     def _working_account_to_model_representation(self) -> str | None:

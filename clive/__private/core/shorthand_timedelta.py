@@ -8,6 +8,7 @@ from clive.__private.core.constants.date import SECONDS_IN_DAY, SECONDS_IN_HOUR,
 from clive.exceptions import CliveError
 
 SHORTHAND_TIMEDELTA_EXAMPLE: Final[str] = 'hH - hours, dD - days, wW - weeks e.g. "24h" or "2d 2h"'
+SHORTHAND_TIMEDELTA_EXAMPLE_SHORT: Final[str] = 'sS - seconds, mM - minutes, hH - hours e.g. "1h" or "12h 30m"'
 TIMEDELTA_EXAMPLE: Final[str] = 'e.g. "timedelta(weeks=1, days=2, hours=3)"'
 
 

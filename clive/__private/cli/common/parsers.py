@@ -150,6 +150,22 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     raise typer.BadParameter(humanize_validation_result(status))
 
 
+@rename("text")
+def transaction_expiration_parser(raw: str) -> timedelta:
+    from clive.__private.core.shorthand_timedelta import (  # noqa: PLC0415
+        SHORTHAND_TIMEDELTA_EXAMPLE,
+        InvalidShorthandToTimedeltaError,
+        shorthand_timedelta_to_timedelta,
+    )
+
+    try:
+        return shorthand_timedelta_to_timedelta(raw)
+    except InvalidShorthandToTimedeltaError:
+        raise typer.BadParameter(
+            f"Invalid transaction expiration format: `{raw}`.\nPlease use {SHORTHAND_TIMEDELTA_EXAMPLE}."
+        ) from None
+
+
 def public_key(raw: str) -> PublicKey:
     from clive.__private.core.keys.keys import PublicKey, PublicKeyInvalidFormatError  # noqa: PLC0415
 

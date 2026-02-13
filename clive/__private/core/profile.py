@@ -6,6 +6,11 @@ from typing import TYPE_CHECKING, Final
 import beekeepy.interfaces as bki
 
 from clive.__private.core.accounts.account_manager import AccountManager
+from clive.__private.core.constants.date import (
+    TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT,
+    TRANSACTION_EXPIRATION_TIMEDELTA_MAX,
+    TRANSACTION_EXPIRATION_TIMEDELTA_MIN,
+)
 from clive.__private.core.constants.tui.themes import DEFAULT_THEME
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
@@ -20,6 +25,7 @@ from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from datetime import timedelta
     from pathlib import Path
     from typing import Self
 
@@ -38,6 +44,28 @@ class InvalidChainIdError(ProfileError):
 
     def __init__(self) -> None:
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
+
+
+class InvalidTransactionExpirationError(ProfileError):
+    """
+    Raised when the given transaction expiration is outside the allowed range.
+
+    Args:
+        value: The expiration value that was rejected.
+    """
+
+    def __init__(self, value: timedelta) -> None:
+        from clive.__private.core.shorthand_timedelta import timedelta_to_shorthand_timedelta  # noqa: PLC0415
+
+        min_display = timedelta_to_shorthand_timedelta(TRANSACTION_EXPIRATION_TIMEDELTA_MIN)
+        min_seconds = int(TRANSACTION_EXPIRATION_TIMEDELTA_MIN.total_seconds())
+        max_display = timedelta_to_shorthand_timedelta(TRANSACTION_EXPIRATION_TIMEDELTA_MAX)
+        max_seconds = int(TRANSACTION_EXPIRATION_TIMEDELTA_MAX.total_seconds())
+        total_seconds = int(value.total_seconds())
+        super().__init__(
+            f"Transaction expiration must be between {min_display} ({min_seconds}s)"
+            f" and {max_display} ({max_seconds}s). Got: {total_seconds}s."
+        )
 
 
 class ProfileInvalidNameError(ProfileError):
@@ -66,6 +94,7 @@ class Profile:
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
         tui_theme: str = DEFAULT_THEME,
+        transaction_expiration: timedelta | None = None,
         *,
         should_enable_known_accounts: bool = True,
     ) -> None:
@@ -86,6 +115,10 @@ class Profile:
         self._chain_id: str | None = None
         self.set_chain_id(chain_id or self._default_chain_id())
         self.tui_theme: str = tui_theme
+
+        self._transaction_expiration: timedelta | None = None
+        if transaction_expiration is not None:
+            self.set_transaction_expiration(transaction_expiration)
 
         self._skip_save = False
         self._hash_of_stored_profile: int | None = None
@@ -166,6 +199,36 @@ class Profile:
         """When no chain_id is set, it should be fetched from the node api."""
         self._chain_id = None
 
+    @property
+    def transaction_expiration(self) -> timedelta:
+        """Return the effective transaction expiration."""
+        if self._transaction_expiration is None:
+            return TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+        return self._transaction_expiration
+
+    @property
+    def transaction_expiration_custom(self) -> timedelta | None:
+        """Return the custom transaction expiration, or None if using default."""
+        return self._transaction_expiration
+
+    def unset_transaction_expiration(self) -> None:
+        """Reset the transaction expiration to the default."""
+        self._transaction_expiration = None
+
+    def set_transaction_expiration(self, value: timedelta) -> None:
+        """
+        Set the transaction expiration.
+
+        Args:
+            value: Expiration duration. Must be between 3s (block interval) and 24h (86400s).
+
+        Raises:
+            InvalidTransactionExpirationError: If the value is out of valid range.
+        """
+        if value < TRANSACTION_EXPIRATION_TIMEDELTA_MIN or value > TRANSACTION_EXPIRATION_TIMEDELTA_MAX:
+            raise InvalidTransactionExpirationError(value)
+        self._transaction_expiration = value
+
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
         self._skip_save = True
@@ -234,6 +297,7 @@ class Profile:
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
         tui_theme: str = DEFAULT_THEME,
+        transaction_expiration: timedelta | None = None,
         *,
         should_enable_known_accounts: bool = True,
     ) -> Profile:
@@ -249,6 +313,7 @@ class Profile:
             chain_id,
             node_address,
             tui_theme,
+            transaction_expiration,
             should_enable_known_accounts=should_enable_known_accounts,
         )
 
@@ -310,6 +375,7 @@ class Profile:
         chain_id: str | None = None,
         node_address: str | HttpUrl | None = None,
         tui_theme: str = DEFAULT_THEME,
+        transaction_expiration: timedelta | None = None,
         *,
         should_enable_known_accounts: bool = True,
     ) -> Self:
@@ -326,6 +392,7 @@ class Profile:
             chain_id,
             node_address,
             tui_theme,
+            transaction_expiration,
             should_enable_known_accounts=should_enable_known_accounts,
         )
 
