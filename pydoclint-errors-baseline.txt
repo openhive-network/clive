@@ -52,10 +52,8 @@ clive/__private/cli/commands/process/process_escrow.py
 clive/__private/cli/commands/process/process_order.py
     DOC501: Method `ProcessOrderCreate._validate_price_specification` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ProcessOrderCreate._validate_price_specification` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderMissingPriceSpecificationError', 'OrderMutuallyExclusiveOptionsError'].
-    DOC101: Method `ProcessOrderCreate._validate_expiration_against_head_block_time`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `ProcessOrderCreate._validate_expiration_against_head_block_time`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [head_block_time: datetime].
     DOC501: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderInvalidExpirationError'].
+    DOC503: Method `ProcessOrderCreate._validate_expiration_against_head_block_time` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderExpirationNotInFutureError', 'OrderExpirationTooFarInFutureError'].
     DOC501: Method `ProcessOrderCreate._validate_assets` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ProcessOrderCreate._validate_assets` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['OrderSameAssetError'].
     DOC201: Method `ProcessOrderCreate._get_min_to_receive_from_price` does not have a return section in docstring
@@ -93,11 +91,6 @@ clive/__private/cli/common/parsers.py
     DOC201: Function `_parse_asset` does not have a return section in docstring
     DOC501: Function `_parse_asset` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `_parse_asset` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.BadParameter'].
-    DOC101: Function `price`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `price`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [raw: str].
-    DOC201: Function `price` does not have a return section in docstring
-    DOC501: Function `price` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `price` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.BadParameter'].
 --------------------
 clive/__private/cli/configure/chain_id.py
     DOC101: Function `set_chain_id`: Docstring contains fewer arguments than in function signature.
@@ -156,8 +149,6 @@ clive/__private/cli/exceptions.py
     DOC103: Method `EscrowAlreadyApprovedError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [role: str].
     DOC101: Method `EscrowReleaseNotAllowedError.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `EscrowReleaseNotAllowedError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
-    DOC101: Method `OrderInvalidExpirationError.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `OrderInvalidExpirationError.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reason: str].
 --------------------
 clive/__private/cli/generate/main.py
     DOC101: Function `generate_key_from_seed`: Docstring contains fewer arguments than in function signature.

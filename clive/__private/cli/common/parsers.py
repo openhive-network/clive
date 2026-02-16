@@ -207,26 +207,3 @@ def hive_datetime(raw: str) -> datetime | timedelta:
         f"Invalid datetime format: '{raw}'. "
         "Expected format: YYYY-MM-DD[THH[:MM[:SS]]] or relative (+7d, +2w, +1d 12h). Time is UTC."
     ) from None
-
-
-@rename("PRICE")
-def price(raw: str) -> Decimal:
-    """Parse a price value (positive decimal number with max 6 decimal places)."""
-    from decimal import Decimal as Dec  # noqa: PLC0415
-    from decimal import InvalidOperation  # noqa: PLC0415
-
-    max_decimal_places = 6
-
-    try:
-        value = Dec(raw)
-    except InvalidOperation:
-        raise typer.BadParameter(f"Invalid price format: '{raw}'. Expected a decimal number.") from None
-
-    if value <= 0:
-        raise typer.BadParameter("Price must be a positive number.")
-
-    exponent = value.as_tuple().exponent
-    if isinstance(exponent, int) and exponent < -max_decimal_places:
-        raise typer.BadParameter(f"Price cannot have more than {max_decimal_places} decimal places.")
-
-    return value

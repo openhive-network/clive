@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import (
+    OrderExpirationNotInFutureError,
+    OrderExpirationTooFarInFutureError,
     OrderFillOrKillNotFilledError,
-    OrderInvalidExpirationError,
     OrderMissingPriceSpecificationError,
     OrderMutuallyExclusiveOptionsError,
     OrderSameAssetError,
@@ -22,8 +23,6 @@ from clive.__private.models.schemas import (
 )
 
 if TYPE_CHECKING:
-    from decimal import Decimal
-
     from clive.__private.cli.types import ComposeTransaction
     from clive.__private.core.commands.data_retrieval.order_data import OrderData
     from clive.__private.models.asset import Asset
@@ -37,10 +36,11 @@ class ProcessOrderCreate(OperationCommand):
     from_account: str
     amount_to_sell: Asset.LiquidT
     min_to_receive: Asset.LiquidT | None = None
-    price: Decimal | None = None
+    price: Asset.Hbd | None = None
     order_id: int | None = None
     expiration: datetime | None = None
     fill_or_kill: bool = False
+    _head_block_time: datetime | None = None
 
     @property
     def order_id_ensure(self) -> int:
@@ -68,14 +68,17 @@ class ProcessOrderCreate(OperationCommand):
         if self.min_to_receive is None and self.price is None:
             raise OrderMissingPriceSpecificationError
 
-    async def _validate_expiration_against_head_block_time(self, head_block_time: datetime) -> None:
+    async def _validate_expiration_against_head_block_time(self) -> None:
         """Validate that expiration is in the future relative to head_block_time."""
-        if self.expiration is not None:
-            expiration = self.expiration
-            if expiration.tzinfo is None:
-                expiration = expiration.replace(tzinfo=UTC)
-            if expiration <= head_block_time:
-                raise OrderInvalidExpirationError("Expiration must be in the future.")
+        assert self._head_block_time is not None, "head_block_time should be set at this point"
+        expiration = self.expiration
+        assert isinstance(expiration, datetime), "expiration should be resolved to datetime at this point"
+        if expiration.tzinfo is None:
+            expiration = expiration.replace(tzinfo=UTC)
+        if expiration <= self._head_block_time:
+            raise OrderExpirationNotInFutureError
+        if expiration > self._head_block_time + timedelta(days=DEFAULT_EXPIRATION_DAYS):
+            raise OrderExpirationTooFarInFutureError
 
     def _validate_assets(self) -> None:
         """Validate that amount_to_sell and min_to_receive are different asset types."""
@@ -94,7 +97,8 @@ class ProcessOrderCreate(OperationCommand):
         assert self.price is not None, "price should be set at this point"
 
         amount = Asset.as_decimal(self.amount_to_sell)
-        calculated_amount = amount * self.price
+        price_value = Asset.as_decimal(self.price)
+        calculated_amount = amount * price_value
 
         # Determine the opposite asset type
         if isinstance(self.amount_to_sell, Asset.Hive):
@@ -115,19 +119,26 @@ class ProcessOrderCreate(OperationCommand):
         dgpo = await self.world.node.api.database_api.get_dynamic_global_properties()
         head_block_time = dgpo.time
 
-        # Validate user-provided expiration against head_block_time
-        await self._validate_expiration_against_head_block_time(head_block_time)
+        # Resolve relative timedelta to absolute datetime
+        if isinstance(self.expiration, timedelta):
+            self.expiration = head_block_time + self.expiration
 
         # Set default expiration if not specified
         # Use head_block_time from the node as reference to ensure expiration is valid
         if self.expiration is None:
             self.expiration = head_block_time + timedelta(days=DEFAULT_EXPIRATION_DAYS)
 
+        self._head_block_time = head_block_time
+
         # Auto-generate order_id if not specified
         if self.order_id is None:
             wrapper = await self.world.commands.retrieve_order_data(account_name=self.from_account)
             order_data: OrderData = wrapper.result_or_raise
             self.order_id = order_data.create_order_id()
+
+    async def validate_inside_context_manager(self) -> None:
+        await super().validate_inside_context_manager()
+        await self._validate_expiration_against_head_block_time()
 
     async def _run(self) -> None:
         try:

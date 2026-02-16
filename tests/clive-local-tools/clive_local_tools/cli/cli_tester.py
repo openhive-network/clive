@@ -805,7 +805,7 @@ class CLITester:
         from_: str | None = None,
         amount_to_sell: tt.Asset.HiveT | tt.Asset.HbdT,
         min_to_receive: tt.Asset.HiveT | tt.Asset.HbdT | None = None,
-        price: Decimal | None = None,
+        price: tt.Asset.HbdT | None = None,
         order_id: int | None = None,
         expiration: str | None = None,
         fill_or_kill: bool | None = None,

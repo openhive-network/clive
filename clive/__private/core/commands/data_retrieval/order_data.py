@@ -99,12 +99,9 @@ class OrderInfo:
 class OrderData:
     orders: list[OrderInfo]
 
-    def create_order_id(self, *, future_order_ids: list[int] | None = None) -> int:
+    def create_order_id(self) -> int:
         """
         Calculate the next available order id for LimitOrderCreateOperation.
-
-        Args:
-            future_order_ids: Future order ids to include in calculation. (e.g. already stored in the cart)
 
         Raises:
             RequestIdError: If the maximum number of order ids is exceeded.
@@ -114,16 +111,14 @@ class OrderData:
         """
         max_number_of_order_ids: Final[int] = 100
 
-        future_order_ids = future_order_ids or []
         existing_ids = [o.orderid for o in self.orders]
-        all_ids = existing_ids + future_order_ids
-        if not all_ids:
+        if not existing_ids:
             return 0
 
-        if len(all_ids) >= max_number_of_order_ids:
+        if len(existing_ids) >= max_number_of_order_ids:
             raise RequestIdError("Maximum quantity of order ids is 100")
 
-        last_occupied_id = max(all_ids)
+        last_occupied_id = max(existing_ids)
         return last_occupied_id + 1
 
 
@@ -141,13 +136,13 @@ class OrderDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, O
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(
-            orders=self.__assert_orders(data.orders),
+            orders=self._assert_orders(data.orders),
         )
 
     async def _process_data(self, data: SanitizedData) -> OrderData:
         orders = [OrderInfo.from_fundament(order) for order in data.orders]
         return OrderData(orders=orders)
 
-    def __assert_orders(self, data: FindLimitOrders | None) -> list[LimitOrdersFundament]:
+    def _assert_orders(self, data: FindLimitOrders | None) -> list[LimitOrdersFundament]:
         assert data is not None, "FindLimitOrders data is missing"
         return data.orders

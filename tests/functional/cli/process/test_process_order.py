@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from decimal import Decimal
 from typing import TYPE_CHECKING, Final
 
 import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import (
+    OrderExpirationNotInFutureError,
     OrderFillOrKillNotFilledError,
-    OrderInvalidExpirationError,
     OrderMissingPriceSpecificationError,
     OrderMutuallyExclusiveOptionsError,
     OrderSameAssetError,
@@ -69,7 +68,7 @@ async def test_process_order_create_with_price(
     """Test clive process order create with --price option uses LimitOrderCreate2Operation."""
     # ARRANGE
     order_id = 2
-    price = Decimal("0.25")  # 0.25 HBD per HIVE
+    price = tt.Asset.Tbd(0.25)  # 0.250 TBD per TESTS
 
     # ACT
     result = cli_tester.process_order_create(
@@ -92,7 +91,7 @@ async def test_process_order_create_with_price_sell_hbd(
     """Test clive process order create with --price option when selling HBD."""
     # ARRANGE
     order_id = 70
-    price = Decimal("4.0")  # 4 HIVE per HBD
+    price = tt.Asset.Tbd(4)  # 4.000 TBD per TBD
 
     # ACT
     result = cli_tester.process_order_create(
@@ -353,7 +352,7 @@ async def test_process_order_create_past_expiration_error(
     past_expiration = "2000-01-01T00:00:00"
     order_id = 31
 
-    expected_error = get_formatted_error_message(OrderInvalidExpirationError("Expiration must be in the future."))
+    expected_error = get_formatted_error_message(OrderExpirationNotInFutureError())
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=expected_error):
@@ -374,7 +373,7 @@ async def test_process_order_create_both_min_and_price_error(
     """Test that order create fails when both --min-to-receive and --price are specified."""
     # ARRANGE
     order_id = 32
-    price = Decimal("0.25")
+    price = tt.Asset.Tbd(0.25)
 
     expected_error = get_formatted_error_message(OrderMutuallyExclusiveOptionsError())
 
@@ -405,24 +404,6 @@ async def test_process_order_create_neither_min_nor_price_error(
         cli_tester.process_order_create(
             from_=WORKING_ACCOUNT_NAME,
             amount_to_sell=HIVE_AMOUNT,
-            order_id=order_id,
-            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
-        )
-
-
-async def test_process_order_create_price_too_many_decimals_error(
-    node: tt.RawNode,  # noqa: ARG001
-    cli_tester: CLITester,
-) -> None:
-    """Test that order create fails when price has too many decimal places."""
-    order_id = 60
-    price_too_precise = Decimal("0.1234567")  # 7 decimal places
-
-    with pytest.raises(CLITestCommandError, match="cannot have more than 6 decimal places"):
-        cli_tester.process_order_create(
-            from_=WORKING_ACCOUNT_NAME,
-            amount_to_sell=HIVE_AMOUNT,
-            price=price_too_precise,
             order_id=order_id,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )

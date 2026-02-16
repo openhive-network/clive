@@ -714,11 +714,19 @@ class OrderSameAssetError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
-class OrderInvalidExpirationError(CLIPrettyError):
-    """Raise when order expiration is invalid."""
+class OrderExpirationNotInFutureError(CLIPrettyError):
+    """Raise when order expiration is not in the future."""
 
-    def __init__(self, reason: str) -> None:
-        message = f"Invalid order expiration: {reason}"
+    def __init__(self) -> None:
+        message = "Invalid order expiration: Expiration must be in the future."
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderExpirationTooFarInFutureError(CLIPrettyError):
+    """Raise when order expiration exceeds maximum allowed days."""
+
+    def __init__(self) -> None:
+        message = "Invalid order expiration: Expiration cannot be more than 28 days in the future."
         super().__init__(message, errno.EINVAL)
 
 

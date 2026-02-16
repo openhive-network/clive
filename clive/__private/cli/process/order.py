@@ -8,11 +8,9 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters.styling import stylized_help
-from clive.__private.cli.common.parsers import hive_datetime, liquid_asset, price
+from clive.__private.cli.common.parsers import hbd_asset, hive_datetime, liquid_asset
 
 if TYPE_CHECKING:
-    from decimal import Decimal
-
     from clive.__private.models.asset import Asset
 
 ORDER_HELP = """\
@@ -29,8 +27,8 @@ Examples:
   # Sell 100 HIVE for at least 25 HBD
   clive process order create --amount-to-sell "100.000 HIVE" --min-to-receive "25.000 HBD"
 
-  # Sell 100 HIVE at 0.25 HBD per HIVE (equivalent to above)
-  clive process order create --amount-to-sell "100.000 HIVE" --price 0.25
+  # Sell 100 HIVE at 0.250 HBD per HIVE (equivalent to above)
+  clive process order create --amount-to-sell "100.000 HIVE" --price "0.250 HBD"
 
   # Sell HBD for HIVE
   clive process order create --amount-to-sell "25.000 HBD" --min-to-receive "100.000 HIVE"
@@ -57,11 +55,11 @@ async def process_order_create(  # noqa: PLR0913
     price_value: str | None = typer.Option(
         None,
         "--price",
-        parser=price,
+        parser=hbd_asset,
         help=(
-            "Price per unit of sold asset. Example: 0.25 means you'll receive 0.25 of the opposite "
-            "asset for each unit sold (0.25 HBD per HIVE when selling HIVE, or 0.25 HIVE per HBD "
-            "when selling HBD). Mutually exclusive with --min-to-receive. Max 6 decimal places."
+            "Price of 1 HIVE in HBD (e.g., 0.25hbd). "
+            "When selling HIVE, you receive HBD; when selling HBD, you receive HIVE. "
+            "Mutually exclusive with --min-to-receive."
         ),
     ),
     order_id: int | None = typer.Option(
@@ -74,7 +72,9 @@ async def process_order_create(  # noqa: PLR0913
         "--expiration",
         parser=hive_datetime,
         help=stylized_help(
-            "When the order expires (e.g., YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS).", default="28 days from now"
+            "When the order expires (max 28 days)."
+            " Formats: absolute (2024-12-31, 2024-12-31T14:30:00) or relative (+14d, +2w).",
+            default="28 days from now",
         ),
     ),
     fill_or_kill: bool = typer.Option(  # noqa: FBT001
@@ -98,7 +98,7 @@ async def process_order_create(  # noqa: PLR0913
         from_account=from_account,
         amount_to_sell=cast("Asset.LiquidT", amount_to_sell),
         min_to_receive=cast("Asset.LiquidT | None", min_to_receive),
-        price=cast("Decimal | None", price_value),
+        price=cast("Asset.Hbd | None", price_value),
         order_id=order_id,
         expiration=expiration,
         fill_or_kill=fill_or_kill,
