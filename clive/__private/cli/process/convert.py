@@ -27,30 +27,24 @@ async def process_convert(  # noqa: PLR0913
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    r"""
+    """
     Convert assets between HBD and HIVE.
 
     The --amount specifies what will be TAKEN from your balance, not what you will receive.
 
     Conversion types (determined by asset type in --amount):
 
-    \b
-    - HBD → HIVE: Standard conversion. HBD is taken immediately; HIVE is received
-      after 3.5 days based on median feed price at that time.
+    HBD → HIVE: Standard conversion. HBD is taken immediately; HIVE is received after 3.5 days
+    based on median feed price at that time.
 
-    \b
-    - HIVE → HBD: Collateralized conversion. All specified HIVE is locked as
-      collateral. The process has two phases:
-
-      First half - instant HBD payout: You receive HBD right away, calculated from
-      half the HIVE amount: (HIVE_amount / 2) * min_feed_price / 1.05. Uses the
-      minimum feed price with a 5% fee to prevent gaming.
-
-      Second half - collateral settlement after 3.5 days: The blockchain calculates
-      how much HIVE is needed to cover the HBD already paid out (using median feed
-      price + 5% fee) and returns the excess collateral as HIVE. The returned amount
-      depends on price changes during this period - if HIVE price rises, you get back
-      more; if it drops, you get back less.
+    HIVE → HBD: Collateralized conversion. All specified HIVE is locked as collateral.
+    First half - instant HBD payout: You receive HBD right away, calculated from half the HIVE
+    amount: (HIVE_amount / 2) * min_feed_price / 1.05. Uses the minimum feed price with a 5% fee
+    to prevent gaming.
+    Second half - collateral settlement after 3.5 days: The blockchain calculates how much HIVE
+    is needed to cover the HBD already paid out (using median feed price + 5% fee) and returns
+    the excess collateral as HIVE. The returned amount depends on price changes during this
+    period - if HIVE price rises, you get back more; if it drops, you get back less.
     """
     from clive.__private.cli.commands.process.process_convert import (  # noqa: PLC0415
         ProcessCollateralizedConvert,
