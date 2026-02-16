@@ -34,7 +34,14 @@ class SanitizedData:
 
 @dataclass
 class HbdConversionRequest:
-    """HBD → HIVE conversion request (standard conversion)."""
+    """
+    HBD → HIVE conversion request (standard conversion).
+
+    Attributes:
+        request_id: The unique identifier of the conversion request.
+        amount: The amount of HBD being converted.
+        conversion_date: The date when the conversion will be completed.
+    """
 
     request_id: int
     amount: AssetHbd
@@ -43,7 +50,15 @@ class HbdConversionRequest:
 
 @dataclass
 class CollateralizedConversionRequest:
-    """HIVE → HBD conversion request (collateralized conversion)."""
+    """
+    HIVE → HBD conversion request (collateralized conversion).
+
+    Attributes:
+        request_id: The unique identifier of the conversion request.
+        collateral_amount: The amount of HIVE used as collateral.
+        converted_amount: The amount of HBD received from the conversion.
+        conversion_date: The date when the conversion will be completed.
+    """
 
     request_id: int
     collateral_amount: AssetHive
@@ -53,7 +68,13 @@ class CollateralizedConversionRequest:
 
 @dataclass
 class ConvertData:
-    """Data about pending conversions for an account."""
+    """
+    Data about pending conversions for an account.
+
+    Attributes:
+        hbd_conversions: HBD → HIVE conversions (standard).
+        collateralized_conversions: HIVE → HBD conversions (collateralized).
+    """
 
     hbd_conversions: list[HbdConversionRequest]
     collateralized_conversions: list[CollateralizedConversionRequest]
