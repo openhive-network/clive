@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -13,9 +14,8 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class ProcessConvert(OperationCommand):
+class _ProcessConvertBase(OperationCommand):
     owner: str
-    amount: Asset.Hbd
     request_id: int | None = None
 
     @property
@@ -23,12 +23,23 @@ class ProcessConvert(OperationCommand):
         assert self.request_id is not None, "request_id should be set at this point"
         return self.request_id
 
+    @abstractmethod
+    def _get_request_id_from_data(self, convert_data: ConvertData) -> int: ...
+
     async def fetch_data(self) -> None:
         await super().fetch_data()
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_convert_data(account_name=self.profile.accounts.working.name)
             convert_data: ConvertData = wrapper.result_or_raise
-            self.request_id = convert_data.create_request_id_for_hbd_conversion()
+            self.request_id = self._get_request_id_from_data(convert_data)
+
+
+@dataclass(kw_only=True)
+class ProcessConvert(_ProcessConvertBase):
+    amount: Asset.Hbd
+
+    def _get_request_id_from_data(self, convert_data: ConvertData) -> int:
+        return convert_data.create_request_id_for_hbd_conversion()
 
     async def _create_operations(self) -> ComposeTransaction:
         yield ConvertOperation(
@@ -39,22 +50,11 @@ class ProcessConvert(OperationCommand):
 
 
 @dataclass(kw_only=True)
-class ProcessCollateralizedConvert(OperationCommand):
-    owner: str
+class ProcessCollateralizedConvert(_ProcessConvertBase):
     amount: Asset.Hive
-    request_id: int | None = None
 
-    @property
-    def request_id_ensure(self) -> int:
-        assert self.request_id is not None, "request_id should be set at this point"
-        return self.request_id
-
-    async def fetch_data(self) -> None:
-        await super().fetch_data()
-        if self.request_id is None:
-            wrapper = await self.world.commands.retrieve_convert_data(account_name=self.profile.accounts.working.name)
-            convert_data: ConvertData = wrapper.result_or_raise
-            self.request_id = convert_data.create_request_id_for_collateralized_conversion()
+    def _get_request_id_from_data(self, convert_data: ConvertData) -> int:
+        return convert_data.create_request_id_for_collateralized_conversion()
 
     async def _create_operations(self) -> ComposeTransaction:
         yield CollateralizedConvertOperation(

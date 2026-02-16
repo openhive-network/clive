@@ -56,17 +56,11 @@ class ConvertData:
     """Data about pending conversions for an account."""
 
     hbd_conversions: list[HbdConversionRequest]
-    """HBD → HIVE conversions (standard)."""
-
     collateralized_conversions: list[CollateralizedConversionRequest]
-    """HIVE → HBD conversions (collateralized)."""
 
     def create_request_id_for_hbd_conversion(self) -> int:
         """
         Calculate the next available request id for HBD → HIVE conversions.
-
-        Raises:
-            RequestIdError: If the maximum number of request ids is exceeded.
 
         Returns:
             The next available request id.
@@ -77,9 +71,6 @@ class ConvertData:
         """
         Calculate the next available request id for HIVE → HBD conversions.
 
-        Raises:
-            RequestIdError: If the maximum number of request ids is exceeded.
-
         Returns:
             The next available request id.
         """
@@ -88,7 +79,18 @@ class ConvertData:
     def _calculate_next_request_id(
         self, conversions: list[HbdConversionRequest] | list[CollateralizedConversionRequest]
     ) -> int:
-        """Calculate next request id from given conversion list."""
+        """
+        Calculate next request id from given conversion list.
+
+        Args:
+            conversions: List of existing conversion requests.
+
+        Returns:
+            The next available request id.
+
+        Raises:
+            RequestIdError: If the maximum number of request ids is exceeded.
+        """
         max_number_of_request_ids: Final[int] = 100
 
         request_ids = [req.request_id for req in conversions]

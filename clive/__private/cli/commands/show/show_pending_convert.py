@@ -7,8 +7,7 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.print_cli import print_cli, print_content_not_available
-from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.models.asset import Asset
+from clive.__private.core.formatters.humanize import humanize_asset, humanize_datetime
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.convert_data import ConvertData
@@ -45,8 +44,8 @@ class ShowPendingConvert(WorldBasedCommand):
         for conversion in result.hbd_conversions:
             table.add_row(
                 f"{conversion.request_id}",
-                f"{Asset.to_legacy(conversion.amount)}",
-                f"{humanize_datetime(conversion.conversion_date)}",
+                humanize_asset(conversion.amount),
+                humanize_datetime(conversion.conversion_date),
             )
         print_cli(table)
 
@@ -61,8 +60,8 @@ class ShowPendingConvert(WorldBasedCommand):
         for conversion in result.collateralized_conversions:
             table.add_row(
                 f"{conversion.request_id}",
-                f"{Asset.to_legacy(conversion.collateral_amount)}",
-                f"{Asset.to_legacy(conversion.converted_amount)}",
-                f"{humanize_datetime(conversion.conversion_date)}",
+                humanize_asset(conversion.collateral_amount),
+                humanize_asset(conversion.converted_amount),
+                humanize_datetime(conversion.conversion_date),
             )
         print_cli(table)

@@ -10,32 +10,7 @@ from clive.__private.cli.common import options
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
 
-convert = CliveTyper(
-    name="convert",
-    help="""\
-Convert assets between HBD and HIVE.
-
-The --amount specifies what will be TAKEN from your balance, not what you will receive.
-
-Conversion types (determined by asset type in --amount):
-
-- HBD → HIVE: Standard conversion. HBD is taken immediately; HIVE is received
-  after 3.5 days based on median feed price at that time.
-
-- HIVE → HBD: Collateralized conversion. All specified HIVE is locked as
-  collateral. The process has two phases:
-
-  First half - instant HBD payout: You receive HBD right away, calculated from
-  half the HIVE amount: (HIVE_amount / 2) * min_feed_price / 1.05. Uses the
-  minimum feed price with a 5% fee to prevent gaming.
-
-  Second half - collateral settlement after 3.5 days: The blockchain calculates
-  how much HIVE is needed to cover the HBD already paid out (using median feed
-  price + 5% fee) and returns the excess collateral as HIVE. The returned amount
-  depends on price changes during this period - if HIVE price rises, you get back
-  more; if it drops, you get back less.
-""",
-)
+convert = CliveTyper(name="convert")
 
 
 @convert.callback(invoke_without_command=True)
@@ -52,7 +27,31 @@ async def process_convert(  # noqa: PLR0913
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
 ) -> None:
-    # Help text is defined in the CliveTyper help parameter above
+    r"""
+    Convert assets between HBD and HIVE.
+
+    The --amount specifies what will be TAKEN from your balance, not what you will receive.
+
+    Conversion types (determined by asset type in --amount):
+
+    \b
+    - HBD → HIVE: Standard conversion. HBD is taken immediately; HIVE is received
+      after 3.5 days based on median feed price at that time.
+
+    \b
+    - HIVE → HBD: Collateralized conversion. All specified HIVE is locked as
+      collateral. The process has two phases:
+
+      First half - instant HBD payout: You receive HBD right away, calculated from
+      half the HIVE amount: (HIVE_amount / 2) * min_feed_price / 1.05. Uses the
+      minimum feed price with a 5% fee to prevent gaming.
+
+      Second half - collateral settlement after 3.5 days: The blockchain calculates
+      how much HIVE is needed to cover the HBD already paid out (using median feed
+      price + 5% fee) and returns the excess collateral as HIVE. The returned amount
+      depends on price changes during this period - if HIVE price rises, you get back
+      more; if it drops, you get back less.
+    """
     from clive.__private.cli.commands.process.process_convert import (  # noqa: PLC0415
         ProcessCollateralizedConvert,
         ProcessConvert,

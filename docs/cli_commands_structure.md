@@ -54,6 +54,7 @@ clive
 │ ├── owner-authority
 │ ├── pending
 │ │ ├── change-recovery-account
+│ │ ├── convert
 │ │ ├── decline-voting-rights
 │ │ ├── power-down
 │ │ ├── power-ups
@@ -75,6 +76,7 @@ clive
 │ ├── claim
 │ │ ├── new-account-token
 │ │ └── rewards
+│ ├── convert
 │ ├── custom-json
 │ ├── delegations
 │ │ ├── remove

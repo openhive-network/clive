@@ -688,6 +688,9 @@ class CLITester:
             ["show", "pending", "decline-voting-rights"], account_name=account_name
         )
 
+    def show_pending_convert(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "pending", "convert"], account_name=account_name)
+
     def crypto_decrypt(self, *, encrypted_memo: str) -> CLITestResult:
         return self.__invoke_command_with_options(["crypto", "decrypt"], (encrypted_memo,))
 
