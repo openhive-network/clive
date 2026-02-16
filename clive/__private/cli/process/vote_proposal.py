@@ -19,7 +19,7 @@ _proposal_id = typer.Option(
 async def process_vote_proposal_add(  # noqa: PLR0913
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -42,7 +42,7 @@ async def process_vote_proposal_add(  # noqa: PLR0913
 async def process_vote_proposal_remove(  # noqa: PLR0913
     account_name: str = options.account_name,
     proposal_id: list[int] = _proposal_id,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

@@ -16,8 +16,9 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models.asset import Asset
-    from clive.__private.models.schemas import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import Account, Authority, OperationUnion, PriceFeed
     from clive.__private.models.transaction import Transaction
+    from wax.models.authority import WaxAuthorities, WaxAuthority
     from wax.wax_result import python_encrypted_memo
 
 
@@ -278,3 +279,69 @@ def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, othe
 
 def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
     return wax.decode_encrypted_memo(encoded_memo)
+
+
+def transaction_get_impacted_accounts(transaction: Transaction) -> list[str]:
+    return wax.transaction_get_impacted_accounts(__as_binary_json(transaction))
+
+
+def collect_signing_keys(
+    transaction: Transaction,
+    retrieve_authorities: Callable[[list[str]], dict[str, wax.python_authorities]],
+) -> list[str]:
+    return wax.collect_signing_keys(__as_binary_json(transaction), retrieve_authorities)
+
+
+def minimize_required_signatures(  # noqa: PLR0913
+    signed_transaction: Transaction,
+    chain_id: str,
+    available_keys: list[str],
+    authorities_map: dict[str, wax.python_authorities],
+    get_witness_key: Callable[[str], str],
+    *,
+    max_recursion: int | None = None,
+    max_membership: int | None = None,
+    max_account_auths: int | None = None,
+) -> list[str]:
+    data = wax.python_minimize_required_signatures_data(
+        chain_id=chain_id,
+        available_keys=available_keys,
+        authorities_map=authorities_map,
+        get_witness_key=get_witness_key,
+        max_recursion=max_recursion,
+        max_membership=max_membership,
+        max_account_auths=max_account_auths,
+    )
+    return wax.minimize_required_signatures(__as_binary_json(signed_transaction), data)
+
+
+def convert_wax_authorities_to_python_authorities(wax_auths: WaxAuthorities) -> wax.python_authorities:
+    def _convert(auth: WaxAuthority | None) -> wax.python_authority:
+        if auth is None:
+            return wax.python_authority(weight_threshold=0, account_auths={}, key_auths={})
+        return wax.python_authority(
+            weight_threshold=auth.weight_threshold,
+            account_auths=dict(auth.account_auths.items()),
+            key_auths=dict(auth.key_auths.items()),
+        )
+
+    return wax.python_authorities(
+        owner=_convert(wax_auths.owner),
+        active=_convert(wax_auths.active),
+        posting=_convert(wax_auths.posting),
+    )
+
+
+def convert_schemas_account_to_python_authorities(account: Account) -> wax.python_authorities:
+    def _convert_authority(authority: Authority) -> wax.python_authority:
+        return wax.python_authority(
+            weight_threshold=int(authority.weight_threshold),
+            account_auths={name: int(weight) for name, weight in authority.account_auths},
+            key_auths={key: int(weight) for key, weight in authority.key_auths},
+        )
+
+    return wax.python_authorities(
+        owner=_convert_authority(account.owner),
+        active=_convert_authority(account.active),
+        posting=_convert_authority(account.posting),
+    )

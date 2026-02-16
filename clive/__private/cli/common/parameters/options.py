@@ -149,7 +149,9 @@ force = typer.Option(
 
 _operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
 
-sign_with = _operation_common_option(typer.Option(None, help="Key alias to sign the transaction with."))
+sign_with = _operation_common_option(
+    typer.Option([], help="Key alias to sign the transaction with. Can be specified multiple times.")
+)
 sign_with_posting = _operation_common_option(
     typer.Option(None, help="Key alias to sign the transaction with. Requires posting authority.")
 )

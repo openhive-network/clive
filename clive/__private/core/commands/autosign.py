@@ -7,13 +7,19 @@ from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
-from clive.__private.core.iwax import calculate_sig_digest
-from clive.__private.core.keys.key_manager import KeyManager, KeyNotFoundError, MultipleKeysFoundError
+from clive.__private.core.iwax import (
+    calculate_sig_digest,
+    minimize_required_signatures,
+)
 from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    import wax
+    from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.node import Node
     from clive.__private.core.types import AlreadySignedMode
-    from clive.__private.models.schemas import Signature
 
 
 class AutoSignCommandError(CommandError):
@@ -27,18 +33,22 @@ class WrongAlreadySignedModeAutoSignError(AutoSignCommandError):
         super().__init__(command, self.reason)
 
 
-class TooManyKeysAutoSignError(AutoSignCommandError):
-    REASON: Final[str] = "Autosign cannot be used when there are multiple keys available."
+class NoMatchingKeyAutoSignError(AutoSignCommandError):
+    REASON: Final[str] = "None of the keys in the wallet match the keys required to sign this transaction."
 
     def __init__(self, command: Command) -> None:
         super().__init__(command, self.REASON)
 
 
-class NoKeyAutoSignError(AutoSignCommandError):
-    REASON: Final[str] = "Autosign cannot be used when there is no key available."
-
-    def __init__(self, command: Command) -> None:
-        super().__init__(command, self.REASON)
+class InsufficientAuthorityDataError(AutoSignCommandError):
+    def __init__(self, command: Command, missing_accounts: list[str]) -> None:
+        self.missing_accounts = missing_accounts
+        accounts_str = ", ".join(missing_accounts)
+        self.reason = (
+            f"Cannot determine signing keys. Authority data is missing for: {accounts_str}. "
+            "These accounts may not exist on the blockchain."
+        )
+        super().__init__(command, self.reason)
 
 
 class TransactionAlreadySignedAutoSignError(AutoSignCommandError):
@@ -51,20 +61,63 @@ class TransactionAlreadySignedAutoSignError(AutoSignCommandError):
 @dataclass(kw_only=True)
 class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
     transaction: Transaction
-    keys: KeyManager
+    node: Node
+    tracked_accounts: Iterable[TrackedAccount]
     chain_id: str
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """How to handle the situation when transaction is already signed."""
 
     async def _execute(self) -> None:
+        from clive.__private.core.commands.prefetch_transaction_authorities import (  # noqa: PLC0415
+            PrefetchTransactionAuthorities,
+        )
+        from clive.__private.core.iwax import collect_signing_keys  # noqa: PLC0415
+
         self._throw_wrong_already_signed_mode()
         self._throw_is_transaction_already_signed()
-        self._throw_no_unique_key()
+
+        authorities_cache = await PrefetchTransactionAuthorities(
+            transaction=self.transaction,
+            node=self.node,
+            tracked_accounts=self.tracked_accounts,
+        ).execute_with_result()
+
+        def _retrieve_from_cache(account_names: list[str]) -> dict[str, wax.python_authorities]:
+            return {name: authorities_cache[name] for name in account_names if name in authorities_cache}
+
+        required_keys = collect_signing_keys(self.transaction, _retrieve_from_cache)
+
+        wallet_keys = await self.unlocked_wallet.public_keys
+        wallet_key_set = {str(key) for key in wallet_keys}
+        matching_keys = [key for key in required_keys if key in wallet_key_set]
+
+        if not matching_keys:
+            raise NoMatchingKeyAutoSignError(self)
 
         sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
-        result = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=self.keys.unique_key.value)
-        self._set_transaction_signature(result)
+        for key in matching_keys:
+            signature = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=key)
+            self.transaction.signatures.append(signature)
+
+        minimal_keys = minimize_required_signatures(
+            self.transaction,
+            self.chain_id,
+            matching_keys,
+            authorities_cache,
+            self._get_witness_key_stub,
+        )
+
+        if len(minimal_keys) < len(matching_keys):
+            self.transaction.signatures = []
+            for key in minimal_keys:
+                signature = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=key)
+                self.transaction.signatures.append(signature)
+
         self._result = self.transaction
+
+    @staticmethod
+    def _get_witness_key_stub(_witness_name: str) -> str:
+        return ""
 
     def _throw_wrong_already_signed_mode(self) -> None:
         if self.already_signed_mode == "strict":
@@ -79,14 +132,3 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
     def _throw_is_transaction_already_signed(self) -> None:
         if self.transaction.is_signed:
             raise TransactionAlreadySignedAutoSignError(self)
-
-    def _throw_no_unique_key(self) -> None:
-        try:
-            _ = self.keys.unique_key
-        except KeyNotFoundError:
-            raise NoKeyAutoSignError(self) from None
-        except MultipleKeysFoundError:
-            raise TooManyKeysAutoSignError(self) from None
-
-    def _set_transaction_signature(self, signature: Signature) -> None:
-        self.transaction.signatures = [signature]

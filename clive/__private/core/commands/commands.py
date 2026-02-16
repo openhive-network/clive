@@ -52,7 +52,6 @@ if TYPE_CHECKING:
         AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
-    from clive.__private.core.keys.key_manager import KeyManager
     from clive.__private.core.profile import Profile
     from clive.__private.core.types import (
         AlreadySignedMode,
@@ -375,7 +374,7 @@ class Commands[WorldT: World]:
         self,
         *,
         content: TransactionConvertibleType,
-        sign_key: PublicKey | None = None,
+        sign_keys: list[PublicKey] | None = None,
         autosign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
@@ -393,8 +392,8 @@ class Commands[WorldT: World]:
                 content=content,
                 app_state=self._world.app_state,
                 node=self._world.node,
-                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key or autosign else None,
-                sign_key=sign_key,
+                unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_keys or autosign else None,
+                sign_keys=sign_keys or [],
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,
@@ -461,7 +460,6 @@ class Commands[WorldT: World]:
         self,
         *,
         transaction: Transaction,
-        keys: KeyManager | None,
         chain_id: str | None = None,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
     ) -> CommandWithResultWrapper[Transaction]:
@@ -471,7 +469,8 @@ class Commands[WorldT: World]:
             AutoSign(
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
                 transaction=transaction,
-                keys=keys if keys is not None else self._world.profile.keys,
+                node=self._world.node,
+                tracked_accounts=self._world.profile.accounts.tracked,
                 chain_id=chain_id or await self._world.node.chain_id,
                 already_signed_mode=already_signed_mode,
             )
