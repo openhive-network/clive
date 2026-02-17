@@ -13,8 +13,17 @@
     "enabled": false
   },
   "dependencyDashboard": true,
-  "separateMultipleMajor": true,
-  "minimumReleaseAge": "2 days",
+
+  // Disabled due to Renovate limitations with Poetry. Poetry lacks a way to update the lockfile
+  // to a specific version (`poetry update --lock` always resolves to the latest allowed by pyproject.toml),
+  // so Renovate cannot pin the lockfile to its selected target version.
+  // This causes MR title/lockfile version mismatches.
+  // See: https://github.com/renovatebot/renovate/discussions/41206
+  // Examples: https://gitlab.syncad.com/hive/clive/-/merge_requests/877 (minimumReleaseAge bypass)
+  //           https://gitlab.syncad.com/hive/clive/-/merge_requests/883 (separateMultipleMajor mismatch)
+  "separateMultipleMajor": false,
+  "minimumReleaseAge": "0 days",
+
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -52,8 +61,7 @@
       "matchPackageNames": [
         "/^hiveio-/",
         "test-tools"
-      ],
-      "minimumReleaseAge": "0 days"
+      ]
     },
     {
       "automerge": true,
