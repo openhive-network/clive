@@ -76,6 +76,21 @@ async def show_pending_change_recovery_account(
     ).run()
 
 
+@pending.command(name="account-recovery")
+async def show_pending_account_recovery(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """Show active account recovery requests (24-hour window after request_account_recovery_operation)."""
+    from clive.__private.cli.commands.show.show_pending_account_recovery import (  # noqa: PLC0415
+        ShowPendingAccountRecovery,
+    )
+
+    await ShowPendingAccountRecovery(
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
+    ).run()
+
+
 @pending.command(name="decline-voting-rights")
 async def show_pending_decline_voting_rights(
     account_name: str = arguments.account_name,

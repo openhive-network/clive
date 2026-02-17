@@ -53,6 +53,7 @@ clive
 │ ├── new-account-token
 │ ├── owner-authority
 │ ├── pending
+│ │ ├── account-recovery
 │ │ ├── change-recovery-account
 │ │ ├── convert
 │ │ ├── decline-voting-rights
