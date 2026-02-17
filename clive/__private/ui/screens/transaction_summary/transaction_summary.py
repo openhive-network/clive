@@ -269,7 +269,7 @@ class TransactionSummary(BaseScreen):
         transaction = self.profile.transaction
 
         try:
-            sign_key = self._get_key_to_sign() if not transaction.is_signed else None
+            sign_key = [self._get_key_to_sign()] if not transaction.is_signed else []
         except NoItemSelectedError:
             self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
             return

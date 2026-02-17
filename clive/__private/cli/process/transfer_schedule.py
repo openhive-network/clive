@@ -57,7 +57,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     frequency: timedelta = _frequency_value,
     memo: str = options.memo_text,
     pair_id: int = _pair_id_value,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -93,7 +93,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     frequency: timedelta | None = _frequency_value_optional,
     memo: str | None = options.memo_text_optional,
     pair_id: int | None = _pair_id_value_none,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -132,7 +132,7 @@ async def process_transfer_schedule_remove(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to: str = options.to_account_name_required,
     pair_id: int | None = _pair_id_value_none,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

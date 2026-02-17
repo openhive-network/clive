@@ -82,7 +82,7 @@ def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFu
 
 def modify_command_common_options(
     ctx: typer.Context,
-    sign_with: str | None,
+    sign_with: list[str],
     autosign: bool | None,  # noqa: FBT001
     broadcast: bool | None,  # noqa: FBT001
     save_file: str | None,
@@ -105,7 +105,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -126,7 +126,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -146,7 +146,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
     async def remove_account(  # noqa: PLR0913
         ctx: typer.Context,
         account: str = _authority_account_name,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -166,7 +166,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
     async def remove_key(  # noqa: PLR0913
         ctx: typer.Context,
         key: str = _authority_key,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -187,7 +187,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
         ctx: typer.Context,
         account: str = _authority_account_name,
         weight: int = _authority_weight,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -208,7 +208,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
         ctx: typer.Context,
         key: str = _authority_key,
         weight: int = _authority_weight,
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = _optional_broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,
@@ -232,7 +232,7 @@ def get_update_authority_typer(authority: AuthorityLevelRegular) -> CliveTyper: 
             None,
             help="Set Threshold",
         ),
-        sign_with: str | None = options.sign_with,
+        sign_with: list[str] = options.sign_with,
         autosign: bool | None = options.autosign,  # noqa: FBT001
         broadcast: bool | None = options.broadcast,  # noqa: FBT001
         save_file: str | None = options.save_file,

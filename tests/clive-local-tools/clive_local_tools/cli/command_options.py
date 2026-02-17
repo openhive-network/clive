@@ -6,7 +6,7 @@ from pathlib import Path
 
 import test_tools as tt
 
-from clive.__private.models.schemas import PublicKey
+from clive.__private.core.keys.keys import PublicKey
 
 from .exceptions import UnsupportedOptionError
 
@@ -26,7 +26,7 @@ def option_to_string(value: StringConvertibleOptionTypes) -> str:
     if isinstance(value, tt.Asset.AnyT):
         return value.as_legacy()
     if isinstance(value, PublicKey):
-        return str(value)
+        return str(value.value)
     raise UnsupportedOptionError(supported_type=StringConvertibleOptionTypes, actual_type=type(value))
 
 
