@@ -24,9 +24,13 @@
   "separateMultipleMajor": false,
   "minimumReleaseAge": "0 days",
 
+  // lockFileMaintenance deletes poetry.lock and regenerates it from scratch,
+  // updating all transitive dependencies at once with no control over individual versions.
+  // This produces massive, hard-to-review MRs. Per-package updates via update-lockfile are sufficient.
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": false
   },
+
   "platformAutomerge": true,
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
