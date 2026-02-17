@@ -73,7 +73,6 @@ clive
 │ └── orders
 ├── process
 │ ├── account-creation
-│ ├── change-recovery-account
 │ ├── claim
 │ │ ├── new-account-token
 │ │ └── rewards
@@ -93,6 +92,10 @@ clive
 │ ├── proxy
 │ │ ├── clear
 │ │ └── set
+│ ├── account-recovery
+│ │ ├── change
+│ │ ├── recover
+│ │ └── request
 │ ├── savings
 │ │ ├── deposit
 │ │ ├── withdrawal
