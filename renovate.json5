@@ -20,8 +20,10 @@
   // This causes MR title/lockfile version mismatches.
   // See: https://github.com/renovatebot/renovate/discussions/41206
   // Examples: https://gitlab.syncad.com/hive/clive/-/merge_requests/877 (minimumReleaseAge bypass)
-  //           https://gitlab.syncad.com/hive/clive/-/merge_requests/883 (separateMultipleMajor mismatch)
-  "separateMultipleMajor": false,
+  //           https://gitlab.syncad.com/hive/clive/-/merge_requests/878 (separateMajorMinor mismatch — mkdocstrings-python 1.19.0 vs 2.0.2)
+  //           https://gitlab.syncad.com/hive/clive/-/merge_requests/880 (separateMajorMinor mismatch — pytest 8.4.2 vs 9.0.2)
+  "separateMajorMinor": false,
+  "separateMultipleMajor": false,  // no observed example yet, but same root cause — expected to occur
   "minimumReleaseAge": "0 days",
 
   // lockFileMaintenance deletes poetry.lock and regenerates it from scratch,
