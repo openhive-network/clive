@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
@@ -57,10 +57,10 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         app_state: The app state.
         node: The node used for transaction broadcasting.
         unlocked_wallet: Required if the transaction needs to be signed.
-        sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+        sign_key: The key(s) to sign the transaction with. If empty, the transaction will not be signed.
         autosign: Whether to automatically sign the transaction.
         already_signed_mode: How to handle already signed transactions.
-        force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
+        force_unsign: Whether to remove the signature from the transaction. Even when sign_key is given.
         chain_id: The chain ID to use when signing the transaction. If not provided, the one from the profile and
             then from the node get_config api will be used as fallback.
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
@@ -77,7 +77,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     node: Node
     unlocked_wallet: AsyncUnlockedWallet | None = None
     """Required if transaction needs to be signed - when sign_key is provided."""
-    sign_key: PublicKey | None = None
+    sign_key: list[PublicKey] = field(default_factory=list)
     autosign: bool = False
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """
@@ -109,13 +109,17 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                     # We don't want to raise an error if the transaction is already signed, just skip the signing step.
                     warnings.warn(AutoSignSkippedWarning(), stacklevel=1)
             elif self.sign_key:
-                transaction = await Sign(
-                    unlocked_wallet=self.unlocked_wallet,
-                    transaction=transaction,
-                    key=self.sign_key,
-                    chain_id=self.chain_id or await self.node.chain_id,
-                    already_signed_mode=self.already_signed_mode,
-                ).execute_with_result()
+                chain_id = self.chain_id or await self.node.chain_id
+                for i, key in enumerate(self.sign_key):
+                    # For multiple keys, use multisign mode after the first signature
+                    mode = self.already_signed_mode if i == 0 else "multisign"
+                    transaction = await Sign(
+                        unlocked_wallet=self.unlocked_wallet,
+                        transaction=transaction,
+                        key=key,
+                        chain_id=chain_id,
+                        already_signed_mode=mode,
+                    ).execute_with_result()
 
         if self.force_unsign:
             transaction = await UnSign(transaction=transaction).execute_with_result()

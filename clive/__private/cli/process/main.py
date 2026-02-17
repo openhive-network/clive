@@ -67,7 +67,7 @@ async def transfer(  # noqa: PLR0913
     to: str = typer.Option(..., help="The account to transfer to."),
     amount: str = options.liquid_amount,
     memo: str = options.memo_text,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -102,7 +102,7 @@ async def process_transaction(  # noqa: PLR0913
             ""
         ),
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -131,7 +131,7 @@ async def process_update_memo_key(  # noqa: PLR0913
         "--key",
         help="New memo public key that will be set for account.",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -181,7 +181,7 @@ async def process_account_creation(  # noqa: PLR0913
         help=stylized_help("The json metadata of the new account passed as string.", default="empty string"),
         show_default=True,
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -273,7 +273,7 @@ async def process_witness_update(  # noqa: PLR0913
         help="Updated price value of 1 HIVE in HBD.",
     ),
     url: str | None = typer.Option(None, help="New witness url."),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -313,7 +313,7 @@ async def process_change_recovery_account(  # noqa: PLR0913
         ...,
         help="This is your trusted account. In case of compromise, only this account can create a recovery request.",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

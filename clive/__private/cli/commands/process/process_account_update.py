@@ -46,17 +46,16 @@ class ProcessAccountUpdate(OperationCommand):
     def modify_common_options(
         self,
         *,
-        sign_with: str | None = None,
+        sign_with: list[str] = [],  # noqa: B006
         autosign: bool | None = None,
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> None:
-        is_sign_given = sign_with is not None
         is_broadcast_given = broadcast is not None
         is_save_file_given = save_file is not None
         is_autosign_given = autosign is not None
 
-        if is_sign_given:
+        if sign_with:
             self.sign_with = sign_with
 
         if is_broadcast_given:

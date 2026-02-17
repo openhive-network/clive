@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import errno
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
 
@@ -59,7 +59,7 @@ class AutoSignSkippedWarningCLI(Warning):
 
 @dataclass(kw_only=True)
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand, ABC):
-    sign_with: str | None = None
+    sign_with: list[str] = field(default_factory=list)
     autosign: bool | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -73,18 +73,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     @property
     def is_sign_with_given(self) -> bool:
-        return self.sign_with is not None
+        return len(self.sign_with) > 0
 
     @property
-    def sign_with_ensure(self) -> str:
-        assert self.sign_with is not None, "Expected sign_with to be set"
-        return self.sign_with
-
-    @property
-    def sign_key(self) -> PublicKey | None:
-        if not self.is_sign_with_given:
-            return None
-        return self.profile.keys.get_from_alias(self.sign_with_ensure)
+    def sign_keys(self) -> list[PublicKey]:
+        return [self.profile.keys.get_from_alias(alias) for alias in self.sign_with]
 
     @property
     def is_autosign_explicitly_requested(self) -> bool:
@@ -183,7 +176,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             transaction = (
                 await self.world.commands.perform_actions_on_transaction(
                     content=self.transaction,
-                    sign_key=self.sign_key,
+                    sign_key=self.sign_keys,
                     already_signed_mode=self.already_signed_mode,
                     force_unsign=self.force_unsign,
                     save_file_path=self.save_file_path,
@@ -264,8 +257,9 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         if len(self.profile.keys) == 0:
             raise CLINoKeysAvailableError
 
-        if self.is_sign_with_given and self.profile.keys.is_alias_available(self.sign_with_ensure):
-            raise CLIKeyAliasNotFoundError(self.sign_with_ensure)
+        for alias in self.sign_with:
+            if self.profile.keys.is_alias_available(alias):
+                raise CLIKeyAliasNotFoundError(alias)
 
         if self.use_autosign:
             try:

@@ -23,7 +23,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
     from datetime import timedelta
     from pathlib import Path
 
@@ -375,7 +375,7 @@ class Commands[WorldT: World]:
         self,
         *,
         content: TransactionConvertibleType,
-        sign_key: PublicKey | None = None,
+        sign_key: Sequence[PublicKey] = (),
         autosign: bool = False,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
@@ -394,7 +394,7 @@ class Commands[WorldT: World]:
                 app_state=self._world.app_state,
                 node=self._world.node,
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet if sign_key or autosign else None,
-                sign_key=sign_key,
+                sign_key=list(sign_key),
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,

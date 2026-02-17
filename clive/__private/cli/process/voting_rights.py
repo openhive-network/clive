@@ -15,7 +15,7 @@ voting_rights = CliveTyper(
 @voting_rights.command(name="decline")
 async def process_voting_rights_decline(
     account_name: str = options.account_name,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -43,7 +43,7 @@ Use command 'clive show pending decline-voting-rights' to display 'decline_votin
 @voting_rights.command(name="cancel-decline")
 async def process_voting_rights_cancel_decline(
     account_name: str = options.account_name,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

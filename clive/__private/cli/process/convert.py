@@ -22,7 +22,7 @@ async def process_convert(  # noqa: PLR0913
         "--request-id",
         help="Unique ID for the conversion request (if not given, will be automatically calculated).",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

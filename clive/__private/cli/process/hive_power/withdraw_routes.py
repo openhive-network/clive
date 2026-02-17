@@ -20,7 +20,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
         help="If auto-vest is set, then the amount of the Hive is immediately converted into HP on the balance. "
         "With no-auto-vest there is no conversion from Hive into HP.",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -47,7 +47,7 @@ async def process_withdraw_routes_set(  # noqa: PLR0913
 async def process_withdraw_routes_remove(  # noqa: PLR0913
     from_account: str = options.from_account_name,
     to_account: str = options.to_account_name_required,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

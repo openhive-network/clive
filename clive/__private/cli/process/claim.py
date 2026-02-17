@@ -23,7 +23,7 @@ async def process_claim_new_account_token(  # noqa: PLR0913
         help="Current account creation fee, if present must be exactly the value returned by clive show chain."
         " If not specified resource credits will be used to obtain token.",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -47,7 +47,7 @@ async def process_claim_new_account_token(  # noqa: PLR0913
 @claim.command(name="rewards")
 async def process_claim_rewards(
     account_name: str = options.account_name,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

@@ -121,7 +121,7 @@ async def process_escrow_transfer(  # noqa: PLR0913
         "--json-meta",
         help="JSON metadata for the escrow.",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -158,7 +158,7 @@ async def process_escrow_approve(  # noqa: PLR0913
         ..., "--escrow-id", help="ID of the escrow to approve. Use `clive show escrow` to list escrow IDs."
     ),
     who: str = _who,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -194,7 +194,7 @@ async def process_escrow_reject(  # noqa: PLR0913
         ..., "--escrow-id", help="ID of the escrow to reject. Use `clive show escrow` to list escrow IDs."
     ),
     who: str = _who,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -232,7 +232,7 @@ async def process_escrow_dispute(  # noqa: PLR0913
         ..., "--escrow-id", help="ID of the escrow to dispute. Use `clive show escrow` to list escrow IDs."
     ),
     who: str = _who,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -287,7 +287,7 @@ async def process_escrow_release(  # noqa: PLR0913
         parser=hive_asset,
         help="Amount of HIVE to release (e.g., 100.000 HIVE).",
     ),
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,

@@ -15,7 +15,7 @@ power_down = CliveTyper(name="power-down", help="Perform power-down, send withdr
 async def process_power_down_start(  # noqa: PLR0913
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -43,7 +43,7 @@ async def process_power_down_start(  # noqa: PLR0913
 async def process_power_down_restart(  # noqa: PLR0913
     account_name: str = options.from_account_name,
     amount: str = options.voting_amount,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
@@ -70,7 +70,7 @@ async def process_power_down_restart(  # noqa: PLR0913
 @power_down.command(name="cancel")
 async def process_power_down_cancel(
     account_name: str = options.account_name,
-    sign_with: str | None = options.sign_with,
+    sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
     save_file: str | None = options.save_file,
