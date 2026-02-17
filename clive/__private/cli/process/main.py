@@ -23,6 +23,7 @@ from clive.__private.cli.process.hive_power.power_down import power_down
 from clive.__private.cli.process.hive_power.power_up import power_up
 from clive.__private.cli.process.hive_power.withdraw_routes import withdraw_routes
 from clive.__private.cli.process.proxy import proxy
+from clive.__private.cli.process.recovery_account import recovery_account
 from clive.__private.cli.process.savings import savings
 from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
@@ -54,6 +55,7 @@ process.add_typer(power_up)
 process.add_typer(withdraw_routes)
 process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
+process.add_typer(recovery_account)
 process.add_typer(voting_rights)
 
 
@@ -297,42 +299,3 @@ async def process_witness_update(  # noqa: PLR0913
         autosign=autosign,
     )
     await operation.run()
-
-
-@process.command(name="change-recovery-account")
-async def process_change_recovery_account(  # noqa: PLR0913
-    account_name: str = modified_param(
-        options.working_account_template,
-        help=stylized_help("The account for which recovery account changes.", is_working_account_default=True),
-    ),
-    new_recovery_account: str = typer.Option(
-        ...,
-        help="This is your trusted account. In case of compromise, only this account can create a recovery request.",
-    ),
-    sign_with: list[str] = options.sign_with,
-    autosign: bool | None = options.autosign,  # noqa: FBT001
-    broadcast: bool = options.broadcast,  # noqa: FBT001
-    save_file: str | None = options.save_file,
-) -> None:
-    """
-    Change recovery account. Should be signed with the owner authority.
-
-    The operation changes your recovery account. It is important to keep it actual, because only a recovery account \
-may create a request account recovery in case of compromised owner authority. The operation must be signed with \
-owner authority. The change takes effect after a 30-day delay. If you want to cancel a pending change recovery \
-account operation, you must create a new change_recovery_account_operation with --new-recovery-account set to the \
-old one. If you want to remove recovery account you can set it to account 'null'. \
-You can check pending operation with command `clive show pending change-recovery-account`.
-    """
-    from clive.__private.cli.commands.process.process_change_recovery_account import (  # noqa: PLC0415
-        ProcessChangeRecoveryAccount,
-    )
-
-    await ProcessChangeRecoveryAccount(
-        account_to_recover=account_name,
-        new_recovery_account=new_recovery_account,
-        sign_with=sign_with,
-        broadcast=broadcast,
-        save_file=save_file,
-        autosign=autosign,
-    ).run()

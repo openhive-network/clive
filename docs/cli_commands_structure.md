@@ -72,7 +72,6 @@ clive
 │ └── witness
 ├── process
 │ ├── account-creation
-│ ├── change-recovery-account
 │ ├── claim
 │ │ ├── new-account-token
 │ │ └── rewards
@@ -89,6 +88,10 @@ clive
 │ ├── proxy
 │ │ ├── clear
 │ │ └── set
+│ ├── recovery-account
+│ │ ├── change
+│ │ ├── recover
+│ │ └── request
 │ ├── savings
 │ │ ├── deposit
 │ │ ├── withdrawal
