@@ -13,6 +13,7 @@ from clive.__private.cli.exceptions import (
     OrderMutuallyExclusiveOptionsError,
     OrderSameAssetError,
 )
+from clive.__private.cli.warnings import typer_echo_warnings
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.models.schemas import (
     HbdExchangeRate,
@@ -147,7 +148,8 @@ class ProcessOrderCreate(OperationCommand):
     async def _create_operations(self) -> ComposeTransaction:
         if self.price is not None:
             # User provided --price → use LimitOrderCreate2Operation
-            min_to_receive = self._get_min_to_receive_from_price()
+            with typer_echo_warnings():
+                min_to_receive = self._get_min_to_receive_from_price()
             yield LimitOrderCreate2Operation(
                 owner=self.from_account,
                 orderid=self.order_id_ensure,
