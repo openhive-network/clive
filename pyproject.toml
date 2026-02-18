@@ -45,6 +45,9 @@ source = [
 ]
 version = "0.0.0"
 
+[tool.poetry.dependencies]
+hiveio-beekeepy = {version = ">=1.28.6,<2.0.0", allow-prereleases = true, source = "gitlab-hive"}
+
 [tool.poetry.requires-plugins]
 poetry-dynamic-versioning = { version = "==1.9.1", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
