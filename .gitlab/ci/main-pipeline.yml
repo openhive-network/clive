@@ -75,9 +75,9 @@ variables:
   PYTEST_NUMBER_OF_PROCESSES: 16
   PYTEST_LOG_DURATIONS: 1
   # colors:
-  TXT_GREEN: "\e[1;32m"
-  TXT_BLUE: "\e[1;34m"
-  TXT_CLEAR: "\e[0m"
+  TXT_GREEN: "\\e[1;32m"
+  TXT_BLUE: "\\e[1;34m"
+  TXT_CLEAR: "\\e[0m"
   # binaries:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
@@ -139,6 +139,8 @@ verify_poetry_lock_sanity:
   stage: static_code_analysis
   extends: .verify_poetry_lock_sanity_template
   image: ${CI_BASE_IMAGE_312}
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/clive/__private"
 
 verify_poetry_lock_stability:
   stage: static_code_analysis
@@ -146,6 +148,7 @@ verify_poetry_lock_stability:
   image: ${CI_BASE_IMAGE_312}
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/clive/__private"
+    COMMON_CI_REF: "mzebrak/detect-unstable-python-deps-fix"
 
 lint_code_with_ruff:
   stage: static_code_analysis
