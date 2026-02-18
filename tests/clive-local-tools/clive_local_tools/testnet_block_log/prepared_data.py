@@ -34,7 +34,9 @@ def get_block_log() -> tt.BlockLog:
 
 def get_time_control(block_log: tt.BlockLog) -> tt.StartTimeControl:
     block_log_time = block_log.get_head_block_time()
-    return tt.StartTimeControl(start_time=block_log_time + EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_REWARDS)
+    return tt.StartTimeControl(
+        start_time=block_log_time + EXTRA_TIME_SHIFT_FOR_GOVERNANCE_AND_REWARDS, speed_up_rate=10
+    )
 
 
 def run_node(webserver_http_endpoint: HttpUrl | None = None) -> tt.RawNode:
