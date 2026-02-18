@@ -58,7 +58,8 @@
   ],
   "ignoreDeps": [
     "clive-local-tools",
-    "python-poetry/poetry"
+    "poetry-core",  // location: pyproject.toml - pinned to match Poetry version from CI
+    "python-poetry/poetry"  // location: .pre-commit-config.yaml - pinned to match Poetry version from CI
   ],
   "packageRules": [
     {
