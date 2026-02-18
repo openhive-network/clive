@@ -7,7 +7,7 @@ default:
 
 renovate:
   stage: maintenance
-  image: renovate/renovate:42.96
+  image: renovate/renovate:42.99
   variables:
     RENOVATE_PLATFORM: gitlab
     RENOVATE_ENDPOINT: https://gitlab.syncad.com/api/v4
