@@ -36,7 +36,7 @@ async def test_change_recovery_account(node: tt.RawNode, cli_tester: CLITester) 
     )
 
     # ACT
-    result = cli_tester.process_change_recovery_account(new_recovery_account=new_recovery_account)
+    result = cli_tester.process_recovery_account_change(new_recovery_account=new_recovery_account)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -48,14 +48,14 @@ async def test_cancel_change_recovery_account(node: tt.RawNode, cli_tester: CLIT
     old_recovery_account = await fetch_recovery_account(cli_tester)
     new_recovery_account = WATCHED_ACCOUNTS_NAMES[0]
     cli_tester.configure_known_account_add(account_name=old_recovery_account)
-    cli_tester.process_change_recovery_account(new_recovery_account=new_recovery_account)
+    cli_tester.process_recovery_account_change(new_recovery_account=new_recovery_account)
     operation = ChangeRecoveryAccountOperation(
         account_to_recover=WORKING_ACCOUNT_NAME,
         new_recovery_account=old_recovery_account,
     )
 
     # ACT
-    result = cli_tester.process_change_recovery_account(new_recovery_account=old_recovery_account)
+    result = cli_tester.process_recovery_account_change(new_recovery_account=old_recovery_account)
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
@@ -72,4 +72,4 @@ async def test_negative_change_to_warning_account(cli_tester: CLITester, warning
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=expected_error_message):
-        cli_tester.process_change_recovery_account(new_recovery_account=warning_account)
+        cli_tester.process_recovery_account_change(new_recovery_account=warning_account)

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 async def test_show_pending_change_recovery_account(cli_tester: CLITester) -> None:
     # ARRANGE
     new_recovery_account = WATCHED_ACCOUNTS_NAMES[0]
-    cli_tester.process_change_recovery_account(new_recovery_account=new_recovery_account)
+    cli_tester.process_recovery_account_change(new_recovery_account=new_recovery_account)
 
     # ACT
     result = cli_tester.show_pending_change_recovery_account()

@@ -647,7 +647,7 @@ class CLITester:
             ["show", "pending", "change-recovery-account"], account_name=account_name
         )
 
-    def process_change_recovery_account(  # noqa: PLR0913
+    def process_recovery_account_change(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -657,7 +657,40 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "change-recovery-account"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "recovery-account", "change"], **extract_params(locals()))
+
+    def process_request_account_recovery(  # noqa: PLR0913
+        self,
+        *,
+        recovery_account: str | None = None,
+        account_to_recover: str,
+        new_owner_key: PublicKey,
+        sign_with: str | list[str] | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "recovery-account", "request"], **extract_params(locals())
+        )
+
+    def process_recover_account(  # noqa: PLR0913
+        self,
+        *,
+        account_to_recover: str | None = None,
+        new_owner_key: PublicKey,
+        recent_owner_key: PublicKey,
+        sign_with: str | list[str] | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(
+            ["process", "recovery-account", "recover"], **extract_params(locals())
+        )
+
+    def show_pending_account_recovery(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "pending", "account-recovery"], account_name=account_name)
 
     def process_voting_rights_decline(
         self,

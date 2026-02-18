@@ -176,7 +176,7 @@ async def test_validation_of_change_recovery_account(
 ) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_change_recovery_account(new_recovery_account=new_recovery_account, **process_action_selector)
+        cli_tester.process_recovery_account_change(new_recovery_account=new_recovery_account, **process_action_selector)
 
     # ACT & ASSERT
     _assert_validation_of_known_accounts(perform_operation, new_recovery_account)
