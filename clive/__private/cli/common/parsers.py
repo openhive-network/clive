@@ -91,6 +91,21 @@ def hive_asset(raw: str) -> Asset.Hive:
     return _parse_asset(raw, Asset.Hive)
 
 
+def decimal_price(raw: str) -> Decimal:
+    from clive.__private.core.decimal_conventer import (  # noqa: PLC0415
+        DecimalConversionNotANumberError,
+        DecimalConverter,
+    )
+
+    try:
+        parsed = DecimalConverter.convert(raw)
+    except DecimalConversionNotANumberError as err:
+        raise typer.BadParameter(f"`{raw}` can't be converted to number") from err
+    if parsed <= 0:
+        raise typer.BadParameter("Price must be greater than 0")
+    return parsed
+
+
 def decimal_percent(raw: str) -> Decimal:
     from clive.__private.cli.warnings import typer_echo_warnings  # noqa: PLC0415
     from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES  # noqa: PLC0415

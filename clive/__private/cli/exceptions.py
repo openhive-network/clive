@@ -682,3 +682,62 @@ class EscrowAgentReleaseWithoutDisputeError(EscrowReleaseNotAllowedError):
 
     def __init__(self) -> None:
         super().__init__("agent can only release after a dispute has been raised.")
+
+
+class OrderMutuallyExclusiveOptionsError(CLIPrettyError):
+    """Raise when both --min-to-receive and --price are specified."""
+
+    def __init__(self) -> None:
+        message = "Options '--min-to-receive' and '--price' are mutually exclusive. Please specify only one of them."
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderMissingPriceSpecificationError(CLIPrettyError):
+    """Raise when neither --min-to-receive nor --price is specified."""
+
+    def __init__(self) -> None:
+        message = (
+            "Either '--min-to-receive' or '--price' must be specified. "
+            "Use '--min-to-receive' to specify the exact amount, or '--price' to calculate it automatically."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderSameAssetError(CLIPrettyError):
+    """Raise when amount_to_sell and min_to_receive are the same asset type."""
+
+    def __init__(self) -> None:
+        message = (
+            "Cannot create an order where both assets are the same type. "
+            "If selling HIVE, you must receive HBD, and vice versa."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderExpirationNotInFutureError(CLIPrettyError):
+    """Raise when order expiration is not in the future."""
+
+    def __init__(self) -> None:
+        message = "Invalid order expiration: Expiration must be in the future."
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderExpirationTooFarInFutureError(CLIPrettyError):
+    """Raise when order expiration exceeds maximum allowed days."""
+
+    def __init__(self) -> None:
+        message = "Invalid order expiration: Expiration cannot be more than 28 days in the future."
+        super().__init__(message, errno.EINVAL)
+
+
+class OrderFillOrKillNotFilledError(CLIPrettyError):
+    """Raise when fill-or-kill order cannot be filled."""
+
+    def __init__(self) -> None:
+        message = (
+            "Fill-or-kill order could not be filled. "
+            "No matching order exists on the market that can fully fill your order. "
+            "Either remove the '--fill-or-kill' flag to create a regular limit order, "
+            "or adjust your price/amount to match existing orders."
+        )
+        super().__init__(message, errno.ECANCELED)
