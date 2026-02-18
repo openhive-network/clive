@@ -647,7 +647,7 @@ class CLITester:
             ["show", "pending", "change-recovery-account"], account_name=account_name
         )
 
-    def process_change_recovery_account(  # noqa: PLR0913
+    def process_recovery_account_change(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,

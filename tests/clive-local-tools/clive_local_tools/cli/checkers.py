@@ -4,8 +4,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from clive.__private.cli.commands.show.show_pending_change_recovery_account import (
+from clive.__private.cli.commands.show.show_pending_account_recovery import (
     NO_PENDING_ACCOUNT_RECOVERY_MESSAGE,
+    ShowPendingAccountRecovery,
+)
+from clive.__private.cli.commands.show.show_pending_change_recovery_account import (
+    NO_PENDING_CHANGE_RECOVERY_ACCOUNT_MESSAGE,
     ShowPendingChangeRecoveryAccount,
 )
 from clive.__private.cli.commands.show.show_pending_decline_voting_rights import (
@@ -188,6 +192,22 @@ def assert_pending_change_recovery_account(
 
 def assert_no_pending_change_recovery_account(context: CLITester | CLITestResult) -> None:
     result = _get_result(context, lambda cli_tester: cli_tester.show_pending_change_recovery_account())
+    expected_output = NO_PENDING_CHANGE_RECOVERY_ACCOUNT_MESSAGE
+    assert_output_contains(expected_output, result)
+
+
+def assert_pending_account_recovery(context: CLITester | CLITestResult, account_name: str) -> None:
+    result = _get_result(
+        context, lambda cli_tester: cli_tester.show_pending_account_recovery(account_name=account_name)
+    )
+    assert_output_contains(ShowPendingAccountRecovery._format_table_title(account_name), result)
+    assert_output_contains(account_name, result)
+
+
+def assert_no_pending_account_recovery(context: CLITester | CLITestResult, account_name: str) -> None:
+    result = _get_result(
+        context, lambda cli_tester: cli_tester.show_pending_account_recovery(account_name=account_name)
+    )
     expected_output = NO_PENDING_ACCOUNT_RECOVERY_MESSAGE
     assert_output_contains(expected_output, result)
 

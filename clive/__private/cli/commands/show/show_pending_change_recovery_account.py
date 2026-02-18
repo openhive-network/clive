@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     )
 
 
-NO_PENDING_ACCOUNT_RECOVERY_MESSAGE: Final[str] = "No pending change recovery account request."
+NO_PENDING_CHANGE_RECOVERY_ACCOUNT_MESSAGE: Final[str] = "No pending change recovery account request."
 
 
 @dataclass(kw_only=True)
@@ -43,7 +43,7 @@ class ShowPendingChangeRecoveryAccount(WorldBasedCommand):
             )
             print_cli(change_recovery_account_info_table)
             return
-        print_content_not_available(NO_PENDING_ACCOUNT_RECOVERY_MESSAGE)
+        print_content_not_available(NO_PENDING_CHANGE_RECOVERY_ACCOUNT_MESSAGE)
 
     def _create_pending_change_recovery_account_info_table(
         self, data: ChangingRecoveryAccountInProgressAlarmData
