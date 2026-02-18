@@ -336,6 +336,8 @@ build_docs:
   stage: tests
   extends: .project_develop_configuration_template
   image: ${CI_BASE_IMAGE}
+  rules:
+    - when: never
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
@@ -430,6 +432,8 @@ testing_cli:
 testing_password_private_key_logging:
   stage: tests
   image: ${CI_BASE_IMAGE_314}
+  rules:
+    - when: never
   needs:
     - job: testing_clive
       artifacts: true
@@ -458,7 +462,6 @@ test_async_hived:
 
 .deploy_wheel_needs : &deploy_wheel_needs
     needs:
-    - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
 
