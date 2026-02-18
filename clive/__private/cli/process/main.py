@@ -22,6 +22,7 @@ from clive.__private.cli.process.hive_power.delegations import delegations
 from clive.__private.cli.process.hive_power.power_down import power_down
 from clive.__private.cli.process.hive_power.power_up import power_up
 from clive.__private.cli.process.hive_power.withdraw_routes import withdraw_routes
+from clive.__private.cli.process.order import order
 from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
 from clive.__private.cli.process.transfer_schedule import transfer_schedule
@@ -41,6 +42,7 @@ process = CliveTyper(name="process", help="Process something (e.g. perform a tra
 process.add_typer(claim)
 process.add_typer(convert)
 process.add_typer(escrow)
+process.add_typer(order)
 process.add_typer(proxy)
 process.add_typer(savings)
 process.add_typer(get_update_authority_typer("owner"))

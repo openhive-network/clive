@@ -41,6 +41,7 @@ if TYPE_CHECKING:
         VestingDelegationExpirationData,
     )
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
+    from clive.__private.core.commands.data_retrieval.order_data import OrderData
     from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesData
@@ -604,6 +605,13 @@ class Commands[WorldT: World]:
 
         return await self.__surround_with_exception_handlers(
             EscrowDataRetrieval(node=self._world.node, account_name=account_name)
+        )
+
+    async def retrieve_order_data(self, *, account_name: str) -> CommandWithResultWrapper[OrderData]:
+        from clive.__private.core.commands.data_retrieval.order_data import OrderDataRetrieval  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            OrderDataRetrieval(node=self._world.node, account_name=account_name)
         )
 
     async def retrieve_witnesses_data(
