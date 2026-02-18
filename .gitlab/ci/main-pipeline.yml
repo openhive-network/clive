@@ -336,18 +336,11 @@ build_docs:
   stage: tests
   extends: .project_develop_configuration_template
   image: ${CI_BASE_IMAGE}
-  rules:
-    - when: never
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
   rules:
-    - if: $PYTHON_VERSION == "3.12"
-      variables:
-        CI_BASE_IMAGE: "${CI_BASE_IMAGE_312}"
-    - if: $PYTHON_VERSION == "3.14"
-      variables:
-        CI_BASE_IMAGE: "${CI_BASE_IMAGE_314}"
+    - when: never
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
