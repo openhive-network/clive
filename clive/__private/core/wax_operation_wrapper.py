@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Self, TypeVar, overload
+from typing import TYPE_CHECKING, Final, Self, TypeVar, overload
 
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.schemas import AccountName, OperationUnion
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     import wax
+    from clive.__private.cli.common.constants import SocialAction
     from clive.__private.core.keys import PublicKey
     from clive.__private.models.asset import Asset
     from wax._private.operation_base import OperationBase as WaxOperationBase
@@ -98,3 +99,22 @@ class WaxOperationWrapper:
             raise WrongTypeError(expect_type, type(schemas_operation))
 
         return schemas_operation  # type: ignore[return-value]
+
+
+class WaxFollowOperationWrapper(WaxOperationWrapper):
+    _ACTION_MAP: Final[dict[str, str]] = {
+        "follow": "follow_blog",
+        "unfollow": "unfollow_blog",
+        "mute": "mute_blog",
+        "unmute": "unmute_blog",
+    }
+
+    @classmethod
+    def create(cls, *, follower: str, following: str, action: SocialAction) -> Self:
+        from wax.hive_apps_operations.follow import FollowOperation as WaxFollowOperation  # noqa: PLC0415
+
+        wax_op = WaxFollowOperation()
+        getattr(wax_op, cls._ACTION_MAP[action])(follower, following)
+        wax_op.authorize(required_posting_auths=follower)
+
+        return cls(wax_op)
