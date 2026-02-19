@@ -49,6 +49,12 @@ clive/__private/cli/commands/process/process_escrow.py
     DOC501: Method `ProcessEscrowRelease._resolve_receiver` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `ProcessEscrowRelease._resolve_receiver` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['EscrowAgentReceiverRequiredError', 'ValueError'].
 --------------------
+clive/__private/cli/commands/process/process_social.py
+    DOC601: Class `ProcessFollow`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ProcessFollow`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [action: SocialAction, follower: str, following: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC501: Method `ProcessFollow._validate_following_not_bad_account` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `ProcessFollow._validate_following_not_bad_account` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['CLITransactionBadAccountError'].
+--------------------
 clive/__private/cli/commands/process/process_transfer_schedule.py
     DOC101: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `_ProcessTransferScheduleCommon._identity_check`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [scheduled_transfer: ScheduledTransfer].
@@ -70,6 +76,11 @@ clive/__private/cli/commands/show/show_transfer_schedule.py
     DOC101: Method `ShowTransferSchedule.__create_table_upcoming`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `ShowTransferSchedule.__create_table_upcoming`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_scheduled_transfers_data: AccountScheduledTransferData].
     DOC201: Method `ShowTransferSchedule.__create_table_upcoming` does not have a return section in docstring
+--------------------
+clive/__private/cli/common/constants.py
+    DOC101: Function `social_action_validates_bad_account`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `social_action_validates_bad_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [action: SocialAction].
+    DOC201: Function `social_action_validates_bad_account` does not have a return section in docstring
 --------------------
 clive/__private/cli/common/parsers.py
     DOC101: Function `_parse_asset`: Docstring contains fewer arguments than in function signature.
@@ -223,6 +234,16 @@ clive/__private/cli/process/savings.py
     DOC103: Function `process_withdrawal`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [amount: str, autosign: bool | None, broadcast: bool | None, force: bool, from_account: str, memo: str, request_id: int | None, save_file: str | None, sign_with: str | None, to_account: str].
     DOC101: Function `process_withdrawal_cancel`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_withdrawal_cancel`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [autosign: bool | None, broadcast: bool | None, from_account: str, request_id: int, save_file: str | None, sign_with: str | None].
+--------------------
+clive/__private/cli/process/social.py
+    DOC101: Function `process_social_follow`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_social_follow`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None, user: str].
+    DOC101: Function `process_social_unfollow`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_social_unfollow`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None, user: str].
+    DOC101: Function `process_social_mute`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_social_mute`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None, user: str].
+    DOC101: Function `process_social_unmute`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_social_unmute`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: str | None, user: str].
 --------------------
 clive/__private/cli/process/transfer_schedule.py
     DOC101: Function `process_transfer_schedule_create`: Docstring contains fewer arguments than in function signature.
