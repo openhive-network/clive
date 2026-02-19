@@ -827,3 +827,51 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "order", "cancel"], **extract_params(locals()))
+
+    def process_social_follow(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        user: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "social", "follow"], **extract_params(locals()))
+
+    def process_social_unfollow(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        user: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "social", "unfollow"], **extract_params(locals()))
+
+    def process_social_mute(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        user: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "social", "mute"], **extract_params(locals()))
+
+    def process_social_unmute(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        user: str,
+        sign_with: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "social", "unmute"], **extract_params(locals()))
