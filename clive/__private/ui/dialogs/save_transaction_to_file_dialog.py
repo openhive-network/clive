@@ -47,7 +47,7 @@ class SignedCheckbox(Checkbox, CliveWidget):
 
     @property
     def _initial_value(self) -> bool:
-        return self.profile.transaction.is_signed
+        return self.profile.transaction.is_signed or bool(self.profile.keys)
 
     @property
     def _should_be_disabled(self) -> bool:
@@ -63,9 +63,10 @@ class SignedCheckbox(Checkbox, CliveWidget):
 
 
 class SaveTransactionToFileDialog(SaveFileBaseDialog):
-    def __init__(self, sign_key: PublicKey | None) -> None:
+    def __init__(self, sign_key: PublicKey | None, *, autosign: bool = False) -> None:
         super().__init__("Save transaction to file", "Save file")
         self._sign_key = sign_key
+        self._autosign = autosign
 
     @property
     def _is_binary_checked(self) -> bool:
@@ -85,13 +86,14 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
         should_be_signed = self._is_signed_checked
         transaction = self.profile.transaction.copy()
 
-        if should_be_signed and not transaction.is_signed and self._sign_key is None:
+        if should_be_signed and not transaction.is_signed and self._sign_key is None and not self._autosign:
             self.notify("Transaction can't be saved because no key was selected.", severity="error")
             return False
 
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
             sign_key=[self._sign_key] if self._sign_key is not None else [],
+            autosign=self._autosign and should_be_signed and not transaction.is_signed,
             force_unsign=not should_be_signed,
             save_file_path=file_path,
             force_save_format="bin" if save_as_binary else "json",
