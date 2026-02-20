@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
+from clive.__private.core.commands.autosign import AutoSignCommandError
 from clive.__private.core.formatters.humanize import humanize_relative_or_whole_path
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_widget import CliveWidget
@@ -97,7 +98,8 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
         )
 
         if wrapper.error_occurred:
-            self.notify("Transaction save failed. Please try again.", severity="error")
+            if not isinstance(wrapper.error, AutoSignCommandError):
+                self.notify("Transaction save failed. Please try again.", severity="error")
             return False
 
         self.profile.transaction.reset()

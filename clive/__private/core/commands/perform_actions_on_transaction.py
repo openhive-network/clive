@@ -103,6 +103,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                         transaction=transaction,
                         keys=self.app_state.world.profile.keys,
                         chain_id=self.chain_id or await self.node.chain_id,
+                        node=self.node,
                         already_signed_mode=self.already_signed_mode,
                     ).execute_with_result()
                 except TransactionAlreadySignedAutoSignError:

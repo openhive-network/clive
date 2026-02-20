@@ -11,6 +11,7 @@ from textual.css.query import NoMatches
 from textual.events import Mount
 from textual.widgets import Label, Select, Static
 
+from clive.__private.core.commands.autosign import AutoSignCommandError
 from clive.__private.core.formatters.humanize import humanize_relative_or_whole_path
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -283,7 +284,8 @@ class TransactionSummary(BaseScreen):
             # recompose key container in case fail of broadcast when transaction was already signed
             if transaction.is_signed:
                 await self.key_container.recompose()
-            self.notify("Transaction broadcast failed. Please try again.", severity="error")
+            if not isinstance(wrapper.error, AutoSignCommandError):
+                self.notify("Transaction broadcast failed. Please try again.", severity="error")
             return
 
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")

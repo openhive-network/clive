@@ -743,6 +743,24 @@ class OrderFillOrKillNotFilledError(CLIPrettyError):
         super().__init__(message, errno.ECANCELED)
 
 
+class CLIInsufficientKeysAutoSignError(CLIPrettyError):
+    """
+    Raises when autosign fails because wallet keys satisfy only some of the transaction's required authorities.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "Autosign failed: wallet keys satisfy only some of the transaction's required authorities.\n"
+        "If you want to sign the transaction manually, use '--sign-with <key-alias>' option.\n"
+        "If you want to show the unsigned transaction, use option '--no-autosign' and '--no-broadcast' together."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
+
+
 class CLIChainIdFromSettingsNotAvailableError(CLIPrettyError):
     """Raise when chain id is not available in settings."""
 
