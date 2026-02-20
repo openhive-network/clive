@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command import Command, CommandError
@@ -19,6 +19,7 @@ from clive.__private.settings import safe_settings
 
 if TYPE_CHECKING:
     import wax
+    from clive.__private.core.cached_offline_data import CachedAuthority
     from clive.__private.core.node import Node
     from clive.__private.core.types import AlreadySignedMode
     from clive.__private.models.schemas import Signature
@@ -71,6 +72,7 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
     node: Node
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """How to handle the situation when transaction is already signed."""
+    cached_authorities: dict[str, CachedAuthority] | None = field(default=None)
 
     async def _execute(self) -> None:
         self._throw_wrong_already_signed_mode()
@@ -101,11 +103,18 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
             PrefetchTransactionAuthorities,
         )
 
-        cache = await PrefetchTransactionAuthorities(transaction=self.transaction, node=self.node).execute_with_result()
-
-        authorities_map: dict[str, wax.python_authorities] = {
-            name: convert_schemas_account_to_python_authorities(account) for name, account in cache.items()
-        }
+        try:
+            cache = await PrefetchTransactionAuthorities(
+                transaction=self.transaction, node=self.node
+            ).execute_with_result()
+            authorities_map: dict[str, wax.python_authorities] = {
+                name: convert_schemas_account_to_python_authorities(account) for name, account in cache.items()
+            }
+        except Exception:
+            if not self.cached_authorities:
+                raise
+            logger.info("Node unavailable, using cached authority data for autosign.")
+            authorities_map = self._build_authorities_from_cache()
 
         def retrieve_authorities(account_names: list[str]) -> dict[str, wax.python_authorities]:
             return {name: authorities_map[name] for name in account_names if name in authorities_map}
@@ -126,6 +135,30 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
             signature = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=key)
             signatures.append(signature)
         self.transaction.signatures = signatures
+
+    def _build_authorities_from_cache(self) -> dict[str, wax.python_authorities]:
+        import wax  # noqa: PLC0415
+
+        result: dict[str, wax.python_authorities] = {}
+        for name, cached in (self.cached_authorities or {}).items():
+            result[name] = wax.python_authorities(
+                owner=wax.python_authority(
+                    weight_threshold=cached.owner.weight_threshold,
+                    account_auths=dict(cached.owner.account_auths),
+                    key_auths=dict(cached.owner.key_auths),
+                ),
+                active=wax.python_authority(
+                    weight_threshold=cached.active.weight_threshold,
+                    account_auths=dict(cached.active.account_auths),
+                    key_auths=dict(cached.active.key_auths),
+                ),
+                posting=wax.python_authority(
+                    weight_threshold=cached.posting.weight_threshold,
+                    account_auths=dict(cached.posting.account_auths),
+                    key_auths=dict(cached.posting.key_auths),
+                ),
+            )
+        return result
 
     def _throw_wrong_already_signed_mode(self) -> None:
         if self.already_signed_mode == "strict":

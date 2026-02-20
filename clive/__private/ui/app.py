@@ -449,9 +449,15 @@ class Clive(App[int]):
             if isinstance(error, bke.CommunicationError) and error.response is None:
                 # notify watchers when node goes offline
                 self.trigger_node_watchers()
+                self._notify_cached_data_usage()
 
             logger.error(f"Update node data failed: {wrapper.error}")
             return
+
+        # Update offline cache alongside regular node data refresh
+        cache_wrapper = await self.world.commands.fetch_offline_data(accounts=accounts)
+        if cache_wrapper.error_occurred:
+            logger.warning(f"Failed to update offline cache: {cache_wrapper.error}")
 
         self.trigger_profile_watchers()
         self.trigger_node_watchers()
@@ -621,6 +627,13 @@ class Clive(App[int]):
 
     def is_worker_group_empty(self, group: str) -> bool:
         return not bool([worker for worker in self.workers if worker.group == group])
+
+    _CACHED_DATA_WARNING: Final[str] = "Node unavailable. Displaying cached data (may be stale)."
+
+    def _notify_cached_data_usage(self) -> None:
+        has_cached_data = self.world.profile.accounts.is_tracked_accounts_node_data_available
+        if has_cached_data and not self.is_notification_present(self._CACHED_DATA_WARNING):
+            self.notify(self._CACHED_DATA_WARNING, severity="warning", timeout=10)
 
     def _retrigger_update_data_from_node(self) -> None:
         if self.is_worker_group_empty(self._NODE_DATA_WORKER_GROUP_NAME):

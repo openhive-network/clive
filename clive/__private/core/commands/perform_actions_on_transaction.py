@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
 
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.cached_offline_data import CachedAuthority, CachedTapos
 
 
 if TYPE_CHECKING:
@@ -88,9 +89,13 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
     broadcast: bool = False
+    cached_tapos: CachedTapos | None = None
+    cached_authorities: dict[str, CachedAuthority] | None = field(default=None)
 
     async def _execute(self) -> None:
-        transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
+        transaction = await BuildTransaction(
+            content=self.content, node=self.node, cached_tapos=self.cached_tapos
+        ).execute_with_result()
 
         if not self.force_unsign and (self.sign_key or self.autosign):
             assert self.unlocked_wallet is not None, "wallet is required when sign_key or autosign is provided"
@@ -105,6 +110,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                         chain_id=self.chain_id or await self.node.chain_id,
                         node=self.node,
                         already_signed_mode=self.already_signed_mode,
+                        cached_authorities=self.cached_authorities,
                     ).execute_with_result()
                 except TransactionAlreadySignedAutoSignError:
                     # We don't want to raise an error if the transaction is already signed, just skip the signing step.

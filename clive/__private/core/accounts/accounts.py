@@ -8,6 +8,7 @@ from clive.__private.models.schemas import AccountName, is_matching_model
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
+    from clive.__private.core.cached_offline_data import CachedAuthority, CachedNodeData
     from clive.__private.core.commands.data_retrieval.update_node_data import NodeData
     from clive.__private.core.known_exchanges import ExchangeEntity
 
@@ -103,6 +104,8 @@ class ExchangeAccount(Account):
 class TrackedAccount(Account):
     _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
     _data: NodeData | None = field(default=None, compare=False)
+    _cached_authority: CachedAuthority | None = field(default=None, compare=False)
+    _cached_node_data: CachedNodeData | None = field(default=None, compare=False)
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -127,6 +130,14 @@ class TrackedAccount(Account):
     def is_alarms_data_available(self) -> bool:
         return self._alarms.is_alarms_data_available
 
+    @property
+    def cached_authority(self) -> CachedAuthority | None:
+        return self._cached_authority
+
+    @property
+    def has_cached_authority(self) -> bool:
+        return self._cached_authority is not None
+
 
 @dataclass
 class KnownAccount(Account):
@@ -141,7 +152,7 @@ class WatchedAccount(TrackedAccount):
 
     @classmethod
     def create_from_working(cls, account: WorkingAccount) -> WatchedAccount:
-        return cls(account.name, account._alarms, account._data)
+        return cls(account.name, account._alarms, account._data, account._cached_authority, account._cached_node_data)
 
 
 @dataclass
@@ -151,4 +162,4 @@ class WorkingAccount(TrackedAccount):
 
     @classmethod
     def create_from_watched(cls, account: WatchedAccount) -> WorkingAccount:
-        return cls(account.name, account._alarms, account._data)
+        return cls(account.name, account._alarms, account._data, account._cached_authority, account._cached_node_data)

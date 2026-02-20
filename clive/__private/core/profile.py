@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
 
     from clive.__private.core.accounts.accounts import Account
+    from clive.__private.core.cached_offline_data import CachedTapos
     from clive.__private.core.encryption import EncryptionService
 
 
@@ -68,6 +69,7 @@ class Profile:
         tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
+        cached_tapos: CachedTapos | None = None,
     ) -> None:
         self._assert_no_direct_initialization(init_key)
 
@@ -90,6 +92,7 @@ class Profile:
         self._skip_save = False
         self._hash_of_stored_profile: int | None = None
         self._should_enable_known_accounts = should_enable_known_accounts
+        self._cached_tapos = cached_tapos
 
     def __hash__(self) -> int:
         return hash(RuntimeToStorageConverter(self).create_storage_model())
@@ -140,6 +143,14 @@ class Profile:
     @property
     def should_enable_known_accounts(self) -> bool:
         return self._should_enable_known_accounts
+
+    @property
+    def cached_tapos(self) -> CachedTapos | None:
+        return self._cached_tapos
+
+    @cached_tapos.setter
+    def cached_tapos(self, value: CachedTapos | None) -> None:
+        self._cached_tapos = value
 
     def add_operation(self, *operations: OperationUnion) -> None:
         self.transaction.add_operation(*operations)
@@ -236,6 +247,7 @@ class Profile:
         tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
+        cached_tapos: CachedTapos | None = None,
     ) -> Profile:
         cls.validate_profile_name(name)
         return cls._create_instance(
@@ -250,6 +262,7 @@ class Profile:
             node_address,
             tui_theme,
             should_enable_known_accounts=should_enable_known_accounts,
+            cached_tapos=cached_tapos,
         )
 
     @classmethod
@@ -312,6 +325,7 @@ class Profile:
         tui_theme: str = DEFAULT_THEME,
         *,
         should_enable_known_accounts: bool = True,
+        cached_tapos: CachedTapos | None = None,
     ) -> Self:
         """Create new instance bypassing blocked direct initializer call."""
         return cls(
@@ -327,6 +341,7 @@ class Profile:
             node_address,
             tui_theme,
             should_enable_known_accounts=should_enable_known_accounts,
+            cached_tapos=cached_tapos,
         )
 
     @staticmethod

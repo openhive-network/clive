@@ -20,6 +20,8 @@ def contains_private_key(content: str, world: World) -> bool:
         True if a private key is detected in the content, False otherwise.
     """
     for account in world.profile.accounts.tracked:
+        if not account.is_node_data_available:
+            continue
         authority = account.data.authority
         try:
             world.wax_interface.scan_text_for_matching_private_keys(

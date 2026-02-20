@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import LockSource
+    from clive.__private.core.cached_offline_data import CachedAuthority
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.commands.create_profile_wallets import CreateProfileWalletsResult
     from clive.__private.core.commands.data_retrieval.chain_data import ChainData
@@ -388,6 +389,17 @@ class Commands[WorldT: World]:
             PerformActionsOnTransaction,
         )
 
+        cached_tapos = self._world.profile.cached_tapos if self._world.is_profile_available else None
+        cached_authorities: dict[str, CachedAuthority] | None = None
+        if self._world.is_profile_available:
+            collected_auths: dict[str, CachedAuthority] = {}
+            for account in self._world.profile.accounts.tracked:
+                authority = account.cached_authority
+                if authority is not None:
+                    collected_auths[account.name] = authority
+            if collected_auths:
+                cached_authorities = collected_auths
+
         return await self.__surround_with_exception_handlers(
             PerformActionsOnTransaction(
                 content=content,
@@ -397,11 +409,13 @@ class Commands[WorldT: World]:
                 sign_key=list(sign_key),
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
-                chain_id=chain_id,
+                chain_id=chain_id or (self._world.profile.chain_id if self._world.is_profile_available else None),
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
                 broadcast=broadcast,
                 autosign=autosign,
+                cached_tapos=cached_tapos,
+                cached_authorities=cached_authorities,
             )
         )
 
@@ -413,11 +427,13 @@ class Commands[WorldT: World]:
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.build_transaction import BuildTransaction  # noqa: PLC0415
 
+        cached_tapos = self._world.profile.cached_tapos if self._world.is_profile_available else None
         return await self.__surround_with_exception_handlers(
             BuildTransaction(
                 content=content,
                 force_update_metadata=force_update_metadata,
                 node=self._world.node,
+                cached_tapos=cached_tapos,
             )
         )
 
@@ -429,11 +445,13 @@ class Commands[WorldT: World]:
     ) -> CommandWrapper:
         from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata  # noqa: PLC0415
 
+        cached_tapos = self._world.profile.cached_tapos if self._world.is_profile_available else None
         return await self.__surround_with_exception_handlers(
             UpdateTransactionMetadata(
                 transaction=transaction,
                 node=self._world.node,
                 expiration=expiration,
+                cached_tapos=cached_tapos,
             )
         )
 
@@ -467,6 +485,16 @@ class Commands[WorldT: World]:
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.autosign import AutoSign  # noqa: PLC0415
 
+        cached_authorities: dict[str, CachedAuthority] | None = None
+        if self._world.is_profile_available:
+            collected: dict[str, CachedAuthority] = {}
+            for account in self._world.profile.accounts.tracked:
+                authority = account.cached_authority
+                if authority is not None:
+                    collected[account.name] = authority
+            if collected:
+                cached_authorities = collected
+
         return await self.__surround_with_exception_handlers(
             AutoSign(
                 unlocked_wallet=self._world.beekeeper_manager.user_wallet,
@@ -475,6 +503,7 @@ class Commands[WorldT: World]:
                 chain_id=chain_id or await self._world.node.chain_id,
                 node=self._world.node,
                 already_signed_mode=already_signed_mode,
+                cached_authorities=cached_authorities,
             )
         )
 
@@ -725,6 +754,17 @@ class Commands[WorldT: World]:
         )
 
         return await self.__surround_with_exception_handlers(GetWitnessSchedule(node=self._world.node))
+
+    async def fetch_offline_data(self, *, accounts: Iterable[TrackedAccount] | None = None) -> CommandWrapper:
+        from clive.__private.core.commands.fetch_offline_data import FetchOfflineData  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            FetchOfflineData(
+                node=self._world.node,
+                profile=self._world.profile,
+                accounts=list(accounts or []),
+            )
+        )
 
     async def save_profile(self) -> NoOpWrapper | CommandWrapper:
         profile = self._world.profile

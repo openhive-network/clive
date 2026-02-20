@@ -89,6 +89,14 @@ async def lock() -> None:
     await Lock().run()
 
 
+@cli.command(name="fetch")
+async def fetch() -> None:
+    """Fetch and cache TAPOS and authority data for offline usage."""
+    from clive.__private.cli.commands.fetch import Fetch  # noqa: PLC0415
+
+    await Fetch().run()
+
+
 @cli.command(name="init", hidden=True)
 async def init() -> None:
     """Initialize Clive environment and configuration."""

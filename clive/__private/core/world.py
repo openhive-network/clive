@@ -4,13 +4,19 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.app_state import AppState, LockSource
+from clive.__private.core.authority import Authority
 from clive.__private.core.beekeeper_manager import BeekeeperManager
 from clive.__private.core.commands.commands import Commands
+from clive.__private.core.commands.data_retrieval.update_node_data.cached_authority_data_provider import (
+    CachedAuthorityDataProvider,
+)
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.core.wallet_container import WalletContainer
+from clive.__private.logger import logger
 from clive.exceptions import ProfileNotLoadedError
+from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 from wax.wax_factory import create_hive_chain
 from wax.wax_options import WaxChainOptions
 
@@ -214,6 +220,8 @@ class World:
         self._profile = new_profile
         await self._update_node()
         await self._update_wax_interface()
+        if new_profile is not None and self.is_wax_interface_available:
+            await self._restore_cached_node_data()
 
     async def on_going_into_locked_mode(self, source: LockSource) -> None:
         """
@@ -288,3 +296,23 @@ class World:
             self._wax_interface.endpoint_url = self.profile.node_address
         else:
             await self._setup_wax_interface()
+
+    async def _restore_cached_node_data(self) -> None:
+        """Reconstruct NodeData from cached data for accounts that have it, enabling offline TUI usage."""
+        for account in self.profile.accounts.tracked:
+            if account.is_node_data_available:
+                continue
+            cached_node = account._cached_node_data
+            cached_auth = account._cached_authority
+            if cached_node is None or cached_auth is None:
+                continue
+            try:
+                provider = CachedAuthorityDataProvider(cached_auth, account.name)
+                authority_operation = await AccountAuthorityUpdateOperation.create_for_with_provider(
+                    self.wax_interface, account.name, provider
+                )
+                authority = Authority(authority_operation)
+                account._data = cached_node.to_node_data(authority)
+                logger.info(f"Restored cached NodeData for account: {account.name}")
+            except Exception:  # noqa: BLE001
+                logger.warning(f"Failed to restore cached NodeData for account: {account.name}", exc_info=True)

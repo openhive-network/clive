@@ -48,6 +48,10 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
             self._change_to_no_alarms_info()
             return no_alarms_info
 
+        if not self.account.is_alarms_data_available:
+            self._change_to_no_alarms_info()
+            return no_alarms_info
+
         alarm_count = len(self.account.alarms.harmful_alarms)
 
         if alarm_count:

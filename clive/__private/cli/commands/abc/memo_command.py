@@ -9,6 +9,7 @@ from clive.__private.cli.exceptions import CLIPrettyError, CLIPrivateKeyInMemoVa
 from clive.__private.core.commands.encrypt_memo import EncryptMemoKeyNotImportedError
 from clive.__private.core.commands.encrypt_memo_with_account_names import AccountNotFoundForEncryptionError
 from clive.__private.core.formatters.humanize import humanize_validation_result
+from clive.__private.logger import logger
 from clive.__private.validators.private_key_in_memo_validator import PrivateKeyInMemoValidator
 
 
@@ -34,7 +35,10 @@ class MemoCommand(WorldBasedCommand, ABC):
 
     async def fetch_data(self) -> None:
         await super().fetch_data()
-        await self.world.commands.update_node_data(accounts=self.profile.accounts.tracked)
+        try:
+            await self.world.commands.update_node_data(accounts=self.profile.accounts.tracked)
+        except Exception:  # noqa: BLE001
+            logger.info("Node unavailable, skipping node data update. Using cached profile data.")
 
     async def validate_inside_context_manager(self) -> None:
         self._validate_private_key_in_memo(self.ensure_memo)

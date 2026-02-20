@@ -66,6 +66,8 @@ class AlarmsTable(CliveCheckerboardTable):
 
     def check_if_should_be_updated(self, content: Profile) -> bool:
         account = self._get_actual_account_state(content)
+        if not account.is_alarms_data_available:
+            return False
         alarms = account.alarms.harmful_alarms
         return alarms != self._previous_alarms
 
@@ -85,6 +87,8 @@ class AlarmsTable(CliveCheckerboardTable):
 
     def update_previous_state(self, content: Profile) -> None:
         account = self._get_actual_account_state(content)
+        if not account.is_alarms_data_available:
+            return
         self._previous_alarms = account.alarms.harmful_alarms
 
     def _get_actual_account_state(self, content: Profile) -> TrackedAccount:

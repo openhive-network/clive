@@ -46,9 +46,10 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
     ) -> Callable[[Callable[P, None]], Callable[P, None]]:
         def can_run_condition(app: Clive) -> bool:
             accounts = app.world.profile.accounts
-            return (
-                accounts.is_tracked_accounts_node_data_available and accounts.is_tracked_accounts_alarms_data_available
-            )
+            has_node_data = accounts.is_tracked_accounts_node_data_available
+            has_alarms_data = accounts.is_tracked_accounts_alarms_data_available
+            is_online = app.world.node.cached.online_or_none is True
+            return has_node_data and (has_alarms_data or not is_online)
 
         return cls._create_prevent_decorator(can_run_condition, message)
 

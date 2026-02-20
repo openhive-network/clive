@@ -236,13 +236,22 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             obj_to_watch=self.world,
             attribute_name="node_reactive",
             callback=self._update_node_status,
-            first_try_callback=lambda: self.node.cached.is_online_status_known,
+            first_try_callback=self._should_update,
         )
         self.tooltip = "Switch node address"
 
+    def _should_update(self) -> bool:
+        if self.node.cached.is_online_status_known:
+            return True
+        return self.profile.accounts.is_tracked_accounts_node_data_available
+
     def _update_node_status(self, node: Node) -> str:
         if not node.cached.online_or_none:
-            self._widget.variant = "error-on-transparent"
+            has_cached_data = self.profile.accounts.is_tracked_accounts_node_data_available
+            if has_cached_data:
+                self._widget.variant = "warning-on-transparent"
+            else:
+                self._widget.variant = "error-on-transparent"
             return "offline"
 
         self._widget.variant = "success-on-transparent"

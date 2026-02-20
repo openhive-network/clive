@@ -20,6 +20,7 @@ CliveButtonVariant = Literal[
     "loading-variant",
     "success-on-transparent",
     "error-on-transparent",
+    "warning-on-transparent",
     "transparent",
     "grey-darken",
     "grey-lighten",
@@ -64,6 +65,15 @@ class CliveButton(Button, CliveWidget):
         &.-error-on-transparent {
             background: 0%;
             color: $error;
+
+            &:hover {
+                background: black 20%;
+            }
+        }
+
+        &.-warning-on-transparent {
+            background: 0%;
+            color: $warning;
 
             &:hover {
                 background: black 20%;
