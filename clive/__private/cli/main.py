@@ -35,6 +35,9 @@ def main(
     version: bool | None = typer.Option(  # noqa: FBT001
         None, "--version", "-V", help="Show the current version and exit.", is_eager=True
     ),
+    offline: bool = typer.Option(  # noqa: FBT001
+        False, "--offline", help="Run in offline mode using cached data."  # noqa: FBT003
+    ),
 ) -> None:
     if version:
         from clive import __version__  # noqa: PLC0415
@@ -43,6 +46,10 @@ def main(
         print_cli(f"Clive version: {__version__}")
         print_cli(f"Storage model revision: {StorageHistory.get_latest_revision()}")
         print_cli(f"Storage model version: {StorageHistory.get_latest_version()}")
+    if offline:
+        import os  # noqa: PLC0415
+
+        os.environ["CLIVE_NODE__OFFLINE"] = "true"
 
 
 _profile_name_unlock_argument = typer.Argument(

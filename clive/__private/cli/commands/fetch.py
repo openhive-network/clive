@@ -3,12 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli
 
 
 @dataclass(kw_only=True)
 class Fetch(WorldBasedCommand):
     async def _run(self) -> None:
+        if self.is_offline_mode:
+            raise CLIPrettyError("Cannot fetch offline data while in offline mode. Remove --offline flag.")
         accounts = list(self.profile.accounts.tracked)
         wrapper = await self.world.commands.fetch_offline_data(accounts=accounts)
         if wrapper.error_occurred:

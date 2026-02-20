@@ -8,6 +8,7 @@ from clive.__private.ui.dialogs.edit_authority_memo_entry_dialog import EditAuth
 from clive.__private.ui.dialogs.edit_authority_regular_entry_dialog import EditAuthorityRegularEntryDialog
 from clive.__private.ui.dialogs.edit_authority_total_threshold_dialog import EditAuthorityTotalThresholdDialog
 from clive.__private.ui.dialogs.edit_key_alias_dialog import EditKeyAliasDialog
+from clive.__private.ui.dialogs.go_offline_dialog import GoOfflineDialog
 from clive.__private.ui.dialogs.load_key_from_file_dialog import LoadKeyFromFileDialog
 from clive.__private.ui.dialogs.load_transaction_from_file_dialog import LoadTransactionFromFileDialog
 from clive.__private.ui.dialogs.mark_alarm_as_harmless_dialog import MarkAlarmAsHarmlessDialog
@@ -27,6 +28,7 @@ __all__ = [
     "EditAuthorityRegularEntryDialog",
     "EditAuthorityTotalThresholdDialog",
     "EditKeyAliasDialog",
+    "GoOfflineDialog",
     "LoadKeyFromFileDialog",
     "LoadTransactionFromFileDialog",
     "MarkAlarmAsHarmlessDialog",

@@ -43,6 +43,10 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
         return self.world.profile
 
     @property
+    def is_offline_mode(self) -> bool:
+        return self.world.app_state.is_offline_mode
+
+    @property
     def beekeeper_remote_url(self) -> HttpUrl | None:
         return safe_settings.beekeeper.remote_address
 
@@ -111,6 +115,8 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
             raise CLIPrettyError(str(ex)) from None
 
     async def _validate_account_exists_in_node(self, account_name: str) -> None:
+        if self.is_offline_mode:
+            return
         wrapper = await self.world.commands.does_account_exists_in_node(account_name=account_name)
         exists = wrapper.result_or_raise
         if not exists:

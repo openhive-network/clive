@@ -24,10 +24,19 @@ class AppState:
     world: World
     _is_unlocked: bool = False
     """Holds info about the current state of the Clive application. Beekeeper can be in different state."""
+    _is_offline_mode: bool = False
 
     @property
     def is_unlocked(self) -> bool:
         return self._is_unlocked
+
+    @property
+    def is_offline_mode(self) -> bool:
+        return self._is_offline_mode
+
+    def set_offline_mode(self, *, offline: bool) -> None:
+        self._is_offline_mode = offline
+        logger.info(f"Offline mode {'enabled' if offline else 'disabled'}.")
 
     async def unlock(
         self,

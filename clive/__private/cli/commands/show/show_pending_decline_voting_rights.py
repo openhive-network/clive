@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
@@ -30,8 +31,13 @@ class ShowPendingDeclineVotingRights(WorldBasedCommand):
 
     async def fetch_data(self) -> None:
         account = TrackedAccount(name=self.account_name)
-        await self.world.commands.update_node_data(accounts=[account])
-        await self.world.commands.update_alarms_data(accounts=[account])
+        if not self.is_offline_mode:
+            await self.world.commands.update_node_data(accounts=[account])
+            await self.world.commands.update_alarms_data(accounts=[account])
+        elif not account.is_node_data_available:
+            raise CLIPrettyError(
+                f"No cached data for account '{self.account_name}'. Run 'clive fetch' while online first."
+            )
         self._alarm = account.alarms.declining_voting_rights_in_progress
 
     async def _run(self) -> None:

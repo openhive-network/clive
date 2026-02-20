@@ -77,6 +77,9 @@ class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
 
         clive_app = get_clive().app_instance()
 
+        if clive_app.world.is_profile_available and clive_app.world.app_state.is_offline_mode:
+            return
+
         if clive_app.world.is_profile_available:
             has_cached_data = clive_app.world.profile.accounts.is_tracked_accounts_node_data_available
             if has_cached_data:

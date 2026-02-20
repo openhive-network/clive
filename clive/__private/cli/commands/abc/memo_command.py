@@ -35,6 +35,8 @@ class MemoCommand(WorldBasedCommand, ABC):
 
     async def fetch_data(self) -> None:
         await super().fetch_data()
+        if self.is_offline_mode:
+            return
         try:
             await self.world.commands.update_node_data(accounts=self.profile.accounts.tracked)
         except Exception:  # noqa: BLE001

@@ -157,6 +157,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         super().validate_all_mutually_exclusive_options()
 
     async def validate_inside_context_manager(self) -> None:
+        if self.is_offline_mode and self.should_broadcast:
+            raise CLIPrettyError("Cannot broadcast transactions in offline mode.")
         self._validate_manual_sign_not_allowed_in_strict_already_signed_mode()
         self._validate_if_broadcasting_signed_transaction()
         await self._validate_bad_accounts()

@@ -35,6 +35,7 @@ from clive.__private.core.constants.setting_identifiers import (
     NODE_COMMUNICATION_ATTEMPTS_AMOUNT,
     NODE_COMMUNICATION_RETRIES_DELAY_SECS,
     NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS,
+    NODE_OFFLINE,
     NODE_REFRESH_ALARMS_RATE_SECS,
     NODE_REFRESH_RATE_SECS,
     SECRETS_DEFAULT_PRIVATE_KEY,
@@ -300,6 +301,10 @@ class SafeSettings:
 
     @dataclass
     class _Node(_Namespace):
+        @property
+        def offline(self) -> bool:
+            return self._parent._get_or_default_false(NODE_OFFLINE)
+
         @property
         def chain_id(self) -> str | None:
             return self._get_node_chain_id()

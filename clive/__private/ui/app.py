@@ -121,6 +121,7 @@ class Clive(App[int]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._world: TUIWorld | None = None
+        self._offline_dialog_shown: bool = False
 
         self._screen_remove_guard = AsyncGuard()
         """
@@ -429,6 +430,8 @@ class Clive(App[int]):
 
     @work(name="alarms data update worker", group=_ALARMS_DATA_WORKER_GROUP_NAME, exclusive=True)
     async def update_alarms_data(self) -> None:
+        if self.world.app_state.is_offline_mode:
+            return
         while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
             await asyncio.sleep(0.1)
         accounts = self.world.profile.accounts.tracked
@@ -441,15 +444,24 @@ class Clive(App[int]):
 
     @work(name="node data update worker", group=_NODE_DATA_WORKER_GROUP_NAME, exclusive=True)
     async def update_data_from_node(self) -> None:
+        if self.world.app_state.is_offline_mode:
+            return
+
         accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             error = wrapper.error
             if isinstance(error, bke.CommunicationError) and error.response is None:
-                # notify watchers when node goes offline
                 self.trigger_node_watchers()
-                self._notify_cached_data_usage()
+                if not self._offline_dialog_shown:
+                    has_cached_data = self.world.profile.accounts.is_tracked_accounts_node_data_available
+                    if has_cached_data:
+                        self._offline_dialog_shown = True
+                        self._show_go_offline_dialog()
+                    else:
+                        self._notify_cached_data_usage()
+                # else: dialog already shown or no cached data, skip
 
             logger.error(f"Update node data failed: {wrapper.error}")
             return
@@ -635,6 +647,19 @@ class Clive(App[int]):
         if has_cached_data and not self.is_notification_present(self._CACHED_DATA_WARNING):
             self.notify(self._CACHED_DATA_WARNING, severity="warning", timeout=10)
 
+    def _show_go_offline_dialog(self) -> None:
+        from clive.__private.ui.dialogs.go_offline_dialog import GoOfflineDialog  # noqa: PLC0415
+
+        def handle_result(go_offline: bool | None) -> None:  # noqa: FBT001
+            if go_offline:
+                self.world.app_state.set_offline_mode(offline=True)
+                self.pause_refresh_node_data_interval()
+                self.pause_refresh_alarms_data_interval()
+                self.notify("Switched to offline mode.", severity="warning", timeout=10)
+                self.trigger_node_watchers()
+
+        self.push_screen(GoOfflineDialog(), callback=handle_result)
+
     def _retrigger_update_data_from_node(self) -> None:
         if self.is_worker_group_empty(self._NODE_DATA_WORKER_GROUP_NAME):
             self.update_data_from_node()
@@ -675,8 +700,12 @@ class Clive(App[int]):
 
     async def _switch_mode_into_unlocked(self) -> None:
         await self.switch_mode_with_reset("dashboard")
-        self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
-        self.resume_periodic_intervals()
+        if self.world.app_state.is_offline_mode:
+            self.notify("Running in offline mode. Data may be stale.", severity="warning", timeout=10)
+            self.resume_refresh_beekeeper_wallet_lock_status_interval()
+        else:
+            self.update_alarms_data_on_newest_node_data(suppress_cancelled_error=True)
+            self.resume_periodic_intervals()
         self.theme = self.world.profile.tui_theme
 
     def _load_bindings_from_file(self) -> CliveBindings:

@@ -54,6 +54,7 @@ class World:
         self._profile: Profile | None = None
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
+        self._seed_offline_mode()
         self._commands = self._setup_commands()
         self._beekeeper_manager = BeekeeperManager()
         self._wax_interface: IHiveChainInterface | None = None
@@ -264,6 +265,11 @@ class World:
             yield
         finally:
             self._is_during_closure = False
+
+    def _seed_offline_mode(self) -> None:
+        from clive.__private.settings import safe_settings  # noqa: PLC0415
+
+        self._app_state.set_offline_mode(offline=safe_settings.node.offline)
 
     async def _setup(self) -> None:
         await self._beekeeper_manager.setup()
