@@ -657,6 +657,8 @@ class Clive(App[int]):
                 self.pause_refresh_alarms_data_interval()
                 self.notify("Switched to offline mode.", severity="warning", timeout=10)
                 self.trigger_node_watchers()
+            else:
+                self.exit()
 
         self.push_screen(GoOfflineDialog(), callback=handle_result)
 
