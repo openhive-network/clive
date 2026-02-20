@@ -97,17 +97,27 @@ class ButtonContainer(Horizontal, CliveWidget):
             yield LoadTransactionFromFileButton()
 
 
-class SelectKey(SafeSelect[PublicKey], CliveWidget):
+AUTOSIGN_LABEL = "Autosign"
+MIN_KEYS_FOR_AUTOSIGN = 2
+
+
+class SelectKey(SafeSelect[PublicKey | None], CliveWidget):
     """Combobox for selecting the public key."""
 
     def __init__(self) -> None:
-        try:
-            first_value: PublicKey | NoSelection = self.profile.keys.first
-        except KeyNotFoundError:
-            first_value = Select.BLANK
+        key_options: list[tuple[str, PublicKey | None]] = [(key.alias, key) for key in self.profile.keys]
+
+        if len(key_options) >= MIN_KEYS_FOR_AUTOSIGN and safe_settings.use_wax_autosign:
+            key_options.insert(0, (AUTOSIGN_LABEL, None))
+            first_value: PublicKey | None | NoSelection = None
+        else:
+            try:
+                first_value = self.profile.keys.first
+            except KeyNotFoundError:
+                first_value = Select.BLANK
 
         super().__init__(
-            [(key.alias, key) for key in self.profile.keys],
+            key_options,
             value=first_value,
             empty_string="no private key found",
         )
@@ -125,6 +135,14 @@ class KeyContainer(Horizontal, CliveWidget):
     """Container for storing widgets connected with keys."""
 
     @property
+    def is_autosign_selected(self) -> bool:
+        select_key = self.query_exactly_one(SelectKey)
+        try:
+            return select_key.value is None
+        except NoItemSelectedError:
+            return False
+
+    @property
     def selected_key(self) -> PublicKey:
         """
         Return selected key.
@@ -134,9 +152,12 @@ class KeyContainer(Horizontal, CliveWidget):
         """
         select_key = self.query_exactly_one(SelectKey)
         try:
-            return select_key.value
+            value = select_key.value
         except NoItemSelectedError as error:
             raise NoItemSelectedError("No key was selected!") from error
+        if value is None:
+            raise NoItemSelectedError("Autosign is selected, not a specific key.")
+        return value
 
     def compose(self) -> ComposeResult:
         if self.profile.transaction.is_signed:
@@ -195,12 +216,13 @@ class TransactionSummary(BaseScreen):
 
     @on(SaveButton.Pressed)
     def action_save_transaction_to_file(self) -> None:
+        autosign = not self.profile.transaction.is_signed and self.key_container.is_autosign_selected
         try:
-            sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
+            sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed and not autosign else None
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key, autosign=autosign))
 
     @on(UpdateMetadataButton.Pressed)
     async def action_update_metadata(self) -> None:
@@ -268,15 +290,23 @@ class TransactionSummary(BaseScreen):
 
         transaction = self.profile.transaction
 
-        try:
-            sign_key = [self._get_key_to_sign()] if not transaction.is_signed else []
-        except NoItemSelectedError:
-            self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
-            return
+        autosign = False
+        sign_key: list[PublicKey] = []
+
+        if not transaction.is_signed:
+            if self.key_container.is_autosign_selected:
+                autosign = True
+            else:
+                try:
+                    sign_key = [self._get_key_to_sign()]
+                except NoItemSelectedError:
+                    self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
+                    return
 
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
             sign_key=sign_key,
+            autosign=autosign,
             broadcast=True,
         )
         if wrapper.error_occurred:
