@@ -6,7 +6,6 @@ import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import (
-    CLIMultipleKeysAutoSignError,
     CLIMutuallyExclusiveOptionsError,
     CLINoKeysAvailableError,
     CLIWrongAlreadySignedModeAutoSignError,
@@ -225,20 +224,23 @@ async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
         cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
 
 
-@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
-async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_profile(
+async def test_autosign_transaction_with_multiple_keys_in_profile(
     cli_tester: CLITester,
     transaction_file_with_transfer: Path,
-    *,
-    broadcast: bool | None,
 ) -> None:
-    """Test failure of autosigning when there are multiple keys in the profile."""
+    """Test autosigning transaction when there are multiple different keys in the profile."""
     # ARRANGE
+    signed_transaction_filepath = create_transaction_filepath("signed_multi_key")
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
-    # ACT $ ASSERT
-    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
+    # ACT
+    result = cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=signed_transaction_filepath
+    )
+
+    # ASSERT
+    assert_contains_transaction_saved_to_file_message(signed_transaction_filepath, result.stdout)
+    assert_transaction_file_is_signed(signed_transaction_filepath)
 
 
 async def test_default_autosign_with_force_unsign(

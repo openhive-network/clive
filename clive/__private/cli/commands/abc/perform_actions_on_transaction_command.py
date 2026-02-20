@@ -29,6 +29,7 @@ from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DE
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import MultipleKeysFoundError
+from clive.__private.settings import safe_settings
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
 from clive.__private.validators.path_validator import PathValidator
 
@@ -261,7 +262,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             if self.profile.keys.is_alias_available(alias):
                 raise CLIKeyAliasNotFoundError(alias)
 
-        if self.use_autosign:
+        if self.use_autosign and not safe_settings.use_wax_autosign:
             try:
                 _ = self.profile.keys.unique_key
             except MultipleKeysFoundError:

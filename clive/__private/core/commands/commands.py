@@ -473,6 +473,7 @@ class Commands[WorldT: World]:
                 transaction=transaction,
                 keys=keys if keys is not None else self._world.profile.keys,
                 chain_id=chain_id or await self._world.node.chain_id,
+                node=self._world.node,
                 already_signed_mode=already_signed_mode,
             )
         )
