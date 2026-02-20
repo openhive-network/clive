@@ -36,7 +36,9 @@ def main(
         None, "--version", "-V", help="Show the current version and exit.", is_eager=True
     ),
     offline: bool = typer.Option(  # noqa: FBT001
-        False, "--offline", help="Run in offline mode using cached data."  # noqa: FBT003
+        False,
+        "--offline",
+        help="Run in offline mode using cached data.",  # noqa: FBT003
     ),
 ) -> None:
     if version:

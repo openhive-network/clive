@@ -27,6 +27,7 @@ from clive.__private.settings import safe_settings
 if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.profile import Profile
 
 
@@ -107,6 +108,18 @@ class WorldBasedCommand(ContextualCLICommand[World], ABC):
     def _validate_session_token_set(self) -> None:
         if not self.is_session_token_set:
             raise CLIBeekeeperSessionTokenNotSetError
+
+    def _get_tracked_account_or_raise(self, account_name: str) -> TrackedAccount:
+        """Get tracked account from the profile with cached data, or raise if not available."""
+        try:
+            account = self.profile.accounts.get_tracked_account(account_name)
+        except AccountNotFoundError:
+            raise CLIPrettyError(
+                f"Account '{account_name}' is not tracked. Add it first with 'clive configure'."
+            ) from None
+        if not account.is_node_data_available:
+            raise CLIPrettyError(f"No cached data for account '{account_name}'. Run 'clive fetch' while online first.")
+        return account
 
     def _validate_account_is_tracked(self, account_name: str) -> None:
         try:

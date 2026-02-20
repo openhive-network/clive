@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.models.asset import Asset
@@ -16,14 +15,11 @@ class ShowBalances(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        account = TrackedAccount(name=self.account_name)
-
-        if not self.is_offline_mode:
+        if self.is_offline_mode:
+            account = self._get_tracked_account_or_raise(self.account_name)
+        else:
+            account = TrackedAccount(name=self.account_name)
             await self.world.commands.update_node_data(accounts=[account])
-        elif not account.is_node_data_available:
-            raise CLIPrettyError(
-                f"No cached data for account '{self.account_name}'. Run 'clive fetch' while online first."
-            )
 
         table = Table(title=f"Balances of `{self.account_name}` account")
 

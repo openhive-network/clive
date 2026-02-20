@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Final
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
@@ -30,14 +29,12 @@ class ShowPendingChangeRecoveryAccount(WorldBasedCommand):
     _alarm: ChangingRecoveryAccountInProgress = field(init=False)
 
     async def fetch_data(self) -> None:
-        account = TrackedAccount(name=self.account_name)
-        if not self.is_offline_mode:
+        if self.is_offline_mode:
+            account = self._get_tracked_account_or_raise(self.account_name)
+        else:
+            account = TrackedAccount(name=self.account_name)
             await self.world.commands.update_node_data(accounts=[account])
             await self.world.commands.update_alarms_data(accounts=[account])
-        elif not account.is_node_data_available:
-            raise CLIPrettyError(
-                f"No cached data for account '{self.account_name}'. Run 'clive fetch' while online first."
-            )
 
         alarm = account.alarms.changing_recovery_account_in_progress
         self._alarm = alarm
