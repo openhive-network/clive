@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import reactive, var
-from textual.widgets import Label
+from textual.widgets import Input, Label
 
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.core.formatters import humanize
+from clive.__private.core.shorthand_timedelta import InvalidShorthandToTimedeltaError, shorthand_timedelta_to_timedelta
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.widgets.buttons import RefreshOneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton, RefreshOneLineButton
+from clive.__private.ui.widgets.inputs.duration_input import DurationInput
+from clive.__private.validators.transaction_expiration_validator import TransactionExpirationValidator
 
 if TYPE_CHECKING:
-    from datetime import datetime
+    from datetime import timedelta
 
     from textual.app import ComposeResult
 
@@ -61,6 +67,55 @@ class TransactionExpirationLabel(Label):
         return f"Expiration: {expiration}"
 
 
+class ModifyExpirationButton(OneLineButton):
+    """Button shown for signed transactions to allow expiration editing after confirming signature invalidation."""
+
+    class Pressed(OneLineButton.Pressed):
+        """Used to identify that modify expiration button was pressed."""
+
+    def __init__(self) -> None:
+        super().__init__("Modify transaction expiration")
+
+
+class ExpirationHolder(Vertical):
+    def __init__(
+        self,
+        expiration: datetime,
+        *,
+        initial_offset: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT,
+        is_signed: bool = False,
+    ) -> None:
+        super().__init__()
+        self._expiration = expiration
+        self._initial_offset = initial_offset
+        self._is_signed = is_signed
+
+    def compose(self) -> ComposeResult:
+        if self._is_signed:
+            yield ModifyExpirationButton()
+        else:
+            yield DurationInput(
+                "Expiration offset (this tx only)",
+                value=self._initial_offset,
+                always_show_title=True,
+                validators=[TransactionExpirationValidator()],
+                id="expiration-offset-input",
+            )
+        yield TransactionExpirationLabel(self._expiration)
+
+    @property
+    def expiration_input(self) -> DurationInput:
+        return self.query_exactly_one("#expiration-offset-input", DurationInput)
+
+    @on(Input.Changed, "#expiration-offset-input Input")
+    def _update_expiration_preview(self, event: Input.Changed) -> None:
+        try:
+            offset = shorthand_timedelta_to_timedelta(event.value)
+        except InvalidShorthandToTimedeltaError:
+            return
+        self.query_exactly_one(TransactionExpirationLabel).expiration = datetime.now(tz=UTC) + offset
+
+
 class TransactionIdLabel(Label):
     """Label for displaying transaction id."""
 
@@ -89,7 +144,11 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
     def compose(self) -> ComposeResult:
         if self.profile.transaction:
             yield TaposHolder(self.profile.transaction)
-            yield TransactionExpirationLabel(self.profile.transaction.expiration)
+            yield ExpirationHolder(
+                self.profile.transaction.expiration,
+                initial_offset=self.profile.transaction_expiration,
+                is_signed=self.profile.transaction.is_signed,
+            )
             with Vertical(id="label-and-button-container"):
                 yield TransactionIdLabel(self.profile.transaction.calculate_transaction_id())
                 yield Container(UpdateMetadataButton())
@@ -99,6 +158,18 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
     @property
     def is_metadata_displayed(self) -> bool:
         return bool(self.query(TaposHolder))
+
+    @property
+    def expiration_offset(self) -> timedelta:
+        """Return the expiration offset from the input, falling back to default if invalid."""
+        try:
+            expiration_holder = self.query_exactly_one(ExpirationHolder)
+            value = expiration_holder.expiration_input.value_or_none(notify_on_value_error=False)
+        except Exception:  # noqa: BLE001
+            return TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+        if value is None:
+            return TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+        return value
 
     async def update_metadata_labels(self) -> None:
         """Recompose or just update values of already existing labels."""

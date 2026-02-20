@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.core.formatters.humanize import humanize_relative_or_whole_path
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_widget import CliveWidget
@@ -12,6 +13,7 @@ from clive.__private.ui.dialogs.save_file_base_dialog import SaveFileBaseDialog
 from clive.__private.ui.styling import colorize_path
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from pathlib import Path
 
     from textual.app import ComposeResult
@@ -62,9 +64,12 @@ class SignedCheckbox(Checkbox, CliveWidget):
 
 
 class SaveTransactionToFileDialog(SaveFileBaseDialog):
-    def __init__(self, sign_key: PublicKey | None) -> None:
+    def __init__(
+        self, sign_key: PublicKey | None, *, expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+    ) -> None:
         super().__init__("Save transaction to file", "Save file")
         self._sign_key = sign_key
+        self._expiration = expiration
 
     @property
     def _is_binary_checked(self) -> bool:
@@ -94,6 +99,7 @@ class SaveTransactionToFileDialog(SaveFileBaseDialog):
             force_unsign=not should_be_signed,
             save_file_path=file_path,
             force_save_format="bin" if save_as_binary else "json",
+            expiration=self._expiration,
         )
 
         if wrapper.error_occurred:

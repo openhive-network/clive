@@ -25,6 +25,8 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
 from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
+    ExpirationHolder,
+    ModifyExpirationButton,
     TransactionMetadataContainer,
     UpdateMetadataButton,
 )
@@ -200,7 +202,9 @@ class TransactionSummary(BaseScreen):
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
+        self.app.push_screen(
+            SaveTransactionToFileDialog(sign_key, expiration=self.transaction_metadata_container.expiration_offset)
+        )
 
     @on(UpdateMetadataButton.Pressed)
     async def action_update_metadata(self) -> None:
@@ -217,6 +221,23 @@ class TransactionSummary(BaseScreen):
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), update_metadata_cb)
         else:
             await refresh()
+
+    @on(ModifyExpirationButton.Pressed)
+    async def _handle_modify_expiration(self) -> None:
+        async def cb(confirm: bool | None) -> None:  # noqa: FBT001
+            if confirm:
+                self.profile.transaction.unsign()
+                await self.commands.update_transaction_metadata(
+                    transaction=self.profile.transaction,
+                    expiration=self.profile.transaction_expiration,
+                )
+                self.app.trigger_profile_watchers()
+                await self.transaction_metadata_container.recompose()
+                await self.key_container.recompose()
+                self._update_subtitle()
+
+        if self.profile.transaction.is_signed:
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
 
     @on(LoadTransactionFromFileButton.Pressed)
     def load_transaction_from_file_by_button(self) -> None:
@@ -268,6 +289,10 @@ class TransactionSummary(BaseScreen):
 
         transaction = self.profile.transaction
 
+        expiration_holder = self.query_exactly_one(ExpirationHolder)
+        if not expiration_holder.expiration_input.validate_passed():
+            return
+
         try:
             sign_key = [self._get_key_to_sign()] if not transaction.is_signed else []
         except NoItemSelectedError:
@@ -278,6 +303,7 @@ class TransactionSummary(BaseScreen):
             content=transaction,
             sign_key=sign_key,
             broadcast=True,
+            expiration=self.transaction_metadata_container.expiration_offset,
         )
         if wrapper.error_occurred:
             # recompose key container in case fail of broadcast when transaction was already signed
@@ -294,7 +320,10 @@ class TransactionSummary(BaseScreen):
 
     async def _update_transaction_metadata(self) -> None:
         self.profile.transaction_file_path = None
-        await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+        await self.commands.update_transaction_metadata(
+            transaction=self.profile.transaction,
+            expiration=self.transaction_metadata_container.expiration_offset,
+        )
         self.app.trigger_profile_watchers()
 
     async def _rebuild_signatures_changed(self) -> None:
@@ -311,7 +340,8 @@ class TransactionSummary(BaseScreen):
 
     async def _rebuild(self) -> None:
         await self.query_exactly_one(CartTable).rebuild()
-        await self._rebuild_signatures_changed()
+        await self.transaction_metadata_container.recompose()
+        await self.key_container.recompose()
         await self.button_container.recompose()
         self._update_subtitle()
 

@@ -125,4 +125,17 @@ TransactionSummary {
       margin-left: 1;
     }
   }
+
+  ExpirationHolder {
+    width: 1fr;
+    height: auto;
+
+    #expiration-offset-input {
+      max-width: 40;
+    }
+
+    TransactionExpirationLabel {
+      color: $text-muted;
+    }
+  }
 }
