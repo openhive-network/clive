@@ -441,6 +441,12 @@ class SafeSettings:
     def _get_bool(self, setting_name: str, *, default: bool | NotSet = NOT_SET) -> bool:
         value = self._get_value_from_settings(setting_name, default=default)
 
+        if isinstance(value, bool):
+            return value
+
+        if isinstance(value, str):
+            return value.lower() not in ("0", "false", "off")
+
         try:
             return bool(value)
         except Exception as error:
