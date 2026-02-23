@@ -1,152 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "poetry": {
-    "enabled": true
-  },
-  "pre-commit": {
-    "enabled": true
-  },
-  "pip_requirements": {
-    "enabled": false
-  },
-  "dependencyDashboard": true,
+  "extends": ["local>hive/common-ci-configuration//renovate/python.json5"],
 
-  // Poetry lacks a way to update the lockfile to a specific version
-  // (`poetry update --lock` always resolves to the latest allowed by pyproject.toml).
-  // To make separateMajorMinor/separateMultipleMajor work correctly, all dependencies
-  // in pyproject.toml have upper bounds (`<{next_major}.0.0`) that constrain the resolver
-  // to stay within the intended major version range.
-  //
-  // An alternative workaround is to disable these options entirely (separateMajorMinor: false,
-  // separateMultipleMajor: false), but that merges major and minor updates into single MRs,
-  // losing the ability to review breaking changes separately.
-  //
-  // Without upper bounds these options caused MR title/lockfile mismatches — Renovate
-  // targeted a minor version but Poetry resolved to a major one:
-  //   https://gitlab.syncad.com/hive/clive/-/merge_requests/878 (mkdocstrings-python — MR targeted 1.19.0, lockfile resolved to 2.0.2)
-  //   https://gitlab.syncad.com/hive/clive/-/merge_requests/880 (pytest — MR targeted 8.4.2, lockfile resolved to 9.0.2)
-  //
-  // See: https://github.com/renovatebot/renovate/discussions/41206
-  "separateMajorMinor": true,
-  "separateMultipleMajor": true,
-
-  // minimumReleaseAge still cannot work with Poetry — the lockfile would resolve to
-  // the latest version regardless of the age gate, causing title/lockfile mismatches.
-  // Upper bounds don't help here since this is about time-gating, not version ranges.
-  //   https://gitlab.syncad.com/hive/clive/-/merge_requests/877 (minimumReleaseAge gated a version, but lockfile resolved to a newer one)
-  "minimumReleaseAge": "0 days",
-
-  // lockFileMaintenance deletes poetry.lock and regenerates it from scratch,
-  // updating all transitive dependencies at once with no control over individual versions.
-  // This produces massive, hard-to-review MRs. Per-package updates via update-lockfile are sufficient.
-  "lockFileMaintenance": {
-    "enabled": false
-  },
-
-  "platformAutomerge": true,
+  // Clive uses unlimited concurrent PRs
   "prConcurrentLimit": 0,
-  "prHourlyLimit": 0,
-  "baseBranchPatterns": [
-    "develop"
-  ],
-  "commitMessagePrefix": "chore(deps):",
-  "addLabels": [
-    "dependencies"
-  ],
-  "ignoreDeps": [
-    "clive-local-tools",
-    "poetry-core",  // location: pyproject.toml - pinned to match Poetry version from CI
-    "python-poetry/poetry"  // location: .pre-commit-config.yaml - pinned to match Poetry version from CI
-  ],
+
   "packageRules": [
-    {
-      "automerge": true,
-      "description": "Group all patch updates together",
-      "groupName": "patch updates",
-      "groupSlug": "patch-updates",
-      "matchUpdateTypes": [
-        "patch"
-      ]
-    },
-    {
-      "allowedVersions": "!/unstable/",
-      "automerge": false,
-      "description": "Group internal Hive ecosystem packages (ignore feature branch builds)",
-      "groupName": "hive-internal",
-      "groupSlug": "hive-internal",
-      "ignoreUnstable": false,
-      "matchPackageNames": [
-        "/^hiveio-/",
-        "test-tools"
-      ]
-    },
-    {
-      "automerge": true,
-      "description": "Group static-analysis tools",
-      "groupName": "static-analysis",
-      "groupSlug": "static-analysis",
-      "matchPackageNames": [
-        "mypy",
-        "pre-commit",
-        "ruff",
-        "pydoclint",
-        "/^types-/"
-      ]
-    },
-    {
-      "description": "Group pytest ecosystem",
-      "groupName": "pytest",
-      "groupSlug": "pytest",
-      "matchPackageNames": [
-        "/^pytest/"
-      ]
-    },
-    {
-      "description": "Group documentation tools",
-      "groupName": "documentation",
-      "groupSlug": "docs",
-      "matchPackageNames": [
-        "/^mkdocs/",
-        "/^markdown-pycon/"
-      ]
-    },
     {
       "description": "Textual ecosystem (TUI framework)",
       "groupName": "textual",
-      "groupSlug": "textual",
-      "matchPackageNames": [
-        "textual",
-        "textual-dev"
-      ]
+      "matchPackageNames": ["textual", "textual-dev"]
     },
     {
       "description": "Typer ecosystem (CLI framework)",
       "groupName": "typer",
-      "groupSlug": "typer",
-      "matchPackageNames": [
-        "/^typer/"
-      ]
-    },
-    {
-      "description": "Group all pre-commit hook updates",
-      "groupName": "pre-commit hooks",
-      "groupSlug": "pre-commit-hooks",
-      "matchManagers": [
-        "pre-commit"
-      ]
-    },
-    {
-      "automerge": false,
-      "description": "Never auto-merge Dockerfile changes (CI infrastructure)",
-      "matchManagers": [
-        "dockerfile"
-      ],
-      "prBodyNotes": [
-        "\u26a0\ufe0f **This updates CI infrastructure.** Trigger manual image build jobs in this MR before merging to confirm it's working."
-      ]
+      "matchPackageNames": ["/^typer/"]
     }
   ]
 }
