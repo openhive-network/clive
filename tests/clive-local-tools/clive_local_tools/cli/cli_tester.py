@@ -259,6 +259,9 @@ class CLITester:
     def show_hive_power(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "hive-power"], **extract_params(locals()))
 
+    def show_rc(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "rc"], **extract_params(locals()))
+
     def show_pending_power_down(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "pending", "power-down"], **extract_params(locals()))
 
@@ -343,6 +346,31 @@ class CLITester:
         autosign: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
+
+    def process_rc_delegations_set(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        delegatee: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        sign_with: str | list[str] | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "rc-delegations", "set"], **extract_params(locals()))
+
+    def process_rc_delegations_remove(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        delegatee: str | None = None,
+        sign_with: str | list[str] | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+        autosign: bool | None = None,
+    ) -> CLITestResult:
+        return self.__invoke_command_with_options(["process", "rc-delegations", "remove"], **extract_params(locals()))
 
     def process_withdraw_routes_set(  # noqa: PLR0913
         self,
