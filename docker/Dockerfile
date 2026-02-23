@@ -1,4 +1,4 @@
-# syntax=registry.gitlab.syncad.com/hive/common-ci-configuration/dockerfile:1.5
+# syntax=registry.gitlab.syncad.com/hive/common-ci-configuration/dockerfile:1.11
 ARG HIVED_IMAGE
 
 ARG PYTHON_INSTALLER_IMAGE
