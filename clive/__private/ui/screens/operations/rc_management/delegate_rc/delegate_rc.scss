@@ -1,0 +1,40 @@
+DelegateRc {
+  IntegerInput {
+    margin-top: 1;
+  }
+
+  Section {
+    margin-bottom: 1;
+
+    TransactionButtons {
+      margin-top: 1;
+    }
+  }
+
+  RcDelegationsTable {
+    height: auto;
+
+    SectionTitle {
+      margin-top: 1;
+    }
+
+    RcDelegationsTableHeader {
+      text-style: bold;
+      height: auto;
+    }
+
+    Static {
+      width: 1fr;
+      text-align: center;
+    }
+
+    RcDelegationRow {
+      width: 1fr;
+      height: auto;
+
+      #revoke-rc-delegation-button {
+        width: 1fr;
+      }
+    }
+  }
+}

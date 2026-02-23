@@ -84,6 +84,9 @@ class OperationVisitor:
     def visit_decline_voting_rights_operation(self, operation: schemas.DeclineVotingRightsOperation) -> None:
         self._default_visit(operation)
 
+    def visit_delegate_rc_operation(self, operation: schemas.DelegateRcOperation) -> None:
+        self._default_visit(operation)
+
     def visit_delegate_vesting_shares_operation(self, operation: schemas.DelegateVestingSharesOperation) -> None:
         self._default_visit(operation)
 

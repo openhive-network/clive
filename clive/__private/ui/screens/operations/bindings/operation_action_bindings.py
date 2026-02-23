@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.accounts.accounts import Account
-    from clive.__private.models.schemas import OperationUnion
+    from clive.__private.models.schemas import OperationBase, OperationUnion
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
 
@@ -113,7 +113,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         try:
             for operation in operations:
-                iwax.validate_operation(operation)
+                if not self._is_custom_operation(operation):
+                    iwax.validate_operation(operation)
         except iwax.WaxOperationFailedError as error:
             self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
@@ -324,3 +325,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.notify("Operation already in the cart", severity="error")
             return True
         return False
+
+    @staticmethod
+    def _is_custom_operation(operation: OperationBase) -> bool:
+        from schemas.operations.custom.custom_base_operation import CustomBaseOperation  # noqa: PLC0415
+
+        return isinstance(operation, CustomBaseOperation)

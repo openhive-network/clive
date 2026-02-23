@@ -62,6 +62,7 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
     def create_left_panel(self) -> ComposeResult:
         from clive.__private.ui.screens.operations import (  # noqa: PLC0415
             HivePowerManagement,
+            RcManagement,
             Savings,
             TransferToAccount,
         )
@@ -72,6 +73,7 @@ class Operations(CartBasedScreen, TransactionSummaryBinding):
                 yield OperationButton("Transfer", TransferToAccount)
                 yield OperationButton("Savings", Savings)
                 yield OperationButton("Hive power management", HivePowerManagement)
+                yield OperationButton("RC management", RcManagement)
                 yield NotImplementedYetButton("Convert")
             with Section(title="Governance"):
                 yield GovernanceOperationButton("Set/Remove proxy", "proxy")

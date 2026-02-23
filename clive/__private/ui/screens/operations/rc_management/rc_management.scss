@@ -1,0 +1,49 @@
+$table-header-color: $primary-darken-3;
+
+RcManagement {
+  Tab {
+    width: 1fr;
+  }
+
+  Tabs {
+    margin-top: 1;
+  }
+
+  CliveDataTable {
+    margin-right: 2;
+    width: 1fr;
+    height: auto;
+
+    RcInfoTableHeader {
+      height: auto;
+
+      Static {
+        text-style: bold;
+        text-align: center;
+      }
+
+      #rc-name-header {
+        width: 2fr;
+      }
+
+      .rc-balance-header {
+        width: 3fr;
+      }
+
+      #rc-name-header,
+      .rc-balance-header {
+        background: $table-header-color;
+      }
+    }
+
+    RowTitle {
+      width: 2fr;
+    }
+
+    .rc-balance-cell {
+      text-style: bold;
+      width: 3fr;
+      text-align: right;
+    }
+  }
+}
