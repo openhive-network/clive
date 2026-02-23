@@ -10,6 +10,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.settings.account_management.account_management import AccountManagement
 from clive.__private.ui.screens.settings.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.screens.settings.switch_node_address import SwitchNodeAddress
+from clive.__private.ui.screens.settings.transaction_expiration import TransactionExpiration
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePartWithArrowBinding
@@ -32,6 +33,7 @@ class Settings(BaseScreen):
             yield OneLineButton("Select node", id_="select-node")
             yield OneLineButton("Manage key aliases", id_="manage-key-aliases")
             yield OneLineButton("Accounts management", id_="account-list-management")
+            yield OneLineButton("Transaction expiration", id_="transaction-expiration")
 
     @on(OneLineButton.Pressed, "#select-node")
     def push_set_node_address_screen(self) -> None:
@@ -44,3 +46,7 @@ class Settings(BaseScreen):
     @on(OneLineButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
         await self.app.push_screen(ManageKeyAliases())
+
+    @on(OneLineButton.Pressed, "#transaction-expiration")
+    def push_transaction_expiration_screen(self) -> None:
+        self.app.push_screen(TransactionExpiration())
