@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Horizontal
+from textual.validation import ValidationResult, Validator
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.core.wax_operation_wrapper import WaxRcDelegationWrapper
+from clive.__private.models.asset import Asset
 from clive.__private.models.schemas import CustomJsonOperation
 from clive.__private.ui.data_providers.rc_data_provider import RcDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -95,6 +98,46 @@ class RcDelegationsTable(CliveCheckerboardTable):
         self._previous_delegations = content.outgoing_delegations
 
 
+class MinRcDelegationValidator(Validator):
+    """Validates that the RC delegation amount meets the blockchain minimum (account_creation_fee / 3)."""
+
+    def __init__(self, pane: DelegateRc) -> None:
+        super().__init__()
+        self._pane = pane
+
+    def validate(self, value: str) -> ValidationResult:
+        if not value:
+            return self.success()
+
+        if not self._pane.provider.is_content_set:
+            return self.success()
+
+        try:
+            amount = Decimal(value)
+        except InvalidOperation:
+            return self.success()
+
+        content = self._pane.provider.content
+        min_rc = content.min_rc_delegation
+
+        from clive.__private.core import iwax  # noqa: PLC0415
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
+        min_asset: Asset.VotingT
+        if self._pane._rc_amount_input.selected_asset_type is Asset.Hive:
+            min_asset = iwax.calculate_vests_to_hp(min_rc, content.gdpo)
+        else:
+            min_asset = iwax.vests(min_rc)
+
+        precision = Asset.get_precision(type(min_asset))
+        min_decimal = Decimal(min_asset.amount) / Decimal(10**precision)
+
+        if amount < min_decimal:
+            return self.failure(f"Minimum RC delegation is {humanize_asset(min_asset)}")
+
+        return self.success()
+
+
 class DelegateRc(TabPane, OperationActionBindings):
     """TabPane with all content about delegate RC."""
 
@@ -104,6 +147,8 @@ class DelegateRc(TabPane, OperationActionBindings):
         super().__init__(title="Delegate RC")
         self._delegatee_input = ReceiverInput("Delegatee")
         self._rc_amount_input = HPVestsAmountInput()
+        self._min_validator = MinRcDelegationValidator(self)
+        self._rc_amount_input.input.validators.append(self._min_validator)
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():

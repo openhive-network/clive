@@ -17,12 +17,14 @@ from clive.__private.core.iwax import (
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
+    from clive.__private.models.asset import Asset
     from clive.__private.models.schemas import (
         DynamicGlobalProperties,
         FindRcAccounts,
         ListRcDirectDelegations,
         RcAccount,
         RcDirectDelegation,
+        WitnessSchedule,
     )
 
 _MAX_RC_DIRECT_DELEGATIONS_LIMIT: Final[int] = 1000
@@ -33,6 +35,7 @@ class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
     rc_accounts: FindRcAccounts | None = None
     rc_delegations: ListRcDirectDelegations | None = None
+    witness_schedule: WitnessSchedule | None = None
 
 
 @dataclass
@@ -40,6 +43,7 @@ class SanitizedData:
     gdpo: DynamicGlobalProperties
     rc_account: RcAccount
     outgoing_delegations: list[RcDirectDelegation]
+    account_creation_fee: Asset.Hive
 
 
 @dataclass
@@ -54,6 +58,7 @@ class RcData:
     full_regeneration: timedelta
     owned_rc_from_stake: int
     gdpo: DynamicGlobalProperties
+    min_rc_delegation: int
 
     def get_delegations_aligned_amounts(self) -> tuple[list[str], list[str]]:
         """
@@ -92,6 +97,7 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
                 await node.api.rc_api.list_rc_direct_delegations(
                     start=(self.account_name, ""), limit=_MAX_RC_DIRECT_DELEGATIONS_LIMIT
                 ),
+                await node.api.database_api.get_witness_schedule(),
             )
         raise bke.UnknownDecisionPathError(f"{self.__class__.__name__}:_harvest_data_from_api")
 
@@ -100,6 +106,7 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
             gdpo=self._assert_gdpo(data.gdpo),
             rc_account=self._assert_rc_account(data.rc_accounts),
             outgoing_delegations=self._assert_delegations(data.rc_delegations),
+            account_creation_fee=self._assert_account_creation_fee(data.witness_schedule),
         )
 
     async def _process_data(self, data: SanitizedData) -> RcData:
@@ -154,6 +161,7 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
             full_regeneration=full_regeneration,
             owned_rc_from_stake=owned_rc_from_stake,
             gdpo=data.gdpo,
+            min_rc_delegation=self._compute_min_rc_delegation(data.account_creation_fee, data.gdpo),
         )
 
     def _assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
@@ -171,3 +179,17 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
     def _assert_delegations(self, data: ListRcDirectDelegations | None) -> list[RcDirectDelegation]:
         assert data is not None, "ListRcDirectDelegations data is missing"
         return data.rc_direct_delegations
+
+    def _assert_account_creation_fee(self, witness_schedule: WitnessSchedule | None) -> Asset.Hive:
+        assert witness_schedule is not None, "WitnessSchedule data is missing"
+        fee = witness_schedule.median_props.account_creation_fee
+        assert fee is not None, "Account creation fee is None"
+        return fee
+
+    @staticmethod
+    def _compute_min_rc_delegation(account_creation_fee: Asset.Hive, gdpo: DynamicGlobalProperties) -> int:
+        from clive.__private.core import iwax  # noqa: PLC0415
+
+        min_hive = iwax.hive(account_creation_fee.amount // 3)
+        min_vests = iwax.calculate_hp_to_vests(min_hive, gdpo)
+        return min_vests.amount
