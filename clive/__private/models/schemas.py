@@ -32,6 +32,7 @@ __all__ = [  # noqa: RUF022
     "ListProposalVotes",
     "ListWitnesses",
     "ListWitnessVotes",
+    "ListRcDirectDelegations",
     "ListWithdrawVestingRoutes",
     # find API response aliases (have nested list property which stores actual model)
     "FindAccounts",
@@ -73,6 +74,7 @@ __all__ = [  # noqa: RUF022
     "CustomJsonOperation",
     "CustomOperation",
     "DeclineVotingRightsOperation",
+    "DelegateRcOperation",
     "DelegateVestingSharesOperation",
     "DeleteCommentOperation",
     "EscrowApproveOperation",
@@ -134,6 +136,7 @@ __all__ = [  # noqa: RUF022
     "PriceFeed",
     "Proposal",
     "RcAccount",
+    "RcDirectDelegation",
     "RecurrentTransfer",
     "SavingsWithdrawal",
     "Transaction",
@@ -194,8 +197,8 @@ if TYPE_CHECKING:
         WithdrawVestingRoutesFundament,
         WitnessesFundament,
     )
-    from schemas.apis.rc_api import FindRcAccounts
-    from schemas.apis.rc_api.fundaments_of_responses import RcAccount
+    from schemas.apis.rc_api import FindRcAccounts, ListRcDirectDelegations
+    from schemas.apis.rc_api.fundaments_of_responses import RcAccount, RcDirectDelegations
     from schemas.apis.transaction_status_api import FindTransaction
     from schemas.base import field
     from schemas.decoders import is_matching_model, validate_schema_field
@@ -237,6 +240,7 @@ if TYPE_CHECKING:
         CustomJsonOperation,
         CustomOperation,
         DeclineVotingRightsOperation,
+        DelegateRcOperation,
         DelegateVestingSharesOperation,
         DeleteCommentOperation,
         EscrowApproveOperation,
@@ -320,6 +324,7 @@ if TYPE_CHECKING:
     VestingDelegation = VestingDelegationsFundament
     VestingDelegationExpiration = VestingDelegationExpirationsFundament
     WithdrawRoute = WithdrawVestingRoutesFundament
+    RcDirectDelegation = RcDirectDelegations
     Witness = WitnessesFundament
 
 lazy_getattr = lazy_module_factory(
@@ -381,6 +386,7 @@ lazy_getattr = lazy_module_factory(
         "CustomJsonOperation",
         "CustomOperation",
         "DeclineVotingRightsOperation",
+        "DelegateRcOperation",
         "DelegateVestingSharesOperation",
         "DeleteCommentOperation",
         "EscrowApproveOperation",
@@ -468,6 +474,7 @@ lazy_getattr = lazy_module_factory(
     ),
     ("schemas.base", "field"),
     ("schemas.apis.rc_api", "FindRcAccounts"),
+    ("schemas.apis.rc_api", "ListRcDirectDelegations"),
     ("schemas.apis.transaction_status_api", "FindTransaction", "TransactionStatus"),
     *aggregate_same_import(
         "GetAccountHistory",
@@ -485,6 +492,7 @@ lazy_getattr = lazy_module_factory(
     ("schemas.operation", "Operation", "OperationBase"),
     ("schemas._preconfigured_base_model", "PreconfiguredBaseModel"),
     ("schemas.apis.rc_api.fundaments_of_responses", "RcAccount"),
+    ("schemas.apis.rc_api.fundaments_of_responses", "RcDirectDelegations", "RcDirectDelegation"),
     ("schemas.operations.recurrent_transfer_operation", "RecurrentTransferOperation"),
     (
         "schemas.operations.extensions.recurrent_transfer_extensions",

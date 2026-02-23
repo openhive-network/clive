@@ -247,6 +247,12 @@ clive/__private/cli/process/proxy.py
     DOC101: Function `process_proxy_clear`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_proxy_clear`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, save_file: str | None, sign_with: list[str]].
 --------------------
+clive/__private/cli/process/rc_delegations.py
+    DOC101: Function `process_rc_delegations_set`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_rc_delegations_set`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, amount: str, autosign: bool | None, broadcast: bool | None, delegatee: str, save_file: str | None, sign_with: list[str]].
+    DOC101: Function `process_rc_delegations_remove`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `process_rc_delegations_remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, delegatee: str, save_file: str | None, sign_with: list[str]].
+--------------------
 clive/__private/cli/process/recovery_account.py
     DOC101: Function `process_change_recovery_account`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_change_recovery_account`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool, new_recovery_account: str, save_file: str | None, sign_with: list[str]].
@@ -340,6 +346,8 @@ clive/__private/cli/show/main.py
     DOC103: Function `show_memo_key`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_hive_power`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_hive_power`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
+    DOC101: Function `show_rc`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `show_rc`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_new_account_token`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `show_new_account_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, account_name_option: str | None].
     DOC101: Function `show_transfer_schedule`: Docstring contains fewer arguments than in function signature.
@@ -592,6 +600,10 @@ clive/__private/ui/screens/operations/hive_power_management/withdraw_routes/with
     DOC603: Class `WithdrawRoutesTable`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ATTRIBUTE_TO_WATCH: , NO_CONTENT_TEXT: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC601: Class `WithdrawRoutes`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `WithdrawRoutes`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_AUTO_VEST: Final[bool], DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+clive/__private/ui/screens/operations/rc_management/delegate_rc/delegate_rc.py
+    DOC601: Class `DelegateRc`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DelegateRc`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DEFAULT_CSS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 clive/__private/ui/screens/operations/transfer_to_account/transfer_to_account.py
     DOC201: Method `TransferToAccount._check_is_known_exchange_in_input` does not have a return section in docstring

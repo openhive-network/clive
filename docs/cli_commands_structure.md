@@ -67,6 +67,7 @@ clive
 │ ├── proposals
 │ ├── proposal
 │ ├── proxy
+│ ├── rc
 │ ├── transaction-status
 │ ├── transfer-schedule
 │ ├── witnesses
@@ -89,6 +90,9 @@ clive
 │ │ ├── cancel
 │ │ ├── restart
 │ │ └── start
+│ ├── rc-delegations
+│ │ ├── remove
+│ │ └── set
 │ ├── power-up
 │ ├── proxy
 │ │ ├── clear
