@@ -34,7 +34,10 @@ class BuildTransaction(CommandWithResult[Transaction]):
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
         try:
-            iwax.validate_transaction(transaction)
+            if self._has_custom_operations(transaction):
+                self._validate_non_custom_operations(transaction)
+            else:
+                iwax.validate_transaction(transaction)
         except WaxOperationFailedError as error:
             raise TransactionWaxValidationError(self, transaction, str(error)) from error
 
@@ -43,3 +46,18 @@ class BuildTransaction(CommandWithResult[Transaction]):
             await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
 
         self._result = transaction
+
+    @staticmethod
+    def _has_custom_operations(transaction: Transaction) -> bool:
+        from schemas.operations.custom.custom_base_operation import CustomBaseOperation  # noqa: PLC0415
+
+        return any(isinstance(op, CustomBaseOperation) for op in transaction.operations_models)
+
+    @staticmethod
+    def _validate_non_custom_operations(transaction: Transaction) -> None:
+        """Validate operations individually, skipping custom operations that wax cannot validate."""
+        from schemas.operations.custom.custom_base_operation import CustomBaseOperation  # noqa: PLC0415
+
+        for operation in transaction.operations_models:
+            if not isinstance(operation, CustomBaseOperation):
+                iwax.validate_operation(operation)

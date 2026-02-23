@@ -33,8 +33,8 @@ class RcInfoTableRow(CliveDataTableRow):
 class RcInfoTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
         yield Static("RC Source", id="rc-name-header")
-        yield Static("Amount [HP]", classes="rc-balance-header")
-        yield Static("Amount [VESTS]", classes="rc-balance-header")
+        yield Static("Amount \\[HP]", classes="rc-balance-header")
+        yield Static("Amount \\[VESTS]", classes="rc-balance-header")
 
 
 def _rc_as_hp(rc_amount: int, content: RcData) -> str:
