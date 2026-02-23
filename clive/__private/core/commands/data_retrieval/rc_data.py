@@ -53,6 +53,30 @@ class RcData:
     outgoing_delegations: list[RcDirectDelegation]
     full_regeneration: timedelta
     owned_rc_from_stake: int
+    gdpo: DynamicGlobalProperties
+
+    def get_delegations_aligned_amounts(self) -> tuple[list[str], list[str]]:
+        """
+        Return aligned amounts of RC delegations in HP and VESTS.
+
+        Returns:
+            The pair of aligned amounts of RC delegations in HP and VESTS.
+        """
+        from clive.__private.core import iwax  # noqa: PLC0415
+        from clive.__private.models.asset import Asset  # noqa: PLC0415
+
+        hp_amounts_to_align, vests_amounts_to_align = [], []
+        for delegation in self.outgoing_delegations:
+            rc_amount = int(delegation.delegated_rc)
+            hp = iwax.calculate_vests_to_hp(rc_amount, self.gdpo)
+            vests = iwax.vests(rc_amount)
+
+            hp_amounts_to_align.append(Asset.pretty_amount(hp))
+            vests_amounts_to_align.append(Asset.pretty_amount(vests))
+
+        from clive.__private.core.formatters.humanize import align_to_dot  # noqa: PLC0415
+
+        return align_to_dot(*hp_amounts_to_align), align_to_dot(*vests_amounts_to_align)
 
 
 @dataclass(kw_only=True)
@@ -129,6 +153,7 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
             outgoing_delegations=outgoing_delegations,
             full_regeneration=full_regeneration,
             owned_rc_from_stake=owned_rc_from_stake,
+            gdpo=data.gdpo,
         )
 
     def _assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:

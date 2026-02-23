@@ -37,15 +37,17 @@ if TYPE_CHECKING:
 class RcDelegationsTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
         yield Static("Delegatee", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
-        yield Static("RC Amount", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("RC [HP]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
+        yield Static("RC [VESTS]", classes=CLIVE_CHECKERBOARD_HEADER_CELL_CLASS_NAME)
         yield PlaceTaker()
 
 
 class RcDelegationRow(CliveCheckerboardTableRow):
-    def __init__(self, delegation: RcDirectDelegation) -> None:
+    def __init__(self, delegation: RcDirectDelegation, aligned_hp_amount: str, aligned_vests_amount: str) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(str(delegation.to)),
-            CliveCheckerBoardTableCell(f"{int(delegation.delegated_rc):,}"),
+            CliveCheckerBoardTableCell(aligned_hp_amount),
+            CliveCheckerBoardTableCell(aligned_vests_amount),
             CliveCheckerBoardTableCell(OneLineButton("Revoke", id_="revoke-rc-delegation-button", variant="error")),
         )
         self._delegation = delegation
@@ -69,7 +71,14 @@ class RcDelegationsTable(CliveCheckerboardTable):
         self._previous_delegations: list[RcDirectDelegation] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: RcData) -> list[RcDelegationRow]:
-        return [RcDelegationRow(delegation) for delegation in content.outgoing_delegations]
+        aligned_hp, aligned_vests = content.get_delegations_aligned_amounts()
+
+        return [
+            RcDelegationRow(delegation, hp_value, vests_value)
+            for delegation, hp_value, vests_value in zip(
+                content.outgoing_delegations, aligned_hp, aligned_vests, strict=True
+            )
+        ]
 
     def check_if_should_be_updated(self, content: RcData) -> bool:
         return self._previous_delegations != content.outgoing_delegations
