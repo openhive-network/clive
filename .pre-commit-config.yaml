@@ -46,7 +46,7 @@ repos:
           - "--tab-width"
           - "4"
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
-    rev: v16.2.1
+    rev: v17.3.0
     hooks:
       - id: stylelint
         name: lint and autoformat stylesheets using stylelint
