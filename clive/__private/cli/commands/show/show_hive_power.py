@@ -52,7 +52,7 @@ class ShowHivePower(WorldBasedCommand):
 
         left_group = Group(general_info, Padding(""), withdraw_routes, Padding(""), delegations)
         right_group = Group(next_withdrawal, Padding(""), to_withdraw, Padding(""), apr, conversion_factor)
-        columns = Columns([left_group, right_group], title=f"Hive Power defails of `{self.account_name}` account")
+        columns = Columns([left_group, right_group], title=f"Hive Power details of `{self.account_name}` account")
 
         print_cli(columns)
 

@@ -831,7 +831,7 @@ class Commands[WorldT: World]:
             if error:
                 await handler.try_to_handle_error(error)
             else:
-                # exectue the command only once
+                # execute the command only once
                 await handler.execute(
                     command.execute_with_result() if isinstance(command, CommandWithResult) else command.execute(),
                 )
