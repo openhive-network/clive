@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from .conftest import ActionSelector
 
 AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(10)
+RC_DELEGATION_AMOUNT: Final[tt.Asset.VestT] = tt.Asset.Vest(5_000)
 BAD_ACCOUNT: Final[str] = AccountManager.get_bad_accounts()[0]
 TEMPORARY_BAD_ACCOUNT: Final[str] = WATCHED_ACCOUNTS_NAMES[0]
 EXPECTED_BAD_ACCOUNT_ERROR_MESSAGE = get_formatted_error_message(CLITransactionBadAccountError(BAD_ACCOUNT))
@@ -217,6 +218,36 @@ async def test_no_validation_of_removing_withdraw_routes_to_account_that_become_
 
     def send_operation() -> None:
         cli_tester.process_withdraw_routes_remove(to=TEMPORARY_BAD_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+
+    # ACT & ASSERT
+    _assert_no_validation_of_bad_account(send_operation)
+
+
+async def test_validation_of_rc_delegation_set(cli_tester: CLITester, process_action_selector: ActionSelector) -> None:
+    # ARRANGE
+    def perform_operation() -> None:
+        cli_tester.process_rc_delegations_set(
+            delegatee=BAD_ACCOUNT,
+            amount=RC_DELEGATION_AMOUNT,
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+            **process_action_selector,
+        )
+
+    # ACT & ASSERT
+    _assert_validation_of_bad_accounts(perform_operation)
+
+
+async def test_no_validation_of_removing_rc_delegation_to_account_that_become_bad(
+    cli_tester: CLITester,
+) -> None:
+    """It should be possible to remove an RC delegation, even if the delegatee is on the bad account list."""
+    # ARRANGE
+    cli_tester.process_rc_delegations_set(
+        delegatee=TEMPORARY_BAD_ACCOUNT, amount=RC_DELEGATION_AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
+
+    def send_operation() -> None:
+        cli_tester.process_rc_delegations_remove(delegatee=TEMPORARY_BAD_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
     _assert_no_validation_of_bad_account(send_operation)
