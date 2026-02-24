@@ -25,7 +25,7 @@ class EmptySelect(Static):
 
     def __init__(self, empty_message: str = DEFAULT_MESSAGE) -> None:
         super().__init__(empty_message)
-        self.value = Select.BLANK
+        self.value = Select.NULL
 
 
 class SingleSelect(Static, Generic[SelectType]):  # noqa: UP046
@@ -57,7 +57,7 @@ class SafeSelect(CliveWidget, Generic[SelectType]):  # noqa: UP046
         options: Iterable[SelectOption[SelectType]],
         *,
         prompt: str = "Select",
-        value: SelectType | NoSelection = Select.BLANK,
+        value: SelectType | NoSelection = Select.NULL,
         empty_string: str = EmptySelect.DEFAULT_MESSAGE,
         id_: str | None = None,
         classes: str | None = None,

@@ -104,7 +104,7 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
         try:
             first_value: PublicKey | NoSelection = self.profile.keys.first
         except KeyNotFoundError:
-            first_value = Select.BLANK
+            first_value = Select.NULL
 
         super().__init__(
             [(key.alias, key) for key in self.profile.keys],
