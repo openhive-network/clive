@@ -8,24 +8,10 @@ build-backend = "poetry_dynamic_versioning.backend"
 [project]
 name = "hiveio-clive"
 description = "CLI application for interacting with the Hive blockchain."
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 readme = "README.md"
 authors = [{ name = "Krzysztof Mochocki", email = "kmochocki@syncad.com" }, { name = "Mateusz Żebrak", email = "mzebrak@syncad.com" }]
 requires-python = '>=3.12,<4'
-dependencies = [
-    'loguru (>=0.7.2,<1.0.0)',
-    'textual (>=7.3.0,<8.0.0)',
-    'aiohttp (>=3.11.15,<4.0.0)',
-    'typer (>=0.20.0,<1.0.0)',
-    'inflection (>=0.5.1,<1.0.0)',
-    'humanize (>=4.12.2,<5.0.0)',
-    'toml (>=0.10.2,<1.0.0)',
-    'pathvalidate (>=3.3.1,<4.0.0)',
-    'hiveio-schemas (>=1.28.2,<2.0.0)',
-    'hiveio-beekeepy (>=1.28.6,<2.0.0)',
-    'hiveio-wax (>=2.0.0,<3.0.0)',
-    'hiveio-api (>=1.28.5,<2.0.0)',
-]
 
 [project.urls]
 repository = "https://gitlab.syncad.com/hive/clive"
@@ -50,32 +36,46 @@ version = "0.0.0"
 poetry-dynamic-versioning = { version = "==1.9.1", extras = ["plugin"] }
 poetry-plugin-freeze = { version = "1.2.0" }
 
+[tool.poetry.dependencies]
+loguru = "^0.7.2"
+textual = "^7.3.0"
+aiohttp = "^3.11.15"
+typer = "^0.24.1"
+inflection = "^0.5.1"
+humanize = "^4.12.2"
+toml = "^0.10.2"
+pathvalidate = "^3.3.1"
+hiveio-schemas = "^1.28.2"
+hiveio-beekeepy = "^1.28.6"
+hiveio-wax = "^2.0.0"
+hiveio-api = "^1.28.5"
+
 [tool.poetry.group.embeddedtestnet.dependencies]
-hiveio-test-tools = ">=2.0.0,<3.0.0"
-pytest = ">=8.3.5,<9.0.0"  # required by test-tools, otherwise they will fail
+hiveio-test-tools = "^2.0.0"
+pytest = "^8.3.5"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=8.3.5,<9.0.0"
-pytest-asyncio = ">=0.26.0,<1.0.0"
-pytest-xdist = ">=3.6.1,<4.0.0"
-pytest-timeout = ">=2.3.1,<3.0.0"
-textual-dev = ">=1.7.0,<2.0.0"
-hiveio-test-tools = ">=2.0.0,<3.0.0"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
+pytest-xdist = "^3.6.1"
+pytest-timeout = "^2.3.1"
+textual-dev = "^1.7.0"
+hiveio-test-tools = "^2.0.0"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
-mypy = ">=1.19.1,<2.0.0"
-pre-commit = ">=4.5.1,<5.0.0"
-ruff = ">=0.14.10,<1.0.0"
-pydoclint = ">=0.8.3,<1.0.0"
-types-toml = ">=0.10.8.20240310,<1.0.0"
+mypy = "^1.19.1"
+pre-commit = "^4.5.1"
+ruff = "^0.14.10"
+pydoclint = "^0.8.3"
+types-toml = "^0.10.8.20240310"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = ">=1.6.1,<2.0.0"
-mkdocstrings-python = ">=1.16.12,<2.0.0"
-mkdocs-material = ">=9.6.12,<10.0.0"
-markdown-pycon = ">=1.0.1,<2.0.0"
+mkdocs = "^1.6.1"
+mkdocstrings-python = "^1.16.12"
+mkdocs-material = "^9.6.12"
+markdown-pycon = "^1.0.1"
 
 [tool.poetry-dynamic-versioning]
 enable = true
