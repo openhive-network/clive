@@ -146,6 +146,13 @@ verify_poetry_lock_stability:
   extends: .verify_poetry_lock_stability_template
   image: ${CI_BASE_IMAGE_312}
 
+verify_clive_local_tools_poetry_lock_stability:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_stability_template
+  image: ${CI_BASE_IMAGE_312}
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/tests/clive-local-tools"
+
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
