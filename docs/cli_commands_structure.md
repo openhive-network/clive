@@ -67,6 +67,7 @@ clive
 │ ├── proposals
 │ ├── proposal
 │ ├── proxy
+│ ├── resource-credits
 │ ├── transaction-status
 │ ├── transfer-schedule
 │ ├── witnesses

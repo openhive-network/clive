@@ -259,6 +259,9 @@ class CLITester:
     def show_hive_power(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "hive-power"], **extract_params(locals()))
 
+    def show_rc(self, *, account_name: str | None = None) -> CLITestResult:
+        return self.__invoke_command_with_options(["show", "resource-credits"], **extract_params(locals()))
+
     def show_pending_power_down(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "pending", "power-down"], **extract_params(locals()))
 

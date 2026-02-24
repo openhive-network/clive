@@ -275,6 +275,17 @@ async def show_hive_power(
     await ShowHivePower(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
 
 
+@show.command(name="resource-credits")
+async def show_rc(
+    account_name: str = arguments.account_name,
+    account_name_option: str | None = argument_related_options.account_name,
+) -> None:
+    """Show resource credits info including RC balance, manabar and outgoing delegations."""
+    from clive.__private.cli.commands.show.show_rc import ShowRc  # noqa: PLC0415
+
+    await ShowRc(account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)).run()
+
+
 @show.command(name="new-account-token")
 async def show_new_account_token(
     account_name: str = arguments.account_name,
