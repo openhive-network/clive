@@ -11,8 +11,8 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 BLOCK_INTERVAL: Final[int] = 3  # Hive block production interval in seconds
-RATIFICATION_SECONDS: Final[int] = 15
-EXPIRATION_SECONDS: Final[int] = 21
+RATIFICATION_SECONDS: Final[int] = 30
+EXPIRATION_SECONDS: Final[int] = 36
 
 RECEIVER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[0].account  # bob
 RECEIVER: Final[str] = RECEIVER_ACCOUNT.name
@@ -56,6 +56,16 @@ def get_past_datetime(days_ago: int, node: tt.RawNode) -> str:
     return past_time.strftime("%Y-%m-%dT%H:%M:%S")
 
 
+def _wait_for_escrow_in_blockchain(node: tt.RawNode, owner: str, escrow_id: int, max_blocks: int = 5) -> None:
+    """Poll the blockchain until the escrow transfer is confirmed."""
+    for _ in range(max_blocks):
+        result = node.api.database.find_escrows(from_=owner)
+        if any(e.escrow_id == escrow_id for e in result.escrows):
+            return
+        node.wait_number_of_blocks(1)
+    raise AssertionError(f"Escrow {escrow_id} not found after {max_blocks} blocks")
+
+
 def create_escrow(
     cli_tester: CLITester,
     escrow_id: int,
@@ -81,7 +91,7 @@ def create_escrow(
         escrow_expiration=escrow_expiration,
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
     )
-    node.wait_number_of_blocks(1)
+    _wait_for_escrow_in_blockchain(node, WORKING_ACCOUNT_NAME, escrow_id)
 
 
 def setup_agent_and_receiver_keys(cli_tester: CLITester) -> None:
@@ -109,9 +119,8 @@ def approve_escrow_by_both(cli_tester: CLITester, escrow_id: int, node: tt.RawNo
         escrow_id=escrow_id,
         sign_with=AGENT_KEY_ALIAS,
     )
-    node.wait_number_of_blocks(1)
 
-    # Receiver approves
+    # Receiver approves — no block wait needed between the two (independent operations)
     cli_tester.configure_working_account_switch(account_name=RECEIVER)
     cli_tester.process_escrow_approve(
         escrow_owner=WORKING_ACCOUNT_NAME,
@@ -132,9 +141,8 @@ def approve_escrow_by_both_with_who(cli_tester: CLITester, escrow_id: int, node:
         who=AGENT,
         sign_with=AGENT_KEY_ALIAS,
     )
-    node.wait_number_of_blocks(1)
 
-    # Receiver approves using --who
+    # Receiver approves using --who — no block wait needed between the two (independent operations)
     cli_tester.process_escrow_approve(
         escrow_owner=WORKING_ACCOUNT_NAME,
         escrow_id=escrow_id,
@@ -148,20 +156,45 @@ def create_expired_escrow(cli_tester: CLITester, escrow_id: int, node: tt.RawNod
     """Create an escrow with short deadlines, approve it, and wait for it to expire.
 
     Uses --who for approvals to avoid working account switches.
+    Keys are set up before the escrow (and its ratification window) is created to avoid
+    consuming time from the tight ratification deadline.
     """
-    reference_block = node.api.database.get_dynamic_global_properties().head_block_number
+    from datetime import datetime  # noqa: PLC0415
+
+    # 1. Set up keys BEFORE the escrow (and its ratification window) is created
+    setup_agent_and_receiver_keys(cli_tester)
 
     ratification_deadline = get_future_datetime_seconds(RATIFICATION_SECONDS, node)
-    escrow_expiration = get_future_datetime_seconds(EXPIRATION_SECONDS, node)
+    escrow_expiration_str = get_future_datetime_seconds(EXPIRATION_SECONDS, node)
 
     create_escrow(
-        cli_tester, escrow_id, node, ratification_deadline=ratification_deadline, escrow_expiration=escrow_expiration
+        cli_tester,
+        escrow_id,
+        node,
+        ratification_deadline=ratification_deadline,
+        escrow_expiration=escrow_expiration_str,
     )
-    approve_escrow_by_both_with_who(cli_tester, escrow_id, node)
 
-    # Wait for escrow to expire: calculate remaining blocks based on elapsed time since deadlines were set
-    current_block = node.api.database.get_dynamic_global_properties().head_block_number
-    elapsed_blocks = current_block - reference_block
-    total_blocks_to_expiration = EXPIRATION_SECONDS // BLOCK_INTERVAL + 1
-    remaining = max(total_blocks_to_expiration - elapsed_blocks, 1)
-    node.wait_number_of_blocks(remaining)
+    # 2. Submit both approvals without intermediate block wait (independent operations)
+    cli_tester.process_escrow_approve(
+        escrow_owner=WORKING_ACCOUNT_NAME,
+        escrow_id=escrow_id,
+        who=AGENT,
+        sign_with=AGENT_KEY_ALIAS,
+    )
+    cli_tester.process_escrow_approve(
+        escrow_owner=WORKING_ACCOUNT_NAME,
+        escrow_id=escrow_id,
+        who=RECEIVER,
+        sign_with=RECEIVER_KEY_ALIAS,
+    )
+    node.wait_number_of_blocks(1)
+
+    # 3. Wait for actual blockchain time to pass the expiration (state-based, no block arithmetic)
+    expiration_dt = datetime.strptime(escrow_expiration_str, "%Y-%m-%dT%H:%M:%S")  # noqa: DTZ007
+    while True:
+        gdpo = node.api.database.get_dynamic_global_properties()
+        head_time = gdpo.time.replace(tzinfo=None) if gdpo.time.tzinfo is not None else gdpo.time
+        if head_time >= expiration_dt:
+            break
+        node.wait_number_of_blocks(1)
