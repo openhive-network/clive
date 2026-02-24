@@ -24,6 +24,11 @@ class FinancialOperationsAccountCollector(OperationVisitor):
         """Names of accounts that are target of financial operation."""
 
     @override
+    def visit_delegate_rc_operation(self, operation: schemas.DelegateRcOperation) -> None:
+        if operation.max_rc > 0:
+            self.accounts.update(operation.delegatees)
+
+    @override
     def visit_delegate_vesting_shares_operation(self, operation: schemas.DelegateVestingSharesOperation) -> None:
         if operation.vesting_shares not in DELEGATION_REMOVE_ASSETS:
             self.accounts.add(operation.delegatee)

@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.__private.core.commands.data_retrieval.order_data import OrderData
     from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData
+    from clive.__private.core.commands.data_retrieval.rc_data import RcData
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesData
     from clive.__private.core.commands.get_wallet_names import WalletStatus
@@ -663,6 +664,17 @@ class Commands[WorldT: World]:
 
         return await self.__surround_with_exception_handlers(
             HivePowerDataRetrieval(node=self._world.node, account_name=account_name)
+        )
+
+    async def retrieve_rc_data(
+        self,
+        *,
+        account_name: str,
+    ) -> CommandWithResultWrapper[RcData]:
+        from clive.__private.core.commands.data_retrieval.rc_data import RcDataRetrieval  # noqa: PLC0415
+
+        return await self.__surround_with_exception_handlers(
+            RcDataRetrieval(node=self._world.node, account_name=account_name)
         )
 
     async def retrieve_chain_data(self) -> CommandWithResultWrapper[ChainData]:

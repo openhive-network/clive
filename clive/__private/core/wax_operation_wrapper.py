@@ -101,6 +101,28 @@ class WaxOperationWrapper:
         return schemas_operation  # type: ignore[return-value]
 
 
+class WaxRcDelegationWrapper(WaxOperationWrapper):
+    @classmethod
+    def create_delegation(cls, *, from_account: str, delegatee: str, max_rc: int) -> Self:
+        from wax.hive_apps_operations.rc import ResourceCreditsOperation  # noqa: PLC0415
+
+        wax_op = ResourceCreditsOperation()
+        wax_op.delegate(from_account, max_rc, delegatee)
+        wax_op.authorize(required_posting_auths=from_account)
+
+        return cls(wax_op)
+
+    @classmethod
+    def create_removal(cls, *, from_account: str, delegatee: str) -> Self:
+        from wax.hive_apps_operations.rc import ResourceCreditsOperation  # noqa: PLC0415
+
+        wax_op = ResourceCreditsOperation()
+        wax_op.remove_delegation(from_account, delegatee)
+        wax_op.authorize(required_posting_auths=from_account)
+
+        return cls(wax_op)
+
+
 class WaxFollowOperationWrapper(WaxOperationWrapper):
     _ACTION_MAP: Final[dict[str, str]] = {
         "follow": "follow_blog",

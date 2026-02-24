@@ -34,7 +34,13 @@ class BuildTransaction(CommandWithResult[Transaction]):
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
         try:
-            iwax.validate_transaction(transaction)
+            # Workaround: wax cannot serialize/validate custom JSON operations (e.g. delegate_rc),
+            # so when a transaction contains them, we skip full transaction validation and validate
+            # only non-custom operations individually. The node performs full validation on broadcast.
+            if self._has_custom_operations(transaction):
+                self._validate_non_custom_operations(transaction)
+            else:
+                iwax.validate_transaction(transaction)
         except WaxOperationFailedError as error:
             raise TransactionWaxValidationError(self, transaction, str(error)) from error
 
@@ -43,3 +49,22 @@ class BuildTransaction(CommandWithResult[Transaction]):
             await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
 
         self._result = transaction
+
+    @staticmethod
+    def _has_custom_operations(transaction: Transaction) -> bool:
+        from schemas.operations.custom.custom_base_operation import CustomBaseOperation  # noqa: PLC0415
+
+        return any(isinstance(op, CustomBaseOperation) for op in transaction.operations_models)
+
+    @staticmethod
+    def _validate_non_custom_operations(transaction: Transaction) -> None:
+        """Validate operations individually, skipping custom operations that wax cannot validate.
+
+        Args:
+            transaction: The transaction whose non-custom operations will be validated.
+        """
+        from schemas.operations.custom.custom_base_operation import CustomBaseOperation  # noqa: PLC0415
+
+        for operation in transaction.operations_models:
+            if not isinstance(operation, CustomBaseOperation):
+                iwax.validate_operation(operation)
