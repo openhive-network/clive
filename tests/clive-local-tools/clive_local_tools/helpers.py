@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from typing import TYPE_CHECKING
 
@@ -17,6 +18,12 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from click import ClickException
+
+
+def get_signatures_count_from_output(output: str) -> int:
+    start = output.index("{")
+    tx, _ = json.JSONDecoder().raw_decode(output, start)
+    return len(tx.get("signatures", []))
 
 
 def get_transaction_id_from_output(output: str) -> str:

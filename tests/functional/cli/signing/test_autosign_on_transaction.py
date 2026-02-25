@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive.__private.cli.exceptions import (
-    CLIMultipleKeysAutoSignError,
+    CLIInsufficientKeysAutoSignError,
     CLIMutuallyExclusiveOptionsError,
     CLINoKeysAvailableError,
     CLIWrongAlreadySignedModeAutoSignError,
@@ -225,20 +225,23 @@ async def test_negative_autosign_transaction_failure_due_to_no_keys_in_profile(
         cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
 
 
-@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
-async def test_negative_autosign_transaction_failure_due_to_multiple_keys_in_profile(
+async def test_autosign_transaction_with_multiple_keys_in_profile(
     cli_tester: CLITester,
     transaction_file_with_transfer: Path,
-    *,
-    broadcast: bool | None,
 ) -> None:
-    """Test failure of autosigning when there are multiple keys in the profile."""
+    """Test autosigning transaction when there are multiple different keys in the profile."""
     # ARRANGE
+    signed_transaction_filepath = create_transaction_filepath("signed_multi_key")
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
-    # ACT $ ASSERT
-    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transaction(from_file=transaction_file_with_transfer, broadcast=broadcast)
+    # ACT
+    result = cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=signed_transaction_filepath
+    )
+
+    # ASSERT
+    assert_contains_transaction_saved_to_file_message(signed_transaction_filepath, result.stdout)
+    assert_transaction_file_is_signed(signed_transaction_filepath)
 
 
 async def test_default_autosign_with_force_unsign(
@@ -278,6 +281,30 @@ async def test_negative_explicit_autosign_with_force_unsign(
         )
 
 
+@pytest.mark.parametrize("extra_keys_count", [1, 2, 3])
+async def test_autosign_transaction_with_matching_key_among_unrelated_keys(
+    cli_tester: CLITester,
+    transaction_file_with_transfer: Path,
+    extra_keys_count: int,
+) -> None:
+    """Test autosigning succeeds when the matching key is present alongside unrelated keys."""
+    # ARRANGE
+    signed_transaction_filepath = create_transaction_filepath("signed_with_unrelated")
+    for i in range(extra_keys_count):
+        cli_tester.configure_key_add(key=PrivateKey.generate().value, alias=f"unrelated_key_{i}")
+    await cli_tester.world.load_profile_based_on_beekepeer()
+    assert len(cli_tester.world.profile.keys) == 1 + extra_keys_count
+
+    # ACT
+    result = cli_tester.process_transaction(
+        from_file=transaction_file_with_transfer, save_file=signed_transaction_filepath
+    )
+
+    # ASSERT
+    assert_contains_transaction_saved_to_file_message(signed_transaction_filepath, result.stdout)
+    assert_transaction_file_is_signed(signed_transaction_filepath)
+
+
 @pytest.mark.parametrize("already_signed_mode", ["override", "multisign"])
 async def test_negative_autosign_with_not_allowed_autosigned_mode(
     cli_tester: CLITester, transaction_file_with_transfer: Path, already_signed_mode: AlreadySignedMode
@@ -290,3 +317,19 @@ async def test_negative_autosign_with_not_allowed_autosigned_mode(
         cli_tester.process_transaction(
             from_file=transaction_file_with_transfer, already_signed_mode=already_signed_mode
         )
+
+
+async def test_negative_autosign_transaction_with_no_matching_keys(
+    cli_tester: CLITester,
+    transaction_file_with_transfer: Path,
+) -> None:
+    """Test autosigning failure when wallet has keys but none match the transaction's required authorities."""
+    # ARRANGE - remove the real key and add two unrelated generated keys
+    for alias in cli_tester.world.profile.keys.get_all_aliases():
+        cli_tester.configure_key_remove(alias=alias)
+    cli_tester.configure_key_add(key=PrivateKey.generate().value, alias="unrelated_key_1")
+    cli_tester.configure_key_add(key=PrivateKey.generate().value, alias="unrelated_key_2")
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIInsufficientKeysAutoSignError())):
+        cli_tester.process_transaction(from_file=transaction_file_with_transfer)

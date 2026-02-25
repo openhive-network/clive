@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.cli.exceptions import (
+    CLIInsufficientKeysAutoSignError,
     CLIKeyAliasNotFoundError,
-    CLIMultipleKeysAutoSignError,
     CLIMutuallyExclusiveOptionsError,
     CLINoKeysAvailableError,
 )
@@ -84,19 +84,30 @@ async def test_negative_autosign_failure_due_to_no_keys_in_profile(
         )
 
 
-@pytest.mark.parametrize("broadcast", [None, True], ids=["default broadcast", "explicit broadcast"])
-async def test_negative_autosign_failure_due_to_multiple_keys_in_profile(
-    cli_tester: CLITester, *, broadcast: bool | None
+async def test_autosign_operation_with_multiple_keys_in_profile(
+    node: tt.RawNode,
+    cli_tester: CLITester,
 ) -> None:
-    """Test autosigning failure when there are multiple keys available and try to send operation."""
+    """Test autosigning operation when there are multiple different keys in the profile."""
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=RECEIVER,
+        amount=AMOUNT,
+        memo=MEMO,
+    )
 
-    # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, memo=MEMO, broadcast=broadcast
-        )
+    # ACT
+    result = cli_tester.process_transfer(
+        from_=operation.from_,
+        amount=operation.amount,
+        to=operation.to,
+        memo=operation.memo,
+    )
+
+    # ASSERT
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_negative_usage_of_autosign_with_sign_with(cli_tester: CLITester) -> None:
@@ -205,24 +216,26 @@ async def test_negative_dry_run_of_autosigned_operation_on_profile_without_keys(
 
 
 @pytest.mark.parametrize("autosign", [None, True])
-async def test_negative_dry_run_of_autosigned_operation_on_profile_with_multiple_keys(
+async def test_dry_run_of_autosigned_operation_on_profile_with_multiple_keys(
     cli_tester: CLITester,
     *,
     autosign: bool | None,
 ) -> None:
     """
-    Test failing of printing out dry run and transaction.
+    Test printing out dry run with autosigned transaction when there are multiple keys.
 
-    It should fail when we try to print out an autosigned transaction when there are multiple keys.
+    Multi-key autosign should succeed and produce a signed transaction.
     """
     # ARRANGE
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
-    # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIMultipleKeysAutoSignError())):
-        cli_tester.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, autosign=autosign, broadcast=False
-        )
+    # ACT
+    result = cli_tester.process_transfer(
+        from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER, autosign=autosign, broadcast=False
+    )
+
+    # ASSERT
+    assert_contains_transaction_created_message(result.stdout)
 
 
 async def test_saving_not_autosigned_operation_on_profile_without_keys(cli_tester: CLITester) -> None:
@@ -276,6 +289,57 @@ async def test_saving_not_autosigned_operation_on_profile_with_multiple_keys(cli
     # ASSERT
     assert_transaction_file_is_unsigned(transaction_filepath)
     assert_contains_transaction_saved_to_file_message(transaction_filepath, result.stdout)
+
+
+@pytest.mark.parametrize("extra_keys_count", [1, 2, 3])
+async def test_autosign_operation_with_matching_key_among_unrelated_keys(
+    node: tt.RawNode,
+    cli_tester: CLITester,
+    extra_keys_count: int,
+) -> None:
+    """Test autosigning succeeds when the matching key is present alongside unrelated keys."""
+    # ARRANGE
+    for i in range(extra_keys_count):
+        cli_tester.configure_key_add(key=PrivateKey.generate().value, alias=f"unrelated_key_{i}")
+    await cli_tester.world.load_profile_based_on_beekepeer()
+    assert len(cli_tester.world.profile.keys) == 1 + extra_keys_count
+    operation = TransferOperation(
+        from_=WORKING_ACCOUNT_NAME,
+        to=RECEIVER,
+        amount=AMOUNT,
+        memo=MEMO,
+    )
+
+    # ACT
+    result = cli_tester.process_transfer(
+        from_=operation.from_,
+        amount=operation.amount,
+        to=operation.to,
+        memo=operation.memo,
+    )
+
+    # ASSERT
+    assert_operations_placed_in_blockchain(node, result, operation)
+
+
+async def test_negative_autosign_with_no_matching_keys(
+    cli_tester: CLITester,
+) -> None:
+    """Test autosigning failure when wallet has keys but none match the transaction's required authorities."""
+    # ARRANGE - remove the real key and add two unrelated generated keys
+    for alias in cli_tester.world.profile.keys.get_all_aliases():
+        cli_tester.configure_key_remove(alias=alias)
+    cli_tester.configure_key_add(key=PrivateKey.generate().value, alias="unrelated_key_1")
+    cli_tester.configure_key_add(key=PrivateKey.generate().value, alias="unrelated_key_2")
+
+    # ACT & ASSERT
+    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLIInsufficientKeysAutoSignError())):
+        cli_tester.process_transfer(
+            from_=WORKING_ACCOUNT_NAME,
+            amount=tt.Asset.Hive(1),
+            to=RECEIVER,
+            memo=MEMO,
+        )
 
 
 async def test_negative_sign_with_takes_precedence_over_autosign(cli_tester: CLITester) -> None:
