@@ -824,13 +824,17 @@ class CLITester:
         )
 
     def show_pending_convert(self, *, account_name: str | None = None) -> CLITestResult:
-        return self.__invoke_command_with_options(["show", "pending", "convert"], account_name=account_name)
+        return self.__invoke_command_with_options(
+            ["show", "pending", "convert"], cli_named_options=extract_params(locals())
+        )
 
     def crypto_decrypt(self, *, encrypted_memo: str) -> CLITestResult:
         return self.__invoke_command_with_options(["crypto", "decrypt"], cli_positional_args=(encrypted_memo,))
 
     def show_escrow(self, *, account_name: str | None = None) -> CLITestResult:
-        return self.__invoke_command_with_options(["show", "escrow"], account_name=account_name)
+        return self.__invoke_command_with_options(
+            ["show", "escrow"], cli_named_options=extract_params(locals())
+        )
 
     def process_claim_rewards(
         self,
@@ -841,7 +845,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "claim", "rewards"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "claim", "rewards"], cli_named_options=extract_params(locals())
+        )
 
     def process_convert(  # noqa: PLR0913
         self,
@@ -874,7 +880,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "escrow", "transfer"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "transfer"], cli_named_options=extract_params(locals())
+        )
 
     def process_escrow_approve(  # noqa: PLR0913
         self,
@@ -887,7 +895,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "escrow", "approve"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "approve"], cli_named_options=extract_params(locals())
+        )
 
     def process_escrow_reject(  # noqa: PLR0913
         self,
@@ -900,7 +910,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "escrow", "reject"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "reject"], cli_named_options=extract_params(locals())
+        )
 
     def process_escrow_dispute(  # noqa: PLR0913
         self,
@@ -913,7 +925,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "escrow", "dispute"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "dispute"], cli_named_options=extract_params(locals())
+        )
 
     def process_escrow_release(  # noqa: PLR0913
         self,
@@ -929,7 +943,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "escrow", "release"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "escrow", "release"], cli_named_options=extract_params(locals())
+        )
 
     def show_orders(self, *, account_name: str | None = None) -> CLITestResult:
         return self.__invoke_command_with_options(["show", "orders"], cli_named_options=extract_params(locals()))
@@ -949,7 +965,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "order", "create"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "order", "create"], cli_named_options=extract_params(locals())
+        )
 
     def process_order_cancel(  # noqa: PLR0913
         self,
@@ -961,7 +979,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "order", "cancel"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "order", "cancel"], cli_named_options=extract_params(locals())
+        )
 
     def process_social_follow(  # noqa: PLR0913
         self,
@@ -973,7 +993,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "social", "follow"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "social", "follow"], cli_named_options=extract_params(locals())
+        )
 
     def process_social_unfollow(  # noqa: PLR0913
         self,
@@ -985,7 +1007,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "social", "unfollow"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "social", "unfollow"], cli_named_options=extract_params(locals())
+        )
 
     def process_social_mute(  # noqa: PLR0913
         self,
@@ -997,7 +1021,9 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "social", "mute"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "social", "mute"], cli_named_options=extract_params(locals())
+        )
 
     def process_social_unmute(  # noqa: PLR0913
         self,
@@ -1009,11 +1035,15 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "social", "unmute"], cli_named_options=extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["process", "social", "unmute"], cli_named_options=extract_params(locals())
+        )
 
     def call(
         self,
-        *args: StringConvertibleOptionTypes,
+        *args: CLIArgumentValue,
         node_address: str | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["call"], args, **extract_params(locals(), "args"))
+        return self.__invoke_command_with_options(
+            ["call"], cli_positional_args=args, cli_named_options=extract_params(locals(), "args")
+        )
