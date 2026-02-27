@@ -832,9 +832,7 @@ class CLITester:
         return self.__invoke_command_with_options(["crypto", "decrypt"], cli_positional_args=(encrypted_memo,))
 
     def show_escrow(self, *, account_name: str | None = None) -> CLITestResult:
-        return self.__invoke_command_with_options(
-            ["show", "escrow"], cli_named_options=extract_params(locals())
-        )
+        return self.__invoke_command_with_options(["show", "escrow"], cli_named_options=extract_params(locals()))
 
     def process_claim_rewards(
         self,
