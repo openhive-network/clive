@@ -149,9 +149,7 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         self._selected_account = radio_button.account
 
     def confirm_selected_working_account(self) -> None:
-        new_working_account = (
-            None if self._is_no_working_account_selected(self._selected_account) else self._selected_account
-        )
+        new_working_account = self._get_highlighted_account()
 
         try:
             self.profile.accounts.switch_working_account(new_working_account)
@@ -159,6 +157,14 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
             return
 
         self._perform_actions_after_accounts_modification()
+
+    def _get_highlighted_account(self) -> TrackedAccount | None:
+        for button in self.query("RadioButton.-selected"):
+            if isinstance(button, NoWorkingAccountRadioButton):
+                return None
+            if isinstance(button, AccountRadioButton):
+                return button.account
+        return None if self._is_no_working_account_selected(self._selected_account) else self._selected_account
 
     def _perform_actions_after_accounts_modification(self) -> None:
         self.app.trigger_profile_watchers()
