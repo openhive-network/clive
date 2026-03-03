@@ -249,7 +249,7 @@ clive/__private/cli/process/proxy.py
 --------------------
 clive/__private/cli/process/rc_delegations.py
     DOC101: Function `process_rc_delegations_set`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `process_rc_delegations_set`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, amount: str, autosign: bool | None, broadcast: bool | None, delegatee: str, save_file: str | None, sign_with: list[str]].
+    DOC103: Function `process_rc_delegations_set`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, amount: str, autosign: bool | None, broadcast: bool | None, delegatee: str, force: bool, save_file: str | None, sign_with: list[str]].
     DOC101: Function `process_rc_delegations_remove`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `process_rc_delegations_remove`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [account_name: str, autosign: bool | None, broadcast: bool | None, delegatee: str, save_file: str | None, sign_with: list[str]].
 --------------------

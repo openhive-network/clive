@@ -24,9 +24,13 @@ class FinancialOperationsAccountCollector(OperationVisitor):
         """Names of accounts that are target of financial operation."""
 
     @override
-    def visit_delegate_rc_operation(self, operation: schemas.DelegateRcOperation) -> None:
-        if operation.max_rc > 0:
-            self.accounts.update(operation.delegatees)
+    def visit_custom_json_operation(self, operation: schemas.CustomJsonOperation) -> None:
+        json_value = operation.json_.value
+        if not isinstance(json_value, list) or len(json_value) < 2 or json_value[0] != "delegate_rc":  # noqa: PLR2004
+            return
+        rc_data = json_value[1]
+        if isinstance(rc_data, dict) and int(rc_data.get("max_rc", 0)) > 0:
+            self.accounts.update(rc_data.get("delegatees", []))
 
     @override
     def visit_delegate_vesting_shares_operation(self, operation: schemas.DelegateVestingSharesOperation) -> None:

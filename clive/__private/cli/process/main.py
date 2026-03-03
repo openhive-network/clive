@@ -24,6 +24,7 @@ from clive.__private.cli.process.hive_power.power_up import power_up
 from clive.__private.cli.process.hive_power.withdraw_routes import withdraw_routes
 from clive.__private.cli.process.order import order
 from clive.__private.cli.process.proxy import proxy
+from clive.__private.cli.process.rc_delegations import rc_delegations
 from clive.__private.cli.process.recovery_account import recovery_account
 from clive.__private.cli.process.savings import savings
 from clive.__private.cli.process.social import social
@@ -53,6 +54,7 @@ process.add_typer(get_update_authority_typer("posting"))
 process.add_typer(vote_proposal)
 process.add_typer(vote_witness)
 process.add_typer(delegations)
+process.add_typer(rc_delegations)
 process.add_typer(power_down)
 process.add_typer(power_up)
 process.add_typer(withdraw_routes)

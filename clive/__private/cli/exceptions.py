@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
+    from clive.__private.models.asset import Asset
 
 
 class CLIPrettyError(ClickException):
@@ -757,3 +758,84 @@ class CLIChainIdFromSettingsNotAvailableError(CLIPrettyError):
             f" You can override settings by environment variable {clive_prefixed_envvar(NODE_CHAIN_ID)}"
         )
         super().__init__(message, errno.EINVAL)
+
+
+class RcDelegationError(CLIPrettyError):
+    @staticmethod
+    def _format_rc_amount(hp: Asset.Hive | None, vests: Asset.Vests) -> str:
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
+        vests_str = humanize_asset(vests)
+        return f"{humanize_asset(hp)} / {vests_str}" if hp is not None else vests_str
+
+
+class RcDelegationBelowMinimumError(RcDelegationError):
+    """
+    Raised when the RC delegation amount is below the minimum allowed threshold.
+
+    Args:
+        amount_hp: The requested amount in HP, or None if HP conversion was not possible.
+        amount_vests: The requested amount in VESTS.
+        min_hp: The minimum allowed RC delegation in HP.
+        min_vests: The minimum allowed RC delegation in VESTS.
+    """
+
+    def __init__(
+        self, amount_hp: Asset.Hive | None, amount_vests: Asset.Vests, min_hp: Asset.Hive, min_vests: Asset.Vests
+    ) -> None:
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
+        amount_display = self._format_rc_amount(amount_hp, amount_vests)
+        min_display = f"{humanize_asset(min_hp)} / {humanize_asset(min_vests)}"
+        message = (
+            f"RC delegation amount {amount_display} is below the minimum threshold of {min_display}.\n"
+            "If you want to remove an RC delegation, use `clive process rc-delegations remove`."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class RcDelegationInsufficientRcError(RcDelegationError):
+    """
+    Raised when there is not enough available RC to satisfy the requested delegation.
+
+    Args:
+        amount_hp: The requested amount in HP, or None if HP conversion was not possible.
+        amount_vests: The requested amount in VESTS.
+        available_hp: The amount of RC available for delegation in HP.
+        available_vests: The amount of RC available for delegation in VESTS.
+    """
+
+    def __init__(
+        self,
+        amount_hp: Asset.Hive | None,
+        amount_vests: Asset.Vests,
+        available_hp: Asset.Hive,
+        available_vests: Asset.Vests,
+    ) -> None:
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
+        amount_display = self._format_rc_amount(amount_hp, amount_vests)
+        available_display = f"{humanize_asset(available_hp)} / {humanize_asset(available_vests)}"
+        message = f"Insufficient RC to delegate {amount_display}. Only {available_display} is available for delegation."
+        super().__init__(message, errno.EPERM)
+
+
+class RcDelegationSameAmountError(RcDelegationError):
+    """
+    Raised when an RC delegation to the given delegatee with the same amount already exists.
+
+    Args:
+        delegatee: The account name of the recipient.
+        amount_hp: The existing (and requested) RC delegation amount in HP.
+        amount_vests: The existing (and requested) RC delegation amount in VESTS.
+    """
+
+    def __init__(self, delegatee: str, amount_hp: Asset.Hive, amount_vests: Asset.Vests) -> None:
+        from clive.__private.core.formatters.humanize import humanize_asset  # noqa: PLC0415
+
+        amount_display = f"{humanize_asset(amount_hp)} / {humanize_asset(amount_vests)}"
+        message = (
+            f"An RC delegation to `{delegatee}` with the same amount ({amount_display}) already exists.\n"
+            "If you want to modify the delegation, specify a different amount."
+        )
+        super().__init__(message, errno.EEXIST)

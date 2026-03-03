@@ -168,4 +168,4 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
 
         min_hive = iwax.hive(account_creation_fee.amount // HIVE_RC_DELEGATION_MIN_ACCOUNT_CREATION_FEE_DIVISOR)
         min_vests = iwax.calculate_hp_to_vests(min_hive, gdpo)
-        return min_vests.amount
+        return int(min_vests.amount)
