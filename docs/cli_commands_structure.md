@@ -79,7 +79,7 @@ clive
 │ │ └── rewards
 │ ├── convert
 │ ├── custom-json
-│ ├── delegations
+│ ├── hp-delegations
 │ │ ├── remove
 │ │ └── set
 │ ├── order

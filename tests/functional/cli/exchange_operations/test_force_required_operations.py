@@ -143,7 +143,7 @@ async def test_validation_of_powering_up_to_exchange(cli_tester: CLITester, *, f
 async def test_validate_of_performing_delegation_set_to_exchange(cli_tester: CLITester, *, force: bool) -> None:
     # ARRANGE
     def send_operation() -> None:
-        cli_tester.process_delegations_set(
+        cli_tester.process_hp_delegations_set(
             delegatee=KNOWN_EXCHANGE_NAME,
             amount=AMOUNT,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,

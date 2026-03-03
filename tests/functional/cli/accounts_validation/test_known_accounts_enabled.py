@@ -49,7 +49,7 @@ async def test_validation_of_delegate_vesting_shares(
 ) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_delegations_set(
+        cli_tester.process_hp_delegations_set(
             delegatee=receiver, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS, **process_action_selector
         )
 
@@ -224,11 +224,11 @@ async def test_no_validation_of_removing_delegation_of_vesting_shares_to_account
 ) -> None:
     """It should be possible to remove delegation, even if account is not on known account list."""
     # ARRANGE
-    cli_tester.process_delegations_set(delegatee=KNOWN_ACCOUNT, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_hp_delegations_set(delegatee=KNOWN_ACCOUNT, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
     cli_tester.configure_known_account_remove(account_name=KNOWN_ACCOUNT)
 
     # ACT & ASSERT
-    cli_tester.process_delegations_remove(delegatee=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+    cli_tester.process_hp_delegations_remove(delegatee=KNOWN_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
 
 async def test_no_validation_of_canceling_savings_withdrawal_to_account_that_was_known(

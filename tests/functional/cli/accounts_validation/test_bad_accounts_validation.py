@@ -67,7 +67,7 @@ async def test_validation_of_delegate_vesting_shares(
 ) -> None:
     # ARRANGE
     def perform_operation() -> None:
-        cli_tester.process_delegations_set(
+        cli_tester.process_hp_delegations_set(
             delegatee=BAD_ACCOUNT,
             amount=AMOUNT,
             sign_with=WORKING_ACCOUNT_KEY_ALIAS,
@@ -227,12 +227,12 @@ async def test_no_validation_of_removing_delegation_of_vesting_shares_to_account
 ) -> None:
     """It should be possible to remove delegation, even if account is on bad account list."""
     # ARRANGE
-    cli_tester.process_delegations_set(
+    cli_tester.process_hp_delegations_set(
         delegatee=TEMPORARY_BAD_ACCOUNT, amount=AMOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     def send_operation() -> None:
-        cli_tester.process_delegations_remove(delegatee=TEMPORARY_BAD_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+        cli_tester.process_hp_delegations_remove(delegatee=TEMPORARY_BAD_ACCOUNT, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ACT & ASSERT
     _assert_no_validation_of_bad_account(send_operation)

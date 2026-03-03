@@ -318,7 +318,7 @@ class CLITester:
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["process", "power-down", "cancel"], **extract_params(locals()))
 
-    def process_delegations_set(  # noqa: PLR0913
+    def process_hp_delegations_set(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -330,9 +330,9 @@ class CLITester:
         force: bool | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "hp-delegations", "set"], **extract_params(locals()))
 
-    def process_delegations_remove(  # noqa: PLR0913
+    def process_hp_delegations_remove(  # noqa: PLR0913
         self,
         *,
         account_name: str | None = None,
@@ -342,7 +342,7 @@ class CLITester:
         save_file: Path | None = None,
         autosign: bool | None = None,
     ) -> CLITestResult:
-        return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "hp-delegations", "remove"], **extract_params(locals()))
 
     def process_withdraw_routes_set(  # noqa: PLR0913
         self,

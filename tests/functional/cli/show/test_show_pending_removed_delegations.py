@@ -21,12 +21,12 @@ async def test_no_pending_removed_delegations(cli_tester: CLITester) -> None:
 async def test_pending_removed_delegations_basic(cli_tester: CLITester) -> None:
     # ARRANGE
     amount_to_delegate: Final[tt.Asset.VestT] = tt.Asset.Vest(123_456.789)
-    cli_tester.process_delegations_set(
+    cli_tester.process_hp_delegations_set(
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=EMPTY_ACCOUNT.name,
         amount=amount_to_delegate,
     )
-    cli_tester.process_delegations_remove(sign_with=WORKING_ACCOUNT_KEY_ALIAS, delegatee=EMPTY_ACCOUNT.name)
+    cli_tester.process_hp_delegations_remove(sign_with=WORKING_ACCOUNT_KEY_ALIAS, delegatee=EMPTY_ACCOUNT.name)
 
     # ACT
     # ASSERT

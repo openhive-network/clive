@@ -10,7 +10,7 @@ from clive.__private.cli.common import options
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
 
-delegations = CliveTyper(name="delegations", help="Set or remove vesting delegaton.")
+delegations = CliveTyper(name="hp-delegations", help="Set or remove vesting delegaton.")
 
 _delegatee_account_name = typer.Option(
     ...,

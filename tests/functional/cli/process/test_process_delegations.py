@@ -31,7 +31,7 @@ async def test_delegations_set_use_vests(node: tt.RawNode, cli_tester: CLITester
     )
 
     # ACT
-    result = cli_tester.process_delegations_set(
+    result = cli_tester.process_hp_delegations_set(
         delegatee=operation.delegatee, amount=AMOUNT_TO_DELEGATE, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
@@ -44,7 +44,7 @@ async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester)
     amount_to_delegate_hp: Final[tt.Asset.VestT] = tt.Asset.Vest(4567.890)
 
     # ACT
-    result = cli_tester.process_delegations_set(
+    result = cli_tester.process_hp_delegations_set(
         delegatee=DELEGATEE_ACCOUNT.name, amount=amount_to_delegate_hp, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
@@ -55,7 +55,7 @@ async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester)
 async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     amount_to_delegate_reset: Final[tt.Asset.VestT] = tt.Asset.Vest(3456.789)
-    cli_tester.process_delegations_set(
+    cli_tester.process_hp_delegations_set(
         delegatee=DELEGATEE_ACCOUNT.name, amount=AMOUNT_TO_DELEGATE, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = DelegateVestingSharesOperation(
@@ -65,7 +65,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
     )
 
     # ACT
-    result = cli_tester.process_delegations_set(
+    result = cli_tester.process_hp_delegations_set(
         delegatee=operation.delegatee, amount=amount_to_delegate_reset, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
 
@@ -75,7 +75,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
 
 async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
-    cli_tester.process_delegations_set(
+    cli_tester.process_hp_delegations_set(
         delegatee=DELEGATEE_ACCOUNT.name, amount=AMOUNT_TO_DELEGATE, sign_with=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = DelegateVestingSharesOperation(
@@ -85,7 +85,9 @@ async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> No
     )
 
     # ACT
-    result = cli_tester.process_delegations_remove(delegatee=operation.delegatee, sign_with=WORKING_ACCOUNT_KEY_ALIAS)
+    result = cli_tester.process_hp_delegations_remove(
+        delegatee=operation.delegatee, sign_with=WORKING_ACCOUNT_KEY_ALIAS
+    )
 
     # ASSERT
     assert_operations_placed_in_blockchain(node, result, operation)
