@@ -80,12 +80,14 @@ to_account_name_required = typer.Option(
 from_account_name_required = typer.Option(
     ...,
     "--from",
+    parser=account_name_parser,
     help='The account to use as "from" argument.',
 )
 
 escrow_owner = typer.Option(
     ...,
     "--escrow-owner",
+    parser=account_name_parser,
     help="The account that initiated the escrow (escrow creator).",
 )
 

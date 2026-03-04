@@ -8,7 +8,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import modified_param, options
 from clive.__private.cli.common.parameters.styling import stylized_help
-from clive.__private.cli.common.parsers import hbd_asset, hive_asset, hive_datetime, liquid_asset
+from clive.__private.cli.common.parsers import account_name, hbd_asset, hive_asset, hive_datetime, liquid_asset
 
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset
@@ -67,8 +67,8 @@ escrow = CliveTyper(name="escrow", help=ESCROW_HELP)
 @escrow.command(name="transfer")
 async def process_escrow_transfer(  # noqa: PLR0913
     from_account: str = options.from_account_name,
-    to: str = typer.Option(..., "--to", help="The account to receive the escrowed funds."),
-    agent: str = typer.Option(..., "--agent", help="The escrow agent account (mediator)."),
+    to: str = typer.Option(..., "--to", parser=account_name, help="The account to receive the escrowed funds."),
+    agent: str = typer.Option(..., "--agent", parser=account_name, help="The escrow agent account (mediator)."),
     escrow_id: int | None = typer.Option(
         None,
         "--escrow-id",
@@ -273,6 +273,7 @@ async def process_escrow_release(  # noqa: PLR0913
     receiver: str | None = typer.Option(
         None,
         "--receiver",
+        parser=account_name,
         help="Who receives the funds. Auto-filled for sender/receiver roles. Required for agent.",
     ),
     hbd_amount: str = typer.Option(
