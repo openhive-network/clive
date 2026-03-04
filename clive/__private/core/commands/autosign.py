@@ -157,21 +157,13 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
         Returns:
             The minimal list of keys needed, or all matching keys if minimization fails.
         """
-        try:
-            minimal_keys = minimize_required_signatures(
-                self.transaction,
-                self.chain_id,
-                matching_keys,
-                authorities_map,
-                lambda _witness: "",
-            )
-        except Exception:  # noqa: BLE001
-            logger.warning("AutoSign: signature minimization failed, using all matching keys.")
-            return matching_keys
-
-        if not minimal_keys:
-            logger.warning("AutoSign: minimization returned no keys, using all matching keys.")
-            return matching_keys
+        minimal_keys = minimize_required_signatures(
+            self.transaction,
+            self.chain_id,
+            matching_keys,
+            authorities_map,
+            lambda _witness: "",
+        )
 
         if not self.check_authority(minimal_keys, authorities_map):
             logger.warning("AutoSign: minimization removed required keys, using all matching keys.")
