@@ -8,7 +8,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.parameters import modified_param
 from clive.__private.cli.common.parameters.styling import stylized_help
-from clive.__private.cli.common.parsers import public_key
+from clive.__private.cli.common.parsers import account_name, public_key
 
 if TYPE_CHECKING:
     from clive.__private.core.keys.keys import PublicKey
@@ -42,6 +42,7 @@ async def process_change_recovery_account(  # noqa: PLR0913
     ),
     new_recovery_account: str = typer.Option(
         ...,
+        parser=account_name,
         help="This is your trusted account. In case of compromise, only this account can create a recovery request.",
     ),
     sign_with: list[str] = options.sign_with,
@@ -84,6 +85,7 @@ async def process_request_account_recovery(  # noqa: PLR0913
     ),
     account_to_recover: str = typer.Option(
         ...,
+        parser=account_name,
         help="The account to be recovered.",
     ),
     new_owner_key: str = typer.Option(
