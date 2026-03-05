@@ -67,7 +67,7 @@ clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.19.1"
 pre-commit = "^4.5.1"
-ruff = "^0.14.10"
+ruff = "^0.15.0"
 pydoclint = "^0.8.3"
 types-toml = "^0.10.8.20240310"
 
