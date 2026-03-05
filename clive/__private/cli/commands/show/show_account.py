@@ -13,7 +13,6 @@ from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.styling import colorize_error
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
-    align_to_dot,
     humanize_asset,
     humanize_bool,
     humanize_datetime,
@@ -82,24 +81,21 @@ class ShowAccount(WorldBasedCommand):
         balances_table.add_column(justify="right", style="green", no_wrap=True)
         balances_table.add_column(justify="right", style="green", no_wrap=True)
 
-        # Get all balance values as strings (HIVE/HP column, then HBD/VESTS column - matching Dashboard order)
-        hive_liquid = humanize_asset(self._account_data.hive_balance)
-        hive_savings = humanize_asset(self._account_data.hive_savings)
-        hp_stake = humanize_hive_power(self._account_data.owned_hp_balance.hp_balance)
-
-        hbd_liquid = humanize_asset(self._account_data.hbd_balance)
-        hbd_savings = humanize_asset(self._account_data.hbd_savings)
-        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, use_short_form=True)
-
-        # Align decimal points within each column
-        hive_liquid_aligned, hive_savings_aligned, hp_stake_aligned = align_to_dot(hive_liquid, hive_savings, hp_stake)
-        hbd_liquid_aligned, hbd_savings_aligned, vests_stake_aligned = align_to_dot(
-            hbd_liquid, hbd_savings, vests_stake
+        balances_table.add_row(
+            "Liquid",
+            humanize_asset(self._account_data.hive_balance),
+            humanize_asset(self._account_data.hbd_balance),
         )
-
-        balances_table.add_row("Liquid", hive_liquid_aligned, hbd_liquid_aligned)
-        balances_table.add_row("Savings", hive_savings_aligned, hbd_savings_aligned)
-        balances_table.add_row("Stake", hp_stake_aligned, vests_stake_aligned)
+        balances_table.add_row(
+            "Savings",
+            humanize_asset(self._account_data.hive_savings),
+            humanize_asset(self._account_data.hbd_savings),
+        )
+        balances_table.add_row(
+            "Stake",
+            humanize_hive_power(self._account_data.owned_hp_balance.hp_balance),
+            humanize_asset(self._account_data.owned_hp_balance.vests_balance, use_short_form=True),
+        )
 
         return balances_table
 
