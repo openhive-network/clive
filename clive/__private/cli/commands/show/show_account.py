@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from functools import partial
 from typing import TYPE_CHECKING
 
 from rich.columns import Columns
@@ -14,14 +13,15 @@ from clive.__private.cli.print_cli import print_cli
 from clive.__private.cli.styling import colorize_error
 from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.formatters.humanize import (
+    align_to_dot,
     humanize_asset,
     humanize_bool,
     humanize_datetime,
+    humanize_hive_power,
     humanize_hive_power_with_comma,
     humanize_manabar_regeneration_time,
     humanize_percent,
 )
-from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarms_storage import AlarmsStorage
@@ -77,29 +77,30 @@ class ShowAccount(WorldBasedCommand):
         return general_info_table
 
     def _create_balance_table(self) -> Table:
-        balances_table = Table(title="The balances")
-        hive_symbol = Asset.get_symbol(Asset.Hive)
-        hbd_symbol = Asset.get_symbol(Asset.Hbd)
-        hp_symbol = "HP"
-        balances_table.add_column("", justify="left", style="cyan", no_wrap=True)
-        balances_table.add_column(hbd_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hive_symbol, justify="right", style="green", no_wrap=True)
-        balances_table.add_column(hp_symbol, justify="right", style="green", no_wrap=True)
+        balances_table = Table(title="The balances", show_header=False)
+        balances_table.add_column(justify="left", style="cyan", no_wrap=True)
+        balances_table.add_column(justify="right", style="green", no_wrap=True)
+        balances_table.add_column(justify="right", style="green", no_wrap=True)
 
-        humanize_asset_no_symbol = partial(humanize_asset, show_symbol=False)
+        # Get all balance values as strings (HIVE/HP column, then HBD/VESTS column - matching Dashboard order)
+        hive_liquid = humanize_asset(self._account_data.hive_balance)
+        hive_savings = humanize_asset(self._account_data.hive_savings)
+        hp_stake = humanize_hive_power(self._account_data.owned_hp_balance.hp_balance)
 
-        balances_table.add_row(
-            "Liquid",
-            humanize_asset_no_symbol(self._account_data.hbd_balance),
-            humanize_asset_no_symbol(self._account_data.hive_balance),
-            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=False),
+        hbd_liquid = humanize_asset(self._account_data.hbd_balance)
+        hbd_savings = humanize_asset(self._account_data.hbd_savings)
+        vests_stake = humanize_asset(self._account_data.owned_hp_balance.vests_balance, use_short_form=True)
+
+        # Align decimal points within each column
+        hive_liquid_aligned, hive_savings_aligned, hp_stake_aligned = align_to_dot(hive_liquid, hive_savings, hp_stake)
+        hbd_liquid_aligned, hbd_savings_aligned, vests_stake_aligned = align_to_dot(
+            hbd_liquid, hbd_savings, vests_stake
         )
-        balances_table.add_row(
-            "Savings",
-            humanize_asset_no_symbol(self._account_data.hbd_savings),
-            humanize_asset_no_symbol(self._account_data.hive_savings),
-            "---",
-        )
+
+        balances_table.add_row("Liquid", hive_liquid_aligned, hbd_liquid_aligned)
+        balances_table.add_row("Savings", hive_savings_aligned, hbd_savings_aligned)
+        balances_table.add_row("Stake", hp_stake_aligned, vests_stake_aligned)
+
         return balances_table
 
     def _create_manabar_stats_table(self) -> Table:
