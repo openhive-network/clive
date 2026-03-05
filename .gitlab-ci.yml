@@ -8,7 +8,7 @@ stages:
 # YAML anchors for pinned versions (used via *anchor_name syntax)
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "f8e1b42621babbd8df2e6e197ecb598cfb9b228e"
+.common_ci_configuration_version: &common_ci_configuration_version "44aefe652c4208db356241bdb917de41afbac86a"
 # Hived image configuration:
 # - hived_branch: Branch to search for images (used for dynamic lookup)
 # - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
@@ -49,12 +49,6 @@ variables:
   # versions that were already built from the develop branch.
   DOCKER_BUILDER_TAG: "47dab930d3676b007782723c45ae7080fa611705"
   DOCKER_DIND_TAG: "53c7826ef0f74b9896fa39aa7eb43140e53ddb0d"
-  # CI base images - Python 3.12 (ubuntu24.04-py3.12-1)
-  CI_BASE_IMAGE_312_TAG: "@sha256:790eba6b399df4ce92037b03ce27b6e212d308189492f50807a0565fa1219ce5"
-  CI_BASE_IMAGE_312: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image${CI_BASE_IMAGE_312_TAG}"
-  # CI base images - Python 3.14 (ubuntu24.04-py3.14-6)
-  CI_BASE_IMAGE_314_TAG: "@sha256:3487ec5ce7d347143f16267378c8e21c90cf902159528f3899e1038e09f0c647"
-  CI_BASE_IMAGE_314: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image${CI_BASE_IMAGE_314_TAG}"
   # Clive testnet base image (python_development:3.12-u24.04-1)
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
@@ -95,6 +89,16 @@ default:
   tags:
     - public-runner-docker
 
+.python_312:
+  image: ${PYTHON_IMAGE}
+  variables:
+    PYTHON_VERSION: "3.12"
+
+.python_314:
+  image: ${PYTHON_IMAGE}
+  variables:
+    PYTHON_VERSION: "3.14"
+
 .runtime_like_env:
   extends: .configuration_template
   needs:
@@ -130,26 +134,30 @@ default:
 
 pre_commit_checks:
   stage: static_code_analysis
-  extends: .pre_commit_checks_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .pre_commit_checks_template
+    - .python_312
   before_script:
     - !reference [.pre_commit_checks_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
-  extends: .verify_poetry_lock_sanity_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .verify_poetry_lock_sanity_template
+    - .python_312
 
 verify_poetry_lock_stability:
   stage: static_code_analysis
-  extends: .verify_poetry_lock_stability_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .verify_poetry_lock_stability_template
+    - .python_312
 
 lint_code_with_ruff:
   stage: static_code_analysis
-  extends: .lint_code_with_ruff_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .lint_code_with_ruff_template
+    - .python_312
   before_script:
     - !reference [.lint_code_with_ruff_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -160,8 +168,9 @@ lint_code_with_ruff:
 
 formatting_with_ruff_check:
   stage: static_code_analysis
-  extends: .project_develop_configuration_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .project_develop_configuration_template
+    - .python_312
   before_script:
     - !reference [.project_develop_configuration_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -171,8 +180,9 @@ formatting_with_ruff_check:
 
 type_check_with_mypy:
   stage: static_code_analysis
-  extends: .type_check_with_mypy_template
-  image: ${CI_BASE_IMAGE_312}
+  extends:
+    - .type_check_with_mypy_template
+    - .python_312
   before_script:
     - !reference [.type_check_with_mypy_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -290,26 +300,21 @@ prepare_testnet_hived_image:
     - public-runner-docker
 
 build_wheel:
-  extends: .build_wheel_template
+  extends:
+    - .build_wheel_template
+    - .python_312
   stage: build
-  image: ${CI_BASE_IMAGE_312}  # We deliver Clive in a container with Python 3.12
   needs: []  # Start immediately, don't wait for static_code_analysis (allows tests to run even if verify_poetry_lock_stability fails)
   dependencies: []  # Don't download artifacts from previous stages (prevents modified poetry.lock from pre_commit_checks)
   script:
-    - echo -e "${TXT_BLUE}Building python wheel...${TXT_CLEAR}"
-    - ls -al
-    - poetry -C "${PYPROJECT_DIR}" version
-    - poetry self add "poetry-plugin-freeze==1.2.0"
-    - poetry -C "${PYPROJECT_DIR}" build --format wheel
+    - !reference [.build_wheel_template, script]
     - poetry -C "${PYPROJECT_DIR}" freeze-wheel
-    - if [ ! -d "${DIST_DIR}" ] && [ -d "dist" ]; then cp -r "dist" "${DIST_DIR}"; fi
-    - ls -al ${DIST_DIR}
 
 build_docs:
   extends:
     - .build_docs_env
     - .docs_variables
-  image: ${CI_BASE_IMAGE_314}
+    - .python_314
   script:
     - cd $PYPROJECT_DIR
     - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
@@ -336,17 +341,10 @@ build_docs:
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
-  image: ${CI_BASE_IMAGE}
+  image: ${PYTHON_IMAGE}
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
-  rules:
-    - if: $PYTHON_VERSION == "3.12"
-      variables:
-        CI_BASE_IMAGE: "${CI_BASE_IMAGE_312}"
-    - if: $PYTHON_VERSION == "3.14"
-      variables:
-        CI_BASE_IMAGE: "${CI_BASE_IMAGE_314}"
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
@@ -430,7 +428,7 @@ testing_cli:
 
 testing_password_private_key_logging:
   stage: tests
-  image: ${CI_BASE_IMAGE_314}
+  extends: .python_314
   needs:
     - job: testing_clive
       artifacts: true
@@ -464,9 +462,10 @@ test_async_hived:
       artifacts: true
 
 deploy_wheel_to_gitlab:
-  extends: .deploy_wheel_to_gitlab_template
+  extends:
+    - .deploy_wheel_to_gitlab_template
+    - .python_314
   stage: deploy
-  image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
@@ -474,15 +473,17 @@ deploy_wheel_to_gitlab:
     - when: manual
 
 deploy_wheel_to_pypi:
-  extends: .deploy_wheel_to_pypi_template
+  extends:
+    - .deploy_wheel_to_pypi_template
+    - .python_314
   stage: deploy
-  image: ${CI_BASE_IMAGE_314}
   <<: *deploy_wheel_needs
 
 .docs_deployment_base:
-  extends: .docs_variables
+  extends:
+    - .docs_variables
+    - .python_314
   stage: deploy
-  image: ${CI_BASE_IMAGE_314}
   cache:
     # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
@@ -565,9 +566,10 @@ clean_docs_preview:
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD AND DEPLOY DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 .generate_clive_startup_scripts_base:
-  extends: .job-defaults
+  extends:
+    - .job-defaults
+    - .python_314
   stage: build_and_deploy_docker
-  image: ${CI_BASE_IMAGE_314}
   variables:
     GIT_SUBMODULE_STRATEGY: none
     IMAGE_NAME: "${CLIVE_IMAGE_NAME}"
