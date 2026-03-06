@@ -40,6 +40,7 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_DEFAULT_PRIVATE_KEY,
     SECRETS_NODE_ADDRESS,
     SELECT_FILE_ROOT_PATH,
+    USE_WAX_AUTOSIGN,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import get_settings
@@ -390,6 +391,10 @@ class SafeSettings:
     @property
     def max_number_of_tracked_accounts(self) -> int:
         return self._get_max_number_of_tracked_accounts()
+
+    @property
+    def use_wax_autosign(self) -> bool:
+        return self._get_bool(USE_WAX_AUTOSIGN, default=True)
 
     def validate(self) -> None:
         def find_property_names(cls: type[object]) -> list[str]:
