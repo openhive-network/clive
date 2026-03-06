@@ -60,6 +60,7 @@ async def test_authorize_multiple_posting(cli_tester: CLITester) -> None:
     # ACT & ASSERT
     cli_tester.process_custom_json(
         broadcast=False,
+        autosign=False,
         authorize=[WORKING_ACCOUNT_DATA.account.name, OTHER_ACCOUNT.name],
         id_=EXAMPLE_ID,
         json_=EXAMPLE_OBJECT,
