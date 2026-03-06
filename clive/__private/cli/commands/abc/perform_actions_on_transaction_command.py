@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Final, cast
 from clive.__private.cli.commands.abc.forceable_cli_command import ForceableCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
+    CLIAuthorityPrefetchAutoSignError,
     CLIKeyAliasNotFoundError,
     CLIMultipleKeysAutoSignError,
     CLINoKeysAvailableError,
@@ -18,17 +19,20 @@ from clive.__private.cli.exceptions import (
     CLITransactionNotSignedError,
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
-    CLIWrongAlreadySignedModeAutoSignError,
 )
 from clive.__private.cli.print_cli import print_cli, print_json
 from clive.__private.cli.warnings import typer_echo_warnings
+from clive.__private.core.commands.autosign import AuthorityPrefetchAutoSignError
 from clive.__private.core.commands.perform_actions_on_transaction import AutoSignSkippedWarning
 from clive.__private.core.constants.data_retrieval import ALREADY_SIGNED_MODE_DEFAULT
 from clive.__private.core.ensure_transaction import ensure_transaction
+from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys.key_manager import MultipleKeysFoundError
+from clive.__private.settings import safe_settings
 from clive.__private.validators.exchange_operations_validator import ExchangeOperationsValidatorCli
 from clive.__private.validators.path_validator import PathValidator
+from clive.exceptions import TransactionNotSignedError
 
 if TYPE_CHECKING:
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -138,7 +142,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def validate(self) -> None:
         self.validate_all_mutually_exclusive_options()
-        self._validate_already_signed_mode()
         self._validate_save_file_path()
         await super().validate()
 
@@ -171,8 +174,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._print_dry_run_message_if_needed()
 
         with typer_echo_warnings(AutoSignSkippedWarning, AutoSignSkippedWarningCLI()):
-            transaction = (
-                await self.world.commands.perform_actions_on_transaction(
+            try:
+                result = await self.world.commands.perform_actions_on_transaction(
                     content=self.transaction,
                     sign_key=self.sign_keys,
                     already_signed_mode=self.already_signed_mode,
@@ -181,7 +184,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                     broadcast=self.should_broadcast,
                     autosign=self.use_autosign,
                 )
-            ).result_or_raise
+            except CannotNotifyError as error:
+                if isinstance(error.error, AuthorityPrefetchAutoSignError):
+                    raise CLIAuthorityPrefetchAutoSignError from None
+                if isinstance(error.error, TransactionNotSignedError):
+                    raise CLITransactionNotSignedError from None
+                raise
+            transaction = result.result_or_raise
 
         self._print_transaction(transaction.with_hash())
         self._print_transaction_success_message()
@@ -203,10 +212,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
         self._validate_mutually_exclusive(
             broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
         )
-
-    def _validate_already_signed_mode(self) -> None:
-        if self.use_autosign and self.already_signed_mode in ["override", "multisign"]:
-            raise CLIWrongAlreadySignedModeAutoSignError
 
     def _validate_manual_sign_not_allowed_in_strict_already_signed_mode(self) -> None:
         if self.is_transaction_signed and self.already_signed_mode == "strict" and self.is_sign_with_given:
@@ -259,7 +264,8 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             if self.profile.keys.is_alias_available(alias):
                 raise CLIKeyAliasNotFoundError(alias)
 
-        if self.use_autosign:
+        # remove this condition when wax autosign is fully rolled out and tested
+        if self.use_autosign and not safe_settings.use_wax_autosign:
             try:
                 _ = self.profile.keys.unique_key
             except MultipleKeysFoundError:

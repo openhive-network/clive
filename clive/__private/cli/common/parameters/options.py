@@ -189,10 +189,7 @@ autosign = _operation_common_option(
     typer.Option(
         None,
         "--autosign/--no-autosign",
-        help=(
-            "Whether to sign the transaction automatically, using single key from the profile as default one"
-            " (if there are multiple keys, it will raise an error)."
-        ),
+        help="Whether to sign the transaction automatically using all keys available in the profile.",
         show_default=False,
     )
 )

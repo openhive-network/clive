@@ -102,8 +102,8 @@ async def process_transaction(  # noqa: PLR0913
             "How to handle situations when a transaction is already signed.\n\n "
             "In 'strict' mode for: \n\n"
             "- '--sign-with': an error is raised, \n\n"
-            "- '--autosign': a warning is shown, but will continue."
-            ""
+            "- '--autosign': a warning is shown, but will continue.\n\n"
+            "Use 'multisign' mode to autosign a partially signed transaction."
         ),
     ),
     sign_with: list[str] = options.sign_with,

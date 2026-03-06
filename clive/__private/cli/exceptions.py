@@ -478,24 +478,6 @@ class CLIMultipleKeysAutoSignError(CLIPrettyError):
         super().__init__(self.MESSAGE, errno.EINVAL)
 
 
-class CLIWrongAlreadySignedModeAutoSignError(CLIPrettyError):
-    """
-    Raises when trying to use autosign together with already_signed_mode that is not 'error'.
-
-    Attributes:
-        MESSAGE: A message to be shown to the user.
-    """
-
-    MESSAGE: Final[str] = (
-        "Using '--already-signed-mode override' or '--already-signed-mode multisign' disables autosign.\n"
-        "If you want to sign the transaction, you must specify a key to sign the transaction by using the "
-        "'--sign-with' option."
-    )
-
-    def __init__(self) -> None:
-        super().__init__(self.MESSAGE, errno.EINVAL)
-
-
 class CLITransactionAlreadySignedError(CLIPrettyError):
     """
     Raises when trying to sign a transaction that is already signed without proper already-signed-mode.
@@ -742,6 +724,24 @@ class OrderFillOrKillNotFilledError(CLIPrettyError):
             "or adjust your price/amount to match existing orders."
         )
         super().__init__(message, errno.ECANCELED)
+
+
+class CLIAuthorityPrefetchAutoSignError(CLIPrettyError):
+    """
+    Raises when autosign fails because required authorities could not be fetched from the node.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "Autosign failed: could not fetch required authorities from the node.\n"
+        "Check your node connection and try again, or sign the transaction manually using '--sign-with <key-alias>'.\n"
+        "If you want to show the unsigned transaction, use '--no-autosign' and '--no-broadcast' together."
+    )
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
 
 
 class CLIChainIdFromSettingsNotAvailableError(CLIPrettyError):
