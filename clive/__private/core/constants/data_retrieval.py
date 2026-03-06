@@ -23,4 +23,4 @@ WITNESSES_SEARCH_MODE_DEFAULT: Final[WitnessesSearchModes] = "search_top_with_vo
 WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT: Final[int] = 50
 
 ALREADY_SIGNED_MODES: Final[tuple[AlreadySignedMode, ...]] = get_args(AlreadySignedMode)
-ALREADY_SIGNED_MODE_DEFAULT: Final[AlreadySignedMode] = "strict"
+ALREADY_SIGNED_MODE_DEFAULT: Final[AlreadySignedMode] = "multisign"
