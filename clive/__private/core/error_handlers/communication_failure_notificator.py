@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Final, TypeGuard
 
 import beekeepy.exceptions as bke
@@ -42,6 +43,10 @@ class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
 
         replaced: list[str] = []
         for error_message in error_messages:
+            simplified = cls._simplify_authority_error(error_message)
+            if simplified is not None:
+                return simplified
+
             for searched_message, replaced_message in cls.SEARCHED_AND_PRINTED_MESSAGES.items():
                 if searched_message in error_message:
                     replaced.append(replaced_message)
@@ -77,6 +82,23 @@ class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
             return
 
         super()._notify_tui(message)
+
+    @staticmethod
+    def _simplify_authority_error(error_message: str) -> str | None:
+        """Extract a clean 'Missing active authority: <account>' message from verbose node errors.
+
+        Args:
+            error_message: The raw error message from the node.
+
+        Returns:
+            A simplified message if the error is about missing authority, None otherwise.
+        """
+        match = re.search(r"Missing (\w+) Authority ([a-z0-9][a-z0-9.\-]*)", error_message)
+        if match:
+            authority_type = match.group(1).lower()
+            account_name = match.group(2)
+            return f"Missing {authority_type} authority: `{account_name}`"
+        return None
 
     @staticmethod
     def _get_communication_not_available_message(url: str) -> str:
