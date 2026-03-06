@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.binding import Binding
@@ -32,13 +32,17 @@ from clive.__private.ui.styling import colorize_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.exceptions import NoItemSelectedError
+from clive.exceptions import CliveError, NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
 
     from clive.__private.core.profile import Profile
+
+
+class AutosignSelectedError(CliveError):
+    """Raised when autosign is selected instead of a specific key."""
 
 
 class AlreadySignedHint(Label):
@@ -97,20 +101,41 @@ class ButtonContainer(Horizontal, CliveWidget):
             yield LoadTransactionFromFileButton()
 
 
-class SelectKey(SafeSelect[PublicKey], CliveWidget):
+class _AutoSignOption:
+    """Sentinel type for the autosign entry in key selection."""
+
+
+AUTOSIGN_OPTION: Final[_AutoSignOption] = _AutoSignOption()
+AUTOSIGN_LABEL: Final[str] = "Autosign"
+MIN_KEYS_FOR_AUTOSIGN: Final[int] = 1
+
+
+class SelectKey(SafeSelect[PublicKey | _AutoSignOption], CliveWidget):
     """Combobox for selecting the public key."""
 
     def __init__(self) -> None:
-        try:
-            first_value: PublicKey | NoSelection = self.profile.keys.first
-        except KeyNotFoundError:
-            first_value = Select.BLANK
-
+        key_options, first_value = self._build_key_options()
         super().__init__(
-            [(key.alias, key) for key in self.profile.keys],
+            key_options,
             value=first_value,
             empty_string="no private key found",
         )
+
+    def _build_key_options(
+        self,
+    ) -> tuple[list[tuple[str, PublicKey | _AutoSignOption]], PublicKey | _AutoSignOption | NoSelection]:
+        key_options: list[tuple[str, PublicKey | _AutoSignOption]] = [(key.alias, key) for key in self.profile.keys]
+
+        if len(key_options) >= MIN_KEYS_FOR_AUTOSIGN and safe_settings.use_wax_autosign:
+            key_options.insert(0, (AUTOSIGN_LABEL, AUTOSIGN_OPTION))
+            first_value: PublicKey | _AutoSignOption | NoSelection = AUTOSIGN_OPTION
+        else:
+            try:
+                first_value = self.profile.keys.first
+            except KeyNotFoundError:
+                first_value = Select.BLANK
+
+        return key_options, first_value
 
 
 class Subtitle(Static):
@@ -125,18 +150,30 @@ class KeyContainer(Horizontal, CliveWidget):
     """Container for storing widgets connected with keys."""
 
     @property
+    def is_autosign_selected(self) -> bool:
+        select_key = self.query_exactly_one(SelectKey)
+        try:
+            return isinstance(select_key.value, _AutoSignOption)
+        except NoItemSelectedError:
+            return False
+
+    @property
     def selected_key(self) -> PublicKey:
         """
         Return selected key.
 
         Raises:
             NoItemSelectedError: When no key was selected.
+            AutosignSelectedError: When autosign is selected instead of a specific key.
         """
         select_key = self.query_exactly_one(SelectKey)
         try:
-            return select_key.value
+            value = select_key.value
         except NoItemSelectedError as error:
             raise NoItemSelectedError("No key was selected!") from error
+        if isinstance(value, _AutoSignOption):
+            raise AutosignSelectedError
+        return value
 
     def compose(self) -> ComposeResult:
         if self.profile.transaction.is_signed:
@@ -189,18 +226,28 @@ class TransactionSummary(BaseScreen):
         with contextlib.suppress(NoMatches):
             self.query_exactly_one(BroadcastButton).focus()
 
+    def _restore_focus_if_lost(self) -> None:
+        if self.app.focused:
+            return
+        with contextlib.suppress(NoMatches):
+            self.query_exactly_one(BroadcastButton).focus()
+            return
+        with contextlib.suppress(NoMatches):
+            self.query_exactly_one(LoadTransactionFromFileButton).focus()
+
     @on(BroadcastButton.Pressed)
     async def action_broadcast(self) -> None:
         await self._broadcast()
 
     @on(SaveButton.Pressed)
     def action_save_transaction_to_file(self) -> None:
+        autosign = not self.profile.transaction.is_signed and self.key_container.is_autosign_selected
         try:
-            sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed else None
+            sign_key = self._get_key_to_sign() if not self.profile.transaction.is_signed and not autosign else None
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key))
+        self.app.push_screen(SaveTransactionToFileDialog(sign_key, autosign=autosign))
 
     @on(UpdateMetadataButton.Pressed)
     async def action_update_metadata(self) -> None:
@@ -268,22 +315,29 @@ class TransactionSummary(BaseScreen):
 
         transaction = self.profile.transaction
 
-        try:
-            sign_key = [self._get_key_to_sign()] if not transaction.is_signed else []
-        except NoItemSelectedError:
-            self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
-            return
+        autosign = False
+        sign_key: list[PublicKey] = []
+
+        if not transaction.is_signed:
+            if self.key_container.is_autosign_selected:
+                autosign = True
+            else:
+                try:
+                    sign_key = [self._get_key_to_sign()]
+                except NoItemSelectedError:
+                    self.notify("Transaction can't be broadcasted because no key was selected.", severity="error")
+                    return
 
         wrapper = await self.commands.perform_actions_on_transaction(
             content=transaction,
             sign_key=sign_key,
+            autosign=autosign,
             broadcast=True,
         )
         if wrapper.error_occurred:
             # recompose key container in case fail of broadcast when transaction was already signed
             if transaction.is_signed:
                 await self.key_container.recompose()
-            self.notify("Transaction broadcast failed. Please try again.", severity="error")
             return
 
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
@@ -314,6 +368,7 @@ class TransactionSummary(BaseScreen):
         await self._rebuild_signatures_changed()
         await self.button_container.recompose()
         self._update_subtitle()
+        self.call_after_refresh(self._restore_focus_if_lost)
 
     async def _rebuild_on_transaction_change(self, profile: Profile) -> None:
         if self._previous_transaction != profile.transaction:
