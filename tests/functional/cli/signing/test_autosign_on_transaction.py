@@ -159,6 +159,7 @@ async def test_autosign_is_skipped_with_warning(
         broadcast=broadcast,
         save_file=resaved_transaction_filepath,
         autosign=autosign,
+        already_signed_mode="strict",
     )
 
     # ASSERT
@@ -185,7 +186,9 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_no_keys_in_profile(
         cli_tester.configure_key_remove(alias=alias)
 
     # ACT
-    result = cli_tester.process_transaction(from_file=signed_transaction_file_with_transfer, broadcast=False)
+    result = cli_tester.process_transaction(
+        from_file=signed_transaction_file_with_transfer, broadcast=False, already_signed_mode="strict"
+    )
 
     # ASSERT
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)
@@ -206,7 +209,9 @@ async def test_dry_run_autosign_is_skipped_with_warning_with_multiple_keys_in_pr
     cli_tester.configure_key_add(key=ADDITIONAL_KEY_VALUE, alias=ADDITIONAL_KEY_ALIAS_NAME)
 
     # ACT
-    result = cli_tester.process_transaction(from_file=signed_transaction_file_with_transfer, broadcast=False)
+    result = cli_tester.process_transaction(
+        from_file=signed_transaction_file_with_transfer, broadcast=False, already_signed_mode="strict"
+    )
 
     # ASSERT
     assert_auto_sign_skipped_warning_message_in_output(result.stdout)

@@ -22,7 +22,6 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.types import AlreadySignedMode
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -198,15 +197,14 @@ async def test_override_signature_in_transaction(
     assert_transaction_file_is_signed(override_transaction_filepath, signatures_count=1)
 
 
-@pytest.mark.parametrize("already_signed_mode", ["strict", None], ids=["explicit_strict", "default_strict"])
 async def test_negative_error_on_already_signed_transaction_during_manual_signing(
-    cli_tester: CLITester, already_signed_mode: AlreadySignedMode | None, signed_transaction_file_with_transfer: Path
+    cli_tester: CLITester, signed_transaction_file_with_transfer: Path
 ) -> None:
-    """Check if raises an error in explicit strict or default `already-signed-mode` during manual signing."""
+    """Check if raises an error in strict `already-signed-mode` during manual signing."""
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLITransactionAlreadySignedError())):
         cli_tester.process_transaction(
-            already_signed_mode=already_signed_mode,
+            already_signed_mode="strict",
             sign_with=ADDITIONAL_KEY_ALIAS_NAME,
             broadcast=False,
             from_file=signed_transaction_file_with_transfer,

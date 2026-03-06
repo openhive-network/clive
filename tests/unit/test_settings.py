@@ -160,20 +160,20 @@ BOOL_SETTING_KEY: Final[str] = "TEST_BOOL"
     ],
 )
 def test_get_bool_from_env_var(
-    generic_env_context_factory: GenericEnvContextFactory, env_value: str, expected: bool
+    generic_env_context_factory: GenericEnvContextFactory, env_value: str, *, expected: bool
 ) -> None:
     env_name = f"{ENVVAR_PREFIX}_{BOOL_SETTING_KEY}"
     env_context_factory = generic_env_context_factory(env_name)
 
     with env_context_factory(env_value):
-        result = safe_settings._get_bool(BOOL_SETTING_KEY)  # noqa: SLF001
+        result = safe_settings._get_bool(BOOL_SETTING_KEY)
 
     assert result is expected, f"_get_bool('{env_value}') should return {expected}"
 
 
 def test_get_bool_default_value() -> None:
-    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=False)  # noqa: SLF001
+    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=False)
     assert result is False
 
-    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=True)  # noqa: SLF001
+    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=True)
     assert result is True
