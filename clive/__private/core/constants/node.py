@@ -21,6 +21,8 @@ HIVE_MAX_RECURRENT_TRANSFER_END_DATE_DAYS: Final[int] = 730  # 2 years
 HIVE_MIN_RECURRENT_TRANSFERS_RECURRENCE_HOURS: Final[int] = 24
 HIVE_MAX_ACCOUNT_WITNESS_VOTES: Final[int] = 30
 HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS: Final[int] = 365
+HIVE_BLOCK_INTERVAL_SECONDS: Final[int] = 3  # HIVE_BLOCK_INTERVAL from protocol config
+HIVE_MAX_TIME_UNTIL_SIGNATURE_EXPIRATION_SECONDS: Final[int] = 86400  # 24h, HIVE_MAX_TIME_UNTIL_SIGNATURE_EXPIRATION
 
 # removal values (special values that are used to remove something in the blockchain state)
 # e.g. DelegateVestingSharesOperation requires to be broadcast with amount of 0 to remove delegation
@@ -38,6 +40,10 @@ TRANSFER_TO_VESTING_RECEIVER_IS_FROM_VALUE: Final[str] = ""
 
 # governance
 GOVERNANCE_VOTES_VALIDITY_PERIOD: Final[timedelta] = timedelta(days=HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS)
+TRANSACTION_EXPIRATION_TIMEDELTA_MIN: Final[timedelta] = timedelta(seconds=HIVE_BLOCK_INTERVAL_SECONDS)
+TRANSACTION_EXPIRATION_TIMEDELTA_MAX: Final[timedelta] = timedelta(
+    seconds=HIVE_MAX_TIME_UNTIL_SIGNATURE_EXPIRATION_SECONDS
+)
 
 # scheduled transfer (also known as recurrent transfer)
 SCHEDULED_TRANSFER_MAX_LIFETIME: Final[timedelta] = timedelta(days=HIVE_MAX_RECURRENT_TRANSFER_END_DATE_DAYS)

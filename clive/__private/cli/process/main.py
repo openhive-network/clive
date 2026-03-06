@@ -106,6 +106,15 @@ async def process_transaction(  # noqa: PLR0913
             "Use 'multisign' mode to autosign a partially signed transaction."
         ),
     ),
+    update_metadata: bool = typer.Option(  # noqa: FBT001
+        default=False,
+        help=(
+            "Replace transaction metadata with fresh values and expiration loaded from profile"
+            " (see `clive configure transaction-expiration`)."
+            " Requires --force-unsign or --already-signed-mode=override,"
+            " because changing metadata invalidates existing signatures."
+        ),
+    ),
     sign_with: list[str] = options.sign_with,
     autosign: bool | None = options.autosign,  # noqa: FBT001
     broadcast: bool | None = options.broadcast,  # noqa: FBT001
@@ -124,6 +133,7 @@ async def process_transaction(  # noqa: PLR0913
         save_file=save_file,
         force=force,
         autosign=autosign,
+        update_metadata=update_metadata,
     ).run()
 
 

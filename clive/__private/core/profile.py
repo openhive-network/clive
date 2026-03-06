@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Final
 import beekeepy.interfaces as bki
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.core.constants.date import (
-    TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT,
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+from clive.__private.core.constants.node import (
     TRANSACTION_EXPIRATION_TIMEDELTA_MAX,
     TRANSACTION_EXPIRATION_TIMEDELTA_MIN,
 )

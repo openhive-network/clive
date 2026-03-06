@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
 
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.core.profile import Profile
+    from clive.__private.core.profile import InvalidTransactionExpirationError, Profile
     from clive.__private.models.asset import Asset
 
 
@@ -580,6 +580,18 @@ class CLIChangeRecoveryAccountValidationError(CLIPrettyError):
     def __init__(self, name: str, reason: str) -> None:
         message = f"Account `{name}` can't be used. Reason: {reason}"
         super().__init__(message, errno.EINVAL)
+
+
+class CLIInvalidTransactionExpirationError(CLIPrettyError):
+    """
+    Raise when an invalid transaction expiration is set.
+
+    Args:
+        error: The original InvalidTransactionExpirationError.
+    """
+
+    def __init__(self, error: InvalidTransactionExpirationError) -> None:
+        super().__init__(str(error), errno.EINVAL)
 
 
 class CLIPrivateKeyInMemoValidationError(CLIPrettyError):
