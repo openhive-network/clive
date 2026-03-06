@@ -45,6 +45,7 @@ class StorageToRuntimeConverter:
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
             tui_theme=self._model.tui_theme,
+            transaction_expiration=self._model.transaction_expiration,
             should_enable_known_accounts=self._model.should_enable_known_accounts,
         )
 

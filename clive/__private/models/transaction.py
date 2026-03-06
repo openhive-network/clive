@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from clive.__private.models.schemas import (
     AccountUpdate2Operation,
@@ -27,12 +27,16 @@ if TYPE_CHECKING:
 
 
 class Transaction(SchemasTransaction):
+    _ALWAYS_EXCLUDED: ClassVar[set[str]] = {"metadata_block_time"}
+
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: Uint16t = 0
     ref_block_prefix: Uint32t = 0
     expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
+    metadata_block_time: HiveDateTime | None = None
+    """Head block time captured when update_transaction_metadata was last called."""
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
@@ -89,9 +93,44 @@ class Transaction(SchemasTransaction):
         self.expiration = HiveDateTime.now() + timedelta(minutes=30)
         self.extensions = []
         self.signatures = []
+        self.metadata_block_time = None
 
     def swap_operations(self, index_1: int, index_2: int) -> None:
         self.operations[index_1], self.operations[index_2] = self.operations[index_2], self.operations[index_1]
+
+    def json(  # noqa: PLR0913
+        self,
+        *,
+        str_keys: bool = False,
+        builtin_types: Iterable[type] | None = None,
+        order: Literal["deterministic", "sorted"] | None = None,
+        exclude_none: bool = False,
+        remove_whitespaces: bool = False,
+        exclude: set[str] | None = None,
+        indent: int | None = None,
+    ) -> str:
+        return super().json(
+            str_keys=str_keys,
+            builtin_types=builtin_types,
+            order=order,
+            exclude_none=exclude_none,
+            remove_whitespaces=remove_whitespaces,
+            exclude=(exclude or set()) | self._ALWAYS_EXCLUDED,
+            indent=indent,
+        )
+
+    def dict(
+        self,
+        *,
+        exclude: set[str] | None = None,
+        exclude_none: bool = False,
+        exclude_defaults: bool = False,
+    ) -> dict[str, Any]:
+        return super().dict(
+            exclude=(exclude or set()) | self._ALWAYS_EXCLUDED,
+            exclude_none=exclude_none,
+            exclude_defaults=exclude_defaults,
+        )
 
     def unsign(self) -> None:
         self.signatures.clear()

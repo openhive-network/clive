@@ -7,6 +7,7 @@ from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed import (
     RecoveryAccountWarningListedAlarmIdentifier,
 )
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.models.schemas import Transaction
 from clive.__private.storage.current_model import ProfileStorageModel
 from clive.exceptions import CliveError
@@ -39,6 +40,9 @@ class RuntimeToStorageConverter:
             node_address=str(self._profile.node_address),
             tui_theme=self._profile.tui_theme,
             should_enable_known_accounts=self._profile.should_enable_known_accounts,
+            transaction_expiration=None
+            if self._profile.transaction_expiration == TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+            else self._profile.transaction_expiration,
         )
 
     def _working_account_to_model_representation(self) -> str | None:
