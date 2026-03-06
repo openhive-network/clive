@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.constants.env import ENVVAR_PREFIX
+from clive.__private.settings import safe_settings
 from clive.__private.settings._settings import Settings
 
 if TYPE_CHECKING:
@@ -131,3 +132,48 @@ def test_loading_dev_env(settings_file: Path) -> None:
     # ASSERT
     log_levels = json.loads(LOG_LEVELS_VALUE_DEV)
     assert settings.get(LOG_LEVELS_KEY) == log_levels, "Environment dev should be used"
+
+
+BOOL_SETTING_KEY: Final[str] = "TEST_BOOL"
+
+
+@pytest.mark.parametrize(
+    ("env_value", "expected"),
+    [
+        ("true", True),
+        ("True", True),
+        ("TRUE", True),
+        ("1", True),
+        ("yes", True),
+        ("y", True),
+        ("anything", True),
+        ("false", False),
+        ("False", False),
+        ("FALSE", False),
+        ("0", False),
+        ("off", False),
+        ("OFF", False),
+        ("no", False),
+        ("No", False),
+        ("n", False),
+        ("N", False),
+    ],
+)
+def test_get_bool_from_env_var(
+    generic_env_context_factory: GenericEnvContextFactory, env_value: str, expected: bool
+) -> None:
+    env_name = f"{ENVVAR_PREFIX}_{BOOL_SETTING_KEY}"
+    env_context_factory = generic_env_context_factory(env_name)
+
+    with env_context_factory(env_value):
+        result = safe_settings._get_bool(BOOL_SETTING_KEY)  # noqa: SLF001
+
+    assert result is expected, f"_get_bool('{env_value}') should return {expected}"
+
+
+def test_get_bool_default_value() -> None:
+    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=False)  # noqa: SLF001
+    assert result is False
+
+    result = safe_settings._get_bool(BOOL_SETTING_KEY, default=True)  # noqa: SLF001
+    assert result is True
