@@ -7,11 +7,14 @@ from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.__private.core.iwax import WaxOperationFailedError
 from clive.__private.models.transaction import Transaction
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from clive.__private.core.node import Node
 
 
@@ -30,6 +33,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
     force_update_metadata: bool = False
     node: Node | None = None
     """Required only if force_update_metadata is True or transaction tapos is not set."""
+    expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
@@ -46,7 +50,9 @@ class BuildTransaction(CommandWithResult[Transaction]):
 
         if not transaction.is_tapos_set or self.force_update_metadata:
             assert self.node is not None, "node is required so that transaction metadata can be updated"
-            await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
+            await UpdateTransactionMetadata(
+                transaction=transaction, node=self.node, expiration=self.expiration
+            ).execute()
 
         self._result = transaction
 

@@ -12,7 +12,6 @@ from clive.__private.core.constants.data_retrieval import (
     WITNESSES_SEARCH_BY_PATTERN_LIMIT_DEFAULT,
     WITNESSES_SEARCH_MODE_DEFAULT,
 )
-from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.core.constants.wallet_recovery import (
     USER_WALLET_RECOVERED_MESSAGE,
     USER_WALLET_RECOVERED_NOTIFICATION_LEVEL,
@@ -24,7 +23,7 @@ from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
-    from datetime import timedelta
+    from datetime import datetime, timedelta
     from pathlib import Path
 
     from beekeepy import AsyncUnlockedWallet, AsyncWallet
@@ -384,10 +383,14 @@ class Commands[WorldT: World]:
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
         broadcast: bool = False,
+        expiration: timedelta | None = None,
+        force_update_metadata: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.perform_actions_on_transaction import (  # noqa: PLC0415
             PerformActionsOnTransaction,
         )
+
+        effective_expiration = expiration if expiration is not None else self._world.profile.transaction_expiration
 
         return await self.__surround_with_exception_handlers(
             PerformActionsOnTransaction(
@@ -403,6 +406,8 @@ class Commands[WorldT: World]:
                 force_save_format=force_save_format,
                 broadcast=broadcast,
                 autosign=autosign,
+                expiration=effective_expiration,
+                force_update_metadata=force_update_metadata,
             )
         )
 
@@ -411,14 +416,18 @@ class Commands[WorldT: World]:
         *,
         content: TransactionConvertibleType,
         force_update_metadata: bool = False,
+        expiration: timedelta | None = None,
     ) -> CommandWithResultWrapper[Transaction]:
         from clive.__private.core.commands.build_transaction import BuildTransaction  # noqa: PLC0415
+
+        effective_expiration = expiration if expiration is not None else self._world.profile.transaction_expiration
 
         return await self.__surround_with_exception_handlers(
             BuildTransaction(
                 content=content,
                 force_update_metadata=force_update_metadata,
                 node=self._world.node,
+                expiration=effective_expiration,
             )
         )
 
@@ -426,15 +435,17 @@ class Commands[WorldT: World]:
         self,
         *,
         transaction: Transaction,
-        expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT,
+        expiration: timedelta | datetime | None = None,
     ) -> CommandWrapper:
         from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata  # noqa: PLC0415
+
+        effective_expiration = expiration if expiration is not None else self._world.profile.transaction_expiration
 
         return await self.__surround_with_exception_handlers(
             UpdateTransactionMetadata(
                 transaction=transaction,
                 node=self._world.node,
-                expiration=expiration,
+                expiration=effective_expiration,
             )
         )
 

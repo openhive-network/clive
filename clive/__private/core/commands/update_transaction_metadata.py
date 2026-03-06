@@ -7,10 +7,10 @@ from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
-from clive.__private.models.schemas import HiveInt
+from clive.__private.models.schemas import HiveDateTime, HiveInt
 
 if TYPE_CHECKING:
-    from datetime import timedelta
+    from datetime import datetime, timedelta
 
     from clive.__private.core.node import Node
     from clive.__private.models.transaction import Transaction
@@ -20,10 +20,12 @@ if TYPE_CHECKING:
 class UpdateTransactionMetadata(Command):
     transaction: Transaction
     node: Node
-    expiration: timedelta = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
-    """Expiration relative to the gdpo time."""
+    expiration: timedelta | datetime = TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+    """Expiration as a relative offset from gdpo time or an absolute datetime."""
 
     async def _execute(self) -> None:
+        from datetime import datetime  # noqa: PLC0415
+
         # clear existing signatures
         self.transaction = await UnSign(transaction=self.transaction).execute_with_result()
 
@@ -43,4 +45,8 @@ class UpdateTransactionMetadata(Command):
         self.transaction.ref_block_prefix = HiveInt(ref_block_prefix)
 
         # set expiration
-        self.transaction.expiration = gdpo.time + self.expiration
+        if isinstance(self.expiration, datetime):
+            self.transaction.expiration = HiveDateTime(self.expiration)
+        else:
+            self.transaction.expiration = gdpo.time + self.expiration
+        self.transaction.metadata_block_time = gdpo.time
