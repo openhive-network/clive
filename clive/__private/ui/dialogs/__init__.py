@@ -11,6 +11,7 @@ from clive.__private.ui.dialogs.edit_key_alias_dialog import EditKeyAliasDialog
 from clive.__private.ui.dialogs.load_key_from_file_dialog import LoadKeyFromFileDialog
 from clive.__private.ui.dialogs.load_transaction_from_file_dialog import LoadTransactionFromFileDialog
 from clive.__private.ui.dialogs.mark_alarm_as_harmless_dialog import MarkAlarmAsHarmlessDialog
+from clive.__private.ui.dialogs.modify_expiration_dialog import ModifyExpirationDialog
 from clive.__private.ui.dialogs.new_key_alias_dialog import NewKeyAliasDialog
 from clive.__private.ui.dialogs.remove_authority_update_operations_dialog import RemoveAuthorityUpdateOperationsDialog
 from clive.__private.ui.dialogs.remove_key_alias_dialog import RemoveKeyAliasDialog
@@ -30,6 +31,7 @@ __all__ = [
     "LoadKeyFromFileDialog",
     "LoadTransactionFromFileDialog",
     "MarkAlarmAsHarmlessDialog",
+    "ModifyExpirationDialog",
     "NewKeyAliasDialog",
     "RemoveAuthorityUpdateOperationsDialog",
     "RemoveKeyAliasDialog",

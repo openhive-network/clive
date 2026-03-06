@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from copy import deepcopy
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
 from textual import on
@@ -14,17 +15,20 @@ from textual.widgets import Label, Select, Static
 from clive.__private.core.formatters.humanize import humanize_relative_or_whole_path
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.models.schemas import HiveDateTime
 from clive.__private.settings import safe_settings
 from clive.__private.ui.bindings.clive_bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs import (
     ConfirmInvalidateSignaturesDialog,
+    ModifyExpirationDialog,
     SaveTransactionToFileDialog,
 )
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
 from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
+    ModifyExpirationButton,
     TransactionMetadataContainer,
     UpdateMetadataButton,
 )
@@ -39,6 +43,7 @@ if TYPE_CHECKING:
     from textual.widgets._select import NoSelection
 
     from clive.__private.core.profile import Profile
+    from clive.__private.models.transaction import Transaction
 
 
 class AutosignSelectedError(CliveError):
@@ -197,6 +202,7 @@ class TransactionSummary(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self._previous_transaction = deepcopy(self.profile.transaction)
+        self._last_expiration: timedelta | datetime = self.profile.transaction_expiration
         self.watch(self.world, "profile_reactive", self._rebuild_on_transaction_change, init=False)
 
     @property
@@ -247,7 +253,11 @@ class TransactionSummary(BaseScreen):
         except NoItemSelectedError:
             sign_key = None
 
-        self.app.push_screen(SaveTransactionToFileDialog(sign_key, autosign=autosign))
+        self.app.push_screen(
+            SaveTransactionToFileDialog(
+                sign_key, autosign=autosign, expiration=self.transaction_metadata_container.expiration_delta
+            )
+        )
 
     @on(UpdateMetadataButton.Pressed)
     async def action_update_metadata(self) -> None:
@@ -264,6 +274,60 @@ class TransactionSummary(BaseScreen):
             await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), update_metadata_cb)
         else:
             await refresh()
+
+    @on(ModifyExpirationButton.Pressed)
+    async def _handle_modify_expiration(self) -> None:
+        is_signed = self.profile.transaction.is_signed
+        expiration_value = self._last_expiration
+
+        async def after_dialog(expiration: timedelta | datetime | None) -> None:
+            if expiration is None:
+                return
+
+            self._last_expiration = expiration
+
+            async def after_confirm_invalidate(confirm: bool | None) -> None:  # noqa: FBT001
+                if confirm:
+                    await self._apply_expiration_change(expiration)
+
+            if is_signed:
+                await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), after_confirm_invalidate)
+            else:
+                await self._apply_expiration_change(expiration)
+
+        await self.app.push_screen(
+            ModifyExpirationDialog(
+                expiration_value=expiration_value,
+                metadata_block_time=self.profile.transaction.metadata_block_time,
+                is_signed=is_signed,
+            ),
+            after_dialog,
+        )
+
+    async def _apply_expiration_change(self, expiration: timedelta | datetime) -> None:
+        transaction = self.profile.transaction
+        if transaction.is_signed:
+            # Signatures will be invalidated — full metadata update is acceptable.
+            await self.commands.update_transaction_metadata(
+                transaction=transaction,
+                expiration=expiration,
+            )
+        else:
+            self._set_expiration_without_metadata_update(transaction, expiration)
+        self.app.trigger_profile_watchers()
+        await self.transaction_metadata_container.recompose()
+        await self.key_container.recompose()
+        self._update_subtitle()
+
+    def _set_expiration_without_metadata_update(
+        self, transaction: Transaction, expiration: timedelta | datetime
+    ) -> None:
+        if isinstance(expiration, datetime):
+            transaction.expiration = HiveDateTime(expiration)
+        elif transaction.metadata_block_time is not None:
+            transaction.expiration = HiveDateTime(transaction.metadata_block_time + expiration)
+        else:
+            transaction.expiration = HiveDateTime(HiveDateTime.now() + expiration)
 
     @on(LoadTransactionFromFileButton.Pressed)
     def load_transaction_from_file_by_button(self) -> None:
@@ -333,6 +397,7 @@ class TransactionSummary(BaseScreen):
             sign_key=sign_key,
             autosign=autosign,
             broadcast=True,
+            expiration=self.transaction_metadata_container.expiration_delta,
         )
         if wrapper.error_occurred:
             # recompose key container in case fail of broadcast when transaction was already signed
@@ -348,7 +413,10 @@ class TransactionSummary(BaseScreen):
 
     async def _update_transaction_metadata(self) -> None:
         self.profile.transaction_file_path = None
-        await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+        await self.commands.update_transaction_metadata(
+            transaction=self.profile.transaction,
+            expiration=self._last_expiration,
+        )
         self.app.trigger_profile_watchers()
 
     async def _rebuild_signatures_changed(self) -> None:
@@ -365,7 +433,8 @@ class TransactionSummary(BaseScreen):
 
     async def _rebuild(self) -> None:
         await self.query_exactly_one(CartTable).rebuild()
-        await self._rebuild_signatures_changed()
+        await self.transaction_metadata_container.recompose()
+        await self.key_container.recompose()
         await self.button_container.recompose()
         self._update_subtitle()
         self.call_after_refresh(self._restore_focus_if_lost)

@@ -8,10 +8,10 @@ from textual.widgets import Label
 
 from clive.__private.core.formatters import humanize
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.widgets.buttons import RefreshOneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton, RefreshOneLineButton
 
 if TYPE_CHECKING:
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     from textual.app import ComposeResult
 
@@ -61,6 +61,26 @@ class TransactionExpirationLabel(Label):
         return f"Expiration: {expiration}"
 
 
+class ModifyExpirationButton(OneLineButton):
+    """Button to open the expiration modification dialog."""
+
+    class Pressed(OneLineButton.Pressed):
+        """Used to identify that modify expiration button was pressed."""
+
+    def __init__(self) -> None:
+        super().__init__("Modify this transaction expiration")
+
+
+class ExpirationHolder(Vertical):
+    def __init__(self, expiration: datetime) -> None:
+        super().__init__()
+        self._expiration = expiration
+
+    def compose(self) -> ComposeResult:
+        yield ModifyExpirationButton()
+        yield TransactionExpirationLabel(self._expiration)
+
+
 class TransactionIdLabel(Label):
     """Label for displaying transaction id."""
 
@@ -89,7 +109,7 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
     def compose(self) -> ComposeResult:
         if self.profile.transaction:
             yield TaposHolder(self.profile.transaction)
-            yield TransactionExpirationLabel(self.profile.transaction.expiration)
+            yield ExpirationHolder(self.profile.transaction.expiration)
             with Vertical(id="label-and-button-container"):
                 yield TransactionIdLabel(self.profile.transaction.calculate_transaction_id())
                 yield Container(UpdateMetadataButton())
@@ -99,6 +119,11 @@ class TransactionMetadataContainer(Horizontal, CliveWidget):
     @property
     def is_metadata_displayed(self) -> bool:
         return bool(self.query(TaposHolder))
+
+    @property
+    def expiration_delta(self) -> timedelta:
+        """Return the profile's default transaction expiration delta."""
+        return self.profile.transaction_expiration
 
     async def update_metadata_labels(self) -> None:
         """Recompose or just update values of already existing labels."""
