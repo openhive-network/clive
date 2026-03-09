@@ -72,6 +72,9 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
         self._throw_wrong_already_signed_mode()
         self._throw_is_transaction_already_signed()
 
+        if self.already_signed_mode == "override":
+            self.transaction.signatures = []  # clear before signing
+
         # remove this condition when wax autosign is fully rolled out and tested
         if safe_settings.use_wax_autosign:
             await self._sign_with_wax_autosign()
@@ -114,31 +117,35 @@ class AutoSign(CommandInUnlocked, CommandWithResult[Transaction]):
         matching_keys = [key for key in approving_keys if key in profile_public_keys]
         logger.debug(f"AutoSign: matching keys in profile: {matching_keys}")
 
-        sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
-        key_to_signature: dict[str, Signature] = {}
-        for key in matching_keys:
-            signature = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=key)
-            key_to_signature[key] = signature
-        # "multisign" preserves existing signatures; "override"/"strict" start fresh
-        existing_signatures = list(self.transaction.signatures) if self.already_signed_mode == "multisign" else []
+        # Save existing signatures before any changes — they are always preserved in the final result
+        # (for override mode the caller is expected to clear signatures before invoking AutoSign)
+        existing_signatures = list(self.transaction.signatures)
 
-        # Hive signing is deterministic (RFC 6979): same key + same tx = same signature.
-        # Filter out keys that already signed the transaction to avoid tx_duplicate_sig errors.
-        existing_sig_set = set(existing_signatures)
-        new_key_to_signature = {k: v for k, v in key_to_signature.items() if v not in existing_sig_set}
-        logger.debug(f"AutoSign: new keys to add (excluding already-signed): {list(new_key_to_signature.keys())}")
-
-        self.transaction.signatures = existing_signatures + list(new_key_to_signature.values())
-
+        # Minimize FIRST (as wallet.cpp does).
+        # In "multisign" mode the transaction already holds signatures from other parties;
+        # minimize_required_signatures considers them (by recovering public keys from the sigs)
+        # and returns only the subset of matching_keys that is still needed.
         minimal_keys = minimize_required_signatures(
             self.transaction,
             self.chain_id,
-            list(new_key_to_signature.keys()),
+            matching_keys,
             authorities_map,
             lambda _witness: "",
         )
         logger.debug(f"AutoSign: minimal keys after minimization: {minimal_keys}")
-        self.transaction.signatures = existing_signatures + [new_key_to_signature[key] for key in minimal_keys]
+
+        # Sign only with the minimal set
+        sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
+        existing_sig_set = set(existing_signatures)
+        new_signatures = []
+        for key in minimal_keys:
+            signature = await self.unlocked_wallet.sign_digest(sig_digest=sig_digest, key=key)
+            # Hive signing is deterministic (RFC 6979): skip if already present (multisign dedup)
+            if signature not in existing_sig_set:
+                new_signatures.append(signature)
+
+        # Existing signatures are always preserved
+        self.transaction.signatures = existing_signatures + new_signatures
 
     def _throw_wrong_already_signed_mode(self) -> None:
         if self.already_signed_mode not in ["strict", "multisign", "override"]:
