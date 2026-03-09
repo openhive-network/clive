@@ -52,7 +52,7 @@ class DecryptMemo(CommandInUnlocked, CommandWithResult[str]):
                 content=encrypted_content,
             )
         except bke.ErrorInResponseError as error:
-            if "Decryption failed" in str(error):
+            if "Decryption failed" in str(error) or "No matching private key found" in str(error):
                 raise DecryptMemoKeyNotImportedError(self) from error
             raise
 

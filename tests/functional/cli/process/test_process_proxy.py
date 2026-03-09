@@ -50,7 +50,7 @@ async def test_canceling_proxy_to_account(node: tt.RawNode, cli_tester: CLITeste
 
 async def test_canceling_not_existing_proxy(cli_tester: CLITester) -> None:
     # ARRANGE
-    expected_message = "Assert Exception:account.has_proxy()"
+    expected_message = r"account\.has_proxy\(\)"
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=expected_message):

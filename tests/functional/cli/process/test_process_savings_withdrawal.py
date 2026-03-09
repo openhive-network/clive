@@ -59,7 +59,7 @@ async def test_withdrawal_valid(
 
 async def test_withdrawal_invalid(cli_tester: CLITester) -> None:
     # ARRANGE
-    expected_error = "Assert Exception:_db.get_savings_balance"
+    expected_error = r"_db\.get_savings_balance"
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as withdrawal_exception_info:
