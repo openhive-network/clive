@@ -49,4 +49,4 @@ class UpdateTransactionMetadata(Command):
             self.transaction.expiration = HiveDateTime(self.expiration)
         else:
             self.transaction.expiration = gdpo.time + self.expiration
-        self.transaction.metadata_block_time = gdpo.time
+        self.transaction.local.last_update_head_block_time = gdpo.time

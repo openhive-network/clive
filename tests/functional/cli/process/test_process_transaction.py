@@ -22,6 +22,7 @@ from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA,
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.core.types import AlreadySignedMode
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -46,6 +47,20 @@ def signed_transaction_file_with_transfer(cli_tester: CLITester) -> Path:
         sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         broadcast=False,
         save_file=transaction_filepath,
+    )
+    return transaction_filepath
+
+
+@pytest.fixture
+def unsigned_transaction_file_with_transfer(cli_tester: CLITester) -> Path:
+    """Create an unsigned transaction file for update-metadata testing."""
+    transaction_filepath = create_transaction_filepath("unsigned")
+    cli_tester.process_transfer(
+        amount=AMOUNT_TO_TRANSFER,
+        to=RECEIVER,
+        broadcast=False,
+        save_file=transaction_filepath,
+        autosign=False,
     )
     return transaction_filepath
 
@@ -208,4 +223,44 @@ async def test_negative_error_on_already_signed_transaction_during_manual_signin
             sign_with=ADDITIONAL_KEY_ALIAS_NAME,
             broadcast=False,
             from_file=signed_transaction_file_with_transfer,
+        )
+
+
+@pytest.mark.parametrize(
+    ("transaction_file_fixture", "already_signed_mode"),
+    [
+        ("unsigned_transaction_file_with_transfer", "override"),
+        ("signed_transaction_file_with_transfer", "override"),
+        ("unsigned_transaction_file_with_transfer", "multisign"),
+    ],
+    ids=["unsigned_override", "signed_override", "unsigned_multisign"],
+)
+async def test_process_transaction_update_metadata_and_broadcast(
+    node: tt.RawNode,
+    cli_tester: CLITester,
+    request: pytest.FixtureRequest,
+    transaction_file_fixture: str,
+    already_signed_mode: AlreadySignedMode,
+) -> None:
+    """Check --update-metadata with broadcast succeeds for valid mode/transaction combinations."""
+    transaction_file = request.getfixturevalue(transaction_file_fixture)
+    result = cli_tester.process_transaction(
+        from_file=transaction_file,
+        update_metadata=True,
+        already_signed_mode=already_signed_mode,
+        sign_with=WORKING_ACCOUNT_KEY_ALIAS,
+    )
+    assert_transaction_in_blockchain(node, result)
+
+
+async def test_negative_process_transaction_update_metadata_signed_with_multisign(
+    cli_tester: CLITester, signed_transaction_file_with_transfer: Path
+) -> None:
+    """Check --update-metadata with a signed transaction fails when already-signed-mode is not override."""
+    with pytest.raises(CLITestCommandError, match="--update-metadata"):
+        cli_tester.process_transaction(
+            from_file=signed_transaction_file_with_transfer,
+            update_metadata=True,
+            already_signed_mode="multisign",
+            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )

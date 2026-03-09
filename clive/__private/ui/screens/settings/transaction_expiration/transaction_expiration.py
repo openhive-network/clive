@@ -14,7 +14,7 @@ from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.section import SectionScrollable
-from clive.__private.validators.transaction_expiration_validator import TransactionExpirationValidator
+from clive.__private.validators.expiration_validator import ExpirationValidator, TimedeltaFormatParser
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -47,7 +47,7 @@ class TransactionExpirationInput(TextInput):
             "Transaction expiration",
             value=current_value,
             placeholder='e.g. "1h", "30m", "12h 30m" (min: 3s, max: 24h)',
-            validators=TransactionExpirationValidator(),
+            validators=ExpirationValidator(parsers=[TimedeltaFormatParser()]),
         )
 
 

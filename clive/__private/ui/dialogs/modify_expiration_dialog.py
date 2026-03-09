@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
 from textual.css.query import NoMatches
@@ -12,7 +12,11 @@ from clive.__private.core.shorthand_timedelta import InvalidShorthandToTimedelta
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveActionDialog
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.inputs.expiration_input import ExpirationInput
-from clive.__private.validators.expiration_validator import ExpirationValidator
+from clive.__private.validators.expiration_validator import (
+    DatetimeFormatParser,
+    ExpirationValidator,
+    TimedeltaFormatParser,
+)
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -87,8 +91,7 @@ class ModifyExpirationDialog(CliveActionDialog["timedelta | datetime | None"]):
             pass
 
         if isinstance(expiration_value, datetime):
-            abs_time = expiration_value.replace(tzinfo=UTC) if expiration_value.tzinfo is None else expiration_value
-            return self._format_expiration_label(abs_time, abs_time - gdpo.time)
+            return self._format_expiration_label(expiration_value, expiration_value - gdpo.time)
 
         if self._is_signed:
             ref = gdpo.time
@@ -144,8 +147,13 @@ class ModifyExpirationDialog(CliveActionDialog["timedelta | datetime | None"]):
             always_show_title=True,
             validators=[
                 ExpirationValidator(
+                    parsers=[
+                        TimedeltaFormatParser(
+                            metadata_block_time=None if self._is_signed else self._metadata_block_time
+                        ),
+                        DatetimeFormatParser(),
+                    ],
                     head_block_time_provider=self._get_head_block_time,
-                    metadata_block_time=None if self._is_signed else self._metadata_block_time,
                 )
             ],
             id="expiration-delta-input",

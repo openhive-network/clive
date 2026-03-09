@@ -145,7 +145,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
     async def validate(self) -> None:
         self.validate_all_mutually_exclusive_options()
         self._validate_save_file_path()
-        self._validate_update_metadata()
         await super().validate()
 
     def validate_all_mutually_exclusive_options(self) -> None:
@@ -161,6 +160,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
 
     async def validate_inside_context_manager(self) -> None:
         self._validate_manual_sign_not_allowed_in_strict_already_signed_mode()
+        self._validate_update_metadata_signed_transaction()
         self._validate_if_broadcasting_signed_transaction()
         await self._validate_bad_accounts()
         await self._validate_unknown_accounts()
@@ -217,12 +217,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             broadcast=self.is_broadcast_explicitly_requested, force_unsign=self.force_unsign, details=details
         )
 
-    def _validate_update_metadata(self) -> None:
+    def _validate_update_metadata_signed_transaction(self) -> None:
         if not self.update_metadata:
             return
-        if not self.force_unsign and self.already_signed_mode != "override":
+        if self.is_transaction_signed and self.already_signed_mode != "override" and not self.force_unsign:
             raise CLIPrettyError(
-                "'--update-metadata' requires '--force-unsign' or '--already-signed-mode=override',\n"
+                "'--update-metadata' with a signed transaction requires '--already-signed-mode=override'"
+                " or '--force-unsign',\n"
                 "because changing metadata invalidates existing transaction signatures.\n"
                 "Use `clive configure transaction-expiration` to set the expiration value."
             )

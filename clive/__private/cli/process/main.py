@@ -111,7 +111,7 @@ async def process_transaction(  # noqa: PLR0913
         help=(
             "Replace transaction metadata with fresh values and expiration loaded from profile"
             " (see `clive configure transaction-expiration`)."
-            " Requires --force-unsign or --already-signed-mode=override,"
+            " For signed transactions, requires --already-signed-mode=override or --force-unsign,"
             " because changing metadata invalidates existing signatures."
         ),
     ),

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import timedelta
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
+from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.models.schemas import (
     AccountUpdate2Operation,
     AccountUpdateOperation,
@@ -19,6 +20,19 @@ from clive.__private.models.schemas import (
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
+
+@dataclass
+class TransactionLocalData:
+    """Runtime-only data attached to Transaction, excluded from serialization.
+
+    Attributes:
+        last_update_head_block_time: Head block time (from GDPO) captured when
+            update_transaction_metadata was last called.
+    """
+
+    last_update_head_block_time: HiveDateTime | None = None
+
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -27,16 +41,17 @@ if TYPE_CHECKING:
 
 
 class Transaction(SchemasTransaction):
-    _ALWAYS_EXCLUDED: ClassVar[set[str]] = {"metadata_block_time"}
+    _ALWAYS_EXCLUDED: ClassVar[set[str]] = {"local"}
 
     operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     ref_block_num: Uint16t = 0
     ref_block_prefix: Uint32t = 0
-    expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
+    expiration: HiveDateTime = field(
+        default_factory=lambda: HiveDateTime.now() + TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+    )
     extensions: list[Any] = []  # noqa: RUF012
     signatures: list[Signature] = []  # noqa: RUF012
-    metadata_block_time: HiveDateTime | None = None
-    """Head block time captured when update_transaction_metadata was last called."""
+    local: TransactionLocalData = field(default_factory=TransactionLocalData)
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
@@ -90,10 +105,10 @@ class Transaction(SchemasTransaction):
         self.operations = []
         self.ref_block_num = Uint16t(0)
         self.ref_block_prefix = Uint32t(0)
-        self.expiration = HiveDateTime.now() + timedelta(minutes=30)
+        self.expiration = HiveDateTime.now() + TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
         self.extensions = []
         self.signatures = []
-        self.metadata_block_time = None
+        self.local = TransactionLocalData()
 
     def swap_operations(self, index_1: int, index_2: int) -> None:
         self.operations[index_1], self.operations[index_2] = self.operations[index_2], self.operations[index_1]

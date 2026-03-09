@@ -298,7 +298,7 @@ class TransactionSummary(BaseScreen):
         await self.app.push_screen(
             ModifyExpirationDialog(
                 expiration_value=expiration_value,
-                metadata_block_time=self.profile.transaction.metadata_block_time,
+                metadata_block_time=self.profile.transaction.local.last_update_head_block_time,
                 is_signed=is_signed,
             ),
             after_dialog,
@@ -324,8 +324,8 @@ class TransactionSummary(BaseScreen):
     ) -> None:
         if isinstance(expiration, datetime):
             transaction.expiration = HiveDateTime(expiration)
-        elif transaction.metadata_block_time is not None:
-            transaction.expiration = HiveDateTime(transaction.metadata_block_time + expiration)
+        elif transaction.local.last_update_head_block_time is not None:
+            transaction.expiration = HiveDateTime(transaction.local.last_update_head_block_time + expiration)
         else:
             transaction.expiration = HiveDateTime(HiveDateTime.now() + expiration)
 

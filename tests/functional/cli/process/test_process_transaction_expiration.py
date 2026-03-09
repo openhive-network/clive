@@ -56,11 +56,11 @@ def signed_transaction_file(cli_tester: CLITester) -> Path:
 
 
 async def test_process_transaction_update_metadata_with_force_unsign(
-    cli_tester: CLITester, signed_transaction_file: Path
+    cli_tester: CLITester, unsigned_transaction_file: Path
 ) -> None:
-    """Check if --update-metadata with --force-unsign refreshes metadata and produces unsigned transaction."""
+    """Check if --update-metadata with --force-unsign on an unsigned transaction refreshes metadata."""
     # ARRANGE
-    original_transaction = load_transaction_from_file(signed_transaction_file)
+    original_transaction = load_transaction_from_file(unsigned_transaction_file)
     output_filepath = create_transaction_filepath("updated_metadata")
 
     # Set a custom expiration in the profile
@@ -68,10 +68,9 @@ async def test_process_transaction_update_metadata_with_force_unsign(
 
     # ACT
     cli_tester.process_transaction(
-        from_file=signed_transaction_file,
+        from_file=unsigned_transaction_file,
         update_metadata=True,
         force_unsign=True,
-        broadcast=False,
         save_file=output_filepath,
     )
 
@@ -133,17 +132,43 @@ async def test_process_transaction_update_metadata_and_broadcast(
     assert_transaction_in_blockchain(node, result)
 
 
-async def test_negative_process_transaction_update_metadata_without_force_unsign_or_override(
+async def test_negative_process_transaction_update_metadata_signed_without_override(
     cli_tester: CLITester, signed_transaction_file: Path
 ) -> None:
-    """Check if --update-metadata without --force-unsign or --already-signed-mode=override raises an error."""
+    """Check if --update-metadata with a signed transaction without --already-signed-mode=override raises an error."""
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match="--update-metadata"):
         cli_tester.process_transaction(
             from_file=signed_transaction_file,
             update_metadata=True,
-            sign_with=WORKING_ACCOUNT_KEY_ALIAS,
         )
+
+
+async def test_process_transaction_update_metadata_signed_with_force_unsign(
+    cli_tester: CLITester, signed_transaction_file: Path
+) -> None:
+    """Check if --update-metadata with --force-unsign strips signatures and refreshes metadata."""
+    # ARRANGE
+    original_transaction = load_transaction_from_file(signed_transaction_file)
+    output_filepath = create_transaction_filepath("force_unsign_updated_metadata")
+
+    # Set a custom expiration in the profile
+    cli_tester.configure_transaction_expiration_set("1h")
+
+    # ACT
+    cli_tester.process_transaction(
+        from_file=signed_transaction_file,
+        update_metadata=True,
+        force_unsign=True,
+        save_file=output_filepath,
+    )
+
+    # ASSERT
+    updated_transaction = load_transaction_from_file(output_filepath)
+    assert_transaction_file_is_unsigned(output_filepath)
+    assert updated_transaction.expiration != original_transaction.expiration, (
+        "Transaction expiration should have been updated after --update-metadata."
+    )
 
 
 async def test_process_transfer_with_custom_expiration(cli_tester: CLITester) -> None:
