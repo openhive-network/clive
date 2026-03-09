@@ -250,6 +250,7 @@ class CLITester:
         save_file: Path | None = None,
         force: bool | None = None,
         autosign: bool | None = None,
+        update_metadata: bool | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(
             ["process", "transaction"],
@@ -943,3 +944,9 @@ class CLITester:
         node_address: str | None = None,
     ) -> CLITestResult:
         return self.__invoke_command_with_options(["call"], args, **extract_params(locals(), "args"))
+
+    def configure_transaction_expiration_set(self, expiration: str) -> CLITestResult:
+        return self.__invoke_command_with_options(["configure", "transaction-expiration", "set"], (expiration,))
+
+    def configure_transaction_expiration_reset(self) -> CLITestResult:
+        return self.__invoke_command_with_options(["configure", "transaction-expiration", "reset"])
