@@ -8,7 +8,7 @@ stages:
 # YAML anchors for pinned versions (used via *anchor_name syntax)
 # Note: When upgrading common_ci_configuration_version, you may also need to update
 # DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "44aefe652c4208db356241bdb917de41afbac86a"
+.common_ci_configuration_version: &common_ci_configuration_version "c9cb02ea67f9f381f52280be4ca1f708243373a0"
 # Hived image configuration:
 # - hived_branch: Branch to search for images (used for dynamic lookup)
 # - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
