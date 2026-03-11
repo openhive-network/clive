@@ -333,7 +333,9 @@ async def test_negative_autosign_with_no_matching_keys(
     cli_tester.configure_key_add(key=PrivateKey.generate().value, alias="unrelated_key_2")
 
     # ACT & ASSERT
-    with pytest.raises(CLITestCommandError, match=get_formatted_error_message(CLITransactionNotSignedMissingKeysError())):
+    with pytest.raises(
+        CLITestCommandError, match=get_formatted_error_message(CLITransactionNotSignedMissingKeysError())
+    ):
         cli_tester.process_transfer(
             from_=WORKING_ACCOUNT_NAME,
             amount=tt.Asset.Hive(1),
