@@ -38,6 +38,9 @@ clive
 │ ├── tracked-account
 │ │ ├── add
 │ │ └── remove
+│ ├── transaction-expiration
+│ │ ├── set
+│ │ └── reset
 │ └── working-account
 │ └── switch
 ├── show
@@ -46,6 +49,7 @@ clive
 │ ├── accounts
 │ ├── balances
 │ ├── chain
+│ ├── escrow
 │ ├── hive-power
 │ ├── keys
 │ ├── memo-key
@@ -80,6 +84,12 @@ clive
 │ │ └── rewards
 │ ├── convert
 │ ├── custom-json
+│ ├── escrow
+│ │ ├── approve
+│ │ ├── dispute
+│ │ ├── reject
+│ │ ├── release
+│ │ └── transfer
 │ ├── hp-delegations
 │ │ ├── remove
 │ │ └── set
@@ -105,6 +115,11 @@ clive
 │ │ ├── deposit
 │ │ ├── withdrawal
 │ │ └── withdrawal-cancel
+│ ├── social
+│ │ ├── follow
+│ │ ├── mute
+│ │ ├── unfollow
+│ │ └── unmute
 │ ├── transaction
 │ ├── transfer
 │ ├── transfer-schedule
@@ -153,6 +168,7 @@ clive
 │ └── secret-phrase
 ├── crypto
 │ └── decrypt
+├── call
 ├── beekeeper
 │ ├── close
 │ ├── create-session
