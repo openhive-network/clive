@@ -282,7 +282,7 @@ class CLIBeekeeperCannotSpawnNewInstanceWithEnvSetError(CLIPrettyError):
         super().__init__(message, errno.EEXIST)
 
 
-class CLITransactionNotSignedError(CLIPrettyError):
+class CLITransactionNotSignedMissingSignOptionError(CLIPrettyError):
     """
     Raise when trying to broadcast unsigned transaction.
 
@@ -291,6 +291,24 @@ class CLITransactionNotSignedError(CLIPrettyError):
     """
 
     MESSAGE: Final[str] = "Could not broadcast unsigned transaction. Did you forget the '--sign-with' option?"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE, errno.EINVAL)
+
+
+class CLITransactionNotSignedMissingKeysError(CLIPrettyError):
+    """
+    Raise when trying to broadcast unsigned transaction because required keys are not imported.
+
+    Attributes:
+        MESSAGE: A message to be shown to the user.
+    """
+
+    MESSAGE: Final[str] = (
+        "Could not broadcast an unsigned transaction. Verify that the required keys are properly imported.\n"
+        "You can check imported keys using `clive show keys` and verify the required authority with "
+        "`clive show active-authority`, `clive show owner-authority`, or `clive show posting-authority`."
+    )
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE, errno.EINVAL)

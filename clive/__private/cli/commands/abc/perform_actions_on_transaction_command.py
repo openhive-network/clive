@@ -16,7 +16,8 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
     CLITransactionAlreadySignedError,
     CLITransactionBadAccountError,
-    CLITransactionNotSignedError,
+    CLITransactionNotSignedMissingKeysError,
+    CLITransactionNotSignedMissingSignOptionError,
     CLITransactionToExchangeError,
     CLITransactionUnknownAccountError,
 )
@@ -188,7 +189,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
                 if isinstance(error.error, AuthorityPrefetchAutoSignError):
                     raise CLIAuthorityPrefetchAutoSignError from None
                 if isinstance(error.error, TransactionNotSignedError):
-                    raise CLITransactionNotSignedError from None
+                    raise CLITransactionNotSignedMissingKeysError from None
                 raise
             transaction = result.result_or_raise
 
@@ -228,7 +229,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ForceableCLICommand,
             return
 
         if self.should_broadcast and (not self.is_sign_with_given and not self.use_autosign):
-            raise CLITransactionNotSignedError
+            raise CLITransactionNotSignedMissingSignOptionError
 
     async def _validate_unknown_accounts(self) -> None:
         if not self.profile.should_enable_known_accounts:

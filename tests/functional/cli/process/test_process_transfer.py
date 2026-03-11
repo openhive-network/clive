@@ -7,7 +7,7 @@ import pytest
 from clive.__private.cli.exceptions import (
     CLIBeekeeperSessionTokenNotSetError,
     CLINoProfileUnlockedError,
-    CLITransactionNotSignedError,
+    CLITransactionNotSignedMissingSignOptionError,
 )
 from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import (
@@ -102,7 +102,7 @@ async def test_process_transfer_in_unlocked_without_sign(
 ) -> None:
     """Check if clive process transfer without sign_with throws exception when wallet is unlocked."""
     # ARRANGE
-    message = CLITransactionNotSignedError.MESSAGE
+    message = CLITransactionNotSignedMissingSignOptionError.MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
