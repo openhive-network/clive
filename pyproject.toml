@@ -48,7 +48,7 @@ pathvalidate = "^3.3.1"
 hiveio-schemas = "^1.28.2-post.0"
 hiveio-beekeepy = "^1.28.6-post.0"
 hiveio-wax = "^2.0.2-post.0"
-hiveio-api = "^1.28.6-rc.0"
+hiveio-api = "^1.28.8-rc"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 hiveio-test-tools = "^2.0.2-post.0"
