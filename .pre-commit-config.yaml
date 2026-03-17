@@ -66,12 +66,12 @@ repos:
         pass_filenames: false
       - id: ruff
         name: linting code with Ruff
-        entry: ruff check --fix
+        entry: ruff check --fix --force-exclude
         language: system
         types: [python]
       - id: ruff-format
         name: format code using Ruff formatter
-        entry: ruff format
+        entry: ruff format --force-exclude
         language: system
         types: [python]
       - id: mypy
