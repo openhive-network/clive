@@ -65,7 +65,7 @@ hiveio-test-tools = "^2.0.2-post.0"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
-mypy = "^1.19.1"
+mypy = "^2.0.0"
 pre-commit = "^4.5.1"
 ruff = "^0.14.10"
 pydoclint = "^0.8.3"
