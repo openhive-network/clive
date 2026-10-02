@@ -10,6 +10,7 @@ from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.exceptions import CliveError
+from wax.exceptions import WaxError
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -73,6 +74,19 @@ class WaxOperationFailedError(CliveError):
     pass
 
 
+def convert_wax_errors[F: Callable[..., Any]](func: F) -> F:
+    # wax raises its own exceptions instead of returning a python_result with the `fail` status,
+    # so convert them to keep the WaxOperationFailedError contract of this module.
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        try:
+            return func(*args, **kwargs)
+        except WaxError as error:
+            raise WaxOperationFailedError(str(error)) from error
+
+    return cast("F", wrapper)
+
+
 def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
@@ -107,32 +121,38 @@ def __as_binary_json(item: OperationUnion | Transaction) -> str:
     return to_serialize.json()
 
 
+@convert_wax_errors
 def validate_transaction(transaction: Transaction) -> None:
     return __validate_wax_response(wax.validate_transaction(__as_binary_json(transaction)))
 
 
+@convert_wax_errors
 def validate_operation(operation: OperationUnion) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 
+@convert_wax_errors
 def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
     result = wax.calculate_sig_digest(__as_binary_json(transaction), chain_id)
     __validate_wax_response(result)
     return result.result
 
 
+@convert_wax_errors
 def calculate_transaction_id(transaction: Transaction) -> str:
     result = wax.calculate_transaction_id(__as_binary_json(transaction))
     __validate_wax_response(result)
     return result.result
 
 
+@convert_wax_errors
 def serialize_transaction(transaction: Transaction) -> bytes:
     result = wax.serialize_transaction(__as_binary_json(transaction))
     __validate_wax_response(result)
     return result.result.encode()
 
 
+@convert_wax_errors
 def deserialize_transaction(transaction: bytes) -> Transaction:
     from clive.__private.models.transaction import Transaction  # noqa: PLC0415
 
@@ -141,6 +161,7 @@ def deserialize_transaction(transaction: bytes) -> Transaction:
     return Transaction.parse_raw(result.result)
 
 
+@convert_wax_errors
 def calculate_public_key(wif: str) -> PublicKey:
     from clive.__private.core.keys import PublicKey  # noqa: PLC0415
 
@@ -149,6 +170,7 @@ def calculate_public_key(wif: str) -> PublicKey:
     return PublicKey(value=result.result)
 
 
+@convert_wax_errors
 def generate_private_key() -> PrivateKey:
     from clive.__private.core.keys import PrivateKey  # noqa: PLC0415
 
@@ -157,6 +179,7 @@ def generate_private_key() -> PrivateKey:
     return PrivateKey(value=result.result)
 
 
+@convert_wax_errors
 @cast_hiveint_args
 def calculate_manabar_full_regeneration_time(
     now: int, max_mana: int, current_mana: int, last_update_time: int
@@ -168,6 +191,7 @@ def calculate_manabar_full_regeneration_time(
     return datetime.datetime.fromtimestamp(int(result.result), tz=datetime.UTC)
 
 
+@convert_wax_errors
 @cast_hiveint_args
 def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> int:
     result = wax.calculate_current_manabar_value(
@@ -201,6 +225,7 @@ def vests(amount: int) -> Asset.Vests:
     return cast("Asset.Vests", from_python_json_asset(wax.vests(amount)))
 
 
+@convert_wax_errors
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     result = wax.calculate_hp_apr(
         head_block_num=int(data.head_block_number),
@@ -241,6 +266,7 @@ def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asse
     return cast("Asset.Vests", from_python_json_asset(result))
 
 
+@convert_wax_errors
 @cast_hiveint_args
 def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
     result = wax.calculate_inflation_rate_for_block(head_block_num)
