@@ -38,7 +38,7 @@ def get_future_datetime(days_ahead: int, node: tt.RawNode | None = None) -> str:
 
     if node is not None:
         gdpo = node.api.database.get_dynamic_global_properties()
-        return (gdpo.time + timedelta(days=days_ahead)).strftime("%Y-%m-%dT%H:%M:%S")
+        return (tt.Time.parse(gdpo.time) + timedelta(days=days_ahead)).strftime("%Y-%m-%dT%H:%M:%S")
 
     return (datetime.now(UTC) + timedelta(days=days_ahead)).strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -52,7 +52,7 @@ def get_past_datetime(days_ago: int, node: tt.RawNode) -> str:
     from datetime import timedelta  # noqa: PLC0415
 
     gdpo = node.api.database.get_dynamic_global_properties()
-    past_time = gdpo.time - timedelta(days=days_ago)
+    past_time = tt.Time.parse(gdpo.time) - timedelta(days=days_ago)
     return past_time.strftime("%Y-%m-%dT%H:%M:%S")
 
 
@@ -95,7 +95,7 @@ def get_future_datetime_seconds(seconds_ahead: int, node: tt.RawNode) -> str:
     from datetime import timedelta  # noqa: PLC0415
 
     gdpo = node.api.database.get_dynamic_global_properties()
-    return (gdpo.time + timedelta(seconds=seconds_ahead)).strftime("%Y-%m-%dT%H:%M:%S")
+    return (tt.Time.parse(gdpo.time) + timedelta(seconds=seconds_ahead)).strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def approve_escrow_by_both(cli_tester: CLITester, escrow_id: int, node: tt.RawNode) -> None:

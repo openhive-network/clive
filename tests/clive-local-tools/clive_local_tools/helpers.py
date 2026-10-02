@@ -12,12 +12,16 @@ from typer import rich_utils
 from clive.__private.cli.print_cli import print_cli
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
-from clive.__private.models.schemas import TransactionId, validate_schema_field
+from clive.__private.models.schemas import GetTransaction, TransactionId, validate_schema_field
+from schemas.convert import to_builtins
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from click import ClickException
+    from hiveio_api.common import NaiAsset
+
+    from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests, PreconfiguredBaseModel
 
 
 def get_signatures_count_from_output(output: str) -> int:
@@ -94,9 +98,47 @@ def get_operation_from_transaction[OperationT](
         AssertionError: If the transaction doesn't contain exactly one operation of the expected type.
     """
     node.wait_number_of_blocks(1)
-    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+    transaction = convert_api_response(
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
+    )
 
     assert len(transaction.operations) == 1, f"Expected 1 operation, got {len(transaction.operations)}"
     op = transaction.operations[0]
     assert isinstance(op.value, operation_type), f"Expected {operation_type.__name__}, got {type(op.value).__name__}"
     return op.value
+
+
+def convert_api_response[ModelT: PreconfiguredBaseModel](response: object, model: type[ModelT]) -> ModelT:
+    """
+    Convert a response of the test-tools node API into the corresponding schemas model.
+
+    Test-tools returns hiveio-api models, in which e.g. operations are plain dictionaries and timestamps are strings.
+    Converting the response allows comparing it with the schemas models that clive uses.
+
+    Args:
+        response: The response returned by the test-tools node API.
+        model: The schemas model to convert the response into.
+
+    Returns:
+        The response converted into the given model.
+    """
+    return model.parse_builtins(to_builtins(response))
+
+
+def convert_nai_asset[AssetT: AssetHive | AssetHbd | AssetVests](asset: NaiAsset, asset_type: type[AssetT]) -> AssetT:
+    """
+    Convert an asset returned by the test-tools node API (hiveio-api NaiAsset) into the schemas asset.
+
+    Args:
+        asset: The asset returned by the test-tools node API.
+        asset_type: The expected type of the asset.
+
+    Returns:
+        The asset converted into the expected type.
+
+    Raises:
+        AssertionError: If the asset is not of the expected type.
+    """
+    converted = tt.Asset.from_nai(to_builtins(asset))
+    assert isinstance(converted, asset_type), f"Expected {asset_type.__name__}, got {type(converted).__name__}"
+    return converted

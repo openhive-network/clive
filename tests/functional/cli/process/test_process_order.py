@@ -16,6 +16,7 @@ from clive.__private.cli.exceptions import (
     OrderSameAssetError,
 )
 from clive.__private.models.schemas import (
+    GetTransaction,
     HbdExchangeRate,
     HiveDateTime,
     LimitOrderCancelOperation,
@@ -25,7 +26,11 @@ from clive.__private.models.schemas import (
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message, get_transaction_id_from_output
+from clive_local_tools.helpers import (
+    convert_api_response,
+    get_formatted_error_message,
+    get_transaction_id_from_output,
+)
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
@@ -58,7 +63,9 @@ def assert_limit_order_create2_in_blockchain(  # noqa: PLR0913
     """
     transaction_id = get_transaction_id_from_output(result.stdout)
     node.wait_number_of_blocks(1)
-    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+    transaction = convert_api_response(
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
+    )
 
     for op_repr in transaction.operations:
         op = op_repr.value
@@ -98,7 +105,7 @@ def assert_order_on_chain_with_relative_expiration(
     matching = [o for o in orders.orders if o.orderid == order_id]
     assert len(matching) == 1, f"Expected 1 order with id {order_id}, found {len(matching)}"
     order = matching[0]
-    actual_delta = order.expiration - order.created
+    actual_delta = tt.Time.parse(order.expiration) - tt.Time.parse(order.created)
     assert abs(actual_delta - expected_delta) < tolerance, (
         f"Expected expiration delta ~{expected_delta}, got {actual_delta}"
     )
@@ -112,7 +119,7 @@ async def test_process_order_create_with_min_to_receive(
     # ARRANGE
     order_id = 1
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    expiration = dgpo.time + timedelta(hours=1)
+    expiration = tt.Time.parse(dgpo.time) + timedelta(hours=1)
     expiration_str = expiration.strftime("%Y-%m-%dT%H:%M:%S")
 
     expected_operation = LimitOrderCreateOperation(
@@ -147,7 +154,7 @@ async def test_process_order_create_with_price(
     order_id = 2
     price = Decimal("0.25")  # 0.250 TBD per TESTS
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    expiration = dgpo.time + timedelta(hours=1)
+    expiration = tt.Time.parse(dgpo.time) + timedelta(hours=1)
     expiration_str = expiration.strftime("%Y-%m-%dT%H:%M:%S")
 
     # When selling 100 HIVE at price 0.250 TBD/HIVE, exchange_rate base=100 HIVE, quote=25 TBD
@@ -180,7 +187,7 @@ async def test_process_order_create_sell_hbd(
     # ARRANGE
     order_id = 4
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    expiration = dgpo.time + timedelta(hours=1)
+    expiration = tt.Time.parse(dgpo.time) + timedelta(hours=1)
     expiration_str = expiration.strftime("%Y-%m-%dT%H:%M:%S")
 
     expected_operation = LimitOrderCreateOperation(
@@ -215,7 +222,7 @@ async def test_process_order_create_with_price_sell_hbd(
     order_id = 70
     price = Decimal("0.25")  # 0.250 TBD per TESTS (1 HIVE = 0.25 HBD)
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    expiration = dgpo.time + timedelta(hours=1)
+    expiration = tt.Time.parse(dgpo.time) + timedelta(hours=1)
     expiration_str = expiration.strftime("%Y-%m-%dT%H:%M:%S")
 
     # When selling 25 HBD at price 0.250 TBD/TESTS, exchange_rate base=25 HBD, quote=100 HIVE
@@ -259,7 +266,9 @@ async def test_process_order_create_auto_id(
     # ASSERT - verify operation placed in blockchain
     transaction_id = get_transaction_id_from_output(result.stdout)
     node.wait_number_of_blocks(1)
-    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+    transaction = convert_api_response(
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
+    )
     assert any(isinstance(op.value, LimitOrderCreate2Operation) for op in transaction.operations)
 
 
@@ -271,7 +280,7 @@ async def test_process_order_create_custom_expiration(
     # ARRANGE
     order_id = 40
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    expiration = dgpo.time + timedelta(seconds=60)
+    expiration = tt.Time.parse(dgpo.time) + timedelta(seconds=60)
     expiration_str = expiration.strftime("%Y-%m-%dT%H:%M:%S")
 
     # ACT
@@ -453,7 +462,7 @@ async def test_process_order_create_too_far_future_expiration_error(
     """Test that order create fails when expiration exceeds the maximum allowed 28 days."""
     # ARRANGE - compute an expiration 29 days after head_block_time (limit is 28 days)
     dgpo = node.api.database_api.get_dynamic_global_properties()
-    too_far_expiration = dgpo.time + timedelta(days=29)
+    too_far_expiration = tt.Time.parse(dgpo.time) + timedelta(days=29)
     expiration_str = too_far_expiration.strftime("%Y-%m-%dT%H:%M:%S")
     order_id = 35
 

@@ -11,7 +11,7 @@ from clive.__private.cli.commands.crypto.decrypt import (
     CLIInvalidEncryptedMemoFormatError,
 )
 from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased
-from clive.__private.models.schemas import TransferOperation
+from clive.__private.models.schemas import GetAccountHistory, TransferOperation
 from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
@@ -20,6 +20,7 @@ from clive_local_tools.cli.checkers import assert_memo_key
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import (
+    convert_api_response,
     get_formatted_error_message,
     get_operation_from_transaction,
     get_transaction_id_from_output,
@@ -40,8 +41,9 @@ AMOUNT: Final[tt.Asset.HiveT] = tt.Asset.Hive(1)
 
 def get_encrypted_memo_from_block_log(node: tt.RawNode) -> str:
     """Get the encrypted memo from the pregenerated block_log."""
-    account_history = node.api.account_history.get_account_history(
-        account=ACCOUNT_WITH_ENCRYPTED_MEMO_DATA.account.name,
+    account_history = convert_api_response(
+        node.api.account_history.get_account_history(account=ACCOUNT_WITH_ENCRYPTED_MEMO_DATA.account.name),
+        GetAccountHistory,
     )
 
     for entry in account_history.history:

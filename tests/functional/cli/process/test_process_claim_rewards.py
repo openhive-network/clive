@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clive.__private.cli.commands.process.process_claim_rewards import CLIClaimRewardsZeroBalanceError
-from clive.__private.models.schemas import ClaimRewardBalanceOperation
+from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests, ClaimRewardBalanceOperation
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import get_formatted_error_message
+from clive_local_tools.helpers import convert_nai_asset, get_formatted_error_message
 from clive_local_tools.testnet_block_log.constants import EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -35,9 +35,9 @@ async def test_claim_rewards_success(node: tt.RawNode, cli_tester: CLITester) ->
 
     operation = ClaimRewardBalanceOperation(
         account=account_name,
-        reward_hive=account.reward_hive_balance,
-        reward_hbd=account.reward_hbd_balance,
-        reward_vests=account.reward_vesting_balance,
+        reward_hive=convert_nai_asset(account.reward_hive_balance, AssetHive),
+        reward_hbd=convert_nai_asset(account.reward_hbd_balance, AssetHbd),
+        reward_vests=convert_nai_asset(account.reward_vesting_balance, AssetVests),
     )
 
     # ACT

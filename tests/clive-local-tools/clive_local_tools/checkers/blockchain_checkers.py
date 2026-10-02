@@ -8,9 +8,9 @@ import pytest
 
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.asset import Asset
-from clive.__private.models.schemas import HbdExchangeRate
+from clive.__private.models.schemas import GetTransaction, HbdExchangeRate
 from clive_local_tools.cli.result_wrapper import CLITestResult
-from clive_local_tools.helpers import get_transaction_id_from_output
+from clive_local_tools.helpers import convert_api_response, get_transaction_id_from_output
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
-    from clive.__private.models.schemas import GetTransaction, OperationBase, OperationUnion, Witness
+    from clive.__private.models.schemas import OperationBase, OperationUnion, Witness
 
 
 def _ensure_transaction_id(trx_id_or_result: CLITestResult | str) -> str:
@@ -32,9 +32,8 @@ def _get_transaction(
 ) -> GetTransaction:
     assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
     transaction_id = _ensure_transaction_id(trx_id_or_result)
-    return node.api.account_history.get_transaction(
-        id=transaction_id,
-        include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
+    return convert_api_response(
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
     )
 
 
