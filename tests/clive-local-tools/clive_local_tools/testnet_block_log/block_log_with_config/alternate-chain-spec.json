@@ -1,9 +1,9 @@
 {
-  "genesis_time": 1770818018,
+  "genesis_time": 1791190359,
   "hardfork_schedule": [
     {
       "block_num": 1,
-      "hardfork": 28
+      "hardfork": 29
     }
   ],
   "hbd_init_supply": 1000000000,
