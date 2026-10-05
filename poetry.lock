@@ -731,13 +731,13 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-schemas"
-version = "1.28.2.post20260907112530"
+version = "1.28.2.post20261005092508"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main", "dev", "embeddedtestnet"]
 files = [
-    {file = "hiveio_schemas-1.28.2.post20260907112530-py3-none-any.whl", hash = "sha256:332a3f37e243944cf705bd27f8728edbddfa9d1e1b2f2261846cc1bf998efe17"},
+    {file = "hiveio_schemas-1.28.2.post20261005092508-py3-none-any.whl", hash = "sha256:b01ddac18248f112453f92b36bd4358cd75a78d3baf00b443d1238b28a34cd8e"},
 ]
 
 [package.dependencies]
@@ -2815,4 +2815,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "7e06938fc4bf679a3c8fe74713d54d0c09ea94e51f74c62c06be6999bf58a5c7"
+content-hash = "5e757697357208b4eaf02ae75a147f7ca0b234de3f58c6bb5ecb6a29748b45a6"
