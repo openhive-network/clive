@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.models.asset import (
+    Asset,
     AssetAmount,
     AssetFactory,
     AssetFactoryHolder,
@@ -34,20 +35,21 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], AbstractClas
         return next(iter(self._selectable.values()))
 
     @property
-    def default_asset_cls(self) -> type[AssetT]:
-        return self.default_asset_factory_holder.asset_cls
+    def default_asset_kind(self) -> Asset.Kind:
+        """Returns the kind of the asset selected by default."""
+        return self.default_asset_factory_holder.asset_kind
 
     @property
-    def asset_cls(self) -> type[AssetT]:
-        """Returns selected asset type."""
-        return self.selection_ensure.asset_cls
+    def asset_kind(self) -> Asset.Kind:
+        """Returns selected asset kind."""
+        return self.selection_ensure.asset_kind
 
     @property
     def asset_factory(self) -> AssetFactory[AssetT]:
         """Return selected asset factory."""
         return self.selection_ensure.asset_factory
 
-    def select_asset(self, asset_type: type[AssetT]) -> None:
+    def select_asset(self, asset_type: Asset.Kind) -> None:
         """
         Select asset by its type.
 
@@ -72,8 +74,8 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], AbstractClas
         asset_factory = self.asset_factory
         return asset_factory(amount)
 
-    def _get_selectable(self, asset_type: type[AssetT]) -> AssetFactoryHolder[AssetT]:
+    def _get_selectable(self, asset_type: Asset.Kind) -> AssetFactoryHolder[AssetT]:
         for asset_factory_holder in self._selectable.values():
-            if asset_factory_holder.asset_cls == asset_type:
+            if asset_factory_holder.asset_kind == asset_type:
                 return asset_factory_holder
         raise AssertionError(f"Asset type {asset_type} is not selectable")

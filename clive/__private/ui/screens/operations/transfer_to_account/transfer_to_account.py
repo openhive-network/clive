@@ -38,7 +38,7 @@ class TransferToAccount(OperationBaseScreen, MemoEncryptingOperationActionBindin
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, *, default_asset_selected: type[Asset.LiquidT] = Asset.Hive) -> None:
+    def __init__(self, *, default_asset_selected: Asset.Kind = Asset.HIVE_KIND) -> None:
         super().__init__()
 
         self._to_input = ReceiverInput("To")

@@ -74,8 +74,8 @@ class KnownExchangeHandler(CliveWidget):
         else:
             amount_input.enable_currency_selector()
 
-        if disable and amount_input.selected_asset_type is not Asset.Hive:
-            amount_input.select_asset(Asset.Hive)
+        if disable and not Asset.is_hive(amount_input.selected_asset_type):
+            amount_input.select_asset(Asset.HIVE_KIND)
 
     def _change_memo_requirement(self, *, required: bool) -> None:
         """Make memo input required or optional."""

@@ -160,7 +160,7 @@ class PowerDown(TabPane, OperationActionBindings):
         owned_balance = content.owned_balance
         delegated_balance = content.delegated_balance
 
-        if self._shares_input.selected_asset_type is Asset.Hive:
+        if Asset.is_hive(self._shares_input.selected_asset_type):
             return owned_balance.hp_balance - delegated_balance.hp_balance
         return owned_balance.vests_balance - delegated_balance.vests_balance
 
@@ -179,7 +179,7 @@ class PowerDown(TabPane, OperationActionBindings):
         one_withdrawal = value / 13
         self._one_withdrawal_display.display = True
 
-        asset = f"{Asset.pretty_amount(one_withdrawal)} {'VESTS' if isinstance(one_withdrawal, Asset.Vests) else 'HP'}"
+        asset = f"{Asset.pretty_amount(one_withdrawal)} {'VESTS' if Asset.is_vests(one_withdrawal) else 'HP'}"
         return f"The withdrawal will be divided into 13 parts, one of which is: {asset}"
 
     @on(CurrencySelectorHpVests.Changed)

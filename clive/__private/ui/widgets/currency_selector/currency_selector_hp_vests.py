@@ -8,6 +8,6 @@ class CurrencySelectorHpVests(CurrencySelectorBase[Asset.Hive | Asset.Vests]):
     @staticmethod
     def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.Hive | Asset.Vests]]:
         return {
-            "HP": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
-            "VESTS": AssetFactoryHolder(asset_cls=Asset.Vests, asset_factory=Asset.vests),
+            "HP": AssetFactoryHolder(asset_kind=Asset.HIVE_KIND, asset_factory=Asset.hive),
+            "VESTS": AssetFactoryHolder(asset_kind=Asset.VESTS_KIND, asset_factory=Asset.vests),
         }

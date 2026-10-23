@@ -203,7 +203,7 @@ class PendingTransfersPane(TabPane, CliveWidget):
 class SavingsTransfers(TabPane, MemoEncryptingOperationActionBindings):
     TITLE: Final[str] = "transfer"
 
-    def __init__(self, default_transfer_type: TransferType, default_asset_selected: type[Asset.LiquidT]) -> None:
+    def __init__(self, default_transfer_type: TransferType, default_asset_selected: Asset.Kind) -> None:
         super().__init__(title=self.TITLE, id="transfer-tab")
 
         self._default_asset_selected = default_asset_selected
@@ -318,7 +318,7 @@ class Savings(OperationBaseScreen):
         self,
         initial_tab: SavingsTabType = "transfer-tab",
         default_transfer_type: TransferType = "to-savings",
-        default_asset_selected: type[Asset.LiquidT] = Asset.Hive,
+        default_asset_selected: Asset.Kind = Asset.HIVE_KIND,
     ) -> None:
         super().__init__()
         self._default_transfer_type = default_transfer_type

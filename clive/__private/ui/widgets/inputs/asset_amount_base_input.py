@@ -120,18 +120,18 @@ class AssetAmountInput[AssetInputT: (Asset.VotingT, Asset.LiquidT, Asset.Hive)](
         return self._currency_selector.create_asset(self.value_raw)
 
     @property
-    def default_asset_type(self) -> type[AssetInputT]:
-        return self._currency_selector.default_asset_cls
+    def default_asset_type(self) -> Asset.Kind:
+        return self._currency_selector.default_asset_kind
 
     @property
-    def selected_asset_type(self) -> type[AssetInputT]:
-        return self._currency_selector.asset_cls
+    def selected_asset_type(self) -> Asset.Kind:
+        return self._currency_selector.asset_kind
 
     @property
     def selected_asset_precision(self) -> int:
         return Asset.get_precision(self.selected_asset_type)
 
-    def select_asset(self, asset_type: type[AssetInputT]) -> None:
+    def select_asset(self, asset_type: Asset.Kind) -> None:
         with self.prevent(CurrencySelectorBase.Changed):
             self._currency_selector.select_asset(asset_type)
 
