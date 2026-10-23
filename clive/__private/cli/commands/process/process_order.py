@@ -89,8 +89,8 @@ class ProcessOrderCreate(OperationCommand):
         """Validate that amount_to_sell and min_to_receive are different asset types."""
         from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-        sell_is_hive = isinstance(self.amount_to_sell, Asset.Hive)
-        receive_is_hive = isinstance(self.min_to_receive_ensure, Asset.Hive)
+        sell_is_hive = Asset.is_hive(self.amount_to_sell)
+        receive_is_hive = Asset.is_hive(self.min_to_receive_ensure)
 
         if sell_is_hive == receive_is_hive:
             raise OrderSameAssetError
@@ -103,7 +103,7 @@ class ProcessOrderCreate(OperationCommand):
 
         amount = Asset.as_decimal(self.amount_to_sell)
 
-        if isinstance(self.amount_to_sell, Asset.Hive):
+        if Asset.is_hive(self.amount_to_sell):
             # Selling HIVE, receiving HBD: multiply by price (HBD per HIVE)
             return Asset.hbd(amount * self.price)
         # Selling HBD, receiving HIVE: divide by price (HBD per HIVE)

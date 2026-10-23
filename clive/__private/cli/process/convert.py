@@ -54,7 +54,7 @@ async def process_convert(  # noqa: PLR0913
 
     amount_ = cast("Asset.LiquidT", amount)
 
-    if isinstance(amount_, Asset.Hbd):
+    if Asset.is_hbd(amount_):
         # HBD → HIVE (standard convert)
         await ProcessConvert(
             owner=from_account,

@@ -20,16 +20,17 @@ class ShowAuthority(WorldBasedCommand):
     async def _run(self) -> None:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         account = accounts[0]
+        authority = {"owner": account.owner, "active": account.active, "posting": account.posting}[self.authority]
 
         title = (
             f"{self.authority} authority of `{account.name}` account,"
-            f"\nweight threshold is {account[self.authority].weight_threshold}:"
+            f"\nweight threshold is {authority.weight_threshold}:"
         )
 
         table = Table(title=title)
         table.add_column("account or public key", min_width=53)
         table.add_column("weight", justify="right")
-        for auth, weight in [*account[self.authority].key_auths, *account[self.authority].account_auths]:
+        for auth, weight in [*authority.key_auths, *authority.account_auths]:
             table.add_row(f"{auth}", f"{weight}")
 
         print_cli(table)

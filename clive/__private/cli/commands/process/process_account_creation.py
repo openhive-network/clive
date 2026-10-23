@@ -80,9 +80,6 @@ class ProcessAccountCreation(OperationCommand):
         if self.fee:
             wrapper = await self.world.commands.get_witness_schedule()
             witness_schedule = wrapper.result_or_raise
-            assert witness_schedule.median_props.account_creation_fee is not None, (
-                "Account creation fee must be set in response of `get_witness_schedule`."
-            )  # TODO: remove after https://gitlab.syncad.com/hive/schemas/-/issues/46 is fixed
             self._fee_value = witness_schedule.median_props.account_creation_fee
             print_cli(f"Account creation fee: `{Asset.to_legacy(self._fee_value)}` will be paid.")
         else:
