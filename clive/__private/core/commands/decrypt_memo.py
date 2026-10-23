@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 import beekeepy.exceptions as bke
 
@@ -32,6 +33,12 @@ class DecryptMemo(CommandInUnlocked, CommandWithResult[str]):
 
     encrypted_memo: str
 
+    _KEY_NOT_IMPORTED_MESSAGES: ClassVar[tuple[str, ...]] = (
+        "Decryption failed",
+        "No matching private key found for ECDH decryption",
+    )
+    """Errors of beekeeper decrypting with keys not in the wallet (texts of its versions)."""
+
     async def _execute(self) -> None:
         try:
             # Decode the encrypted memo to extract keys and content
@@ -52,7 +59,7 @@ class DecryptMemo(CommandInUnlocked, CommandWithResult[str]):
                 content=encrypted_content,
             )
         except bke.ErrorInResponseError as error:
-            if "Decryption failed" in str(error):
+            if any(message in str(error) for message in self._KEY_NOT_IMPORTED_MESSAGES):
                 raise DecryptMemoKeyNotImportedError(self) from error
             raise
 
