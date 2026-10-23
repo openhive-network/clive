@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from clive.__private.models.schemas import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
+import warnings
+
+from hiveio_api import MissingFieldWarning, UnexpectedFieldWarning
 
 
 def _disable_schemas_extra_fields_check() -> None:
-    set_policies(ExtraFieldsPolicy(allow=True), MissingFieldsInGetConfigPolicy(allow=True))
+    """Accept fields of responses not declared in models of hiveio_api and fields missing in responses of get_config."""
+    warnings.filterwarnings("ignore", category=UnexpectedFieldWarning)
+    warnings.filterwarnings("ignore", message=r"GetConfigResponse: ", category=MissingFieldWarning)
 
 
-# This has to be executed before any import that loads schemas
-# Otherwise policy won't be used
+# This has to be executed before any API call
+# Otherwise warnings about fields of responses will be shown
 _disable_schemas_extra_fields_check()

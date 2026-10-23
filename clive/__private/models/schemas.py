@@ -1,24 +1,31 @@
 """
-Some of the models imported from schemas should have a corresponding alias there.
+Some of the models imported from hiveio_api and schemas should have a corresponding alias there.
 
 If name matches our naming convention, no need to alias, just export in __all__.
 
 Why this module exists?
-* we want to have a single source of truth for schema models (there are complicated ones requiring specialization),
-* schemas are not always well named, and we want to have a consistent naming convention in our codebase,
-* some models and not specialized with HF26 assets,
-* some imports from schemas are very long,
-* if something gets changed in schemas, we'll have a single place to update aliases.
+* we want to have a single source of truth for API models (there are complicated ones requiring specialization),
+* generated models are not always well named, and we want to have a consistent naming convention in our codebase,
+* some imports from hiveio_api are very long,
+* if something gets changed in hiveio_api, we'll have a single place to update aliases.
 
-E.g. VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]
-has unnecessary "Fundament" suffix, and is not specialized with HF26 assets.
+E.g. VestingDelegationExpiration = VestingDelegationExpirations has the name of the list of the API response.
+
+Models of API responses, operations and transactions come from hiveio_api - dataclasses built without validation.
+Field types come from schemas in the variant clive needs them:
+* `AccountName`, `ChainId`, `TransactionId` - user-friendly types (`schemas.fields.user_friendly`) which validate values
+  when created (e.g. `AccountName("alice")`) - use them with `is_matching_model` to validate input of users,
+* the other ones - builtin aliases (`schemas.fields.public`, e.g. `PublicKey = str`) for annotations, as fields of the
+  models of hiveio_api are annotated. Where such a type is needed at runtime (e.g. `Uint16t.meta()`), its user-friendly
+  variant is imported from `schemas.fields.user_friendly`, fields of hand-written msgspec models take the forms of
+  `schemas.fields.validation`.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from beekeepy._utilities.smart_lazy_import import aggregate_same_import, lazy_module_factory
+from hiveio_api._utilities.smart_lazy_import import aggregate_same_import, lazy_module_factory
 
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
@@ -74,7 +81,6 @@ __all__ = [  # noqa: RUF022
     "CustomJsonOperation",
     "CustomOperation",
     "DeclineVotingRightsOperation",
-    "DelegateRcOperation",
     "DelegateVestingSharesOperation",
     "DeleteCommentOperation",
     "EscrowApproveOperation",
@@ -124,7 +130,6 @@ __all__ = [  # noqa: RUF022
     "TransactionId",
     "Uint16t",
     "Uint32t",
-    "WitnessPropsSerializedKey",
     # compound models
     "Account",
     "Authority",
@@ -145,87 +150,58 @@ __all__ = [  # noqa: RUF022
     "VestingDelegationExpiration",
     "WithdrawRoute",
     "Witness",
-    # policies
-    "ExtraFieldsPolicy",
-    "MissingFieldsInGetConfigPolicy",
-    "TestnetAssetsPolicy",
-    "set_policies",
-    # exceptions
-    "DecodeError",
-    "ValidationError",
     # other
     "PreconfiguredBaseModel",
     "convert_to_representation",
     "is_matching_model",
-    "validate_schema_field",
     "field",
 ]
 
 if TYPE_CHECKING:
-    from schemas._preconfigured_base_model import PreconfiguredBaseModel
-    from schemas.apis.account_history_api import GetAccountHistory, GetTransaction
-    from schemas.apis.database_api import (
-        FindAccounts,
-        FindProposals,
-        FindRecurrentTransfers,
-        FindSavingsWithdrawals,
-        FindVestingDelegationExpirations,
-        FindVestingDelegations,
-        FindWitnesses,
-        GetConfig,
-        GetDynamicGlobalProperties,
-        GetFeedHistory,
-        GetHardforkProperties,
-        GetVersion,
-        GetWitnessSchedule,
-        ListChangeRecoveryAccountRequests,
-        ListDeclineVotingRightsRequests,
-        ListProposals,
-        ListProposalVotes,
-        ListWithdrawVestingRoutes,
-        ListWitnesses,
-        ListWitnessVotes,
+    from hiveio_api import HiveDateTime
+    from hiveio_api.account_history_api import GetAccountHistoryResponse as GetAccountHistory
+    from hiveio_api.account_history_api import GetTransactionResponse as GetTransaction
+    from hiveio_api.database_api import (
+        Account,
+        DeclineVotingRights,
+        FindAccountRecovery,
+        GetConfigResponse,
+        GetDynamicGlobalPropertiesResponse,
+        GetFeedHistoryResponse,
+        GetHardforkPropertiesResponse,
+        GetVersionResponse,
+        GetWitnessScheduleResponse,
+        Proposals,
+        RecurrentTransfer,
+        SavingsWithdrawal,
+        VestingDelegation,
+        VestingDelegationExpirations,
+        VotingManabar,
+        WithdrawVestingRoutes,
+        Witness,
     )
-    from schemas.apis.database_api.fundaments_of_reponses import (
-        AccountItemFundament,
-        FindRecurrentTransfersFundament,
-        ListChangeRecoveryAccountRequestsFundament,
-        ListDeclineVotingRightsRequestsFundament,
-        SavingsWithdrawalsFundament,
-        VestingDelegationExpirationsFundament,
-        VestingDelegationsFundament,
-        WithdrawVestingRoutesFundament,
-        WitnessesFundament,
-    )
-    from schemas.apis.rc_api import FindRcAccounts, ListRcDirectDelegations
-    from schemas.apis.rc_api.fundaments_of_responses import RcAccount, RcDirectDelegations
-    from schemas.apis.transaction_status_api import FindTransaction
-    from schemas.base import field
-    from schemas.decoders import is_matching_model, validate_schema_field
-    from schemas.errors import DecodeError, ValidationError
-    from schemas.fields.assets import AssetHbd, AssetHive, AssetVests
-    from schemas.fields.basic import AccountName, PublicKey
-    from schemas.fields.compound import (
-        Authority,
-        HbdExchangeRate,
-        LegacyChainProperties,
-        Manabar,
-        Price,
-        Proposal,
-    )
-    from schemas.fields.hex import Hex, Sha256, Signature, TransactionId
-    from schemas.fields.hive_datetime import HiveDateTime
-    from schemas.fields.hive_int import HiveInt
-    from schemas.fields.integers import Uint16t, Uint32t
-    from schemas.fields.resolvables import JsonString
-    from schemas.operation import Operation
-    from schemas.operations import (
+    from hiveio_api.database_api import FindAccountsResponse as FindAccounts
+    from hiveio_api.database_api import FindProposalsResponse as FindProposals
+    from hiveio_api.database_api import FindRecurrentTransfersResponse as FindRecurrentTransfers
+    from hiveio_api.database_api import FindSavingsWithdrawalsResponse as FindSavingsWithdrawals
+    from hiveio_api.database_api import FindVestingDelegationExpirationsResponse as FindVestingDelegationExpirations
+    from hiveio_api.database_api import FindVestingDelegationsResponse as FindVestingDelegations
+    from hiveio_api.database_api import FindWitnessesResponse as FindWitnesses
+    from hiveio_api.database_api import ListChangeRecoveryAccountRequestsResponse as ListChangeRecoveryAccountRequests
+    from hiveio_api.database_api import ListDeclineVotingRightsRequestsResponse as ListDeclineVotingRightsRequests
+    from hiveio_api.database_api import ListProposalsResponse as ListProposals
+    from hiveio_api.database_api import ListProposalVotesResponse as ListProposalVotes
+    from hiveio_api.database_api import ListWithdrawVestingRoutesResponse as ListWithdrawVestingRoutes
+    from hiveio_api.database_api import ListWitnessesResponse as ListWitnesses
+    from hiveio_api.database_api import ListWitnessVotesResponse as ListWitnessVotes
+    from hiveio_api.operations import (
         AccountCreateOperation,
         AccountCreateWithDelegationOperation,
         AccountUpdate2Operation,
         AccountUpdateOperation,
         AccountWitnessProxyOperation,
         AccountWitnessVoteOperation,
+        Authority,
         CancelTransferFromSavingsOperation,
         ChangeRecoveryAccountOperation,
         ClaimAccountOperation,
@@ -240,7 +216,6 @@ if TYPE_CHECKING:
         CustomJsonOperation,
         CustomOperation,
         DeclineVotingRightsOperation,
-        DelegateRcOperation,
         DelegateVestingSharesOperation,
         DeleteCommentOperation,
         EscrowApproveOperation,
@@ -248,19 +223,26 @@ if TYPE_CHECKING:
         EscrowReleaseOperation,
         EscrowTransferOperation,
         FeedPublishOperation,
-        Hf26OperationRepresentation,
-        Hf26Operations,
+        Hf26Operation,
+        Hf26OperationValue,
+        Hf26RecurrentTransferPairId,
+        LegacyChainProperties,
         LimitOrderCancelOperation,
         LimitOrderCreate2Operation,
         LimitOrderCreateOperation,
+        OperationBase,
         Pow2Operation,
         PowOperation,
+        Price,
         RecoverAccountOperation,
+        RecurrentTransferOperation,
+        RecurrentTransferPairId,
         RemoveProposalOperation,
         RequestAccountRecoveryOperation,
         ResetAccountOperation,
         SetResetAccountOperation,
         SetWithdrawVestingRouteOperation,
+        Transaction,
         TransferFromSavingsOperation,
         TransferOperation,
         TransferToSavingsOperation,
@@ -272,41 +254,47 @@ if TYPE_CHECKING:
         WitnessBlockApproveOperation,
         WitnessSetPropertiesOperation,
         WitnessUpdateOperation,
-        convert_to_representation,
     )
-    from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
-    from schemas.operations.extensions.representation_types import (
-        HF26RepresentationRecurrentTransferPairIdOperationExtension,
+    from hiveio_api.operations import hf26_operation as convert_to_representation
+    from hiveio_api.rc_api import FindRcAccountsResponse as FindRcAccounts
+    from hiveio_api.rc_api import ListRcDirectDelegationsResponse as ListRcDirectDelegations
+    from hiveio_api.rc_api import RcAccount, RcAccountDelegation
+    from hiveio_api.transaction_status_api import FindTransactionResponse as TransactionStatus
+    from schemas._preconfigured_base_model import PreconfiguredBaseModel
+    from schemas.base import field
+    from schemas.fields.public import (
+        AssetHbd,
+        AssetHive,
+        AssetVests,
+        Hex,
+        HiveInt,
+        JsonString,
+        PublicKey,
+        Signature,
+        Uint16t,
+        Uint32t,
     )
-    from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-    from schemas.operations.witness_set_properties_operation import WitnessPropsSerializedKey
-    from schemas.policies import (
-        ExtraFieldsPolicy,
-        MissingFieldsInGetConfigPolicy,
-        TestnetAssetsPolicy,
-        set_policies,
-    )
-    from schemas.transaction import Transaction
+    from schemas.fields.user_friendly import AccountName, Sha256, TransactionId
+    from schemas.validation import is_matching_model
 
     # operation BASIC aliases
 
-    OperationBase = Operation
-    OperationRepresentationUnion = Hf26OperationRepresentation
-    OperationUnion = Hf26Operations
+    OperationRepresentationUnion = Hf26Operation
+    OperationUnion = Hf26OperationValue
 
     # get API responses (have no unnecessary nested  properties, just the model itself)
 
-    Config = GetConfig
-    DynamicGlobalProperties = GetDynamicGlobalProperties
-    FeedHistory = GetFeedHistory
-    HardforkProperties = GetHardforkProperties
-    Version = GetVersion
-    WitnessSchedule = GetWitnessSchedule
+    Config = GetConfigResponse
+    DynamicGlobalProperties = GetDynamicGlobalPropertiesResponse
+    FeedHistory = GetFeedHistoryResponse
+    HardforkProperties = GetHardforkPropertiesResponse
+    Version = GetVersionResponse
+    WitnessSchedule = GetWitnessScheduleResponse
 
     # extensions
 
     RecurrentTransferPairIdExtension = RecurrentTransferPairId
-    RecurrentTransferPairIdRepresentation = HF26RepresentationRecurrentTransferPairIdOperationExtension
+    RecurrentTransferPairIdRepresentation = Hf26RecurrentTransferPairId
 
     # basic fields
 
@@ -314,55 +302,51 @@ if TYPE_CHECKING:
 
     # compound models
 
-    Account = AccountItemFundament
-    ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
-    DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
+    ChangeRecoveryAccountRequest = FindAccountRecovery
+    DeclineVotingRightsRequest = DeclineVotingRights
+    HbdExchangeRate = Price
+    Manabar = VotingManabar
     PriceFeed = Price
-    RecurrentTransfer = FindRecurrentTransfersFundament
-    SavingsWithdrawal = SavingsWithdrawalsFundament
-    TransactionStatus = FindTransaction
-    VestingDelegation = VestingDelegationsFundament
-    VestingDelegationExpiration = VestingDelegationExpirationsFundament
-    WithdrawRoute = WithdrawVestingRoutesFundament
-    RcDirectDelegation = RcDirectDelegations
-    Witness = WitnessesFundament
+    Proposal = Proposals
+    RcDirectDelegation = RcAccountDelegation
+    VestingDelegationExpiration = VestingDelegationExpirations
+    WithdrawRoute = WithdrawVestingRoutes
 
 lazy_getattr = lazy_module_factory(
     globals(),
     *aggregate_same_import(
-        "FindAccounts",
-        "FindProposals",
-        "FindRecurrentTransfers",
-        "FindSavingsWithdrawals",
-        "FindVestingDelegationExpirations",
-        "FindVestingDelegations",
-        "FindWitnesses",
-        "ListChangeRecoveryAccountRequests",
-        "ListDeclineVotingRightsRequests",
-        "ListProposals",
-        "ListProposalVotes",
-        "ListWithdrawVestingRoutes",
-        "ListWitnesses",
-        "ListWitnessVotes",
-        ("GetConfig", "Config"),
-        ("GetDynamicGlobalProperties", "DynamicGlobalProperties"),
-        ("GetFeedHistory", "FeedHistory"),
-        ("GetHardforkProperties", "HardforkProperties"),
-        ("GetVersion", "Version"),
-        ("GetWitnessSchedule", "WitnessSchedule"),
-        module="schemas.apis.database_api",
-    ),
-    *aggregate_same_import(
-        ("AccountItemFundament", "Account"),
-        ("FindRecurrentTransfersFundament", "RecurrentTransfer"),
-        ("ListChangeRecoveryAccountRequestsFundament", "ChangeRecoveryAccountRequest"),
-        ("ListDeclineVotingRightsRequestsFundament", "DeclineVotingRightsRequest"),
-        ("SavingsWithdrawalsFundament", "SavingsWithdrawal"),
-        ("VestingDelegationExpirationsFundament", "VestingDelegationExpiration"),
-        ("VestingDelegationsFundament", "VestingDelegation"),
-        ("WithdrawVestingRoutesFundament", "WithdrawRoute"),
-        ("WitnessesFundament", "Witness"),
-        module="schemas.apis.database_api.fundaments_of_reponses",
+        ("FindAccountsResponse", "FindAccounts"),
+        ("FindProposalsResponse", "FindProposals"),
+        ("FindRecurrentTransfersResponse", "FindRecurrentTransfers"),
+        ("FindSavingsWithdrawalsResponse", "FindSavingsWithdrawals"),
+        ("FindVestingDelegationExpirationsResponse", "FindVestingDelegationExpirations"),
+        ("FindVestingDelegationsResponse", "FindVestingDelegations"),
+        ("FindWitnessesResponse", "FindWitnesses"),
+        ("ListChangeRecoveryAccountRequestsResponse", "ListChangeRecoveryAccountRequests"),
+        ("ListDeclineVotingRightsRequestsResponse", "ListDeclineVotingRightsRequests"),
+        ("ListProposalsResponse", "ListProposals"),
+        ("ListProposalVotesResponse", "ListProposalVotes"),
+        ("ListWithdrawVestingRoutesResponse", "ListWithdrawVestingRoutes"),
+        ("ListWitnessesResponse", "ListWitnesses"),
+        ("ListWitnessVotesResponse", "ListWitnessVotes"),
+        ("GetConfigResponse", "Config"),
+        ("GetDynamicGlobalPropertiesResponse", "DynamicGlobalProperties"),
+        ("GetFeedHistoryResponse", "FeedHistory"),
+        ("GetHardforkPropertiesResponse", "HardforkProperties"),
+        ("GetVersionResponse", "Version"),
+        ("GetWitnessScheduleResponse", "WitnessSchedule"),
+        "Account",
+        ("DeclineVotingRights", "DeclineVotingRightsRequest"),
+        ("FindAccountRecovery", "ChangeRecoveryAccountRequest"),
+        ("Proposals", "Proposal"),
+        "RecurrentTransfer",
+        "SavingsWithdrawal",
+        "VestingDelegation",
+        ("VestingDelegationExpirations", "VestingDelegationExpiration"),
+        ("VotingManabar", "Manabar"),
+        ("WithdrawVestingRoutes", "WithdrawRoute"),
+        "Witness",
+        module="hiveio_api.database_api",
     ),
     *aggregate_same_import(
         "AccountCreateOperation",
@@ -378,7 +362,7 @@ lazy_getattr = lazy_module_factory(
         "CollateralizedConvertOperation",
         "CommentOperation",
         "CommentOptionsOperation",
-        "convert_to_representation",
+        ("hf26_operation", "convert_to_representation"),
         "ConvertOperation",
         "CreateClaimedAccountOperation",
         "CreateProposalOperation",
@@ -386,7 +370,6 @@ lazy_getattr = lazy_module_factory(
         "CustomJsonOperation",
         "CustomOperation",
         "DeclineVotingRightsOperation",
-        "DelegateRcOperation",
         "DelegateVestingSharesOperation",
         "DeleteCommentOperation",
         "EscrowApproveOperation",
@@ -400,6 +383,7 @@ lazy_getattr = lazy_module_factory(
         "Pow2Operation",
         "PowOperation",
         "RecoverAccountOperation",
+        "RecurrentTransferOperation",
         "RemoveProposalOperation",
         "RequestAccountRecoveryOperation",
         "ResetAccountOperation",
@@ -416,94 +400,54 @@ lazy_getattr = lazy_module_factory(
         "WitnessBlockApproveOperation",
         "WitnessSetPropertiesOperation",
         "WitnessUpdateOperation",
-        ("Hf26OperationRepresentation", "OperationRepresentationUnion"),
-        ("Hf26Operations", "OperationUnion"),
-        module="schemas.operations",
-    ),
-    *aggregate_same_import(
-        "ExtraFieldsPolicy",
-        "MissingFieldsInGetConfigPolicy",
-        "set_policies",
-        "TestnetAssetsPolicy",
-        module="schemas.policies",
+        "Authority",
+        "LegacyChainProperties",
+        ("Price", "PriceFeed"),
+        ("Price", "HbdExchangeRate"),
+        ("Hf26Operation", "OperationRepresentationUnion"),
+        ("Hf26OperationValue", "OperationUnion"),
+        "OperationBase",
+        ("Hf26RecurrentTransferPairId", "RecurrentTransferPairIdRepresentation"),
+        "Transaction",
+        ("RecurrentTransferPairId", "RecurrentTransferPairIdExtension"),
+        module="hiveio_api.operations",
     ),
     *aggregate_same_import(
         "AssetHbd",
         "AssetHive",
         "AssetVests",
-        module="schemas.fields.assets",
-    ),
-    *aggregate_same_import(
-        "Authority",
-        "LegacyChainProperties",
-        "Manabar",
-        ("Price", "PriceFeed"),
-        module="schemas.fields.compound",
-    ),
-    *aggregate_same_import(
-        "Signature",
-        "TransactionId",
-        ("Sha256", "ChainId"),
         "Hex",
-        module="schemas.fields.hex",
-    ),
-    *aggregate_same_import(
+        "HiveInt",
+        "JsonString",
+        "PublicKey",
+        "Signature",
         "Uint16t",
         "Uint32t",
-        module="schemas.fields.integers",
+        module="schemas.fields.public",
     ),
     *aggregate_same_import(
         "AccountName",
-        "PublicKey",
-        module="schemas.fields.basic",
+        ("Sha256", "ChainId"),
+        "TransactionId",
+        module="schemas.fields.user_friendly",
     ),
     *aggregate_same_import(
-        "is_matching_model",
-        "validate_schema_field",
-        module="schemas.decoders",
+        ("FindRcAccountsResponse", "FindRcAccounts"),
+        ("ListRcDirectDelegationsResponse", "ListRcDirectDelegations"),
+        "RcAccount",
+        ("RcAccountDelegation", "RcDirectDelegation"),
+        module="hiveio_api.rc_api",
     ),
     *aggregate_same_import(
-        "DecodeError",
-        "ValidationError",
-        module="schemas.errors",
+        ("GetAccountHistoryResponse", "GetAccountHistory"),
+        ("GetTransactionResponse", "GetTransaction"),
+        module="hiveio_api.account_history_api",
     ),
-    *aggregate_same_import(
-        "HbdExchangeRate",
-        "Proposal",
-        module="schemas.fields.compound",
-    ),
+    ("hiveio_api.transaction_status_api", "FindTransactionResponse", "TransactionStatus"),
+    ("hiveio_api", "HiveDateTime"),
     ("schemas.base", "field"),
-    ("schemas.apis.rc_api", "FindRcAccounts"),
-    ("schemas.apis.rc_api", "ListRcDirectDelegations"),
-    ("schemas.apis.transaction_status_api", "FindTransaction", "TransactionStatus"),
-    *aggregate_same_import(
-        "GetAccountHistory",
-        "GetTransaction",
-        module="schemas.apis.account_history_api",
-    ),
-    (
-        "schemas.operations.extensions.representation_types",
-        "HF26RepresentationRecurrentTransferPairIdOperationExtension",
-        "RecurrentTransferPairIdRepresentation",
-    ),
-    ("schemas.fields.hive_datetime", "HiveDateTime"),
-    ("schemas.fields.hive_int", "HiveInt"),
-    ("schemas.fields.resolvables", "JsonString"),
-    ("schemas.operation", "Operation", "OperationBase"),
+    ("schemas.validation", "is_matching_model"),
     ("schemas._preconfigured_base_model", "PreconfiguredBaseModel"),
-    ("schemas.apis.rc_api.fundaments_of_responses", "RcAccount"),
-    ("schemas.apis.rc_api.fundaments_of_responses", "RcDirectDelegations", "RcDirectDelegation"),
-    ("schemas.operations.recurrent_transfer_operation", "RecurrentTransferOperation"),
-    (
-        "schemas.operations.extensions.recurrent_transfer_extensions",
-        "RecurrentTransferPairId",
-        "RecurrentTransferPairIdExtension",
-    ),
-    (
-        "schemas.operations.witness_set_properties_operation",
-        "WitnessPropsSerializedKey",
-    ),
-    ("schemas.transaction", "Transaction"),
 )
 
 if not TYPE_CHECKING:
