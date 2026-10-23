@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path  # noqa: TC003
 from typing import Self
 
-from clive.__private.models.schemas import PreconfiguredBaseModel, Transaction
+from clive.__private.models.schemas import PreconfiguredBaseModel
 from clive.__private.storage.migrations import v0
 
 
@@ -13,7 +13,7 @@ class ProfileStorageModel(v0.ProfileStorageModel):
     transaction: TransactionStorageModel | None = None  # type: ignore[assignment]  # changed storage model
 
     class TransactionStorageModel(PreconfiguredBaseModel):
-        transaction_core: Transaction
+        transaction_core: ProfileStorageModel.TransactionCoreStorageModel
         transaction_file_path: Path | None = None
 
         @classmethod
@@ -25,9 +25,7 @@ class ProfileStorageModel(v0.ProfileStorageModel):
         old_transaction = old.transaction
         new_transaction = (
             cls.TransactionStorageModel(
-                transaction_core=Transaction(
-                    **old_transaction.transaction_core.dict(),
-                ),
+                transaction_core=old_transaction.transaction_core,
                 transaction_file_path=old_transaction.transaction_file_path,
             )
             if old_transaction is not None

@@ -31,6 +31,15 @@ class ProfileStorageBase(PreconfiguredBaseModel):
 
     _REVISION_NONCE: ClassVar[int] = 0
 
+    _FROZEN_REVISION: ClassVar[Revision | None] = None
+    """
+    Revision of the version, set instead of computing it from the schema of the model.
+
+    The revision of the first version was computed from the schema of its model with validating field types of schemas,
+    which became builtins - it is frozen, so profiles stored with it are still loaded. The schema of the model is still
+    guarded by tests (`get_schema_revision`).
+    """
+
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(*args, **kwargs)
         cls._REGISTERED_MODELS.append(cls)
@@ -83,6 +92,22 @@ class ProfileStorageBase(PreconfiguredBaseModel):
     @classmethod
     @cache
     def get_this_revision(cls) -> Revision:
+        assert cls is not ProfileStorageBase, "This method should be called on subclass."
+        frozen_revision: Revision | None = vars(cls).get("_FROZEN_REVISION")
+        if frozen_revision is not None:
+            return frozen_revision
+        return cls.get_schema_revision()
+
+    @classmethod
+    def get_schema_revision(cls) -> Revision:
+        """
+        Compute the revision of the version from the schema of its model, also when the revision is frozen.
+
+        Any change of the model (also of the models it embeds) changes it, so tests compare it with known values.
+
+        Returns:
+            The revision computed from the schema of the model.
+        """
         assert cls is not ProfileStorageBase, "This method should be called on subclass."
         return sha256(cls._get_revision_seed().encode()).hexdigest()[:8]
 
