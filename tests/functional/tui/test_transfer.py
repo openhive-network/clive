@@ -42,7 +42,7 @@ async def fill_transfer_data(
     """Assuming Transfer is current screen."""
     assert_is_screen_active(pilot, TransferToAccount)
     amount = str(asset.as_float())
-    asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
+    asset_token: LiquidAssetToken = asset.token(testnet=False).get_symbol()  # type: ignore[assignment]
     assert_is_clive_composed_input_focused(
         pilot, AccountNameInput, context="TransferToAccount should have initial focus"
     )

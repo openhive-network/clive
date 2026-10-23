@@ -31,9 +31,8 @@ async def test_withdrawal_cancel_valid(cli_tester: CLITester) -> None:
 
     # ASSERT
     result = cli_tester.show_pending_withdrawals()
-    assert AMOUNT_TO_DEPOSIT.as_legacy() not in result.stdout, (
-        f"Withdrawal {request_id} of {AMOUNT_TO_DEPOSIT.as_legacy()} should be canceled."
-    )
+    amount_to_deposit = AMOUNT_TO_DEPOSIT.as_legacy(testnet=False)  # clive displays symbols of the mainnet
+    assert amount_to_deposit not in result.stdout, f"Withdrawal {request_id} of {amount_to_deposit} should be canceled."
 
 
 async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:

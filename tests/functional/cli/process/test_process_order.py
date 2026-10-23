@@ -16,7 +16,6 @@ from clive.__private.cli.exceptions import (
     OrderSameAssetError,
 )
 from clive.__private.models.schemas import (
-    GetTransaction,
     HbdExchangeRate,
     HiveDateTime,
     LimitOrderCancelOperation,
@@ -26,11 +25,7 @@ from clive.__private.models.schemas import (
 from clive_local_tools.checkers.blockchain_checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS, WORKING_ACCOUNT_KEY_ALIAS
-from clive_local_tools.helpers import (
-    convert_api_response,
-    get_formatted_error_message,
-    get_transaction_id_from_output,
-)
+from clive_local_tools.helpers import get_formatted_error_message, get_transaction_id_from_output
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
@@ -63,9 +58,7 @@ def assert_limit_order_create2_in_blockchain(  # noqa: PLR0913
     """
     transaction_id = get_transaction_id_from_output(result.stdout)
     node.wait_number_of_blocks(1)
-    transaction = convert_api_response(
-        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
-    )
+    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
 
     for op_repr in transaction.operations:
         op = op_repr.value
@@ -266,9 +259,7 @@ async def test_process_order_create_auto_id(
     # ASSERT - verify operation placed in blockchain
     transaction_id = get_transaction_id_from_output(result.stdout)
     node.wait_number_of_blocks(1)
-    transaction = convert_api_response(
-        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
-    )
+    transaction = node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
     assert any(isinstance(op.value, LimitOrderCreate2Operation) for op in transaction.operations)
 
 

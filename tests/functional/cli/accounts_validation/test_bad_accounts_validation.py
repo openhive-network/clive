@@ -8,11 +8,11 @@ import test_tools as tt
 
 from clive.__private.cli.exceptions import CLITransactionBadAccountError
 from clive.__private.core.accounts.account_manager import AccountManager
+from clive.__private.models.schemas import TransferOperation
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.helpers import create_transaction_file, get_formatted_error_message
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_NAMES, WORKING_ACCOUNT_NAME
-from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator
