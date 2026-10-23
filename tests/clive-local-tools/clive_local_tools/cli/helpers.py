@@ -16,4 +16,4 @@ def get_transaction_id_from_result(result: CLITestResult) -> str:
 
 
 def load_transaction_from_file(transaction_path: Path) -> Transaction:
-    return Transaction.parse_file(transaction_path)
+    return Transaction.parse_raw(transaction_path.read_text())

@@ -15,7 +15,7 @@ from clive_local_tools.checkers.blockchain_checkers import (
     assert_operations_placed_in_blockchain,
     assert_transaction_in_blockchain,
 )
-from clive_local_tools.helpers import convert_nai_asset, create_transaction_filepath
+from clive_local_tools.helpers import create_transaction_filepath
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
@@ -59,8 +59,7 @@ MEMO_KEY: Final[PublicKey] = create_public_key_for_role(role="memo")
 
 
 def fetch_account_creation_fee(node: tt.RawNode) -> AssetHive:
-    fee = node.api.database_api.get_witness_schedule().median_props.account_creation_fee
-    return convert_nai_asset(fee, AssetHive)
+    return node.api.database_api.get_witness_schedule().median_props.account_creation_fee
 
 
 async def test_account_creation_with_fee(node: tt.RawNode, cli_tester: CLITester) -> None:

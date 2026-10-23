@@ -147,7 +147,7 @@ async def _main() -> None:
             profile_model = create_model_from_scratch()
             profile_model.transaction = ProfileStorageModel.TransactionStorageModel(
                 transaction_core=ProfileStorageModel.TransactionCoreStorageModel(
-                    operations=[convert_to_representation(OPERATION)]
+                    operations=[convert_to_representation(OPERATION).to_builtins()]
                 ),
                 transaction_file_path=Path("example/path"),
             )

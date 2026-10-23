@@ -19,8 +19,8 @@ async def choose_asset_token(pilot: ClivePilot, asset_token: LiquidAssetToken) -
     assert isinstance(selected_asset, AssetFactoryHolder), (
         f"Expected 'AssetFactoryHolder', current is {type(selected_asset)}."
     )
-    selected_asset_cls = selected_asset.asset_cls
-    selected_asset_name = Asset.get_symbol(selected_asset_cls)
+    selected_asset_kind = selected_asset.asset_kind
+    selected_asset_name = Asset.get_symbol(selected_asset_kind)
     assert selected_asset_name == asset_token, (
         f"Expected '{asset_token}' selection. Currently '{selected_asset_name}' is selected."
     )
