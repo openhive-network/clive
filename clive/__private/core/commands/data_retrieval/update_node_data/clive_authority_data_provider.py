@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.models.hive_date_time import HiveDateTime
+from clive.__private.models.schemas import HiveDateTime
 from wax.interfaces import IAuthorityDataProvider
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAuthority
 

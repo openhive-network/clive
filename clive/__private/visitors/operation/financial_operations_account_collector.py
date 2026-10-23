@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, override
 
 from clive.__private.core.constants.node import (
@@ -25,7 +26,10 @@ class FinancialOperationsAccountCollector(OperationVisitor):
 
     @override
     def visit_custom_json_operation(self, operation: schemas.CustomJsonOperation) -> None:
-        json_value = operation.json_.value
+        try:
+            json_value: object = json.loads(operation.json_)
+        except json.JSONDecodeError:
+            return  # not a JSON, so not an RC delegation
         if not isinstance(json_value, list) or len(json_value) < 2 or json_value[0] != "delegate_rc":  # noqa: PLR2004
             return
         rc_data = json_value[1]

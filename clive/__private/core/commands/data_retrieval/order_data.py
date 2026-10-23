@@ -14,18 +14,17 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models.asset import Asset
-    from schemas.apis.database_api import FindLimitOrders
-    from schemas.apis.database_api.fundaments_of_reponses import LimitOrdersFundament
+    from hiveio_api.database_api import FindLimitOrdersResponse, LimitOrder
 
 
 @dataclass
 class HarvestedDataRaw:
-    orders: FindLimitOrders | None = None
+    orders: FindLimitOrdersResponse | None = None
 
 
 @dataclass
 class SanitizedData:
-    orders: list[LimitOrdersFundament]
+    orders: list[LimitOrder]
 
 
 @dataclass
@@ -42,8 +41,8 @@ class OrderInfo:
     price: Decimal
 
     @classmethod
-    def from_fundament(cls, fundament: LimitOrdersFundament) -> OrderInfo:
-        """Create OrderInfo from a LimitOrdersFundament."""
+    def from_fundament(cls, fundament: LimitOrder) -> OrderInfo:
+        """Create OrderInfo from a LimitOrder."""
         from clive.__private.models.asset import Asset  # noqa: PLC0415
 
         # Parse sell_price to get the assets
@@ -58,21 +57,21 @@ class OrderInfo:
 
         # Current remaining amount to sell (for_sale is raw internal amount)
         remaining_amount = fundament.for_sale
-        if isinstance(base, Asset.Hive):
-            remaining_sell_asset: Asset.LiquidT = Asset.Hive(amount=remaining_amount)
+        if Asset.is_hive(base):
+            remaining_sell_asset: Asset.LiquidT = Asset.HIVE_KIND.satoshi(remaining_amount)
         else:
-            remaining_sell_asset = Asset.Hbd(amount=remaining_amount)
+            remaining_sell_asset = Asset.HBD_KIND.satoshi(remaining_amount)
 
         # Proportionally calculate remaining receive amount
         ratio = Decimal(remaining_amount) / base_amount if base_amount != 0 else Decimal(0)
         receive_amount = round(quote_amount * ratio)
-        if isinstance(quote, Asset.Hive):
-            remaining_receive_asset: Asset.LiquidT = Asset.Hive(amount=receive_amount)
+        if Asset.is_hive(quote):
+            remaining_receive_asset: Asset.LiquidT = Asset.HIVE_KIND.satoshi(receive_amount)
         else:
-            remaining_receive_asset = Asset.Hbd(amount=receive_amount)
+            remaining_receive_asset = Asset.HBD_KIND.satoshi(receive_amount)
 
         return cls(
-            id_=fundament.id_,
+            id_=fundament.id,
             orderid=fundament.orderid,
             seller=fundament.seller,
             created=fundament.created,
@@ -131,6 +130,6 @@ class OrderDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, O
         orders = [OrderInfo.from_fundament(order) for order in data.orders]
         return OrderData(orders=orders)
 
-    def __assert_orders(self, data: FindLimitOrders | None) -> list[LimitOrdersFundament]:
+    def __assert_orders(self, data: FindLimitOrdersResponse | None) -> list[LimitOrder]:
         assert data is not None, "FindLimitOrders data is missing"
         return data.orders

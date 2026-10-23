@@ -13,23 +13,24 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models.schemas import AssetHbd, AssetHive
-    from schemas.apis.database_api import FindCollateralizedConversionRequests, FindHbdConversionRequests
-    from schemas.apis.database_api.fundaments_of_reponses import (
-        FindCollateralizedConversionRequestsFundament,
-        HbdConversionRequestsFundament,
+    from hiveio_api.database_api import (
+        CollateralizedConversionRequests,
+        FindCollateralizedConversionRequestsResponse,
+        FindHbdConversionRequestsResponse,
+        HbdConversion,
     )
 
 
 @dataclass
 class HarvestedDataRaw:
-    hbd_conversion_requests: FindHbdConversionRequests | None = None
-    collateralized_conversion_requests: FindCollateralizedConversionRequests | None = None
+    hbd_conversion_requests: FindHbdConversionRequestsResponse | None = None
+    collateralized_conversion_requests: FindCollateralizedConversionRequestsResponse | None = None
 
 
 @dataclass
 class SanitizedData:
-    hbd_conversion_requests: list[HbdConversionRequestsFundament]
-    collateralized_conversion_requests: list[FindCollateralizedConversionRequestsFundament]
+    hbd_conversion_requests: list[HbdConversion]
+    collateralized_conversion_requests: list[CollateralizedConversionRequests]
 
 
 @dataclass
@@ -171,14 +172,12 @@ class ConvertDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
             collateralized_conversions=collateralized_conversions,
         )
 
-    def __assert_hbd_conversion_requests(
-        self, data: FindHbdConversionRequests | None
-    ) -> list[HbdConversionRequestsFundament]:
+    def __assert_hbd_conversion_requests(self, data: FindHbdConversionRequestsResponse | None) -> list[HbdConversion]:
         assert data is not None, "FindHbdConversionRequests data is missing"
         return list(data.requests)
 
     def __assert_collateralized_conversion_requests(
-        self, data: FindCollateralizedConversionRequests | None
-    ) -> list[FindCollateralizedConversionRequestsFundament]:
+        self, data: FindCollateralizedConversionRequestsResponse | None
+    ) -> list[CollateralizedConversionRequests]:
         assert data is not None, "FindCollateralizedConversionRequests data is missing"
         return list(data.requests)

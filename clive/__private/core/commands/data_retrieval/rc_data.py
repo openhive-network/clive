@@ -89,8 +89,8 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
     async def _process_data(self, data: SanitizedData) -> RcData:
         rc_account = data.rc_account
         max_rc = int(rc_account.max_rc)
-        delegated_rc = int(rc_account.delegated_rc)
-        received_delegated_rc = int(rc_account.received_delegated_rc)
+        delegated_rc = int(rc_account.delegated_rc or 0)  # optional in the model - none delegated when missing
+        received_delegated_rc = int(rc_account.received_delegated_rc or 0)
         owned_rc_from_stake = max_rc + delegated_rc - received_delegated_rc
 
         head_block_time = data.gdpo.time
@@ -158,9 +158,7 @@ class RcDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, RcDa
 
     def _assert_account_creation_fee(self, witness_schedule: WitnessSchedule | None) -> Asset.Hive:
         assert witness_schedule is not None, "WitnessSchedule data is missing"
-        fee = witness_schedule.median_props.account_creation_fee
-        assert fee is not None, "Account creation fee is None"
-        return fee
+        return witness_schedule.median_props.account_creation_fee
 
     @staticmethod
     def _compute_min_rc_delegation(account_creation_fee: Asset.Hive, gdpo: DynamicGlobalProperties) -> int:

@@ -13,14 +13,14 @@ if TYPE_CHECKING:
     from clive.__private.cli.common.constants import SocialAction
     from clive.__private.core.keys import PublicKey
     from clive.__private.models.asset import Asset
-    from wax._private.operation_base import OperationBase as WaxOperationBase
+    from wax.models.operations import WaxMetaOperation
 
 
 OperationExpectType = TypeVar("OperationExpectType", bound=OperationUnion)
 
 
 class WaxOperationWrapper:
-    def __init__(self, wax_operation: WaxOperationBase) -> None:
+    def __init__(self, wax_operation: WaxMetaOperation) -> None:
         self._wax_operation = wax_operation
 
     @classmethod
@@ -55,14 +55,9 @@ class WaxOperationWrapper:
                     owner=AccountName(owner),
                     witness_signing_key=key_string(key),
                     new_signing_key=key_string(new_signing_key) if new_signing_key is not None else None,
-                    account_creation_fee=account_creation_fee.as_serialized_nai()
-                    if account_creation_fee is not None
-                    else None,
+                    account_creation_fee=account_creation_fee,
                     url=url,
-                    hbd_exchange_rate=HbdExchangeRate(
-                        base=hbd_exchange_rate.as_serialized_nai(),
-                        quote=Asset.hive(1).as_serialized_nai(),
-                    )
+                    hbd_exchange_rate=HbdExchangeRate(base=hbd_exchange_rate, quote=Asset.hive(1))
                     if hbd_exchange_rate
                     else None,
                     maximum_block_size=maximum_block_size,

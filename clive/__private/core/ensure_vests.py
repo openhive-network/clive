@@ -21,7 +21,7 @@ def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.V
     Returns:
         The converted asset to vests.
     """
-    if isinstance(value, Asset.Vests):
+    if Asset.is_vests(value):
         return value
 
     return iwax.calculate_hp_to_vests(value, gdpo)
@@ -38,7 +38,7 @@ async def ensure_vests_async(value: Asset.VotingT, world: World) -> Asset.Vests:
     Returns:
         The converted asset to vests.
     """
-    if isinstance(value, Asset.Vests):
+    if Asset.is_vests(value):
         return value
 
     gdpo = await world.node.cached.dynamic_global_properties

@@ -14,18 +14,17 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models.asset import Asset
-    from schemas.apis.database_api import FindEscrows
-    from schemas.apis.database_api.fundaments_of_reponses import EscrowsFundament
+    from hiveio_api.database_api import Escrow, FindEscrowsResponse
 
 
 @dataclass
 class HarvestedDataRaw:
-    escrows: FindEscrows | None = None
+    escrows: FindEscrowsResponse | None = None
 
 
 @dataclass
 class SanitizedData:
-    escrows: list[EscrowsFundament]
+    escrows: list[Escrow]
 
 
 @dataclass
@@ -129,7 +128,7 @@ class EscrowDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, 
     async def _process_data(self, data: SanitizedData) -> EscrowData:
         escrows = [
             EscrowInfo(
-                id_=e.id_,
+                id_=e.id,
                 escrow_id=e.escrow_id,
                 from_=e.from_,
                 to=e.to,
@@ -147,6 +146,6 @@ class EscrowDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, 
         ]
         return EscrowData(escrows=escrows)
 
-    def __assert_escrows(self, data: FindEscrows | None) -> list[EscrowsFundament]:
+    def __assert_escrows(self, data: FindEscrowsResponse | None) -> list[Escrow]:
         assert data is not None, "FindEscrows data is missing"
         return data.escrows

@@ -90,22 +90,19 @@ def convert_wax_errors[F: Callable[..., Any]](func: F) -> F:
 def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-    asset_cls = Asset.resolve_nai(result.nai)
-    return asset_cls(amount=int(result.amount))
+    return Asset.resolve_nai(result.nai).satoshi(int(result.amount))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
     from clive.__private.models.asset import Asset, UnknownAssetTypeError  # noqa: PLC0415
 
-    match Asset.get_symbol(asset):
-        case "HIVE" | "TESTS":
-            return wax.hive(amount=int(asset.amount))
-        case "HBD" | "TBD":
-            return wax.hbd(amount=int(asset.amount))
-        case "VESTS":
-            return wax.vests(amount=int(asset.amount))
-        case _:
-            raise UnknownAssetTypeError(asset.nai())
+    if Asset.is_hive(asset):
+        return wax.hive(amount=int(asset.amount))
+    if Asset.is_hbd(asset):
+        return wax.hbd(amount=int(asset.amount))
+    if Asset.is_vests(asset):
+        return wax.vests(amount=int(asset.amount))
+    raise UnknownAssetTypeError(asset.nai)
 
 
 def __validate_wax_response(response: wax.python_result) -> None:
@@ -212,17 +209,17 @@ def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
 
 @cast_hiveint_args
 def hive(amount: int) -> Asset.Hive:
-    return cast("Asset.Hive", from_python_json_asset(wax.hive(amount)))
+    return from_python_json_asset(wax.hive(amount))
 
 
 @cast_hiveint_args
 def hbd(amount: int) -> Asset.Hbd:
-    return cast("Asset.Hbd", from_python_json_asset(wax.hbd(amount)))
+    return from_python_json_asset(wax.hbd(amount))
 
 
 @cast_hiveint_args
 def vests(amount: int) -> Asset.Vests:
-    return cast("Asset.Vests", from_python_json_asset(wax.vests(amount)))
+    return from_python_json_asset(wax.vests(amount))
 
 
 @convert_wax_errors
@@ -243,7 +240,7 @@ def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Ass
         base=to_python_json_asset(current_price_feed.base),
         quote=to_python_json_asset(current_price_feed.quote),
     )
-    return cast("Asset.Hive", from_python_json_asset(result))
+    return from_python_json_asset(result)
 
 
 @cast_hiveint_args
@@ -254,7 +251,7 @@ def calculate_vests_to_hp(_vests: int | Asset.Vests, data: TotalVestingProtocol)
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast("Asset.Hive", from_python_json_asset(result))
+    return from_python_json_asset(result)
 
 
 def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asset.Vests:
@@ -263,7 +260,7 @@ def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asse
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast("Asset.Vests", from_python_json_asset(result))
+    return from_python_json_asset(result)
 
 
 @convert_wax_errors
@@ -281,7 +278,7 @@ def calculate_witness_votes_hp(votes: int, data: TotalVestingProtocol) -> Asset.
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast("Asset.Hive", from_python_json_asset(result))
+    return from_python_json_asset(result)
 
 
 def generate_password_based_private_key(

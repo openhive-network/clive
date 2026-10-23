@@ -162,7 +162,9 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
             return utc_epoch()
-        return data.history[0][1].timestamp
+        operation = data.history[0][1]  # items of history are [index, operation] pairs
+        assert not isinstance(operation, int), "Account history info malformed. Expected [index, operation] pair."
+        return operation.timestamp
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time
