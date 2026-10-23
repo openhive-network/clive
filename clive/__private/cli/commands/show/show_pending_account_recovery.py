@@ -10,8 +10,7 @@ from clive.__private.cli.print_cli import print_cli, print_content_not_available
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
-    from schemas.apis.database_api import FindAccountRecoveryRequests
-    from schemas.apis.database_api.fundaments_of_reponses import FindAccountRecoveryRequestsFundament
+    from hiveio_api.database_api import AccountRecovery, FindAccountRecoveryRequestsResponse
 
 
 NO_PENDING_ACCOUNT_RECOVERY_MESSAGE: Final[str] = "No pending account recovery request."
@@ -20,7 +19,7 @@ NO_PENDING_ACCOUNT_RECOVERY_MESSAGE: Final[str] = "No pending account recovery r
 @dataclass(kw_only=True)
 class ShowPendingAccountRecovery(WorldBasedCommand):
     account_name: str
-    _result: FindAccountRecoveryRequests = field(init=False)
+    _result: FindAccountRecoveryRequestsResponse = field(init=False)
 
     async def fetch_data(self) -> None:
         self._result = await self.world.node.api.database_api.find_account_recovery_requests(
@@ -35,7 +34,7 @@ class ShowPendingAccountRecovery(WorldBasedCommand):
             return
         print_content_not_available(NO_PENDING_ACCOUNT_RECOVERY_MESSAGE)
 
-    def _create_table(self, requests: list[FindAccountRecoveryRequestsFundament]) -> Table:
+    def _create_table(self, requests: list[AccountRecovery]) -> Table:
         title = self._format_table_title(self.account_name)
         table = Table(title=title, min_width=len(title))
         table.add_column("Account to recover")

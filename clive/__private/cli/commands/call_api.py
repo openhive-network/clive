@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import errno
 import importlib
+import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
-
-import msgspec
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.node_address_cli_command import NodeAddressCLICommand
@@ -19,7 +18,7 @@ from clive.__private.cli.exceptions import (
 )
 from clive.__private.cli.print_cli import print_json
 from clive.__private.core.formatters.case import camelize
-from clive.__private.models.schemas import DecodeError, JsonString, ValidationError
+from hiveio_api import to_builtins
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar
@@ -162,7 +161,7 @@ class _CallAPICommon(ExternalCLICommand, ABC):
         # currently we don't support condenser_api
         result = await api_method_awaitable(**self.get_keyword_params())
 
-        print_json(msgspec.json.encode(result).decode())
+        print_json(json.dumps(to_builtins(result)))
 
     def get_keyword_params(self) -> dict[str, Any]:
         return self._parsed_params
@@ -181,11 +180,12 @@ class _CallAPICommon(ExternalCLICommand, ABC):
 
     def _validate_api_call_params(self) -> None:
         try:
-            self._parsed_params = JsonString(self.params).value
-        except (DecodeError, ValidationError) as err:
+            parsed_params: object = json.loads(self.params)
+        except json.JSONDecodeError as err:
             raise CLICallAPIParamNotAJSONContainerError(self.params) from err
-        if not isinstance(self._parsed_params, dict):
+        if not isinstance(parsed_params, dict):
             raise CLICallAPIParamNotAJSONContainerError(self.params)
+        self._parsed_params = parsed_params
 
     def _validate_api_method_name(self) -> None:
         if not hasattr(self._api_class, self.method_name):

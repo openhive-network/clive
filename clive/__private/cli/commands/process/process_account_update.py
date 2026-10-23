@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, cast, override
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
+from schemas.fields import user_friendly
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction, ComposeTransaction
@@ -119,7 +120,7 @@ def add_account(auth: Authority, account: str, weight: int) -> Authority:
 def add_key(auth: Authority, key: str, weight: int) -> Authority:
     if is_on_auths_list(key, auth.key_auths):
         raise CLIPrettyError(f"Key {key} is current key authority")
-    key_weight_tuple = (PublicKey(key), HiveInt(weight))
+    key_weight_tuple = (user_friendly.PublicKey(key), HiveInt(weight))
     auth.key_auths.append(key_weight_tuple)
     return auth
 
@@ -134,7 +135,7 @@ def remove_account(auth: Authority, account: str) -> Authority:
 
 
 def remove_key(auth: Authority, key: str) -> Authority:
-    if not is_on_auths_list(PublicKey(key), auth.key_auths):
+    if not is_on_auths_list(user_friendly.PublicKey(key), auth.key_auths):
         raise CLIPrettyError(f"Key {key} is not current key authority")
     auth.key_auths = [key_weight_tuple for key_weight_tuple in auth.key_auths if key_weight_tuple[0] != key]
     return auth
@@ -156,7 +157,7 @@ def set_threshold(auth: Authority, threshold: int) -> Authority:
 
 
 def set_memo_key(operation: AccountUpdate2Operation, key: str) -> AccountUpdate2Operation:
-    operation.memo_key = PublicKey(key)
+    operation.memo_key = user_friendly.PublicKey(key)
     return operation
 
 
