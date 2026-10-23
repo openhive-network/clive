@@ -42,7 +42,7 @@ class ProcessRcDelegation(OperationCommand):
         amount_in_rc = int(self._vesting_shares.amount)
 
         amount_hp: Asset.Hive
-        if isinstance(self.amount, Asset.Hive):
+        if Asset.is_hive(self.amount):
             amount_hp = self.amount
         else:
             amount_hp = iwax.calculate_vests_to_hp(amount_in_rc, rc_data.gdpo)

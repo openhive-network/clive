@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING
 
 import typer
 
@@ -29,7 +29,7 @@ def rename[R, **P](new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     return decorator
 
 
-def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
+def _parse_asset(raw: str, *allowed_kinds: Asset.Kind) -> Asset.AnyT:
     """
     Parse the liquid asset amount.
 
@@ -51,17 +51,16 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
         UnknownAssetTypeError,
     )
 
-    _allowed_assets: tuple[type[Asset.AnyT], ...] = allowed_assets  # type: ignore[assignment]
-    allowed_symbols_message = f"Only {[Asset.get_symbol(allowed) for allowed in _allowed_assets]} are allowed."
+    allowed_symbols_message = f"Only {[Asset.get_symbol(allowed) for allowed in allowed_kinds]} are allowed."
 
     try:
-        asset: ParsedAssetT = Asset.from_legacy(raw)  # type: ignore[assignment]
+        asset = Asset.from_legacy(raw)
     except UnknownAssetTypeError as error:
         raise typer.BadParameter(f"{error} {allowed_symbols_message}") from None
     except AssetAmountInvalidFormatError as error:
         raise typer.BadParameter(f"{error}") from None
 
-    if not isinstance(asset, _allowed_assets):
+    if Asset.get_kind(asset) not in allowed_kinds:
         raise typer.BadParameter(allowed_symbols_message)
     return asset
 
@@ -69,7 +68,7 @@ def _parse_asset[ParsedAssetT: Asset.AnyT](raw: str, *allowed_assets: type[Parse
 def liquid_asset(raw: str) -> Asset.LiquidT:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-    return _parse_asset(raw, *get_args(Asset.LiquidT))  # type: ignore[no-any-return]
+    return _parse_asset(raw, *Asset.LIQUID_TYPES)
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
@@ -77,19 +76,19 @@ def voting_asset(raw: str) -> Asset.VotingT:
 
     raw = raw.upper().replace("HP", "HIVE")
 
-    return _parse_asset(raw, *get_args(Asset.VotingT))  # type: ignore[no-any-return]
+    return _parse_asset(raw, *Asset.VOTING_TYPES)
 
 
 def hbd_asset(raw: str) -> Asset.Hbd:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-    return _parse_asset(raw, Asset.Hbd)
+    return _parse_asset(raw, Asset.HBD_KIND)
 
 
 def hive_asset(raw: str) -> Asset.Hive:
     from clive.__private.models.asset import Asset  # noqa: PLC0415
 
-    return _parse_asset(raw, Asset.Hive)
+    return _parse_asset(raw, Asset.HIVE_KIND)
 
 
 def decimal_price(raw: str) -> Decimal:

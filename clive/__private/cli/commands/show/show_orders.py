@@ -39,7 +39,7 @@ class ShowOrders(WorldBasedCommand):
 
         def get_normalized_price(order: OrderInfo) -> Decimal:
             """Get price normalized to HBD/HIVE (invert for SELL HBD orders)."""
-            if isinstance(order.remaining_sell_asset, Asset.Hbd):
+            if Asset.is_hbd(order.remaining_sell_asset):
                 return Decimal(1) / order.price if order.price != 0 else Decimal(0)
             return order.price
 
@@ -49,7 +49,7 @@ class ShowOrders(WorldBasedCommand):
         order_info: OrderInfo
         for order_info in sorted_orders:
             # Determine order type based on what's being sold
-            order_type = "SELL HIVE" if isinstance(order_info.remaining_sell_asset, Asset.Hive) else "SELL HBD"
+            order_type = "SELL HIVE" if Asset.is_hive(order_info.remaining_sell_asset) else "SELL HBD"
 
             # Calculate price normalized to HBD/HIVE
             normalized_price = get_normalized_price(order_info)
