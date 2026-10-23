@@ -98,7 +98,7 @@ clive/__private/cli/common/constants.py
 --------------------
 clive/__private/cli/common/parsers.py
     DOC101: Function `_parse_asset`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_parse_asset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*allowed_assets: type[ParsedAssetT], raw: str].
+    DOC103: Function `_parse_asset`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*allowed_kinds: Asset.Kind, raw: str].
     DOC201: Function `_parse_asset` does not have a return section in docstring
     DOC501: Function `_parse_asset` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `_parse_asset` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['typer.BadParameter'].
@@ -434,7 +434,7 @@ clive/__private/core/commands/data_retrieval/order_data.py
     DOC601: Class `OrderInfo`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `OrderInfo`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [created: datetime, expiration: datetime, id_: int, orderid: int, price: Decimal, remaining_receive_asset: Asset.LiquidT, remaining_sell_asset: Asset.LiquidT, seller: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC101: Method `OrderInfo.from_fundament`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `OrderInfo.from_fundament`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [fundament: LimitOrdersFundament].
+    DOC103: Method `OrderInfo.from_fundament`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [fundament: LimitOrder].
     DOC201: Method `OrderInfo.from_fundament` does not have a return section in docstring
 --------------------
 clive/__private/core/commands/recover_wallets.py
