@@ -83,13 +83,15 @@ class StorageToRuntimeConverter:
             return None
 
         transaction_core = transaction_storage_model.transaction_core
-        return Transaction(
-            operations=deepcopy(transaction_core.operations),
-            ref_block_num=transaction_core.ref_block_num,
-            ref_block_prefix=transaction_core.ref_block_prefix,
-            expiration=transaction_core.expiration,
-            extensions=deepcopy(transaction_core.extensions),
-            signatures=deepcopy(transaction_core.signatures),
+        return Transaction.from_builtins(
+            {
+                "operations": deepcopy(transaction_core.operations),
+                "ref_block_num": transaction_core.ref_block_num,
+                "ref_block_prefix": transaction_core.ref_block_prefix,
+                "expiration": transaction_core.expiration,
+                "extensions": deepcopy(transaction_core.extensions),
+                "signatures": deepcopy(transaction_core.signatures),
+            }
         )
 
     def _transaction_file_path_from_storage_model(self) -> Path | None:
