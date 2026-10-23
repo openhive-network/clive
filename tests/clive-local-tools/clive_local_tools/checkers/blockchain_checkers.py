@@ -8,9 +8,9 @@ import pytest
 
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.models.asset import Asset
-from clive.__private.models.schemas import GetTransaction, HbdExchangeRate
+from clive.__private.models.schemas import HbdExchangeRate
 from clive_local_tools.cli.result_wrapper import CLITestResult
-from clive_local_tools.helpers import convert_api_response, get_transaction_id_from_output
+from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
-    from clive.__private.models.schemas import OperationBase, OperationUnion, Witness
+    from clive.__private.models.schemas import GetTransaction, OperationBase, OperationUnion, Witness
 
 
 def _ensure_transaction_id(trx_id_or_result: CLITestResult | str) -> str:
@@ -27,14 +27,22 @@ def _ensure_transaction_id(trx_id_or_result: CLITestResult | str) -> str:
     return trx_id_or_result
 
 
+def _rebuild_as_from_api(operation: OperationUnion) -> OperationUnion:
+    """
+    Rebuild the operation from its JSON builtins - the way models of API responses are built.
+
+    Models are built without validation, so e.g. tuples of authorities given in the code are lists in models of
+    responses. Rebuilding makes the expected operations comparable with the ones read from the blockchain.
+    """
+    return type(operation).from_builtins(operation.to_builtins())
+
+
 def _get_transaction(
     node: tt.RawNode, trx_id_or_result: str | CLITestResult, *, wait_for_the_next_block: bool
 ) -> GetTransaction:
     assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
     transaction_id = _ensure_transaction_id(trx_id_or_result)
-    return convert_api_response(
-        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True), GetTransaction
-    )
+    return node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
 
 
 def _is_transaction_in_blockchain(
@@ -76,7 +84,7 @@ def assert_operations_placed_in_blockchain(
     wait_for_the_next_block: bool = True,
 ) -> None:
     transaction = _get_transaction(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
-    operations_to_check = list(expected_operations)
+    operations_to_check = [_rebuild_as_from_api(operation) for operation in expected_operations]
 
     for operation_representation in transaction.operations:
         operation = operation_representation.value
@@ -129,13 +137,12 @@ def assert_witness_property(
 
     # Define specialized check functions
     def check_account_creation_fee() -> None:
-        assert props.account_creation_fee is not None, "account_creation_fee is None (see issue #46)"
         check(props.account_creation_fee, property_value)
 
     def check_hbd_exchange_rate() -> None:
         if isinstance(property_value, HbdExchangeRate):
             hbd_exchange_rate = property_value
-        elif isinstance(property_value, Asset.LiquidT):
+        elif isinstance(property_value, Asset.AnyT) and Asset.get_kind(property_value) in Asset.LIQUID_TYPES:
             hbd_exchange_rate = HbdExchangeRate(base=property_value, quote=Asset.hive(1))
         else:
             pytest.fail(f"Unknown property_value type: {type(property_value)}")

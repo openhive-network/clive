@@ -51,11 +51,11 @@ def assert_balances(
 ) -> None:
     result = context.show_balances(account_name=account_name) if isinstance(context, CLITester) else context
     output = result.output
+    token = str(asset_amount.token(testnet=False))  # clive displays symbols of the mainnet
     assert account_name in output, f"no balances of {account_name} account in balances\n{result.info}"
     assert any(
-        asset_amount.token() in line and asset_amount.pretty_amount() in line and balance in line
-        for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in balances\n{result.info}"
+        token in line and asset_amount.pretty_amount() in line and balance in line for line in output.split("\n")
+    ), f"no {asset_amount.pretty_amount()} {token} in balances\n{result.info}"
 
 
 def assert_pending_withrawals(
@@ -63,10 +63,11 @@ def assert_pending_withrawals(
 ) -> None:
     result = context.show_pending_withdrawals() if isinstance(context, CLITester) else context
     output = result.output
+    token = str(asset_amount.token(testnet=False))  # clive displays symbols of the mainnet
     assert any(
-        account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
+        account_name in line and asset_amount.pretty_amount() in line and token in line.upper()
         for line in output.split("\n")
-    ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals\n{result.info}"
+    ), f"no {asset_amount.pretty_amount()} {token} in pending withdrawals\n{result.info}"
 
 
 def get_authority_result(context: CLITester | CLITestResult, authority: AuthorityLevelRegular) -> CLITestResult:
@@ -171,7 +172,7 @@ def assert_no_pending_power_ups(context: CLITester | CLITestResult) -> None:
 def assert_pending_removed_delegations(context: CLITester | CLITestResult, asset: tt.Asset.VestT) -> None:
     result = context.show_pending_removed_delegations() if isinstance(context, CLITester) else context
     output = result.output
-    expected_output = asset.as_legacy()
+    expected_output = asset.as_legacy(testnet=False)  # clive displays symbols of the mainnet
     assert any(expected_output in line for line in output.split("\n")), (
         f"no entry for `{expected_output}` in pending delegations\n{result.info}"
     )
@@ -278,7 +279,7 @@ def assert_locked_profile(cli_tester: CLITester) -> None:
 
 
 def assert_transaction_file_is_signed(file_path: Path, *, signatures_count: int | None = None) -> None:
-    transaction = Transaction.parse_file(file_path)
+    transaction = Transaction.parse_raw(file_path.read_text())
     assert signatures_count is None or signatures_count >= 1, (
         "signatures_count must be None or greater than or equal to 1"
     )
@@ -292,7 +293,7 @@ def assert_transaction_file_is_signed(file_path: Path, *, signatures_count: int 
 
 
 def assert_transaction_file_is_unsigned(file_path: Path) -> None:
-    transaction = Transaction.parse_file(file_path)
+    transaction = Transaction.parse_raw(file_path.read_text())
     assert len(transaction.signatures) == 0, "Transaction should be unsigned."
 
 
