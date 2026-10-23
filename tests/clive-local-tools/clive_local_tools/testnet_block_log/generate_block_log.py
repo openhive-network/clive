@@ -20,7 +20,6 @@ from clive_local_tools.testnet_block_log.constants import (
     WITNESSES,
     WORKING_ACCOUNT_DATA,
 )
-from schemas.convert import UNSET
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -273,7 +272,7 @@ def main() -> None:
 
     last_block_number = node.get_last_block_number()
     block = node.api.block.get_block(block_num=last_block_number).block
-    assert block is not UNSET, f"Block {last_block_number} not found."
+    assert block is not None, f"Block {last_block_number} not found."
     timestamp = block.timestamp
     tt.logger.info(f"Final block_log head block number: {last_block_number}")
     tt.logger.info(f"Final block_log head block timestamp: {timestamp}")

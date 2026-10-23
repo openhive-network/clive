@@ -22,10 +22,6 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_DIRECTORY, LOG_LEVEL_1ST_PARTY, LOG_LEVELS
 from clive.__private.core.world import World
 from clive.__private.logger import logger
-from clive.__private.models.schemas import (
-    TestnetAssetsPolicy,
-    set_policies,
-)
 from clive.__private.settings import get_settings, safe_settings
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
@@ -43,11 +39,6 @@ if TYPE_CHECKING:
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive.__private.core.profile import Profile
     from clive_local_tools.types import EnvContextFactory, GenericEnvContextFactory
-
-
-@pytest.fixture(autouse=True)
-def _use_testnet_assets() -> None:
-    set_policies(TestnetAssetsPolicy(use_testnet_assets=False))
 
 
 @pytest.fixture(autouse=True, scope="session")
