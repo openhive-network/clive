@@ -8,7 +8,6 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
-from clive.__private.models.schemas import ValidationError
 from clive.__private.ui.bindings import CLIVE_PREDEFINED_BINDINGS
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
@@ -81,8 +80,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         Validate operations from callback result. If any of them is invalid, notifies the user and returns None.
 
-        First it checks for any unhandled ValidationError (which may lead to app crash) from schemas
-        and then performs a wax validation.
+        Errors of inputs raised while creating the operation(s) are reported to the user, and created operations are
+        validated by wax (models of operations do not validate data on creation).
 
         Args:
             create_one_many_operations_cb: A callback that returns either a single operation or a list of operations.
@@ -98,9 +97,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             result = create_one_many_operations_cb()
         except CliveValidatedInputError as error:
             self.notify(str(error), severity="error")
-            return None
-        except ValidationError as error:
-            self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
 
         if isinstance(result, _NotImplemented):
