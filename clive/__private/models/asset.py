@@ -3,21 +3,21 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Generic, TypeAlias, TypeVar, get_args
+from typing import TYPE_CHECKING, Final, Generic, TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
     DecimalConverter,
     DecimalConvertible,
 )
-from clive.__private.models.schemas import AssetHbd, AssetHive, AssetVests
 from clive.exceptions import CliveError
+from hiveio_api import Asset as PublicAsset
+from schemas.fields.public import AssetKind, asset_info_of_nai, asset_info_of_symbol
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-AssetT = TypeVar("AssetT", bound=AssetHive | AssetHbd | AssetVests)
-AssetExplicitT = TypeVar("AssetExplicitT", AssetHive, AssetHbd, AssetVests)
+AssetT = TypeVar("AssetT", bound=PublicAsset)
 
 AssetAmount = DecimalConvertible
 AssetFactory = Callable[[AssetAmount], AssetT]
@@ -62,24 +62,50 @@ class AssetFactoryHolder(Generic[AssetT]):  # noqa: UP046
     Holds factory for asset.
 
     Attributes:
-        asset_cls: Class of the asset.
+        asset_kind: Kind of the asset.
         asset_factory: Factory function to create an instance of the asset.
     """
 
-    asset_cls: type[AssetT]
+    asset_kind: AssetKind
     asset_factory: AssetFactory[AssetT]
 
 
 class Asset:
-    Hive: TypeAlias = AssetHive  # noqa: UP040  # used in isinstance check
-    Hbd: TypeAlias = AssetHbd  # noqa: UP040  # used in isinstance check
-    Vests: TypeAlias = AssetVests  # noqa: UP040  # used in isinstance check
-    LiquidT: TypeAlias = Hive | Hbd  # noqa: UP040  # used in isinstance check
-    VotingT: TypeAlias = Hive | Vests  # noqa: UP040  # used in isinstance check
-    AnyT: TypeAlias = Hive | Hbd | Vests  # noqa: UP040  # used in isinstance check
+    """
+    Factories and helpers of assets - all assets are instances of `hiveio_api.Asset`.
 
-    LIQUID_TYPES: Final[tuple[type[LiquidT]]] = get_args(LiquidT)
-    VOTING_TYPES: Final[tuple[type[VotingT]]] = get_args(VotingT)
+    The aliases name the kinds an asset of an annotation may have; they are the same class, so the kind of an asset is
+    checked with `is_hive()`, `is_hbd()`, `is_vests()` and kinds are passed as `Asset.Kind` (`Asset.HIVE_KIND`, ...).
+
+    Attributes:
+        Hive: Asset of HIVE (annotations only).
+        Hbd: Asset of HBD (annotations only).
+        Vests: Asset of VESTS (annotations only).
+        LiquidT: Asset of HIVE or HBD (annotations only).
+        VotingT: Asset of HIVE or VESTS (annotations only).
+        AnyT: Asset of any kind (annotations only).
+        Kind: Kind of assets.
+        HIVE_KIND: Kind of HIVE.
+        HBD_KIND: Kind of HBD.
+        VESTS_KIND: Kind of VESTS.
+        LIQUID_TYPES: Kinds of liquid assets.
+        VOTING_TYPES: Kinds of assets giving voting power.
+    """
+
+    Hive: TypeAlias = PublicAsset  # noqa: UP040  # annotations only - the kind is checked by `is_hive()`
+    Hbd: TypeAlias = PublicAsset  # noqa: UP040  # annotations only - the kind is checked by `is_hbd()`
+    Vests: TypeAlias = PublicAsset  # noqa: UP040  # annotations only - the kind is checked by `is_vests()`
+    LiquidT: TypeAlias = PublicAsset  # noqa: UP040  # annotations only - HIVE or HBD
+    VotingT: TypeAlias = PublicAsset  # noqa: UP040  # annotations only - HIVE or VESTS
+    AnyT: TypeAlias = PublicAsset  # noqa: UP040  # annotations only
+    Kind: TypeAlias = AssetKind  # noqa: UP040
+
+    HIVE_KIND: Final[AssetKind] = PublicAsset.hive
+    HBD_KIND: Final[AssetKind] = PublicAsset.hbd
+    VESTS_KIND: Final[AssetKind] = PublicAsset.vests
+
+    LIQUID_TYPES: Final[tuple[AssetKind, ...]] = (HIVE_KIND, HBD_KIND)
+    VOTING_TYPES: Final[tuple[AssetKind, ...]] = (HIVE_KIND, VESTS_KIND)
 
     @classmethod
     def hive(cls, amount: AssetAmount) -> Asset.Hive:
@@ -95,7 +121,7 @@ class Asset:
         Returns:
             An instance of Hive asset with the specified amount.
         """
-        return cls.__create(Asset.Hive, amount)
+        return cls.__create(cls.HIVE_KIND, amount)
 
     @classmethod
     def hbd(cls, amount: AssetAmount) -> Asset.Hbd:
@@ -111,7 +137,7 @@ class Asset:
         Returns:
             An instance of Hbd asset with the specified amount.
         """
-        return cls.__create(Asset.Hbd, amount)
+        return cls.__create(cls.HBD_KIND, amount)
 
     @classmethod
     def vests(cls, amount: AssetAmount) -> Asset.Vests:
@@ -127,20 +153,20 @@ class Asset:
         Returns:
             An instance of Vests asset with the specified amount.
         """
-        return cls.__create(Asset.Vests, amount)
+        return cls.__create(cls.VESTS_KIND, amount)
 
     @classmethod
-    def ensure_liquid_type(cls, asset_type: type[Asset.AnyT]) -> type[Asset.LiquidT]:
+    def ensure_liquid_type(cls, asset_type: Asset.Kind) -> Asset.Kind:
         assert asset_type in cls.LIQUID_TYPES, f"Asset is not liquid type, given type is {asset_type}"
         return asset_type
 
     @classmethod
-    def ensure_voting_type(cls, asset_type: type[Asset.AnyT]) -> type[Asset.VotingT]:
+    def ensure_voting_type(cls, asset_type: Asset.Kind) -> Asset.Kind:
         assert asset_type in cls.VOTING_TYPES, f"Asset is not voting type, given type is {asset_type}"
         return asset_type
 
     @classmethod
-    def __create(cls, asset: type[AssetExplicitT], amount: AssetAmount) -> AssetExplicitT:
+    def __create(cls, asset: Asset.Kind, amount: AssetAmount) -> Asset.AnyT:
         """
         Create asset.
 
@@ -159,30 +185,22 @@ class Asset:
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount), "Should be a number.") from error
         else:
-            return asset(amount=amount)
+            return asset.satoshi(amount)
 
     @classmethod
-    def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
+    def resolve_symbol(cls, symbol: str) -> Asset.Kind:
         symbol = symbol.upper()
-        match symbol:
-            case "HIVE" | "TESTS":
-                return Asset.Hive
-            case "HBD" | "TBD":
-                return Asset.Hbd
-            case "VESTS":
-                return Asset.Vests
-            case _:
-                raise UnknownAssetTypeError(symbol)
+        asset_info = asset_info_of_symbol(symbol)
+        if asset_info is None:
+            raise UnknownAssetTypeError(symbol)
+        return PublicAsset.kind_of(asset_info)
 
     @classmethod
-    def resolve_nai(cls, nai: str) -> type[Asset.AnyT]:
-        if nai == cls.get_nai(cls.Hive):
-            return Asset.Hive
-        if nai == cls.get_nai(cls.Hbd):
-            return Asset.Hbd
-        if nai == cls.get_nai(cls.Vests):
-            return Asset.Vests
-        raise UnknownAssetNaiError(nai)
+    def resolve_nai(cls, nai: str) -> Asset.Kind:
+        asset_info = asset_info_of_nai(nai)
+        if asset_info is None:
+            raise UnknownAssetNaiError(nai)
+        return PublicAsset.kind_of(asset_info)
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
@@ -195,13 +213,13 @@ class Asset:
 
         amount, symbol = match.groups()
 
-        asset_cls = cls.resolve_symbol(symbol)
+        asset_kind = cls.resolve_symbol(symbol)
 
-        result = AssetAmountValidator(asset_cls).validate(amount)
+        result = AssetAmountValidator(asset_kind).validate(amount)
         if not result.is_valid:
             raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
-        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
+        return asset_kind.satoshi(cls.__convert_amount_to_internal_representation(amount, asset_kind))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:
@@ -209,15 +227,14 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10 ** asset.precision():.{asset.precision()}f}"
+        return asset.pretty_amount()
 
     @classmethod
     def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
-        precision = cls.get_precision(asset)
-        return DecimalConverter.convert(asset.amount) / DecimalConverter.convert(10**precision)
+        return asset.tokens
 
     @classmethod
-    def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
+    def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | Asset.Kind) -> int:
         """
         Convert given amount to internal representation of integer value.
 
@@ -236,34 +253,38 @@ class Asset:
         return int(amount_decimal * 10**precision)
 
     @staticmethod
-    def get_symbol(asset: type[Asset.AnyT] | Asset.AnyT) -> str:
-        return asset.get_asset_information().symbol[0]
+    def get_symbol(asset: Asset.Kind | Asset.AnyT) -> str:
+        return asset.info.get_symbol() if isinstance(asset, AssetKind) else asset.symbol
 
     @staticmethod
-    def get_precision(asset: type[Asset.AnyT] | Asset.AnyT) -> int:
-        return asset.get_asset_information().precision
+    def get_precision(asset: Asset.Kind | Asset.AnyT) -> int:
+        return asset.info.precision if isinstance(asset, AssetKind) else asset.precision
 
     @staticmethod
-    def get_nai(asset: type[Asset.AnyT] | Asset.AnyT) -> str:
-        return asset.get_asset_information().nai
+    def get_nai(asset: Asset.Kind | Asset.AnyT) -> str:
+        return asset.info.nai if isinstance(asset, AssetKind) else asset.nai
 
-    @staticmethod
-    def is_hive(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        if isinstance(asset, type):
-            return issubclass(asset, Asset.Hive)
+    @classmethod
+    def get_kind(cls, asset: Asset.AnyT) -> Asset.Kind:
+        """
+        Get the kind of the asset - all assets are of the same class, they differ by their NAI.
 
-        return isinstance(asset, Asset.Hive)
+        Args:
+            asset: The asset to get the kind of.
 
-    @staticmethod
-    def is_hbd(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        if isinstance(asset, type):
-            return issubclass(asset, Asset.Hbd)
+        Returns:
+            The kind of the asset, e.g. `Asset.HIVE_KIND`.
+        """
+        return cls.resolve_nai(asset.nai)
 
-        return isinstance(asset, Asset.Hbd)
+    @classmethod
+    def is_hive(cls, asset: Asset.Kind | Asset.AnyT) -> bool:
+        return cls.get_nai(asset) == cls.HIVE_KIND.info.nai
 
-    @staticmethod
-    def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        if isinstance(asset, type):
-            return issubclass(asset, Asset.Vests)
+    @classmethod
+    def is_hbd(cls, asset: Asset.Kind | Asset.AnyT) -> bool:
+        return cls.get_nai(asset) == cls.HBD_KIND.info.nai
 
-        return isinstance(asset, Asset.Vests)
+    @classmethod
+    def is_vests(cls, asset: Asset.Kind | Asset.AnyT) -> bool:
+        return cls.get_nai(asset) == cls.VESTS_KIND.info.nai
