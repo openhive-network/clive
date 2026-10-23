@@ -13,7 +13,7 @@ class CurrencySelector(CurrencySelectorBase[Asset.AnyT]):
     @staticmethod
     def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.AnyT]]:
         return {
-            "HBD": AssetFactoryHolder(asset_cls=Asset.Hbd, asset_factory=Asset.hbd),
-            "HIVE": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
-            "VESTS": AssetFactoryHolder(asset_cls=Asset.Vests, asset_factory=Asset.vests),
+            "HBD": AssetFactoryHolder(asset_kind=Asset.HBD_KIND, asset_factory=Asset.hbd),
+            "HIVE": AssetFactoryHolder(asset_kind=Asset.HIVE_KIND, asset_factory=Asset.hive),
+            "VESTS": AssetFactoryHolder(asset_kind=Asset.VESTS_KIND, asset_factory=Asset.vests),
         }

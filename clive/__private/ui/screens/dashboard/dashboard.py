@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -132,7 +132,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         self,
         account: TrackedAccount,
         balance_type: Literal["liquid", "savings", "stake"],
-        asset_type: type[Asset.AnyT],
+        asset_type: Asset.Kind,
         classes: str | None = None,
         variant: CliveButtonVariant = "grey-lighten",
     ) -> None:
@@ -176,7 +176,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         asset_value = self._get_account_asset_value()
 
         if self.is_staking_hive_power:
-            return humanize_hive_power(cast("Asset.Hive", asset_value))
+            return humanize_hive_power(asset_value)
         return humanize_asset(asset_value, use_short_form=self.is_stake)
 
     def _get_account_asset_value(self) -> Asset.AnyT:
@@ -236,14 +236,14 @@ class RemoveTrackedAccountButton(OneLineButtonUnfocusable, CliveWidget):
 class BalanceStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("LIQUID", classes="liquid title")
-        yield BalanceStatsButton(self._account, "liquid", Asset.Hive)
-        yield BalanceStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "liquid", Asset.HIVE_KIND)
+        yield BalanceStatsButton(self._account, "liquid", Asset.HBD_KIND, variant="grey-darken")
         yield Static("SAVINGS", classes="savings title")
-        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-darken")
-        yield BalanceStatsButton(self._account, "savings", Asset.Hbd)
+        yield BalanceStatsButton(self._account, "savings", Asset.HIVE_KIND, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "savings", Asset.HBD_KIND)
         yield Static("STAKE", classes="stake title")
-        yield BalanceStatsButton(self._account, "stake", Asset.Hive)
-        yield BalanceStatsButton(self._account, "stake", Asset.Vests, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "stake", Asset.HIVE_KIND)
+        yield BalanceStatsButton(self._account, "stake", Asset.VESTS_KIND, variant="grey-darken")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
