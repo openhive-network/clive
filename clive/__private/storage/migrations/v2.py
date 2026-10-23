@@ -7,6 +7,8 @@ from clive.__private.storage.migrations import v1
 
 
 class ProfileStorageModel(v1.ProfileStorageModel):
+    _FROZEN_REVISION = "7b6245aa"
+
     tui_theme: str = DEFAULT_THEME
 
     @classmethod

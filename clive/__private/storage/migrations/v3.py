@@ -7,6 +7,8 @@ from clive.__private.storage.migrations import v2
 
 
 class ProfileStorageModel(v2.ProfileStorageModel):
+    _FROZEN_REVISION = "014d8b80"
+
     transaction_expiration: timedelta | None = None
 
     @classmethod

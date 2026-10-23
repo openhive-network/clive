@@ -14,17 +14,18 @@ from clive.__private.core.alarms.specific_alarms import (
 from clive.__private.core.date_utils import utc_epoch
 from clive.__private.models.schemas import (
     HiveDateTime,
-    OperationRepresentationUnion,
     PreconfiguredBaseModel,
-    Signature,
     Uint16t,
     Uint32t,
     field,
 )
 from clive.__private.storage.migrations.base import AlarmStorageModelBase, ProfileStorageBase
+from schemas.fields.validation import Signature  # noqa: TC001  # msgspec resolves annotations at runtime
 
 
 class ProfileStorageModel(ProfileStorageBase, kw_only=True):
+    _FROZEN_REVISION = "d892ab66"
+
     name: str
     working_account: str | None = None
     tracked_accounts: Sequence[TrackedAccountStorageModel] = []
@@ -87,7 +88,7 @@ class ProfileStorageModel(ProfileStorageBase, kw_only=True):
         public_key: str
 
     class TransactionCoreStorageModel(PreconfiguredBaseModel):
-        operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
+        operations: list[dict[str, object]] = []  # noqa: RUF012  # HF26 form, models built by the runtime
         ref_block_num: Uint16t = 0
         ref_block_prefix: Uint32t = 0
         expiration: HiveDateTime = field(default_factory=lambda: HiveDateTime(utc_epoch()))
