@@ -289,7 +289,8 @@ def humanize_operation_details(operation: OperationBase) -> str:
 
     operation_dict = operation.dict()
 
-    for key, value in operation_dict.items():
+    for key in operation_dict:  # keys of the API
+        value = operation[key]  # value held by the model - assets are not serialized to NAI as in `dict`
         value_ = value
 
         # Display assets in legacy format.
@@ -322,7 +323,7 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
     Returns:
         A human-readable data representing the hive power.
     """
-    hive_symbol = Asset.get_symbol(Asset.Hive)
+    hive_symbol = Asset.get_symbol(Asset.HIVE_KIND)
     result = humanize_asset(value, show_symbol=show_symbol, use_short_form=use_short_form)
     return result.replace(hive_symbol, "HP")
 
@@ -346,7 +347,7 @@ def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool 
         A human-readable data representing the hive power with commas.
     """
     symbol = "HP" if show_symbol else ""
-    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
+    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.HIVE_KIND))
     return f"{hp_value_with_commas} {symbol}".rstrip()
 
 
@@ -359,7 +360,7 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label
         with_label: Whether to add a label to the output.
 
     Example:
-        >>> exchange_rate = HbdExchangeRate(base=Asset.Hbd(0.242), quote=Asset.Hive(1))
+        >>> exchange_rate = HbdExchangeRate(base=Asset.hbd(0.242), quote=Asset.hive(1))
         >>> humanize_hbd_exchange_rate(exchange_rate)
         "0.242 $"
         >>> humanize_hbd_exchange_rate(exchange_rate, with_label=True)
@@ -458,7 +459,7 @@ def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: boo
         with_label: Whether to add a label to the output.
 
     Example:
-        >>> current_price_feed = PriceFeed(base=Asset.Hbd(0.239), quote=Asset.Hive(1))
+        >>> current_price_feed = PriceFeed(base=Asset.hbd(0.239), quote=Asset.hive(1))
         >>> humanize_median_hive_price(current_price_feed)
         "0.239"
         >>> humanize_median_hive_price(current_price_feed, with_label=True))
@@ -537,7 +538,7 @@ def humanize_vest_to_hive_ratio(
         A human-readable data representing the vest to hive ratio.
     """
     calculated = data if isinstance(data, Decimal) else calculate_vests_to_hive_ratio(data)
-    symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
+    symbol = f" {Asset.get_symbol(Asset.VESTS_KIND)}" if show_symbol else ""
     return _maybe_labelize(
         VEST_HIVE_RATIO_LABEL,
         f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}{symbol}",
@@ -633,7 +634,7 @@ def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
         A human-readable data representing the votes converted to hive power with commas.
     """
     hive_power = calculate_witness_votes_hp(votes, data)
-    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
+    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.HIVE_KIND))} HP"
 
 
 def humanize_asset(
@@ -653,7 +654,7 @@ def humanize_asset(
         use_short_form: Whether to use short form for the asset amount.
 
     Example:
-        >>> asset = Asset.Hive(1035.401)
+        >>> asset = Asset.hive(1035.401)
         >>> humanize_asset(asset)
         "1.0K HIVE"
         >>> humanize_asset(asset, show_symbol=False)

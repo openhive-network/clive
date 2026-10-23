@@ -6,7 +6,7 @@ from clive.__private.models.asset import Asset
 
 
 class AssetAmountValidator(Validator):
-    def __init__(self, asset_type: type[Asset.AnyT]) -> None:
+    def __init__(self, asset_type: Asset.Kind) -> None:
         super().__init__()
 
         self.asset_type = asset_type
