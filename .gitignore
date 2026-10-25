@@ -214,3 +214,6 @@ hived-binaries/
 
 # Claude Code local files
 .claude/settings.local.json
+
+# AIDEV suite results (.aidev/run-checks.sh)
+/test-results/
