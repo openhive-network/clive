@@ -1,0 +1,80 @@
+# Profile for hive/clive, written by hand on the shape `aidev project scaffold`
+# (#13561) produces.
+#
+# Schema reference: docs/architecture/project-profile.md
+# Onboarding procedure: the `onboard-external-project` skill.
+# Guide: docs/operations/onboarding-an-external-project.md
+#
+# Every binding below is the command a maintainer said this project runs, and it
+# is reviewed and edited like any other declaration.
+version: 2
+project: clive
+
+gitlab:
+  host: "gitlab.syncad.com"
+  path: "hive/clive"
+  id: 393
+
+branches:
+  integration: "aidev/integration"
+  # develop is fast-forward only: hand off by merge request as a linear one-commit-per-change copy.
+  handoff: "develop"
+  handoff_history: "linear"
+
+# How this project's suites execute (#13892): one kind, stated once.
+environment:
+  kind: "container"
+  # Replace with the repo@sha256:… that `.aidev/runtime/build.sh --push` prints.
+  image: "registry.gitlab.syncad.com/hive/clive/aidev-tests@sha256:8b8e12335aefe5429901d8a7499e4660235791024598912b616c9b3cc0169df6"
+  inputs: ["poetry.lock", "tests/clive-local-tools/poetry.lock"]
+
+issues:
+  intake_label: todo
+  taxonomy: ".aidev/labels.yaml"
+  decompose:
+    # `never` is where an external project starts: nothing marks work
+    # approved on this project's behalf until there is a track record.
+    auto_todo: never
+  # Reports about this project's work are filed against this project.
+  watcher_reports: self
+
+# Verification slots. Each binding is what this project genuinely runs for
+# that slot — never one selection repeated under seven names.
+#
+# Steps (.aidev/run-checks.sh, see .aidev/README.md): unit = tests/unit;
+# functional-cli = tests/functional/cli; functional = CI's testing_clive set;
+# tui = tests/functional/tui; static = ruff, ruff format, mypy and the
+# private-key logging scan; coverage = unit under --cov=clive. The load-sensitive
+# timing tests (test_imports_times, test_command_execution_times) are in no slot.
+verification:
+  quick:
+    adapter: command
+    args: [".aidev/run-checks.sh", "quick", "unit"]
+    artifacts: ["test-results/quick/"]
+  canary:
+    adapter: command
+    args: [".aidev/run-checks.sh", "canary", "functional"]
+    artifacts: ["test-results/canary/"]
+  baseline:
+    adapter: command
+    args: [".aidev/run-checks.sh", "baseline", "unit", "functional-cli"]
+    artifacts: ["test-results/baseline/"]
+  full:
+    adapter: command
+    args: [".aidev/run-checks.sh", "full", "unit", "functional-cli", "functional"]
+    artifacts: ["test-results/full/"]
+  static:
+    adapter: command
+    args: [".aidev/run-checks.sh", "static", "static"]
+    artifacts: ["test-results/static/"]
+  coverage:
+    adapter: command
+    args: [".aidev/run-checks.sh", "coverage", "coverage"]
+    artifacts: ["test-results/coverage/"]
+  system:
+    adapter: command
+    args: [".aidev/run-checks.sh", "system", "tui"]
+    artifacts: ["test-results/system/"]
+
+# Capability grants for target-side code. Empty until this project needs one.
+capabilities: []
