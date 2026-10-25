@@ -78,6 +78,7 @@ repos:
         entry: mypy
         language: system
         types: [python]
+        require_serial: true  # concurrent mypy 2.x runs sharing .mypy_cache crash with INTERNAL ERROR
         exclude: ^\.claude/
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
