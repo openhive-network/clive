@@ -26,7 +26,7 @@ class ShowWitnesses(WorldBasedCommand):
         proxy = accounts[0].proxy
 
         wrapper = await self.world.commands.retrieve_witnesses_data(
-            account_name=proxy if proxy else self.account_name,
+            account_name=proxy or self.account_name,
             mode=WitnessesDataRetrieval.DEFAULT_MODE,
             witness_name_pattern=None,
             search_by_pattern_limit=WitnessesDataRetrieval.DEFAULT_SEARCH_BY_PATTERN_LIMIT,

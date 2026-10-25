@@ -50,12 +50,12 @@ poetry-lock sanity/stability jobs need the network and are not reproduced.
 - poetry.lock's main, dev, static-analysis and embeddedtestnet groups in `/opt/py`
   (`--no-root`; clive and the editable `tests/clive-local-tools` resolve to the mounted
   workspace at `/work`), wrappers for the `clive` / `clive-dev` entry points
-  (`tests/functional/test_startup.py` and `test_signals.py` run them), and pytest-cov for the
-  `coverage` step;
-- gcc and the Python headers: the locked aiohttp 3.11.15 has no Python 3.14 wheel;
+  (`tests/functional/test_startup.py` and `test_signals.py` run them); the dev group's
+  pytest-cov serves the `coverage` step;
 - libfaketime from the Syncad fork (`hive/faketime`, `bw_timer_settime_fix` at
   `873b0941a3ed733e5a9bbd2929ff647cc5c61bbe`), built as common-ci-configuration's
-  ci-base-image builds it; test-tools preloads it into every node it starts;
+  ci-base-image builds it, in a separate build stage: every locked package has a Python 3.14
+  wheel, so the image carries no compiler; test-tools preloads it into every node it starts;
 - the TESTNET `hived`, `cli_wallet`, `get_dev_key`, `block_log_util` that CI's
   `prepare_testnet_hived_image` extracts from `/home/hived/bin`, copied from the digest-pinned
   `registry.gitlab.syncad.com/hive/hive/testnet` image into `/opt/hived/testnet/` and exposed to
