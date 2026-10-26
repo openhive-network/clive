@@ -101,7 +101,7 @@ class AsyncHivedTemplate[RemoteSettingsT: RemoteHandleSettings](
         return AsyncBatchHandle(
             url=self.http_endpoint,
             overseer=self._overseer,
-            api=lambda o: HivedAsyncApiCollection(o),
+            api=HivedAsyncApiCollection,
             delay_error_on_data_access=delay_error_on_data_access,
         )
 

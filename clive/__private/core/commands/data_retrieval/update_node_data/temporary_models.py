@@ -60,7 +60,7 @@ class SanitizedData:
 class AccountProcessedData:
     core: Account
     authority: Authority
-    last_history_entry: datetime = field(default_factory=lambda: utc_epoch())
+    last_history_entry: datetime = field(default_factory=utc_epoch)
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
     """Could be missing if rc_api is not available"""

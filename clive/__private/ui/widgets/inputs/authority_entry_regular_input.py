@@ -62,7 +62,7 @@ class AuthorityEntryRegularInput(TextInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             suggester=suggester,
-            validators=validators if validators else AuthorityEntryValidator(),
+            validators=validators or AuthorityEntryValidator(),
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,

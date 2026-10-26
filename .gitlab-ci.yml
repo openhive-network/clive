@@ -6,9 +6,6 @@ stages:
   - build_and_deploy_docker
 
 # YAML anchors for pinned versions (used via *anchor_name syntax)
-# Note: When upgrading common_ci_configuration_version, you may also need to update
-# DOCKER_BUILDER_TAG and DOCKER_DIND_TAG in the variables section below.
-.common_ci_configuration_version: &common_ci_configuration_version "c9cb02ea67f9f381f52280be4ca1f708243373a0"
 # Hived image configuration:
 # - hived_branch: Branch to search for images (used for dynamic lookup)
 # - hived_override_tag: When set (not "none"), skips dynamic lookup and uses this tag directly
@@ -29,8 +26,9 @@ stages:
 
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+  # common-ci-configuration defines the CI images and tool versions; follow its develop branch
   - project: 'hive/common-ci-configuration'
-    ref: *common_ci_configuration_version
+    ref: develop
     file:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
@@ -43,12 +41,6 @@ variables:
   # Hived image lookup (set via anchors above)
   HIVED_BRANCH: *hived_branch
   HIVED_OVERRIDE_TAG: *hived_override_tag
-  # Docker builder images (from common-ci-configuration)
-  # Note: These images are not built on every common-ci-configuration commit.
-  # When upgrading common-ci-configuration, check the common-ci-configuration registry for latest available
-  # versions that were already built from the develop branch.
-  DOCKER_BUILDER_TAG: "47dab930d3676b007782723c45ae7080fa611705"
-  DOCKER_DIND_TAG: "53c7826ef0f74b9896fa39aa7eb43140e53ddb0d"
   # Clive testnet base image (python_development:3.12-u24.04-1)
   CLIVE_TESTNET_BASE_IMAGE_TAG: "@sha256:cf7cc40b911d2baec112ffab85d80748034239aac9b11e06064a79f0221ad258"
   CLIVE_TESTNET_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/python_development${CLIVE_TESTNET_BASE_IMAGE_TAG}"
@@ -89,15 +81,9 @@ default:
   tags:
     - public-runner-docker
 
-.python_312:
+# for jobs whose template sets no image: common-ci-configuration's Python image (PYTHON_VERSION is its global)
+.python_image:
   image: ${PYTHON_IMAGE}
-  variables:
-    PYTHON_VERSION: "3.12"
-
-.python_314:
-  image: ${PYTHON_IMAGE}
-  variables:
-    PYTHON_VERSION: "3.14"
 
 .runtime_like_env:
   extends: .configuration_template
@@ -134,55 +120,36 @@ default:
 
 pre_commit_checks:
   stage: static_code_analysis
-  extends:
-    - .pre_commit_checks_template
-    - .python_312
+  extends: .pre_commit_checks_template
   before_script:
     - !reference [.pre_commit_checks_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
-  extends:
-    - .verify_poetry_lock_sanity_template
-    - .python_312
+  extends: .verify_poetry_lock_sanity_template
 
 verify_poetry_lock_stability:
   stage: static_code_analysis
-  extends:
-    - .verify_poetry_lock_stability_template
-    - .python_312
+  extends: .verify_poetry_lock_stability_template
 
 lint_code_with_ruff:
   stage: static_code_analysis
-  extends:
-    - .lint_code_with_ruff_template
-    - .python_312
-  before_script:
-    - !reference [.lint_code_with_ruff_template, before_script]
-    - !reference [.update_deps_for_static_analysis, script]
-  script:  # our own script because of newer ruff version
-    - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
-      ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
+  extends: .lint_code_with_ruff_template
 
-
+# ruff from common-ci-configuration's tools image, as in .lint_code_with_ruff_template
 formatting_with_ruff_check:
   stage: static_code_analysis
-  extends:
-    - .project_develop_configuration_template
-    - .python_312
-  before_script:
-    - !reference [.project_develop_configuration_template, before_script]
-    - !reference [.update_deps_for_static_analysis, script]
+  extends: .job-defaults
+  image: "${PYTHON_TEST_TOOLS_IMAGE}"
   script:
+    - ruff --version
     - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
       ruff format --check --diff ${PACKAGES_TO_CHECK}
 
 type_check_with_mypy:
   stage: static_code_analysis
-  extends:
-    - .type_check_with_mypy_template
-    - .python_312
+  extends: .type_check_with_mypy_template
   before_script:
     - !reference [.type_check_with_mypy_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
@@ -300,9 +267,7 @@ prepare_testnet_hived_image:
     - public-runner-docker
 
 build_wheel:
-  extends:
-    - .build_wheel_template
-    - .python_312
+  extends: .build_wheel_template
   stage: build
   needs: []  # Start immediately, don't wait for static_code_analysis (allows tests to run even if verify_poetry_lock_stability fails)
   dependencies: []  # Don't download artifacts from previous stages (prevents modified poetry.lock from pre_commit_checks)
@@ -314,7 +279,6 @@ build_docs:
   extends:
     - .build_docs_env
     - .docs_variables
-    - .python_314
   script:
     - cd $PYPROJECT_DIR
     - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
@@ -341,10 +305,6 @@ build_docs:
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
-  image: ${PYTHON_IMAGE}
-  parallel:
-    matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
@@ -393,7 +353,7 @@ testing_clive:
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
     - export PYTEST_ARGS=(
-      --ignore tests/functional/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py --ignore tests/unit/test_command_execution_times.py --ignore tests/async_hived
+      --ignore tests/functional/tui --ignore tests/functional/cli --ignore tests/unit/test_imports_times.py --ignore tests/unit/test_command_execution_times.py --ignore tests/unit/async_hived
       -v
       )
     - !reference [.run-pytest, script]
@@ -428,7 +388,7 @@ testing_cli:
 
 testing_password_private_key_logging:
   stage: tests
-  extends: .python_314
+  extends: .python_image
   needs:
     - job: testing_clive
       artifacts: true
@@ -462,9 +422,7 @@ test_async_hived:
       artifacts: true
 
 deploy_wheel_to_gitlab:
-  extends:
-    - .deploy_wheel_to_gitlab_template
-    - .python_314
+  extends: .deploy_wheel_to_gitlab_template
   stage: deploy
   <<: *deploy_wheel_needs
   rules:
@@ -473,16 +431,14 @@ deploy_wheel_to_gitlab:
     - when: manual
 
 deploy_wheel_to_pypi:
-  extends:
-    - .deploy_wheel_to_pypi_template
-    - .python_314
+  extends: .deploy_wheel_to_pypi_template
   stage: deploy
   <<: *deploy_wheel_needs
 
 .docs_deployment_base:
   extends:
     - .docs_variables
-    - .python_314
+    - .python_image
   stage: deploy
   cache:
     # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
@@ -568,7 +524,7 @@ clean_docs_preview:
 .generate_clive_startup_scripts_base:
   extends:
     - .job-defaults
-    - .python_314
+    - .python_image
   stage: build_and_deploy_docker
   variables:
     GIT_SUBMODULE_STRATEGY: none

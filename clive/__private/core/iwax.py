@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import datetime
 from collections.abc import Callable
+from datetime import UTC, datetime
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
@@ -183,12 +183,12 @@ def generate_private_key() -> PrivateKey:
 @cast_hiveint_args
 def calculate_manabar_full_regeneration_time(
     now: int, max_mana: int, current_mana: int, last_update_time: int
-) -> datetime.datetime:
+) -> datetime:
     result = wax.calculate_manabar_full_regeneration_time(
         now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
     )
     __validate_wax_response(result)
-    return datetime.datetime.fromtimestamp(int(result.result), tz=datetime.UTC)
+    return datetime.fromtimestamp(int(result.result), tz=UTC)
 
 
 @convert_wax_errors
