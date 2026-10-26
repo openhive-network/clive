@@ -39,7 +39,7 @@ poetry-plugin-freeze = { version = "1.2.0" }
 [tool.poetry.dependencies]
 loguru = "^0.7.2"
 textual = "^7.3.0"
-aiohttp = "^3.11.15"
+aiohttp = "^3.14.5"
 typer = "^0.24.1"
 inflection = "^0.5.1"
 humanize = "^4.12.2"
@@ -52,22 +52,23 @@ hiveio-api = "^1.28.6-rc.0"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 hiveio-test-tools = "1.28.8rc2.post20261002091953"
-pytest = "^9.0.0"  # required by test-tools, otherwise they will fail
+pytest = "^9.1.1"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^9.0.0"
-pytest-asyncio = "^1.3.0"
-pytest-xdist = "^3.6.1"
-pytest-timeout = "^2.3.1"
+pytest = "^9.1.1"
+pytest-asyncio = "^1.4.1"
+pytest-xdist = "^3.8.0"
+pytest-timeout = "^2.4.0"
+pytest-cov = "^7.1.0"
 textual-dev = "^1.7.0"
 hiveio-test-tools = "1.28.8rc2.post20261002091953"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
-mypy = "^1.19.1"
+mypy = "^2.4.0"
 pre-commit = "^4.5.1"
-ruff = "^0.14.10"
+ruff = "^0.17.2"
 pydoclint = "^0.8.3"
 types-toml = "^0.10.8.20240310"
 
@@ -175,6 +176,8 @@ ignore = [
     "S101", # Use of assert detected; too restrictive
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
+    "CPY001", # Missing copyright notice at top of file; the project does not use per-file copyright headers
+    "PLR0917", # Too many positional arguments; overlaps PLR0913, and Typer command signatures define CLI parameters
 ]
 
 [tool.ruff.lint.flake8-annotations]

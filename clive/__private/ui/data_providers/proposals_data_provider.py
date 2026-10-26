@@ -23,7 +23,7 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
 
     async def _update(self) -> None:
         proxy = self.profile.accounts.working.data.proxy
-        account_name = proxy if proxy else self.profile.accounts.working.name
+        account_name = proxy or self.profile.accounts.working.name
 
         wrapper = await self.commands.retrieve_proposals_data(
             account_name=account_name, order=self.__order, order_direction=self.__order_direction, status=self.__status

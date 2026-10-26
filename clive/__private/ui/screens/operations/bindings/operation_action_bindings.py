@@ -66,17 +66,17 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         self._check_if_correctly_implemented()
 
-    def _create_operation(self) -> OperationUnion | None | _NotImplemented:
+    def _create_operation(self) -> OperationUnion | _NotImplemented | None:
         """Return a new operation based on the data from screen or None."""
         return _NotImplemented()
 
-    def _create_operations(self) -> list[OperationUnion] | None | _NotImplemented:
+    def _create_operations(self) -> list[OperationUnion] | _NotImplemented | None:
         """Return a list of operations based on the data from screen or None."""
         return _NotImplemented()
 
     def _validate_and_notify(
         self,
-        create_one_many_operations_cb: Callable[[], OperationUnion | list[OperationUnion] | None | _NotImplemented],
+        create_one_many_operations_cb: Callable[[], OperationUnion | list[OperationUnion] | _NotImplemented | None],
     ) -> list[OperationUnion] | None:
         """
         Validate operations from callback result. If any of them is invalid, notifies the user and returns None.
