@@ -19,7 +19,7 @@ from clive.__private.core.types import OrderDirections, ProposalOrders, Proposal
 from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
-    import datetime
+    from datetime import datetime
 
     from clive.__private.core.node import Node
     from clive.__private.core.node.async_hived.api.database_api.common import DatabaseApiCommons
@@ -36,8 +36,8 @@ class Proposal:
     votes: str
     daily_pay: str
     status: str
-    start_date: datetime.datetime
-    end_date: datetime.datetime
+    start_date: datetime
+    end_date: datetime
     voted: bool = False
 
     @property

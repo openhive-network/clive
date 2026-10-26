@@ -35,7 +35,7 @@ class WitnessDetailsDialog(CliveInfoDialog, CliveWidget):
         self._witness_widget.loading = True
 
     def on_mount(self) -> None:
-        self.set_interval(safe_settings.node.refresh_rate_secs, lambda: self.refresh_witness_data())
+        self.set_interval(safe_settings.node.refresh_rate_secs, self.refresh_witness_data)
 
     def create_dialog_content(self) -> ComposeResult:
         with Center(), Section():

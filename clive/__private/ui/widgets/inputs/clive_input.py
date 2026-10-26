@@ -133,7 +133,7 @@ class CliveInput(Input):
             type=type,
             max_length=max_length,
             highlighter=highlighter,
-            suggester=suggester if suggester else CliveSuggester(),
+            suggester=suggester or CliveSuggester(),
             validators=validators,
             validate_on=validate_on if validate_on is not None else self._DEFAULT_VALIDATE_ON,
             valid_empty=valid_empty,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final, Generic, TypeAlias, TypeVar, cast, get_args
+from typing import TYPE_CHECKING, Final, Generic, TypeAlias, TypeVar, get_args
 
 from clive.__private.core.decimal_conventer import (
     DecimalConversionNotANumberError,
@@ -132,12 +132,12 @@ class Asset:
     @classmethod
     def ensure_liquid_type(cls, asset_type: type[Asset.AnyT]) -> type[Asset.LiquidT]:
         assert asset_type in cls.LIQUID_TYPES, f"Asset is not liquid type, given type is {asset_type}"
-        return cast("type[Asset.LiquidT]", asset_type)
+        return asset_type
 
     @classmethod
     def ensure_voting_type(cls, asset_type: type[Asset.AnyT]) -> type[Asset.VotingT]:
         assert asset_type in cls.VOTING_TYPES, f"Asset is not voting type, given type is {asset_type}"
-        return cast("type[Asset.VotingT]", asset_type)
+        return asset_type
 
     @classmethod
     def __create(cls, asset: type[AssetExplicitT], amount: AssetAmount) -> AssetExplicitT:

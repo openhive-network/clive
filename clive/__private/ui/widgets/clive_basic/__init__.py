@@ -17,7 +17,6 @@ __all__ = [
     "CliveCheckerboardTable",
     "CliveCheckerboardTableRow",
     "CliveCollapsible",
-    "CliveCollapsible",
     "CliveDataTable",
     "CliveDataTableRow",
     "CliveHeader",

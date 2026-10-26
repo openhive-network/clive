@@ -43,4 +43,4 @@ class ProcessPowerDownStart(ProcessPowerDown):
 
 @dataclass(kw_only=True)
 class ProcessPowerDownCancel(ProcessPowerDown):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: POWER_DOWN_REMOVE_ASSET.copy())
+    amount: Asset.VotingT = field(init=False, default_factory=POWER_DOWN_REMOVE_ASSET.copy)

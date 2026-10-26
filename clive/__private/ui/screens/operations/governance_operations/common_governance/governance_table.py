@@ -334,7 +334,7 @@ class GovernanceTable(
         yield self.header
 
     def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
+        self.watch(self.provider, "_content", callback=self._sync_list_on_content_change)
 
     async def sync_list(self, *, focus_first_element: bool = False) -> None:
         await self.loading_set()
@@ -350,6 +350,10 @@ class GovernanceTable(
             first_row.focus()
 
         self.set_loaded()
+
+    async def _sync_list_on_content_change(self) -> None:
+        # textual passes a watcher one positional argument per parameter, and sync_list's keyword-only one counts
+        await self.sync_list()
 
     async def loading_set(self) -> None:
         self._is_loading = True

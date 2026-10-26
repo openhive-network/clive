@@ -34,7 +34,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
 
     async def _update(self) -> None:
         proxy = self.profile.accounts.working.data.proxy
-        account_name = proxy if proxy else self.profile.accounts.working.name
+        account_name = proxy or self.profile.accounts.working.name
 
         wrapper = await self.commands.retrieve_witnesses_data(
             account_name=account_name,
