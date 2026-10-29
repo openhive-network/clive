@@ -1,5 +1,5 @@
 """
-Some of the models imported from hiveio_api and schemas should have a corresponding alias there.
+Some of the models imported from hiveio_api should have a corresponding alias there.
 
 If name matches our naming convention, no need to alias, just export in __all__.
 
@@ -12,13 +12,13 @@ Why this module exists?
 E.g. VestingDelegationExpiration = VestingDelegationExpirations has the name of the list of the API response.
 
 Models of API responses, operations and transactions come from hiveio_api - dataclasses built without validation.
-Field types come from schemas in the variant clive needs them:
-* `AccountName`, `ChainId`, `TransactionId` - user-friendly types (`schemas.fields.user_friendly`) which validate values
-  when created (e.g. `AccountName("alice")`) - use them with `is_matching_model` to validate input of users,
-* the other ones - builtin aliases (`schemas.fields.public`, e.g. `PublicKey = str`) for annotations, as fields of the
-  models of hiveio_api are annotated. Where such a type is needed at runtime (e.g. `Uint16t.meta()`), its user-friendly
-  variant is imported from `schemas.fields.user_friendly`, fields of hand-written msgspec models take the forms of
-  `schemas.fields.validation`.
+Field types come from `hiveio_api.fields` in the variant clive needs them:
+* `AccountName`, `ChainId`, `TransactionId` - user-friendly types (`hiveio_api.fields.user_friendly`) which validate
+  values when created (e.g. `AccountName("alice")`) - use them with `is_matching_model` to validate input of users,
+* the other ones - builtin aliases (`hiveio_api.fields.public`, e.g. `PublicKey = str`) for annotations, as fields of
+  the models of hiveio_api are annotated. Where such a type is needed at runtime (e.g. `Uint16t.meta()`), its
+  user-friendly variant is imported from `hiveio_api.fields.user_friendly`, fields of hand-written msgspec models take
+  the forms of `hiveio_api.fields.validation`.
 """
 
 from __future__ import annotations
@@ -157,6 +157,8 @@ __all__ = [  # noqa: RUF022
 ]
 
 if TYPE_CHECKING:
+    from msgspec import field
+
     from hiveio_api import HiveDateTime
     from hiveio_api.account_history_api import GetAccountHistoryResponse as GetAccountHistory
     from hiveio_api.account_history_api import GetTransactionResponse as GetTransaction
@@ -193,6 +195,18 @@ if TYPE_CHECKING:
     from hiveio_api.database_api import ListWithdrawVestingRoutesResponse as ListWithdrawVestingRoutes
     from hiveio_api.database_api import ListWitnessesResponse as ListWitnesses
     from hiveio_api.database_api import ListWitnessVotesResponse as ListWitnessVotes
+    from hiveio_api.fields.public import (
+        AssetHbd,
+        AssetHive,
+        Hex,
+        HiveInt,
+        JsonString,
+        PublicKey,
+        Signature,
+        Uint16t,
+        Uint32t,
+    )
+    from hiveio_api.fields.user_friendly import AccountName, Sha256, TransactionId
     from hiveio_api.operations import (
         AccountCreateOperation,
         AccountCreateWithDelegationOperation,
@@ -259,21 +273,8 @@ if TYPE_CHECKING:
     from hiveio_api.rc_api import ListRcDirectDelegationsResponse as ListRcDirectDelegations
     from hiveio_api.rc_api import RcAccount, RcAccountDelegation
     from hiveio_api.transaction_status_api import FindTransactionResponse as TransactionStatus
-    from schemas._preconfigured_base_model import PreconfiguredBaseModel
-    from schemas.base import field
-    from schemas.fields.public import (
-        AssetHbd,
-        AssetHive,
-        Hex,
-        HiveInt,
-        JsonString,
-        PublicKey,
-        Signature,
-        Uint16t,
-        Uint32t,
-    )
-    from schemas.fields.user_friendly import AccountName, Sha256, TransactionId
-    from schemas.validation import is_matching_model
+    from hiveio_api.validation import is_matching_model
+    from hiveio_api.validation.model import PreconfiguredBaseModel
 
     # operation BASIC aliases
 
@@ -420,13 +421,13 @@ lazy_getattr = lazy_module_factory(
         "Signature",
         "Uint16t",
         "Uint32t",
-        module="schemas.fields.public",
+        module="hiveio_api.fields.public",
     ),
     *aggregate_same_import(
         "AccountName",
         ("Sha256", "ChainId"),
         "TransactionId",
-        module="schemas.fields.user_friendly",
+        module="hiveio_api.fields.user_friendly",
     ),
     *aggregate_same_import(
         ("FindRcAccountsResponse", "FindRcAccounts"),
@@ -442,9 +443,9 @@ lazy_getattr = lazy_module_factory(
     ),
     ("hiveio_api.transaction_status_api", "FindTransactionResponse", "TransactionStatus"),
     ("hiveio_api", "HiveDateTime"),
-    ("schemas.base", "field"),
-    ("schemas.validation", "is_matching_model"),
-    ("schemas._preconfigured_base_model", "PreconfiguredBaseModel"),
+    ("msgspec", "field"),
+    ("hiveio_api.validation", "is_matching_model"),
+    ("hiveio_api.validation.model", "PreconfiguredBaseModel"),
 )
 
 if not TYPE_CHECKING:
