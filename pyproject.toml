@@ -45,13 +45,13 @@ inflection = "^0.5.1"
 humanize = "^4.12.2"
 toml = "^0.10.2"
 pathvalidate = "^3.3.1"
-hiveio-schemas = "1.28.2.dev20261029021230"  # development build of hive/schemas!178
-hiveio-beekeepy = "1.28.6.dev20261029021859"  # development build of hive/beekeeper!101
-hiveio-wax = "1.28.8.dev20261029023544"  # development build of hive/wax!682
-hiveio-api = "1.28.8rc3.dev20261029021805"  # development build of hive/hive!2126
+msgspec = "^0.20.0"
+hiveio-beekeepy = "1.28.6.dev20261029053450"  # development build of hive/beekeeper!113
+hiveio-wax = "1.28.8.dev20261029054250"  # development build of hive/wax!695
+hiveio-api = "1.28.8rc3.dev20261029052500"  # development build of hive/hive!2157
 
 [tool.poetry.group.embeddedtestnet.dependencies]
-hiveio-test-tools = "1.28.8.dev20261029023544"
+hiveio-test-tools = "1.28.8.dev20261029054250"
 pytest = "^9.1.1"  # required by test-tools, otherwise they will fail
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
@@ -62,7 +62,7 @@ pytest-xdist = "^3.8.0"
 pytest-timeout = "^2.4.0"
 pytest-cov = "^7.1.0"
 textual-dev = "^1.7.0"
-hiveio-test-tools = "1.28.8.dev20261029023544"
+hiveio-test-tools = "1.28.8.dev20261029054250"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 
 [tool.poetry.group.static-analysis.dependencies]
@@ -184,7 +184,7 @@ ignore = [
 allow-star-arg-any = true
 
 [tool.ruff.lint.isort]
-known-first-party = ["clive", "wax", "schemas", "hiveio_api", "clive_local_tools"]
+known-first-party = ["clive", "wax", "hiveio_api", "clive_local_tools"]
 required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]
