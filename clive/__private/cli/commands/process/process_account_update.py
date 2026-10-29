@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, cast, override
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLINoChangesTransactionError, CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
-from schemas.fields import user_friendly
+from hiveio_api.fields import user_friendly
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityUpdateFunction, ComposeTransaction

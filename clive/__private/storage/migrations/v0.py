@@ -20,7 +20,7 @@ from clive.__private.models.schemas import (
     field,
 )
 from clive.__private.storage.migrations.base import AlarmStorageModelBase, ProfileStorageBase
-from schemas.fields.validation import Signature  # noqa: TC001  # msgspec resolves annotations at runtime
+from hiveio_api.fields.validation import Signature  # noqa: TC001  # msgspec resolves annotations at runtime
 
 
 class ProfileStorageModel(ProfileStorageBase, kw_only=True):

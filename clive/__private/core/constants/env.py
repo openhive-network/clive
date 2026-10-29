@@ -12,7 +12,7 @@ ENTRYPOINT: Final[str] = "clive"
 KNOWN_FIRST_PARTY_PACKAGES: Final[list[str]] = [
     "beekeepy",
     "clive_local_tools",
-    "schemas",
+    "hiveio_api",
     "test_tools",
     "wax",
 ]
