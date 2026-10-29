@@ -56,7 +56,7 @@ ENV HOME=/tmp \
     RUFF_CACHE_DIR=/tmp/.ruff_cache
 
 # hive testnet image 6509cbed (hive develop 6509cbed3ed7c3e60806ab15028dfd4adcda0bb9)
-COPY --from=registry.gitlab.syncad.com/hive/hive/testnet@sha256:aaa77a3c4d37d06c848501d8d1154f321cd09047e3a8667960f9252a03964c1f \
+COPY --from=registry.gitlab.syncad.com/hive/hive/testnet@sha256:6af686ea4c88cde38adaf5f463ce877b32de8327d84661a8b67c296296a0fd3d \
      /home/hived/bin/ /opt/hived/testnet/
 RUN cd /opt/hived/testnet && rm -rf CMakeFiles *.cmake *.h chain_test plugin_test
 COPY --from=faketime /usr/local/lib/faketime/ /usr/local/lib/faketime/
