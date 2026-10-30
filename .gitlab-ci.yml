@@ -132,6 +132,10 @@ verify_poetry_lock_sanity:
 verify_poetry_lock_stability:
   stage: static_code_analysis
   extends: .verify_poetry_lock_stability_template
+  # Only the release to PyPI must not depend on development builds - branches and merge requests may,
+  # Renovate bumps them to releases.
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
 
 lint_code_with_ruff:
   stage: static_code_analysis
@@ -269,7 +273,7 @@ prepare_testnet_hived_image:
 build_wheel:
   extends: .build_wheel_template
   stage: build
-  needs: []  # Start immediately, don't wait for static_code_analysis (allows tests to run even if verify_poetry_lock_stability fails)
+  needs: []  # Start immediately, don't wait for static_code_analysis
   dependencies: []  # Don't download artifacts from previous stages (prevents modified poetry.lock from pre_commit_checks)
   script:
     - !reference [.build_wheel_template, script]
@@ -433,7 +437,11 @@ deploy_wheel_to_gitlab:
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
-  <<: *deploy_wheel_needs
+  needs:
+    - job: testing_password_private_key_logging
+    - job: build_wheel
+      artifacts: true
+    - job: verify_poetry_lock_stability
 
 .docs_deployment_base:
   extends:
