@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -45,7 +46,7 @@ def _assert_social_operation_payload(
         f"Expected {expected_follower} in required_posting_auths, got {op.required_posting_auths}"
     )
 
-    json_value = op.json_.value
+    json_value = json.loads(op.json_)
     assert isinstance(json_value, list), f"Expected json_ value to be a list, got {type(json_value)}"
     payload = json_value[1]
     assert payload["follower"] == expected_follower, (

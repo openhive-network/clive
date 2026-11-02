@@ -8,7 +8,6 @@ from clive.__private.core.alarms.specific_alarms.recovery_account_warning_listed
     RecoveryAccountWarningListedAlarmIdentifier,
 )
 from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
-from clive.__private.models.schemas import Transaction
 from clive.__private.storage.current_model import ProfileStorageModel
 from clive.exceptions import CliveError
 
@@ -59,8 +58,8 @@ class RuntimeToStorageConverter:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
     def _transaction_to_model(self) -> ProfileStorageModel.TransactionStorageModel:
-        transaction_core = Transaction(
-            operations=deepcopy(self._profile.operation_representations),
+        transaction_core = ProfileStorageModel.TransactionCoreStorageModel(
+            operations=[operation.to_builtins() for operation in self._profile.operation_representations],
             ref_block_num=self._profile.transaction.ref_block_num,
             ref_block_prefix=self._profile.transaction.ref_block_prefix,
             expiration=self._profile.transaction.expiration,

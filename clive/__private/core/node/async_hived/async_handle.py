@@ -11,13 +11,14 @@ from beekeepy.handle.remote import (
 
 from clive.__private.core.node.async_hived.api.api_collection import HivedAsyncApiCollection
 from clive.__private.core.node.async_hived.common_helpers import HiveHandleCommonHelpers
-from wax.helpy._interfaces.time import Time
+from wax.api import hived_rules
+from wax.helpy import Time
 from wax.helpy.exceptions import BlockWaitTimeoutError
 
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from schemas.fields.basic import AccountName
+    from beekeepy.communication import ResponseCallback
 
 
 class AsyncHivedTemplate[RemoteSettingsT: RemoteHandleSettings](
@@ -25,7 +26,10 @@ class AsyncHivedTemplate[RemoteSettingsT: RemoteHandleSettings](
     HiveHandleCommonHelpers,
 ):
     def _construct_api(self) -> HivedAsyncApiCollection:
-        return HivedAsyncApiCollection(owner=self)
+        return self._with_rules(HivedAsyncApiCollection(owner=self))
+
+    def _rules(self) -> list[ResponseCallback]:
+        return hived_rules()
 
     def _target_service(self) -> str:
         return self._hived_target_service_name()
@@ -42,7 +46,7 @@ class AsyncHivedTemplate[RemoteSettingsT: RemoteHandleSettings](
     async def get_head_block_time(self) -> datetime:
         return self._get_head_block_time(await self.get_dynamic_global_properties())
 
-    async def get_current_witness(self) -> AccountName:
+    async def get_current_witness(self) -> str:
         return self._get_current_witness(await self.get_dynamic_global_properties())
 
     async def wait_number_of_blocks(self, blocks_to_wait: int, *, timeout: float = math.inf) -> None:
@@ -100,7 +104,7 @@ class AsyncHivedTemplate[RemoteSettingsT: RemoteHandleSettings](
     async def batch(self, *, delay_error_on_data_access: bool = False) -> AsyncBatchHandle[HivedAsyncApiCollection]:
         return AsyncBatchHandle(
             url=self.http_endpoint,
-            overseer=self._overseer,
+            owner=self,
             api=HivedAsyncApiCollection,
             delay_error_on_data_access=delay_error_on_data_access,
         )

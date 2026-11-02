@@ -25,7 +25,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
         delayed_votes = accounts[0].delayed_votes
 
-        if len(delayed_votes) == 0:
+        if not delayed_votes:
             message = (
                 f"There are no pending power ups (delayed influence on governance) for account `{self.account_name}`."
             )

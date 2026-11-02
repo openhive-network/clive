@@ -148,10 +148,6 @@ class ProcessUpdateWitness(OperationCommand):
 
     def _create_witness_update_operation(self) -> WitnessUpdateOperation:
         witness = self.witness_ensure
-        # TODO: remove those 3 assertions after https://gitlab.syncad.com/hive/schemas/-/issues/46 is fixed
-        assert witness.props.account_creation_fee is not None, "Account creation fee must is always set"
-        assert witness.props.maximum_block_size is not None, "Maximum block size is always set"
-        assert witness.props.hbd_interest_rate is not None, "Hbd interest rate is always set"
         hbd_interest_rate = (
             percent_to_hive_percent(self.hbd_interest_rate)
             if self.hbd_interest_rate
@@ -166,6 +162,7 @@ class ProcessUpdateWitness(OperationCommand):
                 maximum_block_size=self.maximum_block_size or witness.props.maximum_block_size,
                 hbd_interest_rate=hbd_interest_rate,
             ),
+            fee=Asset.hive(0),
         )
 
     def _create_witness_set_properties_operation(self) -> WitnessSetPropertiesOperation:

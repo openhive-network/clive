@@ -33,7 +33,7 @@ def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> 
 
 
 class LiquidOperationChooseButton(OneLineButton):
-    def __init__(self, label: str, action: ActionType, account: Account, asset_type: type[Asset.LiquidT]) -> None:
+    def __init__(self, label: str, action: ActionType, account: Account, asset_type: Asset.Kind) -> None:
         super().__init__(label=label)
         self._action = action
         self._account = account
@@ -63,7 +63,7 @@ class LiquidOperationChooseButton(OneLineButton):
 class LiquidNavigationDialog(CliveInfoDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    def __init__(self, account: Account, asset_type: type[Asset.LiquidT]) -> None:
+    def __init__(self, account: Account, asset_type: Asset.Kind) -> None:
         super().__init__(border_title=f"Choose liquid operation to perform on {Asset.get_symbol(asset_type)}")
         self._account = account
         self._asset_type = asset_type
@@ -72,7 +72,7 @@ class LiquidNavigationDialog(CliveInfoDialog):
         with Center(), Section():
             yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
             yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
-            if self._asset_type == Asset.Hive:
+            if Asset.is_hive(self._asset_type):
                 yield self._create_liquid_operation_choose_button("Power up", "power-up")
 
     def _create_liquid_operation_choose_button(self, label: str, action: ActionType) -> LiquidOperationChooseButton:

@@ -60,7 +60,7 @@ class ShowRc(WorldBasedCommand):
         end_section: bool = False,
     ) -> None:
         hp = humanize_hive_power_with_comma(iwax.calculate_vests_to_hp(rc_amount, self._rc_data.gdpo))
-        vests = humanize_asset(Asset.Vests(amount=rc_amount))
+        vests = humanize_asset(Asset.VESTS_KIND.satoshi(rc_amount))
         hp_aligned, vests_aligned = align_to_dot(hp, vests, center_to=column_title)
 
         if sign_prefix and rc_amount != 0:

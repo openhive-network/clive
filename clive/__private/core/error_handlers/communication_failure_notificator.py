@@ -35,7 +35,7 @@ class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
         if isinstance(exception, bke.TimeoutExceededError):
             return cls._get_communication_timeout_message(exception)
 
-        error_messages = exception.get_response_error_messages()
+        error_messages = cls._get_error_messages(exception)
         url = exception.url
 
         if not error_messages:
@@ -82,6 +82,32 @@ class CommunicationFailureNotificator(ErrorNotificator[bke.CommunicationError]):
             return
 
         super()._notify_tui(message)
+
+    @staticmethod
+    def _get_error_messages(exception: CommunicationError) -> list[str]:
+        """
+        Get messages of the error found in the response.
+
+        When `data` of a JSON-RPC error is the exception of the service, it holds only templates of messages - the
+        `message` holds them formatted (e.g. the failed assertion with its message), so it is preferred. When `data` is
+        a text, it is the detail of an error with a generic `message` (errors of the API of beekeeper).
+
+        Args:
+            exception: The exception that has occurred.
+
+        Returns:
+            Messages of the error, empty when there is no response.
+        """
+        response = exception.response
+        if isinstance(response, dict):
+            error = response.get("error")
+            if (
+                isinstance(error, dict)
+                and isinstance(error.get("data"), dict)
+                and isinstance(message := error.get("message"), str)
+            ):
+                return [message]
+        return exception.get_response_error_messages()
 
     @staticmethod
     def _simplify_authority_error(error_message: str) -> str | None:

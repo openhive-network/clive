@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.date import TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
 from clive.__private.models.schemas import (
@@ -11,12 +10,10 @@ from clive.__private.models.schemas import (
     HiveDateTime,
     OperationRepresentationUnion,
     OperationUnion,
-    Signature,
     TransactionId,
     Uint16t,
     Uint32t,
     convert_to_representation,
-    field,
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
@@ -34,39 +31,64 @@ class TransactionLocalData:
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterable, Iterator
 
     from clive.__private.core.accounts.accounts import KnownAccount
     from clive.__private.visitors.operation.operation_visitor import OperationVisitor
 
 
-class Transaction(SchemasTransaction):
-    _ALWAYS_EXCLUDED: ClassVar[set[str]] = {"local"}
+def _default_expiration() -> HiveDateTime:
+    return HiveDateTime(HiveDateTime.now() + TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT)
 
-    operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
+
+@dataclass(kw_only=True)
+class Transaction(SchemasTransaction):
+    """
+    Transaction of operations in the HF26 form.
+
+    Runtime-only data (`local`) is kept in a slot, out of the fields - it is never serialized. Fields are annotated
+    with builtins (models are built without validation), not with the validating field types of schemas.
+
+    Attributes:
+        operations: Operations in the HF26 form.
+        ref_block_num: Number of the reference block (TaPoS).
+        ref_block_prefix: Prefix of the reference block (TaPoS).
+        expiration: Time of expiration.
+        extensions: Extensions of the transaction.
+        signatures: Signatures of the transaction.
+    """
+
+    __slots__ = ("_local",)
+
+    operations: list[OperationRepresentationUnion] = field(default_factory=list)
     ref_block_num: Uint16t = 0
     ref_block_prefix: Uint32t = 0
-    expiration: HiveDateTime = field(
-        default_factory=lambda: HiveDateTime.now() + TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
-    )
-    extensions: list[Any] = []  # noqa: RUF012
-    signatures: list[Signature] = []  # noqa: RUF012
-    local: TransactionLocalData = field(default_factory=TransactionLocalData)
+    expiration: HiveDateTime = field(default_factory=_default_expiration)
+    extensions: list[object] = field(default_factory=list)
+    signatures: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        self._local = TransactionLocalData()
 
     def __bool__(self) -> bool:
         """Return True when there are any operations."""
         return bool(self.operations)
 
-    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:  # type: ignore[override]
+    def __contains__(self, operation: object) -> bool:
         if isinstance(operation, OperationUnion):
             return operation in self.operations_models
         return operation in self.operations
 
-    def __iter__(self) -> Iterator[OperationUnion]:
+    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]  # models iterate nothing, this one ops
         return iter(self.operations_models)
 
     def __len__(self) -> int:
         return len(self.operations)
+
+    @property
+    def local(self) -> TransactionLocalData:
+        """Runtime-only data attached to the transaction, not serialized."""
+        return self._local
 
     @property
     def is_signed(self) -> bool:
@@ -82,8 +104,7 @@ class Transaction(SchemasTransaction):
         return [op.value for op in self.operations]
 
     @classmethod
-    def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
-        assert isinstance(value, Iterable)
+    def convert_operations(cls, value: Iterable[OperationUnion]) -> list[OperationRepresentationUnion]:
         return [convert_to_representation(op) for op in value]
 
     def add_operation(self, *operations: OperationUnion) -> None:
@@ -105,53 +126,27 @@ class Transaction(SchemasTransaction):
         self.operations = []
         self.ref_block_num = Uint16t(0)
         self.ref_block_prefix = Uint32t(0)
-        self.expiration = HiveDateTime.now() + TRANSACTION_EXPIRATION_TIMEDELTA_DEFAULT
+        self.expiration = _default_expiration()
         self.extensions = []
         self.signatures = []
-        self.local = TransactionLocalData()
+        self._local = TransactionLocalData()
 
     def swap_operations(self, index_1: int, index_2: int) -> None:
         self.operations[index_1], self.operations[index_2] = self.operations[index_2], self.operations[index_1]
-
-    def json(  # noqa: PLR0913
-        self,
-        *,
-        str_keys: bool = False,
-        builtin_types: Iterable[type] | None = None,
-        order: Literal["deterministic", "sorted"] | None = None,
-        exclude_none: bool = False,
-        remove_whitespaces: bool = False,
-        exclude: set[str] | None = None,
-        indent: int | None = None,
-    ) -> str:
-        return super().json(
-            str_keys=str_keys,
-            builtin_types=builtin_types,
-            order=order,
-            exclude_none=exclude_none,
-            remove_whitespaces=remove_whitespaces,
-            exclude=(exclude or set()) | self._ALWAYS_EXCLUDED,
-            indent=indent,
-        )
-
-    def dict(
-        self,
-        *,
-        exclude: set[str] | None = None,
-        exclude_none: bool = False,
-        exclude_defaults: bool = False,
-    ) -> dict[str, Any]:
-        return super().dict(
-            exclude=(exclude or set()) | self._ALWAYS_EXCLUDED,
-            exclude_none=exclude_none,
-            exclude_defaults=exclude_defaults,
-        )
 
     def unsign(self) -> None:
         self.signatures.clear()
 
     def with_hash(self) -> TransactionWithHash:
-        return TransactionWithHash(**self.dict(), transaction_id=self.calculate_transaction_id())
+        return TransactionWithHash(
+            operations=self.operations,
+            ref_block_num=self.ref_block_num,
+            ref_block_prefix=self.ref_block_prefix,
+            expiration=self.expiration,
+            extensions=self.extensions,
+            signatures=self.signatures,
+            transaction_id=self.calculate_transaction_id(),
+        )
 
     def accept(self, visitor: OperationVisitor) -> None:
         """
@@ -229,6 +224,10 @@ class Transaction(SchemasTransaction):
             ):
                 self.remove_operation(operation)
 
+    def _after_build(self) -> None:
+        self.__post_init__()  # building by `from_builtins` does not call `__post_init__`
 
-class TransactionWithHash(Transaction, kw_only=True):
-    transaction_id: TransactionId
+
+@dataclass(kw_only=True)
+class TransactionWithHash(Transaction):
+    transaction_id: str
