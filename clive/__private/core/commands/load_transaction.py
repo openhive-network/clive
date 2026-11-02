@@ -53,7 +53,7 @@ class LoadTransaction(CommandWithResult[Transaction]):
         """
         # imported here, models for validation are loaded only when needed
         from hiveio_api._validation.operations import Transaction as TransactionValidationModel  # noqa: PLC0415
-        from schemas.validation import validate  # noqa: PLC0415
+        from hiveio_api.validation import validate  # noqa: PLC0415
 
         if not isinstance(data, dict):
             return False

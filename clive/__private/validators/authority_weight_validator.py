@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from textual.validation import Integer
 
-from schemas.fields.user_friendly import Uint16t
+from hiveio_api.fields.user_friendly import Uint16t
 
 
 class AuthorityWeightValidator(Integer):

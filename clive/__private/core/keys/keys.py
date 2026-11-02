@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Literal, overload
 from clive.__private.core import iwax
 from clive.__private.models.schemas import is_matching_model
 from clive.exceptions import CliveError
-from schemas.fields.user_friendly import PublicKey as SchemaPublicKey
+from hiveio_api.fields.user_friendly import PublicKey as SchemaPublicKey
 
 if TYPE_CHECKING:
     from pathlib import Path

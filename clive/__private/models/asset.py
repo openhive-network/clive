@@ -12,7 +12,7 @@ from clive.__private.core.decimal_conventer import (
 )
 from clive.exceptions import CliveError
 from hiveio_api import Asset as PublicAsset
-from schemas.fields.public import AssetKind, asset_info_of_nai, asset_info_of_symbol
+from hiveio_api.fields.public import AssetKind, asset_info_of_nai, asset_info_of_symbol
 
 if TYPE_CHECKING:
     from decimal import Decimal
