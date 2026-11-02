@@ -20,6 +20,8 @@ BASE_IMAGE=""
 
 CLIVE_VERSION=""
 
+PYTHON_TEST_TOOLS_TAG=""
+
 DOCKER_TARGET="instance"
 
 print_help () {
@@ -34,6 +36,7 @@ print_help () {
     echo "  --python-installer-image=image_name Allows to specify image being used as python installer"
     echo "  --base-image=image_name             Allows to specify an image name being use as a base of the one to be built"
     echo "  --clive-version=version             Allows to specify a version of clive to be installed in the image"
+    echo "  --python-test-tools-tag=tag         Allows to specify the common-ci-configuration python-test-tools tag whose pip constraints hold the embedded testnet's test tools (default: the Dockerfile's)"
     echo "  --embedded-testnet                  Allows to build a clive image having embedded a hived testnet inside (ready for immediate sanboxing run)"
     echo "  --help                              Display this help screen and exit"
     echo
@@ -56,6 +59,10 @@ while [ $# -gt 0 ]; do
     --clive-version=*)
       CLIVE_VERSION="${1#*=}"
       echo "Specified clive version: ${CLIVE_VERSION}"
+      ;;
+    --python-test-tools-tag=*)
+      PYTHON_TEST_TOOLS_TAG="${1#*=}"
+      echo "Specified python-test-tools tag: ${PYTHON_TEST_TOOLS_TAG}"
       ;;
     --embedded-testnet)
       DOCKER_TARGET="embedded_testnet_instance"
@@ -145,6 +152,7 @@ docker buildx build --target="${DOCKER_TARGET}" \
   --build-arg BASE_IMAGE="${BASE_IMAGE}" \
   --build-arg HIVED_IMAGE="${HIVED_IMAGE}" \
   --build-arg CLIVE_VERSION="${CLIVE_VERSION}" \
+  ${PYTHON_TEST_TOOLS_TAG:+--build-arg PYTHON_TEST_TOOLS_TAG="${PYTHON_TEST_TOOLS_TAG}"} \
   --build-arg BUILD_TIME="${BUILD_TIME}" \
   --build-arg GIT_COMMIT_SHA="${GIT_COMMIT_SHA}" \
   --build-arg GIT_CURRENT_BRANCH="${GIT_CURRENT_BRANCH}" \

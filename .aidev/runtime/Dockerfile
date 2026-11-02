@@ -17,19 +17,21 @@
 #   stage so no compiler reaches the image (every locked package has a cp314 wheel);
 # * node, for .aidev/junit-helpers.sh, and git;
 # * poetry.lock's main, dev, static-analysis and embeddedtestnet groups in /opt/py
-#   (pytest + xdist/timeout/asyncio/cov, test-tools, ruff, mypy), installed by poetry from
+#   (test-tools, ruff, mypy), installed by poetry from
 #   a copy at /work so the editable clive-local-tools path dependency resolves to the
 #   mounted workspace (/work/tests/clive-local-tools); clive itself (`--no-root`) is
 #   importable from /work through a .pth, and its [project.scripts] entry points
 #   (`clive`, `clive-dev`, which test_startup/test_signals run) are written as
-#   wrappers in /opt/py/bin, since `--no-root` installs none.
+#   wrappers in /opt/py/bin, since `--no-root` installs none;
+# * pytest + xdist/timeout/asyncio/cov in /opt/py, which clive does not lock, at the base
+#   image's versions (its /etc/python-test-tools/constraints.txt), as CI's tests run them.
 #
 # Build and pin it with .aidev/runtime/build.sh; see .aidev/README.md.
 
 # libfaketime, which test-tools preloads into hived (/usr/local/lib/faketime): the
 # Syncad fork common-ci-configuration's ci-base-image builds, at a pinned commit of
 # its bw_timer_settime_fix branch, with the same flags.
-FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python-test-tools@sha256:6f7fb3acf0c4f5551cf9fa58a382fbae66c9c47b06510b31685553581ef1409e AS faketime
+FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python-test-tools@sha256:e19194941631ce299ccb41ad7e924472e8e89b44468461cea348a7b220623e6d AS faketime
 USER root
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git gcc make libc6-dev \
@@ -40,7 +42,7 @@ RUN apt-get update \
     && make install \
     && test -f /usr/local/lib/faketime/libfaketimeMT.so.1
 
-FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python-test-tools@sha256:6f7fb3acf0c4f5551cf9fa58a382fbae66c9c47b06510b31685553581ef1409e
+FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python-test-tools@sha256:e19194941631ce299ccb41ad7e924472e8e89b44468461cea348a7b220623e6d
 
 USER root
 
@@ -77,6 +79,8 @@ RUN python3 -m venv --without-pip /opt/py \
     && cd /work \
     && POETRY_CACHE_DIR=/tmp/poetry-cache POETRY_VIRTUALENVS_CREATE=false poetry install --no-root --no-interaction \
          --with dev,static-analysis,embeddedtestnet --without docs \
+    && /python_venv/bin/python -m pip --python /opt/py/bin/python install --no-cache-dir -c /etc/python-test-tools/constraints.txt \
+         pytest pytest-xdist pytest-timeout pytest-asyncio pytest-cov \
     && /opt/py/bin/ruff --version && /opt/py/bin/mypy --version && /opt/py/bin/python -m pytest --version \
     && /opt/py/bin/python -c 'import pytest_cov' \
     && timeout 30 "$(/opt/py/bin/python -c 'import beekeepy, pathlib; print(pathlib.Path(beekeepy.__file__).parent)')/beekeeper" --version \
