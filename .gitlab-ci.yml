@@ -118,12 +118,20 @@ default:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+# clive does not lock pytest, but mypy needs it to check tests/: install it into the project's venv
+# at python-test-tools' version, as common-ci-configuration publishes it
+.install_pytest_for_type_checking:
+  script:
+    - !reference [.python_test_tools_constraints, script]
+    - python3 -m pip install -c "${PYTHON_TEST_TOOLS_CONSTRAINTS}" pytest
+
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
   before_script:
     - !reference [.pre_commit_checks_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
+    - !reference [.install_pytest_for_type_checking, script]
 
 verify_poetry_lock_sanity:
   stage: static_code_analysis
@@ -153,6 +161,7 @@ type_check_with_mypy:
   before_script:
     - !reference [.type_check_with_mypy_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
+    - !reference [.install_pytest_for_type_checking, script]
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -266,6 +275,20 @@ prepare_testnet_hived_image:
   tags:
     - public-runner-docker
 
+# test-tools preloads libfaketime into the nodes it starts with a time control; python-test-tools, which runs
+# the tests, does not carry it, so it is taken from common-ci-configuration's Python image, which builds it
+prepare_faketime:
+  extends: .python_image
+  stage: build
+  needs: []
+  script:
+    - mkdir -p "${CI_PROJECT_DIR}/faketime"
+    - cp -v /usr/local/lib/faketime/libfaketimeMT.so.1 "${CI_PROJECT_DIR}/faketime/"
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - faketime/
+
 build_wheel:
   extends: .build_wheel_template
   stage: build
@@ -292,11 +315,16 @@ build_docs:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+# The tests run in common-ci-configuration's python-test-tools with its pytest and plugins, at the versions in
+# common-ci-configuration's docker-bake.hcl; clive does not pin them.
+#
 # Installation flow in .testing:
-# 1. poetry install (from .project_develop_configuration_template) - installs all deps including clive in editable mode
+# 1. poetry install - installs clive's dependencies (without the static-analysis and docs groups) and clive in
+#    editable mode into the image's venv (VIRTUAL_ENV=/python_venv), next to the tools
 # 2. poetry update --without static-analysis (when TEST_WITH_LATEST_DEPENDENCIES=true) - updates to latest versions
 # 3. pip uninstall clive - removes editable clive to replace with wheel
 # 4. pip install --no-deps dist/*.whl - installs wheel without touching deps (already installed by poetry)
+# The image's pytest packages are listed before step 1, and the job fails if the steps changed any of them.
 #
 # We always use --no-deps because:
 # - Poetry already installed all dependencies (either from lock or updated)
@@ -304,15 +332,26 @@ build_docs:
 # - Faster installation (skips dependency resolution)
 .testing:
   stage: tests
-  extends: .project_develop_configuration_template
+  extends: .job-defaults
+  image: "${PYTHON_TEST_TOOLS_IMAGE}"
+  retry:
+    max: 2
+    when:
+      - script_failure
+      - runner_system_failure
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
     - job: prepare_testnet_hived_image
       artifacts: true
+    - job: prepare_faketime
+      artifacts: true
     - job: build_wheel
       artifacts: true
   variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}"
+    LIBFAKETIME_PATH: "${CI_PROJECT_DIR}/faketime/libfaketimeMT.so.1"  # for test-tools
+    TEST_TOOLS_VERSIONS_FILE: "/tmp/python-test-tools-versions.txt"
     CLIVE_BEEKEEPER__COMMUNICATION_TOTAL_TIMEOUT_SECS: 60
     CLIVE_NODE__COMMUNICATION_TOTAL_TIMEOUT_SECS: 60
     CLIVE_BEEKEEPER__INITIALIZATION_TIMEOUT: 60
@@ -326,7 +365,11 @@ build_docs:
     BLOCK_LOG_UTIL_PATH:  "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/block_log_util"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   before_script:
-    - !reference [.project_develop_configuration_template, before_script]
+    - python3 -V
+    - poetry -C "${PYPROJECT_DIR}" -V
+    - echo -e "${TXT_BLUE}pytest packages of ${PYTHON_TEST_TOOLS_IMAGE}:${TXT_CLEAR}"
+    - pip list --format=freeze | grep -iE '^pytest(-[a-z]+)?==' | tee "${TEST_TOOLS_VERSIONS_FILE}"
+    - poetry -C "${PYPROJECT_DIR}" install --without static-analysis,docs
     - !reference [.update_deps_for_tests, script]
     - pip list --editable
     - python3 -m pip uninstall clive -y
@@ -335,6 +378,11 @@ build_docs:
     - python3 -m pip install --no-deps dist/*.whl
     - pip list --editable
     - pip list
+    - |
+      pip list --format=freeze | grep -iE '^pytest(-[a-z]+)?==' | diff "${TEST_TOOLS_VERSIONS_FILE}" - || {
+        echo "ERROR: installing clive changed the pytest packages of ${PYTHON_TEST_TOOLS_IMAGE}"
+        exit 1
+      }
     - clive --version  # assertion that Clive can be run as application
   artifacts:
     reports:
@@ -571,6 +619,7 @@ clean_docs_preview:
       --python-installer-image=${PYTHON_INSTALLER_IMAGE}
       --base-image=${BASE_IMAGE}
       --clive-version=${WHEEL_BUILD_VERSION}
+      --python-test-tools-tag=${PYTHON_TEST_TOOLS_TAG}
       ${BUILD_INSTANCE_ARGS}
     - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
     - source docker_image_name.env

@@ -7,7 +7,12 @@ ARG BASE_IMAGE
 
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
+# common-ci-configuration's python-test-tools tag whose pip constraints hold the embedded testnet's test tools
+ARG PYTHON_TEST_TOOLS_TAG=develop
+
 FROM $HIVED_IMAGE AS hived_image
+
+FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python-test-tools:${PYTHON_TEST_TOOLS_TAG} AS python_test_tools
 
 FROM $BASE_IMAGE AS preconfigured_base_image
 
@@ -173,9 +178,15 @@ COPY --from=python_installer /poetry_venv /poetry_venv
 
 ENV PATH="/home/hived_admin/.local/bin:/poetry_venv/bin:$PATH"
 
+# test-tools needs pytest, which clive does not lock: it is installed at the version of PYTHON_TEST_TOOLS_TAG.
+# The COPY fails the build when that image carries no constraints, so pytest is never installed unconstrained.
+COPY --from=python_test_tools /etc/python-test-tools/constraints.txt /tmp/python-test-tools-constraints.txt
+
 # Run dev installation to supplement with embeddedtestnet dependencies
 RUN set -ex; source "${PYTHON_VENV_PATH}/bin/activate" && \
-    poetry install --only embeddedtestnet --no-root
+    poetry install --only embeddedtestnet --no-root && \
+    pip install -c /tmp/python-test-tools-constraints.txt pytest && \
+    pip show pytest
 
 ENV TESTNET_MODE=1
 
