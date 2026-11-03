@@ -48,9 +48,9 @@ stylelint, pydoclint, poetry-lock) and the poetry-lock sanity/stability jobs nee
 -   poetry.lock's main, dev, static-analysis and embeddedtestnet groups in `/opt/py` (`--no-root`; clive and the
     editable `tests/clive-local-tools` resolve to the mounted workspace at `/work`), wrappers for the `clive` /
     `clive-dev` entry points (`tests/functional/test_startup.py` and `test_signals.py` run them);
--   pytest, pytest-xdist, pytest-timeout, pytest-asyncio and pytest-cov in `/opt/py`, which clive does not lock, at
-    the versions of the base image's pip constraints (`/etc/python-test-tools/constraints.txt`), as CI's tests use
-    them; pytest-cov serves the `coverage` step;
+-   pytest, pytest-xdist, pytest-timeout, pytest-asyncio and pytest-cov in `/opt/py`, which clive does not lock, at the
+    versions of the base image's pip constraints (`/etc/python-test-tools/constraints.txt`), as CI's tests use them;
+    pytest-cov serves the `coverage` step;
 -   libfaketime from the Syncad fork (`hive/faketime`, `bw_timer_settime_fix` at
     `873b0941a3ed733e5a9bbd2929ff647cc5c61bbe`), built as common-ci-configuration's ci-base-image builds it, in a
     separate build stage: every locked package has a Python 3.14 wheel, so the image carries no compiler; test-tools
