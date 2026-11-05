@@ -52,6 +52,7 @@ class LoadTransaction(CommandWithResult[Transaction]):
             True when the data is a valid transaction, False otherwise.
         """
         # imported here, models for validation are loaded only when needed
+        # private path until hiveio-api exposes the model publicly: https://gitlab.syncad.com/hive/hive/-/work_items/980
         from hiveio_api._validation.operations import Transaction as TransactionValidationModel  # noqa: PLC0415
         from hiveio_api.validation import validate  # noqa: PLC0415
 
