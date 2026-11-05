@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from hiveio_api._utilities.smart_lazy_import import aggregate_same_import, lazy_module_factory
+from hiveio_api_client.lazy_import import aggregate_same_import, lazy_module_factory
 
 __all__ = [  # noqa: RUF022
     # operation BASIC aliases
