@@ -25,7 +25,7 @@ branches:
 environment:
   kind: "container"
   # Replace with the repo@sha256:… that `.aidev/runtime/build.sh --push` prints.
-  image: "registry.gitlab.syncad.com/hive/clive/aidev-tests@sha256:ee0227b48cc55da4f70f95e4cd0544722292d38edb8c4358d10308cafa71fc7c"
+  image: "registry.gitlab.syncad.com/hive/clive/aidev-tests@sha256:71e937bb2cf06f1062a114c8c66daf65abd1a8ac578a6e142528f30bd9f78694"
   inputs: ["poetry.lock", "tests/clive-local-tools/poetry.lock"]
 
 issues:
